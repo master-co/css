@@ -7,7 +7,9 @@
     "types": "index.d.ts",
     "private": false,
     "keywords": [],
-    "peerDependencies": {},
+    "peerDependencies": {
+        "@master/style": "^1.0.0-alpha"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/master-style/styles.git"
