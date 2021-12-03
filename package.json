@@ -1,7 +1,7 @@
 {
     "scripts": {
         "update": "git rebase package/main",
-        "build": "npm i && webpack",
+        "build": "npm i && cd src && npm i && cd ../ && webpack",
         "release": "semantic-release || true"
     },
     "dependencies": {
