@@ -1,7 +1,7 @@
 import { DASH, FAMILY, FONT, F_PREFIX } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterFontFamilyVirtualClass extends MasterVirtualClass {
+export class MasterFontFamilyStyle extends MasterStyle {
     static override prefixes =  /^f-family:/;
     static override properties = [FONT + DASH + FAMILY];
     static override semantics = {

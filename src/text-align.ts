@@ -1,7 +1,7 @@
 import { ALIGN, DASH, TEXT } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterTextAlignVirtualClass extends MasterVirtualClass {
+export class MasterTextAlignStyle extends MasterStyle {
     static override prefixes =  /^(t-align:|t:(top|center|left|right))/;
     static override properties = [TEXT + DASH + ALIGN];
 }

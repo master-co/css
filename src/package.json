@@ -1,5 +1,5 @@
 {
-    "name": "@master/variants",
+    "name": "@master/styles",
     "license": "MIT",
     "description": "",
     "author": "Aoyue Design LTD.",
@@ -10,6 +10,6 @@
     "peerDependencies": {},
     "repository": {
         "type": "git",
-        "url": "https://github.com/master-style/variants.git"
+        "url": "https://github.com/master-style/styles.git"
     }
 }

@@ -1,6 +1,6 @@
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterVariableVirtualClass extends MasterVirtualClass {
+export class MasterVariableStyle extends MasterStyle {
     static override prefixes = /^\$.*:/;
     override get properties(): { [key: string]: any } {
         return {

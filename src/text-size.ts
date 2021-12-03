@@ -1,7 +1,7 @@
 import { DASH, EM, FONT, HEIGHT, LINE, REM, SIZE } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterTextSizeVirtualClass extends MasterVirtualClass {
+export class MasterTextSizeStyle extends MasterStyle {
     static override prefixes = /^(t:[0-9])/;
     override get properties(): { [key: string]: any } {
         return {

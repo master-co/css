@@ -1,7 +1,7 @@
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 import { BORDER } from './constants/css-property-keyword';
 
-export class MasterBorderVirtualClass extends MasterVirtualClass {
+export class MasterBorderStyle extends MasterStyle {
     static override prefixes = /^b:/;
     static override properties = [BORDER];
 }

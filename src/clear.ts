@@ -1,7 +1,7 @@
 import { CLEAR } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterClearVirtualClass extends MasterVirtualClass {
+export class MasterClearStyle extends MasterStyle {
     static override prefixes = /^clear:/;
     static override properties = [CLEAR];
 }

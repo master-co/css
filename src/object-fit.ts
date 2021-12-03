@@ -1,7 +1,7 @@
 import { DASH, FIT, OBJECT } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterObjectFitVirtualClass extends MasterVirtualClass {
+export class MasterObjectFitStyle extends MasterStyle {
     static override prefixes =  /^(object-fit:|object:(contain|cover|fill|scale-down))/;
     static override properties = [OBJECT + DASH + FIT];
 }

@@ -1,7 +1,7 @@
 import { WIDTH } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterWidthVirtualClass extends MasterVirtualClass {
+export class MasterWidthStyle extends MasterStyle {
     static override prefixes =  /^w:/;
     static override properties = [WIDTH];
     static override semantics = {

@@ -1,7 +1,7 @@
 import { FILTER } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterFilterVirtualClass extends MasterVirtualClass {
+export class MasterFilterStyle extends MasterStyle {
     static override prefixes = /^filter:/;
     static override properties = [FILTER];
 }

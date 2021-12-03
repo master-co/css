@@ -1,7 +1,7 @@
 import { DASH, DELAY, TRANSITION } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterTransitionDelayVirtualClass extends MasterVirtualClass {
+export class MasterTransitionDelayStyle extends MasterStyle {
     static override prefixes =  /^(transition-delay|~delay):/;
     static override properties = [TRANSITION + DASH + DELAY];
 }

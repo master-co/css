@@ -1,7 +1,7 @@
 import { ISOLATE, ISOLATION } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterIsolationVirtualClass extends MasterVirtualClass {
+export class MasterIsolationStyle extends MasterStyle {
     static override prefixes = /^isolation:/;
     static override properties = [ISOLATION];
     static override semantics = {

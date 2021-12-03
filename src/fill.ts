@@ -1,7 +1,7 @@
 import { FILL } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterFillVirtualClass extends MasterVirtualClass {
+export class MasterFillStyle extends MasterStyle {
     static override prefixes = /^fill:/;
     static override properties = [FILL];
 }

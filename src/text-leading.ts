@@ -1,7 +1,7 @@
 import { DASH, FIRST, LETTER, TEXT, TRANSFORM, UPPERCASE } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterTextLeadingVirtualClass extends MasterVirtualClass {
+export class MasterTextLeadingStyle extends MasterStyle {
     static override prefixes = /^t:leading/;
     static override fixedPseudo = ':' + FIRST + DASH + LETTER;
     static override semantics = {

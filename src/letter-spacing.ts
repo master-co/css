@@ -1,7 +1,7 @@
 import { LETTER_SPACING } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterLetterSpacingVirtualClass extends MasterVirtualClass {
+export class MasterLetterSpacingStyle extends MasterStyle {
     static override prefixes =  /^(ls|letter-spacing):/;
     static override properties = [LETTER_SPACING];
     static override defaultUnit = 'em';

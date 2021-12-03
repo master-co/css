@@ -1,7 +1,7 @@
 import { DASH, FONT, F_PREFIX, WEIGHT } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterFontWeightVirtualClass extends MasterVirtualClass {
+export class MasterFontWeightStyle extends MasterStyle {
     static override prefixes =  /^f-weight:/;
     static override properties = [FONT + DASH + WEIGHT];
     static override defaultUnit = '';

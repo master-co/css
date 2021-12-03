@@ -1,7 +1,7 @@
 import { FIXED, POSITION, STATIC, STICKY } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterPositionVirtualClass extends MasterVirtualClass {
+export class MasterPositionStyle extends MasterStyle {
     static override prefixes = /^position:/;
     static override properties = [POSITION];
     static override semantics = {

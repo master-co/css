@@ -1,7 +1,7 @@
 import { ANIMATION, DASH, PLAY_STATE, TIMING_FUNCTION } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterAnimationTimingFunctionVirtualClass extends MasterVirtualClass {
+export class MasterAnimationTimingFunctionStyle extends MasterStyle {
     static override prefixes = /^(animation-timing-function|\*easing):/;
     static override properties = [ANIMATION + DASH + TIMING_FUNCTION];
 }

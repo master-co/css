@@ -1,7 +1,7 @@
 import { HEIGHT } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterHeightVirtualClass extends MasterVirtualClass {
+export class MasterHeightStyle extends MasterStyle {
     static override prefixes =  /^h:/;
     static override properties = [HEIGHT];
     static override semantics = {

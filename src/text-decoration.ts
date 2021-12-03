@@ -1,7 +1,7 @@
 import { DASH, DECORATION, TEXT } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterTextDecorationVirtualClass extends MasterVirtualClass {
+export class MasterTextDecorationStyle extends MasterStyle {
     static override prefixes =  /^(t-decoration:|t:(underline|line-throught))/;
     static override properties = [TEXT + DASH + DECORATION];
 }

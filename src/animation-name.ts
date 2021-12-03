@@ -1,7 +1,7 @@
 import { ANIMATION, DASH, NAME } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterAnimationNameVirtualClass extends MasterVirtualClass {
+export class MasterAnimationNameStyle extends MasterStyle {
     static override prefixes = /^(animation-name|\*name):/;
     static override properties = [ANIMATION + DASH + NAME];
 }

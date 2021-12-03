@@ -1,7 +1,7 @@
 import { STROKE } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterStrokeVirtualClass extends MasterVirtualClass {
+export class MasterStrokeStyle extends MasterStyle {
     static override prefixes = /^stroke:/;
     static override properties = [STROKE];
 }

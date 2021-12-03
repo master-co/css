@@ -1,7 +1,7 @@
 import { HIDDEN, INVISIBLE, VISIBILITY, VISIBLE } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterVisibilityVirtualClass extends MasterVirtualClass {
+export class MasterVisibilityStyle extends MasterStyle {
     static override prefixes = /^visibility:/;
     static override properties = [VISIBILITY];
     static override semantics = {

@@ -1,7 +1,7 @@
 import { ALIGN, DASH, VERTICAL } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterVerticalAlignVirtualClass extends MasterVirtualClass {
+export class MasterVerticalAlignStyle extends MasterStyle {
     static override prefixes =  /^(v|v-align):/;
     static override properties = [VERTICAL + DASH + ALIGN];
 }

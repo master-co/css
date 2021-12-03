@@ -1,7 +1,7 @@
 import { DASH, STROKE, WIDTH } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterStrokeWidthVirtualClass extends MasterVirtualClass {
+export class MasterStrokeWidthStyle extends MasterStyle {
     static override prefixes = /^stroke-width:/;
     static override properties = [STROKE + DASH + WIDTH];
 }

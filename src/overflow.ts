@@ -1,7 +1,7 @@
 import { OVERFLOW } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterOverflowVirtualClass extends MasterVirtualClass {
+export class MasterOverflowStyle extends MasterStyle {
     static override prefixes = /^(overflow|ovf)(-x|-y)?:/;
     static override properties = [OVERFLOW];
 }

@@ -1,7 +1,7 @@
 import { DASH, TIMING_FUNCTION, TRANSITION } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterTransitionTimingFunctionVirtualClass extends MasterVirtualClass {
+export class MasterTransitionTimingFunctionStyle extends MasterStyle {
     static override prefixes =  /^(transition-timing-function|~easing):/;
     static override properties = [TRANSITION + DASH + TIMING_FUNCTION];
 }

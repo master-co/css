@@ -1,188 +1,188 @@
-import { MasterVirtualClass } from './virtual-class';
-import { MasterFontWeightVirtualClass } from './font-weight';
-import { MasterFontFamilyVirtualClass } from './font-family';
-import { MasterFontSizeVirtualClass } from './font-size';
-import { MasterSpacingVirtualClass } from './spacing';
-import { MasterWidthVirtualClass } from './width';
-import { MasterHeightVirtualClass } from './height';
-import { MasterMinWidthVirtualClass } from './min-width';
-import { MasterMinHeightVirtualClass } from './min-height';
-import { MasterLetterSpacingVirtualClass } from './letter-spacing';
-import { MasterFontSmoothingVirtualClass } from './font-smoothing';
-import { MasterFontStyleVirtualClass } from './font-style';
-import { MasterFontVariantNumericVirtualClass } from './font-variant-numeric';
-import { MasterLineHeightVirtualClass } from './line-height';
-import { MasterObjectFitVirtualClass } from './object-fit';
-import { MasterObjectPositionVirtualClass } from './object-position';
-import { MasterTextAlignVirtualClass } from './text-align';
-import { MasterTextDecorationVirtualClass } from './text-decoration';
-import { MasterTextLeadingVirtualClass } from './text-leading';
-import { MasterTextTransformVirtualClass } from './text-transform';
-import { MasterVerticalAlignVirtualClass } from './vertical-align';
-import { MasterLinesVirtualClass } from './lines';
-import { MasterTransformOriginVirtualClass } from './transform-origin';
-import { MasterTransformStyleVirtualClass } from './transform-style';
-import { MasterTransformBoxVirtualClass } from './transform-box';
-import { MasterTransformVirtualClass } from './transform';
-import { MasterTransitionVirtualClass } from './transition';
-import { MasterTransitionDelayVirtualClass } from './transition-delay';
-import { MasterTransitionDurationVirtualClass } from './transition-duration';
-import { MasterTransitionPropertyVirtualClass } from './transition-property';
-import { MasterTransitionTimingFunctionVirtualClass } from './transition-timing-function';
-import { MasterMaxHeightVirtualClass } from './max-height';
-import { MasterMaxWidthVirtualClass } from './max-width';
-import { MasterDisplayVirtualClass } from './display';
-import { MasterBoxSizingVirtualClass } from './box-sizing';
-import { MasterOpacityVirtualClass } from './opacity';
-import { MasterVisibilityVirtualClass } from './visibility';
-import { MasterClearVirtualClass } from './clear';
-import { MasterFloatVirtualClass } from './float';
-import { MasterIsolationVirtualClass } from './isolation';
-import { MasterOverflowVirtualClass } from './overflow';
-import { MasterOverscrollBehaviorVirtualClass } from './overscroll-behavior';
-import { MasterZIndexVirtualClass } from './z-index';
-import { MasterAnimationDelayVirtualClass } from './animation-delay';
-import { MasterAnimationDirectionVirtualClass } from './animation-direction';
-import { MasterAnimationFillModeVirtualClass } from './animation-fill-mode';
-import { MasterAnimationIterationCountVirtualClass } from './animation-iteration-count';
-import { MasterAnimationNameVirtualClass } from './animation-name';
-import { MasterAnimationPlayStateVirtualClass } from './animation-play-state';
-import { MasterAnimationTimingFunctionVirtualClass } from './animation-timing-function';
-import { MasterAnimationVirtualClass } from './animation';
-import { MasterBorderColorVirtualClass } from './border-color';
-import { MasterBorderRadiusVirtualClass } from './border-radius';
-import { MasterBorderStyleVirtualClass } from './border-style';
-import { MasterBorderWidthVirtualClass } from './border-width';
-import { MasterBorderVirtualClass } from './border';
-import { MasterBackgroundAttachmentVirtualClass } from './background-attachment';
-import { MasterBackgroundBlendModeVirtualClass } from './background-blend-mode';
-import { MasterBackgroundClipVirtualClass } from './background-clip';
-import { MasterBackgroundColorVirtualClass } from './background-color';
-import { MasterBackgroundOriginVirtualClass } from './background-origin';
-import { MasterBackgroundPositionVirtualClass } from './background-position';
-import { MasterBackgroundRepeatVirtualClass } from './background-repeat';
-import { MasterBackgroundSizeVirtualClass } from './background-size';
-import { MasterBackgroundImageVirtualClass } from './background-image';
-import { MasterBackgroundVirtualClass } from './background';
-import { MasterMixBlendModeVirtualClass } from './mix-blend-mode';
-import { MasterPositionVirtualClass } from './position';
-import { MasterPlacementVirtualClass } from './placement';
-import { MasterBackdropFilterVirtualClass } from './backdrop-filter';
-import { MasterFillVirtualClass } from './fill';
-import { MasterStrokeVirtualClass } from './stroke';
-import { MasterStrokeWidthVirtualClass } from './stroke-width';
-import { MasterFilterVirtualClass } from './filter';
-import { MasterCursorVirtualClass } from './cursor';
-import { MasterPointerEventsVirtualClass } from './pointer-events';
-import { MasterResizeVirtualClass } from './resize';
-import { MasterTouchActionVirtualClass } from './touch-action';
-import { MasterUserDragVirtualClass } from './user-drag';
-import { MasterUserSelectVirtualClass } from './user-select';
-import { MasterBoxShadowVirtualClass } from './box-shadow';
-import { MasterTextShadowVirtualClass } from './text-shadow';
-import { MasterTextSizeVirtualClass } from './text-size';
-import { MasterWordBreakVirtualClass } from './word-break';
-import { MasterGridColumnsVirtualClass } from './grid-columns';
-import { MasterGridRowsVirtualClass } from './grid-rows';
-import { MasterGapVirtualClass } from './gap';
-import { MasterWordSpacingVirtualClass } from './word-spacing';
-import { MasterVariableVirtualClass } from './variable';
+import { MasterStyle } from '@master/style';
+import { MasterFontWeightStyle } from './font-weight';
+import { MasterFontFamilyStyle } from './font-family';
+import { MasterFontSizeStyle } from './font-size';
+import { MasterSpacingStyle } from './spacing';
+import { MasterWidthStyle } from './width';
+import { MasterHeightStyle } from './height';
+import { MasterMinWidthStyle } from './min-width';
+import { MasterMinHeightStyle } from './min-height';
+import { MasterLetterSpacingStyle } from './letter-spacing';
+import { MasterFontSmoothingStyle } from './font-smoothing';
+import { MasterFontStyleStyle } from './font-style';
+import { MasterFontVariantNumericStyle } from './font-variant-numeric';
+import { MasterLineHeightStyle } from './line-height';
+import { MasterObjectFitStyle } from './object-fit';
+import { MasterObjectPositionStyle } from './object-position';
+import { MasterTextAlignStyle } from './text-align';
+import { MasterTextDecorationStyle } from './text-decoration';
+import { MasterTextLeadingStyle } from './text-leading';
+import { MasterTextTransformStyle } from './text-transform';
+import { MasterVerticalAlignStyle } from './vertical-align';
+import { MasterLinesStyle } from './lines';
+import { MasterTransformOriginStyle } from './transform-origin';
+import { MasterTransformStyleStyle } from './transform-style';
+import { MasterTransformBoxStyle } from './transform-box';
+import { MasterTransformStyle } from './transform';
+import { MasterTransitionStyle } from './transition';
+import { MasterTransitionDelayStyle } from './transition-delay';
+import { MasterTransitionDurationStyle } from './transition-duration';
+import { MasterTransitionPropertyStyle } from './transition-property';
+import { MasterTransitionTimingFunctionStyle } from './transition-timing-function';
+import { MasterMaxHeightStyle } from './max-height';
+import { MasterMaxWidthStyle } from './max-width';
+import { MasterDisplayStyle } from './display';
+import { MasterBoxSizingStyle } from './box-sizing';
+import { MasterOpacityStyle } from './opacity';
+import { MasterVisibilityStyle } from './visibility';
+import { MasterClearStyle } from './clear';
+import { MasterFloatStyle } from './float';
+import { MasterIsolationStyle } from './isolation';
+import { MasterOverflowStyle } from './overflow';
+import { MasterOverscrollBehaviorStyle } from './overscroll-behavior';
+import { MasterZIndexStyle } from './z-index';
+import { MasterAnimationDelayStyle } from './animation-delay';
+import { MasterAnimationDirectionStyle } from './animation-direction';
+import { MasterAnimationFillModeStyle } from './animation-fill-mode';
+import { MasterAnimationIterationCountStyle } from './animation-iteration-count';
+import { MasterAnimationNameStyle } from './animation-name';
+import { MasterAnimationPlayStateStyle } from './animation-play-state';
+import { MasterAnimationTimingFunctionStyle } from './animation-timing-function';
+import { MasterAnimationStyle } from './animation';
+import { MasterBorderColorStyle } from './border-color';
+import { MasterBorderRadiusStyle } from './border-radius';
+import { MasterBorderStyleStyle } from './border-style';
+import { MasterBorderWidthStyle } from './border-width';
+import { MasterBorderStyle } from './border';
+import { MasterBackgroundAttachmentStyle } from './background-attachment';
+import { MasterBackgroundBlendModeStyle } from './background-blend-mode';
+import { MasterBackgroundClipStyle } from './background-clip';
+import { MasterBackgroundColorStyle } from './background-color';
+import { MasterBackgroundOriginStyle } from './background-origin';
+import { MasterBackgroundPositionStyle } from './background-position';
+import { MasterBackgroundRepeatStyle } from './background-repeat';
+import { MasterBackgroundSizeStyle } from './background-size';
+import { MasterBackgroundImageStyle } from './background-image';
+import { MasterBackgroundStyle } from './background';
+import { MasterMixBlendModeStyle } from './mix-blend-mode';
+import { MasterPositionStyle } from './position';
+import { MasterPlacementStyle } from './placement';
+import { MasterBackdropFilterStyle } from './backdrop-filter';
+import { MasterFillStyle } from './fill';
+import { MasterStrokeStyle } from './stroke';
+import { MasterStrokeWidthStyle } from './stroke-width';
+import { MasterFilterStyle } from './filter';
+import { MasterCursorStyle } from './cursor';
+import { MasterPointerEventsStyle } from './pointer-events';
+import { MasterResizeStyle } from './resize';
+import { MasterTouchActionStyle } from './touch-action';
+import { MasterUserDragStyle } from './user-drag';
+import { MasterUserSelectStyle } from './user-select';
+import { MasterBoxShadowStyle } from './box-shadow';
+import { MasterTextShadowStyle } from './text-shadow';
+import { MasterTextSizeStyle } from './text-size';
+import { MasterWordBreakStyle } from './word-break';
+import { MasterGridColumnsStyle } from './grid-columns';
+import { MasterGridRowsStyle } from './grid-rows';
+import { MasterGapStyle } from './gap';
+import { MasterWordSpacingStyle } from './word-spacing';
+import { MasterVariableStyle } from './variable';
 
-MasterVirtualClass.Subscriptions.push(
-    MasterVariableVirtualClass,
-    MasterFontWeightVirtualClass,
-    MasterFontFamilyVirtualClass,
-    MasterSpacingVirtualClass,
-    MasterFontSizeVirtualClass,
-    MasterDisplayVirtualClass,
-    MasterWidthVirtualClass,
-    MasterHeightVirtualClass,
-    MasterMinWidthVirtualClass,
-    MasterMinHeightVirtualClass,
-    MasterLetterSpacingVirtualClass,
-    MasterFontSmoothingVirtualClass,
-    MasterFontStyleVirtualClass,
-    MasterFontVariantNumericVirtualClass,
-    MasterLineHeightVirtualClass,
-    MasterObjectFitVirtualClass,
-    MasterObjectPositionVirtualClass,
-    MasterTextAlignVirtualClass,
-    MasterTextDecorationVirtualClass,
-    MasterTextLeadingVirtualClass,
-    MasterTextTransformVirtualClass,
-    MasterVerticalAlignVirtualClass,
-    MasterLinesVirtualClass,
-    MasterMaxHeightVirtualClass,
-    MasterMaxWidthVirtualClass,
-    MasterBoxSizingVirtualClass,
-    MasterOpacityVirtualClass,
-    MasterVisibilityVirtualClass,
-    MasterClearVirtualClass,
-    MasterFloatVirtualClass,
-    MasterIsolationVirtualClass,
-    MasterOverflowVirtualClass,
-    MasterOverscrollBehaviorVirtualClass,
-    MasterZIndexVirtualClass,
-    MasterPositionVirtualClass,
-    MasterPlacementVirtualClass,
-    MasterCursorVirtualClass,
-    MasterPointerEventsVirtualClass,
-    MasterResizeVirtualClass,
-    MasterTouchActionVirtualClass,
-    MasterWordBreakVirtualClass,
-    MasterWordSpacingVirtualClass,
-    MasterUserDragVirtualClass,
-    MasterUserSelectVirtualClass,
-    MasterTextShadowVirtualClass,
-    MasterTextSizeVirtualClass,
-    MasterBoxShadowVirtualClass,
+MasterStyle.Subscriptions.push(
+    MasterVariableStyle,
+    MasterFontWeightStyle,
+    MasterFontFamilyStyle,
+    MasterSpacingStyle,
+    MasterFontSizeStyle,
+    MasterDisplayStyle,
+    MasterWidthStyle,
+    MasterHeightStyle,
+    MasterMinWidthStyle,
+    MasterMinHeightStyle,
+    MasterLetterSpacingStyle,
+    MasterFontSmoothingStyle,
+    MasterFontStyleStyle,
+    MasterFontVariantNumericStyle,
+    MasterLineHeightStyle,
+    MasterObjectFitStyle,
+    MasterObjectPositionStyle,
+    MasterTextAlignStyle,
+    MasterTextDecorationStyle,
+    MasterTextLeadingStyle,
+    MasterTextTransformStyle,
+    MasterVerticalAlignStyle,
+    MasterLinesStyle,
+    MasterMaxHeightStyle,
+    MasterMaxWidthStyle,
+    MasterBoxSizingStyle,
+    MasterOpacityStyle,
+    MasterVisibilityStyle,
+    MasterClearStyle,
+    MasterFloatStyle,
+    MasterIsolationStyle,
+    MasterOverflowStyle,
+    MasterOverscrollBehaviorStyle,
+    MasterZIndexStyle,
+    MasterPositionStyle,
+    MasterPlacementStyle,
+    MasterCursorStyle,
+    MasterPointerEventsStyle,
+    MasterResizeStyle,
+    MasterTouchActionStyle,
+    MasterWordBreakStyle,
+    MasterWordSpacingStyle,
+    MasterUserDragStyle,
+    MasterUserSelectStyle,
+    MasterTextShadowStyle,
+    MasterTextSizeStyle,
+    MasterBoxShadowStyle,
     // transform
-    MasterTransformBoxVirtualClass,
-    MasterTransformStyleVirtualClass,
-    MasterTransformOriginVirtualClass,
-    MasterTransformVirtualClass, // last
+    MasterTransformBoxStyle,
+    MasterTransformStyleStyle,
+    MasterTransformOriginStyle,
+    MasterTransformStyle, // last
     // transition
-    MasterTransitionPropertyVirtualClass,
-    MasterTransitionTimingFunctionVirtualClass,
-    MasterTransitionDurationVirtualClass,
-    MasterTransitionDelayVirtualClass,
-    MasterTransitionVirtualClass, // last
+    MasterTransitionPropertyStyle,
+    MasterTransitionTimingFunctionStyle,
+    MasterTransitionDurationStyle,
+    MasterTransitionDelayStyle,
+    MasterTransitionStyle, // last
     // animation
-    MasterAnimationDelayVirtualClass,
-    MasterAnimationDirectionVirtualClass,
-    MasterAnimationFillModeVirtualClass,
-    MasterAnimationIterationCountVirtualClass,
-    MasterAnimationNameVirtualClass,
-    MasterAnimationPlayStateVirtualClass,
-    MasterAnimationTimingFunctionVirtualClass,
-    MasterAnimationVirtualClass,
+    MasterAnimationDelayStyle,
+    MasterAnimationDirectionStyle,
+    MasterAnimationFillModeStyle,
+    MasterAnimationIterationCountStyle,
+    MasterAnimationNameStyle,
+    MasterAnimationPlayStateStyle,
+    MasterAnimationTimingFunctionStyle,
+    MasterAnimationStyle,
     // border
-    MasterBorderColorVirtualClass,
-    MasterBorderRadiusVirtualClass,
-    MasterBorderStyleVirtualClass,
-    MasterBorderWidthVirtualClass,
-    MasterBorderVirtualClass,
+    MasterBorderColorStyle,
+    MasterBorderRadiusStyle,
+    MasterBorderStyleStyle,
+    MasterBorderWidthStyle,
+    MasterBorderStyle,
     // background
-    MasterBackgroundAttachmentVirtualClass,
-    MasterBackgroundBlendModeVirtualClass,
-    MasterBackgroundClipVirtualClass,
-    MasterBackgroundColorVirtualClass,
-    MasterBackgroundOriginVirtualClass,
-    MasterBackgroundPositionVirtualClass,
-    MasterBackgroundRepeatVirtualClass,
-    MasterBackgroundSizeVirtualClass,
-    MasterBackgroundImageVirtualClass,
-    MasterBackgroundVirtualClass,
+    MasterBackgroundAttachmentStyle,
+    MasterBackgroundBlendModeStyle,
+    MasterBackgroundClipStyle,
+    MasterBackgroundColorStyle,
+    MasterBackgroundOriginStyle,
+    MasterBackgroundPositionStyle,
+    MasterBackgroundRepeatStyle,
+    MasterBackgroundSizeStyle,
+    MasterBackgroundImageStyle,
+    MasterBackgroundStyle,
     // effect
-    MasterMixBlendModeVirtualClass,
-    MasterBackdropFilterVirtualClass,
-    MasterFilterVirtualClass,
+    MasterMixBlendModeStyle,
+    MasterBackdropFilterStyle,
+    MasterFilterStyle,
     // svg
-    MasterFillVirtualClass,
-    MasterStrokeVirtualClass,
-    MasterStrokeWidthVirtualClass,
+    MasterFillStyle,
+    MasterStrokeStyle,
+    MasterStrokeWidthStyle,
     // grid
-    MasterGridColumnsVirtualClass,
-    MasterGridRowsVirtualClass,
-    MasterGapVirtualClass
+    MasterGridColumnsStyle,
+    MasterGridRowsStyle,
+    MasterGapStyle
 )

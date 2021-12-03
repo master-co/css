@@ -1,7 +1,7 @@
 import { BACKDROP, DASH, FILTER } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterBackdropFilterVirtualClass extends MasterVirtualClass {
+export class MasterBackdropFilterStyle extends MasterStyle {
     static override prefixes = /^(bd|backdrop-filter):/;
     static override properties = [BACKDROP + DASH + FILTER];
 }

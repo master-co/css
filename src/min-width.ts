@@ -1,7 +1,7 @@
 import { MIN_WIDTH } from './constants/css-property-keyword';
-import { MasterVirtualClass } from './virtual-class';
+import { MasterStyle } from '@master/style';
 
-export class MasterMinWidthVirtualClass extends MasterVirtualClass {
+export class MasterMinWidthStyle extends MasterStyle {
     static override prefixes =  /^min-w:/;
     static override properties = [MIN_WIDTH];
 }
