@@ -1,0 +1,1 @@
+export const UNIT_VALUE_PATTERN = /^([+-.]?\d+\.?\d?)(.*)?/;
