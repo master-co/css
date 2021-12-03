@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "update": "git rebase package/main",
+        "update": "git merge package/main",
         "build": "npm i && cd src && npm i && cd ../ && webpack",
         "release": "semantic-release || true"
     },
