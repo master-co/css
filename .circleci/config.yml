@@ -1,0 +1,21 @@
+version: 2
+
+workflows:
+  version: 2
+  package:
+    jobs:
+      - release:
+          context: Master
+
+jobs:
+  release:
+    docker:
+      - image: "cimg/node:17.1.0"
+    steps:
+      - checkout
+      - run:
+          name: build
+          command: npm run build
+      - run:
+          name: semantic release
+          command: npm run release
