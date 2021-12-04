@@ -2,7 +2,6 @@
 const path = require('path');
 const Webpack = require('webpack');
 const glob = require('globby');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
@@ -68,35 +67,6 @@ module.exports = env => {
                             }
                         }
                     ]
-                },
-                {
-                    test: /index\.(sass|scss|css)$/,
-                    use: [
-                        {
-                            loader: MiniCssExtractPlugin.loader,
-                        }
-                    ]
-                },
-                {
-                    test: /\.(sass|scss|css)$/,
-                    use: [
-                        { loader: 'css-loader' },
-                        {
-                            loader: 'postcss-loader',
-                            options: {
-                                postcssOptions: {
-                                    config: 'postcss.config.js',
-                                },
-                            }
-                        },
-                        {
-                            loader: 'sass-loader',
-                            options: {
-                                sassOptions: {
-                                    includePaths: ['./node_modules']
-                                }
-                            }
-                        }]
                 }
             ]
         },
@@ -108,10 +78,6 @@ module.exports = env => {
         devtool: 'source-map',
         plugins: [
             new Webpack.ProgressPlugin(),
-            new MiniCssExtractPlugin({
-                filename: '[name].css',
-                chunkFilename: '[name].css'
-            }),
             new CopyPlugin({
                 patterns: [
                     {
