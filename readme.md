@@ -1,6 +1,6 @@
 # Create
 ## 1. Naming your package
-```shell
+```properties
 PACKAGE_NAME=
 ```
 Please follow the naming conventions:
@@ -10,21 +10,21 @@ Please follow the naming conventions:
 
 ## 2. Choose and clone
 ### 📦 Standard Package ( CSS & JS )
-```shell
+```zsh
 git clone -b standard https://github.com/master-style/package.git $PACKAGE_NAME
 ```
 ### 📦 CSS Package
-```shell
+```zsh
 git clone -b css https://github.com/master-style/package.git $PACKAGE_NAME
 ```
 ### 📦 JS Package
-```shell
+```zsh
 git clone -b js https://github.com/master-style/package.git $PACKAGE_NAME
 ```
 
 ## 3. New a Github repository and configure remote
 [Github CLI Installation | Github](https://github.com/cli/cli#installation)
-```shell
+```zsh
 cd $PACKAGE_NAME
 gh repo create master-style/$PACKAGE_NAME --public
 git remote remove origin
