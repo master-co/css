@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "update": "git merge package/js",
+        "update": "git fetch && git merge package/js",
         "build": "npm i && cd src && npm i && cd ../ && webpack",
         "release": "semantic-release || true"
     },
