@@ -8,6 +8,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const src = path.resolve('./src');
 const packagePath = path.join(src, 'package.json');
 const package = require(packagePath);
+const assets = require('./assets.json');
 
 module.exports = env => {
     const entryGlob = [
@@ -92,6 +93,10 @@ module.exports = env => {
                             return Buffer.from(JSON.stringify(package));;
                         },
                     },
+                    ...assets.map((assets) => ({
+                        from: assets,
+                        noErrorOnMissing: true
+                    }))
                 ],
             }),
         ]
