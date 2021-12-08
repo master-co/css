@@ -28,17 +28,24 @@
             }
         ],
         "@semantic-release/release-notes-generator",
-        "@semantic-release/github",
-        [
-            "@semantic-release/npm",
-            {
-                "pkgRoot": "dist"
-            }
-        ],
         [
             "@semantic-release/exec",
             {
                 "prepareCmd": "npm run build"
+            }
+        ],
+        [
+            "@semantic-release/github",
+            {
+                "assets": [
+                    "dist/**/*.{js,css}"
+                ]
+            }
+        ],
+        [
+            "@semantic-release/npm",
+            {
+                "pkgRoot": "dist"
             }
         ]
     ],
