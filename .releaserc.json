@@ -34,14 +34,7 @@
                 "prepareCmd": "npm run build"
             }
         ],
-        [
-            "@semantic-release/github",
-            {
-                "assets": [
-                    "dist/**/*.{js,css}"
-                ]
-            }
-        ],
+        "@semantic-release/github",
         [
             "@semantic-release/npm",
             {
