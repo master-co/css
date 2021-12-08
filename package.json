@@ -2,7 +2,7 @@
     "scripts": {
         "update": "git fetch package js && git merge package/js",
         "build": "npm i && cd src && npm i && cd ../ && webpack",
-        "release": "semantic-release || true"
+        "release": "npm i semantic-release@18 @semantic-release/exec@6 && semantic-release || true"
     },
     "dependencies": {
         "@babel/core": "^7.16.0",
@@ -19,7 +19,6 @@
         "babel-loader": "^8.2.3",
         "copy-webpack-plugin": "^10.0.0",
         "globby": "^11.0.4",
-        "semantic-release": "^18.0.1",
         "terser-webpack-plugin": "^5.2.5",
         "ts-loader": "^9.2.6",
         "typescript": "^4.5.2",
