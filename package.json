@@ -1,8 +1,7 @@
 {
     "scripts": {
         "update": "git fetch package standard && git merge package/standard",
-        "build": "npm i && cd src && npm i && cd ../ && webpack",
-        "release": "npm i semantic-release@18 @semantic-release/exec@6 && semantic-release || true"
+        "build": "npm i && cd src && npm i && cd ../ && webpack"
     },
     "dependencies": {
         "@babel/core": "^7.16.0",

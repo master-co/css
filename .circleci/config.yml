@@ -14,5 +14,8 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Copy package.json to ./dist for verification release
+          command: mkdir -p ./dist && cp ./src/package.json ./dist/package.json
+      - run:
           name: semantic release
-          command: npm run release
+          command: npm i semantic-release@18 @semantic-release/exec@6 && npx semantic-release || true
