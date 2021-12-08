@@ -1,4 +1,5 @@
 [
+    "src/package.json",
     "README*",
     "LICENSE*"
 ]

@@ -81,18 +81,6 @@ module.exports = env => {
             new Webpack.ProgressPlugin(),
             new CopyPlugin({
                 patterns: [
-                    {
-                        from: packagePath,
-                        transform(content) {
-                            let package = JSON.parse(content.toString());
-                            delete package.devDependencies;
-                            delete package.publishConfig;
-                            delete package.release;
-                            delete package.files;
-                            delete package.scripts;
-                            return Buffer.from(JSON.stringify(package));;
-                        },
-                    },
                     ...assets.map((assets) => ({
                         from: assets,
                         noErrorOnMissing: true
