@@ -5,9 +5,7 @@ const master = require('../master.json');
 
 module.exports = {
     mode: 'development',
-    entry: {
-        app: './index.ts'
-    },
+    entry: './src/index.ts',
     resolve: {
         extensions: common.resolve.extensions,
         modules: [
@@ -17,8 +15,12 @@ module.exports = {
     },
     devtool: 'inline-source-map',
     devServer: {
-        hot: true,
-        // open: true
+        hot: false,
+        // open: true,
+        watchFiles: [
+            './src/**/*',
+            '../src/**/*'
+        ],
     },
     module: {
         rules: [
@@ -33,8 +35,8 @@ module.exports = {
         new webpack.ProgressPlugin(),
         new HtmlWebpackPlugin({
             title: master.name,
-            favicon: './favicon.png',
-            template: './index.html'
+            favicon: './src/favicon.png',
+            template: './src/index.html'
         })
     ]
 }
