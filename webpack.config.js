@@ -9,7 +9,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const src = path.resolve('./src');
 const packagePath = path.join(src, 'package.json');
 const package = require(packagePath);
-const assets = require('./assets.json');
+const master = require('./master.json');
 
 module.exports = env => {
     const entryGlob = [
@@ -115,8 +115,8 @@ module.exports = env => {
             }),
             new CopyPlugin({
                 patterns: [
-                    ...assets.map((assets) => ({
-                        from: assets,
+                    ...master.assets.map((glob) => ({
+                        from: glob,
                         noErrorOnMissing: true
                     }))
                 ],
