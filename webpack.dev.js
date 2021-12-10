@@ -1,42 +1,35 @@
 const webpack = require('webpack');
-const common = require('../webpack.common');
+const common = require('./webpack.common');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const master = require('../master.json');
+const master = require('./master.json');
 
 module.exports = {
     mode: 'development',
-    entry: './src/index.ts',
+    entry: './dev/src/index.ts',
     resolve: {
         extensions: common.resolve.extensions,
         modules: [
             ...common.resolve.modules,
-            './node_modules'
+            './dev/node_modules'
         ]
     },
     devtool: 'inline-source-map',
     devServer: {
         hot: false,
-        // open: true,
+        open: true,
         watchFiles: [
-            './src/**/*',
+            './dev/src/**/*',
             '../src/**/*'
         ],
     },
-    module: {
-        rules: [
-            ...common.module.rules,
-            {
-                test: /\.html$/,
-                loader: 'raw-loader'
-            }
-        ]
-    },
+    module: common.module,
     plugins: [
         new webpack.ProgressPlugin(),
         new HtmlWebpackPlugin({
             title: master.name,
-            favicon: './src/favicon.png',
-            template: './src/index.html'
-        })
+            favicon: './dev/src/favicon.png',
+            template: './dev/src/index.html'
+        }),
+        ...common.plugins
     ]
 }

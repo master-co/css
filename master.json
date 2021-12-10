@@ -1,5 +1,4 @@
 {
-    "name": "package",
     "assets": [
         "src/package.json",
         "README*",

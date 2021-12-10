@@ -2,7 +2,6 @@ const common = require('./webpack.common.js');
 const path = require('path');
 const webpack = require('webpack');
 const glob = require('globby');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
@@ -45,17 +44,7 @@ module.exports = {
         ],
     },
     module: {
-        rules: [
-            ...common.module.rules,
-            {
-                test: /index\.(sass|scss|css)$/,
-                use: [
-                    {
-                        loader: MiniCssExtractPlugin.loader,
-                    }
-                ]
-            }
-        ]
+        rules: common.module.rules
     },
     output: {
         clean: true,
@@ -64,10 +53,6 @@ module.exports = {
     },
     plugins: [
         new webpack.ProgressPlugin(),
-        new MiniCssExtractPlugin({
-            filename: '[name].css',
-            chunkFilename: '[name].css'
-        }),
         new CopyPlugin({
             patterns: [
                 ...master.assets.map((glob) => ({
@@ -76,5 +61,6 @@ module.exports = {
                 }))
             ],
         }),
+        ...common.plugins
     ]
 }

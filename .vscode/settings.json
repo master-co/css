@@ -7,11 +7,9 @@
                     "commands": []
                 },
                 {
-                    "name": "dev",
+                    "name": "serve",
                     "commands": [
-                        "cd dev",
-                        "npm i",
-                        "npx webpack"
+                        "npm run serve"
                     ]
                 }
             ]

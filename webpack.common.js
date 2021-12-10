@@ -1,11 +1,11 @@
 const path = require('path');
-const root = path.resolve(process.env.WEBPACK_SERVE ? '../' : './');
-const src = path.join(root, './src');
+const src = path.join('./src');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     resolve: {
         extensions: ['.js', '.ts', '.mjs'],
-        modules: [src, path.join(root, './node_modules')]
+        modules: [src, path.join('./node_modules')]
     },
     module: {
         rules: [
@@ -13,7 +13,7 @@ module.exports = {
                 test: /\.ts$/,
                 loader: 'ts-loader',
                 options: {
-                    configFile: path.join(root, './tsconfig.json')
+                    configFile: path.resolve('./tsconfig.json')
                 }
             },
             {
@@ -29,6 +29,14 @@ module.exports = {
                 ]
             },
             {
+                test: /index\.(sass|scss|css)$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                    }
+                ]
+            },
+            {
                 test: /\.(sass|scss|css)$/,
                 use: [
                     { loader: 'css-loader' },
@@ -36,7 +44,7 @@ module.exports = {
                         loader: 'postcss-loader',
                         options: {
                             postcssOptions: {
-                                config: path.join(root, './postcss.config.js'),
+                                config: './postcss.config.js',
                             },
                         }
                     },
@@ -44,11 +52,17 @@ module.exports = {
                         loader: 'sass-loader',
                         options: {
                             sassOptions: {
-                                includePaths: [path.join(root, './node_modules')]
+                                includePaths: ['./node_modules']
                             }
                         }
                     }]
             }
         ]
-    }
+    },
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: '[name].css',
+            chunkFilename: '[name].css'
+        })
+    ]
 }
