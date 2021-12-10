@@ -1,0 +1,20 @@
+{
+    "restoreTerminals.terminals": [
+        {
+            "splitTerminals": [
+                {
+                    "name": "dev",
+                    "commands": []
+                },
+                {
+                    "name": "dev",
+                    "commands": [
+                        "cd dev",
+                        "npm i",
+                        "npx webpack"
+                    ]
+                }
+            ]
+        }
+    ]
+}
