@@ -17,7 +17,7 @@
     "badges": [
         {
             "alt": "CI status",
-            "href": "https://circleci.com/gh/{{ github.name }}/workflows/{{ github.name }}/tree/main",
+            "href": "https://circleci.com/gh/{{ github.name }}/workflows/{{ name }}/tree/main",
             "src": "https://img.shields.io/circleci/build/github/{{ github.name }}/{{ name }}/main.svg?logo=circleci&logoColor=fff&label=CircleCI"
         },
         {
@@ -27,7 +27,7 @@
         },
         {
             "alt": "license",
-            "href": "https://circleci.com/gh/{{ github.name }}/workflows/{{ github.name }}/tree/main",
+            "href": "https://github.com/{{ github.name }}/{{ name }}/blob/main/LICENSE",
             "src": "https://img.shields.io/github/license/{{ github.name }}/{{ name }}"
         }
     ]
