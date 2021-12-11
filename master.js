@@ -1,4 +1,4 @@
-exports.modules = {
+module.exports = {
     name: '{({ name })}',
     github: {
         repoName: '{({ github.repoName })}',
