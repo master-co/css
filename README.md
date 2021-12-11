@@ -16,6 +16,6 @@
 npm install {{ package.name }}
 ```
 ## CDN
-<!-- cdns.map((cdn) => `- [${cdn.name}](${cdn.href})`) --><!---->
+<!-- cdns.map((cdn) => `\n- [${cdn.name}](${cdn.href})`).join('') --><!---->
 
 # Usage
