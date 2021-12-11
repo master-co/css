@@ -1,7 +1,0 @@
-{
-    "assets": [
-        "src/package.json",
-        "README*",
-        "LICENSE*"
-    ]
-}
