@@ -1,4 +1,9 @@
 exports.modules = {
+    name: '{({ name })}',
+    github: {
+        repoName: '{({ github.repoName })}',
+        name: '{({ github.name})}'
+    },
     assets: [
         'src/package.json',
         'README*',
@@ -17,8 +22,8 @@ exports.modules = {
     badges: [
         {
             alt: 'CI status',
-            href: 'https://circleci.com/gh/{{ github.orgName }}/workflows/{{ github.orgName }}/tree/main',
-            src: 'https://img.shields.io/circleci/build/github/{{ github.orgName }}/{{ name }}/main.svg?logo=circleci&logoColor=fff&label=CircleCI'
+            href: 'https://circleci.com/gh/{{ github.name }}/workflows/{{ github.name }}/tree/main',
+            src: 'https://img.shields.io/circleci/build/github/{{ github.name }}/{{ name }}/main.svg?logo=circleci&logoColor=fff&label=CircleCI'
         },
         {
             alt: 'npm',
@@ -27,8 +32,8 @@ exports.modules = {
         },
         {
             alt: 'license',
-            href: 'https://circleci.com/gh/{{ github.orgName }}/workflows/{{ github.orgName }}/tree/main',
-            src: 'https://img.shields.io/github/license/{{ github.orgName }}/{{ name }}'
+            href: 'https://circleci.com/gh/{{ github.name }}/workflows/{{ github.name }}/tree/main',
+            src: 'https://img.shields.io/github/license/{{ github.name }}/{{ name }}'
         }
     ]
 }
