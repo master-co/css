@@ -1,4 +1,4 @@
-const common = require('./webpack.common.js');
+const jsConfig = require('./webpack.common.js');
 const path = require('path');
 const webpack = require('webpack');
 const glob = require('globby');
@@ -24,7 +24,7 @@ module.exports = {
         }
         return entrypoint;
     }, {}),
-    resolve: common.resolve,
+    resolve: jsConfig.resolve,
     externals: [
         ...Object.keys(package.peerDependencies || []),
         ...Object.keys(package.dependencies || [])
@@ -44,7 +44,9 @@ module.exports = {
         ],
     },
     module: {
-        rules: common.module.rules
+        rules: {
+            ...jsConfig.module.rules
+        }
     },
     output: {
         clean: true,
@@ -61,6 +63,6 @@ module.exports = {
                 }))
             ],
         }),
-        ...common.plugins
+        ...jsConfig.plugins
     ]
 }
