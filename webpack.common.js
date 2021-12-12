@@ -12,7 +12,11 @@ module.exports = {
                 test: /\.ts$/,
                 loader: 'ts-loader',
                 options: {
-                    configFile: path.resolve('./tsconfig.json')
+                    configFile: path.resolve(
+                        process.env.WEBPACK_SERVE
+                            ? './tsconfig.dev.json'
+                            : './tsconfig.json'
+                    )
                 }
             },
             {
