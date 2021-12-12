@@ -15,7 +15,6 @@ module.exports = {
     },
     devtool: 'inline-source-map',
     devServer: {
-        hot: false,
         watchFiles: [
             './dev/src/**/*',
             '../src/**/*'
