@@ -44,9 +44,9 @@ module.exports = {
         ],
     },
     module: {
-        rules: {
+        rules: [
             ...jsConfig.module.rules
-        }
+        ]
     },
     output: {
         clean: true,
