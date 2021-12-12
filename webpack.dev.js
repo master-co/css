@@ -1,5 +1,6 @@
 const webpack = require('webpack');
-const common = require('./webpack.common');
+const cssConfig = require('./webpack.common.css');
+const jsConfig = require('./webpack.common.js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const master = require('./master.json');
 
@@ -7,9 +8,9 @@ module.exports = {
     mode: 'development',
     entry: './dev/src/index.ts',
     resolve: {
-        extensions: common.resolve.extensions,
+        extensions: jsConfig.resolve.extensions,
         modules: [
-            ...common.resolve.modules,
+            ...jsConfig.resolve.modules,
             './dev/node_modules'
         ]
     },
@@ -21,7 +22,12 @@ module.exports = {
             '../src/**/*'
         ],
     },
-    module: common.module,
+    module: {
+        rules: [
+            ...jsConfig.module.rules,
+            ...cssConfig.module.rules
+        ]
+    },
     plugins: [
         new webpack.ProgressPlugin(),
         new HtmlWebpackPlugin({
@@ -29,6 +35,7 @@ module.exports = {
             favicon: './dev/src/favicon.png',
             template: './dev/src/index.html'
         }),
-        ...common.plugins
+        ...jsConfig.plugins,
+        ...cssConfig.plugins
     ]
 }
