@@ -45,10 +45,10 @@ module.exports = {
         ],
     },
     module: {
-        rules: {
+        rules: [
             ...jsConfig.module.rules,
             ...cssConfig.module.rules
-        }
+        ]
     },
     output: {
         clean: true,
