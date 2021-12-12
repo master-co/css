@@ -2,7 +2,9 @@
     "scripts": {
         "update": "git fetch package js && git merge package/js",
         "build": "npm i --production && cd src && npm i && cd .. && webpack --config webpack.prod.js",
-        "serve": "cd src && npm i && cd .. && npm i && webpack serve --config webpack.dev.js",
+        "install": "cd src && npm i && cd .. && npm i",
+        "serve": "npm run install && webpack serve --config webpack.dev.js",
+        "start": "npm run install && webpack serve --config webpack.dev.js --open",
         "update:readme": "m package render README.md"
     },
     "dependencies": {
