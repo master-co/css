@@ -5,6 +5,7 @@
     "author": "Aoyue Design LTD.",
     "main": "index.js",
     "types": "index.d.ts",
+    "funding": "https://opencollective.com/master-style",
     "private": false,
     "keywords": [
         "style",
