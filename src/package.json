@@ -1,12 +1,19 @@
 {
     "name": "@master/styles",
     "license": "MIT",
-    "description": "",
+    "description": "Freely style HTML with unlimited CSS variants ( less than 20KB )",
     "author": "Aoyue Design LTD.",
     "main": "index.js",
     "types": "index.d.ts",
     "private": false,
-    "keywords": [],
+    "keywords": [
+        "style",
+        "html",
+        "variants",
+        "virtual-css",
+        "css",
+        "ui"
+    ],
     "peerDependencies": {
         "@master/style": "^1.0.0-alpha"
     },

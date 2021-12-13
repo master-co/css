@@ -1,5 +1,4 @@
 import { MasterStyle } from '@master/style';
-import { getCssPropertyText } from '../utils/get-css-property-text';
 import { DASH, MARGIN, PADDING } from './constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from './constants/direction';
 

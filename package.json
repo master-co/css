@@ -1,8 +1,10 @@
 {
     "scripts": {
-        "update": "git merge package/main",
-        "build": "npm i && cd src && npm i && cd ../ && webpack",
-        "release": "semantic-release || true"
+        "update": "git fetch package js && git merge package/js",
+        "build": "npm i --production && cd src && npm i && cd .. && webpack --config webpack.prod.js",
+        "serve": "cd src && npm i && cd .. && npm i && webpack serve --config webpack.dev.js",
+        "start": "cd src && npm i && cd .. && npm i && webpack serve --config webpack.dev.js --open",
+        "update:readme": "m package render README.md"
     },
     "dependencies": {
         "@babel/core": "^7.16.0",
@@ -16,22 +18,19 @@
         "@babel/preset-typescript": "^7.16.0",
         "@babel/runtime": "^7.16.3",
         "@types/node": "^16.11.11",
-        "@types/reflect-metadata": "^0.1.0",
-        "autoprefixer": "^10.4.0",
         "babel-loader": "^8.2.3",
         "copy-webpack-plugin": "^10.0.0",
-        "css-loader": "^6.5.1",
         "globby": "^11.0.4",
-        "mini-css-extract-plugin": "^2.4.5",
-        "sass": "^1.44.0",
-        "sass-loader": "^12.3.0",
-        "semantic-release": "^18.0.1",
-        "style-loader": "^3.3.1",
         "terser-webpack-plugin": "^5.2.5",
         "ts-loader": "^9.2.6",
         "typescript": "^4.5.2",
         "webpack": "^5.64.4",
         "webpack-cli": "^4.9.1"
+    },
+    "devDependencies": {
+        "@master/cli": "^1.0.0-alpha.17",
+        "html-webpack-plugin": "^5.5.0",
+        "webpack-dev-server": "^4.6.0"
     },
     "files": [
         "dist"
