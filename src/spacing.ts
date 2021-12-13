@@ -2,7 +2,7 @@ import { MasterStyle } from '@master/style';
 import { DASH, MARGIN, PADDING } from './constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from './constants/direction';
 
-export class MasterSpacingStyle extends MasterStyle {
+export class SpacingStyle extends MasterStyle {
     static override prefixes = /^(p|m)(x|y|t|b|l|r)?:/;
 
     override get properties(): { [key: string]: any } {

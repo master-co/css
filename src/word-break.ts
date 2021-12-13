@@ -3,7 +3,7 @@ import { MasterStyle } from '@master/style';
 
 const BREAK_WORD = BREAK + DASH + WORD;
 const OVERFLOW_WRAP = OVERFLOW + DASH + WRAP;
-export class MasterWordBreakStyle extends MasterStyle {
+export class WordBreakStyle extends MasterStyle {
     static override prefixes =  /^(wb:|word-break:)/;
     static override properties = [WORD + DASH + BREAK];
     static override defaultUnit = '';

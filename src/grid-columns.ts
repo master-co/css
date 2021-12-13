@@ -1,7 +1,7 @@
 import { COLUMNS, COMMA, DASH, DISPLAY, FR, GRID, MAX, MIN, REPEAT, TEMPLATE } from './constants/css-property-keyword';
 import { MasterStyle } from '@master/style';
 
-export class MasterGridColumnsStyle extends MasterStyle {
+export class GridColumnsStyle extends MasterStyle {
     static override prefixes = /^cols:/;
     static override defaultUnit = '';
     override get properties(): { [key: string]: any } {

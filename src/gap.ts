@@ -1,7 +1,7 @@
 import { COLUMN, DASH, GAP, ROW, X, Y } from './constants/css-property-keyword';
 import { MasterStyle } from '@master/style';
 
-export class MasterGapStyle extends MasterStyle {
+export class GapStyle extends MasterStyle {
     static override prefixes = /^gap(-x|-y)?:/;
     override get properties(): { [key: string]: any } {
         switch (this.prefix[4]) {

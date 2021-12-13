@@ -7,7 +7,7 @@ const MARGIN_RIGHT = MARGIN + DASH + RIGHT;
 const MARGIN_BOTTOM = MARGIN + DASH + BOTTOM;
 const MARGIN_TOP = MARGIN + DASH + TOP;
 
-export class MasterPlacementStyle extends MasterStyle {
+export class PlacementStyle extends MasterStyle {
     static override prefixes = /^(top|left|right|bottom|center|middle):/;
     static override semantics = {
         [TOP]: { [TOP]: 0 },

@@ -1,7 +1,7 @@
 import { DASH, TEXT, TRANSFORM } from './constants/css-property-keyword';
 import { MasterStyle } from '@master/style';
 
-export class MasterTextTransformStyle extends MasterStyle {
+export class TextTransformStyle extends MasterStyle {
     static override prefixes = /^(t-transform:|t:(uppercase|lowercase|capitalize))/;
     static override properties = [TEXT + DASH + TRANSFORM];
 }

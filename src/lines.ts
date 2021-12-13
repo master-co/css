@@ -2,7 +2,7 @@ import { BOX, BREAK, CLAMP, DASH, DISPLAY, ELLIPSIS, HIDDEN, LINE, ORIENT, OVERF
 import { WEBKIT_PREFIX } from './constants/css-browser-prefix';
 import { MasterStyle } from '@master/style';
 
-export class MasterLinesStyle extends MasterStyle {
+export class LinesStyle extends MasterStyle {
     static override prefixes = /^lines:/;
     static override defaultUnit = '';
     override get properties(): { [key: string]: any } {

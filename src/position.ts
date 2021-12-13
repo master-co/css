@@ -1,7 +1,7 @@
 import { FIXED, POSITION, STATIC, STICKY } from './constants/css-property-keyword';
 import { MasterStyle } from '@master/style';
 
-export class MasterPositionStyle extends MasterStyle {
+export class PositionStyle extends MasterStyle {
     static override prefixes = /^position:/;
     static override properties = [POSITION];
     static override semantics = {

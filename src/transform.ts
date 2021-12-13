@@ -1,7 +1,7 @@
 import { DEG, PX, ROTATE, SKEW, TRANSFORM, TRANSLATE } from './constants/css-property-keyword';
 import { MasterStyle } from '@master/style';
 
-export class MasterTransformStyle extends MasterStyle {
+export class TransformStyle extends MasterStyle {
     static override prefixes = /^(transform:)/;
     static override starts = /^(translate|scale|skew|rotate|perspective|matrix)(3d|X|Y|Z)?\(/;
     static override properties = [TRANSFORM];

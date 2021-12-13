@@ -1,188 +1,188 @@
 import { MasterStyle } from '@master/style';
-import { MasterFontWeightStyle } from './font-weight';
-import { MasterFontFamilyStyle } from './font-family';
-import { MasterFontSizeStyle } from './font-size';
-import { MasterSpacingStyle } from './spacing';
-import { MasterWidthStyle } from './width';
-import { MasterHeightStyle } from './height';
-import { MasterMinWidthStyle } from './min-width';
-import { MasterMinHeightStyle } from './min-height';
-import { MasterLetterSpacingStyle } from './letter-spacing';
-import { MasterFontSmoothingStyle } from './font-smoothing';
-import { MasterFontStyleStyle } from './font-style';
-import { MasterFontVariantNumericStyle } from './font-variant-numeric';
-import { MasterLineHeightStyle } from './line-height';
-import { MasterObjectFitStyle } from './object-fit';
-import { MasterObjectPositionStyle } from './object-position';
-import { MasterTextAlignStyle } from './text-align';
-import { MasterTextDecorationStyle } from './text-decoration';
-import { MasterTextLeadingStyle } from './text-leading';
-import { MasterTextTransformStyle } from './text-transform';
-import { MasterVerticalAlignStyle } from './vertical-align';
-import { MasterLinesStyle } from './lines';
-import { MasterTransformOriginStyle } from './transform-origin';
-import { MasterTransformStyleStyle } from './transform-style';
-import { MasterTransformBoxStyle } from './transform-box';
-import { MasterTransformStyle } from './transform';
-import { MasterTransitionStyle } from './transition';
-import { MasterTransitionDelayStyle } from './transition-delay';
-import { MasterTransitionDurationStyle } from './transition-duration';
-import { MasterTransitionPropertyStyle } from './transition-property';
-import { MasterTransitionTimingFunctionStyle } from './transition-timing-function';
-import { MasterMaxHeightStyle } from './max-height';
-import { MasterMaxWidthStyle } from './max-width';
-import { MasterDisplayStyle } from './display';
-import { MasterBoxSizingStyle } from './box-sizing';
-import { MasterOpacityStyle } from './opacity';
-import { MasterVisibilityStyle } from './visibility';
-import { MasterClearStyle } from './clear';
-import { MasterFloatStyle } from './float';
-import { MasterIsolationStyle } from './isolation';
-import { MasterOverflowStyle } from './overflow';
-import { MasterOverscrollBehaviorStyle } from './overscroll-behavior';
-import { MasterZIndexStyle } from './z-index';
-import { MasterAnimationDelayStyle } from './animation-delay';
-import { MasterAnimationDirectionStyle } from './animation-direction';
-import { MasterAnimationFillModeStyle } from './animation-fill-mode';
-import { MasterAnimationIterationCountStyle } from './animation-iteration-count';
-import { MasterAnimationNameStyle } from './animation-name';
-import { MasterAnimationPlayStateStyle } from './animation-play-state';
-import { MasterAnimationTimingFunctionStyle } from './animation-timing-function';
-import { MasterAnimationStyle } from './animation';
-import { MasterBorderColorStyle } from './border-color';
-import { MasterBorderRadiusStyle } from './border-radius';
-import { MasterBorderStyleStyle } from './border-style';
-import { MasterBorderWidthStyle } from './border-width';
-import { MasterBorderStyle } from './border';
-import { MasterBackgroundAttachmentStyle } from './background-attachment';
-import { MasterBackgroundBlendModeStyle } from './background-blend-mode';
-import { MasterBackgroundClipStyle } from './background-clip';
-import { MasterBackgroundColorStyle } from './background-color';
-import { MasterBackgroundOriginStyle } from './background-origin';
-import { MasterBackgroundPositionStyle } from './background-position';
-import { MasterBackgroundRepeatStyle } from './background-repeat';
-import { MasterBackgroundSizeStyle } from './background-size';
-import { MasterBackgroundImageStyle } from './background-image';
-import { MasterBackgroundStyle } from './background';
-import { MasterMixBlendModeStyle } from './mix-blend-mode';
-import { MasterPositionStyle } from './position';
-import { MasterPlacementStyle } from './placement';
-import { MasterBackdropFilterStyle } from './backdrop-filter';
-import { MasterFillStyle } from './fill';
-import { MasterStrokeStyle } from './stroke';
-import { MasterStrokeWidthStyle } from './stroke-width';
-import { MasterFilterStyle } from './filter';
-import { MasterCursorStyle } from './cursor';
-import { MasterPointerEventsStyle } from './pointer-events';
-import { MasterResizeStyle } from './resize';
-import { MasterTouchActionStyle } from './touch-action';
-import { MasterUserDragStyle } from './user-drag';
-import { MasterUserSelectStyle } from './user-select';
-import { MasterBoxShadowStyle } from './box-shadow';
-import { MasterTextShadowStyle } from './text-shadow';
-import { MasterTextSizeStyle } from './text-size';
-import { MasterWordBreakStyle } from './word-break';
-import { MasterGridColumnsStyle } from './grid-columns';
-import { MasterGridRowsStyle } from './grid-rows';
-import { MasterGapStyle } from './gap';
-import { MasterWordSpacingStyle } from './word-spacing';
-import { MasterVariableStyle } from './variable';
+import { FontWeightStyle } from './font-weight';
+import { FontFamilyStyle } from './font-family';
+import { FontSizeStyle } from './font-size';
+import { SpacingStyle } from './spacing';
+import { WidthStyle } from './width';
+import { HeightStyle } from './height';
+import { MinWidthStyle } from './min-width';
+import { MinHeightStyle } from './min-height';
+import { LetterSpacingStyle } from './letter-spacing';
+import { FontSmoothingStyle } from './font-smoothing';
+import { FontStyleStyle } from './font-style';
+import { FontVariantNumericStyle } from './font-variant-numeric';
+import { LineHeightStyle } from './line-height';
+import { ObjectFitStyle } from './object-fit';
+import { ObjectPositionStyle } from './object-position';
+import { TextAlignStyle } from './text-align';
+import { TextDecorationStyle } from './text-decoration';
+import { TextLeadingStyle } from './text-leading';
+import { TextTransformStyle } from './text-transform';
+import { VerticalAlignStyle } from './vertical-align';
+import { LinesStyle } from './lines';
+import { TransformOriginStyle } from './transform-origin';
+import { TransformStyleStyle } from './transform-style';
+import { TransformBoxStyle } from './transform-box';
+import { TransformStyle } from './transform';
+import { TransitionStyle } from './transition';
+import { TransitionDelayStyle } from './transition-delay';
+import { TransitionDurationStyle } from './transition-duration';
+import { TransitionPropertyStyle } from './transition-property';
+import { TransitionTimingFunctionStyle } from './transition-timing-function';
+import { MaxHeightStyle } from './max-height';
+import { MaxWidthStyle } from './max-width';
+import { DisplayStyle } from './display';
+import { BoxSizingStyle } from './box-sizing';
+import { OpacityStyle } from './opacity';
+import { VisibilityStyle } from './visibility';
+import { ClearStyle } from './clear';
+import { FloatStyle } from './float';
+import { IsolationStyle } from './isolation';
+import { OverflowStyle } from './overflow';
+import { OverscrollBehaviorStyle } from './overscroll-behavior';
+import { ZIndexStyle } from './z-index';
+import { AnimationDelayStyle } from './animation-delay';
+import { AnimationDirectionStyle } from './animation-direction';
+import { AnimationFillModeStyle } from './animation-fill-mode';
+import { AnimationIterationCountStyle } from './animation-iteration-count';
+import { AnimationNameStyle } from './animation-name';
+import { AnimationPlayStateStyle } from './animation-play-state';
+import { AnimationTimingFunctionStyle } from './animation-timing-function';
+import { AnimationStyle } from './animation';
+import { BorderColorStyle } from './border-color';
+import { BorderRadiusStyle } from './border-radius';
+import { BorderStyleStyle } from './border-style';
+import { BorderWidthStyle } from './border-width';
+import { BorderStyle } from './border';
+import { BackgroundAttachmentStyle } from './background-attachment';
+import { BackgroundBlendModeStyle } from './background-blend-mode';
+import { BackgroundClipStyle } from './background-clip';
+import { BackgroundColorStyle } from './background-color';
+import { BackgroundOriginStyle } from './background-origin';
+import { BackgroundPositionStyle } from './background-position';
+import { BackgroundRepeatStyle } from './background-repeat';
+import { BackgroundSizeStyle } from './background-size';
+import { BackgroundImageStyle } from './background-image';
+import { BackgroundStyle } from './background';
+import { MixBlendModeStyle } from './mix-blend-mode';
+import { PositionStyle } from './position';
+import { PlacementStyle } from './placement';
+import { BackdropFilterStyle } from './backdrop-filter';
+import { FillStyle } from './fill';
+import { StrokeStyle } from './stroke';
+import { StrokeWidthStyle } from './stroke-width';
+import { FilterStyle } from './filter';
+import { CursorStyle } from './cursor';
+import { PointerEventsStyle } from './pointer-events';
+import { ResizeStyle } from './resize';
+import { TouchActionStyle } from './touch-action';
+import { UserDragStyle } from './user-drag';
+import { UserSelectStyle } from './user-select';
+import { BoxShadowStyle } from './box-shadow';
+import { TextShadowStyle } from './text-shadow';
+import { TextSizeStyle } from './text-size';
+import { WordBreakStyle } from './word-break';
+import { GridColumnsStyle } from './grid-columns';
+import { GridRowsStyle } from './grid-rows';
+import { GapStyle } from './gap';
+import { WordSpacingStyle } from './word-spacing';
+import { VariableStyle } from './variable';
 
 MasterStyle.Subscriptions.push(
-    MasterVariableStyle,
-    MasterFontWeightStyle,
-    MasterFontFamilyStyle,
-    MasterSpacingStyle,
-    MasterFontSizeStyle,
-    MasterDisplayStyle,
-    MasterWidthStyle,
-    MasterHeightStyle,
-    MasterMinWidthStyle,
-    MasterMinHeightStyle,
-    MasterLetterSpacingStyle,
-    MasterFontSmoothingStyle,
-    MasterFontStyleStyle,
-    MasterFontVariantNumericStyle,
-    MasterLineHeightStyle,
-    MasterObjectFitStyle,
-    MasterObjectPositionStyle,
-    MasterTextAlignStyle,
-    MasterTextDecorationStyle,
-    MasterTextLeadingStyle,
-    MasterTextTransformStyle,
-    MasterVerticalAlignStyle,
-    MasterLinesStyle,
-    MasterMaxHeightStyle,
-    MasterMaxWidthStyle,
-    MasterBoxSizingStyle,
-    MasterOpacityStyle,
-    MasterVisibilityStyle,
-    MasterClearStyle,
-    MasterFloatStyle,
-    MasterIsolationStyle,
-    MasterOverflowStyle,
-    MasterOverscrollBehaviorStyle,
-    MasterZIndexStyle,
-    MasterPositionStyle,
-    MasterPlacementStyle,
-    MasterCursorStyle,
-    MasterPointerEventsStyle,
-    MasterResizeStyle,
-    MasterTouchActionStyle,
-    MasterWordBreakStyle,
-    MasterWordSpacingStyle,
-    MasterUserDragStyle,
-    MasterUserSelectStyle,
-    MasterTextShadowStyle,
-    MasterTextSizeStyle,
-    MasterBoxShadowStyle,
+    VariableStyle,
+    FontWeightStyle,
+    FontFamilyStyle,
+    SpacingStyle,
+    FontSizeStyle,
+    DisplayStyle,
+    WidthStyle,
+    HeightStyle,
+    MinWidthStyle,
+    MinHeightStyle,
+    LetterSpacingStyle,
+    FontSmoothingStyle,
+    FontStyleStyle,
+    FontVariantNumericStyle,
+    LineHeightStyle,
+    ObjectFitStyle,
+    ObjectPositionStyle,
+    TextAlignStyle,
+    TextDecorationStyle,
+    TextLeadingStyle,
+    TextTransformStyle,
+    VerticalAlignStyle,
+    LinesStyle,
+    MaxHeightStyle,
+    MaxWidthStyle,
+    BoxSizingStyle,
+    OpacityStyle,
+    VisibilityStyle,
+    ClearStyle,
+    FloatStyle,
+    IsolationStyle,
+    OverflowStyle,
+    OverscrollBehaviorStyle,
+    ZIndexStyle,
+    PositionStyle,
+    PlacementStyle,
+    CursorStyle,
+    PointerEventsStyle,
+    ResizeStyle,
+    TouchActionStyle,
+    WordBreakStyle,
+    WordSpacingStyle,
+    UserDragStyle,
+    UserSelectStyle,
+    TextShadowStyle,
+    TextSizeStyle,
+    BoxShadowStyle,
     // transform
-    MasterTransformBoxStyle,
-    MasterTransformStyleStyle,
-    MasterTransformOriginStyle,
-    MasterTransformStyle, // last
+    TransformBoxStyle,
+    TransformStyleStyle,
+    TransformOriginStyle,
+    TransformStyle, // last
     // transition
-    MasterTransitionPropertyStyle,
-    MasterTransitionTimingFunctionStyle,
-    MasterTransitionDurationStyle,
-    MasterTransitionDelayStyle,
-    MasterTransitionStyle, // last
+    TransitionPropertyStyle,
+    TransitionTimingFunctionStyle,
+    TransitionDurationStyle,
+    TransitionDelayStyle,
+    TransitionStyle, // last
     // animation
-    MasterAnimationDelayStyle,
-    MasterAnimationDirectionStyle,
-    MasterAnimationFillModeStyle,
-    MasterAnimationIterationCountStyle,
-    MasterAnimationNameStyle,
-    MasterAnimationPlayStateStyle,
-    MasterAnimationTimingFunctionStyle,
-    MasterAnimationStyle,
+    AnimationDelayStyle,
+    AnimationDirectionStyle,
+    AnimationFillModeStyle,
+    AnimationIterationCountStyle,
+    AnimationNameStyle,
+    AnimationPlayStateStyle,
+    AnimationTimingFunctionStyle,
+    AnimationStyle,
     // border
-    MasterBorderColorStyle,
-    MasterBorderRadiusStyle,
-    MasterBorderStyleStyle,
-    MasterBorderWidthStyle,
-    MasterBorderStyle,
+    BorderColorStyle,
+    BorderRadiusStyle,
+    BorderStyleStyle,
+    BorderWidthStyle,
+    BorderStyle,
     // background
-    MasterBackgroundAttachmentStyle,
-    MasterBackgroundBlendModeStyle,
-    MasterBackgroundClipStyle,
-    MasterBackgroundColorStyle,
-    MasterBackgroundOriginStyle,
-    MasterBackgroundPositionStyle,
-    MasterBackgroundRepeatStyle,
-    MasterBackgroundSizeStyle,
-    MasterBackgroundImageStyle,
-    MasterBackgroundStyle,
+    BackgroundAttachmentStyle,
+    BackgroundBlendModeStyle,
+    BackgroundClipStyle,
+    BackgroundColorStyle,
+    BackgroundOriginStyle,
+    BackgroundPositionStyle,
+    BackgroundRepeatStyle,
+    BackgroundSizeStyle,
+    BackgroundImageStyle,
+    BackgroundStyle,
     // effect
-    MasterMixBlendModeStyle,
-    MasterBackdropFilterStyle,
-    MasterFilterStyle,
+    MixBlendModeStyle,
+    BackdropFilterStyle,
+    FilterStyle,
     // svg
-    MasterFillStyle,
-    MasterStrokeStyle,
-    MasterStrokeWidthStyle,
+    FillStyle,
+    StrokeStyle,
+    StrokeWidthStyle,
     // grid
-    MasterGridColumnsStyle,
-    MasterGridRowsStyle,
-    MasterGapStyle
+    GridColumnsStyle,
+    GridRowsStyle,
+    GapStyle
 )

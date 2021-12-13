@@ -7,7 +7,7 @@ const BORDER_TOP_RIGHT_RADIUS = BORDER + DASH + TOP + DASH + RIGHT + DASH + RADI
 const BORDER_BOTTOM_LEFT_RADIUS = BORDER + DASH + BOTTOM + DASH + LEFT + DASH + RADIUS;
 const BORDER_BOTTOM_RIGHT_RADIUS = BORDER + DASH + BOTTOM + DASH + RIGHT + DASH + RADIUS;
 
-export class MasterBorderRadiusStyle extends MasterStyle {
+export class BorderRadiusStyle extends MasterStyle {
     static override prefixes = /^(r(t|b|l|r)?(t|b|l|r)?:)/;
     static override semantics = {
         [ROUNDED]: '1e9em',

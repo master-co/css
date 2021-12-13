@@ -3,7 +3,7 @@ import { MasterStyle } from '@master/style';
 
 const BREAK_WORD = BREAK + DASH + WORD;
 const OVERFLOW_WRAP = OVERFLOW + DASH + WRAP;
-export class MasterWordSpacingStyle extends MasterStyle {
+export class WordSpacingStyle extends MasterStyle {
     static override prefixes = /^(ws:|word-spacing:)/;
     static override properties = [WORD + DASH + SPACING];
 }

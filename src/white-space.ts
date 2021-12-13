@@ -4,7 +4,7 @@ import { MasterStyle } from '@master/style';
 const WHITE_SPACE = WHITE + DASH + SPACE;
 const BREAK_SPACES = BREAK + DASH + SPACE + 's';
 
-export class MasterWhiteSpaceStyle extends MasterStyle {
+export class WhiteSpaceStyle extends MasterStyle {
     static override prefixes = /^(ws|white-space):/;
     static override properties = [WHITE_SPACE];
     static override defaultUnit = '';
