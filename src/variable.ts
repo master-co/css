@@ -1,10 +1,10 @@
 import { MasterStyle } from '@master/style';
 
 export class VariableStyle extends MasterStyle {
-    static override prefixes = /^\$.*:/;
+    static override prefixes = /^\$(.*):/;
     override get properties(): { [key: string]: any } {
         return {
-            ['--' + this.prefix.slice(1, -1)]: this
+            ['--' + this.prefix.slice(2, -2)]: this
         }
     }
 }
