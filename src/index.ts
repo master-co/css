@@ -87,11 +87,28 @@ import { GridRowsStyle } from './grid-rows';
 import { GapStyle } from './gap';
 import { WordSpacingStyle } from './word-spacing';
 import { VariableStyle } from './variable';
+import { AspectRadioStyle } from './aspect-radio';
+import { BoxDecorationBreakStyle } from './box-decoration-break';
+import { BreakAfterStyle } from './break-after';
+import { BreakBeforeStyle } from './break-before';
+import { BreakInsideStyle } from './break-inside';
+import { FlexShrinkStyle } from './flex-shrink';
+import { FlexDirectionStyle } from './flex-direction';
+import { FlexGrowStyle } from './flex-grow';
+import { FlexWrapStyle } from './flex-wrap';
+import { FlexBasisStyle } from './flex-basis';
+import { FlexStyle } from './flex';
+import { OrderStyle } from './order';
+import { GridColumnStyle } from './grid-column';
+import { ColumnSpanStyle } from './column-span';
+import { GridRowStyle } from './grid-row';
+import { FontColorStyle } from './font-color';
 
 MasterStyle.Subscriptions.push(
     VariableStyle,
     FontWeightStyle,
     FontFamilyStyle,
+    FontColorStyle,
     SpacingStyle,
     FontSizeStyle,
     DisplayStyle,
@@ -182,7 +199,24 @@ MasterStyle.Subscriptions.push(
     StrokeStyle,
     StrokeWidthStyle,
     // grid
+    GridColumnStyle,
     GridColumnsStyle,
+    GridRowStyle,
     GridRowsStyle,
-    GapStyle
+    GapStyle,
+    OrderStyle,
+    // flex
+    FlexBasisStyle,
+    FlexWrapStyle,
+    FlexGrowStyle,
+    FlexShrinkStyle,
+    FlexDirectionStyle,
+    FlexStyle, // last
+    // break
+    BreakInsideStyle,
+    BreakBeforeStyle,
+    BreakAfterStyle,
+    BoxDecorationBreakStyle,
+    AspectRadioStyle,
+    ColumnSpanStyle
 )
