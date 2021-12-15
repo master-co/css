@@ -103,6 +103,18 @@ import { GridColumnStyle } from './grid-column';
 import { ColumnSpanStyle } from './column-span';
 import { GridRowStyle } from './grid-row';
 import { FontColorStyle } from './font-color';
+import { AlignContentStyle } from './align-content';
+import { AlignItemsStyle } from './align-items';
+import { AlignSelfStyle } from './align-self';
+import { GridAutoColumnsStyle } from './grid-auto-columns';
+import { GridAutoFlowStyle } from './grid-auto-flow';
+import { GridAutoRowsStyle } from './grid-auto-rows';
+import { JustifyContentStyle } from './justify-content';
+import { JustifyItemsStyle } from './justify-items';
+import { JustifySelfStyle } from './justify-self';
+import { PlaceContentStyle } from './place-content';
+import { PlaceItemsStyle } from './place-items';
+import { PlaceSelfStyle } from './place-self';
 
 MasterStyle.Subscriptions.push(
     VariableStyle,
@@ -203,6 +215,9 @@ MasterStyle.Subscriptions.push(
     GridColumnsStyle,
     GridRowStyle,
     GridRowsStyle,
+    GridAutoColumnsStyle,
+    GridAutoFlowStyle,
+    GridAutoRowsStyle,
     GapStyle,
     OrderStyle,
     // flex
@@ -218,5 +233,17 @@ MasterStyle.Subscriptions.push(
     BreakAfterStyle,
     BoxDecorationBreakStyle,
     AspectRadioStyle,
-    ColumnSpanStyle
+    ColumnSpanStyle,
+    // align
+    AlignContentStyle,
+    AlignItemsStyle,
+    AlignSelfStyle,
+    // justify
+    JustifyContentStyle,
+    JustifyItemsStyle,
+    JustifySelfStyle,
+    // place
+    PlaceContentStyle,
+    PlaceItemsStyle,
+    PlaceSelfStyle
 )
