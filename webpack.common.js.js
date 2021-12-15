@@ -14,8 +14,8 @@ module.exports = {
                 options: {
                     configFile: path.resolve(
                         process.env.WEBPACK_SERVE
-                            ? './dev/tsconfig.json'
-                            : './tsconfig.json'
+                            ? './tsconfig.json'
+                            : './tsconfig.prod.json'
                     )
                 }
             },
