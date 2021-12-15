@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const jsConfig = require('./webpack.common.js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const master = require('./master.json');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
     mode: 'development',
@@ -11,7 +12,8 @@ module.exports = {
         modules: [
             ...jsConfig.resolve.modules,
             './dev/node_modules'
-        ]
+        ],
+        plugins: [new TsconfigPathsPlugin()]
     },
     devtool: 'inline-source-map',
     devServer: {

@@ -30,6 +30,7 @@
     "devDependencies": {
         "@master/cli": "^1.0.0-alpha.17",
         "html-webpack-plugin": "^5.5.0",
+        "tsconfig-paths-webpack-plugin": "^3.5.2",
         "webpack-dev-server": "^4.6.0"
     },
     "files": [

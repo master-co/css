@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "outDir": "./dist",
+        "baseUrl": "./",
         "sourceMap": true,
         "declaration": true,
         "experimentalDecorators": true,
