@@ -4,7 +4,6 @@ import { MasterStyle } from '@master/style';
 const ROW_REVERSE = ROW + DASH + REVERSE;
 
 export class FlexDirectionStyle extends MasterStyle {
-    static override prefixes = /^flex-direction:/;
     static override properties = [FLEX + DASH + DIRECTION];
     static override semantics = {
         [FLEX_PREFIX + ROW]: ROW,

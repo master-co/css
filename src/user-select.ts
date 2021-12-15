@@ -6,6 +6,7 @@ const USER_SELECT = USER + DASH + SELECT;
 
 export class UserSelectStyle extends MasterStyle {
     static override prefixes = /^user-select:/;
+    static override supportFullName = false;
     static override properties = [
         USER_SELECT,
         WEBKIT_PREFIX + USER_SELECT

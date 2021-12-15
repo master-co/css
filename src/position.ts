@@ -2,7 +2,6 @@ import { FIXED, POSITION, STATIC, STICKY } from './constants/css-property-keywor
 import { MasterStyle } from '@master/style';
 
 export class PositionStyle extends MasterStyle {
-    static override prefixes = /^position:/;
     static override properties = [POSITION];
     static override semantics = {
         [STATIC]: STATIC,

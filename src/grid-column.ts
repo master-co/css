@@ -4,19 +4,15 @@ import { MasterStyle } from '@master/style';
 const GRID_COLUMN = GRID + DASH + COLUMN;
 
 export class GridColumnStyle extends MasterStyle {
-    static override prefixes = /^grid-(col-span|column):/;
+    static override prefixes = /^grid-col-span:/;
+    static override properties = [GRID_COLUMN];
     static override defaultUnit = '';
     static override semantics = {
         [GRID + DASH + COL + DASH + AUTO]: AUTO
     }
-    override get properties(): { [key: string]: any } {
-        return {
-            [GRID_COLUMN]: {
-                ...this,
-                value: this.prefix.startsWith(GRID_COLUMN) 
-                    ? this.value
-                    : SPAN + ' ' + this.value + '/' + SPAN + ' ' + this.value
-            }
-        };
+    override get parseValue() {
+        return this.prefix.startsWith(GRID_COLUMN) 
+            ? this.value
+            : SPAN + ' ' + this.value + '/' + SPAN + ' ' + this.value;
     }
 }

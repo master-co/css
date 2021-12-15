@@ -2,7 +2,7 @@ import { DEG, PX, ROTATE, SKEW, TRANSFORM, TRANSLATE } from './constants/css-pro
 import { MasterStyle } from '@master/style';
 
 export class TransformStyle extends MasterStyle {
-    static override prefixes = /^(transform:|((translate|scale|skew|rotate|perspective|matrix)(3d|X|Y|Z)?\())/;
+    static override prefixes = /^(translate|scale|skew|rotate|perspective|matrix)(3d|X|Y|Z)?\(/;
     static override properties = [TRANSFORM];
     static override defaultUnit = '';
     override get parseValue() {

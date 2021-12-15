@@ -5,7 +5,7 @@ const WHITE_SPACE = WHITE + DASH + SPACE;
 const BREAK_SPACES = BREAK + DASH + SPACE + 's';
 
 export class WhiteSpaceStyle extends MasterStyle {
-    static override prefixes = /^(ws|white-space):/;
+    static override prefixes = /^ws:/;
     static override properties = [WHITE_SPACE];
     static override defaultUnit = '';
     static override semantics = {

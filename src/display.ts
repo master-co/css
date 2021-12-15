@@ -15,7 +15,7 @@ const INLINE_BLOCK = INLINE + DASH + BLOCK,
     LIST_ITEM = LIST + DASH + ITEM;
 
 export class DisplayStyle extends MasterStyle {
-    static override prefixes = /^(display|d):/;
+    static override prefixes = /^d:/;
     static override properties = [DISPLAY];
     static override semantics = {
         [BLOCK]: BLOCK,

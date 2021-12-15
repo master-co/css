@@ -4,6 +4,7 @@ import { MasterStyle } from '@master/style';
 export class TextLeadingStyle extends MasterStyle {
     static override prefixes = /^t:leading/;
     static override fixedPseudo = ':' + FIRST + DASH + LETTER;
+    static override supportFullName = false;
     static override semantics = {
         't:leading': {
             [TEXT + DASH + TRANSFORM]: UPPERCASE

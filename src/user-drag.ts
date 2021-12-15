@@ -6,6 +6,7 @@ const USER_DRAG = USER + DASH + DRAG;
 
 export class UserDragStyle extends MasterStyle {
     static override prefixes = /^user-drag:/;
+    static override supportFullName = false;
     static override properties = [
         USER_DRAG,
         WEBKIT_PREFIX + USER_DRAG

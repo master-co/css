@@ -2,7 +2,6 @@ import { BORDER, BOX, BOX_PREFIX, CONTENT, DASH, SIZING } from './constants/css-
 import { MasterStyle } from '@master/style';
 
 export class BoxSizingStyle extends MasterStyle {
-    static override prefixes = /^box-sizing:/;
     static override properties = [BOX + DASH + SIZING];
     static override semantics = {
         [BOX_PREFIX + CONTENT]: CONTENT + DASH + BOX,

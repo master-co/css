@@ -17,6 +17,7 @@ export class PlacementStyle extends MasterStyle {
         [CENTER]: { [RIGHT]: 0, [LEFT]: 0, [MARGIN_LEFT]: AUTO, [MARGIN_RIGHT]: AUTO },
         [MIDDLE]: { [TOP]: 0, [BOTTOM]: 0, [MARGIN_TOP]: AUTO, [MARGIN_BOTTOM]: AUTO }
     }
+    static override supportFullName = false;
     override get properties(): { [key: string]: any } {
         const propertyName = this.prefix.slice(0, -1);
         switch (propertyName) {

@@ -4,7 +4,7 @@ import { MasterStyle } from '@master/style';
 const extreme = '999999';
 
 export class OrderStyle extends MasterStyle {
-    static override prefixes = /^(order|o):/;
+    static override prefixes = /^o:/;
     static override properties = [ORDER];
     static override semantics = {
         [ORDER + ':' + FIRST]: '-' + extreme,

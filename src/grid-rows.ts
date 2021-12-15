@@ -4,6 +4,7 @@ import { MasterStyle } from '@master/style';
 export class GridRowsStyle extends MasterStyle {
     static override prefixes = /^grid-rows:/;
     static override defaultUnit = '';
+    static override supportFullName = false;
     override get properties(): { [key: string]: any } {
         return {
             [DISPLAY]: { ...this, value: GRID },

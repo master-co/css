@@ -2,7 +2,6 @@ import { HIDDEN, INVISIBLE, VISIBILITY, VISIBLE } from './constants/css-property
 import { MasterStyle } from '@master/style';
 
 export class VisibilityStyle extends MasterStyle {
-    static override prefixes = /^visibility:/;
     static override properties = [VISIBILITY];
     static override semantics = {
         [VISIBLE]: VISIBLE,

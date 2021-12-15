@@ -1,4 +1,4 @@
-import { CLIP, DASH, ELLIPSIS, OVERFLOW, TEXT, T_PREFIX } from './constants/css-property-keyword';
+import { DASH, OVERFLOW, TEXT } from './constants/css-property-keyword';
 import { MasterStyle } from '@master/style';
 
 export class TextOverflowStyle extends MasterStyle {

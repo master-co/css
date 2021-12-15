@@ -5,6 +5,7 @@ import { MasterStyle } from '@master/style';
 export class LinesStyle extends MasterStyle {
     static override prefixes = /^lines:/;
     static override defaultUnit = '';
+    static override supportFullName = false;
     override get properties(): { [key: string]: any } {
         return {
             [OVERFLOW]: { ...this, value: HIDDEN },

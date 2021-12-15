@@ -7,6 +7,7 @@ const MOZ_OSX_FONT_SMOOTHING = MOZ_PREFIX + OSX + FONT + DASH + SMOOTHING;
 
 export class FontSmoothingStyle extends MasterStyle {
     static override defaultUnit = '';
+    static override supportFullName = false;
     static override semantics = {
         [F_PREFIX + SMOOTH]: {
             [WEBKIT_FONT_SMOOTHING]: ANTIALIASED,
