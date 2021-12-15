@@ -5,13 +5,6 @@
         "./src/**/*.d.ts",
     ],
     "compilerOptions": {
-        "paths": {
-            "@master/style": [
-                "../../style/src"
-            ],
-            "@master/style/*": [
-                "../../style/src/*"
-            ]
-        }
+        "paths": {}
     }
 }

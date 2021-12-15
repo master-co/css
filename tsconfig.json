@@ -12,7 +12,15 @@
         "lib": [
             "es2018",
             "dom"
-        ]
+        ],
+        "paths": {
+            "@master/style": [
+                "../style/src"
+            ],
+            "@master/style/*": [
+                "../style/src/*"
+            ]
+        }
     },
     "include": [
         "./src/**/*index.ts",
