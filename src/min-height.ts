@@ -4,12 +4,13 @@ import { MasterStyle } from '@master/style';
 const MIN_HEIGHT_PREFIX = MIN + DASH + H_PREFIX;
 
 export class MinHeightStyle extends MasterStyle {
-    static override prefixes =  /^min-h:/;
+    static override prefixes =  /^min-h(eight)?:/;
     static override properties = [MIN_HEIGHT];
-    static override semantics = {
-        [MIN_HEIGHT_PREFIX + FULL]: PERCENT100,
-        [MIN_HEIGHT_PREFIX + FIT]: FIT_CONTENT,
-        [MIN_HEIGHT_PREFIX + MAX]: MAX_CONTENT,
-        [MIN_HEIGHT_PREFIX + MIN]: MIN_CONTENT
+    static override supportFullName = false;
+    static override values = {
+        [FULL]: PERCENT100,
+        [FIT]: FIT_CONTENT,
+        [MAX]: MAX_CONTENT,
+        [MIN]: MIN_CONTENT
     }
 }

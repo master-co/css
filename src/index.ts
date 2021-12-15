@@ -115,13 +115,20 @@ import { JustifySelfStyle } from './justify-self';
 import { PlaceContentStyle } from './place-content';
 import { PlaceItemsStyle } from './place-items';
 import { PlaceSelfStyle } from './place-self';
-
+import { PaddingStyle } from './padding';
+import { MarginStyle } from './margin';
+import { TextOverflowStyle } from './text-overflow';
+import { ListStylePositionStyle } from './list-style-position';
+import { ListStyleTypeStyle } from './list-style-type';
+ 
 MasterStyle.Subscriptions.push(
     VariableStyle,
     FontWeightStyle,
     FontFamilyStyle,
     FontColorStyle,
     SpacingStyle,
+    MarginStyle,
+    PaddingStyle,
     FontSizeStyle,
     DisplayStyle,
     WidthStyle,
@@ -138,6 +145,7 @@ MasterStyle.Subscriptions.push(
     TextAlignStyle,
     TextDecorationStyle,
     TextLeadingStyle,
+    TextOverflowStyle,
     TextTransformStyle,
     VerticalAlignStyle,
     LinesStyle,
@@ -245,5 +253,7 @@ MasterStyle.Subscriptions.push(
     // place
     PlaceContentStyle,
     PlaceItemsStyle,
-    PlaceSelfStyle
+    PlaceSelfStyle,
+    ListStylePositionStyle,
+    ListStyleTypeStyle
 )

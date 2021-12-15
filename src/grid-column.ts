@@ -1,18 +1,14 @@
-import { AUTO, COL, COLUMN, DASH, GRID, SPAN } from './constants/css-property-keyword';
+import { COLUMN, DASH, GRID, SPAN } from './constants/css-property-keyword';
 import { MasterStyle } from '@master/style';
 
-const GRID_COLUMN = GRID + DASH + COLUMN;
-
 export class GridColumnStyle extends MasterStyle {
-    static override prefixes = /^grid-col-span:/;
-    static override properties = [GRID_COLUMN];
+    static override prefixes = /^grid-col(umn)?(-span)?:/;
+    static override properties = [GRID + DASH + COLUMN];
     static override defaultUnit = '';
-    static override semantics = {
-        [GRID + DASH + COL + DASH + AUTO]: AUTO
-    }
+    static override supportFullName = false;
     override get parseValue() {
-        return this.prefix.startsWith(GRID_COLUMN) 
-            ? this.value
-            : SPAN + ' ' + this.value + '/' + SPAN + ' ' + this.value;
+        return this.prefix.slice(-5, -1) === 'span' && this.value !== 'auto'
+            ? SPAN + ' ' + this.value + '/' + SPAN + ' ' + this.value
+            : this.value;
     }
 }

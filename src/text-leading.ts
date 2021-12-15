@@ -2,12 +2,12 @@ import { DASH, FIRST, LETTER, TEXT, TRANSFORM, UPPERCASE } from './constants/css
 import { MasterStyle } from '@master/style';
 
 export class TextLeadingStyle extends MasterStyle {
-    static override prefixes = /^t:leading/;
+    static override prefixes = /^t(ext)?:leading/;
     static override fixedPseudo = ':' + FIRST + DASH + LETTER;
     static override supportFullName = false;
-    static override semantics = {
-        't:leading': {
+    override get parseValue() {
+        return {
             [TEXT + DASH + TRANSFORM]: UPPERCASE
-        }
+        };
     }
 }

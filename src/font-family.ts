@@ -1,14 +1,15 @@
-import { DASH, FAMILY, FONT, F_PREFIX, MONO, SANS, SERIF, VAR_END, VAR_START } from './constants/css-property-keyword';
+import { DASH, FAMILY, FONT, MONO, SANS, SERIF, VAR_END, VAR_START } from './constants/css-property-keyword';
 import { MasterStyle } from '@master/style';
 
-const F_DASH = 'f-';
+const VAR_F = VAR_START + 'f' + DASH;
 
 export class FontFamilyStyle extends MasterStyle {
-    static override prefixes = /^f-family:/;
+    static override prefixes = /^f(ont)?-family:/;
+    static override supportFullName = false;
     static override properties = [FONT + DASH + FAMILY];
-    static override semantics = {
-        [F_PREFIX + MONO]: VAR_START + F_DASH + MONO + VAR_END,
-        [F_PREFIX + SANS]: VAR_START + F_DASH + SANS + VAR_END,
-        [F_PREFIX + SERIF]: VAR_START + F_DASH + SERIF + VAR_END
+    static override values = {
+        [MONO]: VAR_F + MONO + VAR_END,
+        [SANS]: VAR_F + SANS + VAR_END,
+        [SERIF]: VAR_F + SERIF + VAR_END
     }
 }

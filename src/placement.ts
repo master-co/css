@@ -30,15 +30,15 @@ export class PlacementStyle extends MasterStyle {
                 return {
                     [LEFT]: this,
                     [RIGHT]: this,
-                    [MARGIN_LEFT]: { ...this, unit: '', value: AUTO },
-                    [MARGIN_RIGHT]: { ...this, unit: '', value: AUTO }
+                    [MARGIN_LEFT]: { ...this, unit: '' },
+                    [MARGIN_RIGHT]: { ...this, unit: '' }
                 }
             case MIDDLE:
                 return {
                     [TOP]: this,
                     [BOTTOM]: this,
-                    [MARGIN_TOP]: { ...this, unit: '', value: AUTO },
-                    [MARGIN_BOTTOM]: { ...this, unit: '', value: AUTO }
+                    [MARGIN_TOP]: { ...this, unit: '' },
+                    [MARGIN_BOTTOM]: { ...this, unit: '' }
                 }
         }
     }
