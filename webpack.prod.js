@@ -38,6 +38,9 @@ module.exports = {
                     format: {
                         comments: false,
                     },
+                    mangle: {
+                        properties: true
+                    }
                 },
                 extractComments: false,
             }),
