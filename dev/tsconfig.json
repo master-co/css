@@ -5,5 +5,15 @@
         "../src/**/*.d.ts",
         "./src/**/*index.ts",
         "./src/**/*.d.ts",
-    ]
+    ],
+    "compilerOptions": {
+        "paths": {
+            "@master/style": [
+                "../../style/src"
+            ],
+            "@master/style/*": [
+                "../../style/src/*"
+            ]
+        }
+    }
 }
