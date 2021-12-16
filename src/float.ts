@@ -1,6 +1,6 @@
 import { FLOAT } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class FloatStyle extends MasterStyle {
+export class FloatStyle extends Style {
     static override properties = [FLOAT];
 }

@@ -1,8 +1,8 @@
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 import { DASH, MARGIN, PADDING } from './constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from './constants/direction';
 
-export class SpacingStyle extends MasterStyle {
+export class SpacingStyle extends Style {
     static override prefixes = /^(p|m)(x|y|t|b|l|r)?:/;
     static override supportFullName = false;
     override get properties(): { [key: string]: any } {

@@ -1,7 +1,7 @@
 import { HIDDEN, INVISIBLE, VISIBILITY, VISIBLE } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class VisibilityStyle extends MasterStyle {
+export class VisibilityStyle extends Style {
     static override properties = [VISIBILITY];
     static override semantics = {
         [VISIBLE]: VISIBLE,

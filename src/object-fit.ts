@@ -1,7 +1,7 @@
 import { DASH, FIT, OBJECT } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class ObjectFitStyle extends MasterStyle {
+export class ObjectFitStyle extends Style {
     static override prefixes =  /^object:(contain|cover|fill|scale-down)/;
     static override properties = [OBJECT + DASH + FIT];
 }

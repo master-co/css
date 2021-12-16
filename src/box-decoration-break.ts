@@ -1,7 +1,7 @@
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 import { BOX, BREAK, DASH, DECORATION } from './constants/css-property-keyword';
 
-export class BoxDecorationBreakStyle extends MasterStyle {
+export class BoxDecorationBreakStyle extends Style {
     static override prefixes = /^box:(slice|clone)/;
     static override properties = [BOX + DASH + DECORATION + DASH + BREAK];
 }

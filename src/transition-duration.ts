@@ -1,7 +1,7 @@
 import { DASH, DURATION, TRANSITION } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class TransitionDurationStyle extends MasterStyle {
+export class TransitionDurationStyle extends Style {
     static override prefixes =  /^~duration:/;
     static override properties = [TRANSITION + DASH + DURATION];
 }

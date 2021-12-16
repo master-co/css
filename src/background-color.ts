@@ -1,7 +1,7 @@
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 import { BACKGROUND, COLOR, DASH } from './constants/css-property-keyword';
 
-export class BackgroundColorStyle extends MasterStyle {
+export class BackgroundColorStyle extends Style {
     static override prefixes = /^((bg|background)-color:|(bg|background):transparent)/;
     static override properties = [BACKGROUND + DASH + COLOR];
     static override supportFullName = false;

@@ -1,9 +1,9 @@
 import { DASH, FAMILY, FONT, MONO, SANS, SERIF, VAR_END, VAR_START } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
 const VAR_F = VAR_START + 'f' + DASH;
 
-export class FontFamilyStyle extends MasterStyle {
+export class FontFamilyStyle extends Style {
     static override prefixes = /^f(ont)?-family:/;
     static override supportFullName = false;
     static override properties = [FONT + DASH + FAMILY];

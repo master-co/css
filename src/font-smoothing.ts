@@ -1,8 +1,8 @@
 import { MOZ_PREFIX, OSX, WEBKIT_PREFIX } from './constants/css-browser-prefix';
 import { ANTIALIASED, AUTO, DASH, FONT, GRAYSCALE, SMOOTH, SMOOTHING } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class FontSmoothingStyle extends MasterStyle {
+export class FontSmoothingStyle extends Style {
     static override prefixes = /^f(ont)?:(smooth|sharp)/;
     static override defaultUnit = '';
     static override supportFullName = false;

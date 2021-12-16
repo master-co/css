@@ -1,10 +1,10 @@
 import { BREAK, DASH, SPACE, WHITE } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
 const WHITE_SPACE = WHITE + DASH + SPACE;
 const BREAK_SPACES = BREAK + DASH + SPACE + 's';
 
-export class WhiteSpaceStyle extends MasterStyle {
+export class WhiteSpaceStyle extends Style {
     static override properties = [WHITE_SPACE];
     static override defaultUnit = '';
     static override semantics = {

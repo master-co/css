@@ -1,7 +1,7 @@
 import { DASH, FONT, WEIGHT } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class FontWeightStyle extends MasterStyle {
+export class FontWeightStyle extends Style {
     static override prefixes =  /^f(ont)?-weight:/;
     static override properties = [FONT + DASH + WEIGHT];
     static override supportFullName = false;

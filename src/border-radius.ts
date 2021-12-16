@@ -1,4 +1,4 @@
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 import { TOP, RIGHT, BOTTOM, LEFT, T, B, L, R } from './constants/direction';
 import { BORDER, DASH, RADIUS, ROUND, ROUNDED } from './constants/css-property-keyword';
 
@@ -8,7 +8,7 @@ const BORDER_TOP_LEFT_RADIUS = BORDER + DASH + TOP + DASH + LEFT + DASH + RADIUS
     BORDER_BOTTOM_RIGHT_RADIUS = BORDER + DASH + BOTTOM + DASH + RIGHT + DASH + RADIUS,
     BORDER_RADIUS_S = [BORDER_TOP_LEFT_RADIUS, BORDER_TOP_RIGHT_RADIUS, BORDER_BOTTOM_LEFT_RADIUS, BORDER_BOTTOM_RIGHT_RADIUS];
 
-export class BorderRadiusStyle extends MasterStyle {
+export class BorderRadiusStyle extends Style {
     static override prefixes = /^((r(t|b|l|r)?(t|b|l|r)?|border(-(top|bottom)-(left|right))?-radius):)/;
     static override semantics = {
         [ROUNDED]: '1e9em',

@@ -1,13 +1,13 @@
 import { AUTO, CENTER, DASH, MARGIN, MIDDLE } from './constants/css-property-keyword';
 import { BOTTOM, LEFT, RIGHT, TOP } from './constants/direction';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
 const MARGIN_LEFT = MARGIN + DASH + LEFT;
 const MARGIN_RIGHT = MARGIN + DASH + RIGHT;
 const MARGIN_BOTTOM = MARGIN + DASH + BOTTOM;
 const MARGIN_TOP = MARGIN + DASH + TOP;
 
-export class PlacementStyle extends MasterStyle {
+export class PlacementStyle extends Style {
     static override prefixes = /^(top|left|right|bottom|center|middle):/;
     static override semantics = {
         [TOP]: { [TOP]: 0 },

@@ -1,9 +1,9 @@
 import { FIRST, LAST, ORDER, ORDER_PREFIX } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
 const extreme = '999999';
 
-export class OrderStyle extends MasterStyle {
+export class OrderStyle extends Style {
     static override prefixes = /^o:/;
     static override properties = [ORDER];
     static override semantics = {

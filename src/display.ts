@@ -1,7 +1,7 @@
 import { BLOCK, CAPTION, DASH, DISPLAY, FLEX, GRID, INLINE, TABLE, CELL, GROUP, FOOTER, HEADER, ROW, FLOW, ROOT, ITEM, LIST, COL, COLUMN } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class DisplayStyle extends MasterStyle {
+export class DisplayStyle extends Style {
     static override prefixes = /^d:/;
     static override properties = [DISPLAY];
     static override semantics = {

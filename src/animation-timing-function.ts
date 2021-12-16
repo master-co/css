@@ -1,7 +1,7 @@
 import { ANIMATION, DASH, TIMING_FUNCTION } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class AnimationTimingFunctionStyle extends MasterStyle {
+export class AnimationTimingFunctionStyle extends Style {
     static override prefixes = /^\*easing:/;
     static override properties = [ANIMATION + DASH + TIMING_FUNCTION];
 }

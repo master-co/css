@@ -1,6 +1,6 @@
 import { STROKE } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class StrokeStyle extends MasterStyle {
+export class StrokeStyle extends Style {
     static override properties = [STROKE];
 }

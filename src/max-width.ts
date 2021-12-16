@@ -1,7 +1,7 @@
 import { FIT, FIT_CONTENT, FULL, MAX, MAX_CONTENT, MAX_WIDTH, MIN, MIN_CONTENT, PERCENT100, W_PREFIX } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class MaxWidthStyle extends MasterStyle {
+export class MaxWidthStyle extends Style {
     static override prefixes =  /^max-w(idth)?:/;
     static override properties = [MAX_WIDTH];
     static override supportFullName = false;

@@ -1,7 +1,7 @@
 import { ABS, ABSOLUTE, FIXED, POSITION, REL, RELATIVE, STATIC, STICKY } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class PositionStyle extends MasterStyle {
+export class PositionStyle extends Style {
     static override properties = [POSITION];
     static override values = {
         [ABS]: ABSOLUTE,

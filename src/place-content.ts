@@ -1,6 +1,6 @@
 import { CONTENT, DASH, PLACE } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class PlaceContentStyle extends MasterStyle {
+export class PlaceContentStyle extends Style {
     static override properties = [PLACE + DASH + CONTENT];
 }

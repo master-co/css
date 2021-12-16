@@ -1,4 +1,4 @@
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 import { FontWeightStyle } from './font-weight';
 import { FontFamilyStyle } from './font-family';
 import { FontSizeStyle } from './font-size';
@@ -137,7 +137,7 @@ import { CaretColorStyle } from './caret-color';
 import { ScrollBehaviorStyle } from './scroll-behavior';
 import { ScrollMarginStyle } from './scroll-margin';
 
-MasterStyle.Subscriptions.push(
+Style.Subscriptions.push(
     VariableStyle,
     FontWeightStyle,
     FontFamilyStyle,

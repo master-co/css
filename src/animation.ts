@@ -1,7 +1,7 @@
 import { ANIMATION } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class AnimationStyle extends MasterStyle {
+export class AnimationStyle extends Style {
     static override symbol = '*'; 
     static override properties = [ANIMATION];
 }
