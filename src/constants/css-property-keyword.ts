@@ -207,3 +207,5 @@ export const COLLAPSE = 'collapse';
 export const LAYOUT = 'layout';
 export const ACCENT = 'accent';
 export const CARET = 'caret';
+export const SNAP = 'snap';
+export const STOP = 'stop';

@@ -136,6 +136,11 @@ import { AppearanceStyle } from './appearance';
 import { CaretColorStyle } from './caret-color';
 import { ScrollBehaviorStyle } from './scroll-behavior';
 import { ScrollMarginStyle } from './scroll-margin';
+import { ScrollPaddingStyle } from './scroll-padding';
+import { ScrollSnapAlignStyle } from './scroll-snap-align';
+import { ScrollSnapStopStyle } from './scroll-snap-stop';
+import { ScrollSnapTypeStyle } from './scroll-snap-type';
+import { WillChangeStyle } from './will-change';
 
 Style.Subscriptions.push(
     VariableStyle,
@@ -287,6 +292,12 @@ Style.Subscriptions.push(
     AccentColorStyle,
     AppearanceStyle,
     CaretColorStyle,
+    // scroll
     ScrollBehaviorStyle,
-    ScrollMarginStyle
+    ScrollMarginStyle,
+    ScrollPaddingStyle,
+    ScrollSnapAlignStyle,
+    ScrollSnapStopStyle,
+    ScrollSnapTypeStyle,
+    WillChangeStyle
 )
