@@ -1,7 +1,7 @@
 import { TRANSITION } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class TransitionStyle extends MasterStyle {
+export class TransitionStyle extends Style {
     static override symbol = '~'; 
     static override properties = [TRANSITION];
 }

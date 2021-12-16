@@ -1,6 +1,6 @@
 import { ALIGN, DASH, SELF } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class AlignSelfStyle extends MasterStyle {
+export class AlignSelfStyle extends Style {
     static override properties = [ALIGN + DASH + SELF];
 }

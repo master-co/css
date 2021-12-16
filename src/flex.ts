@@ -1,6 +1,6 @@
 import { FLEX } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class FlexStyle extends MasterStyle {
+export class FlexStyle extends Style {
     static override properties = [FLEX];
 }

@@ -1,7 +1,7 @@
 import { DASH, OBJECT, POSITION } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class ObjectPositionStyle extends MasterStyle {
+export class ObjectPositionStyle extends Style {
     static override prefixes =  /^object:(top|bottom|right|left|center)/;
     static override properties = [OBJECT + DASH + POSITION];
 }

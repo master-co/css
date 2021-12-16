@@ -1,6 +1,6 @@
 import { DASH, FLEX, SHRINK } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class FlexShrinkStyle extends MasterStyle {
+export class FlexShrinkStyle extends Style {
     static override properties = [FLEX + DASH + SHRINK];
 }

@@ -1,4 +1,4 @@
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 import { FontWeightStyle } from './font-weight';
 import { FontFamilyStyle } from './font-family';
 import { FontSizeStyle } from './font-size';
@@ -121,7 +121,7 @@ import { TextOverflowStyle } from './text-overflow';
 import { ListStylePositionStyle } from './list-style-position';
 import { ListStyleTypeStyle } from './list-style-type';
  
-MasterStyle.Subscriptions.push(
+Style.Subscriptions.push(
     VariableStyle,
     FontWeightStyle,
     FontFamilyStyle,

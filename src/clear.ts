@@ -1,6 +1,6 @@
 import { CLEAR } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class ClearStyle extends MasterStyle {
+export class ClearStyle extends Style {
     static override properties = [CLEAR];
 }

@@ -1,6 +1,6 @@
 import { DASH, SPACING, WORD } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class WordSpacingStyle extends MasterStyle {
+export class WordSpacingStyle extends Style {
     static override properties = [WORD + DASH + SPACING];
 }

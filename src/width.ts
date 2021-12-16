@@ -1,7 +1,7 @@
 import { FIT, FIT_CONTENT, FULL, MAX, MAX_CONTENT, MIN, MIN_CONTENT, PERCENT100, WIDTH } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class WidthStyle extends MasterStyle {
+export class WidthStyle extends Style {
     static override prefixes =  /^w:/;
     static override properties = [WIDTH];
     static override values = {

@@ -1,7 +1,7 @@
 import { LETTER_SPACING } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class LetterSpacingStyle extends MasterStyle {
+export class LetterSpacingStyle extends Style {
     static override prefixes =  /^ls:/;
     static override properties = [LETTER_SPACING];
     static override defaultUnit = 'em';

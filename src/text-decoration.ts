@@ -1,7 +1,7 @@
 import { DASH, DECORATION, TEXT } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class TextDecorationStyle extends MasterStyle {
+export class TextDecorationStyle extends Style {
     static override prefixes =  /^(t(ext)?-decoration:|t(ext)?:(underline|line-throught))/;
     static override properties = [TEXT + DASH + DECORATION];
     static override supportFullName = false;

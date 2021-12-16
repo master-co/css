@@ -1,7 +1,7 @@
 import { ANIMATION, DASH, DELAY } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class AnimationDelayStyle extends MasterStyle {
+export class AnimationDelayStyle extends Style {
     static override prefixes = /^\*delay:/;
     static override properties = [ANIMATION + DASH + DELAY];
 }

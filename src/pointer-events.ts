@@ -1,6 +1,6 @@
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 import { DASH, EVENTS, POINTERS } from './constants/css-property-keyword';
 
-export class PointerEventsStyle extends MasterStyle {
+export class PointerEventsStyle extends Style {
     static override properties = [POINTERS + DASH + EVENTS];
 }

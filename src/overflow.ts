@@ -1,7 +1,7 @@
 import { DASH, OVERFLOW, X, Y } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class OverflowStyle extends MasterStyle {
+export class OverflowStyle extends Style {
     static override prefixes = /^(overflow|ovf)(-x|-y)?:/;
     static override supportFullName = false;
     override get properties(): { [key: string]: any } {

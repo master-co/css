@@ -1,7 +1,7 @@
 import { ROWS, DASH, DISPLAY, FR, GRID, MAX, MIN, REPEAT, TEMPLATE, COMMA, AUTO, FLOW, COLUMN } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class GridRowsStyle extends MasterStyle {
+export class GridRowsStyle extends Style {
     static override prefixes = /^grid-rows:/;
     static override defaultUnit = '';
     static override supportFullName = false;

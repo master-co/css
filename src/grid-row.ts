@@ -1,7 +1,7 @@
 import { DASH, GRID, ROW, SPAN } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class GridRowStyle extends MasterStyle {
+export class GridRowStyle extends Style {
     static override prefixes = /^grid-row(-span)?:/;
     static override properties = [GRID + DASH + ROW];
     static override defaultUnit = '';

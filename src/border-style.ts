@@ -1,7 +1,7 @@
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 import { BORDER, DASH, STYLE } from './constants/css-property-keyword';
 
-export class BorderStyleStyle extends MasterStyle {
+export class BorderStyleStyle extends Style {
     static override prefixes = /^b-style:/;
     static override properties = [BORDER + DASH + STYLE];
 }

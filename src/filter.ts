@@ -1,6 +1,6 @@
 import { FILTER } from './constants/css-property-keyword';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class FilterStyle extends MasterStyle {
+export class FilterStyle extends Style {
     static override properties = [FILTER];
 }

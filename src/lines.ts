@@ -1,8 +1,8 @@
 import { BOX, BREAK, CLAMP, DASH, DISPLAY, ELLIPSIS, HIDDEN, LINE, ORIENT, OVERFLOW, TEXT, VERTICAL, WORD, WRAP } from './constants/css-property-keyword';
 import { WEBKIT_PREFIX } from './constants/css-browser-prefix';
-import { MasterStyle } from '@master/style';
+import { Style } from '@master/style';
 
-export class LinesStyle extends MasterStyle {
+export class LinesStyle extends Style {
     static override prefixes = /^lines:/;
     static override defaultUnit = '';
     static override supportFullName = false;
