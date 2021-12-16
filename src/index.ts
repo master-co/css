@@ -1,4 +1,5 @@
-import { Style } from '@master/style';
+import { StyleSheet } from '@master/style';
+
 import { FontWeightStyle } from './font-weight';
 import { FontFamilyStyle } from './font-family';
 import { FontSizeStyle } from './font-size';
@@ -120,140 +121,149 @@ import { MarginStyle } from './margin';
 import { TextOverflowStyle } from './text-overflow';
 import { ListStylePositionStyle } from './list-style-position';
 import { ListStyleTypeStyle } from './list-style-type';
- 
-Style.Subscriptions.push(
-    VariableStyle,
-    FontWeightStyle,
-    FontFamilyStyle,
-    FontColorStyle,
-    SpacingStyle,
-    MarginStyle,
-    PaddingStyle,
-    FontSizeStyle,
-    DisplayStyle,
-    WidthStyle,
-    HeightStyle,
-    MinWidthStyle,
-    MinHeightStyle,
-    LetterSpacingStyle,
-    FontSmoothingStyle,
-    FontStyleStyle,
-    FontVariantNumericStyle,
-    LineHeightStyle,
-    ObjectFitStyle,
-    ObjectPositionStyle,
-    TextAlignStyle,
-    TextDecorationStyle,
-    TextLeadingStyle,
-    TextOverflowStyle,
-    TextTransformStyle,
-    VerticalAlignStyle,
-    LinesStyle,
-    MaxHeightStyle,
-    MaxWidthStyle,
-    BoxSizingStyle,
-    OpacityStyle,
-    VisibilityStyle,
-    ClearStyle,
-    FloatStyle,
-    IsolationStyle,
-    OverflowStyle,
-    OverscrollBehaviorStyle,
-    ZIndexStyle,
-    PositionStyle,
-    PlacementStyle,
-    CursorStyle,
-    PointerEventsStyle,
-    ResizeStyle,
-    TouchActionStyle,
-    WordBreakStyle,
-    WordSpacingStyle,
-    UserDragStyle,
-    UserSelectStyle,
-    TextShadowStyle,
-    TextSizeStyle,
-    BoxShadowStyle,
-    // transform
-    TransformBoxStyle,
-    TransformStyleStyle,
-    TransformOriginStyle,
-    TransformStyle, // last
-    // transition
-    TransitionPropertyStyle,
-    TransitionTimingFunctionStyle,
-    TransitionDurationStyle,
-    TransitionDelayStyle,
-    TransitionStyle, // last
-    // animation
-    AnimationDelayStyle,
-    AnimationDirectionStyle,
-    AnimationFillModeStyle,
-    AnimationIterationCountStyle,
-    AnimationNameStyle,
-    AnimationPlayStateStyle,
-    AnimationTimingFunctionStyle,
-    AnimationStyle,
-    // border
-    BorderColorStyle,
-    BorderRadiusStyle,
-    BorderStyleStyle,
-    BorderWidthStyle,
-    BorderStyle,
-    // background
-    BackgroundAttachmentStyle,
-    BackgroundBlendModeStyle,
-    BackgroundClipStyle,
-    BackgroundColorStyle,
-    BackgroundOriginStyle,
-    BackgroundPositionStyle,
-    BackgroundRepeatStyle,
-    BackgroundSizeStyle,
-    BackgroundImageStyle,
-    BackgroundStyle,
-    // effect
-    MixBlendModeStyle,
-    BackdropFilterStyle,
-    FilterStyle,
-    // svg
-    FillStyle,
-    StrokeStyle,
-    StrokeWidthStyle,
-    // grid
-    GridColumnStyle,
-    GridColumnsStyle,
-    GridRowStyle,
-    GridRowsStyle,
-    GridAutoColumnsStyle,
-    GridAutoFlowStyle,
-    GridAutoRowsStyle,
-    GapStyle,
-    OrderStyle,
-    // flex
-    FlexBasisStyle,
-    FlexWrapStyle,
-    FlexGrowStyle,
-    FlexShrinkStyle,
-    FlexDirectionStyle,
-    FlexStyle, // last
-    // break
-    BreakInsideStyle,
-    BreakBeforeStyle,
-    BreakAfterStyle,
-    BoxDecorationBreakStyle,
-    AspectRadioStyle,
-    ColumnSpanStyle,
-    // align
-    AlignContentStyle,
-    AlignItemsStyle,
-    AlignSelfStyle,
-    // justify
-    JustifyContentStyle,
-    JustifyItemsStyle,
-    JustifySelfStyle,
-    // place
-    PlaceContentStyle,
-    PlaceItemsStyle,
-    PlaceSelfStyle,
-    ListStylePositionStyle,
-    ListStyleTypeStyle
-)
+
+window.addEventListener('DOMContentLoaded', (event) => {
+    /**
+     * 創建監聽器已追蹤整個 document 的 class
+     */
+    StyleSheet.Styles.push(
+        VariableStyle,
+        FontWeightStyle,
+        FontFamilyStyle,
+        FontColorStyle,
+        SpacingStyle,
+        MarginStyle,
+        PaddingStyle,
+        FontSizeStyle,
+        DisplayStyle,
+        WidthStyle,
+        HeightStyle,
+        MinWidthStyle,
+        MinHeightStyle,
+        LetterSpacingStyle,
+        FontSmoothingStyle,
+        FontStyleStyle,
+        FontVariantNumericStyle,
+        LineHeightStyle,
+        ObjectFitStyle,
+        ObjectPositionStyle,
+        TextAlignStyle,
+        TextDecorationStyle,
+        TextLeadingStyle,
+        TextOverflowStyle,
+        TextTransformStyle,
+        VerticalAlignStyle,
+        LinesStyle,
+        MaxHeightStyle,
+        MaxWidthStyle,
+        BoxSizingStyle,
+        OpacityStyle,
+        VisibilityStyle,
+        ClearStyle,
+        FloatStyle,
+        IsolationStyle,
+        OverflowStyle,
+        OverscrollBehaviorStyle,
+        ZIndexStyle,
+        PositionStyle,
+        PlacementStyle,
+        CursorStyle,
+        PointerEventsStyle,
+        ResizeStyle,
+        TouchActionStyle,
+        WordBreakStyle,
+        WordSpacingStyle,
+        UserDragStyle,
+        UserSelectStyle,
+        TextShadowStyle,
+        TextSizeStyle,
+        BoxShadowStyle,
+        // transform
+        TransformBoxStyle,
+        TransformStyleStyle,
+        TransformOriginStyle,
+        TransformStyle, // last
+        // transition
+        TransitionPropertyStyle,
+        TransitionTimingFunctionStyle,
+        TransitionDurationStyle,
+        TransitionDelayStyle,
+        TransitionStyle, // last
+        // animation
+        AnimationDelayStyle,
+        AnimationDirectionStyle,
+        AnimationFillModeStyle,
+        AnimationIterationCountStyle,
+        AnimationNameStyle,
+        AnimationPlayStateStyle,
+        AnimationTimingFunctionStyle,
+        AnimationStyle,
+        // border
+        BorderColorStyle,
+        BorderRadiusStyle,
+        BorderStyleStyle,
+        BorderWidthStyle,
+        BorderStyle,
+        // background
+        BackgroundAttachmentStyle,
+        BackgroundBlendModeStyle,
+        BackgroundClipStyle,
+        BackgroundColorStyle,
+        BackgroundOriginStyle,
+        BackgroundPositionStyle,
+        BackgroundRepeatStyle,
+        BackgroundSizeStyle,
+        BackgroundImageStyle,
+        BackgroundStyle,
+        // effect
+        MixBlendModeStyle,
+        BackdropFilterStyle,
+        FilterStyle,
+        // svg
+        FillStyle,
+        StrokeStyle,
+        StrokeWidthStyle,
+        // grid
+        GridColumnStyle,
+        GridColumnsStyle,
+        GridRowStyle,
+        GridRowsStyle,
+        GridAutoColumnsStyle,
+        GridAutoFlowStyle,
+        GridAutoRowsStyle,
+        GapStyle,
+        OrderStyle,
+        // flex
+        FlexBasisStyle,
+        FlexWrapStyle,
+        FlexGrowStyle,
+        FlexShrinkStyle,
+        FlexDirectionStyle,
+        FlexStyle, // last
+        // break
+        BreakInsideStyle,
+        BreakBeforeStyle,
+        BreakAfterStyle,
+        BoxDecorationBreakStyle,
+        AspectRadioStyle,
+        ColumnSpanStyle,
+        // align
+        AlignContentStyle,
+        AlignItemsStyle,
+        AlignSelfStyle,
+        // justify
+        JustifyContentStyle,
+        JustifyItemsStyle,
+        JustifySelfStyle,
+        // place
+        PlaceContentStyle,
+        PlaceItemsStyle,
+        PlaceSelfStyle,
+        ListStylePositionStyle,
+        ListStyleTypeStyle
+    )
+    const sheet = new StyleSheet(document.head);
+    StyleSheet.root = sheet;
+    sheet.observe(document.documentElement, { subtree: false, childList: false });
+    sheet.observe(document.body);
+})
