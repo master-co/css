@@ -120,7 +120,23 @@ import { MarginStyle } from './margin';
 import { TextOverflowStyle } from './text-overflow';
 import { ListStylePositionStyle } from './list-style-position';
 import { ListStyleTypeStyle } from './list-style-type';
- 
+import { TextDecorationColorStyle } from './text-decoration-color';
+import { TextDecorationStyleStyle } from './text-decoration-style';
+import { TextDecorationThicknessStyle } from './text-decoration-thickness';
+import { TextIndentStyle } from './text-indent';
+import { ContentStyle } from './content';
+import { OutlineColorStyle } from './outline-color';
+import { OutlineOffsetStyle } from './outline-offset';
+import { OutlineStyleStyle } from './outline-style';
+import { OutlineWidthStyle } from './outline-width';
+import { BorderCollapseStyle } from './border-collapse';
+import { TableLayoutStyle } from './table-layout';
+import { AccentColorStyle } from './accent-color';
+import { AppearanceStyle } from './appearance';
+import { CaretColorStyle } from './caret-color';
+import { ScrollBehaviorStyle } from './scroll-behavior';
+import { ScrollMarginStyle } from './scroll-margin';
+
 MasterStyle.Subscriptions.push(
     VariableStyle,
     FontWeightStyle,
@@ -135,6 +151,7 @@ MasterStyle.Subscriptions.push(
     HeightStyle,
     MinWidthStyle,
     MinHeightStyle,
+    ContentStyle,
     LetterSpacingStyle,
     FontSmoothingStyle,
     FontStyleStyle,
@@ -143,10 +160,14 @@ MasterStyle.Subscriptions.push(
     ObjectFitStyle,
     ObjectPositionStyle,
     TextAlignStyle,
+    TextDecorationColorStyle,
+    TextDecorationStyleStyle,
     TextDecorationStyle,
+    TextDecorationThicknessStyle,
     TextLeadingStyle,
     TextOverflowStyle,
     TextTransformStyle,
+    TextIndentStyle,
     VerticalAlignStyle,
     LinesStyle,
     MaxHeightStyle,
@@ -173,6 +194,7 @@ MasterStyle.Subscriptions.push(
     TextShadowStyle,
     TextSizeStyle,
     BoxShadowStyle,
+    TableLayoutStyle,
     // transform
     TransformBoxStyle,
     TransformStyleStyle,
@@ -198,6 +220,7 @@ MasterStyle.Subscriptions.push(
     BorderRadiusStyle,
     BorderStyleStyle,
     BorderWidthStyle,
+    BorderCollapseStyle,
     BorderStyle,
     // background
     BackgroundAttachmentStyle,
@@ -255,5 +278,15 @@ MasterStyle.Subscriptions.push(
     PlaceItemsStyle,
     PlaceSelfStyle,
     ListStylePositionStyle,
-    ListStyleTypeStyle
+    ListStyleTypeStyle,
+    // outline
+    OutlineColorStyle,
+    OutlineOffsetStyle,
+    OutlineStyleStyle,
+    OutlineWidthStyle,
+    AccentColorStyle,
+    AppearanceStyle,
+    CaretColorStyle,
+    ScrollBehaviorStyle,
+    ScrollMarginStyle
 )
