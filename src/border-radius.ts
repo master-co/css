@@ -59,6 +59,10 @@ export class BorderRadiusStyle extends Style {
                         [BORDER_TOP_RIGHT_RADIUS]: this,
                         [BORDER_BOTTOM_RIGHT_RADIUS]: this
                     }
+                default:
+                    return {
+                        [BORDER + DASH + RADIUS]: this
+                    }
             }
         }
 
