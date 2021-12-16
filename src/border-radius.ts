@@ -6,6 +6,7 @@ const BORDER_TOP_LEFT_RADIUS = BORDER + DASH + TOP + DASH + LEFT + DASH + RADIUS
     BORDER_TOP_RIGHT_RADIUS = BORDER + DASH + TOP + DASH + RIGHT + DASH + RADIUS,
     BORDER_BOTTOM_LEFT_RADIUS = BORDER + DASH + BOTTOM + DASH + LEFT + DASH + RADIUS,
     BORDER_BOTTOM_RIGHT_RADIUS = BORDER + DASH + BOTTOM + DASH + RIGHT + DASH + RADIUS,
+    BORDER_RADIUS = BORDER + DASH + RADIUS,
     BORDER_RADIUS_S = [BORDER_TOP_LEFT_RADIUS, BORDER_TOP_RIGHT_RADIUS, BORDER_BOTTOM_LEFT_RADIUS, BORDER_BOTTOM_RIGHT_RADIUS];
 
 export class BorderRadiusStyle extends Style {
@@ -61,14 +62,14 @@ export class BorderRadiusStyle extends Style {
                     }
                 default:
                     return {
-                        [BORDER + DASH + RADIUS]: this
+                        [BORDER_RADIUS]: this
                     }
             }
         }
 
-        const prefix = this.prefix.slice(0, -1);
+        const prefix = this.prefix?.slice(0, -1);
         return {
-            [BORDER_RADIUS_S.includes(prefix) ? prefix : BORDER + DASH + RADIUS]: this
+            [BORDER_RADIUS_S.includes(prefix) ? prefix : BORDER_RADIUS]: this
         }
     }
 }
