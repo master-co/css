@@ -121,6 +121,27 @@ import { MarginStyle } from './margin';
 import { TextOverflowStyle } from './text-overflow';
 import { ListStylePositionStyle } from './list-style-position';
 import { ListStyleTypeStyle } from './list-style-type';
+import { TextDecorationColorStyle } from './text-decoration-color';
+import { TextDecorationStyleStyle } from './text-decoration-style';
+import { TextDecorationThicknessStyle } from './text-decoration-thickness';
+import { TextIndentStyle } from './text-indent';
+import { ContentStyle } from './content';
+import { OutlineColorStyle } from './outline-color';
+import { OutlineOffsetStyle } from './outline-offset';
+import { OutlineStyleStyle } from './outline-style';
+import { OutlineWidthStyle } from './outline-width';
+import { BorderCollapseStyle } from './border-collapse';
+import { TableLayoutStyle } from './table-layout';
+import { AccentColorStyle } from './accent-color';
+import { AppearanceStyle } from './appearance';
+import { CaretColorStyle } from './caret-color';
+import { ScrollBehaviorStyle } from './scroll-behavior';
+import { ScrollMarginStyle } from './scroll-margin';
+import { ScrollPaddingStyle } from './scroll-padding';
+import { ScrollSnapAlignStyle } from './scroll-snap-align';
+import { ScrollSnapStopStyle } from './scroll-snap-stop';
+import { ScrollSnapTypeStyle } from './scroll-snap-type';
+import { WillChangeStyle } from './will-change';
 
 window.addEventListener('DOMContentLoaded', (event) => {
     /**
@@ -140,6 +161,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         HeightStyle,
         MinWidthStyle,
         MinHeightStyle,
+        ContentStyle,
         LetterSpacingStyle,
         FontSmoothingStyle,
         FontStyleStyle,
@@ -148,10 +170,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
         ObjectFitStyle,
         ObjectPositionStyle,
         TextAlignStyle,
+        TextDecorationColorStyle,
+        TextDecorationStyleStyle,
         TextDecorationStyle,
+        TextDecorationThicknessStyle,
         TextLeadingStyle,
         TextOverflowStyle,
         TextTransformStyle,
+        TextIndentStyle,
         VerticalAlignStyle,
         LinesStyle,
         MaxHeightStyle,
@@ -178,6 +204,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         TextShadowStyle,
         TextSizeStyle,
         BoxShadowStyle,
+        TableLayoutStyle,
         // transform
         TransformBoxStyle,
         TransformStyleStyle,
@@ -203,6 +230,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         BorderRadiusStyle,
         BorderStyleStyle,
         BorderWidthStyle,
+        BorderCollapseStyle,
         BorderStyle,
         // background
         BackgroundAttachmentStyle,
@@ -260,7 +288,23 @@ window.addEventListener('DOMContentLoaded', (event) => {
         PlaceItemsStyle,
         PlaceSelfStyle,
         ListStylePositionStyle,
-        ListStyleTypeStyle
+        ListStyleTypeStyle,
+        // outline
+        OutlineColorStyle,
+        OutlineOffsetStyle,
+        OutlineStyleStyle,
+        OutlineWidthStyle,
+        AccentColorStyle,
+        AppearanceStyle,
+        CaretColorStyle,
+        // scroll
+        ScrollBehaviorStyle,
+        ScrollMarginStyle,
+        ScrollPaddingStyle,
+        ScrollSnapAlignStyle,
+        ScrollSnapStopStyle,
+        ScrollSnapTypeStyle,
+        WillChangeStyle
     )
     const sheet = new StyleSheet(document.head);
     StyleSheet.root = sheet;
