@@ -5,7 +5,7 @@ export class FontWeightStyle extends Style {
     static override prefixes = /^f(ont)?-weight:/;
     static override properties = [FONT + DASH + WEIGHT];
     static override supportFullName = false;
-    static override defaultUnit = '';
+    static override unit = '';
     static override values = {};
     static override semantics = {};
 }

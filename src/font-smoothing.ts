@@ -4,7 +4,7 @@ import { Style } from '@master/style';
 
 export class FontSmoothingStyle extends Style {
     static override prefixes = /^f(ont)?:(smooth|sharp)/;
-    static override defaultUnit = '';
+    static override unit = '';
     static override supportFullName = false;
     override get properties(): { [key: string]: any } {
         const isSmooth = this.value === SMOOTH;

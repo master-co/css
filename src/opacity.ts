@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class OpacityStyle extends Style {
     static override properties = [OPACITY];
-    static override defaultUnit = '';
+    static override unit = '';
 }

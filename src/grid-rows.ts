@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 export class GridRowsStyle extends Style {
     static override prefixes = /^grid-rows:/;
-    static override defaultUnit = '';
+    static override unit = '';
     static override supportFullName = false;
     override get properties(): { [key: string]: any } {
         return {

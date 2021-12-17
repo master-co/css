@@ -6,7 +6,7 @@ const OVERFLOW_WRAP = OVERFLOW + DASH + WRAP;
 
 export class WordBreakStyle extends Style {
     static override properties = [WORD + DASH + BREAK];
-    static override defaultUnit = '';
+    static override unit = '';
     static override semantics = {
         // break-words
         [BREAK + DASH + WORD]: {

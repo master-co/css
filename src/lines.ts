@@ -4,7 +4,7 @@ import { Style } from '@master/style';
 
 export class LinesStyle extends Style {
     static override prefixes = /^lines:/;
-    static override defaultUnit = '';
+    static override unit = '';
     static override supportFullName = false;
     override get properties(): { [key: string]: any } {
         return {

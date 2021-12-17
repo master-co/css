@@ -12,5 +12,5 @@ export class OrderStyle extends Style {
         [ORDER + ':' + LAST]: extreme,
         [ORDER_PREFIX + LAST]: extreme
     }
-    static override defaultUnit = '';
+    static override unit = '';
 }

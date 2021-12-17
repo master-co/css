@@ -4,7 +4,7 @@ import { Style } from '@master/style';
 export class TransformStyle extends Style {
     static override prefixes = /^(translate|scale|skew|rotate|perspective|matrix)(3d|X|Y|Z)?\(/;
     static override properties = [TRANSFORM];
-    static override defaultUnit = '';
+    static override unit = '';
     override get parseValue() {
         return this.value.replace(
             /(translate|scale|skew|rotate|perspective|matrix)(3d|X|Y|Z)?\((.*?)\)(;|$)/gm,
