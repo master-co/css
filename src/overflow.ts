@@ -7,11 +7,11 @@ export class OverflowStyle extends Style {
     override get properties(): { [key: string]: any } {
         switch (this.prefix.slice(-2, -1)) {
             case X:
-                return { [OVERFLOW + DASH + X]: this };
+                return { 'overflow-x': this };
             case Y:
-                return { [OVERFLOW + DASH + Y]: this };
+                return { 'overflow-y': this };
             default:
-                return { [OVERFLOW]: this };
+                return { 'overflow': this };
         }
     }
 }

@@ -1,14 +1,15 @@
-import { DASH, FONT, WEIGHT } from './constants/css-property-keyword';
+import { DASH, FONT, FONT_PREFIX, F_PREFIX, WEIGHT } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class FontWeightStyle extends Style {
-    static override prefixes =  /^f(ont)?-weight:/;
+    static override prefixes = /^f(ont)?-weight:/;
     static override properties = [FONT + DASH + WEIGHT];
     static override supportFullName = false;
     static override defaultUnit = '';
+    static override values = {};
+    static override semantics = {};
 }
 
-FontWeightStyle.values = {};
 let weight = 100;
 for (const name of [
     'thin',
@@ -22,5 +23,7 @@ for (const name of [
     'heavy'
 ]) {
     FontWeightStyle.values[name] = weight;
+    FontWeightStyle.semantics[F_PREFIX + name] = weight;
+    FontWeightStyle.semantics[FONT_PREFIX + name] = weight;
     weight += 100;
 }

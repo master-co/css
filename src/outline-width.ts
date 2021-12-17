@@ -3,5 +3,4 @@ import { Style } from '@master/style';
 
 export class OutlineWidthStyle extends Style {
     static override properties = [OUTLINE + DASH + WIDTH];
-    static override defaultUnit = 'px';
 }
