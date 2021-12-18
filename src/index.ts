@@ -1,4 +1,4 @@
-import { StyleSheet } from '@master/style';
+import { StyleSheet, Style } from '@master/style';
 
 import { FontWeightStyle } from './font-weight';
 import { FontFamilyStyle } from './font-family';
@@ -143,169 +143,204 @@ import { ScrollSnapStopStyle } from './scroll-snap-stop';
 import { ScrollSnapTypeStyle } from './scroll-snap-type';
 import { WillChangeStyle } from './will-change';
 
+/**
+ * 創建監聽器已追蹤整個 document 的 class
+ */
+StyleSheet.Styles.push(
+    VariableStyle,
+    FontWeightStyle,
+    FontFamilyStyle,
+    FontColorStyle,
+    SpacingStyle,
+    MarginStyle,
+    PaddingStyle,
+    FontSizeStyle,
+    DisplayStyle,
+    WidthStyle,
+    HeightStyle,
+    MinWidthStyle,
+    MinHeightStyle,
+    ContentStyle,
+    LetterSpacingStyle,
+    FontSmoothingStyle,
+    FontStyleStyle,
+    FontVariantNumericStyle,
+    LineHeightStyle,
+    ObjectFitStyle,
+    ObjectPositionStyle,
+    TextAlignStyle,
+    TextDecorationColorStyle,
+    TextDecorationStyleStyle,
+    TextDecorationStyle,
+    TextDecorationThicknessStyle,
+    TextLeadingStyle,
+    TextOverflowStyle,
+    TextTransformStyle,
+    TextIndentStyle,
+    VerticalAlignStyle,
+    LinesStyle,
+    MaxHeightStyle,
+    MaxWidthStyle,
+    BoxSizingStyle,
+    OpacityStyle,
+    VisibilityStyle,
+    ClearStyle,
+    FloatStyle,
+    IsolationStyle,
+    OverflowStyle,
+    OverscrollBehaviorStyle,
+    ZIndexStyle,
+    PositionStyle,
+    PlacementStyle,
+    CursorStyle,
+    PointerEventsStyle,
+    ResizeStyle,
+    TouchActionStyle,
+    WordBreakStyle,
+    WordSpacingStyle,
+    UserDragStyle,
+    UserSelectStyle,
+    TextShadowStyle,
+    TextSizeStyle,
+    BoxShadowStyle,
+    TableLayoutStyle,
+    // transform
+    TransformBoxStyle,
+    TransformStyleStyle,
+    TransformOriginStyle,
+    TransformStyle, // last
+    // transition
+    TransitionPropertyStyle,
+    TransitionTimingFunctionStyle,
+    TransitionDurationStyle,
+    TransitionDelayStyle,
+    TransitionStyle, // last
+    // animation
+    AnimationDelayStyle,
+    AnimationDirectionStyle,
+    AnimationFillModeStyle,
+    AnimationIterationCountStyle,
+    AnimationNameStyle,
+    AnimationPlayStateStyle,
+    AnimationTimingFunctionStyle,
+    AnimationStyle,
+    // border
+    BorderColorStyle,
+    BorderRadiusStyle,
+    BorderStyleStyle,
+    BorderWidthStyle,
+    BorderCollapseStyle,
+    BorderStyle,
+    // background
+    BackgroundAttachmentStyle,
+    BackgroundBlendModeStyle,
+    BackgroundClipStyle,
+    BackgroundColorStyle,
+    BackgroundOriginStyle,
+    BackgroundPositionStyle,
+    BackgroundRepeatStyle,
+    BackgroundSizeStyle,
+    BackgroundImageStyle,
+    BackgroundStyle,
+    // effect
+    MixBlendModeStyle,
+    BackdropFilterStyle,
+    FilterStyle,
+    // svg
+    FillStyle,
+    StrokeStyle,
+    StrokeWidthStyle,
+    // grid
+    GridColumnStyle,
+    GridColumnsStyle,
+    GridRowStyle,
+    GridRowsStyle,
+    GridAutoColumnsStyle,
+    GridAutoFlowStyle,
+    GridAutoRowsStyle,
+    GapStyle,
+    OrderStyle,
+    // flex
+    FlexBasisStyle,
+    FlexWrapStyle,
+    FlexGrowStyle,
+    FlexShrinkStyle,
+    FlexDirectionStyle,
+    FlexStyle, // last
+    // break
+    BreakInsideStyle,
+    BreakBeforeStyle,
+    BreakAfterStyle,
+    BoxDecorationBreakStyle,
+    AspectRadioStyle,
+    ColumnSpanStyle,
+    // align
+    AlignContentStyle,
+    AlignItemsStyle,
+    AlignSelfStyle,
+    // justify
+    JustifyContentStyle,
+    JustifyItemsStyle,
+    JustifySelfStyle,
+    // place
+    PlaceContentStyle,
+    PlaceItemsStyle,
+    PlaceSelfStyle,
+    ListStylePositionStyle,
+    ListStyleTypeStyle,
+    // outline
+    OutlineColorStyle,
+    OutlineOffsetStyle,
+    OutlineStyleStyle,
+    OutlineWidthStyle,
+    AccentColorStyle,
+    AppearanceStyle,
+    CaretColorStyle,
+    // scroll
+    ScrollBehaviorStyle,
+    ScrollMarginStyle,
+    ScrollPaddingStyle,
+    ScrollSnapAlignStyle,
+    ScrollSnapStopStyle,
+    ScrollSnapTypeStyle,
+    WillChangeStyle
+)
+
+const colorVariables = {
+    blue: [
+        '237 245 255',
+        '208 226 255',
+        '166 200 255',
+        '120 169 255',
+        '69 137 255',
+        '15 98 254',
+        '0 67 206',
+        '0 45 156',
+        '0 29 108',
+        '0 17 65'
+    ]
+}
+
+Style.colors.push(...Object.keys(colorVariables));
+
+const variablesStyle = document.createElement('style');
+
+let variablesText = ':root{';
+
+for (const colorName in colorVariables) {
+    const levelColors = colorVariables[colorName];
+    let level = 10;
+    for (const levelColor of levelColors) {
+        variablesText += '--' + colorName + level + ':' + levelColor + ';';
+        level += 10;
+    }
+}
+
+variablesText += '}';
+
 window.addEventListener('DOMContentLoaded', (event) => {
-    /**
-     * 創建監聽器已追蹤整個 document 的 class
-     */
-    StyleSheet.Styles.push(
-        VariableStyle,
-        FontWeightStyle,
-        FontFamilyStyle,
-        FontColorStyle,
-        SpacingStyle,
-        MarginStyle,
-        PaddingStyle,
-        FontSizeStyle,
-        DisplayStyle,
-        WidthStyle,
-        HeightStyle,
-        MinWidthStyle,
-        MinHeightStyle,
-        ContentStyle,
-        LetterSpacingStyle,
-        FontSmoothingStyle,
-        FontStyleStyle,
-        FontVariantNumericStyle,
-        LineHeightStyle,
-        ObjectFitStyle,
-        ObjectPositionStyle,
-        TextAlignStyle,
-        TextDecorationColorStyle,
-        TextDecorationStyleStyle,
-        TextDecorationStyle,
-        TextDecorationThicknessStyle,
-        TextLeadingStyle,
-        TextOverflowStyle,
-        TextTransformStyle,
-        TextIndentStyle,
-        VerticalAlignStyle,
-        LinesStyle,
-        MaxHeightStyle,
-        MaxWidthStyle,
-        BoxSizingStyle,
-        OpacityStyle,
-        VisibilityStyle,
-        ClearStyle,
-        FloatStyle,
-        IsolationStyle,
-        OverflowStyle,
-        OverscrollBehaviorStyle,
-        ZIndexStyle,
-        PositionStyle,
-        PlacementStyle,
-        CursorStyle,
-        PointerEventsStyle,
-        ResizeStyle,
-        TouchActionStyle,
-        WordBreakStyle,
-        WordSpacingStyle,
-        UserDragStyle,
-        UserSelectStyle,
-        TextShadowStyle,
-        TextSizeStyle,
-        BoxShadowStyle,
-        TableLayoutStyle,
-        // transform
-        TransformBoxStyle,
-        TransformStyleStyle,
-        TransformOriginStyle,
-        TransformStyle, // last
-        // transition
-        TransitionPropertyStyle,
-        TransitionTimingFunctionStyle,
-        TransitionDurationStyle,
-        TransitionDelayStyle,
-        TransitionStyle, // last
-        // animation
-        AnimationDelayStyle,
-        AnimationDirectionStyle,
-        AnimationFillModeStyle,
-        AnimationIterationCountStyle,
-        AnimationNameStyle,
-        AnimationPlayStateStyle,
-        AnimationTimingFunctionStyle,
-        AnimationStyle,
-        // border
-        BorderColorStyle,
-        BorderRadiusStyle,
-        BorderStyleStyle,
-        BorderWidthStyle,
-        BorderCollapseStyle,
-        BorderStyle,
-        // background
-        BackgroundAttachmentStyle,
-        BackgroundBlendModeStyle,
-        BackgroundClipStyle,
-        BackgroundColorStyle,
-        BackgroundOriginStyle,
-        BackgroundPositionStyle,
-        BackgroundRepeatStyle,
-        BackgroundSizeStyle,
-        BackgroundImageStyle,
-        BackgroundStyle,
-        // effect
-        MixBlendModeStyle,
-        BackdropFilterStyle,
-        FilterStyle,
-        // svg
-        FillStyle,
-        StrokeStyle,
-        StrokeWidthStyle,
-        // grid
-        GridColumnStyle,
-        GridColumnsStyle,
-        GridRowStyle,
-        GridRowsStyle,
-        GridAutoColumnsStyle,
-        GridAutoFlowStyle,
-        GridAutoRowsStyle,
-        GapStyle,
-        OrderStyle,
-        // flex
-        FlexBasisStyle,
-        FlexWrapStyle,
-        FlexGrowStyle,
-        FlexShrinkStyle,
-        FlexDirectionStyle,
-        FlexStyle, // last
-        // break
-        BreakInsideStyle,
-        BreakBeforeStyle,
-        BreakAfterStyle,
-        BoxDecorationBreakStyle,
-        AspectRadioStyle,
-        ColumnSpanStyle,
-        // align
-        AlignContentStyle,
-        AlignItemsStyle,
-        AlignSelfStyle,
-        // justify
-        JustifyContentStyle,
-        JustifyItemsStyle,
-        JustifySelfStyle,
-        // place
-        PlaceContentStyle,
-        PlaceItemsStyle,
-        PlaceSelfStyle,
-        ListStylePositionStyle,
-        ListStyleTypeStyle,
-        // outline
-        OutlineColorStyle,
-        OutlineOffsetStyle,
-        OutlineStyleStyle,
-        OutlineWidthStyle,
-        AccentColorStyle,
-        AppearanceStyle,
-        CaretColorStyle,
-        // scroll
-        ScrollBehaviorStyle,
-        ScrollMarginStyle,
-        ScrollPaddingStyle,
-        ScrollSnapAlignStyle,
-        ScrollSnapStopStyle,
-        ScrollSnapTypeStyle,
-        WillChangeStyle
-    )
+    document.head.prepend(variablesStyle);
+    variablesStyle.sheet.insertRule(variablesText);
     const sheet = new StyleSheet(document.head);
     StyleSheet.root = sheet;
     sheet.observe(document.documentElement, { subtree: false, childList: false });
