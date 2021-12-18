@@ -7,7 +7,7 @@ export class PositionStyle extends Style {
         'abs': ABSOLUTE,
         'rel': RELATIVE
     };
-    static semantics = {
+    static override semantics = {
         static: 'static',
         fixed: 'fixed',
         abs: 'absolute',

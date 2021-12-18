@@ -5,4 +5,5 @@ export class FontColorStyle extends Style {
     static override prefixes = /^((f(ont)?-)?color:)/;
     static override colorStarts = 'f(ont)?:';
     static override key = COLOR;
+    static override unit = '';
 }
