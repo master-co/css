@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class GridAutoFlowStyle extends Style {
     static override prefixes = /^grid(-auto)?-flow:/;
-    static override property = GRID + DASH + AUTO + DASH + FLOW;
+    static override key = GRID + DASH + AUTO + DASH + FLOW;
 }

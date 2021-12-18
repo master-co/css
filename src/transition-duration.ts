@@ -3,6 +3,6 @@ import { Style } from '@master/style';
 
 export class TransitionDurationStyle extends Style {
     static override prefixes =  /^~duration:/;
-    static override property = TRANSITION + DASH + DURATION;
+    static override key = TRANSITION + DASH + DURATION;
     static override unit = 'ms';
 }

@@ -3,6 +3,6 @@ import { Style } from '@master/style';
 
 export class MaxWidthStyle extends Style {
     static override prefixes = /^max-w:/;
-    static override property = MAX_WIDTH;
+    static override key = MAX_WIDTH;
     static override values = SIZING_VALUES;
 }

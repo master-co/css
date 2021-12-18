@@ -5,7 +5,7 @@ import { Style } from '@master/style';
 export class FontSmoothingStyle extends Style {
     static override prefixes = /^f(ont)?:(smooth|sharp)/;
     static override unit = '';
-    override get properties(): { [key: string]: any } {
+    override get props(): { [key: string]: any } {
         const isSmooth = this.value === SMOOTH;
         return {
             [WEBKIT_PREFIX + FONT + DASH + SMOOTHING]: {

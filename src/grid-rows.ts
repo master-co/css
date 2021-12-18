@@ -4,7 +4,7 @@ import { Style } from '@master/style';
 export class GridRowsStyle extends Style {
     static override prefixes = /^grid-rows:/;
     static override unit = '';
-    override get properties(): { [key: string]: any } {
+    override get props(): { [key: string]: any } {
         return {
             [DISPLAY]: { ...this, value: GRID },
             [GRID + DASH + AUTO + DASH + FLOW]: { ...this, value: COLUMN },

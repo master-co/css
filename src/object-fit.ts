@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class ObjectFitStyle extends Style {
     static override prefixes =  /^object:(contain|cover|fill|scale-down)/;
-    static override property = OBJECT + DASH + FIT;
+    static override key = OBJECT + DASH + FIT;
 }

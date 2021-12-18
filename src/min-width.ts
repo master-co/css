@@ -5,6 +5,6 @@ const MIN_W_PREFIX = MIN + DASH + W_PREFIX;
 
 export class MinWidthStyle extends Style {
     static override prefixes = /^min-w:/;
-    static override property = MIN_WIDTH;
+    static override key = MIN_WIDTH;
     static override values = SIZING_VALUES;
 }

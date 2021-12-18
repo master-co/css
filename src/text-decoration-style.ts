@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class TextDecorationStyleStyle extends Style {
     static override prefixes =  /^(t-decoration-style:|t(ext)?:(solid|double|dotted|dashed|wavy))/;
-    static override property = TEXT + DASH + DECORATION + DASH + STYLE;
+    static override key = TEXT + DASH + DECORATION + DASH + STYLE;
 }

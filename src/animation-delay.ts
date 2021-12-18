@@ -3,6 +3,6 @@ import { Style } from '@master/style';
 
 export class AnimationDelayStyle extends Style {
     static override prefixes = /^\*delay:/;
-    static override property = ANIMATION + DASH + DELAY;
+    static override key = ANIMATION + DASH + DELAY;
     static override unit = 'ms';
 }

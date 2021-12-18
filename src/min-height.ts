@@ -5,6 +5,6 @@ const MIN_HEIGHT_PREFIX = MIN + DASH + H_PREFIX;
 
 export class MinHeightStyle extends Style {
     static override prefixes = /^min-h:/;
-    static override property = MIN_HEIGHT;
+    static override key = MIN_HEIGHT;
     static override values = SIZING_VALUES;
 }

@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 export class DisplayStyle extends Style {
     static override prefixes = /^d:/;
-    static override property = DISPLAY;
+    static override key = DISPLAY;
     static override semantics = {
         'hidden': NONE
     }

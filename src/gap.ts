@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 export class GapStyle extends Style {
     static override prefixes = /^gap(-x|-y)?:/;
-    override get properties(): { [key: string]: any } {
+    override get props(): { [key: string]: any } {
         switch (this.prefix[4]) {
             case X:
                 return { [COLUMN + DASH + GAP]: this };

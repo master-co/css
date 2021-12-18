@@ -15,7 +15,7 @@ export class BorderRadiusStyle extends Style {
         [ROUNDED]: '1e9em',
         [ROUND]: '50%'
     }
-    override get properties(): { [key: string]: any } {
+    override get props(): { [key: string]: any } {
         if (this.prefix) {
             const suffix = this.prefix.slice(1, -1);
             switch (suffix) {

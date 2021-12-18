@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class FlexWrapStyle extends Style {
     static override prefixes = /^flex:(wrap(-reverse)?|nowrap)/;
-    static override property = FLEX + DASH + WRAP;
+    static override key = FLEX + DASH + WRAP;
 }

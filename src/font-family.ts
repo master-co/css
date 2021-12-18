@@ -5,7 +5,7 @@ const VAR_F = VAR_START + 'f' + DASH;
 
 export class FontFamilyStyle extends Style {
     static override prefixes = /^f-family:/;
-    static override property = FONT + DASH + FAMILY;
+    static override key = FONT + DASH + FAMILY;
     static override values = {
         mono: VAR_F + MONO + VAR_END,
         sans: VAR_F + SANS + VAR_END,

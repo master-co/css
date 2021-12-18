@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class StrokeWidthStyle extends Style {
     static override prefixes = /^stroke:[0-9]((?!;).)*$/;
-    static override property = STROKE + DASH + WIDTH;
+    static override key = STROKE + DASH + WIDTH;
 }

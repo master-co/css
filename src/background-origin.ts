@@ -3,5 +3,5 @@ import { BACKGROUND, DASH, ORIGIN } from './constants/css-property-keyword';
 
 export class BackgroundOriginStyle extends Style {
     static override prefixes = /^bg-origin:/;
-    static override property = BACKGROUND + DASH + ORIGIN;
+    static override key = BACKGROUND + DASH + ORIGIN;
 }

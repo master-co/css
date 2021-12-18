@@ -3,5 +3,5 @@ import { BOX, DASH, SHADOW } from './constants/css-property-keyword';
 
 export class BoxShadowStyle extends Style {
     static override prefixes = /^shadow:/;
-    static override property = BOX + DASH + SHADOW;
+    static override key = BOX + DASH + SHADOW;
 }

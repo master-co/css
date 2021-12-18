@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 export class HeightStyle extends Style {
     static override prefixes = /^h:/;
-    static override property = HEIGHT;
+    static override key = HEIGHT;
     static override values = SIZING_VALUES;
 
 }

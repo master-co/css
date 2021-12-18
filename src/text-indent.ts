@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class TextIndentStyle extends Style {
     static override prefixes =  /^t(ext)?-indent:/;
-    static override property = TEXT + DASH + INDENT;
+    static override key = TEXT + DASH + INDENT;
 }

@@ -12,7 +12,7 @@ export class PlacementStyle extends Style {
         center: { right: 0, left: 0, 'margin-left': AUTO, 'margin-right': AUTO },
         middle: { top: 0, bottom: 0, 'margin-top': AUTO, 'margin-bottom': AUTO }
     }
-    override get properties(): { [key: string]: any } {
+    override get props(): { [key: string]: any } {
         const propertyName = this.prefix.slice(0, -1);
         switch (propertyName) {
             case TOP:

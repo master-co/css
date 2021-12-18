@@ -2,7 +2,7 @@ import { BREAK, DASH, HIDDEN, WORD } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class WordBreakStyle extends Style {
-    static override property = WORD + DASH + BREAK;
+    static override key = WORD + DASH + BREAK;
     static override unit = '';
     static override semantics = {
         'break-words': {

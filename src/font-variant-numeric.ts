@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class FontVariantNumericStyle extends Style {
     static override prefixes = /^(f-variant-numeric:|f(ont)?:(ordinal|slashed-zero|lining-nums|oldstyle-nums|proportional-nums|tabular-nums|diagonal-fractions|stached-fractions))/;
-    static override property = FONT + DASH + VARIANT + DASH + NUMERIC;
+    static override key = FONT + DASH + VARIANT + DASH + NUMERIC;
 }

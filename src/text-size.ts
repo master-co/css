@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 export class TextSizeStyle extends Style {
     static override prefixes = /^(t(ext)?:[0-9]((?!;).)*$)/;
-    override get properties(): { [key: string]: any } {
+    override get props(): { [key: string]: any } {
         return {
             [FONT + DASH + SIZE]: this,
             [LINE + DASH + HEIGHT]: {

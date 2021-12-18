@@ -3,5 +3,5 @@ import { BORDER, DASH, STYLE } from './constants/css-property-keyword';
 
 export class BorderStyleStyle extends Style {
     static override prefixes = /^b-style:|b(order)?:dotted|dashed|solid|double|groove|ridge|inset|outset/;
-    static override property = BORDER + DASH + STYLE;
+    static override key = BORDER + DASH + STYLE;
 }

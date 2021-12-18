@@ -2,6 +2,6 @@ import { BASIS, DASH, FLEX, SIZING_VALUES } from './constants/css-property-keywo
 import { Style } from '@master/style';
 
 export class FlexBasisStyle extends Style {
-    static override property = FLEX + DASH + BASIS;
+    static override key = FLEX + DASH + BASIS;
     static override values = SIZING_VALUES;
 }

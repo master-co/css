@@ -3,5 +3,5 @@ import { BACKGROUND, DASH, SIZE } from './constants/css-property-keyword';
 
 export class BackgroundSizeStyle extends Style {
     static override prefixes =  /^(bg-size:|(bg|background):(auto|cover|contain))/;
-    static override property = BACKGROUND + DASH + SIZE;
+    static override key = BACKGROUND + DASH + SIZE;
 }

@@ -5,7 +5,7 @@ import { Style } from '@master/style';
 export class LinesStyle extends Style {
     static override prefixes = /^lines:/;
     static override unit = '';
-    override get properties(): { [key: string]: any } {
+    override get props(): { [key: string]: any } {
         return {
             overflow: { ...this, value: HIDDEN },
             display: { ...this, value: WEBKIT_PREFIX + BOX },

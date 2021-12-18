@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class TransformStyleStyle extends Style {
     static override prefixes =  /^transform:(flat|preserve-3d)/;
-    static override property = TRANSFORM + DASH + STYLE;
+    static override key = TRANSFORM + DASH + STYLE;
 }

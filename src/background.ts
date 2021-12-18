@@ -3,5 +3,5 @@ import { BACKGROUND } from './constants/css-property-keyword';
 
 export class BackgroundStyle extends Style {
     static override prefixes = /^bg:/;
-    static override property = BACKGROUND;
+    static override key = BACKGROUND;
 }

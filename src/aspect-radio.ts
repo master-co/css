@@ -3,7 +3,7 @@ import { SQUARE, VIDEO, ASPECT, RATIO, DASH } from './constants/css-property-key
 
 export class AspectRadioStyle extends Style {
     static override prefixes = /^aspect:/;
-    static override property = ASPECT + DASH + RATIO;
+    static override key = ASPECT + DASH + RATIO;
     static override unit = '';
     static override semantics = {
         [SQUARE]: '1/1',

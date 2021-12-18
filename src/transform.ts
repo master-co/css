@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 export class TransformStyle extends Style {
     static override prefixes = /^(translate|scale|skew|rotate|perspective|matrix)(3d|X|Y|Z)?\(/;
-    static override property = TRANSFORM;
+    static override key = TRANSFORM;
     static override unit = '';
     override get parseValue() {
         return this.value.replace(

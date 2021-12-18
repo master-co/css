@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 export class FlexDirectionStyle extends Style {
     static override prefixes = /^flex:((row|col|column)(-reverse)?)/;
-    static override property = FLEX + DASH + DIRECTION;
+    static override key = FLEX + DASH + DIRECTION;
     static override values = {
         col: COLUMN,
         'col-reverse': COLUMN + DASH + REVERSE

@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class TextDecorationColorStyle extends Style {
     static override prefixes =  /^t-decoration-color:/;
-    static override property = TEXT + DASH + DECORATION + DASH + COLOR;
+    static override key = TEXT + DASH + DECORATION + DASH + COLOR;
 }

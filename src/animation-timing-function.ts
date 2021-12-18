@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class AnimationTimingFunctionStyle extends Style {
     static override prefixes = /^\*easing:/;
-    static override property = ANIMATION + DASH + TIMING_FUNCTION;
+    static override key = ANIMATION + DASH + TIMING_FUNCTION;
 }
