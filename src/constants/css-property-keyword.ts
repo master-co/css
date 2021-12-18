@@ -209,3 +209,9 @@ export const ACCENT = 'accent';
 export const CARET = 'caret';
 export const SNAP = 'snap';
 export const STOP = 'stop';
+export const SIZING_VALUES = {
+    full: PERCENT100,
+    fit: FIT_CONTENT,
+    max: MAX_CONTENT,
+    min: MIN_CONTENT
+}

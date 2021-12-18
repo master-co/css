@@ -2,28 +2,19 @@ import { DASH, FONT, FONT_PREFIX, F_PREFIX, WEIGHT } from './constants/css-prope
 import { Style } from '@master/style';
 
 export class FontWeightStyle extends Style {
-    static override prefixes = /^f(ont)?-weight:/;
+    static override prefixes = /^f(ont)?-weight:|f(ont):(thin|extralight|light|regular|medium|semibold|bold|extrabold|heavy)/;
     static override properties = [FONT + DASH + WEIGHT];
     static override supportFullName = false;
     static override unit = '';
-    static override values = {};
-    static override semantics = {};
-}
-
-let weight = 100;
-for (const name of [
-    'thin',
-    'extralight',
-    'light',
-    'regular',
-    'medium',
-    'semibold',
-    'bold',
-    'extrabold',
-    'heavy'
-]) {
-    FontWeightStyle.values[name] = weight;
-    FontWeightStyle.semantics[F_PREFIX + name] = weight;
-    FontWeightStyle.semantics[FONT_PREFIX + name] = weight;
-    weight += 100;
+    static override values = {
+        thin: 100,
+        extralight: 200,
+        light: 300,
+        regular: 400,
+        medium: 500,
+        semibold: 600,
+        bold: 700,
+        extrabold: 800,
+        heavy: 900
+    };
 }

@@ -8,9 +8,9 @@ export class FontFamilyStyle extends Style {
     static override supportFullName = false;
     static override properties = [FONT + DASH + FAMILY];
     static override values = {
-        [MONO]: VAR_F + MONO + VAR_END,
-        [SANS]: VAR_F + SANS + VAR_END,
-        [SERIF]: VAR_F + SERIF + VAR_END
+        mono: VAR_F + MONO + VAR_END,
+        sans: VAR_F + SANS + VAR_END,
+        serif: VAR_F + SERIF + VAR_END
     }
     static override semantics = {};
 }

@@ -5,7 +5,7 @@ export class BoxSizingStyle extends Style {
     static override prefixes = /^box:(content|border)/;
     static override properties = [BOX + DASH + SIZING];
     static override values = {
-        [CONTENT]: CONTENT + DASH + BOX,
-        [BORDER]: BORDER + DASH + BOX
+        content: CONTENT + DASH + BOX,
+        border: BORDER + DASH + BOX
     }
 }

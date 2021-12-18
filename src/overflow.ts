@@ -1,4 +1,4 @@
-import { DASH, OVERFLOW, X, Y } from './constants/css-property-keyword';
+import { X, Y } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class OverflowStyle extends Style {
