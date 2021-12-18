@@ -4,7 +4,6 @@ import { Style } from '@master/style';
 export class GridColumnsStyle extends Style {
     static override prefixes = /^grid-col(umn)?s:/;
     static override unit = '';
-    static override supportFullName = false;
     override get properties(): { [key: string]: any } {
         return {
             [DISPLAY]: { ...this, value: GRID },

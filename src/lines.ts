@@ -5,15 +5,14 @@ import { Style } from '@master/style';
 export class LinesStyle extends Style {
     static override prefixes = /^lines:/;
     static override unit = '';
-    static override supportFullName = false;
     override get properties(): { [key: string]: any } {
         return {
-            [OVERFLOW]: { ...this, value: HIDDEN },
-            [DISPLAY]: { ...this, value: WEBKIT_PREFIX + BOX },
-            [OVERFLOW + DASH + WRAP]: { ...this, value: BREAK + DASH + WORD },
-            [TEXT + DASH + OVERFLOW]: { ...this, value: ELLIPSIS },
-            [WEBKIT_PREFIX + BOX + DASH + ORIENT]: { ...this, value: VERTICAL },
-            [WEBKIT_PREFIX + LINE + DASH + CLAMP]: this
+            overflow: { ...this, value: HIDDEN },
+            display: { ...this, value: WEBKIT_PREFIX + BOX },
+            'overflow-wrap': { ...this, value: BREAK + DASH + WORD },
+            'text-overflow': { ...this, value: ELLIPSIS },
+            '-webkit-box-orient': { ...this, value: VERTICAL },
+            '-webkit-line-clamp': this
         }
     }
 }

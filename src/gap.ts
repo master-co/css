@@ -3,7 +3,6 @@ import { Style } from '@master/style';
 
 export class GapStyle extends Style {
     static override prefixes = /^gap(-x|-y)?:/;
-    static override supportFullName = false;
     override get properties(): { [key: string]: any } {
         switch (this.prefix[4]) {
             case X:

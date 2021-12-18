@@ -1,8 +1,8 @@
-import { DASH, EM, FONT, HEIGHT, LINE, REM, SIZE } from './constants/css-property-keyword';
+import { DASH, FONT, HEIGHT, LINE, REM, SIZE } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class TextSizeStyle extends Style {
-    static override prefixes = /^(t(ext)?:[0-9])/;
+    static override prefixes = /^(t(ext)?:[0-9]((?!;).)*$)/;
     override get properties(): { [key: string]: any } {
         return {
             [FONT + DASH + SIZE]: this,

@@ -1,23 +1,17 @@
-import { AUTO, CENTER, DASH, MARGIN, MIDDLE } from './constants/css-property-keyword';
+import { AUTO, CENTER, MIDDLE } from './constants/css-property-keyword';
 import { BOTTOM, LEFT, RIGHT, TOP } from './constants/direction';
 import { Style } from '@master/style';
-
-const MARGIN_LEFT = MARGIN + DASH + LEFT;
-const MARGIN_RIGHT = MARGIN + DASH + RIGHT;
-const MARGIN_BOTTOM = MARGIN + DASH + BOTTOM;
-const MARGIN_TOP = MARGIN + DASH + TOP;
 
 export class PlacementStyle extends Style {
     static override prefixes = /^(top|left|right|bottom|center|middle):/;
     static override semantics = {
-        [TOP]: { [TOP]: 0 },
-        [LEFT]: { [LEFT]: 0 },
-        [RIGHT]: { [RIGHT]: 0 },
-        [BOTTOM]: { [BOTTOM]: 0 },
-        [CENTER]: { [RIGHT]: 0, [LEFT]: 0, [MARGIN_LEFT]: AUTO, [MARGIN_RIGHT]: AUTO },
-        [MIDDLE]: { [TOP]: 0, [BOTTOM]: 0, [MARGIN_TOP]: AUTO, [MARGIN_BOTTOM]: AUTO }
+        top: { top: 0 },
+        left: { left: 0 },
+        right: { right: 0 },
+        bottom: { bottom: 0 },
+        center: { right: 0, left: 0, 'margin-left': AUTO, 'margin-right': AUTO },
+        middle: { top: 0, bottom: 0, 'margin-top': AUTO, 'margin-bottom': AUTO }
     }
-    static override supportFullName = false;
     override get properties(): { [key: string]: any } {
         const propertyName = this.prefix.slice(0, -1);
         switch (propertyName) {
@@ -28,17 +22,17 @@ export class PlacementStyle extends Style {
                 return { [propertyName]: this }
             case CENTER:
                 return {
-                    [LEFT]: this,
-                    [RIGHT]: this,
-                    [MARGIN_LEFT]: { ...this, unit: '' },
-                    [MARGIN_RIGHT]: { ...this, unit: '' }
+                    left: this,
+                    right: this,
+                    'margin-left': { ...this, unit: '' },
+                    'margin-right': { ...this, unit: '' }
                 }
             case MIDDLE:
                 return {
-                    [TOP]: this,
-                    [BOTTOM]: this,
-                    [MARGIN_TOP]: { ...this, unit: '' },
-                    [MARGIN_BOTTOM]: { ...this, unit: '' }
+                    top: this,
+                    bottom: this,
+                    'margin-top': { ...this, unit: '' },
+                    'margin-bottom': { ...this, unit: '' }
                 }
         }
     }

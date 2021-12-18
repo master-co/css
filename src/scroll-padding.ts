@@ -4,7 +4,6 @@ import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from './constants/directio
 
 export class ScrollPaddingStyle extends Style {
     static override prefixes = /^scroll-(p(x|y|t|b|l|r)|p(adding)?(-(top|bottom|left|right))?):/;
-    static override supportFullName = false;
     override get properties(): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'p') {
             const SCROLL_PADDING_PREFIX = SCROLL + DASH + PADDING + DASH,

@@ -3,6 +3,5 @@ import { Style } from '@master/style';
 
 export class GridAutoColumnsStyle extends Style {
     static override prefixes = /^grid-auto-(columns|cols):/;
-    static override supportFullName = false;
     static override property = GRID + DASH + AUTO + DASH + COLUMNS;
 }
