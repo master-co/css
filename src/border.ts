@@ -3,5 +3,5 @@ import { BORDER } from './constants/css-property-keyword';
 
 export class BorderStyle extends Style {
     static override prefixes = /^b:/;
-    static override properties = [BORDER];
+    static override property = BORDER;
 }

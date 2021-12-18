@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class AnimationPlayStateStyle extends Style {
     static override prefixes = /^\*play-state:/;
-    static override properties = [ANIMATION + DASH + PLAY_STATE];
+    static override property = ANIMATION + DASH + PLAY_STATE;
 }

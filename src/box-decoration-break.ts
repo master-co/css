@@ -3,5 +3,5 @@ import { BOX, BREAK, DASH, DECORATION } from './constants/css-property-keyword';
 
 export class BoxDecorationBreakStyle extends Style {
     static override prefixes = /^box:(slice|clone)/;
-    static override properties = [BOX + DASH + DECORATION + DASH + BREAK];
+    static override property = BOX + DASH + DECORATION + DASH + BREAK;
 }

@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class AnimationNameStyle extends Style {
     static override prefixes = /^\*name:/;
-    static override properties = [ANIMATION + DASH + NAME];
+    static override property = ANIMATION + DASH + NAME;
 }

@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class TransitionDurationStyle extends Style {
     static override prefixes =  /^~duration:/;
-    static override properties = [TRANSITION + DASH + DURATION];
+    static override property = TRANSITION + DASH + DURATION;
 }

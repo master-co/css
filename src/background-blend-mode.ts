@@ -3,6 +3,6 @@ import { BACKGROUND, BLEND, DASH, MODE } from './constants/css-property-keyword'
 
 export class BackgroundBlendModeStyle extends Style {
     static override prefixes = /^(bg|background)-blend(-mode)?:/;
-    static override properties = [BACKGROUND + DASH + BLEND + DASH + MODE];
+    static override property = BACKGROUND + DASH + BLEND + DASH + MODE;
     static override supportFullName = false;
 }

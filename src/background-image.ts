@@ -3,6 +3,6 @@ import { BACKGROUND, DASH, IMAGE } from './constants/css-property-keyword';
 
 export class BackgroundImageStyle extends Style {
     static override prefixes =  /^(bg|background)-image:/;
-    static override properties = [BACKGROUND + DASH + IMAGE];
+    static override property = BACKGROUND + DASH + IMAGE;
     static override supportFullName = false;
 }

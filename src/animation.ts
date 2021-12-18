@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class AnimationStyle extends Style {
     static override symbol = '*'; 
-    static override properties = [ANIMATION];
+    static override property = ANIMATION;
 }

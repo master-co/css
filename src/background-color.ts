@@ -3,6 +3,6 @@ import { BACKGROUND, COLOR, DASH } from './constants/css-property-keyword';
 
 export class BackgroundColorStyle extends Style {
     static override prefixes = /^((bg|background)-color:|(bg|background):transparent)/;
-    static override properties = [BACKGROUND + DASH + COLOR];
+    static override property = BACKGROUND + DASH + COLOR;
     static override supportFullName = false;
 }

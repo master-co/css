@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 export class MaxHeightStyle extends Style {
     static override prefixes = /^max-h(eight)?:/;
-    static override properties = [MAX_HEIGHT];
+    static override property = MAX_HEIGHT;
     static override supportFullName = false;
     static override values = {
         full: PERCENT100,

@@ -5,7 +5,7 @@ const extreme = '999999';
 
 export class OrderStyle extends Style {
     static override prefixes = /^o:/;
-    static override properties = [ORDER];
+    static override property = ORDER;
     static override semantics = {
         [ORDER + ':' + FIRST]: '-' + extreme,
         [ORDER_PREFIX + FIRST]: '-' + extreme,

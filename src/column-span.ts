@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class ColumnSpanStyle extends Style {
     static override prefixes = /^col-span:/;
-    static override properties = [COLUMN + DASH + SPAN];
+    static override property = COLUMN + DASH + SPAN;
 }

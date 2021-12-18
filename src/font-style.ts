@@ -4,5 +4,5 @@ import { Style } from '@master/style';
 export class FontStyleStyle extends Style {
     static override prefixes =  /^(f(ont)?-style:|f(ont)?:italic)/;
     static override supportFullName = false;
-    static override properties = [FONT + DASH + STYLE];
+    static override property = FONT + DASH + STYLE;
 }

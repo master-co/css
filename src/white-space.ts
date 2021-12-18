@@ -5,7 +5,7 @@ const WHITE_SPACE = WHITE + DASH + SPACE;
 const BREAK_SPACES = BREAK + DASH + SPACE + 's';
 
 export class WhiteSpaceStyle extends Style {
-    static override properties = [WHITE_SPACE];
+    static override property = WHITE_SPACE;
     static override unit = '';
     static override semantics = {
         // break-spaces

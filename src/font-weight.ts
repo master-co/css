@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 export class FontWeightStyle extends Style {
     static override prefixes = /^f(ont)?-weight:|f(ont):(thin|extralight|light|regular|medium|semibold|bold|extrabold|heavy)/;
-    static override properties = [FONT + DASH + WEIGHT];
+    static override property = FONT + DASH + WEIGHT;
     static override supportFullName = false;
     static override unit = '';
     static override values = {

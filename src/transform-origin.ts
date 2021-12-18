@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class TransformOriginStyle extends Style {
     static override prefixes =  /^transform:(top|bottom|right|left|center)/;
-    static override properties = [TRANSFORM + DASH + ORIGIN];
+    static override property = TRANSFORM + DASH + ORIGIN;
 }

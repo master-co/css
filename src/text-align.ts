@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class TextAlignStyle extends Style {
     static override prefixes =  /^t(ext)?:(justify|center|left|right)/;
-    static override properties = [TEXT + DASH + ALIGN];
+    static override property = TEXT + DASH + ALIGN;
 }

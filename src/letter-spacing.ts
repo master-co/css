@@ -3,6 +3,6 @@ import { Style } from '@master/style';
 
 export class LetterSpacingStyle extends Style {
     static override prefixes =  /^ls:/;
-    static override properties = [LETTER_SPACING];
+    static override property = LETTER_SPACING;
     static override unit = 'em';
 }

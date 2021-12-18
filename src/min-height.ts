@@ -5,7 +5,7 @@ const MIN_HEIGHT_PREFIX = MIN + DASH + H_PREFIX;
 
 export class MinHeightStyle extends Style {
     static override prefixes = /^min-h(eight)?:/;
-    static override properties = [MIN_HEIGHT];
+    static override property = MIN_HEIGHT;
     static override supportFullName = false;
     static override values = {
         full: PERCENT100,

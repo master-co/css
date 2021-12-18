@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 export class DisplayStyle extends Style {
     static override prefixes = /^d:/;
-    static override properties = [DISPLAY];
+    static override property = DISPLAY;
     static override semantics = {
         [TABLE + DASH + COL]: TABLE + DASH + COLUMN,
         [TABLE + DASH + COL + DASH + GROUP]: TABLE + DASH + COLUMN + DASH + GROUP,

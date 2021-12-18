@@ -2,7 +2,7 @@ import { ABSOLUTE, POSITION, RELATIVE } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class PositionStyle extends Style {
-    static override properties = [POSITION];
+    static override property = POSITION;
     static override values = {
         'abs': ABSOLUTE,
         'rel': RELATIVE

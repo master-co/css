@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class BackdropFilterStyle extends Style {
     static override prefixes = /^bd:/;
-    static override properties = [BACKDROP + DASH + FILTER];
+    static override property = BACKDROP + DASH + FILTER;
 }

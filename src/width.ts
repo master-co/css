@@ -3,6 +3,6 @@ import { Style } from '@master/style';
 
 export class WidthStyle extends Style {
     static override prefixes = /^w:/;
-    static override properties = [WIDTH];
+    static override property = WIDTH;
     static override values = SIZING_VALUES;
 }

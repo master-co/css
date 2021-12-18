@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class ObjectPositionStyle extends Style {
     static override prefixes =  /^object:(top|bottom|right|left|center)/;
-    static override properties = [OBJECT + DASH + POSITION];
+    static override property = OBJECT + DASH + POSITION;
 }

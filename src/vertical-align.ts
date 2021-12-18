@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class VerticalAlignStyle extends Style {
     static override prefixes =  /^v(ertical)?(-align)?:/;
-    static override properties = [VERTICAL + DASH + ALIGN];
+    static override property = VERTICAL + DASH + ALIGN;
 }

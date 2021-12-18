@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 export class GridColumnStyle extends Style {
     static override prefixes = /^grid-col(umn)?(-span)?:/;
-    static override properties = [GRID + DASH + COLUMN];
+    static override property = GRID + DASH + COLUMN;
     static override unit = '';
     static override supportFullName = false;
     override get parseValue() {
