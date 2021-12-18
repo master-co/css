@@ -5,7 +5,7 @@ export class WordBreakStyle extends Style {
     static override property = WORD + DASH + BREAK;
     static override unit = '';
     static override semantics = {
-        'break-word': {
+        'break-words': {
             'overflow-wrap': BREAK + DASH + WORD,
             overflow: HIDDEN
         }
