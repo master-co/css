@@ -331,7 +331,7 @@ for (const colorName in colorVariables) {
     const levelColors = colorVariables[colorName];
     let level = 10;
     for (const levelColor of levelColors) {
-        variablesText += '--' + colorName + level + ':' + levelColor + ';';
+        variablesText += '--' + colorName + '-' + level + ':' + levelColor + ';';
         level += 10;
     }
 }
