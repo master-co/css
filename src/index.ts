@@ -306,43 +306,20 @@ StyleSheet.Styles.push(
     WillChangeStyle
 )
 
-const colorVariables = {
-    blue: [
-        '237 245 255',
-        '208 226 255',
-        '166 200 255',
-        '120 169 255',
-        '69 137 255',
-        '15 98 254',
-        '0 67 206',
-        '0 45 156',
-        '0 29 108',
-        '0 17 65'
-    ]
-}
-
-Style.colors.push(...Object.keys(colorVariables));
-
-const variablesStyle = document.createElement('style');
-
-let variablesText = ':root{';
-
-for (const colorName in colorVariables) {
-    const levelColors = colorVariables[colorName];
-    let level = 10;
-    for (const levelColor of levelColors) {
-        variablesText += '--' + colorName + '-' + level + ':' + levelColor + ';';
-        level += 10;
-    }
-}
-
-variablesText += '}';
-
 window.addEventListener('DOMContentLoaded', (event) => {
-    document.head.prepend(variablesStyle);
-    variablesStyle.sheet.insertRule(variablesText);
     const sheet = new StyleSheet(document.head);
     StyleSheet.root = sheet;
     sheet.observe(document.documentElement, { subtree: false, childList: false });
     sheet.observe(document.body);
+    const palettes = {
+        blue: ['edf5ff', 'd0e2ff', 'a6c8ff', '78a9ff', '4589ff', '0f62fe', '0043ce', '002d9c', '001d6c', '001141'],
+        red: ['fff1f1', 'ffd7d9', 'ffb3b8', 'ff8389', 'fa4d56', 'da1e28', 'a2191f', '750e13', '520408', '2d0709'],
+        purple: ['f6f2ff', 'e8daff', 'd4bbff', 'be95ff', 'a56eff', '8a3ffc', '6929c4', '491d8b', '31135e', '1c0f30'],
+        gray: ['f4f4f4', 'e0e0e0', 'c6c6c6', 'a8a8a8', '8d8d8d', '6f6f6f', '525252', '393939', '262626', '161616'],
+        green: ['defbe6', 'a7f0ba', '6fdc8c', '42be65', '24a148', '198038', '0e6027', '044317', '022d0d', '071908'],
+        pink: ['fff0f7', 'ffd6e8', 'ffafd2', 'ff7eb6', 'ee5396', 'd02670', '9f1853', '740937', '510224', '2a0a18'],
+        cyan: ['e5f6ff', 'bae6ff', '82cfff', '33b1ff', '1192e8', '0072c3', '00539a', '003a6d', '012749', '061727'],
+        teal: ['d9fbfb', '9ef0f0', '3ddbd9', '08bdba', '009d9a', '007d79', '005d5d', '004144', '022b30', '081a1c']
+    }
+    Object.assign(Style.colors, palettes);
 })
