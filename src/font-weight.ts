@@ -2,7 +2,7 @@ import { DASH, FONT, FONT_PREFIX, F_PREFIX, WEIGHT } from './constants/css-prope
 import { Style } from '@master/style';
 
 export class FontWeightStyle extends Style {
-    static override prefixes = /^f-weight:|f(ont):(thin|extralight|light|regular|medium|semibold|bold|extrabold|heavy)/;
+    static override prefixes = /^f-weight:|f(ont)?:(thin|extralight|light|regular|medium|semibold|bold|extrabold|heavy)/;
     static override key = FONT + DASH + WEIGHT;
     static override unit = '';
     static override values = {
