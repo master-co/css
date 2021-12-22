@@ -1,4 +1,4 @@
-import { BLOCK, DASH, DISPLAY, FLEX, GRID, INLINE, TABLE, GROUP, COL, COLUMN, CONTENTS, HIDDEN, NONE } from './constants/css-property-keyword';
+import { BLOCK, DASH, DISPLAY, FLEX, GRID, INLINE, TABLE, CONTENTS, NONE } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class DisplayStyle extends Style {
