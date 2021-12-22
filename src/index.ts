@@ -314,13 +314,11 @@ window.addEventListener('DOMContentLoaded', (event) => {
         red: ['fff1f1', 'ffd7d9', 'ffb3b8', 'ff8389', 'fa4d56', 'da1e28', 'a2191f', '750e13', '520408', '2d0709'],
         purple: ['f6f2ff', 'e8daff', 'd4bbff', 'be95ff', 'a56eff', '8a3ffc', '6929c4', '491d8b', '31135e', '1c0f30'],
         gray: ['f4f4f5', 'e0e0e1', 'c6c6c7', 'a8a8a9', '8d8d8e', '6f6f70', '525253', '39393a', '262627', '161617'],
-        fade: ['f2f3f7', 'dce0ea', 'c2c8d6', 'a5adc0', '8993a9', '68738c', '505a71', '394051', '242933', '181921'],
+        fade: ['f2f3f7', 'dce0ea', 'c2c8d6', 'a5adc0', '8993a9', '68738c', '505a71', '373d4e', '242933', '181921'],
         green: ['defbe6', 'a7f0ba', '6fdc8c', '42be65', '24a148', '198038', '0e6027', '044317', '022d0d', '071908'],
         pink: ['fff0f7', 'ffd6e8', 'ffafd2', 'ff7eb6', 'ee5396', 'd02670', '9f1853', '740937', '510224', '2a0a18'],
         cyan: ['e5f6ff', 'bae6ff', '82cfff', '33b1ff', '1192e8', '0072c3', '00539a', '003a6d', '012749', '061727'],
-        teal: ['d9fbfb', '9ef0f0', '3ddbd9', '08bdba', '009d9a', '007d79', '005d5d', '004144', '022b30', '081a1c'],
-        black: '000000',
-        white: 'ffffff'
+        teal: ['d9fbfb', '9ef0f0', '3ddbd9', '08bdba', '009d9a', '007d79', '005d5d', '004144', '022b30', '081a1c']
     };
     const colors = {
         black: '000000',
