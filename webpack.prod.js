@@ -39,7 +39,9 @@ module.exports = {
                         comments: false,
                     },
                     mangle: {
-                        properties: true
+                        properties: {
+                            reserved: ['Style']
+                        }
                     }
                 },
                 extractComments: false,
