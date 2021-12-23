@@ -3,5 +3,8 @@
     "include": [
         "./src/**/*index.ts",
         "./src/**/*.d.ts",
-    ]
+    ],
+    "compilerOptions": {
+        "paths": {}
+    }
 }
