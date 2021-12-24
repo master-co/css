@@ -37,11 +37,6 @@ module.exports = {
                 terserOptions: {
                     format: {
                         comments: false,
-                    },
-                    mangle: {
-                        properties: {
-                            reserved: ['Style']
-                        }
                     }
                 },
                 extractComments: false,
@@ -55,8 +50,11 @@ module.exports = {
     },
     output: {
         clean: true,
-        libraryTarget: 'umd',
-        globalObject: 'this'
+        library: {
+            name: '@master/styles',
+            type: 'umd',
+        },
+        globalObject: 'self'
     },
     plugins: [
         new webpack.ProgressPlugin(),
