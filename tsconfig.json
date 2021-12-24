@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "outDir": "./dist",
+        "baseUrl": "./",
         "sourceMap": true,
         "declaration": true,
         "experimentalDecorators": true,
@@ -15,6 +16,12 @@
         ]
     },
     "include": [
-        "./src/**/*index.ts"
+        "./src/**/*index.ts",
+        "./src/**/*.d.ts",
+        "./dev/src/**/*index.ts",
+        "./dev/src/**/*.d.ts"
+    ],
+    "exclude": [
+        "./src/node_modules"
     ]
 }
