@@ -1,4 +1,4 @@
-import { DASH, FONT, FONT_PREFIX, F_PREFIX, WEIGHT } from './constants/css-property-keyword';
+import { DASH, FONT, WEIGHT } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class FontWeightStyle extends Style {
