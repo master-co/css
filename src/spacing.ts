@@ -3,7 +3,7 @@ import { DASH, MARGIN, PADDING } from './constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from './constants/direction';
 
 export class SpacingStyle extends Style {
-    static override matches = /^(p|m)(x|y|t|b|l|r)?:/;
+    static override matches = /^(p|m)(x|y|t|b|l|r)?:./;
     override get props(): { [key: string]: any } {
         const charAt1 = this.prefix[0];
         const SPACING = charAt1 === 'm' ? MARGIN : PADDING;

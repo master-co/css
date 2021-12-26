@@ -2,7 +2,7 @@ import { DASH, FONT, WEIGHT } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class FontWeightStyle extends Style {
-    static override matches = /^f-weight:|f(ont)?:(thin|extralight|light|regular|medium|semibold|bold|extrabold|heavy)/;
+    static override matches = /^f-weight:.|f(ont)?:(thin|extralight|light|regular|medium|semibold|bold|extrabold|heavy)/;
     static override key = FONT + DASH + WEIGHT;
     static override unit = '';
     static override values = {

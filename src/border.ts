@@ -3,7 +3,7 @@ import { BORDER, DASH } from './constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from './constants/direction';
 
 export class BorderStyle extends Style {
-    static override matches = /^b((x|y|t|b|l|r)?|(order)?(-(left|right|top|bottom))?):/;
+    static override matches = /^b((x|y|t|b|l|r)?|(order)?(-(left|right|top|bottom))?):./;
     override get props(): { [key: string]: any } {
         const direction = /^b(order)?-?(.)?/.exec(this.prefix)[2];
         const BORDER_LEFT = BORDER + DASH + LEFT;

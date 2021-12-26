@@ -2,7 +2,7 @@ import { BLOCK, DASH, DISPLAY, FLEX, GRID, INLINE, TABLE, CONTENTS, NONE } from 
 import { Style } from '@master/style';
 
 export class DisplayStyle extends Style {
-    static override matches = /^d:/;
+    static override matches = /^d:./;
     static override key = DISPLAY;
     static override semantics = {
         'hidden': NONE
