@@ -2,7 +2,7 @@ import { ANIMATION, DASH, DELAY } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class AnimationDelayStyle extends Style {
-    static override prefixes = /^\*delay:/;
+    static override matches = /^\*delay:/;
     static override key = ANIMATION + DASH + DELAY;
     static override unit = 'ms';
 }

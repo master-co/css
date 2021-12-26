@@ -2,6 +2,6 @@ import { ANIMATION, DASH, TIMING_FUNCTION } from './constants/css-property-keywo
 import { Style } from '@master/style';
 
 export class AnimationTimingFunctionStyle extends Style {
-    static override prefixes = /^\*easing:/;
+    static override matches = /^\*easing:/;
     static override key = ANIMATION + DASH + TIMING_FUNCTION;
 }

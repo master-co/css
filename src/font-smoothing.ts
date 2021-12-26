@@ -3,7 +3,7 @@ import { ANTIALIASED, AUTO, DASH, FONT, GRAYSCALE, SMOOTH, SMOOTHING } from './c
 import { Style } from '@master/style';
 
 export class FontSmoothingStyle extends Style {
-    static override prefixes = /^f(ont)?:(smooth|sharp)/;
+    static override matches = /^f(ont)?:(smooth|sharp)/;
     static override unit = '';
     override get props(): { [key: string]: any } {
         const isSmooth = this.value === SMOOTH;

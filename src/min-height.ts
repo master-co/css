@@ -4,7 +4,7 @@ import { Style } from '@master/style';
 const MIN_HEIGHT_PREFIX = MIN + DASH + H_PREFIX;
 
 export class MinHeightStyle extends Style {
-    static override prefixes = /^min-h:/;
+    static override matches = /^min-h:/;
     static override key = MIN_HEIGHT;
     static override values = SIZING_VALUES;
 }

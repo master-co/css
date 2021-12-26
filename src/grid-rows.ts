@@ -2,7 +2,7 @@ import { ROWS, DASH, DISPLAY, FR, GRID, MAX, MIN, REPEAT, TEMPLATE, COMMA, AUTO,
 import { Style } from '@master/style';
 
 export class GridRowsStyle extends Style {
-    static override prefixes = /^grid-rows:/;
+    static override matches = /^grid-rows:/;
     static override unit = '';
     override get props(): { [key: string]: any } {
         return {

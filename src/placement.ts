@@ -3,7 +3,7 @@ import { BOTTOM, LEFT, RIGHT, TOP } from './constants/direction';
 import { Style } from '@master/style';
 
 export class PlacementStyle extends Style {
-    static override prefixes = /^(top|left|right|bottom|center|middle):/;
+    static override matches = /^(top|left|right|bottom|center|middle):/;
     static override semantics = {
         top: { top: 0 },
         left: { left: 0 },
