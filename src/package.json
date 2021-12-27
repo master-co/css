@@ -16,7 +16,7 @@
         "ui"
     ],
     "peerDependencies": {
-        "@master/style": "^1.0.0-alpha.24"
+        "@master/style": "^1.0.0-alpha.36"
     },
     "repository": {
         "type": "git",
