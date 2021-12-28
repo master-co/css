@@ -143,6 +143,7 @@ import { ScrollSnapAlignStyle } from './scroll-snap-align';
 import { ScrollSnapStopStyle } from './scroll-snap-stop';
 import { ScrollSnapTypeStyle } from './scroll-snap-type';
 import { WillChangeStyle } from './will-change';
+import { TextUnderlineOffsetStyle } from './text-underline-offset';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -174,6 +175,7 @@ StyleSheet.Styles.push(
     TextDecorationStyleStyle,
     TextDecorationStyle,
     TextDecorationThicknessStyle,
+    TextUnderlineOffsetStyle,
     TextLeadingStyle,
     TextOverflowStyle,
     TextTransformStyle,
