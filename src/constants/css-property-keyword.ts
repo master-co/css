@@ -179,10 +179,6 @@ export const ORDER_PREFIX = 'o:';
 export const LAST = 'last';
 export const COL = 'col';
 export const SPAN = 'span';
-export const MAX_CONTENT = MAX + DASH + CONTENT;
-export const MIN_CONTENT = MIN + DASH + CONTENT;
-export const FIT_CONTENT = FIT + DASH + CONTENT;
-export const PERCENT100 = '100%';
 export const JUSTIFY = 'justify';
 export const ITEMS = ITEM + 's';
 export const SELF = 'self';
@@ -210,8 +206,8 @@ export const CARET = 'caret';
 export const SNAP = 'snap';
 export const STOP = 'stop';
 export const SIZING_VALUES = {
-    full: PERCENT100,
-    fit: FIT_CONTENT,
-    max: MAX_CONTENT,
-    min: MIN_CONTENT
+    full: '100%',
+    fit: FIT + DASH + CONTENT,
+    max: MAX + DASH + CONTENT,
+    min: MIN + DASH + CONTENT
 }
