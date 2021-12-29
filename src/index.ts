@@ -157,7 +157,14 @@ StyleSheet.Styles.push(
     MarginStyle,
     PaddingStyle,
     FontSizeStyle,
-    DisplayStyle,
+    // flex
+    FlexBasisStyle,
+    FlexWrapStyle,
+    FlexGrowStyle,
+    FlexShrinkStyle,
+    FlexDirectionStyle,
+    FlexStyle, // last
+    DisplayStyle, // after FlexStyle
     WidthStyle,
     HeightStyle,
     MinWidthStyle,
@@ -263,13 +270,6 @@ StyleSheet.Styles.push(
     GridAutoRowsStyle,
     GapStyle,
     OrderStyle,
-    // flex
-    FlexBasisStyle,
-    FlexWrapStyle,
-    FlexGrowStyle,
-    FlexShrinkStyle,
-    FlexDirectionStyle,
-    FlexStyle, // last
     // break
     BreakInsideStyle,
     BreakBeforeStyle,
