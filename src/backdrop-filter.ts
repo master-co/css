@@ -1,7 +1,11 @@
-import { BACKDROP, DASH, FILTER } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class BackdropFilterStyle extends Style {
-    static override matches = /^bd:./;
-    static override key = BACKDROP + DASH + FILTER;
+    static override matches = /^(bd|backdrop-filter):./;
+    override get props(): { [key: string]: any } {
+        return {
+            'backdrop-filter': this,
+            '-webkit-backdrop-filter': this
+        }
+    };
 }
