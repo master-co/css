@@ -132,6 +132,7 @@ import { OutlineStyleStyle } from './outline-style';
 import { OutlineWidthStyle } from './outline-width';
 import { OutlineStyle } from './outline';
 import { BorderCollapseStyle } from './border-collapse';
+import { BorderSpacingStyle } from './border-spacing';
 import { TableLayoutStyle } from './table-layout';
 import { AccentColorStyle } from './accent-color';
 import { AppearanceStyle } from './appearance';
@@ -246,6 +247,7 @@ StyleSheet.Styles.push(
     BorderStyleStyle,
     BorderWidthStyle,
     BorderCollapseStyle,
+    BorderSpacingStyle,
     BorderStyle,
     // background
     BackgroundAttachmentStyle,
