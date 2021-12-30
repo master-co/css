@@ -1,4 +1,4 @@
-import { BOX, BREAK, CLAMP, DASH, DISPLAY, ELLIPSIS, HIDDEN, LINE, ORIENT, OVERFLOW, TEXT, VERTICAL, WORD, WRAP } from './constants/css-property-keyword';
+import { BOX, BREAK, DASH, ELLIPSIS, HIDDEN, VERTICAL, WORD } from './constants/css-property-keyword';
 import { WEBKIT_PREFIX } from './constants/css-browser-prefix';
 import { Style } from '@master/style';
 
