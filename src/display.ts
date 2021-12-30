@@ -11,7 +11,6 @@ export class DisplayStyle extends Style {
 
 for (const value of [
     BLOCK,
-    FLEX,
     GRID,
     TABLE,
     CONTENTS,
