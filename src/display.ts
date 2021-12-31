@@ -5,19 +5,13 @@ export class DisplayStyle extends Style {
     static override matches = /^d:./;
     static override key = DISPLAY;
     static override semantics = {
-        'hidden': NONE
+        hidden: NONE,
+        block: BLOCK,
+        table: TABLE,
+        contents: CONTENTS,
+        'inline-block': INLINE + DASH + BLOCK,
+        'inline-flex': INLINE + DASH + FLEX,
+        'inline-grid': INLINE + DASH + GRID,
+        'inline-table': INLINE + DASH + TABLE
     }
-}
-
-for (const value of [
-    BLOCK,
-    GRID,
-    TABLE,
-    CONTENTS,
-    INLINE + DASH + BLOCK,
-    INLINE + DASH + FLEX,
-    INLINE + DASH + GRID,
-    INLINE + DASH + TABLE
-]) {
-    DisplayStyle.semantics[value] = value
 }
