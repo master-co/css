@@ -149,6 +149,7 @@ import { InsetStyle } from './inset';
 import { ColumnsStyle } from './columns';
 import { WhiteSpaceStyle } from './white-space';
 import { TextOrientationStyle } from './text-orientation';
+import { WritingModeStyle } from './writing-mode';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -317,7 +318,8 @@ StyleSheet.Styles.push(
     ScrollSnapAlignStyle,
     ScrollSnapStopStyle,
     ScrollSnapTypeStyle,
-    WillChangeStyle
+    WillChangeStyle,
+    WritingModeStyle
 )
 
 window.addEventListener('DOMContentLoaded', (event) => {
