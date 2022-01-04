@@ -121,6 +121,7 @@ import { MarginStyle } from './margin';
 import { TextOverflowStyle } from './text-overflow';
 import { ListStylePositionStyle } from './list-style-position';
 import { ListStyleTypeStyle } from './list-style-type';
+import { ListStyleStyle } from './list-style';
 import { TextDecorationColorStyle } from './text-decoration-color';
 import { TextDecorationStyleStyle } from './text-decoration-style';
 import { TextDecorationThicknessStyle } from './text-decoration-thickness';
@@ -302,6 +303,7 @@ StyleSheet.Styles.push(
     PlaceSelfStyle,
     ListStylePositionStyle,
     ListStyleTypeStyle,
+    ListStyleStyle,
     // outline
     OutlineColorStyle,
     OutlineOffsetStyle,
