@@ -17,7 +17,6 @@ import { ObjectFitStyle } from './object-fit';
 import { ObjectPositionStyle } from './object-position';
 import { TextAlignStyle } from './text-align';
 import { TextDecorationStyle } from './text-decoration';
-import { TextLeadingStyle } from './text-leading';
 import { TextTransformStyle } from './text-transform';
 import { VerticalAlignStyle } from './vertical-align';
 import { LinesStyle } from './lines';
@@ -190,7 +189,6 @@ StyleSheet.Styles.push(
     TextDecorationStyle,
     TextDecorationThicknessStyle,
     TextUnderlineOffsetStyle,
-    TextLeadingStyle,
     TextOverflowStyle,
     TextOrientationStyle,
     TextTransformStyle,
