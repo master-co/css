@@ -148,6 +148,7 @@ import { TextUnderlineOffsetStyle } from './text-underline-offset';
 import { InsetStyle } from './inset';
 import { ColumnsStyle } from './columns';
 import { WhiteSpaceStyle } from './white-space';
+import { TextOrientationStyle } from './text-orientation';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -189,6 +190,7 @@ StyleSheet.Styles.push(
     TextUnderlineOffsetStyle,
     TextLeadingStyle,
     TextOverflowStyle,
+    TextOrientationStyle,
     TextTransformStyle,
     TextIndentStyle,
     VerticalAlignStyle,
