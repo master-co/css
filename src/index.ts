@@ -17,7 +17,6 @@ import { ObjectFitStyle } from './object-fit';
 import { ObjectPositionStyle } from './object-position';
 import { TextAlignStyle } from './text-align';
 import { TextDecorationStyle } from './text-decoration';
-import { TextLeadingStyle } from './text-leading';
 import { TextTransformStyle } from './text-transform';
 import { VerticalAlignStyle } from './vertical-align';
 import { LinesStyle } from './lines';
@@ -121,6 +120,7 @@ import { MarginStyle } from './margin';
 import { TextOverflowStyle } from './text-overflow';
 import { ListStylePositionStyle } from './list-style-position';
 import { ListStyleTypeStyle } from './list-style-type';
+import { ListStyleStyle } from './list-style';
 import { TextDecorationColorStyle } from './text-decoration-color';
 import { TextDecorationStyleStyle } from './text-decoration-style';
 import { TextDecorationThicknessStyle } from './text-decoration-thickness';
@@ -189,7 +189,6 @@ StyleSheet.Styles.push(
     TextDecorationStyle,
     TextDecorationThicknessStyle,
     TextUnderlineOffsetStyle,
-    TextLeadingStyle,
     TextOverflowStyle,
     TextOrientationStyle,
     TextTransformStyle,
@@ -302,6 +301,7 @@ StyleSheet.Styles.push(
     PlaceSelfStyle,
     ListStylePositionStyle,
     ListStyleTypeStyle,
+    ListStyleStyle,
     // outline
     OutlineColorStyle,
     OutlineOffsetStyle,
