@@ -17,7 +17,15 @@ export class BorderRadiusStyle extends Style {
     }
     override get props(): { [key: string]: any } {
         if (this.prefix) {
-            const suffix = this.prefix.slice(1, -1);
+            let suffix = '';
+            const splits = this.prefix.split('-');
+            if (splits.length > 1) {
+                for (let i = 1; i < splits.length - 1; i++) {
+                    suffix = splits[i][0];
+                }
+            } else {
+                suffix = this.prefix.slice(1, -1);
+            }
             switch (suffix) {
                 case T:
                     return {
