@@ -1,7 +1,14 @@
-import { BOX, DASH, TRANSFORM } from './constants/css-property-keyword';
+import { BORDER, BOX, CONTENT, DASH, FILL, STROKE, TRANSFORM } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class TransformBoxStyle extends Style {
-    static override matches =  /^transform:(content-box|border-box|fill-box|stroke-box|view-box)(?!;)/;
+    static override matches =  /^transform:(content|border|fill|stroke|view)(?!;)/;
     static override key = TRANSFORM + DASH + BOX;
+    static override values = {
+        content: CONTENT + DASH + BOX,
+        border: BORDER + DASH + BOX,
+        fill: FILL + DASH + BOX,
+        stroke: STROKE + DASH + BOX,
+        view: 'view' + DASH + BOX
+    }
 }
