@@ -150,6 +150,7 @@ import { ColumnsStyle } from './columns';
 import { WhiteSpaceStyle } from './white-space';
 import { TextOrientationStyle } from './text-orientation';
 import { WritingModeStyle } from './writing-mode';
+import { ContainStyle } from './contain';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -175,6 +176,7 @@ StyleSheet.Styles.push(
     HeightStyle,
     MinWidthStyle,
     MinHeightStyle,
+    ContainStyle,
     ContentStyle,
     LetterSpacingStyle,
     FontSmoothingStyle,
