@@ -21,7 +21,7 @@ export class BorderRadiusStyle extends Style {
             const splits = this.prefix.split('-');
             if (splits.length > 1) {
                 for (let i = 1; i < splits.length - 1; i++) {
-                    suffix = splits[i][0];
+                    suffix += splits[i][0];
                 }
             } else {
                 suffix = this.prefix.slice(1, -1);
