@@ -151,6 +151,7 @@ import { WhiteSpaceStyle } from './white-space';
 import { TextOrientationStyle } from './text-orientation';
 import { WritingModeStyle } from './writing-mode';
 import { ContainStyle } from './contain';
+import { AnimationDurationStyle } from './animation-duration';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -239,6 +240,7 @@ StyleSheet.Styles.push(
     // animation
     AnimationDelayStyle,
     AnimationDirectionStyle,
+    AnimationDurationStyle,
     AnimationFillModeStyle,
     AnimationIterationCountStyle,
     AnimationNameStyle,
