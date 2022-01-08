@@ -42,7 +42,7 @@ export function getBorderProps(name: string, instance: object, suffix = '') {
             }
         default:
             return {
-                [BORDER]: instance
+                [BORDER + suffix]: instance
             }
     }
 }
