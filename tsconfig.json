@@ -11,7 +11,7 @@
         "module": "es2020",
         "skipLibCheck": true,
         "lib": [
-            "es2018",
+            "es2021",
             "dom"
         ],
         "paths": {

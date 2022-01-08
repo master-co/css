@@ -1,7 +1,11 @@
 import { Style } from '@master/style';
-import { BORDER, COLOR, DASH } from './constants/css-property-keyword';
+import { COLOR } from './constants/css-property-keyword';
+import { getBorderProps } from './utils/get-border-props';
 
 export class BorderColorStyle extends Style {
-    static override colorStarts = 'b(order)?:';
-    static override key = BORDER + DASH + COLOR;
+    static override matches = /^border(-(left|right|top|bottom))?-color:./;
+    static override colorStarts = 'b((x|y|t|b|l|r)|(order(-(left|right|top|bottom))?))?:';
+    override get props(): { [key: string]: any } {
+        return getBorderProps(this.prefix, this, COLOR);
+    }
 }
