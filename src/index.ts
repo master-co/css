@@ -9,7 +9,7 @@ import { HeightStyle } from './height';
 import { MinWidthStyle } from './min-width';
 import { MinHeightStyle } from './min-height';
 import { LetterSpacingStyle } from './letter-spacing';
-import { FontSmoothingStyle } from './font-smoothing';
+import { FontSmoothStyle } from './font-smooth';
 import { FontStyleStyle } from './font-style';
 import { FontVariantNumericStyle } from './font-variant-numeric';
 import { LineHeightStyle } from './line-height';
@@ -180,7 +180,7 @@ StyleSheet.Styles.push(
     ContainStyle,
     ContentStyle,
     LetterSpacingStyle,
-    FontSmoothingStyle,
+    FontSmoothStyle,
     FontStyleStyle,
     FontVariantNumericStyle,
     LineHeightStyle,

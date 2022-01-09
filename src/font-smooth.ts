@@ -2,7 +2,7 @@ import { MOZ_PREFIX, OSX, WEBKIT_PREFIX } from './constants/css-browser-prefix';
 import { ANTIALIASED, AUTO, DASH, FONT, GRAYSCALE, SMOOTH, SMOOTHING } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
-export class FontSmoothingStyle extends Style {
+export class FontSmoothStyle extends Style {
     static override matches = /^f(ont)?:(smooth|sharp)(?!;)/;
     static override unit = '';
     override get props(): { [key: string]: any } {
