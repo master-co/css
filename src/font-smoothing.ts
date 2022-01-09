@@ -8,13 +8,13 @@ export class FontSmoothingStyle extends Style {
     override get props(): { [key: string]: any } {
         const isSmooth = this.value === SMOOTH;
         return {
-            [WEBKIT_PREFIX + FONT + DASH + SMOOTHING]: {
+            '-webkit-font-smoothing': {
                 ...this,
                 value: isSmooth
                     ? ANTIALIASED
                     : AUTO
             },
-            [MOZ_PREFIX + OSX + FONT + DASH + SMOOTHING]: {
+            '-moz-osxfont-smoothing': {
                 ...this,
                 value: isSmooth
                     ? GRAYSCALE
