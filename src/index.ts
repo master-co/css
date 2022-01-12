@@ -153,6 +153,7 @@ import { WritingModeStyle } from './writing-mode';
 import { ContainStyle } from './contain';
 import { AnimationDurationStyle } from './animation-duration';
 import { TextRenderingStyle } from './text-rendering';
+import { DirectionStyle } from './direction';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -325,7 +326,8 @@ StyleSheet.Styles.push(
     ScrollSnapStopStyle,
     ScrollSnapTypeStyle,
     WillChangeStyle,
-    WritingModeStyle
+    WritingModeStyle,
+    DirectionStyle
 )
 
 window.addEventListener('DOMContentLoaded', (event) => {
