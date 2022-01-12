@@ -4,8 +4,8 @@ import { Style } from '@master/style';
 export class WordBreakStyle extends Style {
     static override key = WORD + DASH + BREAK;
     static override unit = '';
-    static override semantics = {
-        'break-words': {
+    static override values = {
+        'break-word': {
             'overflow-wrap': BREAK + DASH + WORD,
             overflow: HIDDEN
         }
