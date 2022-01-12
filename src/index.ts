@@ -152,6 +152,7 @@ import { TextOrientationStyle } from './text-orientation';
 import { WritingModeStyle } from './writing-mode';
 import { ContainStyle } from './contain';
 import { AnimationDurationStyle } from './animation-duration';
+import { TextRenderingStyle } from './text-rendering';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -195,6 +196,7 @@ StyleSheet.Styles.push(
     TextOverflowStyle,
     TextOrientationStyle,
     TextTransformStyle,
+    TextRenderingStyle,
     TextIndentStyle,
     VerticalAlignStyle,
     ColumnsStyle,
