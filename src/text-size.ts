@@ -2,7 +2,7 @@ import { REM } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class TextSizeStyle extends Style {
-    static override matches = /^t(ext)?:[0-9]((?!;).)*$/;
+    static override matches = /^t(ext)?:([0-9]|(max|min|calc|clamp)\(.*\))((?!;).)*$/;
     override get props(): { [key: string]: any } {
         return {
             'font-size': this,
