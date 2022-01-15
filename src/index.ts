@@ -155,6 +155,7 @@ import { AnimationDurationStyle } from './animation-duration';
 import { TextRenderingStyle } from './text-rendering';
 import { DirectionStyle } from './direction';
 import { TextDecorationLineStyle } from './text-decoration-line';
+import { GridColumnStartStyle } from './grid-column-start';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -280,6 +281,7 @@ StyleSheet.Styles.push(
     StrokeStyle,
     StrokeWidthStyle,
     // grid
+    GridColumnStartStyle,
     GridColumnStyle,
     GridColumnsStyle,
     GridRowStyle,
