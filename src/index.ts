@@ -154,6 +154,7 @@ import { ContainStyle } from './contain';
 import { AnimationDurationStyle } from './animation-duration';
 import { TextRenderingStyle } from './text-rendering';
 import { DirectionStyle } from './direction';
+import { TextDecorationLineStyle } from './text-decoration-line';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -192,6 +193,7 @@ StyleSheet.Styles.push(
     TextDecorationColorStyle,
     TextDecorationStyleStyle,
     TextDecorationThicknessStyle,
+    TextDecorationLineStyle,
     TextDecorationStyle,
     TextUnderlineOffsetStyle,
     TextOverflowStyle,
