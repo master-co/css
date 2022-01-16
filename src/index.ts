@@ -156,6 +156,7 @@ import { TextRenderingStyle } from './text-rendering';
 import { DirectionStyle } from './direction';
 import { TextDecorationLineStyle } from './text-decoration-line';
 import { GridColumnStartStyle } from './grid-column-start';
+import { ListStyleImageStyle } from './list-style-image';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -312,6 +313,7 @@ StyleSheet.Styles.push(
     PlaceSelfStyle,
     ListStylePositionStyle,
     ListStyleTypeStyle,
+    ListStyleImageStyle,
     ListStyleStyle,
     // outline
     OutlineColorStyle,
