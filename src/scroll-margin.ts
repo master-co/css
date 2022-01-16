@@ -3,7 +3,7 @@ import { DASH, MARGIN, SCROLL } from './constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from './constants/direction';
 
 export class ScrollMarginStyle extends Style {
-    static override matches = /^(scroll-(m(x|y|t|b|l|r)|margin(-(top|bottom|left|right))?):.)/;
+    static override matches = /^scroll-m(x|y|t|b|l|r|argin(-(top|bottom|left|right))?)?:./;
     override get props(): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'm') {
             const SCROLL_MARGIN_PREFIX = SCROLL + DASH + MARGIN + DASH,
