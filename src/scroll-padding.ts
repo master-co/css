@@ -3,7 +3,7 @@ import { DASH, PADDING, SCROLL } from './constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from './constants/direction';
 
 export class ScrollPaddingStyle extends Style {
-    static override matches = /^(scroll-(p(x|y|t|b|l|r)|padding(-(top|bottom|left|right))?):.)/;
+    static override matches = /^scroll-p(x|y|t|b|l|r|adding(-(top|bottom|left|right))?)?:./;
     override get props(): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'p') {
             const SCROLL_PADDING_PREFIX = SCROLL + DASH + PADDING + DASH,
