@@ -160,6 +160,8 @@ import { ListStyleImageStyle } from './list-style-image';
 import { ShapeOutsideStyle } from './shape-outside';
 import { ShapeMarginStyle } from './shape-margin';
 import { ShapeImageThresholdStyle } from './shape-image-threshold';
+import { ClipPathStyle } from './clip-path';
+import { GridStyle } from './grid';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -293,6 +295,7 @@ StyleSheet.Styles.push(
     GridAutoColumnsStyle,
     GridAutoFlowStyle,
     GridAutoRowsStyle,
+    GridStyle,
     GapStyle,
     OrderStyle,
     // break
@@ -339,7 +342,8 @@ StyleSheet.Styles.push(
     DirectionStyle,
     ShapeOutsideStyle,
     ShapeMarginStyle,
-    ShapeImageThresholdStyle
+    ShapeImageThresholdStyle,
+    ClipPathStyle
 )
 
 window.addEventListener('DOMContentLoaded', (event) => {
