@@ -157,6 +157,9 @@ import { DirectionStyle } from './direction';
 import { TextDecorationLineStyle } from './text-decoration-line';
 import { GridColumnStartStyle } from './grid-column-start';
 import { ListStyleImageStyle } from './list-style-image';
+import { ShapeOutsideStyle } from './shape-outside';
+import { ShapeMarginStyle } from './shape-margin';
+import { ShapeImageThresholdStyle } from './shape-image-threshold';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -333,7 +336,10 @@ StyleSheet.Styles.push(
     ScrollSnapTypeStyle,
     WillChangeStyle,
     WritingModeStyle,
-    DirectionStyle
+    DirectionStyle,
+    ShapeOutsideStyle,
+    ShapeMarginStyle,
+    ShapeImageThresholdStyle
 )
 
 window.addEventListener('DOMContentLoaded', (event) => {

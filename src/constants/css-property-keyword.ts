@@ -205,6 +205,7 @@ export const ACCENT = 'accent';
 export const CARET = 'caret';
 export const SNAP = 'snap';
 export const STOP = 'stop';
+export const SHAPE = 'shape';
 export const SIZING_VALUES = {
     full: '100%',
     fit: FIT + DASH + CONTENT,
