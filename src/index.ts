@@ -163,6 +163,7 @@ import { ShapeImageThresholdStyle } from './shape-image-threshold';
 import { ClipPathStyle } from './clip-path';
 import { GridStyle } from './grid';
 import { FontStyle } from './font';
+import { QuotesStyle } from './quotes';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -345,7 +346,8 @@ StyleSheet.Styles.push(
     ShapeOutsideStyle,
     ShapeMarginStyle,
     ShapeImageThresholdStyle,
-    ClipPathStyle
+    ClipPathStyle,
+    QuotesStyle
 )
 
 window.addEventListener('DOMContentLoaded', (event) => {
