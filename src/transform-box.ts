@@ -1,4 +1,4 @@
-import { BORDER, BOX, CONTENT, DASH, FILL, STROKE, TRANSFORM } from './constants/css-property-keyword';
+import { BORDER, BOX, CONTENT, DASH, FILL, STROKE, TRANSFORM, VIEW } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class TransformBoxStyle extends Style {
@@ -9,6 +9,6 @@ export class TransformBoxStyle extends Style {
         border: BORDER + DASH + BOX,
         fill: FILL + DASH + BOX,
         stroke: STROKE + DASH + BOX,
-        view: 'view' + DASH + BOX
+        view: VIEW + DASH + BOX
     }
 }

@@ -6,6 +6,7 @@ export class DisplayStyle extends Style {
     static override key = DISPLAY;
     static override semantics = {
         hidden: NONE,
+        hide: NONE,
         block: BLOCK,
         table: TABLE,
         contents: CONTENTS,
