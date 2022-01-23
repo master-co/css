@@ -166,6 +166,9 @@ import { FontStyle } from './font';
 import { QuotesStyle } from './quotes';
 import { GridTemplateStyle } from './grid-template';
 import { GridRowStartStyle } from './grid-row-start';
+import { GridTemplateAreasStyle } from './grid-template-areas';
+import { GridTemplateColumnsStyle } from './grid-template-columns';
+import { GridTemplateRowsStyle } from './grid-template-rows';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -301,6 +304,9 @@ StyleSheet.Styles.push(
     GridAutoColumnsStyle,
     GridAutoFlowStyle,
     GridAutoRowsStyle,
+    GridTemplateAreasStyle,
+    GridTemplateColumnsStyle,
+    GridTemplateRowsStyle,
     GridTemplateStyle,
     GridStyle,
     GapStyle,
