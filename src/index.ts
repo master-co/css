@@ -164,6 +164,7 @@ import { ClipPathStyle } from './clip-path';
 import { GridStyle } from './grid';
 import { FontStyle } from './font';
 import { QuotesStyle } from './quotes';
+import { GridTemplateStyle } from './grid-template';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -298,6 +299,7 @@ StyleSheet.Styles.push(
     GridAutoColumnsStyle,
     GridAutoFlowStyle,
     GridAutoRowsStyle,
+    GridTemplateStyle,
     GridStyle,
     GapStyle,
     OrderStyle,
