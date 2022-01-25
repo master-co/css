@@ -207,6 +207,9 @@ export const SNAP = 'snap';
 export const STOP = 'stop';
 export const SHAPE = 'shape';
 export const VIEW = 'view';
+export const AREA = 'area';
+export const END = 'end';
+export const START = 'start';
 export const SIZING_VALUES = {
     full: '100%',
     fit: FIT + DASH + CONTENT,
