@@ -169,6 +169,7 @@ import { GridRowStartStyle } from './grid-row-start';
 import { GridTemplateAreasStyle } from './grid-template-areas';
 import { GridTemplateColumnsStyle } from './grid-template-columns';
 import { GridTemplateRowsStyle } from './grid-template-rows';
+import { GridAreaStyle } from './grid-area';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -308,6 +309,7 @@ StyleSheet.Styles.push(
     GridTemplateColumnsStyle,
     GridTemplateRowsStyle,
     GridTemplateStyle,
+    GridAreaStyle,
     GridStyle,
     GapStyle,
     OrderStyle,
