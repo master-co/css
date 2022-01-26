@@ -381,6 +381,26 @@ window.addEventListener('DOMContentLoaded', (event) => {
         cyan: '0072c3',
         teal: '007d79',
     };
+    const palettes = {
+        blue: ['edf5ff', 'd0e2ff', 'a6c8ff', '78a9ff', '4589ff', '0f62fe', '0043ce', '002d9c', '001d6c', '001141'],
+        red: ['fff1f1', 'ffd7d9', 'ffb3b8', 'ff8389', 'fa4d56', 'da1e28', 'a2191f', '750e13', '520408', '2d0709'],
+        purple: ['f6f2ff', 'e8daff', 'd4bbff', 'be95ff', 'a56eff', '8a3ffc', '6929c4', '491d8b', '31135e', '1c0f30'],
+        gray: ['f4f4f5', 'e0e0e1', 'c6c6c7', 'a8a8a9', '8d8d8e', '6f6f70', '525253', '39393a', '262627', '161617'],
+        fade: ['f2f4f8', 'dde1e6', 'c1c7cd', 'a2a9b0', '878d96', '697077', '4d5358', '343a3f', '21272a', '121619'],
+        green: ['defbe6', 'a7f0ba', '6fdc8c', '42be65', '24a148', '198038', '0e6027', '044317', '022d0d', '071908'],
+        pink: ['fff0f7', 'ffd6e8', 'ffafd2', 'ff7eb6', 'ee5396', 'd02670', '9f1853', '740937', '510224', '2a0a18'],
+        cyan: ['e5f6ff', 'bae6ff', '82cfff', '33b1ff', '1192e8', '0072c3', '00539a', '003a6d', '012749', '061727'],
+        teal: ['d9fbfb', '9ef0f0', '3ddbd9', '08bdba', '009d9a', '007d79', '005d5d', '004144', '022b30', '081a1c'],
+    };
+    for (const colorName in palettes) {
+        const colorCodes = palettes[colorName];
+        const eachColors = colors[colorName] = colors[colorName] ? { '': colors[colorName] } : {};
+        let level = 10;
+        for (const colorCode of colorCodes) {
+            eachColors[level] = colorCode
+            level += 10;
+        }
+    }
     Style.singleColors = singleColors;
     Object.assign(Style.colors, colors);
     const sheet = new StyleSheet(document.head);
