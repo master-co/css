@@ -378,19 +378,30 @@ window.addEventListener('DOMContentLoaded', (event) => {
         cyan: ['e5f6ff', 'bae6ff', '82cfff', '33b1ff', '1192e8', '0072c3', '00539a', '003a6d', '012749', '061727'],
         teal: ['d9fbfb', '9ef0f0', '3ddbd9', '08bdba', '009d9a', '007d79', '005d5d', '004144', '022b30', '081a1c'],
     };
+    const singleColors = ['black', 'white'];
     const colors = {
         black: '000000',
-        white: 'ffffff'
+        white: 'ffffff',
+        blue: '0f62fe',
+        red: 'da1e28',
+        purple: '8a3ffc',
+        gray: '6f6f70',
+        fade: '697077',
+        green: '198038',
+        pink: 'd02670',
+        cyan: '0072c3',
+        teal: '007d79',
     };
     for (const colorName in palettes) {
         const colorCodes = palettes[colorName];
-        const eachColors = colors[colorName] = {};
+        const eachColors = colors[colorName] = colors[colorName] ? { '': colors[colorName]} : {};
         let level = 10;
         for (const colorCode of colorCodes) {
             eachColors[level] = colorCode
             level += 10;
         }
     }
+    Style.singleColors = singleColors;
     Object.assign(Style.colors, colors);
     const sheet = new StyleSheet(document.head);
     StyleSheet.root = sheet;
