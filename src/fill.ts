@@ -3,4 +3,6 @@ import { Style } from '@master/style';
 
 export class FillStyle extends Style {
     static override key = FILL;
+    static override colorStarts = 'fill:';
+    static override colorful = true;
 }
