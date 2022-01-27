@@ -5,4 +5,5 @@ export class FontStyle extends Style {
     static override matches = /^f:./;
     static override key = FONT;
     static override unit = '';
+    static override colorful = true;
 }

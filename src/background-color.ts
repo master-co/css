@@ -6,4 +6,5 @@ export class BackgroundColorStyle extends Style {
     static override colorStarts = '(bg|background):';
     static override key = BACKGROUND + DASH + COLOR;
     static override unit = '';
+    static override colorful = true;
 }
