@@ -1,4 +1,4 @@
-import { REM } from "src/constants/css-property-keyword";
+import { REM } from '../constants/css-property-keyword';
 
 export function parseValueUnit(value: string, getUnit: (method: string) => string): string {
     let result = '';
