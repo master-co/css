@@ -1,4 +1,4 @@
-import { DASH, DEG, FILTER, REM, ROTATE, SHADOW } from './constants/css-property-keyword';
+import { BLUR, DASH, DEG, DROP, FILTER, HUE, REM, ROTATE, SHADOW } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 import { parseValueUnit } from './utils/parse-value-unit';
 
@@ -10,10 +10,10 @@ export class FilterStyle extends Style {
             this.value,
             method => {
                 switch (method) {
-                    case 'blur':
-                    case 'drop' + DASH + SHADOW:
+                    case BLUR:
+                    case DROP + DASH + SHADOW:
                         return REM;
-                    case 'hue' + DASH + ROTATE:
+                    case HUE + DASH + ROTATE:
                         return DEG;
                 }
 

@@ -210,6 +210,9 @@ export const VIEW = 'view';
 export const AREA = 'area';
 export const END = 'end';
 export const START = 'start';
+export const BLUR = 'blur';
+export const DROP = 'drop';
+export const HUE = 'hue';
 export const SIZING_VALUES = {
     full: '100%',
     fit: FIT + DASH + CONTENT,
