@@ -1,11 +1,12 @@
-import { ANTIALIASED, AUTO, DASH, GRAYSCALE, SUBPIXEL } from './constants/css-property-keyword';
+import { ANTIALIASED, AUTO, DASH, FONT, GRAYSCALE, SMOOTHING, SUBPIXEL } from './constants/css-property-keyword';
 import { Style } from '@master/style';
+import { MOZ_PREFIX, WEBKIT_PREFIX } from './constants/css-browser-prefix';
 
 const SUBPIXEL_ANTIALIASED = SUBPIXEL + DASH + ANTIALIASED;
-const WEBKIT_FONT_SMOOTHING = '-webkit-font-smoothing';
-const MOZ_OSXFONT_SMOOTHING = '-moz-osxfont-smoothing';
+const WEBKIT_FONT_SMOOTHING = WEBKIT_PREFIX + FONT + DASH + SMOOTHING;
+const MOZ_OSXFONT_SMOOTHING = MOZ_PREFIX + 'osx' + FONT + DASH + SMOOTHING;
 
-export class FontSmoothStyle extends Style {
+export class FontSmoothingStyle extends Style {
     static override matches = /^f(ont)?:(antialiased|subpixel-antialiased)(?!;)/;
     static override unit = '';
     override get props(): { [key: string]: any } {
