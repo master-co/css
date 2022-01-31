@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 import { parseValueUnit } from './utils/parse-value-unit';
 
 export class FilterStyle extends Style {
-    static override matches = /^blur\(.*?\)/
+    static override matches = /^(blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)\(.*?\)/
     static override key = FILTER;
     override get parseValue() {
         return parseValueUnit(
