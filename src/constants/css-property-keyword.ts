@@ -129,7 +129,6 @@ export const PX = 'px';
 export const STYLE = 'style';
 export const GRAYSCALE = 'grayscale';
 export const SMOOTHING = 'smoothing';
-export const SMOOTH = 'smooth';
 export const SHARP = 'sharp';
 export const ANTIALIASED = 'antialiased';
 export const SUBPIXEL = 'subpixel';
