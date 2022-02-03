@@ -4,5 +4,5 @@ import { Style } from '@master/style';
 export class FlexStyle extends Style {
     static override key = FLEX;
     static override unit = '';
-    override getOrder = -1;
+    override order = -1;
 }

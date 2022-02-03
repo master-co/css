@@ -5,5 +5,5 @@ export class ColumnsStyle extends Style {
     static override matches = /^(columns|cols):./;
     static override key = COLUMNS;
     static override unit = '';
-    override getOrder = -1;
+    override order = -1;
 }

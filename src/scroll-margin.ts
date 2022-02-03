@@ -46,7 +46,7 @@ export class ScrollMarginStyle extends Style {
             }
         }
     }
-    override get getOrder(): number {
+    override get order(): number {
         return (this.prefix === SCROLL + DASH + MARGIN + ':' || this.prefix === SCROLL + DASH + 'm:') ? -1 : 0;
     }
 }

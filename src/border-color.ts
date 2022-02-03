@@ -9,7 +9,7 @@ export class BorderColorStyle extends Style {
     override get props(): { [key: string]: any } {
         return getBorderProps(this.prefix, this, COLOR);
     }
-    override get getOrder(): number {
+    override get order(): number {
         return (this.prefix === BORDER + DASH + COLOR + ":" || this.prefix === 'b:' || this.prefix === BORDER + ':') ? -1 : 0;
     }
 }

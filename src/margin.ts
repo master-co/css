@@ -8,7 +8,7 @@ export class MarginStyle extends Style {
             [this.prefix.slice(0, -1)]: this
         }
     }
-    override get getOrder(): number {
+    override get order(): number {
         return (this.prefix === MARGIN + ":") ? -1 : 0;
     }
 }

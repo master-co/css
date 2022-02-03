@@ -79,7 +79,7 @@ export class BorderRadiusStyle extends Style {
             [BORDER_RADIUS_S.includes(prefix) ? prefix : BORDER_RADIUS]: this
         }
     }
-    override get getOrder(): number {
+    override get order(): number {
         return (this.prefix === BORDER + DASH + RADIUS + ":" || this.prefix === 'r:') ? -1 : 0;
     }
 }

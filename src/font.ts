@@ -6,5 +6,5 @@ export class FontStyle extends Style {
     static override key = FONT;
     static override unit = '';
     static override colorful = true;
-    override getOrder = -1;
+    override order = -1;
 }

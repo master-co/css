@@ -13,5 +13,5 @@ export class GapStyle extends Style {
                 return { [GAP]: this };
         }
     }
-    override getOrder = -1;
+    override order = -1;
 }

@@ -4,5 +4,5 @@ import { Style } from '@master/style';
 export class TransitionStyle extends Style {
     static override symbol = '~'; 
     static override key = TRANSITION;
-    override getOrder = -1;
+    override order = -1;
 }
