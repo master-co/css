@@ -3,5 +3,6 @@ import { Style } from '@master/style';
 
 export class FillStyle extends Style {
     static override key = FILL;
+    static override colorMatches = /^fill:(#|(rgb|hsl)\(.*\))((?!;).)*$/;
     static override colorful = true;
 }
