@@ -375,12 +375,14 @@ const colors = {
     blue: '0f62fe',
     red: 'da1e28',
     purple: '8a3ffc',
-    gray: '6f6f70',
-    fade: '697077',
+    yellow: 'eabc09',
     green: '198038',
-    pink: 'd02670',
     cyan: '0072c3',
+    fade: '697077',
+    orange: 'ffa500',
+    pink: 'd02670',
     teal: '007d79',
+    gray: '6f6f70',
 };
 Style.singleColors = singleColors;
 Object.assign(Style.colors, colors);
