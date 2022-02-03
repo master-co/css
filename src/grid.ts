@@ -3,4 +3,7 @@ import { Style } from '@master/style';
 
 export class GridStyle extends Style {
     static override key = GRID;
+    override get getOrder(): number {
+        return -1;
+    }
 }

@@ -44,4 +44,7 @@ export class SpacingStyle extends Style {
                 }
         }
     }
+    override get getOrder(): number {
+        return (this.prefix === 'p:' || this.prefix === 'm:') ? -1 : 0;
+    }
 }

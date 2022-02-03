@@ -1,5 +1,5 @@
 import { Style } from '@master/style';
-import { COLOR } from './constants/css-property-keyword';
+import { BORDER, COLOR, DASH } from './constants/css-property-keyword';
 import { getBorderProps } from './utils/get-border-props';
 
 export class BorderColorStyle extends Style {
@@ -8,5 +8,8 @@ export class BorderColorStyle extends Style {
     static override colorful = true;
     override get props(): { [key: string]: any } {
         return getBorderProps(this.prefix, this, COLOR);
+    }
+    override get getOrder(): number {
+        return (this.prefix === BORDER + DASH + COLOR + ":" || this.prefix === 'b:' || this.prefix === BORDER + ':') ? -1 : 0;
     }
 }
