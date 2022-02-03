@@ -3,4 +3,5 @@ import { Style } from '@master/style';
 
 export class StrokeStyle extends Style {
     static override key = STROKE;
+    static override colorful = true;
 }
