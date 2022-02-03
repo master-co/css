@@ -370,17 +370,17 @@ const singleColors = ['black', 'white'];
 const colors = {
     black: '000000',
     white: 'ffffff',
-    blue: '0f62fe',
+    gray: '6f6f70',
+    fade: '697077',
     red: 'da1e28',
-    purple: '8a3ffc',
+    orange: 'ffa500',
     yellow: 'eabc09',
     green: '198038',
-    cyan: '0072c3',
-    fade: '697077',
-    orange: 'ffa500',
-    pink: 'd02670',
     teal: '007d79',
-    gray: '6f6f70',
+    blue: '0f62fe',
+    cyan: '0072c3',
+    pink: '9f1853',
+    purple: '6929c4',
 };
 Style.singleColors = singleColors;
 Object.assign(Style.colors, colors);
