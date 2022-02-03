@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class PlaceContentStyle extends Style {
     static override key = PLACE + DASH + CONTENT;
-    override getOrder = -1;
+    override order = -1;
 }

@@ -8,7 +8,7 @@ export class BorderStyle extends Style {
     override get props(): { [key: string]: any } {
         return getBorderProps(this.prefix, this);
     }
-    override get getOrder(): number {
+    override get order(): number {
         return (this.prefix === BORDER + ":" || this.prefix === 'b:') ? -2 : -1;
     }
 }

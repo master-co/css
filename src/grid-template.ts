@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class GridTemplateStyle extends Style {
     static override key = GRID + DASH + TEMPLATE;
-    override getOrder = -1;
+    override order = -1;
 }

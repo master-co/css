@@ -3,5 +3,5 @@ import { Style } from '@master/style';
 
 export class ListStyleStyle extends Style {
     static override key = LIST + DASH + STYLE;
-    override getOrder = -1;
+    override order = -1;
 }

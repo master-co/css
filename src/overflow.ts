@@ -13,7 +13,7 @@ export class OverflowStyle extends Style {
                 return { 'overflow': this };
         }
     }
-    override get getOrder(): number {
+    override get order(): number {
         switch (this.prefix.slice(-2, -1)) {
             case X:
             case Y:

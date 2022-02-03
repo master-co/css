@@ -5,5 +5,5 @@ export class TextDecorationStyle extends Style {
     static override matches =  /^t(ext)?:(underline|line-through|overline)/;
     static override key = TEXT + DASH + DECORATION;
     static override colorful = true;
-    override getOrder = -1;
+    override order = -1;
 }

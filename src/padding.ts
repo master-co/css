@@ -8,7 +8,7 @@ export class PaddingStyle extends Style {
             [this.prefix.slice(0, -1)]: this
         }
     }
-    override get getOrder(): number {
+    override get order(): number {
         return (this.prefix === PADDING + ':') ? -1 : 0;
     }
 }
