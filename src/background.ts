@@ -5,7 +5,5 @@ export class BackgroundStyle extends Style {
     static override matches = /^bg:./;
     static override key = BACKGROUND;
     static override colorful = true;
-    override get getOrder(): number {
-        return -1;
-    }
+    override getOrder = -1;
 }
