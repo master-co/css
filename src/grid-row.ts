@@ -10,4 +10,7 @@ export class GridRowStyle extends Style {
             ? SPAN + ' ' + this.value + '/' + SPAN + ' ' + this.value
             : this.value;
     }
+    override get getOrder(): number {
+        return -1;
+    }
 }

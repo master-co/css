@@ -46,4 +46,7 @@ export class ScrollPaddingStyle extends Style {
             }
         }
     }
+    override get getOrder(): number {
+        return (this.prefix === SCROLL + DASH + PADDING + ':' || this.prefix === SCROLL + DASH + 'p:') ? -1 : 0;
+    }
 }
