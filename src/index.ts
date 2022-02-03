@@ -172,6 +172,7 @@ import { GridTemplateRowsStyle } from './grid-template-rows';
 import { GridAreaStyle } from './grid-area';
 import { GridColumnEndStyle } from './grid-column-end';
 import { GridRowEndStyle } from './grid-row-end';
+import { MaskImageStyle } from './mask-image';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -363,7 +364,8 @@ StyleSheet.Styles.push(
     ShapeMarginStyle,
     ShapeImageThresholdStyle,
     ClipPathStyle,
-    QuotesStyle
+    QuotesStyle,
+    MaskImageStyle
 )
 
 const singleColors = ['black', 'white'];
