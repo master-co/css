@@ -3,6 +3,6 @@ import { Style } from '@master/style';
 
 export class TextDecorationColorStyle extends Style {
     static override key = TEXT + DASH + DECORATION + DASH + COLOR;
-    static override colorMatches = /^text-decoration:(#|(rgb|hsl)\(.*\))((?!;).)*$/;
+    static override colorStarts = 'text-decoration:';
     static override colorful = true;
 }
