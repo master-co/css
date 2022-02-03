@@ -381,7 +381,7 @@ const colors = {
     teal: '007d79',
     blue: '0f62fe',
     cyan: '0072c3',
-    pink: '9f1853',
+    pink: 'd02670',
     purple: '6929c4',
 };
 Style.singleColors = singleColors;
