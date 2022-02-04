@@ -384,7 +384,7 @@ Object.assign(Style.colors, {
     beryl: '11a26a',
     teal: '007d79',
     sky: '068bd0',
-    cyan: '0072c3',
+    cyan: '13b8d0',
     blue: '0f62fe',
     indigo: '412fc8',
     violet: '5b28d2',
