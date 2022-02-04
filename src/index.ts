@@ -368,8 +368,8 @@ StyleSheet.Styles.push(
     MaskImageStyle
 )
 
-const singleColors = ['black', 'white'];
-const colors = {
+Style.singleColors.push('black', 'white');
+Object.assign(Style.colors, {
     black: '000000',
     white: 'ffffff',
     fade: '6f778b',
@@ -392,9 +392,7 @@ const colors = {
     fuchsia: 'cc22c9',
     pink: 'd02670',
     crimson: 'd41842',
-};
-Style.singleColors = singleColors;
-Object.assign(Style.colors, colors);
+});
 
 window.addEventListener('DOMContentLoaded', (event) => {
     const sheet = new StyleSheet(document.head);
