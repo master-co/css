@@ -372,8 +372,6 @@ const singleColors = ['black', 'white'];
 const colors = {
     black: '000000',
     white: 'ffffff',
-    dark: '39393f',
-    zinc: '4e4e58',
     fade: '697077',
     gray: '6f6f70',
     stone: '5e5350',
