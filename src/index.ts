@@ -394,10 +394,8 @@ Object.assign(Style.colors, {
     red: 'ed1c24',
 });
 
-if (typeof window !== 'undefined' && window) {
-    window.addEventListener('DOMContentLoaded', (event) => {
-        const sheet = new StyleSheet(document.head);
-        StyleSheet.root = sheet;
-        sheet.observe(document.documentElement);
-    });
-}
+window.addEventListener('DOMContentLoaded', (event) => {
+    const sheet = new StyleSheet(document.head);
+    StyleSheet.root = sheet;
+    sheet.observe(document.documentElement);
+});
