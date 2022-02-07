@@ -373,7 +373,7 @@ Object.assign(Style.colors, {
     black: '000000',
     white: 'ffffff',
     fade: '71798e',
-    gray: '7c7c83',
+    gray: '7c7c7e',
     brown: '936753',
     orange: 'ff6600',
     gold: 'ff9d00',
