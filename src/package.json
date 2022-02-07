@@ -1,7 +1,7 @@
 {
     "name": "@master/styles",
     "license": "MIT",
-    "description": "Freely style HTML with unlimited CSS variants ( less than 20KB )",
+    "description": "Freely stylize HTML with unlimited CSS style variants ( less than 13KB )",
     "author": "Aoyue Design LTD.",
     "main": "index.js",
     "types": "index.d.ts",
