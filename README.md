@@ -10,8 +10,8 @@
 <!-- badges.map((badge) => `<a href="${badge.href}"><img src="${badge.src}" alt="${badge.alt}"></a>`).join('&nbsp;')--><a href="https://circleci.com/gh/master-co/workflows/styles/tree/main"><img src="https://img.shields.io/circleci/build/github/master-co/styles/main.svg?logo=circleci&logoColor=fff&label=CircleCI" alt="CI status"></a>&nbsp;<a href="https://www.npmjs.com/@master/styles"><img src="https://img.shields.io/npm/v/@master/styles.svg?logo=npm&logoColor=fff&label=NPM&color=limegreen" alt="npm"></a>&nbsp;<a href="https://github.com/master-co/styles/blob/main/LICENSE"><img src="https://img.shields.io/github/license/master-co/styles" alt="license"></a><!---->
 </p>
 
-# Documentation
-- [styles.master.co](https://styles.master.co)
+- [Introduction](https://styles.master.co)
+- [Getting started](https://docs.master.co/styles/setup)
 
 # Community
 - [Github Discussions](https://github.com/master-co/styles/discussions)
