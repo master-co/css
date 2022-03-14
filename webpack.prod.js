@@ -1,7 +1,7 @@
 const jsConfig = require('./webpack.common.js');
 const path = require('path');
 const webpack = require('webpack');
-const glob = require('globby');
+const glob = require('glob');
 const CopyPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
@@ -9,12 +9,12 @@ const src = path.resolve('./src');
 const packagePath = path.join(src, 'package.json');
 const package = require(packagePath);
 const master = require('./master.json');
-const entryGlob = [
-    path.join(src, '**/index.{ts,js}')
+const entries = [
+    ...glob.sync(path.join(src, '**/index.{ts,js}'))
 ];
 
 module.exports = {
-    entry: glob.sync(entryGlob).reduce((entrypoint, eachPath) => {
+    entry: entries.reduce((entrypoint, eachPath) => {
         const parsePath = path.parse(path.relative(src, eachPath));
         const filename = path.join(parsePath.dir, parsePath.name);
         if (entrypoint[filename]) {

@@ -20,7 +20,7 @@
         "@types/node": "^16.11.11",
         "babel-loader": "^8.2.3",
         "copy-webpack-plugin": "^10.0.0",
-        "globby": "^11.0.4",
+        "glob": "^7.2.0",
         "terser-webpack-plugin": "^5.2.5",
         "ts-loader": "^9.2.6",
         "typescript": "^4.5.2",
