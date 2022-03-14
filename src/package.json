@@ -6,6 +6,7 @@
     "main": "index.js",
     "types": "index.d.ts",
     "funding": "https://opencollective.com/master-co",
+    "homepage": "https://styles.master.co",
     "private": false,
     "keywords": [
         "style",
