@@ -11,7 +11,8 @@
 </p>
 
 - [Introduction](https://styles.master.co)
-- [Getting started](https://docs.master.co/styles/setup)
+- [Setup](https://docs.master.co/styles/setup)
+- [Why](https://docs.master.co/styles/why)
 
 # Community
 - [Github Discussions](https://github.com/master-co/styles/discussions)
