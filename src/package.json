@@ -1,7 +1,7 @@
 {
     "name": "@master/styles",
     "license": "MIT",
-    "description": "Using familiar CSS syntax in class=\"...\" ( less than 13KB )",
+    "description": "A Virtual CSS language with enhanced syntax ( less than 13KB )",
     "author": "Aoyue Design LLC.",
     "main": "index.js",
     "types": "index.d.ts",
