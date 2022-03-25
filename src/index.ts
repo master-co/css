@@ -173,6 +173,9 @@ import { GridAreaStyle } from './grid-area';
 import { GridColumnEndStyle } from './grid-column-end';
 import { GridRowEndStyle } from './grid-row-end';
 import { MaskImageStyle } from './mask-image';
+import { TextStrokeStyle } from './text-stroke';
+import { TextStrokeWidthStyle } from './text-stroke-width';
+import { TextStrokeColorStyle } from './text-stroke-color';
 
 /**
  * 創建監聽器已追蹤整個 document 的 class
@@ -248,6 +251,9 @@ StyleSheet.Styles.push(
     UserSelectStyle,
     TextShadowStyle,
     TextSizeStyle,
+    TextStrokeWidthStyle,
+    TextStrokeColorStyle,
+    TextStrokeStyle,
     BoxShadowStyle,
     TableLayoutStyle,
     // transform
