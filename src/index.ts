@@ -400,8 +400,6 @@ Object.assign(Style.colors, {
     red: 'ed1c24',
 });
 
-window.addEventListener('DOMContentLoaded', (event) => {
-    const sheet = new StyleSheet(document.head);
-    StyleSheet.root = sheet;
-    sheet.observe(document.documentElement);
-});
+const sheet = new StyleSheet(document.head);
+StyleSheet.root = sheet;
+sheet.observe(document.documentElement);
