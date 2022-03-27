@@ -372,7 +372,7 @@ export const Styles = [
 ]
 
 export function init() {
-    StyleSheet.Styles.concat(Styles);
+    StyleSheet.Styles.push(...Styles);
     Style.singleColors.push('black', 'white');
     Object.assign(Style.colors, {
         black: '000000',
