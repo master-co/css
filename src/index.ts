@@ -177,10 +177,7 @@ import { TextStrokeStyle } from './text-stroke';
 import { TextStrokeWidthStyle } from './text-stroke-width';
 import { TextStrokeColorStyle } from './text-stroke-color';
 
-/**
- * 創建監聽器已追蹤整個 document 的 class
- */
-StyleSheet.Styles.push(
+export const Styles = [
     VariableStyle,
     FontWeightStyle,
     FontFamilyStyle,
@@ -372,34 +369,45 @@ StyleSheet.Styles.push(
     ClipPathStyle,
     QuotesStyle,
     MaskImageStyle
-)
+]
 
-Style.singleColors.push('black', 'white');
-Object.assign(Style.colors, {
-    black: '000000',
-    white: 'ffffff',
-    fade: '71798e',
-    gray: '7c7c7e',
-    brown: '936753',
-    orange: 'ff6600',
-    gold: 'ff9d00',
-    yellow: 'ffc800',
-    grass: '85d016',
-    green: '2fb655',
-    beryl: '00cc7e',
-    teal: '00ccaa',
-    cyan: '12d0ed',
-    sky: '00a6ff',
-    blue: '0f62fe',
-    indigo: '4f46e5',
-    violet: '6316e9',
-    purple: '8318e7',
-    fuchsia: 'cc22c9',
-    pink: 'd92671',
-    crimson: 'dc143c',
-    red: 'ed1c24',
-});
+export function init() {
+    StyleSheet.Styles.concat(Styles);
+    Style.singleColors.push('black', 'white');
+    Object.assign(Style.colors, {
+        black: '000000',
+        white: 'ffffff',
+        fade: '71798e',
+        gray: '7c7c7e',
+        brown: '936753',
+        orange: 'ff6600',
+        gold: 'ff9d00',
+        yellow: 'ffc800',
+        grass: '85d016',
+        green: '2fb655',
+        beryl: '00cc7e',
+        teal: '00ccaa',
+        cyan: '12d0ed',
+        sky: '00a6ff',
+        blue: '0f62fe',
+        indigo: '4f46e5',
+        violet: '6316e9',
+        purple: '8318e7',
+        fuchsia: 'cc22c9',
+        pink: 'd92671',
+        crimson: 'dc143c',
+        red: 'ed1c24',
+    });
+    const sheet = new StyleSheet(document.head);
+    StyleSheet.root = sheet;
+    sheet.observe(document.documentElement);
+}
 
-const sheet = new StyleSheet(document.head);
-StyleSheet.root = sheet;
-sheet.observe(document.documentElement);
+if (typeof window !== undefined) {
+    const MASTER_STYLES = 'MasterStyles';
+    window['init' + MASTER_STYLES] = init;
+    window[MASTER_STYLES] = Styles;
+    if (!window[MASTER_STYLES + 'Manual']) {
+        init();
+    }
+}
