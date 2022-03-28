@@ -405,7 +405,7 @@ export function init() {
     sheet.observe(document.documentElement);
 }
 
-if (typeof window !== undefined) {
+if (typeof window !== 'undefined') {
     const MASTER_STYLES = 'MasterStyles';
     window['init' + MASTER_STYLES] = init;
     window[MASTER_STYLES] = Styles;
