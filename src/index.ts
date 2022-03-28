@@ -173,6 +173,7 @@ import { GridAreaStyle } from './grid-area';
 import { GridColumnEndStyle } from './grid-column-end';
 import { GridRowEndStyle } from './grid-row-end';
 import { MaskImageStyle } from './mask-image';
+import { TextFillColorStyle } from './text-fill-color';
 import { TextStrokeStyle } from './text-stroke';
 import { TextStrokeWidthStyle } from './text-stroke-width';
 import { TextStrokeColorStyle } from './text-stroke-color';
@@ -248,6 +249,7 @@ export const Styles = [
     UserSelectStyle,
     TextShadowStyle,
     TextSizeStyle,
+    TextFillColorStyle,
     TextStrokeWidthStyle,
     TextStrokeColorStyle,
     TextStrokeStyle,
