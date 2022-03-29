@@ -54,7 +54,7 @@ module.exports = {
             name: '@master/styles',
             type: 'umd',
         },
-        globalObject: 'self'
+        globalObject: 'this'
     },
     plugins: [
         new webpack.ProgressPlugin(),
