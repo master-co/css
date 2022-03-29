@@ -1,4 +1,5 @@
 {
+    "name": "@master/styles",
     "scripts": {
         "update": "git fetch package js && git merge package/js",
         "build": "npm i --production && cd src && npm i && cd .. && webpack --config webpack.prod.js",
