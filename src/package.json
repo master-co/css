@@ -1,11 +1,11 @@
 {
     "name": "@master/styles",
     "license": "MIT",
-    "description": "Freely stylize HTML with unlimited CSS style variants ( less than 13KB )",
+    "description": "A Virtual CSS language with enhanced syntax ( less than 13KB )",
     "author": "Aoyue Design LLC.",
     "main": "index.js",
     "types": "index.d.ts",
-    "funding": "https://opencollective.com/master-co",
+    "funding": "https://docs.master.co/styles/donate",
     "homepage": "https://styles.master.co",
     "private": false,
     "keywords": [
@@ -17,7 +17,7 @@
         "ui"
     ],
     "peerDependencies": {
-        "@master/style": "^1.0.0-beta"
+        "@master/style": "^1.0.0"
     },
     "repository": {
         "type": "git",
