@@ -3,7 +3,7 @@
     <img src="https://raw.githubusercontent.com/master-co/package/document/images/logo-and-text.svg" alt="logo" width="142">
 </p>
 <p align="center">
-    <b><!-- name -->stylesvv<!----></b>
+    <b><!-- name -->styles<!----></b>
 </p>
 <p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax ( less than 13KB )<!----></p>
 <p align="center">
