@@ -413,11 +413,14 @@ export function init() {
     }
 }
 
+const MASTER_STYLES = 'MasterStyles';
+const MASTER_STYLES_MANUAL = MASTER_STYLES + 'Manual';
 if (hasWindow) {
-    const MASTER_STYLES = 'MasterStyles';
     window['init' + MASTER_STYLES] = init;
     window[MASTER_STYLES] = Styles;
-    if (!window[MASTER_STYLES + 'Manual']) {
+    if (!window[MASTER_STYLES_MANUAL]) {
         init();
     }
+} else if (process.env[MASTER_STYLES_MANUAL] !== 'true') {
+    init();
 }
