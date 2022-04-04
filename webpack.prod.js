@@ -40,6 +40,9 @@ module.exports = {
                     }
                 },
                 extractComments: false,
+                compress: {
+                    drop_console: true
+                }
             }),
         ],
     },
