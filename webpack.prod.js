@@ -37,6 +37,9 @@ module.exports = {
                 terserOptions: {
                     format: {
                         comments: false,
+                    },
+                    compress: {
+                        drop_console: true
                     }
                 },
                 extractComments: false,
