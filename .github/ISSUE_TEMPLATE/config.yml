@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+    - name: Questions & Discussions
+      url: https://github.com/master-co/styles/discussions
+      about: Use GitHub discussions for forum-like discussions and questions.
+    - name: Discord Chat
+      url: https://discord.gg/sZNKpAAAw6
+      about: A friendly chat room, where you can ask questions and get help from other users in real time.
