@@ -42,10 +42,7 @@ module.exports = {
                         drop_console: true
                     }
                 },
-                extractComments: false,
-                compress: {
-                    drop_console: true
-                }
+                extractComments: false
             }),
         ],
     },
