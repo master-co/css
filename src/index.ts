@@ -177,6 +177,8 @@ import { TextFillColorStyle } from './text-fill-color';
 import { TextStrokeStyle } from './text-stroke';
 import { TextStrokeWidthStyle } from './text-stroke-width';
 import { TextStrokeColorStyle } from './text-stroke-color';
+import { StrokeDasharrayStyle } from './stroke-dasharray';
+import { StrokeDashoffsetStyle } from './stroke-dashoffset';
 
 const hasWindow = typeof window !== 'undefined';
 
@@ -303,8 +305,10 @@ export const Styles = [
     FilterStyle,
     // svg
     FillStyle,
-    StrokeStyle,
+    StrokeDasharrayStyle,
+    StrokeDashoffsetStyle,
     StrokeWidthStyle,
+    StrokeStyle,
     // grid
     GridColumnStartStyle,
     GridColumnEndStyle,
