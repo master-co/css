@@ -396,7 +396,7 @@ export const colors = {
     indigo: '5557e8',
     violet: '7949e5',
     purple: '9832e4',
-    fuchsia: 'b717bc',
+    fuchsia: 'b61cbb',
     pink: 'c91975',
     crimson: 'ce1a4b',
     red: 'd11a1e',
