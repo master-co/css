@@ -398,7 +398,7 @@ export const colors = {
     purple: '9832e4',
     fuchsia: 'ba0ec0',
     pink: 'cc1174',
-    crimson: 'd11740',
+    crimson: 'ce1a4b',
     red: 'd41319',
     black: '000000',
     white: 'ffffff'
