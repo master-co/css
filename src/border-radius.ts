@@ -28,6 +28,7 @@ export class BorderRadiusStyle extends Style {
             }
             switch (suffix) {
                 case T:
+                case 'tt':
                     return {
                         [BORDER_TOP_LEFT_RADIUS]: this,
                         [BORDER_TOP_RIGHT_RADIUS]: this
@@ -43,6 +44,7 @@ export class BorderRadiusStyle extends Style {
                         [BORDER_TOP_RIGHT_RADIUS]: this
                     }
                 case B:
+                case 'bb':
                     return {
                         [BORDER_BOTTOM_LEFT_RADIUS]: this,
                         [BORDER_BOTTOM_RIGHT_RADIUS]: this
@@ -58,11 +60,13 @@ export class BorderRadiusStyle extends Style {
                         [BORDER_BOTTOM_RIGHT_RADIUS]: this
                     }
                 case L:
+                case 'll':
                     return {
                         [BORDER_TOP_LEFT_RADIUS]: this,
                         [BORDER_BOTTOM_LEFT_RADIUS]: this
                     }
                 case R:
+                case 'rr':
                     return {
                         [BORDER_TOP_RIGHT_RADIUS]: this,
                         [BORDER_BOTTOM_RIGHT_RADIUS]: this
