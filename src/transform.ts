@@ -2,12 +2,12 @@ import { DEG, REM, ROTATE, SKEW, TRANSFORM, TRANSLATE } from './constants/css-pr
 import { Style } from '@master/style';
 
 export class TransformStyle extends Style {
-    static override matches = /^(translate|scale|skew|rotate|perspective|matrix)(3d|X|Y|Z)?\(/;
+    static override matches = /^(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\(/;
     static override key = TRANSFORM;
     static override unit = '';
     override get parseValue() {
         return this.value.replace(
-            /(translate|scale|skew|rotate|perspective|matrix)(3d|X|Y|Z)?\((.*?)\)/gm,
+            /(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\((.*?)\)/gm,
             (origin, method, type, valueStr: string) => {
                 let unit: string;
                 let last: boolean;

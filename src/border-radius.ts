@@ -10,7 +10,7 @@ const BORDER_TOP_LEFT_RADIUS = BORDER + DASH + TOP + DASH + LEFT + DASH + RADIUS
     BORDER_RADIUS_S = [BORDER_TOP_LEFT_RADIUS, BORDER_TOP_RIGHT_RADIUS, BORDER_BOTTOM_LEFT_RADIUS, BORDER_BOTTOM_RIGHT_RADIUS];
 
 export class BorderRadiusStyle extends Style {
-    static override matches = /^((r(t|b|l|r)?(t|b|l|r)?|border(-(top|bottom)-(left|right))?-radius):.)/;
+    static override matches = /^((r[tblr]?[tblr]?|border(-(top|bottom)-(left|right))?-radius):.)/;
     static override semantics = {
         [ROUNDED]: '1e9em',
         [ROUND]: '50%'
