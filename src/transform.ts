@@ -7,7 +7,7 @@ export class TransformStyle extends Style {
     static override unit = '';
     override get parseValue() {
         return this.value.replace(
-            /(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\((.*?)\)/gm,
+            /(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\((.*?)\)/g,
             (origin, method, type, valueStr: string) => {
                 let unit: string;
                 let last: boolean;
