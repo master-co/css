@@ -2,7 +2,7 @@ import { Style } from '@master/style';
 import { DASH, PADDING, SCROLL } from './constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from './constants/direction';
 
-export class ScrollPaddingStyle extends Style {
+export class ScrollPadding extends Style {
     static override matches = /^scroll-p([xytblr]|adding(-(top|bottom|left|right))?)?:./;
     override get props(): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'p') {

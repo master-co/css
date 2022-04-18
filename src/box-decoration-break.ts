@@ -1,6 +1,6 @@
 import { Style } from '@master/style';
 
-export class BoxDecorationBreakStyle extends Style {
+export class BoxDecorationBreak extends Style {
     static override matches = /^box-decoration-break:|box:(slice|clone)(?!;)/;
     override get props(): { [key: string]: any } {
         return {

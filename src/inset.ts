@@ -1,5 +1,5 @@
 import { Style } from '@master/style';
 
-export class InsetStyle extends Style {
+export class Inset extends Style {
     static override key = 'inset';
 }

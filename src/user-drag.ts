@@ -1,6 +1,6 @@
 import { Style } from '@master/style';
 
-export class UserDragStyle extends Style {
+export class UserDrag extends Style {
     static override matches = /^user-drag:./;
     override get props(): { [key: string]: any } {
         return {

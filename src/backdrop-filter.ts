@@ -2,7 +2,7 @@ import { Style } from '@master/style';
 import { BACKDROP, BLUR, DASH, DEG, DROP, FILTER, HUE, REM, ROTATE, SHADOW } from './constants/css-property-keyword';
 import { parseValueUnit } from './utils/parse-value-unit';
 
-export class BackdropFilterStyle extends Style {
+export class BackdropFilter extends Style {
     static override matches = /^bd:./;
     static override key = BACKDROP + DASH + FILTER;
     override get props(): { [key: string]: any } {

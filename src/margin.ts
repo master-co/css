@@ -1,7 +1,7 @@
 import { Style } from '@master/style';
 import { MARGIN } from './constants/css-property-keyword';
 
-export class MarginStyle extends Style {
+export class Margin extends Style {
     static override matches = /^margin(-(left|right|top|bottom))?:./;
     override get props(): { [key: string]: any } {
         return {

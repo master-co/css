@@ -1,381 +1,381 @@
 import { StyleSheet, Style } from '@master/style';
 
-import { FontWeightStyle } from './font-weight';
-import { FontFamilyStyle } from './font-family';
-import { FontSizeStyle } from './font-size';
-import { SpacingStyle } from './spacing';
-import { WidthStyle } from './width';
-import { HeightStyle } from './height';
-import { MinWidthStyle } from './min-width';
-import { MinHeightStyle } from './min-height';
-import { LetterSpacingStyle } from './letter-spacing';
-import { FontSmoothingStyle } from './font-smoothing';
-import { FontStyleStyle } from './font-style';
-import { FontVariantNumericStyle } from './font-variant-numeric';
-import { LineHeightStyle } from './line-height';
-import { ObjectFitStyle } from './object-fit';
-import { ObjectPositionStyle } from './object-position';
-import { TextAlignStyle } from './text-align';
-import { TextDecorationStyle } from './text-decoration';
-import { TextTransformStyle } from './text-transform';
-import { VerticalAlignStyle } from './vertical-align';
-import { LinesStyle } from './lines';
-import { TransformOriginStyle } from './transform-origin';
-import { TransformStyleStyle } from './transform-style';
-import { TransformBoxStyle } from './transform-box';
-import { TransformStyle } from './transform';
-import { TransitionStyle } from './transition';
-import { TransitionDelayStyle } from './transition-delay';
-import { TransitionDurationStyle } from './transition-duration';
-import { TransitionPropertyStyle } from './transition-property';
-import { TransitionTimingFunctionStyle } from './transition-timing-function';
-import { MaxHeightStyle } from './max-height';
-import { MaxWidthStyle } from './max-width';
-import { DisplayStyle } from './display';
-import { BoxSizingStyle } from './box-sizing';
-import { OpacityStyle } from './opacity';
-import { VisibilityStyle } from './visibility';
-import { ClearStyle } from './clear';
-import { FloatStyle } from './float';
-import { IsolationStyle } from './isolation';
-import { OverflowStyle } from './overflow';
-import { OverscrollBehaviorStyle } from './overscroll-behavior';
-import { ZIndexStyle } from './z-index';
-import { AnimationDelayStyle } from './animation-delay';
-import { AnimationDirectionStyle } from './animation-direction';
-import { AnimationFillModeStyle } from './animation-fill-mode';
-import { AnimationIterationCountStyle } from './animation-iteration-count';
-import { AnimationNameStyle } from './animation-name';
-import { AnimationPlayStateStyle } from './animation-play-state';
-import { AnimationTimingFunctionStyle } from './animation-timing-function';
-import { AnimationStyle } from './animation';
-import { BorderColorStyle } from './border-color';
-import { BorderRadiusStyle } from './border-radius';
-import { BorderStyleStyle } from './border-style';
-import { BorderWidthStyle } from './border-width';
-import { BorderStyle } from './border';
-import { BackgroundAttachmentStyle } from './background-attachment';
-import { BackgroundBlendModeStyle } from './background-blend-mode';
-import { BackgroundClipStyle } from './background-clip';
-import { BackgroundColorStyle } from './background-color';
-import { BackgroundOriginStyle } from './background-origin';
-import { BackgroundPositionStyle } from './background-position';
-import { BackgroundRepeatStyle } from './background-repeat';
-import { BackgroundSizeStyle } from './background-size';
-import { BackgroundImageStyle } from './background-image';
-import { BackgroundStyle } from './background';
-import { MixBlendModeStyle } from './mix-blend-mode';
-import { PositionStyle } from './position';
-import { PlacementStyle } from './placement';
-import { BackdropFilterStyle } from './backdrop-filter';
-import { FillStyle } from './fill';
-import { StrokeStyle } from './stroke';
-import { StrokeWidthStyle } from './stroke-width';
-import { FilterStyle } from './filter';
-import { CursorStyle } from './cursor';
-import { PointerEventsStyle } from './pointer-events';
-import { ResizeStyle } from './resize';
-import { TouchActionStyle } from './touch-action';
-import { UserDragStyle } from './user-drag';
-import { UserSelectStyle } from './user-select';
-import { BoxShadowStyle } from './box-shadow';
-import { TextShadowStyle } from './text-shadow';
-import { TextSizeStyle } from './text-size';
-import { WordBreakStyle } from './word-break';
-import { GridColumnsStyle } from './grid-columns';
-import { GridRowsStyle } from './grid-rows';
-import { GapStyle } from './gap';
-import { WordSpacingStyle } from './word-spacing';
-import { VariableStyle } from './variable';
-import { AspectRadioStyle } from './aspect-radio';
-import { BoxDecorationBreakStyle } from './box-decoration-break';
-import { BreakAfterStyle } from './break-after';
-import { BreakBeforeStyle } from './break-before';
-import { BreakInsideStyle } from './break-inside';
-import { FlexShrinkStyle } from './flex-shrink';
-import { FlexDirectionStyle } from './flex-direction';
-import { FlexGrowStyle } from './flex-grow';
-import { FlexWrapStyle } from './flex-wrap';
-import { FlexBasisStyle } from './flex-basis';
-import { FlexStyle } from './flex';
-import { OrderStyle } from './order';
-import { GridColumnStyle } from './grid-column';
-import { ColumnSpanStyle } from './column-span';
-import { GridRowStyle } from './grid-row';
-import { FontColorStyle } from './font-color';
-import { AlignContentStyle } from './align-content';
-import { AlignItemsStyle } from './align-items';
-import { AlignSelfStyle } from './align-self';
-import { GridAutoColumnsStyle } from './grid-auto-columns';
-import { GridAutoFlowStyle } from './grid-auto-flow';
-import { GridAutoRowsStyle } from './grid-auto-rows';
-import { JustifyContentStyle } from './justify-content';
-import { JustifyItemsStyle } from './justify-items';
-import { JustifySelfStyle } from './justify-self';
-import { PlaceContentStyle } from './place-content';
-import { PlaceItemsStyle } from './place-items';
-import { PlaceSelfStyle } from './place-self';
-import { PaddingStyle } from './padding';
-import { MarginStyle } from './margin';
-import { TextOverflowStyle } from './text-overflow';
-import { ListStylePositionStyle } from './list-style-position';
-import { ListStyleTypeStyle } from './list-style-type';
-import { ListStyleStyle } from './list-style';
-import { TextDecorationColorStyle } from './text-decoration-color';
-import { TextDecorationStyleStyle } from './text-decoration-style';
-import { TextDecorationThicknessStyle } from './text-decoration-thickness';
-import { TextIndentStyle } from './text-indent';
-import { ContentStyle } from './content';
-import { OutlineColorStyle } from './outline-color';
-import { OutlineOffsetStyle } from './outline-offset';
-import { OutlineStyleStyle } from './outline-style';
-import { OutlineWidthStyle } from './outline-width';
-import { OutlineStyle } from './outline';
-import { BorderCollapseStyle } from './border-collapse';
-import { BorderSpacingStyle } from './border-spacing';
-import { TableLayoutStyle } from './table-layout';
-import { AccentColorStyle } from './accent-color';
-import { AppearanceStyle } from './appearance';
-import { CaretColorStyle } from './caret-color';
-import { ScrollBehaviorStyle } from './scroll-behavior';
-import { ScrollMarginStyle } from './scroll-margin';
-import { ScrollPaddingStyle } from './scroll-padding';
-import { ScrollSnapAlignStyle } from './scroll-snap-align';
-import { ScrollSnapStopStyle } from './scroll-snap-stop';
-import { ScrollSnapTypeStyle } from './scroll-snap-type';
-import { WillChangeStyle } from './will-change';
-import { TextUnderlineOffsetStyle } from './text-underline-offset';
-import { InsetStyle } from './inset';
-import { ColumnsStyle } from './columns';
-import { WhiteSpaceStyle } from './white-space';
-import { TextOrientationStyle } from './text-orientation';
-import { WritingModeStyle } from './writing-mode';
-import { ContainStyle } from './contain';
-import { AnimationDurationStyle } from './animation-duration';
-import { TextRenderingStyle } from './text-rendering';
-import { DirectionStyle } from './direction';
-import { TextDecorationLineStyle } from './text-decoration-line';
-import { GridColumnStartStyle } from './grid-column-start';
-import { ListStyleImageStyle } from './list-style-image';
-import { ShapeOutsideStyle } from './shape-outside';
-import { ShapeMarginStyle } from './shape-margin';
-import { ShapeImageThresholdStyle } from './shape-image-threshold';
-import { ClipPathStyle } from './clip-path';
-import { GridStyle } from './grid';
-import { FontStyle } from './font';
-import { QuotesStyle } from './quotes';
-import { GridTemplateStyle } from './grid-template';
-import { GridRowStartStyle } from './grid-row-start';
-import { GridTemplateAreasStyle } from './grid-template-areas';
-import { GridTemplateColumnsStyle } from './grid-template-columns';
-import { GridTemplateRowsStyle } from './grid-template-rows';
-import { GridAreaStyle } from './grid-area';
-import { GridColumnEndStyle } from './grid-column-end';
-import { GridRowEndStyle } from './grid-row-end';
-import { MaskImageStyle } from './mask-image';
-import { TextFillColorStyle } from './text-fill-color';
-import { TextStrokeStyle } from './text-stroke';
-import { TextStrokeWidthStyle } from './text-stroke-width';
-import { TextStrokeColorStyle } from './text-stroke-color';
-import { StrokeDasharrayStyle } from './stroke-dasharray';
-import { StrokeDashoffsetStyle } from './stroke-dashoffset';
+import { FontWeight } from './font-weight';
+import { FontFamily } from './font-family';
+import { FontSize } from './font-size';
+import { Spacing } from './spacing';
+import { Width } from './width';
+import { Height } from './height';
+import { MinWidth } from './min-width';
+import { MinHeight } from './min-height';
+import { LetterSpacing } from './letter-spacing';
+import { FontSmoothing } from './font-smoothing';
+import { FontStyle } from './font-style';
+import { FontVariantNumeric } from './font-variant-numeric';
+import { LineHeight } from './line-height';
+import { ObjectFit } from './object-fit';
+import { ObjectPosition } from './object-position';
+import { TextAlign } from './text-align';
+import { TextDecoration } from './text-decoration';
+import { TextTransform } from './text-transform';
+import { VerticalAlign } from './vertical-align';
+import { Lines } from './lines';
+import { TransformOrigin } from './transform-origin';
+import { TransformStyle } from './transform-style';
+import { TransformBox } from './transform-box';
+import { Transform } from './transform';
+import { Transition } from './transition';
+import { TransitionDelay } from './transition-delay';
+import { TransitionDuration } from './transition-duration';
+import { TransitionProperty } from './transition-property';
+import { TransitionTimingFunction } from './transition-timing-function';
+import { MaxHeight } from './max-height';
+import { MaxWidth } from './max-width';
+import { Display } from './display';
+import { BoxSizing } from './box-sizing';
+import { Opacity } from './opacity';
+import { Visibility } from './visibility';
+import { Clear } from './clear';
+import { Float } from './float';
+import { Isolation } from './isolation';
+import { Overflow } from './overflow';
+import { OverscrollBehavior } from './overscroll-behavior';
+import { ZIndex } from './z-index';
+import { AnimationDelay } from './animation-delay';
+import { AnimationDirection } from './animation-direction';
+import { AnimationFillMode } from './animation-fill-mode';
+import { AnimationIterationCount } from './animation-iteration-count';
+import { AnimationName } from './animation-name';
+import { AnimationPlayState } from './animation-play-state';
+import { AnimationTimingFunction } from './animation-timing-function';
+import { Animation } from './animation';
+import { BorderColor } from './border-color';
+import { BorderRadius } from './border-radius';
+import { BorderStyle } from './border-style';
+import { BorderWidth } from './border-width';
+import { Border } from './border';
+import { BackgroundAttachment } from './background-attachment';
+import { BackgroundBlendMode } from './background-blend-mode';
+import { BackgroundClip } from './background-clip';
+import { BackgroundColor } from './background-color';
+import { BackgroundOrigin } from './background-origin';
+import { BackgroundPosition } from './background-position';
+import { BackgroundRepeat } from './background-repeat';
+import { BackgroundSize } from './background-size';
+import { BackgroundImage } from './background-image';
+import { Background } from './background';
+import { MixBlendMode } from './mix-blend-mode';
+import { Position } from './position';
+import { Placement } from './placement';
+import { BackdropFilter } from './backdrop-filter';
+import { Fill } from './fill';
+import { Stroke } from './stroke';
+import { StrokeWidth } from './stroke-width';
+import { Filter } from './filter';
+import { Cursor } from './cursor';
+import { PointerEvents } from './pointer-events';
+import { Resize } from './resize';
+import { TouchAction } from './touch-action';
+import { UserDrag } from './user-drag';
+import { UserSelect } from './user-select';
+import { BoxShadow } from './box-shadow';
+import { TextShadow } from './text-shadow';
+import { TextSize } from './text-size';
+import { WordBreak } from './word-break';
+import { GridColumns } from './grid-columns';
+import { GridRows } from './grid-rows';
+import { Gap } from './gap';
+import { WordSpacing } from './word-spacing';
+import { Variable } from './variable';
+import { AspectRadio } from './aspect-radio';
+import { BoxDecorationBreak } from './box-decoration-break';
+import { BreakAfter } from './break-after';
+import { BreakBefore } from './break-before';
+import { BreakInside } from './break-inside';
+import { FlexShrink } from './flex-shrink';
+import { FlexDirection } from './flex-direction';
+import { FlexGrow } from './flex-grow';
+import { FlexWrap } from './flex-wrap';
+import { FlexBasis } from './flex-basis';
+import { Flex } from './flex';
+import { Order } from './order';
+import { GridColumn } from './grid-column';
+import { ColumnSpan } from './column-span';
+import { GridRow } from './grid-row';
+import { FontColor } from './font-color';
+import { AlignContent } from './align-content';
+import { AlignItems } from './align-items';
+import { AlignSelf } from './align-self';
+import { GridAutoColumns } from './grid-auto-columns';
+import { GridAutoFlow } from './grid-auto-flow';
+import { GridAutoRows } from './grid-auto-rows';
+import { JustifyContent } from './justify-content';
+import { JustifyItems } from './justify-items';
+import { JustifySelf } from './justify-self';
+import { PlaceContent } from './place-content';
+import { PlaceItems } from './place-items';
+import { PlaceSelf } from './place-self';
+import { Padding } from './padding';
+import { Margin } from './margin';
+import { TextOverflow } from './text-overflow';
+import { ListStylePosition } from './list-style-position';
+import { ListStyleType } from './list-style-type';
+import { ListStyle } from './list-style';
+import { TextDecorationColor } from './text-decoration-color';
+import { TextDecorationStyle } from './text-decoration-style';
+import { TextDecorationThickness } from './text-decoration-thickness';
+import { TextIndent } from './text-indent';
+import { Content } from './content';
+import { OutlineColor } from './outline-color';
+import { OutlineOffset } from './outline-offset';
+import { OutlineStyle } from './outline-style';
+import { OutlineWidth } from './outline-width';
+import { Outline } from './outline';
+import { BorderCollapse } from './border-collapse';
+import { BorderSpacing } from './border-spacing';
+import { TableLayout } from './table-layout';
+import { AccentColor } from './accent-color';
+import { Appearance } from './appearance';
+import { CaretColor } from './caret-color';
+import { ScrollBehavior } from './scroll-behavior';
+import { ScrollMargin } from './scroll-margin';
+import { ScrollPadding } from './scroll-padding';
+import { ScrollSnapAlign } from './scroll-snap-align';
+import { ScrollSnapStop } from './scroll-snap-stop';
+import { ScrollSnapType } from './scroll-snap-type';
+import { WillChange } from './will-change';
+import { TextUnderlineOffset } from './text-underline-offset';
+import { Inset } from './inset';
+import { Columns } from './columns';
+import { WhiteSpace } from './white-space';
+import { TextOrientation } from './text-orientation';
+import { WritingMode } from './writing-mode';
+import { Contain } from './contain';
+import { AnimationDuration } from './animation-duration';
+import { TextRendering } from './text-rendering';
+import { Direction } from './direction';
+import { TextDecorationLine } from './text-decoration-line';
+import { GridColumnStart } from './grid-column-start';
+import { ListStyleImage } from './list-style-image';
+import { ShapeOutside } from './shape-outside';
+import { ShapeMargin } from './shape-margin';
+import { ShapeImageThreshold } from './shape-image-threshold';
+import { ClipPath } from './clip-path';
+import { Grid } from './grid';
+import { Font } from './font';
+import { Quotes } from './quotes';
+import { GridTemplate } from './grid-template';
+import { GridRowStart } from './grid-row-start';
+import { GridTemplateAreas } from './grid-template-areas';
+import { GridTemplateColumns } from './grid-template-columns';
+import { GridTemplateRows } from './grid-template-rows';
+import { GridArea } from './grid-area';
+import { GridColumnEnd } from './grid-column-end';
+import { GridRowEnd } from './grid-row-end';
+import { MaskImage } from './mask-image';
+import { TextFillColor } from './text-fill-color';
+import { TextStroke } from './text-stroke';
+import { TextStrokeWidth } from './text-stroke-width';
+import { TextStrokeColor } from './text-stroke-color';
+import { StrokeDasharray } from './stroke-dasharray';
+import { StrokeDashoffset } from './stroke-dashoffset';
 
 const hasWindow = typeof window !== 'undefined';
 
 export const Styles = [
-    VariableStyle,
-    FontWeightStyle,
-    FontFamilyStyle,
-    FontColorStyle,
-    SpacingStyle,
-    MarginStyle,
-    PaddingStyle,
-    FontSizeStyle,
+    Variable,
+    FontWeight,
+    FontFamily,
+    FontColor,
+    Spacing,
+    Margin,
+    Padding,
+    FontSize,
     // flex
-    FlexBasisStyle,
-    FlexWrapStyle,
-    FlexGrowStyle,
-    FlexShrinkStyle,
-    FlexDirectionStyle,
-    FlexStyle, // last
-    DisplayStyle, // after FlexStyle
-    WidthStyle,
-    HeightStyle,
-    MinWidthStyle,
-    MinHeightStyle,
-    ContainStyle,
-    ContentStyle,
-    LetterSpacingStyle,
-    FontSmoothingStyle,
-    FontStyleStyle,
-    FontVariantNumericStyle,
+    FlexBasis,
+    FlexWrap,
+    FlexGrow,
+    FlexShrink,
+    FlexDirection,
+    Flex, // last
+    Display, // after FlexStyle
+    Width,
+    Height,
+    MinWidth,
+    MinHeight,
+    Contain,
+    Content,
+    LetterSpacing,
+    FontSmoothing,
     FontStyle,
-    LineHeightStyle,
-    ObjectFitStyle,
-    ObjectPositionStyle,
-    TextAlignStyle,
-    TextDecorationColorStyle,
-    TextDecorationStyleStyle,
-    TextDecorationThicknessStyle,
-    TextDecorationLineStyle,
+    FontVariantNumeric,
+    Font,
+    LineHeight,
+    ObjectFit,
+    ObjectPosition,
+    TextAlign,
+    TextDecorationColor,
     TextDecorationStyle,
-    TextUnderlineOffsetStyle,
-    TextOverflowStyle,
-    TextOrientationStyle,
-    TextTransformStyle,
-    TextRenderingStyle,
-    TextIndentStyle,
-    VerticalAlignStyle,
-    ColumnsStyle,
-    WhiteSpaceStyle,
-    InsetStyle,
-    LinesStyle,
-    MaxHeightStyle,
-    MaxWidthStyle,
-    BoxSizingStyle,
-    OpacityStyle,
-    VisibilityStyle,
-    ClearStyle,
-    FloatStyle,
-    IsolationStyle,
-    OverflowStyle,
-    OverscrollBehaviorStyle,
-    ZIndexStyle,
-    PositionStyle,
-    PlacementStyle,
-    CursorStyle,
-    PointerEventsStyle,
-    ResizeStyle,
-    TouchActionStyle,
-    WordBreakStyle,
-    WordSpacingStyle,
-    UserDragStyle,
-    UserSelectStyle,
-    TextShadowStyle,
-    TextSizeStyle,
-    TextFillColorStyle,
-    TextStrokeWidthStyle,
-    TextStrokeColorStyle,
-    TextStrokeStyle,
-    BoxShadowStyle,
-    TableLayoutStyle,
+    TextDecorationThickness,
+    TextDecorationLine,
+    TextDecoration,
+    TextUnderlineOffset,
+    TextOverflow,
+    TextOrientation,
+    TextTransform,
+    TextRendering,
+    TextIndent,
+    VerticalAlign,
+    Columns,
+    WhiteSpace,
+    Inset,
+    Lines,
+    MaxHeight,
+    MaxWidth,
+    BoxSizing,
+    Opacity,
+    Visibility,
+    Clear,
+    Float,
+    Isolation,
+    Overflow,
+    OverscrollBehavior,
+    ZIndex,
+    Position,
+    Placement,
+    Cursor,
+    PointerEvents,
+    Resize,
+    TouchAction,
+    WordBreak,
+    WordSpacing,
+    UserDrag,
+    UserSelect,
+    TextShadow,
+    TextSize,
+    TextFillColor,
+    TextStrokeWidth,
+    TextStrokeColor,
+    TextStroke,
+    BoxShadow,
+    TableLayout,
     // transform
-    TransformBoxStyle,
-    TransformStyleStyle,
-    TransformOriginStyle,
-    TransformStyle, // last
+    TransformBox,
+    TransformStyle,
+    TransformOrigin,
+    Transform, // last
     // transition
-    TransitionPropertyStyle,
-    TransitionTimingFunctionStyle,
-    TransitionDurationStyle,
-    TransitionDelayStyle,
-    TransitionStyle, // last
+    TransitionProperty,
+    TransitionTimingFunction,
+    TransitionDuration,
+    TransitionDelay,
+    Transition, // last
     // animation
-    AnimationDelayStyle,
-    AnimationDirectionStyle,
-    AnimationDurationStyle,
-    AnimationFillModeStyle,
-    AnimationIterationCountStyle,
-    AnimationNameStyle,
-    AnimationPlayStateStyle,
-    AnimationTimingFunctionStyle,
-    AnimationStyle,
+    AnimationDelay,
+    AnimationDirection,
+    AnimationDuration,
+    AnimationFillMode,
+    AnimationIterationCount,
+    AnimationName,
+    AnimationPlayState,
+    AnimationTimingFunction,
+    Animation,
     // border
-    BorderColorStyle,
-    BorderRadiusStyle,
-    BorderStyleStyle,
-    BorderWidthStyle,
-    BorderCollapseStyle,
-    BorderSpacingStyle,
+    BorderColor,
+    BorderRadius,
     BorderStyle,
+    BorderWidth,
+    BorderCollapse,
+    BorderSpacing,
+    Border,
     // background
-    BackgroundAttachmentStyle,
-    BackgroundBlendModeStyle,
-    BackgroundClipStyle,
-    BackgroundColorStyle,
-    BackgroundOriginStyle,
-    BackgroundPositionStyle,
-    BackgroundRepeatStyle,
-    BackgroundSizeStyle,
-    BackgroundImageStyle,
-    BackgroundStyle,
+    BackgroundAttachment,
+    BackgroundBlendMode,
+    BackgroundClip,
+    BackgroundColor,
+    BackgroundOrigin,
+    BackgroundPosition,
+    BackgroundRepeat,
+    BackgroundSize,
+    BackgroundImage,
+    Background,
     // effect
-    MixBlendModeStyle,
-    BackdropFilterStyle,
-    FilterStyle,
+    MixBlendMode,
+    BackdropFilter,
+    Filter,
     // svg
-    FillStyle,
-    StrokeDasharrayStyle,
-    StrokeDashoffsetStyle,
-    StrokeWidthStyle,
-    StrokeStyle,
+    Fill,
+    StrokeDasharray,
+    StrokeDashoffset,
+    StrokeWidth,
+    Stroke,
     // grid
-    GridColumnStartStyle,
-    GridColumnEndStyle,
-    GridColumnStyle,
-    GridColumnsStyle,
-    GridRowStartStyle,
-    GridRowEndStyle,
-    GridRowStyle,
-    GridRowsStyle,
-    GridAutoColumnsStyle,
-    GridAutoFlowStyle,
-    GridAutoRowsStyle,
-    GridTemplateAreasStyle,
-    GridTemplateColumnsStyle,
-    GridTemplateRowsStyle,
-    GridTemplateStyle,
-    GridAreaStyle,
-    GridStyle,
-    GapStyle,
-    OrderStyle,
+    GridColumnStart,
+    GridColumnEnd,
+    GridColumn,
+    GridColumns,
+    GridRowStart,
+    GridRowEnd,
+    GridRow,
+    GridRows,
+    GridAutoColumns,
+    GridAutoFlow,
+    GridAutoRows,
+    GridTemplateAreas,
+    GridTemplateColumns,
+    GridTemplateRows,
+    GridTemplate,
+    GridArea,
+    Grid,
+    Gap,
+    Order,
     // break
-    BreakInsideStyle,
-    BreakBeforeStyle,
-    BreakAfterStyle,
-    BoxDecorationBreakStyle,
-    AspectRadioStyle,
-    ColumnSpanStyle,
+    BreakInside,
+    BreakBefore,
+    BreakAfter,
+    BoxDecorationBreak,
+    AspectRadio,
+    ColumnSpan,
     // align
-    AlignContentStyle,
-    AlignItemsStyle,
-    AlignSelfStyle,
+    AlignContent,
+    AlignItems,
+    AlignSelf,
     // justify
-    JustifyContentStyle,
-    JustifyItemsStyle,
-    JustifySelfStyle,
+    JustifyContent,
+    JustifyItems,
+    JustifySelf,
     // place
-    PlaceContentStyle,
-    PlaceItemsStyle,
-    PlaceSelfStyle,
-    ListStylePositionStyle,
-    ListStyleTypeStyle,
-    ListStyleImageStyle,
-    ListStyleStyle,
+    PlaceContent,
+    PlaceItems,
+    PlaceSelf,
+    ListStylePosition,
+    ListStyleType,
+    ListStyleImage,
+    ListStyle,
     // outline
-    OutlineColorStyle,
-    OutlineOffsetStyle,
-    OutlineStyleStyle,
-    OutlineWidthStyle,
+    OutlineColor,
+    OutlineOffset,
     OutlineStyle,
-    AccentColorStyle,
-    AppearanceStyle,
-    CaretColorStyle,
+    OutlineWidth,
+    Outline,
+    AccentColor,
+    Appearance,
+    CaretColor,
     // scroll
-    ScrollBehaviorStyle,
-    ScrollMarginStyle,
-    ScrollPaddingStyle,
-    ScrollSnapAlignStyle,
-    ScrollSnapStopStyle,
-    ScrollSnapTypeStyle,
-    WillChangeStyle,
-    WritingModeStyle,
-    DirectionStyle,
-    ShapeOutsideStyle,
-    ShapeMarginStyle,
-    ShapeImageThresholdStyle,
-    ClipPathStyle,
-    QuotesStyle,
+    ScrollBehavior,
+    ScrollMargin,
+    ScrollPadding,
+    ScrollSnapAlign,
+    ScrollSnapStop,
+    ScrollSnapType,
+    WillChange,
+    WritingMode,
+    Direction,
+    ShapeOutside,
+    ShapeMargin,
+    ShapeImageThreshold,
+    ClipPath,
+    Quotes,
     MaskImageStyle
 ]
 

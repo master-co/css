@@ -1,6 +1,6 @@
 import { Style } from '@master/style';
 
-export class TextStrokeColorStyle extends Style {
+export class TextStrokeColor extends Style {
     static override matches = /^text-stroke-color:./;
     static override colorStarts = 'text-stroke:';
     static override colorful = true;

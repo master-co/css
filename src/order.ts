@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 const extreme = '999999';
 
-export class OrderStyle extends Style {
+export class Order extends Style {
     static override matches = /^o(rder)?:./;
     static override key = ORDER;
     static override values = {

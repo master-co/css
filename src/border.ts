@@ -2,7 +2,7 @@ import { Style } from '@master/style';
 import { BORDER } from './constants/css-property-keyword';
 import { getBorderProps } from './utils/get-border-props';
 
-export class BorderStyle extends Style {
+export class Border extends Style {
     static override matches = /^b([xytblr]?|order(-(left|right|top|bottom))?):./;
     static override colorful = true;
     override get props(): { [key: string]: any } {

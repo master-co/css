@@ -2,7 +2,7 @@ import { BOX, BREAK, DASH, ELLIPSIS, HIDDEN, VERTICAL, WORD } from './constants/
 import { WEBKIT_PREFIX } from './constants/css-browser-prefix';
 import { Style } from '@master/style';
 
-export class LinesStyle extends Style {
+export class Lines extends Style {
     static override matches = /^lines:./;
     static override unit = '';
     override get props(): { [key: string]: any } {

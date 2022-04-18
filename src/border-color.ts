@@ -2,7 +2,7 @@ import { Style } from '@master/style';
 import { BORDER, COLOR, DASH } from './constants/css-property-keyword';
 import { getBorderProps } from './utils/get-border-props';
 
-export class BorderColorStyle extends Style {
+export class BorderColor extends Style {
     static override matches = /^border(-(left|right|top|bottom))?-color:./;
     static override colorStarts = 'b([xytblr]|(order(-(left|right|top|bottom))?))?:';
     static override colorful = true;

@@ -1,7 +1,7 @@
 import { DASH, OVERSCROLL_BEHAVIOR, X, Y } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
-export class OverscrollBehaviorStyle extends Style {
+export class OverscrollBehavior extends Style {
     static override matches = /^overscroll-behavior(-x|-y)?:./;
     override get props(): { [key: string]: any } {
         switch (this.prefix.slice(-2, -1)) {
