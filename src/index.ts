@@ -376,7 +376,7 @@ export const Styles = [
     ShapeImageThreshold,
     ClipPath,
     Quotes,
-    MaskImageStyle
+    MaskImage
 ]
 
 export const colors = {
