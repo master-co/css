@@ -1,7 +1,7 @@
 import { REM } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
-export class TextSizeStyle extends Style {
+export class TextSize extends Style {
     static id = 'textSize';
     static override matches = /^t(ext)?:([0-9]|(max|min|calc|clamp)\(.*\))((?!;).)*$/;
     override get props(): { [key: string]: any } {

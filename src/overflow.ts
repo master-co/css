@@ -1,7 +1,7 @@
 import { X, Y } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
-export class OverflowStyle extends Style {
+export class Overflow extends Style {
     static id = 'overflow';
     static override matches = /^(overflow|ovf)(-x|-y)?:./;
     override get props(): { [key: string]: any } {

@@ -1,7 +1,7 @@
 import { Style } from '@master/style';
 import { SQUARE, VIDEO, ASPECT, RATIO, DASH } from './constants/css-property-keyword';
 
-export class AspectRadioStyle extends Style {
+export class AspectRadio extends Style {
     static override matches = /^aspect:./;
     static override key = ASPECT + DASH + RATIO;
     static override unit = '';

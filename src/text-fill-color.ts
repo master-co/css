@@ -1,6 +1,6 @@
 import { Style } from '@master/style';
 
-export class TextFillColorStyle extends Style {
+export class TextFillColor extends Style {
     static id = 'textFillColor';
     static override matches = /^text-fill-color:./;
     static override colorStarts = 'text-fill:';

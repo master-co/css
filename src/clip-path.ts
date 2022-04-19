@@ -1,7 +1,7 @@
 import { BORDER, BOX, CLIP, CONTENT, DASH, FILL, MARGIN, PADDING, STROKE, VIEW } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
-export class ClipPathStyle extends Style {
+export class ClipPath extends Style {
     static override matches = /^clip:./
     static override key = CLIP + DASH + 'path';
     static override values = {

@@ -2,7 +2,7 @@ import { Style } from '@master/style';
 import { BORDER, DASH, WIDTH } from './constants/css-property-keyword';
 import { getBorderProps } from './utils/get-border-props';
 
-export class BorderWidthStyle extends Style {
+export class BorderWidth extends Style {
     static id = 'borderWidth';
     static override matches = /^(border(-(left|right|top|bottom))?-width:.|b([xytblr]|order(-(left|right|top|bottom))?)?:(([0-9]|(max|min|calc|clamp)\(.*\))|(max|min|calc|clamp)\(.*\))((?!;).)*$)/;
     override get props(): { [key: string]: any } {

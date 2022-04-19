@@ -1,6 +1,6 @@
 import { DASH, STROKE } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
-export class StrokeDasharrayStyle extends Style {
+export class StrokeDasharray extends Style {
     static override key = STROKE + DASH + 'dasharray';
 }

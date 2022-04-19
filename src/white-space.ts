@@ -1,7 +1,7 @@
 import { BREAK, DASH, SPACE, WHITE } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
-export class WhiteSpaceStyle extends Style {
+export class WhiteSpace extends Style {
     static override key = WHITE + DASH + SPACE;
     static override unit = '';
     static override semantics = {

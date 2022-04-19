@@ -3,7 +3,7 @@ import { BOTTOM, LEFT, RIGHT, TOP } from './constants/direction';
 import { Style } from '@master/style';
 
 // TODO: id
-export class PlacementStyle extends Style {
+export class Placement extends Style {
     static override matches = /^(top|left|right|bottom|center|middle):./;
     override get props(): { [key: string]: any } {
         const propertyName = this.prefix.slice(0, -1);

@@ -1,7 +1,7 @@
 import { COLUMN, DASH, GRID, SPAN } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
-export class GridColumnStyle extends Style {
+export class GridColumn extends Style {
     static override matches = /^grid-col(umn)?(-span)?:./;
     static override key = GRID + DASH + COLUMN;
     static override unit = '';

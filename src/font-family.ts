@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 const VAR_FONT = VAR_START + 'font' + DASH;
 
-export class FontFamilyStyle extends Style {
+export class FontFamily extends Style {
     static override matches = /^f(ont)?:(mono|sans|serif)(?!;)/;
     static override key = FONT + DASH + FAMILY;
     static override values = {

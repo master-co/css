@@ -1,6 +1,6 @@
 import { DASH, JUSTIFY, SELF } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
-export class JustifySelfStyle extends Style {
+export class JustifySelf extends Style {
     static override key = JUSTIFY + DASH + SELF;
 }
