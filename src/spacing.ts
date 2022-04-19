@@ -1,5 +1,5 @@
 import { Style } from '@master/style';
-import { DASH, MARGIN, PADDING } from './constants/css-property-keyword';
+import { dash, MARGIN, PADDING } from './constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from './constants/direction';
 
 // TODO: id
@@ -8,10 +8,10 @@ export class Spacing extends Style {
     override get props(): { [key: string]: any } {
         const charAt1 = this.prefix[0];
         const SPACING = charAt1 === 'm' ? MARGIN : PADDING;
-        const SPACING_LEFT = SPACING + DASH + LEFT;
-        const SPACING_RIGHT = SPACING + DASH + RIGHT;
-        const SPACING_TOP = SPACING + DASH + TOP;
-        const SPACING_BOTTOM = SPACING + DASH + BOTTOM;
+        const SPACING_LEFT = dash(SPACING, LEFT);
+        const SPACING_RIGHT = dash(SPACING, RIGHT);
+        const SPACING_TOP = dash(SPACING, TOP);
+        const SPACING_BOTTOM = dash(SPACING, BOTTOM);
         switch (this.prefix[1]) {
             case X:
                 return {

@@ -1,4 +1,4 @@
-import { BLOCK, DASH, DISPLAY, FLEX, GRID, INLINE, TABLE, CONTENTS, NONE } from './constants/css-property-keyword';
+import { BLOCK, dash, DISPLAY, FLEX, GRID, INLINE, TABLE, CONTENTS, NONE } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class Display extends Style {
@@ -10,9 +10,9 @@ export class Display extends Style {
         block: BLOCK,
         table: TABLE,
         contents: CONTENTS,
-        'inline-block': INLINE + DASH + BLOCK,
-        'inline-flex': INLINE + DASH + FLEX,
-        'inline-grid': INLINE + DASH + GRID,
-        'inline-table': INLINE + DASH + TABLE
+        'inline-block': dash(INLINE, BLOCK),
+        'inline-flex': dash(INLINE, FLEX),
+        'inline-grid': dash(INLINE, GRID),
+        'inline-table': dash(INLINE, TABLE)
     }
 }

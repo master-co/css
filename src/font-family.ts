@@ -1,14 +1,14 @@
-import { DASH, FAMILY, FONT, MONO, SANS, SERIF, VAR_END, VAR_START } from './constants/css-property-keyword';
+import { dash, FAMILY, FONT, MONO, SANS, SERIF } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
-const VAR_FONT = VAR_START + 'font' + DASH;
+const VAR_FONT = 'var(--' + FONT + '-';
 
 export class FontFamily extends Style {
     static override matches = /^f(ont)?:(mono|sans|serif)(?!;)/;
-    static override key = FONT + DASH + FAMILY;
+    static override key = dash(FONT, FAMILY);
     static override values = {
-        mono: VAR_FONT + MONO + VAR_END,
-        sans: VAR_FONT + SANS + VAR_END,
-        serif: VAR_FONT + SERIF + VAR_END
+        mono: VAR_FONT + MONO + ')',
+        sans: VAR_FONT + SANS + ')',
+        serif: VAR_FONT + SERIF + ')'
     }
 }

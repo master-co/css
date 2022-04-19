@@ -1,10 +1,10 @@
-import { AUTO, CONTENT, DASH, GRID, MAX, MIN, ROWS } from './constants/css-property-keyword';
+import { AUTO, CONTENT, dash, GRID, MAX, MIN, ROWS } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class GridAutoRows extends Style {
-    static override key = GRID + DASH + AUTO + DASH + ROWS;
+    static override key = dash(GRID, AUTO, ROWS);
     static override values = {
-        'min': MIN + DASH + CONTENT,
-        'max': MAX + DASH + CONTENT
+        'min': dash(MIN, CONTENT),
+        'max': dash(MAX, CONTENT)
     };
 }

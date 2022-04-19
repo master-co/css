@@ -1,10 +1,10 @@
 import { Style } from '@master/style';
-import { BACKDROP, BLUR, DASH, DEG, DROP, FILTER, HUE, REM, ROTATE, SHADOW } from './constants/css-property-keyword';
+import { BACKDROP, BLUR, dash, DEG, DROP, FILTER, HUE, REM, ROTATE, SHADOW } from './constants/css-property-keyword';
 import { parseValueUnit } from './utils/parse-value-unit';
 
 export class BackdropFilter extends Style {
     static override matches = /^bd:./;
-    static override key = BACKDROP + DASH + FILTER;
+    static override key = dash(BACKDROP, FILTER);
     override get props(): { [key: string]: any } {
         return {
             'backdrop-filter': this,
@@ -17,9 +17,9 @@ export class BackdropFilter extends Style {
             method => {
                 switch (method) {
                     case BLUR:
-                    case DROP + DASH + SHADOW:
+                    case dash(DROP, SHADOW):
                         return REM;
-                    case HUE + DASH + ROTATE:
+                    case dash(HUE, ROTATE):
                         return DEG;
                 }
 

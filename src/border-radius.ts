@@ -1,12 +1,12 @@
 import { Style } from '@master/style';
 import { TOP, RIGHT, BOTTOM, LEFT, T, B, L, R } from './constants/direction';
-import { BORDER, DASH, RADIUS, ROUND, ROUNDED } from './constants/css-property-keyword';
+import { BORDER, dash, RADIUS, ROUND, ROUNDED } from './constants/css-property-keyword';
 
-const BORDER_TOP_LEFT_RADIUS = BORDER + DASH + TOP + DASH + LEFT + DASH + RADIUS,
-    BORDER_TOP_RIGHT_RADIUS = BORDER + DASH + TOP + DASH + RIGHT + DASH + RADIUS,
-    BORDER_BOTTOM_LEFT_RADIUS = BORDER + DASH + BOTTOM + DASH + LEFT + DASH + RADIUS,
-    BORDER_BOTTOM_RIGHT_RADIUS = BORDER + DASH + BOTTOM + DASH + RIGHT + DASH + RADIUS,
-    BORDER_RADIUS = BORDER + DASH + RADIUS,
+const BORDER_TOP_LEFT_RADIUS = dash(BORDER, TOP, LEFT, RADIUS),
+    BORDER_TOP_RIGHT_RADIUS = dash(BORDER, TOP, RIGHT, RADIUS),
+    BORDER_BOTTOM_LEFT_RADIUS = dash(BORDER, BOTTOM, LEFT, RADIUS),
+    BORDER_BOTTOM_RIGHT_RADIUS = dash(BORDER, BOTTOM, RIGHT, RADIUS),
+    BORDER_RADIUS = dash(BORDER, RADIUS),
     BORDER_RADIUS_S = [BORDER_TOP_LEFT_RADIUS, BORDER_TOP_RIGHT_RADIUS, BORDER_BOTTOM_LEFT_RADIUS, BORDER_BOTTOM_RIGHT_RADIUS];
 
 export class BorderRadius extends Style {
@@ -81,6 +81,6 @@ export class BorderRadius extends Style {
         }
     }
     override get order(): number {
-        return (this.prefix === BORDER + DASH + RADIUS + ":" || this.prefix === 'r:') ? -1 : 0;
+        return (this.prefix === dash(BORDER, RADIUS) + ":" || this.prefix === 'r:') ? -1 : 0;
     }
 }

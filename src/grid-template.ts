@@ -1,7 +1,7 @@
-import { DASH, GRID, TEMPLATE } from './constants/css-property-keyword';
+import { dash, GRID, TEMPLATE } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class GridTemplate extends Style {
-    static override key = GRID + DASH + TEMPLATE;
+    static override key = dash(GRID, TEMPLATE);
     override order = -1;
 }

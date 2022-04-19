@@ -1,3 +1,4 @@
+export const dash = (...words: string[]) => words.join('-');
 export const DASH = '-';
 export const BORDER = 'border';
 export const RADIUS = 'radius';
@@ -62,7 +63,7 @@ export const VISIBLE = 'visible';
 export const Z_INDEX = 'z-index';
 export const CLEAR = 'clear';
 export const BEHAVIOR = 'behavior';
-export const OVERSCROLL_BEHAVIOR = 'overscroll' + DASH + BEHAVIOR;
+export const OVERSCROLL_BEHAVIOR = dash('overscroll', BEHAVIOR);
 export const Y = 'y';
 export const X = 'x';
 export const WEIGHT = 'weight';
@@ -135,11 +136,11 @@ export const SUBPIXEL = 'subpixel';
 export const LETTER = 'letter';
 export const FIRST = 'first';
 export const SPACING = 'spacing';
-export const LETTER_SPACING = LETTER + DASH + SPACING;
-export const MAX_WIDTH = MAX + DASH + WIDTH;
-export const MIN_WIDTH = MIN + DASH + WIDTH;
-export const MAX_HEIGHT = MAX + DASH + HEIGHT;
-export const MIN_HEIGHT = MIN + DASH + HEIGHT;
+export const LETTER_SPACING = dash(LETTER, SPACING);
+export const MAX_WIDTH = dash(MAX, WIDTH);
+export const MIN_WIDTH = dash(MIN, WIDTH);
+export const MAX_HEIGHT = dash(MAX, HEIGHT);
+export const MIN_HEIGHT = dash(MIN, HEIGHT);
 export const FONT_PREFIX = 'font:';
 export const F_PREFIX = 'f:';
 export const T_PREFIX = 't:';
@@ -183,8 +184,6 @@ export const ITEMS = ITEM + 's';
 export const SELF = 'self';
 export const PLACE = 'place';
 export const ITALIC = 'italic';
-export const VAR_START = 'var(--';
-export const VAR_END = ')';
 export const MONO = 'mono';
 export const SANS = 'sans';
 export const SERIF = 'serif';
@@ -214,9 +213,7 @@ export const DROP = 'drop';
 export const HUE = 'hue';
 export const SIZING_VALUES = {
     full: '100%',
-    fit: FIT + DASH + CONTENT,
-    max: MAX + DASH + CONTENT,
-    min: MIN + DASH + CONTENT
+    fit: dash(FIT, CONTENT),
+    max: dash(MAX, CONTENT),
+    min: dash(MIN, CONTENT)
 }
-
-export const dash = (...words: string[]) => words.join('-');

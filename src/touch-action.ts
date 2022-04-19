@@ -1,6 +1,6 @@
 import { Style } from '@master/style';
-import { ACTION, DASH, TOUCH } from './constants/css-property-keyword';
+import { ACTION, dash, TOUCH } from './constants/css-property-keyword';
 
 export class TouchAction extends Style {
-    static override key = TOUCH + DASH + ACTION;
+    static override key = dash(TOUCH, ACTION);
 }

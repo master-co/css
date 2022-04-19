@@ -1,7 +1,7 @@
 import { Style } from '@master/style';
-import { DASH, IMAGE, SHAPE } from './constants/css-property-keyword';
+import { dash, IMAGE, SHAPE } from './constants/css-property-keyword';
 
 export class ShapeImageThreshold extends Style {
-    static override key = SHAPE + DASH + IMAGE + DASH + 'threshold';
+    static override key = dash(SHAPE, IMAGE, 'threshold');
     static override unit = '';
 }

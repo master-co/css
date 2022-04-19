@@ -1,10 +1,10 @@
-import { ANTIALIASED, AUTO, DASH, FONT, GRAYSCALE, SMOOTHING, SUBPIXEL } from './constants/css-property-keyword';
+import { ANTIALIASED, AUTO, dash, FONT, GRAYSCALE, SMOOTHING, SUBPIXEL } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 import { MOZ_PREFIX, WEBKIT_PREFIX } from './constants/css-browser-prefix';
 
-const SUBPIXEL_ANTIALIASED = SUBPIXEL + DASH + ANTIALIASED;
-const WEBKIT_FONT_SMOOTHING = WEBKIT_PREFIX + FONT + DASH + SMOOTHING;
-const MOZ_OSXFONT_SMOOTHING = MOZ_PREFIX + 'osx' + FONT + DASH + SMOOTHING;
+const SUBPIXEL_ANTIALIASED = dash(SUBPIXEL, ANTIALIASED);
+const WEBKIT_FONT_SMOOTHING = dash(WEBKIT_PREFIX + FONT, SMOOTHING);
+const MOZ_OSXFONT_SMOOTHING = dash(MOZ_PREFIX + 'osx' + FONT, SMOOTHING);
 
 export class FontSmoothing extends Style {
     static id = 'fontSmoothing';

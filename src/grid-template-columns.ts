@@ -1,11 +1,11 @@
-import { COLUMNS, CONTENT, DASH, GRID, MAX, MIN, TEMPLATE } from './constants/css-property-keyword';
+import { COLUMNS, CONTENT, dash, GRID, MAX, MIN, TEMPLATE } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class GridTemplateColumns extends Style {
     static override matches = /^grid-template-cols:./;
-    static override key = GRID + DASH + TEMPLATE + DASH + COLUMNS;
+    static override key = dash(GRID, TEMPLATE, COLUMNS);
     static override values = {
-        'min': MIN + DASH + CONTENT,
-        'max': MAX + DASH + CONTENT
+        'min': dash(MIN, CONTENT),
+        'max': dash(MAX, CONTENT)
     };
 }

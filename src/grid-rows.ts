@@ -1,4 +1,4 @@
-import { ROWS, DASH, DISPLAY, FR, GRID, MAX, MIN, REPEAT, TEMPLATE, COMMA, AUTO, FLOW, COLUMN, dash } from './constants/css-property-keyword';
+import { ROWS, dash, DISPLAY, FR, GRID, MAX, MIN, REPEAT, TEMPLATE, COMMA, AUTO, FLOW, COLUMN, dash } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class GridRows extends Style {
@@ -7,8 +7,8 @@ export class GridRows extends Style {
     override get props(): { [key: string]: any } {
         return {
             [DISPLAY]: { ...this, value: GRID },
-            [GRID + DASH + AUTO + DASH + FLOW]: { ...this, value: COLUMN },
-            [GRID + DASH + TEMPLATE + DASH + ROWS]: {
+            [dash(GRID, AUTO, FLOW)]: { ...this, value: COLUMN },
+            [dash(GRID, TEMPLATE, ROWS)]: {
                 ...this,
                 value: REPEAT
                     + '(' + this.value

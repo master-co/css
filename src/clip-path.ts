@@ -1,16 +1,16 @@
-import { BORDER, BOX, CLIP, CONTENT, DASH, FILL, MARGIN, PADDING, STROKE, VIEW } from './constants/css-property-keyword';
+import { BORDER, BOX, CLIP, CONTENT, dash, FILL, MARGIN, PADDING, STROKE, VIEW } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class ClipPath extends Style {
     static override matches = /^clip:./
-    static override key = CLIP + DASH + 'path';
+    static override key = dash(CLIP, 'path');
     static override values = {
-        content: CONTENT + DASH + BOX,
-        border: BORDER + DASH + BOX,
-        padding: PADDING + DASH + BOX,
-        margin: MARGIN + DASH + BOX,
-        fill: FILL + DASH + BOX,
-        stroke: STROKE + DASH + BOX,
-        view: VIEW + DASH + BOX
+        content: dash(CONTENT, BOX),
+        border: dash(BORDER, BOX),
+        padding: dash(PADDING, BOX),
+        margin: dash(MARGIN, BOX),
+        fill: dash(FILL, BOX),
+        stroke: dash(STROKE, BOX),
+        view: dash(VIEW, BOX)
     }
 }

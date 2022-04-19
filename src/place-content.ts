@@ -1,7 +1,7 @@
-import { CONTENT, DASH, PLACE } from './constants/css-property-keyword';
+import { CONTENT, dash, PLACE } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class PlaceContent extends Style {
-    static override key = PLACE + DASH + CONTENT;
+    static override key = dash(PLACE, CONTENT);
     override order = -1;
 }

@@ -1,5 +1,5 @@
 import { Style } from '@master/style';
-import { DASH, MARGIN, SCROLL } from './constants/css-property-keyword';
+import { dash, MARGIN, SCROLL } from './constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from './constants/direction';
 
 export class ScrollMargin extends Style {
@@ -7,7 +7,7 @@ export class ScrollMargin extends Style {
     static override matches = /^scroll-m([xytblr]|argin(-(top|bottom|left|right))?)?:./;
     override get props(): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'm') {
-            const SCROLL_MARGIN_PREFIX = SCROLL + DASH + MARGIN + DASH,
+            const SCROLL_MARGIN_PREFIX = dash(SCROLL, MARGIN) + '-',
                 SCROLL_MARGIN_LEFT = SCROLL_MARGIN_PREFIX + LEFT,
                 SCROLL_MARGIN_RIGHT = SCROLL_MARGIN_PREFIX + RIGHT,
                 SCROLL_MARGIN_TOP = SCROLL_MARGIN_PREFIX + TOP,
@@ -48,6 +48,6 @@ export class ScrollMargin extends Style {
         }
     }
     override get order(): number {
-        return (this.prefix === SCROLL + DASH + MARGIN + ':' || this.prefix === SCROLL + DASH + 'm:') ? -1 : 0;
+        return (this.prefix === dash(SCROLL, MARGIN) + ':' || this.prefix === dash(SCROLL, 'm:')) ? -1 : 0;
     }
 }

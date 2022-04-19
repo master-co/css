@@ -1,5 +1,5 @@
 import { Style } from '@master/style';
-import { BORDER, DASH, STYLE } from './constants/css-property-keyword';
+import { BORDER, dash, STYLE } from './constants/css-property-keyword';
 import { getBorderProps } from './utils/get-border-props';
 
 export class BorderStyle extends Style {
@@ -9,6 +9,6 @@ export class BorderStyle extends Style {
         return getBorderProps(this.prefix, this, STYLE);
     }
     override get order(): number {
-        return (this.prefix === BORDER + DASH + STYLE + ":" || this.prefix === 'b:' || this.prefix === BORDER + ':') ? -1 : 0;
+        return (this.prefix === dash(BORDER, STYLE) + ":" || this.prefix === 'b:' || this.prefix === BORDER + ':') ? -1 : 0;
     }
 }
