@@ -377,7 +377,33 @@ export const Styles = [
     ClipPath,
     Quotes,
     MaskImage
-]
+] as Styles;
+
+/**
+ * @param query fontSize, 'font-size' 
+ * */
+const get = Styles.get = (query: string) => Styles.find((EachStyle) =>
+    query === EachStyle.id || query === EachStyle.key?.replace(/-./g, (m) => m[1].toUpperCase()) || query === EachStyle.key
+);
+
+/**
+ * @param property 'values', 'semantics' and all of the Style members
+ * */
+Styles.extend = (property, settings, refresh = true) => {
+    for (const query in settings) {
+        const EachStyle = get(property);
+        if (EachStyle) {
+            const eachSettings = settings[query];
+            const oldSettings = EachStyle[property];
+            oldSettings
+                ? Object.assign(oldSettings, eachSettings)
+                : EachStyle[property] = eachSettings;
+        }
+    }
+    if (refresh) {
+        StyleSheet.refresh();
+    }
+}
 
 export const colors = {
     fade: '63697c',
@@ -433,4 +459,9 @@ declare global {
     interface Window {
         MasterStyles: typeof Styles;
     }
+}
+
+export interface Styles extends Array<typeof Style> {
+    extend: (property: 'semantics' | 'values', settings: { [key: string]: { [key: string]: any } }, refresh?: boolean) => void;
+    get: (query: string) => typeof Style
 }
