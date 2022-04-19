@@ -1,8 +1,8 @@
 import { Style } from '@master/style';
+import { dash, IMAGE } from './constants/css-property-keyword';
 
 export class MaskImage extends Style {
-    static id = 'maskImage';
-    static override matches = /^mask-image:./;
+    static override key = dash('mask', IMAGE)
     override get props(): { [key: string]: any } {
         return {
             'mask-image': this,

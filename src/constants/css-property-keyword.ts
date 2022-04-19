@@ -218,3 +218,5 @@ export const SIZING_VALUES = {
     max: MAX + DASH + CONTENT,
     min: MIN + DASH + CONTENT
 }
+
+export const dash = (...words: string[]) => words.join('-');

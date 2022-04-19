@@ -3,7 +3,7 @@ import { Style } from '@master/style';
 
 export class OverscrollBehavior extends Style {
     static id = 'overscrollBehavior';
-    static override matches = /^overscroll-behavior(-x|-y)?:./;
+    static override matches = /^overscroll-behavior(?:-[xy])?:/;
     override get props(): { [key: string]: any } {
         switch (this.prefix.slice(-2, -1)) {
             case X:

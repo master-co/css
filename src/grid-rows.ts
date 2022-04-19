@@ -1,9 +1,8 @@
-import { ROWS, DASH, DISPLAY, FR, GRID, MAX, MIN, REPEAT, TEMPLATE, COMMA, AUTO, FLOW, COLUMN } from './constants/css-property-keyword';
+import { ROWS, DASH, DISPLAY, FR, GRID, MAX, MIN, REPEAT, TEMPLATE, COMMA, AUTO, FLOW, COLUMN, dash } from './constants/css-property-keyword';
 import { Style } from '@master/style';
 
 export class GridRows extends Style {
-    static id = 'gridRows';
-    static override matches = /^grid-rows:./;
+    static override key = dash(GRID, ROWS);
     static override unit = '';
     override get props(): { [key: string]: any } {
         return {
