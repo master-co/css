@@ -2,6 +2,7 @@ import { Style } from '@master/style';
 import { PADDING } from './constants/css-property-keyword';
 
 export class PaddingStyle extends Style {
+    static id = 'padding';
     static override matches = /^padding(-(left|right|top|bottom))?:./;
     override get props(): { [key: string]: any } {
         return {

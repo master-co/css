@@ -1,6 +1,7 @@
 import { Style } from '@master/style';
 
 export class MaskImageStyle extends Style {
+    static id = 'maskImage';
     static override matches = /^mask-image:./;
     override get props(): { [key: string]: any } {
         return {

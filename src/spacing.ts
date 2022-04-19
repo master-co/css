@@ -2,6 +2,7 @@ import { Style } from '@master/style';
 import { DASH, MARGIN, PADDING } from './constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from './constants/direction';
 
+// TODO: id
 export class SpacingStyle extends Style {
     static override matches = /^[pm][xytblr]?:./;
     override get props(): { [key: string]: any } {

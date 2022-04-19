@@ -1,6 +1,7 @@
 import { Style } from '@master/style';
 
 export class TextFillColorStyle extends Style {
+    static id = 'textFillColor';
     static override matches = /^text-fill-color:./;
     static override colorStarts = 'text-fill:';
     static override colorful = true;

@@ -3,6 +3,7 @@ import { BORDER, COLOR, DASH } from './constants/css-property-keyword';
 import { getBorderProps } from './utils/get-border-props';
 
 export class BorderColorStyle extends Style {
+    static id = 'borderColor';
     static override matches = /^border(-(left|right|top|bottom))?-color:./;
     static override colorStarts = 'b([xytblr]|(order(-(left|right|top|bottom))?))?:';
     static override colorful = true;

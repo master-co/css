@@ -2,6 +2,7 @@ import { CENTER, MIDDLE } from './constants/css-property-keyword';
 import { BOTTOM, LEFT, RIGHT, TOP } from './constants/direction';
 import { Style } from '@master/style';
 
+// TODO: id
 export class PlacementStyle extends Style {
     static override matches = /^(top|left|right|bottom|center|middle):./;
     override get props(): { [key: string]: any } {
