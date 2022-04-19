@@ -391,7 +391,7 @@ const get = Styles.get = (query: string) => Styles.find((EachStyle) =>
  * */
 Styles.extend = (property, settings, refresh = true) => {
     for (const query in settings) {
-        const EachStyle = get(property);
+        const EachStyle = get(query);
         if (EachStyle) {
             const eachSettings = settings[query];
             const oldSettings = EachStyle[property];
