@@ -432,9 +432,23 @@ export const colors = {
 
 export const singleColors = ['black', 'white'];
 
+export const breakpoints = {
+    '3xs': 360,
+    '2xs': 480,
+    xs: 600,
+    sm: 768,
+    md: 1024,
+    lg: 1280,
+    xl: 1440,
+    '2xl': 1600,
+    '3xl': 1920,
+    '4xl': 2560
+};
+
 export function init() {
     StyleSheet.Styles.push(...Styles);
     Style.singleColors.push(...singleColors);
+    Style.breakpoints = breakpoints;
     Object.assign(Style.colors, colors);
     if (hasWindow) {
         const sheet = new StyleSheet(document.head);
