@@ -6,6 +6,7 @@ export class Spacing extends Style {
     static override id = 'spacing';
     static override matches = /^[pm][xytblr]?:./;
     override get props(): { [key: string]: any } {
+        const props = {};
         const charAt1 = this.prefix[0];
         const SPACING = charAt1 === 'm' ? MARGIN : PADDING;
         const SPACING_LEFT = dash(SPACING, LEFT);
