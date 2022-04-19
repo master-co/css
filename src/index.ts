@@ -428,3 +428,9 @@ if (hasWindow) {
 } else if (process.env[MASTER_STYLES_MANUAL] !== 'true') {
     init();
 }
+
+declare global {
+    interface Window {
+        MasterStyles: typeof Styles;
+    }
+}
