@@ -7,6 +7,7 @@ const WEBKIT_FONT_SMOOTHING = WEBKIT_PREFIX + FONT + DASH + SMOOTHING;
 const MOZ_OSXFONT_SMOOTHING = MOZ_PREFIX + 'osx' + FONT + DASH + SMOOTHING;
 
 export class FontSmoothing extends Style {
+    static id = 'fontSmoothing';
     static override matches = /^f(ont)?:(antialiased|subpixel-antialiased)(?!;)/;
     static override unit = '';
     override get props(): { [key: string]: any } {

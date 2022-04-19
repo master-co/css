@@ -2,6 +2,7 @@ import { COLUMNS, COMMA, DASH, DISPLAY, FR, GRID, MAX, MIN, REPEAT, TEMPLATE } f
 import { Style } from '@master/style';
 
 export class GridColumns extends Style {
+    static id = 'gridColumns';
     static override matches = /^grid-col(umn)?s:./;
     static override unit = '';
     override get props(): { [key: string]: any } {
