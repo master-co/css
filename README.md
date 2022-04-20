@@ -5,7 +5,7 @@
 <p align="center">
     <b><!-- name -->styles<!----></b>
 </p>
-<p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax ( less than 13KB )<!----></p>
+<p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax ( less than 8KB )<!----></p>
 <p align="center">
 
 [![MIT License](https://flat.badgen.net/github/license/master-co/styles?color=yellow)](https://github.com/master-co/styles/blob/main/LICENSE)
