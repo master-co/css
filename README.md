@@ -7,8 +7,18 @@
 </p>
 <p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax ( less than 13KB )<!----></p>
 <p align="center">
-<!-- badges.map((badge) => `<a href="${badge.href}"><img src="${badge.src}" alt="${badge.alt}"></a>`).join('&nbsp;')--><a href="https://circleci.com/gh/master-co/workflows/styles/tree/main"><img src="https://img.shields.io/circleci/build/github/master-co/styles/main.svg?logo=circleci&logoColor=fff&label=CircleCI" alt="CI status"></a>&nbsp;<a href="https://www.npmjs.com/@master/styles"><img src="https://img.shields.io/npm/v/@master/styles.svg?logo=npm&logoColor=fff&label=NPM&color=limegreen" alt="npm"></a>&nbsp;<a href="https://github.com/master-co/styles/blob/main/LICENSE"><img src="https://img.shields.io/github/license/master-co/styles" alt="license"></a><!---->
+
+[![MIT License](https://flat.badgen.net/github/license/master-co/styles?color=yellow)](https://github.com/master-co/styles/blob/main/LICENSE)
+[![Latest Release](https://flat.badgen.net/npm/v/@master/styles?icon=npm&label&color=yellow)](https://www.npmjs.com/package/@master/styles)
+[![Bundle Size](https://flat.badgen.net/bundlephobia/minzip/@master/styles?icon=packagephobia&label&color=yellow)](https://bundlephobia.com/package/@master/styles 'gzip bundle size (including dependencies)')
+[![Package Size](https://flat.badgen.net/badgesize/brotli/https://cdn.jsdelivr.net/npm/@master/styles?icon=jsdelivr&label&color=yellow)](https://unpkg.com/@master/styles 'brotli package size (without dependencies)')
+[![Documentation](https://flat.badgen.net/badge/icon/Documentation?icon=awesome&label&color=yellow)](https://styles.master.co)
+[![Github](https://flat.badgen.net/badge/icon/master-co%2Ftstyles?icon=github&label&color=yellow)](https://github.com/master-co/styles)
+[![Discord](https://flat.badgen.net/badge/icon/discord?icon=discord&label&color=yellow)](https://discord.gg/sZNKpAAAw6)
+[![CI](https://flat.badgen.net/github/status/master-co/styles/main/ci/circleci?icon=circleci)](https://circleci.com/gh/master-co/workflows/styles/tree/main)
+
 </p>
+
 
 - [Introduction](https://styles.master.co)
 - [Setup](https://docs.master.co/styles/setup)
