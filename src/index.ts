@@ -394,10 +394,7 @@ Styles.extend = (property, settings, refresh = true) => {
         const EachStyle = get(query);
         if (EachStyle) {
             const eachSettings = settings[query];
-            const oldSettings = EachStyle[property];
-            oldSettings
-                ? Object.assign(oldSettings, eachSettings)
-                : EachStyle[property] = eachSettings;
+            EachStyle.extend(property, eachSettings);
         }
     }
     if (refresh) {
