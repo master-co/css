@@ -423,11 +423,9 @@ export const colors = {
     pink: 'ca1473',
     crimson: 'ce1a4b',
     red: 'd11a1e',
-    black: '000000',
-    white: 'ffffff'
+    black: { '': '000000' },
+    white: { '': 'ffffff' }
 }
-
-export const singleColors = ['black', 'white'];
 
 export const breakpoints = {
     '3xs': 360,
@@ -444,9 +442,8 @@ export const breakpoints = {
 
 export function init() {
     StyleSheet.Styles.push(...Styles);
-    Style.singleColors.push(...singleColors);
-    Style.breakpoints = breakpoints;
-    Object.assign(Style.colors, colors);
+    Style.extend('breakpoints', breakpoints);
+    Style.extend('colors', colors);
     if (hasWindow) {
         const sheet = new StyleSheet(document.head);
         StyleSheet.root = sheet;
