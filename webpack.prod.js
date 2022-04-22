@@ -40,7 +40,15 @@ module.exports = {
                     },
                     compress: {
                         drop_console: true
-                    }
+                    },
+                    mangle: {
+                        reserved: [
+                            'Styles',
+                            'init',
+                            'colors',
+                            'breakpoints',
+                        ]
+                    },
                 },
                 extractComments: false
             }),
