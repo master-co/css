@@ -466,6 +466,7 @@ if (hasWindow) {
 declare global {
     interface Window {
         MasterStyles: typeof Styles;
+        MasterStylesManual: boolean;
     }
 }
 
