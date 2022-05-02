@@ -642,7 +642,6 @@ export const breakpoints = {
 };
 
 export function init() {
-    StyleSheet.Styles.push(...Styles);
     if (hasWindow) {
         const sheet = new StyleSheet(document.head);
         StyleSheet.root = sheet;
@@ -652,6 +651,7 @@ export function init() {
 
 Style.extend('colors', colors, false);
 Style.extend('breakpoints', breakpoints, false);
+StyleSheet.Styles.push(...Styles);
 
 const MASTER_STYLES = 'MasterStyles';
 const MASTER_STYLES_MANUAL = MASTER_STYLES + 'Manual';
