@@ -180,8 +180,6 @@ import { TextStrokeColor } from './text-stroke-color';
 import { StrokeDasharray } from './stroke-dasharray';
 import { StrokeDashoffset } from './stroke-dashoffset';
 
-const hasWindow = typeof window !== 'undefined';
-
 export const Styles = [
     Variable,
     FontWeight,
@@ -642,11 +640,9 @@ export const breakpoints = {
 };
 
 export function init() {
-    if (hasWindow) {
-        const sheet = new StyleSheet(document.head);
-        StyleSheet.root = sheet;
-        sheet.observe(document.documentElement);
-    }
+    const sheet = new StyleSheet(document.head);
+    StyleSheet.root = sheet;
+    sheet.observe(document.documentElement);
 }
 
 Style.extend('colors', colors, false);
@@ -655,14 +651,12 @@ StyleSheet.Styles.push(...Styles);
 
 const MASTER_STYLES = 'MasterStyles';
 const MASTER_STYLES_MANUAL = MASTER_STYLES + 'Manual';
-if (hasWindow) {
+if (typeof window !== 'undefined') {
     window['init' + MASTER_STYLES] = init;
     window[MASTER_STYLES] = Styles;
     if (!window[MASTER_STYLES_MANUAL]) {
         init();
     }
-} else if (process.env[MASTER_STYLES_MANUAL] !== 'true') {
-    init();
 }
 
 declare global {
@@ -670,8 +664,6 @@ declare global {
         MasterStyles: typeof Styles;
         MasterStylesManual: boolean;
     }
-    var MasterStyles: typeof Styles;
-    var MasterStylesManual: boolean;
 }
 
 export interface Styles extends Array<typeof Style> {
