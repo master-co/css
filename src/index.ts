@@ -180,6 +180,8 @@ import { TextStrokeColor } from './text-stroke-color';
 import { StrokeDasharray } from './stroke-dasharray';
 import { StrokeDashoffset } from './stroke-dashoffset';
 
+const isBrowser = typeof window !== 'undefined';
+
 export const Styles = [
     Variable,
     FontWeight,
@@ -640,9 +642,11 @@ export const breakpoints = {
 };
 
 export function init() {
-    const sheet = new StyleSheet(document.head);
-    StyleSheet.root = sheet;
-    sheet.observe(document.documentElement);
+    if (isBrowser) {
+        const sheet = new StyleSheet(document.head);
+        StyleSheet.root = sheet;
+        sheet.observe(document.documentElement);
+    }
 }
 
 Style.extend('colors', colors, false);
@@ -651,7 +655,7 @@ StyleSheet.Styles.push(...Styles);
 
 const MASTER_STYLES = 'MasterStyles';
 const MASTER_STYLES_MANUAL = MASTER_STYLES + 'Manual';
-if (typeof window !== 'undefined') {
+if (isBrowser) {
     window['init' + MASTER_STYLES] = init;
     window[MASTER_STYLES] = Styles;
     if (!window[MASTER_STYLES_MANUAL]) {
