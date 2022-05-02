@@ -403,7 +403,7 @@ Styles.extend = (property, settings, refresh = true) => {
 }
 
 // @ts-ignore
-export const colors = Style.colors = {
+export const colors = {
     fade: {
         10: 'f4f4f6',
         20: 'c3c6cf',
@@ -628,7 +628,7 @@ export const colors = Style.colors = {
     white: 'ffffff'
 }
 
-export const breakpoints = Style.breakpoints = {
+export const breakpoints = {
     '3xs': 360,
     '2xs': 480,
     xs: 600,
@@ -649,6 +649,9 @@ export function init() {
         sheet.observe(document.documentElement);
     }
 }
+
+Style.extend('colors', colors, false);
+Style.extend('breakpoints', breakpoints, false);
 
 const MASTER_STYLES = 'MasterStyles';
 const MASTER_STYLES_MANUAL = MASTER_STYLES + 'Manual';
