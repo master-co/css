@@ -670,6 +670,8 @@ declare global {
         MasterStyles: typeof Styles;
         MasterStylesManual: boolean;
     }
+    var MasterStyles: typeof Styles;
+    var MasterStylesManual: boolean;
 }
 
 export interface Styles extends Array<typeof Style> {
