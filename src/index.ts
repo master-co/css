@@ -179,6 +179,12 @@ import { TextStrokeWidth } from './text-stroke-width';
 import { TextStrokeColor } from './text-stroke-color';
 import { StrokeDasharray } from './stroke-dasharray';
 import { StrokeDashoffset } from './stroke-dashoffset';
+import { X } from './x';
+import { Y } from './y';
+import { Cx } from './cx';
+import { Cy } from './cy';
+import { Rx } from './rx';
+import { Ry } from './ry';
 
 const isBrowser = typeof window !== 'undefined';
 
@@ -309,6 +315,12 @@ export const Styles = [
     StrokeDashoffset,
     StrokeWidth,
     Stroke,
+    X,
+    Y,
+    Cx,
+    Cy,
+    Rx,
+    Ry,
     // grid
     GridColumnStart,
     GridColumnEnd,
