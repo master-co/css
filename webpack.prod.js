@@ -10,7 +10,9 @@ const packagePath = path.join(src, 'package.json');
 const package = require(packagePath);
 const master = require('./master.json');
 const entries = [
-    ...glob.sync(path.join(src, '{,!(node_modules)/**/}index.{ts,js}'))
+    ...glob.sync(path.join(src, '{,!(node_modules)/**/}index.{ts,js}')),
+    ...glob.sync(path.join(src, 'colors.ts')),
+    ...glob.sync(path.join(src, 'breakpoints.ts'))
 ];
 
 module.exports = {
