@@ -185,6 +185,12 @@ import { Cx } from './cx';
 import { Cy } from './cy';
 import { Rx } from './rx';
 import { Ry } from './ry';
+import { BorderImageOutset } from './border-image-outset';
+import { BorderImageRepeat } from './border-image-repeat';
+import { BorderImageSlice } from './border-image-slice';
+import { BorderImageSource } from './border-image-source';
+import { BorderImageWidth } from './border-image-width';
+import { BorderImage } from './border-image';
 
 import { colors } from './colors';
 import { breakpoints } from './breakpoints';
@@ -300,6 +306,13 @@ export const Styles = [
     BorderCollapse,
     BorderSpacing,
     Border,
+    // border-image
+    BorderImageOutset,
+    BorderImageRepeat,
+    BorderImageSlice,
+    BorderImageSource,
+    BorderImageWidth,
+    BorderImage,
     // background
     BackgroundAttachment,
     BackgroundBlendMode,
