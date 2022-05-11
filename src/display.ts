@@ -10,6 +10,7 @@ export class Display extends Style {
         block: BLOCK,
         table: TABLE,
         flex: FLEX,
+        grid: GRID,
         contents: CONTENTS,
         'inline-block': dash(INLINE, BLOCK),
         'inline-flex': dash(INLINE, FLEX),
