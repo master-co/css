@@ -1,5 +1,5 @@
 import { MAX_WIDTH, SIZING_VALUES } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class MaxWidth extends Style {
     static override matches = /^max-w:./;

@@ -1,5 +1,5 @@
 import { ABSOLUTE, POSITION, RELATIVE } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class Position extends Style {
     static override key = POSITION;

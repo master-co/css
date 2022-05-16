@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { BACKGROUND, dash, POSITION, PX } from '../constants/css-property-keyword';
 
 export class BackgroundPosition extends Style {

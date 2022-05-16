@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { ACTION, dash, TOUCH } from '../constants/css-property-keyword';
 
 export class TouchAction extends Style {

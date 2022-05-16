@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { ACCENT, COLOR, dash } from '../constants/css-property-keyword';
 
 export class AccentColor extends Style {

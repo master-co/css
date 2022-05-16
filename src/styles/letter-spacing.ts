@@ -1,5 +1,5 @@
 import { LETTER_SPACING } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class LetterSpacing extends Style {
     static override matches =  /^ls:./;

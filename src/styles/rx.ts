@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class Rx extends Style {
     static override key = 'rx';

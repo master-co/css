@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { BORDER, dash, IMAGE } from '../constants/css-property-keyword';
 
 export class BorderImageSource extends Style {

@@ -1,5 +1,5 @@
 import { SIZING_VALUES, WIDTH } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class Width extends Style {
     static override matches = /^w:./;

@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { BOX, BREAK, dash, DECORATION } from '../constants/css-property-keyword';
 
 export class BoxDecorationBreak extends Style {

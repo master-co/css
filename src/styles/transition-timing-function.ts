@@ -1,5 +1,5 @@
 import { dash, TIMING_FUNCTION, TRANSITION } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class TransitionTimingFunction extends Style {
     static override matches = /^~easing:./;

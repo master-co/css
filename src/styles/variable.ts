@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class Variable extends Style {
     static id = 'variable';

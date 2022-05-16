@@ -1,5 +1,5 @@
 import { ANIMATION, dash, PLAY_STATE } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class AnimationPlayState extends Style {
     static override matches = /^\@play-state:./;

@@ -1,5 +1,5 @@
 import { ANIMATION } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class Animation extends Style {
     static override symbol = '@'; 

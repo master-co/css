@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { ALIGN, dash, SCROLL, SNAP } from '../constants/css-property-keyword';
 
 export class ScrollSnapAlign extends Style {

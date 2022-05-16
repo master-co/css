@@ -1,5 +1,5 @@
 import { COLOR } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class FontColor extends Style {
     static override matches = /^font-color:./;

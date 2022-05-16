@@ -1,5 +1,5 @@
 import { dash, LIST, STYLE, TYPE } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class ListStyleType extends Style {
     static override matches = /^list-style:(none|disc|decimal)(?!;)/;

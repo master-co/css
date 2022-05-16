@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { SQUARE, VIDEO, ASPECT, RATIO, dash } from '../constants/css-property-keyword';
 
 export class AspectRadio extends Style {

@@ -1,5 +1,5 @@
 import { CONTENT, dash, JUSTIFY } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class JustifyContent extends Style {
     static override matches =  /^jc:./;

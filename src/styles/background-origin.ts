@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { BACKGROUND, BORDER, BOX, CONTENT, dash, ORIGIN, PADDING } from '../constants/css-property-keyword';
 
 export class BackgroundOrigin extends Style {

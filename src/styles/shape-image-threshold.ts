@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { dash, IMAGE, SHAPE } from '../constants/css-property-keyword';
 
 export class ShapeImageThreshold extends Style {

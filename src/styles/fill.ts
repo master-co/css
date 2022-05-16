@@ -1,5 +1,5 @@
 import { FILL } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class Fill extends Style {
     static override key = FILL;

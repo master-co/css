@@ -1,5 +1,5 @@
 import { dash, SPACING, WORD } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class WordSpacing extends Style {
     static override key = dash(WORD, SPACING);

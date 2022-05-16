@@ -1,6 +1,6 @@
 import { BOX, BREAK, dash, ELLIPSIS, HIDDEN, VERTICAL, WORD } from '../constants/css-property-keyword';
 import { WEBKIT_PREFIX } from '../constants/css-browser-prefix';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class Lines extends Style {
     static id = 'lines';

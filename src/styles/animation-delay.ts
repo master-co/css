@@ -1,5 +1,5 @@
 import { ANIMATION, dash, DELAY } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class AnimationDelay extends Style {
     static override matches = /^\@delay:./;

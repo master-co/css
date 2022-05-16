@@ -1,4 +1,5 @@
-import { StyleSheet, Style } from '@master/style';
+import { Style } from '../style';
+import { StyleSheet } from '../sheet';
 
 import { FontWeight } from './font-weight';
 import { FontFamily } from './font-family';

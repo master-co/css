@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { BORDER, BOX, CONTENT, dash, MARGIN, PADDING, SHAPE } from '../constants/css-property-keyword';
 
 export class ShapeOutside extends Style {

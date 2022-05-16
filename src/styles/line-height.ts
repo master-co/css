@@ -1,5 +1,5 @@
 import { dash, HEIGHT, LINE } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class LineHeight extends Style {
     static override matches = /^lh:./;

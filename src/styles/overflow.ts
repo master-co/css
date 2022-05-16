@@ -1,5 +1,5 @@
 import { X, Y } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class Overflow extends Style {
     static id = 'overflow';

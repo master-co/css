@@ -1,5 +1,5 @@
 import { COLOR, dash, OUTLINE } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class OutlineColor extends Style {
     static override key = dash(OUTLINE, COLOR);

@@ -1,5 +1,5 @@
 import { HEIGHT, SIZING_VALUES } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class Height extends Style {
     static override matches = /^h:./;

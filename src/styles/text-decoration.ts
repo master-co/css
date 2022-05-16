@@ -1,5 +1,5 @@
 import { dash, DECORATION, TEXT } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class TextDecoration extends Style {
     static override matches = /^t(ext)?:(underline|line-through|overline)/;

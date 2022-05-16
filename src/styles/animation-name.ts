@@ -1,5 +1,5 @@
 import { ANIMATION, dash, NAME } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class AnimationName extends Style {
     static override matches = /^\@name:./;

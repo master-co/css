@@ -1,5 +1,5 @@
 import { dash, STROKE, WIDTH } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class StrokeWidth extends Style {
     static override matches = /^stroke:([0-9]|(max|min|calc|clamp)\(.*\))((?!;).)*$/;

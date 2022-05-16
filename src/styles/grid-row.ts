@@ -1,5 +1,5 @@
 import { dash, GRID, ROW, SPAN } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class GridRow extends Style {
     static override matches = /^grid-row-span:./;

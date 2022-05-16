@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { BACKGROUND, CLIP, dash } from '../constants/css-property-keyword';
 
 export class BackgroundClip extends Style {

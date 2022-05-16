@@ -1,5 +1,5 @@
 import { AUTO, CONTENT, dash, GRID, MAX, MIN, ROWS } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class GridAutoRows extends Style {
     static override key = dash(GRID, AUTO, ROWS);

@@ -1,5 +1,5 @@
 import { ORDER } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 const extreme = '999999';
 

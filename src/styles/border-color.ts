@@ -1,6 +1,6 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { BORDER, COLOR, dash } from '../constants/css-property-keyword';
-import { getBorderProps } from './utils/get-border-props';
+import { getBorderProps } from '../utils/get-border-props';
 
 export class BorderColor extends Style {
     static id = 'borderColor';

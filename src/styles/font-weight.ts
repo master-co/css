@@ -1,5 +1,5 @@
 import { dash, FONT, WEIGHT } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class FontWeight extends Style {
     static override matches = /^f(ont)?:(thin|extralight|light|regular|medium|semibold|bold|extrabold|heavy)(?!;)/;

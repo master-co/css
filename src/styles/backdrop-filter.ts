@@ -1,6 +1,6 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { BACKDROP, BLUR, dash, DEG, DROP, FILTER, HUE, REM, ROTATE, SHADOW } from '../constants/css-property-keyword';
-import { parseValueUnit } from './utils/parse-value-unit';
+import { parseValueUnit } from '../utils/parse-value-unit';
 
 export class BackdropFilter extends Style {
     static override matches = /^bd:./;

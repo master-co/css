@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { MARGIN } from '../constants/css-property-keyword';
 
 export class Margin extends Style {

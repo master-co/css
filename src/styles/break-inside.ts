@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { BREAK, dash, INSIDE } from '../constants/css-property-keyword';
 
 export class BreakInside extends Style {

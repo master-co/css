@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { dash, TEXT } from '../constants/css-property-keyword';
 
 export class TextRendering extends Style {

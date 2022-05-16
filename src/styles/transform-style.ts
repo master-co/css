@@ -1,5 +1,5 @@
 import { dash, STYLE, TRANSFORM } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class TransformStyle extends Style {
     static override matches = /^transform:(flat|preserve-3d)(?!;)/;

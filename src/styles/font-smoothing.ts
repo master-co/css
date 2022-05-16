@@ -1,5 +1,5 @@
 import { ANTIALIASED, AUTO, dash, FONT, GRAYSCALE, SMOOTHING, SUBPIXEL } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { MOZ_PREFIX, WEBKIT_PREFIX } from '../constants/css-browser-prefix';
 
 const SUBPIXEL_ANTIALIASED = dash(SUBPIXEL, ANTIALIASED);

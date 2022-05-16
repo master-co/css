@@ -1,5 +1,5 @@
 import { BORDER, BOX, CLIP, CONTENT, dash, FILL, MARGIN, PADDING, STROKE, VIEW } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class ClipPath extends Style {
     static override matches = /^clip:./

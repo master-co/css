@@ -1,5 +1,5 @@
 import { MIN_WIDTH, SIZING_VALUES } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class MinWidth extends Style {
     static override matches = /^min-w:./;

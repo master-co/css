@@ -1,5 +1,5 @@
 import { REM } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class TextSize extends Style {
     static id = 'textSize';

@@ -1,5 +1,5 @@
 import { CLAMP, dash, LINE } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class LineClamp extends Style {
     static override key = dash(LINE, CLAMP);

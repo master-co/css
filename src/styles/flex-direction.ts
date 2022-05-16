@@ -1,5 +1,5 @@
 import { COLUMN, dash, DIRECTION, FLEX, REVERSE } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class FlexDirection extends Style {
     static override matches = /^flex:((row|col|column)(-reverse)?)(?!;)/;

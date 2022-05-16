@@ -1,5 +1,5 @@
 import { BREAK, dash, SPACE, WHITE } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class WhiteSpace extends Style {
     static override key = dash(WHITE, SPACE);

@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { AUTO } from '../constants/css-property-keyword';
 
 export class Inset extends Style {

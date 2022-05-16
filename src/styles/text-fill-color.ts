@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class TextFillColor extends Style {
     static id = 'textFillColor';

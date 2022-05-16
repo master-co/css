@@ -1,5 +1,5 @@
 import { ANIMATION, COUNT, dash, ITERATION } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class AnimationIterationCount extends Style {
     static override matches = /^\@iteration-count:./;

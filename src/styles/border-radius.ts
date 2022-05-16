@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { TOP, RIGHT, BOTTOM, LEFT, T, B, L, R } from '../constants/direction';
 import { BORDER, dash, RADIUS, ROUND, ROUNDED } from '../constants/css-property-keyword';
 

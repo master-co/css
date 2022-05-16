@@ -1,5 +1,5 @@
 import { GRID } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class Grid extends Style {
     static override key = GRID;

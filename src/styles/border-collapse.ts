@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { BORDER, COLLAPSE, dash } from '../constants/css-property-keyword';
 
 export class BorderCollapse extends Style {

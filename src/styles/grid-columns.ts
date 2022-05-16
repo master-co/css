@@ -1,5 +1,5 @@
 import { COLUMNS, COMMA, dash, DISPLAY, FR, GRID, MAX, MIN, REPEAT, TEMPLATE } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class GridColumns extends Style {
     static override matches = /^grid-cols:./;

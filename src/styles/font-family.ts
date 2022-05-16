@@ -1,5 +1,5 @@
 import { dash, FAMILY, FONT, MONO, SANS, SERIF } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 const VAR_FONT = 'var(--' + FONT + '-';
 

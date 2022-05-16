@@ -1,5 +1,5 @@
 import { ISOLATE, ISOLATION } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class Isolation extends Style {
     static override key = ISOLATION;

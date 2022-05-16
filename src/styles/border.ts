@@ -1,6 +1,6 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { BORDER } from '../constants/css-property-keyword';
-import { getBorderProps } from './utils/get-border-props';
+import { getBorderProps } from '../utils/get-border-props';
 
 export class Border extends Style {
     static id = 'border';

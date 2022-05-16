@@ -1,5 +1,5 @@
 import { Z_INDEX } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class ZIndex extends Style {
     static override matches = /^z:./;

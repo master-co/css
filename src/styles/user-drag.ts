@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { dash, DRAG, USER } from '../constants/css-property-keyword';
 
 export class UserDrag extends Style {

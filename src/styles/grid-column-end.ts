@@ -1,5 +1,5 @@
 import { COLUMN, dash, END, GRID } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class GridColumnEnd extends Style {
     static override matches = /^grid-col-end:./;

@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { BLEND, dash, MIX, MODE } from '../constants/css-property-keyword';
 
 export class MixBlendMode extends Style {

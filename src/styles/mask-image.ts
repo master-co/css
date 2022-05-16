@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { dash, IMAGE } from '../constants/css-property-keyword';
 
 export class MaskImage extends Style {

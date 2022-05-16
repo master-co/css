@@ -1,5 +1,5 @@
 import { dash, FONT, STYLE } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class FontStyle extends Style {
     static override matches = /^f(ont)?:(normal|italic|oblique)(?!;)/;

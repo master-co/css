@@ -1,4 +1,4 @@
-import { Style } from '@master/style';
+import { Style } from '../style';
 import { BORDER, dash, IMAGE, SLICE } from '../constants/css-property-keyword';
 
 export class BorderImageSlice extends Style {

@@ -1,6 +1,6 @@
 import { CENTER, MIDDLE } from '../constants/css-property-keyword';
 import { BOTTOM, LEFT, RIGHT, TOP } from '../constants/direction';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 // TODO: id
 export class Placement extends Style {

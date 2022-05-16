@@ -1,5 +1,5 @@
 import { BORDER, BOX, CONTENT, dash, FILL, STROKE, TRANSFORM, VIEW } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class TransformBox extends Style {
     static override matches = /^transform:(content|border|fill|stroke|view)(?!;)/;

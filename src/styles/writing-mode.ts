@@ -1,5 +1,5 @@
 import { dash, MODE } from '../constants/css-property-keyword';
-import { Style } from '@master/style';
+import { Style } from '../style';
 
 export class WritingMode extends Style {
     static override key = dash('writing', MODE);
