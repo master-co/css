@@ -7,7 +7,7 @@
 <p align="center">
     <b><!-- name -->CSS<!----></b>
 </p>
-<p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax. ( ~15KB )<!----></p>
+<p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax. ( ~13KB )<!----></p>
 
 [![MIT License](https://flat.badgen.net/github/license/master-co/css?color=yellow)](https://github.com/master-co/css/blob/main/LICENSE)
 [![Latest Release](https://flat.badgen.net/npm/v/@master/css?icon=npm&label&color=yellow)](https://www.npmjs.com/package/@master/css)
