@@ -192,11 +192,8 @@ import { BorderImageSource } from './border-image-source';
 import { BorderImageWidth } from './border-image-width';
 import { BorderImage } from './border-image';
 
-import { colors } from './colors';
-import { breakpoints } from './breakpoints';
-
-export * from './colors';
-export * from './breakpoints';
+import { colors } from '../colors';
+import { breakpoints } from '../breakpoints';
 
 const isBrowser = typeof window !== 'undefined';
 
