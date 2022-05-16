@@ -1,5 +1,4 @@
-import { Style } from './style';
-import { StyleSheet } from './sheet';
+import { Style, StyleSheet } from './';
 import './polyfills/css-escape';
 import { generateColorVariablesText } from './utils/generate-color-variables-text';
 
