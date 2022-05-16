@@ -1,7 +1,7 @@
 {
     "name": "@master/css",
     "license": "MIT",
-    "description": "A Virtual CSS language with enhanced syntax. ( less than 15KB )",
+    "description": "A Virtual CSS language with enhanced syntax. ( ~15KB )",
     "author": "Aoyue Design LLC.",
     "main": "index.js",
     "types": "index.d.ts",
