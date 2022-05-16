@@ -43,17 +43,7 @@ module.exports = {
                     },
                     compress: {
                         drop_console: true
-                    },
-                    mangle: {
-                        reserved: [
-                            'Style',
-                            'StyleSheet',
-                            'Styles',
-                            'init',
-                            'colors',
-                            'breakpoints',
-                        ]
-                    },
+                    }
                 },
                 extractComments: false
             }),
