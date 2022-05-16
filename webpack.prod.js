@@ -12,7 +12,9 @@ const master = require('./master.json');
 const entries = [
     ...glob.sync(path.join(src, '{,!(node_modules)/**/}index.{ts,js}')),
     ...glob.sync(path.join(src, 'colors.ts')),
-    ...glob.sync(path.join(src, 'breakpoints.ts'))
+    ...glob.sync(path.join(src, 'breakpoints.ts')),
+    ...glob.sync(path.join(src, 'render.ts')),
+    ...glob.sync(path.join(src, 'index.ts')),
 ];
 
 module.exports = {
@@ -45,6 +47,8 @@ module.exports = {
                     },
                     mangle: {
                         reserved: [
+                            'Style',
+                            'StyleSheet',
                             'Styles',
                             'init',
                             'colors',
