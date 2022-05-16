@@ -1,8 +1,8 @@
-import { Style, StyleSheet } from './';
+import type { Style, StyleSheet } from './';
 import './polyfills/css-escape';
 import { generateColorVariablesText } from './utils/generate-color-variables-text';
 
-export function render(html: string): {
+export function render(html: string, options?: { Style: typeof Style, StyleSheet: typeof StyleSheet }): {
     stylesCss: string,
     colorsCss: string,
     colorsMetaContent: string,
@@ -16,7 +16,7 @@ export function render(html: string): {
             html
         };
     }
-
+    const { Style, StyleSheet } = options;
     const styleSheet = new StyleSheet();
     const regexp = /\sclass="([^"]*)"/gm;
     let results: string[];
