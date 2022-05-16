@@ -615,7 +615,7 @@ export class Style {
                                 let startLevel: number = 0,
                                     startRgb: number[] = '0' in data
                                         ? hexToRgb(data[0])
-                                        : [255, 255, 255],
+                                        : [0, 0, 0],
                                     endLevel: number,
                                     endRgb: number[];
 
@@ -660,7 +660,7 @@ export class Style {
                                     endLevel = 100;
                                     endRgb = '100' in data
                                         ? hexToRgb(data[100])
-                                        : [0, 0, 0];
+                                        : [255, 255, 255];
 
                                     generateColor();
                                 }
@@ -674,9 +674,10 @@ export class Style {
                         }
 
                         variablesSheet?.insertRule(
-                            generateColorVariablesText(colorName, rgbColorLevels), colorNameIndex === -1
-                            ? Object.keys(this.colors).length
-                            : colorNameIndex);
+                            generateColorVariablesText(colorName, rgbColorLevels), 
+                            colorNameIndex === -1
+                                ? Object.keys(this.colors).length
+                                : colorNameIndex);
 
                         this.rgbColors[colorName] = rgbColorLevels;
 
