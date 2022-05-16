@@ -192,6 +192,7 @@ import { BorderImageSlice } from './border-image-slice';
 import { BorderImageSource } from './border-image-source';
 import { BorderImageWidth } from './border-image-width';
 import { BorderImage } from './border-image';
+import { Group } from './group';
 
 import { colors } from '../colors';
 import { breakpoints } from '../breakpoints';
@@ -199,6 +200,7 @@ import { breakpoints } from '../breakpoints';
 const isBrowser = typeof window !== 'undefined';
 
 export const Styles = [
+    Group,
     Variable,
     FontWeight,
     FontFamily,
