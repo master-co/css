@@ -2,7 +2,7 @@ import { Style, StyleSheet } from './';
 import './polyfills/css-escape';
 import { generateColorVariablesText } from './utils/generate-color-variables-text';
 
-export function render(html: string, options?: { Style: typeof Style, StyleSheet: typeof StyleSheet }): {
+export function render(html: string, options: { Style: typeof Style, StyleSheet: typeof StyleSheet }): {
     stylesCss: string,
     colorsCss: string,
     colorsMetaContent: string,
@@ -16,8 +16,9 @@ export function render(html: string, options?: { Style: typeof Style, StyleSheet
             html
         };
     }
-    const { Style, StyleSheet } = options;
-    const styleSheet = new StyleSheet();
+    const _StyleSheet = options.StyleSheet;
+    const _Style = options.Style;
+    const styleSheet = new _StyleSheet();
     const regexp = /\sclass="([^"]*)"/gm;
     let results: string[];
     while (results = regexp.exec(html)) {
@@ -30,10 +31,10 @@ export function render(html: string, options?: { Style: typeof Style, StyleSheet
         }
     }
     const stylesCss = styleSheet.styles.map(eachStyle => eachStyle.text).join('');
-    const colorsCss = Style.colorNames
-        .map(colorName => generateColorVariablesText(colorName, Style.rgbColors[colorName]))
+    const colorsCss = _Style.colorNames
+        .map(colorName => generateColorVariablesText(colorName, _Style.rgbColors[colorName]))
         .join('');
-    const colorsMetaContent = Style.colorNames.join(',');
+    const colorsMetaContent = _Style.colorNames.join(',');
     return {
         stylesCss,
         colorsCss,
