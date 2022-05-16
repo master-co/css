@@ -5,7 +5,7 @@
     <img src="https://raw.githubusercontent.com/master-co/package/document/images/logo-and-text.svg" alt="logo" width="142">
 </p>
 <p align="center">
-    <b><!-- name -->css<!----></b>
+    <b><!-- name -->CSS<!----></b>
 </p>
 <p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax ( less than 8KB )<!----></p>
 
