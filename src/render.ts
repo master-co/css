@@ -3,7 +3,12 @@ import { StyleSheet } from './sheet';
 import './polyfills/css-escape';
 import { generateColorVariablesText } from './utils/generate-color-variables-text';
 
-export function render(html: string, StyleSheetCls: typeof StyleSheet, StyleCls: typeof Style): { stylesCss: string, colorsCss: string, colorsMetaContent: string, html: string } {
+export function render(html: string): {
+    stylesCss: string,
+    colorsCss: string,
+    colorsMetaContent: string,
+    html: string
+} {
     if (!html) {
         return {
             stylesCss: '',
@@ -13,7 +18,7 @@ export function render(html: string, StyleSheetCls: typeof StyleSheet, StyleCls:
         };
     }
 
-    const styleSheet = new StyleSheetCls();
+    const styleSheet = new StyleSheet();
     const regexp = /\sclass="([^"]*)"/gm;
     let results: string[];
     while (results = regexp.exec(html)) {
@@ -26,10 +31,10 @@ export function render(html: string, StyleSheetCls: typeof StyleSheet, StyleCls:
         }
     }
     const stylesCss = styleSheet.styles.map(eachStyle => eachStyle.text).join('');
-    const colorsCss = StyleCls.colorNames
-        .map(colorName => generateColorVariablesText(colorName, StyleCls.rgbColors[colorName]))
+    const colorsCss = Style.colorNames
+        .map(colorName => generateColorVariablesText(colorName, Style.rgbColors[colorName]))
         .join('');
-    const colorsMetaContent = StyleCls.colorNames.join(',');
+    const colorsMetaContent = Style.colorNames.join(',');
     return {
         stylesCss,
         colorsCss,
@@ -38,8 +43,8 @@ export function render(html: string, StyleSheetCls: typeof StyleSheet, StyleCls:
             ? html.replace(/(<head>)/,
                 `$1
                 <style id="master-colors">${colorsCss}</style>
-                <meta name="master:colors" content="${colorsMetaContent}"></meta>
-                <style id="master-styles">${stylesCss}</style>`
+                <style id="master-styles">${stylesCss}</style>
+                <meta name="master:colors" content="${colorsMetaContent}"></meta>`
             )
             : html
     };
