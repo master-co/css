@@ -16,7 +16,7 @@
         ]
     },
     "include": [
-        "./src/**/*index.ts",
+        "./src/**/*.ts",
         "./src/**/*.d.ts",
         "./dev/src/**/*index.ts",
         "./dev/src/**/*.d.ts"
