@@ -1,7 +1,8 @@
 import { Style } from '../style';
 import { StyleSheet } from '../sheet';
+import { START_SYMBOL } from '../constants/start-symbol';
 
-const bracketRegexp = /\{(.*?)\}/;
+const bracketRegexp = /\{(.*)\}/;
 
 export class Group extends Style {
     static id = 'group';
@@ -11,7 +12,7 @@ export class Group extends Style {
         const newProps = {};
 
         const handleStyle = (style: Style) => {
-            const cssProperties = style.text.match(bracketRegexp)[1].split(';');
+            const cssProperties = style.text.slice(CSS.escape(style.name).length).match(bracketRegexp)[1].split(';');
             for (const eachCssProperty of cssProperties) {
                 const indexOfColon = eachCssProperty.indexOf(':');
                 const name = eachCssProperty.slice(0, indexOfColon);
@@ -22,8 +23,44 @@ export class Group extends Style {
                 }
             }
         };
+
+        const names = [];
+        let currentName: string = '';
+        const addName = () => {
+            if (currentName) {
+                names.push(currentName);
+                currentName = '';
+            }
+        };
+
+        let i = 1;
+        const analyze = (end: string) => {
+            for (; i < this.name.length; i++) {
+                const char = this.name[i];
+
+                if (!end) {
+                    if (char === '|') {
+                        addName();
+                        continue;
+                    }
+                    if (char === '}') {
+                        break;
+                    }
+                }
+
+                currentName += char;
+
+                if (end === char) {
+                    break;
+                } else if (char in START_SYMBOL && end !== '\'') {
+                    i++;
+                    analyze(START_SYMBOL[char]);
+                }
+            }
+        };
+        analyze(undefined);
+        addName();
         
-        const names = this.name.match(bracketRegexp)[1].split('|');
         for (const eachName of names) {
             const result = StyleSheet.findAndNew(eachName);
             if (Array.isArray(result)) {

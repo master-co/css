@@ -7,6 +7,7 @@ import { StyleSheet } from './sheet';
 import { generateColorVariablesText } from './utils/generate-color-variables-text';
 import { hexToRgb } from './utils/hex-to-rgb';
 import { rgbToHex } from './utils/rgb-to-hex';
+import { START_SYMBOL } from './constants/start-symbol';
 
 const MATCHES = 'matches';
 const SEMANTICS = 'semantics';
@@ -40,11 +41,6 @@ const REM = 'rem';
 
 const selectorSymbols = ['!', '*', '>', '+', '~', ':', '[', '@', '_'];
 const semanticSuffixes = [...selectorSymbols, undefined, '.'];
-const startSymbol = {
-    '(': ')',
-    '\'': '\'',
-    '{': '}'
-};
 const scrollbarPseudoRegexp = new RegExp(SCROLLBAR_PSEUDO, 'g');
 const searchPseudoRegexp = new RegExp(SEARCH_PSEUDO, 'g');
 const meterPseudoRegexp = new RegExp(METER_PSEUDO, 'g');
@@ -231,8 +227,8 @@ export class Style {
                         }
 
                         break;
-                    } else if (val in startSymbol) {
-                        analyze(startSymbol[val], depth === undefined ? 0 : depth + 1, func);
+                    } else if (val in START_SYMBOL) {
+                        analyze(START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func);
                     } else if (val === ';' && (end !== '\'' || func === 'path')) {
                         if (!end) {
                             uv = parseValue(currentValueToken, unit, colors);
