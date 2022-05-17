@@ -42,7 +42,8 @@ const selectorSymbols = ['!', '*', '>', '+', '~', ':', '[', '@', '_'];
 const semanticSuffixes = [...selectorSymbols, undefined, '.'];
 const startSymbol = {
     '(': ')',
-    '\'': '\''
+    '\'': '\'',
+    '{': '}'
 };
 const scrollbarPseudoRegexp = new RegExp(SCROLLBAR_PSEUDO, 'g');
 const searchPseudoRegexp = new RegExp(SEARCH_PSEUDO, 'g');
@@ -94,7 +95,7 @@ export class Style {
     static readonly mediaQueries: { [key: string]: string } = {};
     static readonly sheets: StyleSheet[] = sheets;
     static readonly colors: Record<string, any> = {};
-    static readonly classes: Record<string, string> = {};
+    static readonly classes: Record<string, string | string[]> = {};
     static readonly colorNames: string[] = [];
     private static readonly relations: Record<string, string[]> = {};
 
@@ -176,13 +177,18 @@ export class Style {
             this.value = semantics[matching.value];
         } else {
             if (matching.origin === MATCHES) {
-                const indexOfColon = token.indexOf(':');
-                this.prefix = token.slice(0, indexOfColon + 1);
-                if (this.prefix.includes('(')) {
-                    this.prefix = undefined;
+                const firstChar = token[0];
+                if (firstChar === '{' || firstChar === '(') {
                     valueToken = token;
                 } else {
-                    valueToken = token.slice(indexOfColon + 1);
+                    const indexOfColon = token.indexOf(':');
+                    this.prefix = token.slice(0, indexOfColon + 1);
+                    if (this.prefix.includes('(')) {
+                        this.prefix = undefined;
+                        valueToken = token;
+                    } else {
+                        valueToken = token.slice(indexOfColon + 1);
+                    }
                 }
             } else if (matching.origin === SYMBOL) {
                 this.symbol = token[0];

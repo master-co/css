@@ -222,7 +222,7 @@ export class StyleSheet extends MutationObserver {
                         }
 
                         if (!(className in this.styleOfName)) {
-                            const style = StyleSheet.findAndNew(className);
+                            const style = StyleSheet.findAndNew(className) as Style;
                             if (style) {
                                 style.cssRule = parentCssRule ?? cssRule;
                                 this.styles.push(style);
@@ -301,24 +301,40 @@ export class StyleSheet extends MutationObserver {
      * 尋找匹配的 Style 生成實例
      */
     static findAndNew(name: string) {
-        for (const EachStyle of this.Styles) {
-            const matching = EachStyle.match(name);
-            if (matching) {
-                return new EachStyle(name, matching);
+        const findAndNewStyle = (className: string) => {
+            for (const EachStyle of this.Styles) {
+                const matching = EachStyle.match(className);
+                if (matching) {
+                    return new EachStyle(className, matching);
+                }
             }
-        }
+        };
+
+        return name in Style.classes
+            ? (Style.classes[name] as string[])
+                .map(findAndNewStyle)
+                .filter(eachStyle => eachStyle)
+            : findAndNewStyle(name);
     }
 
     /**
      * 尋找匹配的 Style
      */
     static find(name: string) {
-        for (const EachStyle of this.Styles) {
-            const matching = EachStyle.match(name);
-            if (matching) {
-                return EachStyle;
+        const findStyle = (className: string) => {
+            for (const EachStyle of this.Styles) {
+                const matching = EachStyle.match(className);
+                if (matching) {
+                    return EachStyle;
+                }
             }
-        }
+        };
+
+        return name in Style.classes
+            ? (Style.classes[name] as string[])
+                .map(findStyle)
+                .filter(eachStyleClass => eachStyleClass)
+            : findStyle(name);
     }
 
     /**
@@ -760,17 +776,13 @@ export class StyleSheet extends MutationObserver {
     }
 
     findAndInsert(className: string) {
-        const insertStyle = (name: string) => {
-            const style = StyleSheet.findAndNew(name);
-            style && this.insert(style);
-        };
-
-        if (className in Style.classes) {
-            for (const eachClassName of Style.classes[className]) {
-                insertStyle(eachClassName);
+        const result = StyleSheet.findAndNew(className);
+        if (Array.isArray(result)) {
+            for (const eachStyle of result) {
+                this.insert(eachStyle);
             }
-        } else {
-            insertStyle(className);
+        } else if (result) {
+            this.insert(result);
         }
     }
 }
