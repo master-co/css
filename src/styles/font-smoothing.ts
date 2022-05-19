@@ -8,7 +8,7 @@ const MOZ_OSXFONT_SMOOTHING = dash(MOZ_PREFIX + 'osx' + FONT, SMOOTHING);
 
 export class FontSmoothing extends Style {
     static id = 'fontSmoothing';
-    static override matches = /^f(ont)?:(antialiased|subpixel-antialiased)(?!;)/;
+    static override matches = /^f(ont)?:(antialiased|subpixel-antialiased)(?!\|)/;
     static override unit = '';
     override get props(): { [key: string]: any } {
         const props = {};

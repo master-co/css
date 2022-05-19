@@ -2,7 +2,7 @@ import { BORDER, BOX, CONTENT, dash, FILL, STROKE, TRANSFORM, VIEW } from '../co
 import { Style } from '../style';
 
 export class TransformBox extends Style {
-    static override matches = /^transform:(content|border|fill|stroke|view)(?!;)/;
+    static override matches = /^transform:(content|border|fill|stroke|view)(?!\|)/;
     static override key = dash(TRANSFORM, BOX);
     static override values = {
         content: dash(CONTENT, BOX),

@@ -39,7 +39,7 @@ export class Group extends Style {
                 const char = this.name[i];
 
                 if (!end) {
-                    if (char === '|') {
+                    if (char === ';') {
                         addName();
                         continue;
                     }

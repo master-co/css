@@ -3,7 +3,7 @@ import { Style } from '../style';
 
 export class TextSize extends Style {
     static id = 'textSize';
-    static override matches = /^t(ext)?:([0-9]|(max|min|calc|clamp)\(.*\))((?!;).)*$/;
+    static override matches = /^t(ext)?:([0-9]|(max|min|calc|clamp)\(.*\))((?!\|).)*$/;
     override get props(): { [key: string]: any } {
         return {
             'font-size': this,

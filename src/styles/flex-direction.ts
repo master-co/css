@@ -2,7 +2,7 @@ import { COLUMN, dash, DIRECTION, FLEX, REVERSE } from '../constants/css-propert
 import { Style } from '../style';
 
 export class FlexDirection extends Style {
-    static override matches = /^flex:((row|col|column)(-reverse)?)(?!;)/;
+    static override matches = /^flex:((row|col|column)(-reverse)?)(?!\|)/;
     static override key = dash(FLEX, DIRECTION);
     static override values = {
         col: COLUMN,

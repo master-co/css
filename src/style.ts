@@ -123,10 +123,10 @@ export class Style {
         // TODO: 動態 new Regex 效能問題待優化
         if (this.colorStarts
             && (
-                name.match('^' + this.colorStarts + '(#|(rgb|hsl)\\(.*\\))((?!;).)*$')
+                name.match('^' + this.colorStarts + '(#|(rgb|hsl)\\(.*\\))((?!\|).)*$')
                 || this.colorNames.length
                 && name.match('^' + this.colorStarts + '(' + this.colorNames.join('|') + ')')
-                && name.indexOf(';') === -1
+                && name.indexOf('|') === -1
             )
         ) {
             return { origin: MATCHES };
@@ -229,7 +229,7 @@ export class Style {
                         break;
                     } else if (val in START_SYMBOL) {
                         analyze(START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func);
-                    } else if (val === ';' && (end !== '\'' || func === 'path')) {
+                    } else if (val === '|' && (end !== '\'' || func === 'path')) {
                         if (!end) {
                             uv = parseValue(currentValueToken, unit, colors);
                             valueTokens.push(uv.value + uv.unit);
@@ -252,7 +252,7 @@ export class Style {
                                 continue;
                             } else if (
                                 val === '#'
-                                && (currentValueToken || valueTokens.length && valueToken[i - 1] !== ';')
+                                && (currentValueToken || valueTokens.length && valueToken[i - 1] !== '|')
                                 || selectorSymbols.includes(val)
                             ) {
                                 break;
