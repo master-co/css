@@ -174,7 +174,7 @@ export class Style {
         } else {
             if (matching.origin === MATCHES) {
                 const firstChar = token[0];
-                if (firstChar === '{' || firstChar === '(') {
+                if (firstChar === '{') {
                     valueToken = token;
                 } else {
                     const indexOfColon = token.indexOf(':');
@@ -676,7 +676,7 @@ export class Style {
                         }
 
                         variablesSheet?.insertRule(
-                            generateColorVariablesText(colorName, rgbColorLevels), 
+                            generateColorVariablesText(colorName, rgbColorLevels),
                             colorNameIndex === -1
                                 ? Object.keys(this.colors).length
                                 : colorNameIndex);
