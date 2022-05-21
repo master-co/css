@@ -20,9 +20,39 @@
 
 </div>
 
+![image](https://raw.githubusercontent.com/master-co/css-language-service/alpha/images/cover.jpg)
+
 - [Introduction](https://css.master.co)
 - [Setup](https://docs.master.co/css/setup)
 - [Why](https://docs.master.co/css/why)
+
+# Quick Started
+This is just a quick start guide, the full official [documentation](https://docs.master.co/styles/setup) here.
+## Setup
+The `normal.css` is an optional official package.
+```bash
+npm install @master/css @master/normal.css
+```
+import `@master/css` into your main js file
+```js
+import '@master/css'
+```
+import `@master/normal.css` into your global css file
+```css
+@import '@master/normal.css'
+```
+or use CDNs
+```html
+<link href="https://cdn.jsdelivr.net/npm/@master/normal.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@master/css"></script>
+```
+
+## Hello World
+```html
+<h1 class="font:40 font:heavy bg:blue:hover m:50 text:center@md">
+    Hello World
+</h1>
+```
 
 # Community
 - [Github Discussions](https://github.com/master-co/css/discussions)
@@ -31,5 +61,3 @@
 # Language Service
 
 A [Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) for [Master CSS](https://github.com/master-co/css). Provides code-completion and syntax highlighting.
-
-![image](https://user-images.githubusercontent.com/424290/163530745-65366f1d-bdc1-4eb6-b276-e4f454eb2d9d.png)
