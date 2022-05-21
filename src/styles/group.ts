@@ -6,7 +6,7 @@ const bracketRegexp = /\{(.*)\}/;
 
 export class Group extends Style {
     static id = 'group';
-    static override matches = /^(?:[*.#[_>~+:@](?:.+?))?{/;
+    static override matches = /^{/;
     static override unit = '';
     override get props(): { [key: string]: any } {
         const newProps = {};
@@ -33,11 +33,7 @@ export class Group extends Style {
             }
         };
 
-        let i = 0;
-        for (; i < this.name.length;) {
-            if (this.name[i++] === '{' && this.name[i - 2] !== '\\')
-                break;
-        }
+        let i = 1;
         const analyze = (end: string) => {
             for (; i < this.name.length; i++) {
                 const char = this.name[i];

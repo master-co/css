@@ -176,15 +176,6 @@ export class Style {
                 const firstChar = token[0];
                 if (firstChar === '{') {
                     valueToken = token;
-                } else if (semanticSuffixes.includes(firstChar)) {
-                    suffixToken = '';
-                    for (let i = 0; i < token.length; i++) {
-                        const char = token[i];
-                        if (char === '{'  && token[i - 1] !== '\\')
-                            break;
-
-                        suffixToken += char;
-                    }
                 } else {
                     const indexOfColon = token.indexOf(':');
                     this.prefix = token.slice(0, indexOfColon + 1);
@@ -200,100 +191,98 @@ export class Style {
                 valueToken = token.slice(1);
             }
 
-            if (valueToken !== undefined) {
-                let currentValueToken = '';
-                let valueTokens = [];
-                let i = 0;
-                let uv;
-                (function analyze(end?, depth?, func: string = '') {
-                    let varIndex: number;
-                    if (end) {
-                        if (end === ')' && currentValueToken.slice(-1) === '$') {
-                            varIndex = currentValueToken.length - 1;
-                        }
-                        currentValueToken += valueToken[i++];
+            let currentValueToken = '';
+            let valueTokens = [];
+            let i = 0;
+            let uv;
+            (function analyze(end?, depth?, func: string = '') {
+                let varIndex: number;
+                if (end) {
+                    if (end === ')' && currentValueToken.slice(-1) === '$') {
+                        varIndex = currentValueToken.length - 1;
                     }
+                    currentValueToken += valueToken[i++];
+                }
 
-                    for (; i < valueToken.length; i++) {
-                        const val = valueToken[i];
+                for (; i < valueToken.length; i++) {
+                    const val = valueToken[i];
 
-                        if (val === end) {
-                            currentValueToken += val;
+                    if (val === end) {
+                        currentValueToken += val;
 
-                            if (varIndex !== undefined) {
-                                currentValueToken = currentValueToken.slice(0, varIndex) + currentValueToken.slice(varIndex).replace(/\$\((.*)\)/, 'var(--$1)');
-                            }
+                        if (varIndex !== undefined) {
+                            currentValueToken = currentValueToken.slice(0, varIndex) + currentValueToken.slice(varIndex).replace(/\$\((.*)\)/, 'var(--$1)');
+                        }
 
-                            if (!depth) {
-                                if (end === '\'') {
-                                    valueTokens.push(currentValueToken);
-                                } else {
-                                    uv = parseValue(currentValueToken, unit, colors);
-                                    valueTokens.push(uv.value + uv.unit);
-                                }
-
-                                func = '';
-                                currentValueToken = '';
-                            }
-
-                            break;
-                        } else if (val in START_SYMBOL) {
-                            analyze(START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func);
-                        } else if (val === '|' && (end !== '\'' || func === 'path')) {
-                            if (!end) {
+                        if (!depth) {
+                            if (end === '\'') {
+                                valueTokens.push(currentValueToken);
+                            } else {
                                 uv = parseValue(currentValueToken, unit, colors);
                                 valueTokens.push(uv.value + uv.unit);
-                                currentValueToken = '';
-                            } else {
-                                currentValueToken += ' ';
-                            }
-                        } else {
-                            if (!end) {
-                                if (val === '.') {
-                                    if (isNaN(+valueToken[i + 1])) {
-                                        break;
-                                    } else if (valueToken[i - 1] === '-') {
-                                        currentValueToken += '0';
-                                    }
-                                } else if (val === ',') {
-                                    uv = parseValue(currentValueToken, unit, colors);
-                                    valueTokens.push(uv.value + uv.unit, ',');
-                                    currentValueToken = ''
-                                    continue;
-                                } else if (
-                                    val === '#'
-                                    && (currentValueToken || valueTokens.length && valueToken[i - 1] !== '|')
-                                    || selectorSymbols.includes(val)
-                                ) {
-                                    break;
-                                }
-
-                                func += val;
                             }
 
-                            currentValueToken += val;
+                            func = '';
+                            currentValueToken = '';
                         }
-                    }
-                })();
 
-                if (currentValueToken) {
-                    uv = parseValue(currentValueToken, unit, colors);
-                    valueTokens.push(uv.value + uv.unit);
-                }
-
-                suffixToken = valueToken.slice(i);
-
-                if (valueTokens.length === 1) {
-                    if (uv) {
-                        this.value = uv.value;
-                        this.unit = uv.unit;
+                        break;
+                    } else if (val in START_SYMBOL) {
+                        analyze(START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func);
+                    } else if (val === '|' && (end !== '\'' || func === 'path')) {
+                        if (!end) {
+                            uv = parseValue(currentValueToken, unit, colors);
+                            valueTokens.push(uv.value + uv.unit);
+                            currentValueToken = '';
+                        } else {
+                            currentValueToken += ' ';
+                        }
                     } else {
-                        this.value = valueTokens[0];
-                        this.unit = '';
+                        if (!end) {
+                            if (val === '.') {
+                                if (isNaN(+valueToken[i + 1])) {
+                                    break;
+                                } else if (valueToken[i - 1] === '-') {
+                                    currentValueToken += '0';
+                                }
+                            } else if (val === ',') {
+                                uv = parseValue(currentValueToken, unit, colors);
+                                valueTokens.push(uv.value + uv.unit, ',');
+                                currentValueToken = ''
+                                continue;
+                            } else if (
+                                val === '#'
+                                && (currentValueToken || valueTokens.length && valueToken[i - 1] !== '|')
+                                || selectorSymbols.includes(val)
+                            ) {
+                                break;
+                            }
+
+                            func += val;
+                        }
+
+                        currentValueToken += val;
                     }
-                } else {
-                    this.value = valueTokens.join(' ');
                 }
+            })();
+
+            if (currentValueToken) {
+                uv = parseValue(currentValueToken, unit, colors);
+                valueTokens.push(uv.value + uv.unit);
+            }
+
+            suffixToken = valueToken.slice(i);
+
+            if (valueTokens.length === 1) {
+                if (uv) {
+                    this.value = uv.value;
+                    this.unit = uv.unit;
+                } else {
+                    this.value = valueTokens[0];
+                    this.unit = '';
+                }
+            } else {
+                this.value = valueTokens.join(' ');
             }
         }
 
