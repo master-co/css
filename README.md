@@ -22,29 +22,40 @@
 
 ![image](https://raw.githubusercontent.com/master-co/css-language-service/alpha/images/cover.jpg)
 
+Documentation
 - [Introduction](https://css.master.co)
 - [Setup](https://docs.master.co/css/setup)
 - [Why](https://docs.master.co/css/why)
 
-# Quick Started
-This is just a quick start guide, the full official [documentation](https://docs.master.co/styles/setup) here.
-## Setup
-The `normal.css` is an optional official package.
-```bash
-npm install @master/css @master/normal.css
+Community
+- [Github Discussions](https://github.com/master-co/css/discussions)
+- [Join Master Discord](https://discord.gg/sZNKpAAAw6)
+
+Extension
+- A [Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) for Master CSS. Provides code-completion and syntax highlighting.
+
+On this page
+- [Quick Start](#quick-start)
+  - [1. Download](#1-download)
+  - [2. Import into your js file](#2-import-into-your-js-file)
+  - [Hello World](#hello-world)
+- [Official Normal CSS](#official-normal-css)
+
+# Quick Start
+This is just a quick start guide, the official [documentation](https://docs.master.co/styles/setup) here.
+
+## 1. Download
+```shell
+npm install @master/css
 ```
-import `@master/css` into your main js file
+Or use a CDN
+```html
+<script src="https://cdn.jsdelivr.net/npm/@master/css"></script>
+```
+
+## 2. Import into your js file
 ```js
 import '@master/css'
-```
-import `@master/normal.css` into your global css file
-```css
-@import '@master/normal.css'
-```
-or use CDNs
-```html
-<link href="https://cdn.jsdelivr.net/npm/@master/normal.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@master/css"></script>
 ```
 
 ## Hello World
@@ -53,11 +64,16 @@ or use CDNs
     Hello World
 </h1>
 ```
+Next, learn the common [Syntax - Master CSS](https://docs.master.co/styles/syntax)!
 
-# Community
-- [Github Discussions](https://github.com/master-co/css/discussions)
-- [Join Master Discord](https://discord.gg/sZNKpAAAw6)
+# Official Normal CSS
+Normalize browser's styles: [`@master/normal.css`](https://github.com/master-co/normal.css)
 
-# Language Service
-
-A [Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) for [Master CSS](https://github.com/master-co/css). Provides code-completion and syntax highlighting.
+import `@master/normal.css` into your global css file
+```css
+@import '@master/normal.css';
+```
+or use a CDN
+```html
+<link href="https://cdn.jsdelivr.net/npm/@master/normal.css" rel="stylesheet">
+```
