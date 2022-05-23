@@ -11,16 +11,21 @@ export class Group extends Style {
     override get props(): { [key: string]: any } {
         const newProps = {};
 
+        const addProp = (propertyName: string) => {
+            const indexOfColon = propertyName.indexOf(':');
+            if (indexOfColon !== -1) {
+                const name = propertyName.slice(0, indexOfColon);
+                if (!(name in newProps)) {
+                    newProps[name] = {
+                        value: propertyName.slice(indexOfColon + 1)
+                    };
+                }
+            }
+        }
         const handleStyle = (style: Style) => {
             const cssProperties = style.text.slice(CSS.escape(style.name).length).match(bracketRegexp)[1].split(';');
             for (const eachCssProperty of cssProperties) {
-                const indexOfColon = eachCssProperty.indexOf(':');
-                const name = eachCssProperty.slice(0, indexOfColon);
-                if (!(name in newProps)) {
-                    newProps[name] = {
-                        value: eachCssProperty.slice(indexOfColon + 1)
-                    };
-                }
+                addProp(eachCssProperty);
             }
         };
 
@@ -67,8 +72,12 @@ export class Group extends Style {
                 for (const eachStyle of result) {
                     handleStyle(eachStyle);
                 }
-            } else if (result) {
-                handleStyle(result);
+            } else {
+                if (result) {
+                    handleStyle(result);
+                } else {
+                    addProp(eachName);
+                }
             }
         }
 
