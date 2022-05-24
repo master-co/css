@@ -193,6 +193,7 @@ import { BorderImageSource } from './border-image-source';
 import { BorderImageWidth } from './border-image-width';
 import { BorderImage } from './border-image';
 import { Group } from './group';
+import { CounterIncrement } from './counter-increment';
 
 import { colors } from '../colors';
 import { breakpoints } from '../breakpoints';
@@ -223,6 +224,7 @@ export const Styles = [
     MinHeight,
     Contain,
     Content,
+    CounterIncrement,
     LetterSpacing,
     FontSmoothing,
     FontStyle,
