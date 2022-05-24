@@ -1,6 +1,6 @@
 name: Checking title of pull request
 on:
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - reopened
