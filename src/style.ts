@@ -197,25 +197,40 @@ export class Style {
             let uv;
             (function analyze(end?, depth?, func: string = '') {
                 let varIndex: number;
+                let isString = false;
                 if (end) {
                     if (end === ')' && currentValueToken.slice(-1) === '$') {
                         varIndex = currentValueToken.length - 1;
+                    } else if (end === '\'') {
+                        isString = true;
                     }
+
                     currentValueToken += valueToken[i++];
                 }
 
                 for (; i < valueToken.length; i++) {
                     const val = valueToken[i];
-
                     if (val === end) {
                         currentValueToken += val;
+                        if (isString) {
+                            let count = 0;
+                            for (let j = currentValueToken.length - 2;; j--)  {
+                                if (currentValueToken[j] !== '\\') {
+                                    break;
+                                }
+                                count++;
+                            }
+                            if (count % 2) {
+                                continue;
+                            }
+                        }
 
                         if (varIndex !== undefined) {
                             currentValueToken = currentValueToken.slice(0, varIndex) + currentValueToken.slice(varIndex).replace(/\$\((.*)\)/, 'var(--$1)');
                         }
 
                         if (!depth) {
-                            if (end === '\'') {
+                            if (isString) {
                                 valueTokens.push(currentValueToken);
                             } else {
                                 uv = parseValue(currentValueToken, unit, colors);
@@ -227,9 +242,9 @@ export class Style {
                         }
 
                         break;
-                    } else if (val in START_SYMBOL) {
+                    } else if (!isString && val in START_SYMBOL) {
                         analyze(START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func);
-                    } else if (val === '|' && (end !== '\'' || func === 'path')) {
+                    } else if (val === '|' && (!isString || func === 'path')) {
                         if (!end) {
                             uv = parseValue(currentValueToken, unit, colors);
                             valueTokens.push(uv.value + uv.unit);
@@ -248,7 +263,7 @@ export class Style {
                             } else if (val === ',') {
                                 uv = parseValue(currentValueToken, unit, colors);
                                 valueTokens.push(uv.value + uv.unit, ',');
-                                currentValueToken = ''
+                                currentValueToken = '';
                                 continue;
                             } else if (
                                 val === '#'
@@ -260,9 +275,9 @@ export class Style {
 
                             func += val;
                         }
-
+                        
                         currentValueToken += val;
-                    }
+                    }               
                 }
             })();
 

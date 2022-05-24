@@ -56,6 +56,19 @@ export class Group extends Style {
                 currentName += char;
 
                 if (end === char) {
+                    if (end === '\'') {
+                        let count = 0;
+                        for (let j = currentName.length - 2;; j--)  {
+                            if (currentName[j] !== '\\') {
+                                break;
+                            }
+                            count++;
+                        }
+                        if (count % 2) {
+                            continue;
+                        }
+                    }
+
                     break;
                 } else if (char in START_SYMBOL && end !== '\'') {
                     i++;
