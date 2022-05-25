@@ -13,7 +13,7 @@ jobs:
       - image: "cimg/node:17.1.0"
     steps:
       - checkout
-      - test:
+      - run:
           name: test
           command: npm run test
       - run:
