@@ -15,7 +15,7 @@ jobs:
       - checkout
       - run:
           name: test
-          command: npm run test
+          command: npm i && npm run test
       - run:
           name: Copy package.json to ./dist for verification release
           command: mkdir -p ./dist && cp ./src/package.json ./dist/package.json
