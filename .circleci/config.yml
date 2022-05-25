@@ -13,6 +13,9 @@ jobs:
       - image: "cimg/node:17.1.0"
     steps:
       - checkout
+      - test:
+          name: test
+          command: npm run test
       - run:
           name: Copy package.json to ./dist for verification release
           command: mkdir -p ./dist && cp ./src/package.json ./dist/package.json
