@@ -750,7 +750,10 @@ export class StyleSheet extends MutationObserver {
         const sheet = this.element.sheet;
         const deleteRule = (name: string) => {
             const style = this.styleOfName[name];
-            if (!style?.cssRule)
+            if (
+                !style?.cssRule
+                || name in Style.relations && Style.relations[name].some(eachClassName => eachClassName in this.countOfName)
+            )
                 return;
 
             for (let index = 0; index < sheet.cssRules.length; index++) {

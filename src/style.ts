@@ -93,7 +93,7 @@ export class Style {
     static readonly colors: Record<string, any> = {};
     static readonly classes: Record<string, string | string[]> = {};
     static readonly colorNames: string[] = [];
-    private static readonly relations: Record<string, string[]> = {};
+    static readonly relations: Record<string, string[]> = {};
 
     static match(name: string): StyleMatching {
         /**
