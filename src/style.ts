@@ -76,7 +76,6 @@ export class Style {
 
     cssRule: CSSRule;
 
-    static fixedSelector: string;
     static id: string;
     static key: string;
     static matches: RegExp;
@@ -157,7 +156,7 @@ export class Style {
                 return;
             }
         }
-        let { semantics, unit, colors, key, values, fixedSelector, colorful, breakpoints, mediaQueries } = TargetStyle;
+        let { semantics, unit, colors, key, values, colorful, breakpoints, mediaQueries } = TargetStyle;
         let token = name;
 
         // 防止非色彩 style 的 token 被解析
@@ -487,14 +486,12 @@ export class Style {
             prefixText += '[dir=' + this.direction + '] ';
         }
 
-        const selectorsText = (selector ? selector + ' ' : '') + (fixedSelector ? fixedSelector : '');
-
         this.text = prefixText
             + '.'
             + CSS.escape(this.name)
-            + selectorsText
+            + selector
             + (this.name in Style.relations
-                ? Style.relations[this.name].map(eachClassName => ', ' + prefixText + '.' + eachClassName + selectorsText).join('')
+                ? Style.relations[this.name].map(eachClassName => ', ' + prefixText + '.' + eachClassName + selector).join('')
                 : '')
             + '{'
             + (typeof this.value === 'object'
