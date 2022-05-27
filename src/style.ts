@@ -213,7 +213,7 @@ export class Style {
                         currentValueToken += val;
                         if (isString) {
                             let count = 0;
-                            for (let j = currentValueToken.length - 2;; j--)  {
+                            for (let j = currentValueToken.length - 2; ; j--) {
                                 if (currentValueToken[j] !== '\\') {
                                     break;
                                 }
@@ -274,9 +274,9 @@ export class Style {
 
                             func += val;
                         }
-                        
+
                         currentValueToken += val;
-                    }               
+                    }
                 }
             })();
 
@@ -327,6 +327,22 @@ export class Style {
         // ::progress -> ::-webkit-progress
         if (suffixToken.includes(PROGRESS_PSEUDO)) {
             suffixToken = suffixToken.replace(progressPseudoRegexp, WEBKIT_PSEUDO_PREFIX + PROGRESS);
+        }
+        // :first -> :first-child
+        if (suffixToken.includes(':first')) {
+            suffixToken = suffixToken.replace(/:first/g, ':first-child');
+        }
+        // :last -> :last-child
+        if (suffixToken.includes(':last')) {
+            suffixToken = suffixToken.replace(/:last/g, ':last-child');
+        }
+        // :even -> :nth-child(2n)
+        if (suffixToken.includes(':even')) {
+            suffixToken = suffixToken.replace(/:even/g, ':nth-child(2n)');
+        }
+        // :odd -> :nth-child(odd)
+        if (suffixToken.includes(':odd')) {
+            suffixToken = suffixToken.replace(/:odd/g, ':nth-child(odd)');
         }
 
         // 2. parseValue
