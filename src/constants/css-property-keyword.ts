@@ -38,7 +38,6 @@ export const FILTER = 'filter';
 export const STATIC = 'static';
 export const BLEND = 'blend';
 export const MIX = 'mix';
-export const UPPERCASE = 'uppercase';
 export const ISOLATE = 'isolate';
 export const ROUNDED = 'rounded';
 export const ROUND = 'round';
