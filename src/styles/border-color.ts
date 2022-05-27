@@ -1,5 +1,5 @@
 import { Style } from '../style';
-import { BORDER, COLOR, dash } from '../constants/css-property-keyword';
+import { BORDER, COLOR, CURRENT_COLOR, dash } from '../constants/css-property-keyword';
 import { getBorderProps } from '../utils/get-border-props';
 
 export class BorderColor extends Style {
@@ -12,5 +12,8 @@ export class BorderColor extends Style {
     }
     override get order(): number {
         return (this.prefix === dash(BORDER, COLOR) + ":" || this.prefix === 'b:' || this.prefix === BORDER + ':') ? -1 : 0;
+    }
+    static override values = {
+        current: CURRENT_COLOR
     }
 }

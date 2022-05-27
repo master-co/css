@@ -1,5 +1,5 @@
 import { Style } from '../style';
-import { BACKGROUND, COLOR, dash } from '../constants/css-property-keyword';
+import { BACKGROUND, COLOR, CURRENT_COLOR, dash } from '../constants/css-property-keyword';
 
 export class BackgroundColor extends Style {
     static override matches = /^(bg|background):transparent(?!\|)/;
@@ -7,4 +7,7 @@ export class BackgroundColor extends Style {
     static override key = dash(BACKGROUND, COLOR);
     static override unit = '';
     static override colorful = true;
+    static override values = {
+        current: CURRENT_COLOR
+    }
 }

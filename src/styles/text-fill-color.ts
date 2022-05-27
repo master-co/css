@@ -1,3 +1,4 @@
+import { CURRENT_COLOR } from 'src/constants/css-property-keyword';
 import { Style } from '../style';
 
 export class TextFillColor extends Style {
@@ -9,5 +10,8 @@ export class TextFillColor extends Style {
         return {
             '-webkit-text-fill-color': this
         };
+    }
+    static override values = {
+        current: CURRENT_COLOR
     }
 }

@@ -7,6 +7,7 @@ export const PADDING = 'padding';
 export const FONT = 'font';
 export const CURSOR = 'cursor';
 export const POINTER = 'pointer';
+export const CURRENT_COLOR = 'currentColor';
 export const COMMA = ',';
 export const FLOW = 'flow';
 export const TEMPLATE = 'template';

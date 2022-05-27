@@ -1,3 +1,4 @@
+import { CURRENT_COLOR } from 'src/constants/css-property-keyword';
 import { Style } from '../style';
 
 export class TextStrokeColor extends Style {
@@ -9,5 +10,8 @@ export class TextStrokeColor extends Style {
         return {
             '-webkit-text-stroke-color': this
         };
+    }
+    static override values = {
+        current: CURRENT_COLOR
     }
 }
