@@ -197,6 +197,7 @@ import { CounterIncrement } from './counter-increment';
 
 import { colors } from '../colors';
 import { breakpoints } from '../breakpoints';
+import { Area } from './area';
 
 const isBrowser = typeof window !== 'undefined';
 
@@ -218,10 +219,13 @@ export const Styles = [
     FlexDirection,
     Flex, // last
     Display, // after FlexStyle
+    // area
+    Area,
     Width,
     Height,
     MinWidth,
     MinHeight,
+
     Contain,
     Content,
     CounterIncrement,
