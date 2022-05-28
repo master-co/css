@@ -330,19 +330,19 @@ export class Style {
         }
         // :first -> :first-child
         if (suffixToken.includes(':first')) {
-            suffixToken = suffixToken.replace(/:first/g, ':first-child');
+            suffixToken = suffixToken.replace(/:first(?![a-z-])/g, ':first-child');
         }
         // :last -> :last-child
         if (suffixToken.includes(':last')) {
-            suffixToken = suffixToken.replace(/:last/g, ':last-child');
+            suffixToken = suffixToken.replace(/:last(?![a-z-])/g, ':last-child');
         }
         // :even -> :nth-child(2n)
         if (suffixToken.includes(':even')) {
-            suffixToken = suffixToken.replace(/:even/g, ':nth-child(2n)');
+            suffixToken = suffixToken.replace(/:even(?![a-z-])/g, ':nth-child(2n)');
         }
         // :odd -> :nth-child(odd)
         if (suffixToken.includes(':odd')) {
-            suffixToken = suffixToken.replace(/:odd/g, ':nth-child(odd)');
+            suffixToken = suffixToken.replace(/:odd(?![a-z-])/g, ':nth-child(odd)');
         }
 
         // 2. parseValue
