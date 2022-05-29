@@ -198,6 +198,7 @@ import { CounterIncrement } from './counter-increment';
 import { colors } from '../colors';
 import { breakpoints } from '../breakpoints';
 import { Area } from './area';
+import { ScreenReader } from './screen-reader';
 
 const isBrowser = typeof window !== 'undefined';
 
@@ -413,7 +414,9 @@ export const Styles = [
     ShapeImageThreshold,
     ClipPath,
     Quotes,
-    MaskImage
+    MaskImage,
+    // screen reader
+    ScreenReader
 ] as Styles;
 
 /**
