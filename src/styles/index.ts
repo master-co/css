@@ -197,12 +197,13 @@ import { CounterIncrement } from './counter-increment';
 
 import { colors } from '../colors';
 import { breakpoints } from '../breakpoints';
-import { Area } from './area';
-import { ScreenReader } from './screen-reader';
+import { Utility } from './utility';
+// import { Area } from './area';
 
 const isBrowser = typeof window !== 'undefined';
 
 export const Styles = [
+    Utility,
     Group,
     Variable,
     FontWeight,
@@ -221,7 +222,7 @@ export const Styles = [
     Flex, // last
     Display, // after FlexStyle
     // area
-    Area,
+    // Area,
     Width,
     Height,
     MinWidth,
@@ -414,9 +415,7 @@ export const Styles = [
     ShapeImageThreshold,
     ClipPath,
     Quotes,
-    MaskImage,
-    // screen reader
-    ScreenReader
+    MaskImage
 ] as Styles;
 
 /**

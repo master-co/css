@@ -9,18 +9,4 @@ export class Inset extends Style {
             [this.prefix.slice(0, -1)]: this
         }
     }
-    static override semantics = {
-        center: {
-            left: 0,
-            right: 0,
-            'margin-left': AUTO,
-            'margin-right': AUTO
-        },
-        middle: {
-            top: 0,
-            bottom: 0,
-            'margin-top': AUTO,
-            'margin-bottom': AUTO
-        }
-    }
 }
