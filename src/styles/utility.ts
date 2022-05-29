@@ -3,6 +3,10 @@ import { Style } from '../style';
 
 export class Utility extends Style {
     static override semantics = {
+        'center-content': {
+            'justify-content': 'center',
+            'align-items': 'center',
+        },
         'sr-only': {
             'position': 'absolute',
             'width': '1',
