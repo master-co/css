@@ -9,6 +9,7 @@ test("shorthands", () => {
     testCSS("hide:last", ".hide\\:last:last-child{display:none}")
     testCSS("hide:even", ".hide\\:even:nth-child(2n){display:none}")
     testCSS("hide:odd", ".hide\\:odd:nth-child(odd){display:none}")
+    testCSS("hide:nth(2)", ".hide\\:nth\\(2\\):nth-child(2){display:none}")
     testCSS("hide:first:focus", ".hide\\:first\\:focus:first-child:focus{display:none}")
     testCSS("uppercase::first-letter", ".uppercase\\:\\:first-letter::first-letter{text-transform:uppercase}")
 })

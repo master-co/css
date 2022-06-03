@@ -344,6 +344,10 @@ export class Style {
         if (suffixToken.includes(':odd')) {
             suffixToken = suffixToken.replace(/:odd(?![a-z-])/g, ':nth-child(odd)');
         }
+        // :nth( -> :nth-child(
+        if (suffixToken.includes(':nth(')) {
+            suffixToken = suffixToken.replace(/:nth\(/g, ':nth-child(');
+        }
 
         // 2. parseValue
         if (this.parseValue) {
