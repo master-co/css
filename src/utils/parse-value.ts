@@ -6,12 +6,15 @@ const VAR_START = 'var(--';
 export function parseValue(
     token: string | number,
     defaultUnit?: string,
-    colors?: Record<string, Record<string, string>>
+    colors?: Record<string, Record<string, string>>,
+    values?: Record<string, Record<string, string>>
 ) {
-    let value: any = '';
+    let value: any = values ? values[token] : '';
     let unit: string = '';
     let unitToken: string = '';
-    if (typeof token === 'number') {
+    if (value) {
+        return { value, unit, unitToken }
+    } else if (typeof token === 'number') {
         value = token;
         unit = defaultUnit || '';
     } else {

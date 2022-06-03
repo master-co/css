@@ -232,7 +232,7 @@ export class Style {
                             if (isString) {
                                 valueTokens.push(currentValueToken);
                             } else {
-                                uv = parseValue(currentValueToken, unit, colors);
+                                uv = parseValue(currentValueToken, unit, colors, values);
                                 valueTokens.push(uv.value + uv.unit);
                             }
 
@@ -245,7 +245,7 @@ export class Style {
                         analyze(START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func);
                     } else if (val === '|' && (!isString || func === 'path')) {
                         if (!end) {
-                            uv = parseValue(currentValueToken, unit, colors);
+                            uv = parseValue(currentValueToken, unit, colors, values);
                             valueTokens.push(uv.value + uv.unit);
                             currentValueToken = '';
                         } else {
@@ -260,7 +260,7 @@ export class Style {
                                     currentValueToken += '0';
                                 }
                             } else if (val === ',') {
-                                uv = parseValue(currentValueToken, unit, colors);
+                                uv = parseValue(currentValueToken, unit, colors, values);
                                 valueTokens.push(uv.value + uv.unit, ',');
                                 currentValueToken = '';
                                 continue;
@@ -281,7 +281,7 @@ export class Style {
             })();
 
             if (currentValueToken) {
-                uv = parseValue(currentValueToken, unit, colors);
+                uv = parseValue(currentValueToken, unit, colors, values);
                 valueTokens.push(uv.value + uv.unit);
             }
 
