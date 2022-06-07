@@ -1,12 +1,13 @@
 import { Style } from '../style';
 import { StyleSheet } from '../sheet';
 import { START_SYMBOL } from '../constants/start-symbol';
+import { GROUP } from 'src/constants/css-property-keyword';
 
 const bracketRegexp = /\{(.*)\}/;
 
 export class Group extends Style {
-    static id = 'group';
-    static override matches = /^{/;
+    static id = GROUP;
+    static override matches = /^(?:.+?[*_>~+])?\{.+?\}/;
     static override unit = '';
     override get props(): { [key: string]: any } {
         const newProps = {};
@@ -40,8 +41,8 @@ export class Group extends Style {
 
         let i = 1;
         const analyze = (end: string) => {
-            for (; i < this.name.length; i++) {
-                const char = this.name[i];
+            for (; i < this.value.length; i++) {
+                const char = this.value[i];
 
                 if (!end) {
                     if (char === ';') {

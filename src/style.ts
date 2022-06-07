@@ -8,6 +8,7 @@ import { generateColorVariablesText } from './utils/generate-color-variables-tex
 import { hexToRgb } from './utils/hex-to-rgb';
 import { rgbToHex } from './utils/rgb-to-hex';
 import { START_SYMBOL } from './constants/start-symbol';
+import { GROUP } from './constants/css-property-keyword';
 
 const MATCHES = 'matches';
 const SEMANTICS = 'semantics';
@@ -48,6 +49,10 @@ const sliderRunnableTrackPseudoRegexp = new RegExp(SLIDER_RUNNABLE_TRACK_PSEUDO,
 const sliderThumbPseudoRegexp = new RegExp(SLIDER_THUMB_PSEUDO, 'g');
 const resizerPseudoRegexp = new RegExp(RESIZER_PSEUDO, 'g');
 const progressPseudoRegexp = new RegExp(PROGRESS_PSEUDO, 'g');
+const selectorSplitRegexp = /(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])/;
+const transformSelectorUnderline = (selector: string) => selector.split(selectorSplitRegexp)
+    .map((eachToken, i) => i % 2 ? eachToken : eachToken.replace(/\_/g, ' '))
+    .join('');
 
 export interface StyleMatching {
     origin: 'matches' | 'semantics' | 'symbol';
@@ -62,7 +67,8 @@ export class Style {
     readonly symbol: string;
     readonly value: any | { [key: string]: string };
     readonly token: string;
-    readonly selector: string;
+    readonly prefixSelector: string;
+    readonly suffixSelector: string;
     readonly important: boolean;
     readonly media: StyleMedia;
     readonly at: Record<string, string> = {};
@@ -156,7 +162,7 @@ export class Style {
                 return;
             }
         }
-        let { semantics, unit, colors, key, values, colorful, breakpoints, mediaQueries } = TargetStyle;
+        let { id, semantics, unit, colors, key, values, colorful, breakpoints, mediaQueries } = TargetStyle;
         let token = name;
 
         // 防止非色彩 style 的 token 被解析
@@ -165,16 +171,23 @@ export class Style {
         }
 
         // 1. value / selectorToken
-        let valueToken: string, suffixToken: string;
+        let valueToken: string, prefixToken: string, suffixToken: string;
         if (matching.origin === SEMANTICS) {
             valueToken = matching.value;
             suffixToken = token.slice(matching.value.length);
             this.value = semantics[matching.value];
         } else {
             if (matching.origin === MATCHES) {
-                const firstChar = token[0];
-                if (firstChar === '{') {
-                    valueToken = token;
+                if (id === GROUP) {
+                    let i = 0;
+                    for (; i < token.length; i++) {
+                        if (token[i] === '{' && token[i - 1] !== '\\') {
+                            break;
+                        }
+                    }
+
+                    prefixToken = token.slice(0, i);
+                    valueToken = token.slice(i);
                 } else {
                     const indexOfColon = token.indexOf(':');
                     this.prefix = token.slice(0, indexOfColon + 1);
@@ -365,23 +378,27 @@ export class Style {
             suffixToken = suffixToken.slice(1);
         }
 
-        // 5. selector
-        const suffixTokens = suffixToken.split('@');
-        let selector = suffixTokens[0].replace(/\_/g, ' ');
+        // 5. prefix selector
+        this.prefixSelector = prefixToken
+            ? transformSelectorUnderline(prefixToken)
+            : '';
 
-        if (selector) {
-            this.hasWhere = selector.includes(':where(');
+        // 6. suffix selector
+        const suffixTokens = suffixToken.split('@');
+        let suffixSelector = suffixTokens[0];
+        if (suffixSelector) {
+            suffixSelector = transformSelectorUnderline(suffixSelector);
+            this.hasWhere = suffixSelector.includes(':where(');
             for (let i = 0; i < PRIORITY_SELECTORS.length; i++) {
-                if (selector.includes(PRIORITY_SELECTORS[i])) {
+                if (suffixSelector.includes(PRIORITY_SELECTORS[i])) {
                     this.prioritySelectorIndex = i;
                     break;
                 }
             }
         }
+        this.suffixSelector = suffixSelector;
 
-        this.selector = selector;
-
-        // 6. atTokens
+        // 7. atTokens
         for (let i = 1; i < suffixTokens.length; i++) {
             const atToken = suffixTokens[i];
             if (atToken) {
@@ -502,6 +519,9 @@ export class Style {
         if (this.colorScheme) {
             prefixText += '.' + this.colorScheme + ' ';
         }
+        if (this.prefixSelector) {
+            prefixText += this.prefixSelector;
+        }
         if (this.direction) {
             prefixText += '[dir=' + this.direction + '] ';
         }
@@ -509,9 +529,9 @@ export class Style {
         this.text = prefixText
             + '.'
             + CSS.escape(this.name)
-            + selector
+            + this.suffixSelector
             + (this.name in Style.relations
-                ? Style.relations[this.name].map(eachClassName => ', ' + prefixText + '.' + eachClassName + selector).join('')
+                ? Style.relations[this.name].map(eachClassName => ', ' + prefixText + '.' + eachClassName + this.suffixSelector).join('')
                 : '')
             + '{'
             + (typeof this.value === 'object'
