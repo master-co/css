@@ -1,7 +1,7 @@
 import { Style } from '../style';
 import { StyleSheet } from '../sheet';
 import { START_SYMBOL } from '../constants/start-symbol';
-import { GROUP } from 'src/constants/css-property-keyword';
+import { GROUP } from '../constants/css-property-keyword';
 
 const bracketRegexp = /\{(.*)\}/;
 

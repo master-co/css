@@ -13,3 +13,7 @@ test("shorthands", () => {
     testCSS("hide:first:focus", ".hide\\:first\\:focus:first-child:focus{display:none}")
     testCSS("uppercase::first-letter", ".uppercase\\:\\:first-letter::first-letter{text-transform:uppercase}")
 })
+
+test("reactive-styles", ()=> {
+    testCSS(":checked+{hide}", ":checked+.\\:checked\\+\\{hide\\}{display:none}")
+})
