@@ -562,23 +562,24 @@ export class Style {
 
     static extend(
         property: 'classes' | 'breakpoints' | 'colors' | 'values' | 'semantics' | 'mediaQueries',
-        settings: Record<string, any>,
-        refresh = true
+        ...settings: Record<string, any>[]
     ) {
-        if (!settings)
-            return;
+        if (!settings.length)
+            return this;
 
         const handleSettings = (oldSettings: any, onAdd?: (key: string, value: any) => any, onDelete?: (key: string) => void) => {
-            for (const key in settings) {
-                const value = settings[key];
-                if (value === null || value === undefined) {
-                    if (key in oldSettings) {
-                        onDelete?.(key);
-
-                        delete oldSettings[key];
+            for (const eachSetting of settings) {
+                for (const key in eachSetting) {
+                    const value = eachSetting[key];
+                    if (value === null || value === undefined) {
+                        if (key in oldSettings) {
+                            onDelete?.(key);
+    
+                            delete oldSettings[key];
+                        }
+                    } else {
+                        oldSettings[key] = onAdd?.(key, value) ?? value;
                     }
-                } else {
-                    oldSettings[key] = onAdd?.(key, value) ?? value;
                 }
             }
         };
@@ -761,9 +762,7 @@ export class Style {
                 break;
         }
 
-        if (refresh) {
-            StyleSheet.refresh();
-        }
+        return this;
     };
 }
 

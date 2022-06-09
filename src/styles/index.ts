@@ -428,17 +428,18 @@ const get = Styles.get = (query: string) => Styles.find((EachStyle) =>
 /**
  * @param property 'values', 'semantics' and all of the Style members
  * */
-Styles.extend = (property, settings, refresh = true) => {
-    for (const query in settings) {
-        const EachStyle = get(query);
-        if (EachStyle) {
-            const eachSettings = settings[query];
-            EachStyle.extend(property, eachSettings);
+Styles.extend = (property, ...settings) => {
+    for (const eachSetting of settings) {
+        for (const query in eachSetting) {
+            const EachStyle = get(query);
+            if (EachStyle) {
+                const eachSettings = settings[query];
+                EachStyle.extend(property, eachSettings);
+            }
         }
     }
-    if (refresh) {
-        StyleSheet.refresh();
-    }
+
+    return this;
 }
 
 export function init() {
@@ -449,8 +450,8 @@ export function init() {
     }
 }
 
-Style.extend('colors', colors, false);
-Style.extend('breakpoints', breakpoints, false);
+Style.extend('colors', colors)
+    .extend('breakpoints', breakpoints);
 StyleSheet.Styles.push(...Styles);
 
 const MASTER_CSS = 'MasterCSS';
@@ -470,6 +471,6 @@ declare global {
 }
 
 export interface Styles extends Array<typeof Style> {
-    extend: (property: 'semantics' | 'values', settings: { [key: string]: { [key: string]: any } }, refresh?: boolean) => void;
+    extend: (property: 'semantics' | 'values', ...settings: { [key: string]: { [key: string]: any } }[]) => Styles;
     get: (query: string) => typeof Style
 }
