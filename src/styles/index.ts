@@ -453,12 +453,11 @@ Style.extend('colors', colors, false);
 Style.extend('breakpoints', breakpoints, false);
 StyleSheet.Styles.push(...Styles);
 
-const MASTER_STYLES = 'MasterStyles';
-const MASTER_STYLES_MANUAL = MASTER_STYLES + 'Manual';
+const MASTER_CSS = 'MasterCSS';
 if (isBrowser) {
-    window['init' + MASTER_STYLES] = init;
-    window[MASTER_STYLES] = Styles;
-    if (!window[MASTER_STYLES_MANUAL]) {
+    window['init' + MASTER_CSS] = init;
+    window['MasterStyles'] = Styles;
+    if (!window[MASTER_CSS + 'Manual']) {
         init();
     }
 }
@@ -466,7 +465,7 @@ if (isBrowser) {
 declare global {
     interface Window {
         MasterStyles: typeof Styles;
-        MasterStylesManual: boolean;
+        MasterCSSManual: boolean;
     }
 }
 
