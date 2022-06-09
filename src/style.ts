@@ -567,19 +567,19 @@ export class Style {
         if (!settings.length)
             return this;
 
+        const assignedSettings = Object.assign({}, ...settings)
+
         const handleSettings = (oldSettings: any, onAdd?: (key: string, value: any) => any, onDelete?: (key: string) => void) => {
-            for (const eachSetting of settings) {
-                for (const key in eachSetting) {
-                    const value = eachSetting[key];
-                    if (value === null || value === undefined) {
-                        if (key in oldSettings) {
-                            onDelete?.(key);
-    
-                            delete oldSettings[key];
-                        }
-                    } else {
-                        oldSettings[key] = onAdd?.(key, value) ?? value;
+            for (const key in assignedSettings) {
+                const value = assignedSettings[key];
+                if (value === null || value === undefined) {
+                    if (key in oldSettings) {
+                        onDelete?.(key);
+
+                        delete oldSettings[key];
                     }
+                } else {
+                    oldSettings[key] = onAdd?.(key, value) ?? value;
                 }
             }
         };

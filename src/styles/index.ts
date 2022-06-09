@@ -429,16 +429,14 @@ const get = Styles.get = (query: string) => Styles.find((EachStyle) =>
  * @param property 'values', 'semantics' and all of the Style members
  * */
 Styles.extend = (property, ...settings) => {
-    for (const eachSetting of settings) {
-        for (const query in eachSetting) {
-            const EachStyle = get(query);
-            if (EachStyle) {
-                const eachSettings = settings[query];
-                EachStyle.extend(property, eachSettings);
-            }
+    const assignedSettings = Object.assign({}, ...settings);
+    for (const query in assignedSettings) {
+        const EachStyle = get(query);
+        if (EachStyle) {
+            const eachSettings = assignedSettings[query];
+            EachStyle.extend(property, eachSettings);
         }
     }
-
     return this;
 }
 
