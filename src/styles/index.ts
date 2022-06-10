@@ -434,7 +434,7 @@ Styles.extend = (property, ...settings) => {
         const EachStyle = get(query);
         if (EachStyle) {
             const eachSettings = assignedSettings[query];
-            EachStyle.extend(property, eachSettings);
+            EachStyle.extend(property as any, eachSettings);
         }
     }
     return this;
@@ -469,6 +469,11 @@ declare global {
 }
 
 export interface Styles extends Array<typeof Style> {
-    extend: (property: 'semantics' | 'values', ...settings: { [key: string]: { [key: string]: any } }[]) => Styles;
+    extend: (
+        property: 'semantics' | 'values',
+        ...settings: {
+            [key: string]: { [key: string]: any }
+        }[]
+    ) => Styles;
     get: (query: string) => typeof Style
 }

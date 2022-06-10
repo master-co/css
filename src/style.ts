@@ -561,7 +561,7 @@ export class Style {
     }
 
     static extend(
-        property: 'classes' | 'breakpoints' | 'colors' | 'values' | 'semantics' | 'mediaQueries',
+        property: 'classes' | 'breakpoints' | 'colors' | 'mediaQueries',
         ...settings: Record<string, any>[]
     ) {
         if (!settings.length)
