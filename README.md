@@ -83,6 +83,7 @@ or use a CDN
 # Original Design
 - __Master CSS Syntax__: As a whole new language, Master created our own unique syntax.
 - __Class Highlight__: Master is the first language to highlight class names in markup.
+- __Hybrid Rendering__: Apply both JIT and AOT to CSS compilation. Similar to [Hydration](https://en.wikipedia.org/wiki/Hydration_(web_development)) technology.
 - __Reactive Styles__ ─ the one of groundbreaking features that let you style an element based on parent/sibling state.
 - __Arbitrary selectors and media queries__: Apply arbitrary selectors and media queries directly in class="", which is the most powerful and comprehensive language on the market.
 
