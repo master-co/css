@@ -54,8 +54,6 @@ const transformSelectorUnderline = (selector: string) => selector.split(selector
     .map((eachToken, i) => i % 2 ? eachToken : eachToken.replace(/\_/g, ' '))
     .join('');
 
-type ExtendDataType<A> = A extends 'colorSchemes' ? string[] : Record<string, any>;
-
 export interface StyleMatching {
     origin: 'matches' | 'semantics' | 'symbol';
     value?: string;
@@ -563,32 +561,26 @@ export class Style {
         // console.log(this);
     }
 
-    static extend<A extends 'classes' | 'breakpoints' | 'colors' | 'mediaQueries' | 'colorSchemes'>(
-        property: A,
-        ...settings: ExtendDataType<A>[]
+    static extend(
+        property: 'classes' | 'breakpoints' | 'colors' | 'mediaQueries',
+        ...settings: Record<string, any>[]
     ) {
         if (!settings.length)
             return this;
 
-        const defaultValue = property === 'colorSchemes' ? [] : {};
-        const isArray = Array.isArray(defaultValue);
-        const assignedSettings = Object.assign(isArray ? [] : {}, ...settings);
+        const assignedSettings = Object.assign({}, ...settings);
 
         const handleSettings = (oldSettings: any, onAdd?: (key: string, value: any) => any, onDelete?: (key: string) => void) => {
-            if (isArray) {
-                this[property] = assignedSettings;
-            } else {
-                for (const key in assignedSettings) {
-                    const value = assignedSettings[key];
-                    if (value === null || value === undefined) {
-                        if (key in oldSettings) {
-                            onDelete?.(key);
-    
-                            delete oldSettings[key];
-                        }
-                    } else {
-                        oldSettings[key] = onAdd?.(key, value) ?? value;
+            for (const key in assignedSettings) {
+                const value = assignedSettings[key];
+                if (value === null || value === undefined) {
+                    if (key in oldSettings) {
+                        onDelete?.(key);
+
+                        delete oldSettings[key];
                     }
+                } else {
+                    oldSettings[key] = onAdd?.(key, value) ?? value;
                 }
             }
         };
@@ -765,7 +757,7 @@ export class Style {
                 let oldSettings = this[property];
                 if (!oldSettings) {
                     // @ts-ignore
-                    oldSettings = this[property] = defaultValue;
+                    oldSettings = this[property] = {};
                 }
                 handleSettings(oldSettings);
                 break;
