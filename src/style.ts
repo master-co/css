@@ -257,7 +257,7 @@ export class Style {
                         break;
                     } else if (!isString && val in START_SYMBOL) {
                         analyze(START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func);
-                    } else if (val === '|' && (!isString || func === 'path')) {
+                    } else if (val === '|' && end !== '}' && (!isString || func === 'path')) {
                         if (!end) {
                             uv = parseValue(currentValueToken, unit, colors, values);
                             valueTokens.push(uv.value + uv.unit);
