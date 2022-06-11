@@ -54,6 +54,8 @@ const transformSelectorUnderline = (selector: string) => selector.split(selector
     .map((eachToken, i) => i % 2 ? eachToken : eachToken.replace(/\_/g, ' '))
     .join('');
 
+type ExtendDataType<A> = A extends 'colorSchemes' ? string[] : Record<string, any>;
+
 export interface StyleMatching {
     origin: 'matches' | 'semantics' | 'symbol';
     value?: string;
@@ -99,6 +101,7 @@ export class Style {
     static readonly classes: Record<string, string | string[]> = {};
     static readonly colorNames: string[] = [];
     static readonly relations: Record<string, string[]> = {};
+    static readonly colorSchemes: string[] = ['dark', 'light'];
 
     static match(name: string): StyleMatching {
         /**
@@ -162,7 +165,7 @@ export class Style {
                 return;
             }
         }
-        let { id, semantics, unit, colors, key, values, colorful, breakpoints, mediaQueries } = TargetStyle;
+        let { id, semantics, unit, colors, key, values, colorful, breakpoints, mediaQueries, colorSchemes } = TargetStyle;
         let token = name;
 
         // 防止非色彩 style 的 token 被解析
@@ -402,7 +405,7 @@ export class Style {
         for (let i = 1; i < suffixTokens.length; i++) {
             const atToken = suffixTokens[i];
             if (atToken) {
-                if (atToken.startsWith('dark') || atToken.startsWith('light')) {
+                if (colorSchemes.includes(atToken)) {
                     this.colorScheme = atToken;
                 } else if (
                     atToken === 'rtl'
@@ -560,26 +563,32 @@ export class Style {
         // console.log(this);
     }
 
-    static extend(
-        property: 'classes' | 'breakpoints' | 'colors' | 'mediaQueries',
-        ...settings: Record<string, any>[]
+    static extend<A extends 'classes' | 'breakpoints' | 'colors' | 'mediaQueries' | 'colorSchemes'>(
+        property: A,
+        ...settings: ExtendDataType<A>[]
     ) {
         if (!settings.length)
             return this;
 
-        const assignedSettings = Object.assign({}, ...settings)
+        const defaultValue = property === 'colorSchemes' ? [] : {};
+        const isArray = Array.isArray(defaultValue);
+        const assignedSettings = Object.assign(isArray ? [] : {}, ...settings);
 
         const handleSettings = (oldSettings: any, onAdd?: (key: string, value: any) => any, onDelete?: (key: string) => void) => {
-            for (const key in assignedSettings) {
-                const value = assignedSettings[key];
-                if (value === null || value === undefined) {
-                    if (key in oldSettings) {
-                        onDelete?.(key);
-
-                        delete oldSettings[key];
+            if (isArray) {
+                this[property] = assignedSettings;
+            } else {
+                for (const key in assignedSettings) {
+                    const value = assignedSettings[key];
+                    if (value === null || value === undefined) {
+                        if (key in oldSettings) {
+                            onDelete?.(key);
+    
+                            delete oldSettings[key];
+                        }
+                    } else {
+                        oldSettings[key] = onAdd?.(key, value) ?? value;
                     }
-                } else {
-                    oldSettings[key] = onAdd?.(key, value) ?? value;
                 }
             }
         };
@@ -753,10 +762,10 @@ export class Style {
                     });
                 break;
             default:
-                let oldSettings: Record<string, any> = this[property];
+                let oldSettings = this[property];
                 if (!oldSettings) {
                     // @ts-ignore
-                    oldSettings = this[property] = {};
+                    oldSettings = this[property] = defaultValue;
                 }
                 handleSettings(oldSettings);
                 break;
