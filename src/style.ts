@@ -275,7 +275,7 @@ export class Style {
                                 }
                             } else if (val === ',') {
                                 uv = parseValue(currentValueToken, unit, colors, values);
-                                valueTokens.push(uv.value + uv.unit + ',');
+                                valueTokens.push(uv.value + uv.unit, ',');
                                 currentValueToken = '';
                                 continue;
                             } else if (
@@ -310,7 +310,7 @@ export class Style {
                     this.unit = '';
                 }
             } else {
-                this.value = valueTokens.join(' ');
+                this.value = valueTokens.reduce((previousVal, currentVal, i) => previousVal + currentVal + ((currentVal === ',' || valueTokens[i + 1] === ',' || i === valueTokens.length - 1) ? '' : ' '), '');
             }
         }
 
