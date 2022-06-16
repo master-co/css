@@ -5,23 +5,25 @@ export class Overflow extends Style {
     static id = 'overflow';
     static override matches = /^(overflow|ovf)(-x|-y)?:./;
     override get props(): { [key: string]: any } {
-        switch (this.prefix.slice(-2, -1)) {
-            case X:
-                return { 'overflow-x': this };
-            case Y:
-                return { 'overflow-y': this };
-            default:
-                return { 'overflow': this };
+        if (this.prefix) {
+            switch (this.prefix.slice(-2, -1)) {
+                case X:
+                    return { 'overflow-x': this };
+                case Y:
+                    return { 'overflow-y': this };
+            }
         }
+        return { 'overflow': this };
     }
     override get order(): number {
-        switch (this.prefix.slice(-2, -1)) {
-            case X:
-            case Y:
-                return 0;
-            default:
-                return -1;
+        if (this.prefix) {
+            switch (this.prefix.slice(-2, -1)) {
+                case X:
+                case Y:
+                    return 0;
+            }
         }
+        return -1;
     }
     static override semantics = {
         overflow: 'visible'
