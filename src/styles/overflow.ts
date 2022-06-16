@@ -23,4 +23,7 @@ export class Overflow extends Style {
                 return -1;
         }
     }
+    static override semantics = {
+        overflow: 'visible'
+    }
 }
