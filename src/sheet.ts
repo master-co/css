@@ -28,37 +28,31 @@ export class StyleSheet extends MutationObserver {
 
             const correctionOfClassName = {};
             const attributeMutationRecords: MutationRecord[] = [];
-            const addedElements: Element[] = [];
-            const removedElements: Element[] = [];
+            const updatedElements: Element[] = [];
+            const unchangedElements: Element[] = [];
 
             /**
             * 取得所有深層後代的 class names 
             */
-            const handleClassNameDeeply = (targets: HTMLCollection, remove: boolean, collectedElements?: Element[]) => {
-                for (let i = 0; i < targets.length; i++) {
-                    const element = targets[i];
+            const handleClassNameDeeply = (element: Element, remove: boolean) => {
+                if (remove) {
+                    element.classList.forEach(removeClassName);
+                } else {
+                    element.classList.forEach(addClassName);
+                }
 
-                    if (
-                        element.classList
-                        && !collectedElements.includes(element)
-                    ) {
-                        collectedElements.push(element);
-                        element.classList.forEach((className) => {
-                            if (remove) {
-                                removeClassName(className);
-                            } else {
-                                addClassName(className);
-                            }
-                        });
-                        const children = element.children;
-                        if (children.length) {
-                            handleClassNameDeeply(children, remove, collectedElements);
-                        }
+                const children = element.children;
+                for (let i = 0; i < children.length; i++) {
+                    const eachChildren = children[i];
+                    if (eachChildren.classList) {
+                        updatedElements.push(eachChildren);
+
+                        handleClassNameDeeply(eachChildren, remove);
                     }
                 }
             }
 
-            const addClassName = (className) => {
+            const addClassName = (className: string) => {
                 if (className in correctionOfClassName) {
                     correctionOfClassName[className]++;
                 } else {
@@ -71,6 +65,20 @@ export class StyleSheet extends MutationObserver {
                     correctionOfClassName[className]--;
                 } else {
                     correctionOfClassName[className] = -1;
+                }
+            }
+
+            const handleNodes = (nodes: HTMLCollection, remove: boolean) => {
+                for (let i = 0; i < nodes.length; i++) {
+                    const eachNode = nodes[i];
+                    if (eachNode.classList && !updatedElements.includes(eachNode) && !unchangedElements.includes(eachNode)) {
+                        if (eachNode.isConnected !== remove) {
+                            updatedElements.push(eachNode);
+                            handleClassNameDeeply(eachNode, remove);
+                        } else {
+                            unchangedElements.push(eachNode);
+                        }
+                    }
                 }
             }
 
@@ -99,18 +107,8 @@ export class StyleSheet extends MutationObserver {
                     }
                 } else {
                     // 先判斷節點新增或移除
-                    if (addedNodes.length) {
-                        /**
-                         * 新元素插入時萃取 class name
-                         */
-                        handleClassNameDeeply(addedNodes as any, false, addedElements);
-                    }
-                    if (removedNodes.length) {
-                        /**
-                         * 當元素被移除時萃取 class name
-                         */
-                        handleClassNameDeeply(removedNodes as any, true, removedElements);
-                    }
+                    handleNodes(addedNodes, false);
+                    handleNodes(removedNodes, true);
                 }
             }
 
@@ -128,26 +126,35 @@ export class StyleSheet extends MutationObserver {
                  * 該批 mutationRecords 中，某個 target 同時有 attribute 及 childList 的變更，
                  * 則以 childList 節點插入及移除的 target.className 為主
                  */
-                if (
-                    addedElements.includes(target as Element)
-                    || removedElements.includes(target as Element)
-                ) {
-                    continue;
-                }
-                const oldClassNames: string[] = oldValue ? oldValue.split(' ') : [];
+                const updated = updatedElements.includes(target as Element);
                 const classNames = (target as Element).classList;
-                if (classNames.length) {
-                    classNames.forEach((className: string) => {
-                        if (!oldClassNames.includes(className)) {
-                            addClassName(className);
-                            // console.log('add', className);
+                const oldClassNames = oldValue ? oldValue.split(' ') : [];
+                if (updated) {
+                    if (target.isConnected) {
+                        continue;
+                    } else {
+                        for (const oldClassName of oldClassNames) {
+                            if (!classNames.contains(oldClassName)) {
+                                removeClassName(oldClassName);
+                            }
                         }
-                    })
-                }
-                for (const oldClassName of oldClassNames) {
-                    if (!classNames.contains(oldClassName)) {
-                        removeClassName(oldClassName);
-                        // console.log('remove', oldClassName);
+                    }
+                } else {
+                    if (target.isConnected) {
+                        classNames.forEach((className) => {
+                            if (!oldClassNames.includes(className)) {
+                                addClassName(className);
+                            }
+                        })
+                        for (const oldClassName of oldClassNames) {
+                            if (!classNames.contains(oldClassName)) {
+                                removeClassName(oldClassName);
+                            }
+                        }
+                    } else {
+                        for (const oldClassName of oldClassNames) {
+                            removeClassName(oldClassName);
+                        }
                     }
                 }
             }
@@ -163,15 +170,16 @@ export class StyleSheet extends MutationObserver {
                      * 匹配並刪除對應的 rule
                      */
                     this.delete(className);
-                } else if (!(className in this.countOfName)) {
-                    // add
-                    /**
-                     * 新 class name 被 connected 至 DOM tree，
-                     * 匹配並創建對應的 Rule
-                     */
-                    this.findAndInsert(className);
-                    this.countOfName[className] = count;
                 } else {
+                    if (!(className in this.countOfName)) {
+                        // add
+                        /**
+                         * 新 class name 被 connected 至 DOM tree，
+                         * 匹配並創建對應的 Rule
+                         */
+                        this.findAndInsert(className);
+                    }
+                  
                     this.countOfName[className] = count;
                 }
             }
