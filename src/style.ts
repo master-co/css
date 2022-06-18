@@ -102,8 +102,14 @@ export class Style {
     static readonly colorSchemes: string[] = ['dark', 'light'];
 
     static match(name: string): StyleMatching {
+        /** 
+         * STEP 1. matches
+         */
+        if (this.matches && this.matches.test(name)) {
+            return { origin: MATCHES };
+        }
         /**
-         *  STEP 1. semantic
+         *  STEP 2. semantic
          */
         if (this.semantics) {
             for (const semanticName in this.semantics) {
@@ -116,12 +122,6 @@ export class Style {
                     return { origin: SEMANTICS, value: semanticName };
                 }
             }
-        }
-        /** 
-         * STEP 2. matches
-         */
-        if (this.matches && this.matches.test(name)) {
-            return { origin: MATCHES };
         }
         /** 
          * STEP 3. color starts
