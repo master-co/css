@@ -239,7 +239,7 @@ export class StyleSheet extends MutationObserver {
                         }
                     } else if (cssRule.cssRules) {
                         for (let index = 0; index < cssRule.cssRules.length; index++) {
-                            checkDeep(cssRule.cssRules[index], parentCssRule ?? cssRule);
+                            checkDeep(cssRule.cssRules[index], parentCssRule ?? cssRule.cssRules[index]);
                         }
                     }
                 };
@@ -764,10 +764,13 @@ export class StyleSheet extends MutationObserver {
             )
                 return;
 
+            console.log('A', style.cssRule);
             for (let index = 0; index < sheet.cssRules.length; index++) {
                 const eachCssRule = sheet.cssRules[index];
+                console.log(eachCssRule);
                 if (eachCssRule === style.cssRule) {
                     // console.log(style.name, eachCssRule)
+                    console.log('B');
                     sheet.deleteRule(index);
                     this.styles.splice(index, 1);
                     delete this.styleOfName[style.name];
