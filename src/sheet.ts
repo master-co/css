@@ -200,41 +200,39 @@ export class StyleSheet extends MutationObserver {
                         const selectorTexts = cssRule.selectorText.split(', ');
                         const escapedClassNames = selectorTexts[0].split(' ');
 
-                        let escapedClassName: string;
-                        for (let i = escapedClassNames.length - 1; i >= 0; i--) {
+                        for (let i = 0; i <  escapedClassNames.length; i++) {
                             const eachSelectorText = escapedClassNames[i];
                             if (eachSelectorText[0] === '.') {
-                                escapedClassName = eachSelectorText.slice(1);
-                                break;
-                            }
-                        }
-
-                        let className = '';
-                        for (let j = 0; j < escapedClassName.length; j++) {
-                            const char = escapedClassName[j];
-                            const nextChar = escapedClassName[j + 1];
-
-                            if (char === '\\') {
-                                j++;
-
-                                if (nextChar !== '\\') {
-                                    className += nextChar;
-
-                                    continue;
+                                const escapedClassName = eachSelectorText.slice(1);
+                                
+                                let className = '';
+                                for (let j = 0; j < escapedClassName.length; j++) {
+                                    const char = escapedClassName[j];
+                                    const nextChar = escapedClassName[j + 1];
+        
+                                    if (char === '\\') {
+                                        j++;
+        
+                                        if (nextChar !== '\\') {
+                                            className += nextChar;
+        
+                                            continue;
+                                        }
+                                    } else if (selectorSymbols.includes(char)) {
+                                        break;
+                                    }
+        
+                                    className += char;
                                 }
-                            } else if (selectorSymbols.includes(char)) {
-                                break;
-                            }
 
-                            className += char;
-                        }
-
-                        if (!(className in this.styleOfName)) {
-                            const style = StyleSheet.findAndNew(className) as Style;
-                            if (style) {
-                                style.cssRule = parentCssRule ?? cssRule;
-                                this.styles.push(style);
-                                this.styleOfName[style.name] = style;
+                                if (!(className in this.styleOfName) && !(className in Style.classes)) {
+                                    const style = StyleSheet.findAndNew(className) as Style;
+                                    if (style) {
+                                        style.cssRule = parentCssRule ?? cssRule;
+                                        this.styles.push(style);
+                                        this.styleOfName[style.name] = style;
+                                    }
+                                }
                             }
                         }
                     } else if (cssRule.cssRules) {
