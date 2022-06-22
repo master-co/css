@@ -1,4 +1,4 @@
-import { BLOCK, dash, DISPLAY, FLEX, GRID, INLINE, TABLE, CONTENTS, NONE } from '../constants/css-property-keyword';
+import { BLOCK, dash, DISPLAY, FLEX, GRID, INLINE, TABLE, CONTENTS, NONE, FLOW, LIST, ITEM, ROW, COLUMN, GROUP } from '../constants/css-property-keyword';
 import { Style } from '../style';
 
 export class Display extends Style {
@@ -12,9 +12,20 @@ export class Display extends Style {
         flex: FLEX,
         grid: GRID,
         contents: CONTENTS,
+        inline: INLINE,
         'inline-block': dash(INLINE, BLOCK),
         'inline-flex': dash(INLINE, FLEX),
         'inline-grid': dash(INLINE, GRID),
-        'inline-table': dash(INLINE, TABLE)
+        'inline-table': dash(INLINE, TABLE),
+        'table-cell': dash(TABLE, 'cell'),
+        'table-caption': dash(TABLE, 'caption'),
+        'flow-root': dash(FLOW, 'root'),
+        'list-item': dash(LIST, ITEM),
+        'table-row': dash(TABLE, ROW),
+        'table-column': dash(TABLE, COLUMN),
+        'table-row-group': dash(TABLE, ROW, GROUP),
+        'table-column-group': dash(TABLE, COLUMN, GROUP),
+        'table-header-group': dash(TABLE, 'header', GROUP),
+        'table-footer-group': dash(TABLE, 'footer', GROUP)
     }
 }
