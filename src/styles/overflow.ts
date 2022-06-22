@@ -3,7 +3,7 @@ import { Style } from '../style';
 
 export class Overflow extends Style {
     static id = 'overflow';
-    static override matches = /^overflow(-x|-y)?:(?:visible|hidden|scroll|auto|clip|inherit|initial|revert|revert-layer|unset|\$|var)/;
+    static override matches = /^overflow(-x|-y)?:(?:visible|overlay|hidden|scroll|auto|clip|inherit|initial|revert|revert-layer|unset|\$|var)/;
     override get props(): { [key: string]: any } {
         if (this.prefix) {
             switch (this.prefix.slice(-2, -1)) {
