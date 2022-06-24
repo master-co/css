@@ -1,5 +1,6 @@
 const path = require('path');
 const src = path.join('./src');
+const CreateColorTest = require('./src/plugins/create-color-scss');
 
 module.exports = {
     resolve: {
@@ -33,5 +34,5 @@ module.exports = {
             },
         ]
     },
-    plugins: []
+    plugins: [new CreateColorTest()]
 }

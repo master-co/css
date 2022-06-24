@@ -195,8 +195,8 @@ import { BorderImage } from './border-image';
 import { Group } from './group';
 import { CounterIncrement } from './counter-increment';
 
-import { colors } from '../colors';
-import { breakpoints } from '../breakpoints';
+import colors from '../colors';
+import breakpoints from '../breakpoints';
 import { Utility } from './utility';
 // import { Area } from './area';
 

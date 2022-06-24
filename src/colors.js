@@ -1,4 +1,4 @@
-export const colors = {
+module.exports = {
     fade: {
         10: '131518',
         20: '24262d',

@@ -19,14 +19,30 @@ export function parseValue(
         unit = defaultUnit || '';
     } else {
         if (colors) {
-            const [levelColor, opacity] = token.split('/');
+            const [levelColor, opacityStr] = token.split('/');
             for (const colorName in colors) {
                 if (levelColor.startsWith(colorName)) {
                     const nextChar = levelColor[colorName.length];
-                    if (!nextChar || nextChar === '-') {
-                        value = 'rgb(' + VAR_START + levelColor + ')' + (opacity ? '/' + opacity : '') + ')';
+                    const level = !nextChar
+                        ? ''
+                        : nextChar === '-'
+                            ? levelColor.slice(colorName.length + 1)
+                            : undefined;
+                    if (level !== undefined) {
+                        const hexColor = colors[colorName][level];
+                        if (hexColor) {
+                            value = '#' + hexColor;
+                            if (opacityStr) {
+                                let opacity = +opacityStr;
+                                opacity = isNaN(opacity)
+                                    ? 1
+                                    : Math.min(Math.max(opacity, 0), 1);
 
-                        return { value, unit, unitToken };
+                                value += Math.round(opacity * 255).toString(16).toUpperCase();
+                            }
+
+                            return { value, unit, unitToken };
+                        }
                     }
                 }
             }

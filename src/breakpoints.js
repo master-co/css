@@ -1,4 +1,4 @@
-export const breakpoints = {
+module.exports = {
     '3xs': 360,
     '2xs': 480,
     xs: 600,

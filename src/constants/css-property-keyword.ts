@@ -1,4 +1,4 @@
-import { breakpoints } from '../breakpoints';
+import breakpoints from '../breakpoints';
 
 export const dash = (...words: string[]) => words.join('-');
 export const DASH = '-';

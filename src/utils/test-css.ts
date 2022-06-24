@@ -1,8 +1,8 @@
-import { Style, StyleSheet } from '../../src';
+import { StyleSheet } from '../../src';
 import { render } from '../../src/render';
 
 export const css = (cls: string): string => {
-    return render(`<html class="${cls}">`, { StyleSheet, Style }).stylesCss
+    return render(`<html class="${cls}">`, { StyleSheet }).stylesCss
 }
 
 export const testCSS = (cls: string, expected: string): void => {

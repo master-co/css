@@ -4,11 +4,9 @@ import { getCssPropertyText } from './utils/get-css-property-text';
 import { parseValue } from './utils/parse-value';
 import { PRIORITY_SELECTORS } from './constants/priority-selectors';
 import { StyleSheet } from './sheet';
-import { generateColorVariablesText } from './utils/generate-color-variables-text';
-import { hexToRgb } from './utils/hex-to-rgb';
-import { rgbToHex } from './utils/rgb-to-hex';
 import { START_SYMBOL } from './constants/start-symbol';
 import { GROUP } from './constants/css-property-keyword';
+const generateLevelColors = require('./utils/generate-level-colors');
 
 const MATCHES = 'matches';
 const SEMANTICS = 'semantics';
@@ -89,7 +87,6 @@ export class Style {
     static symbol: string;
     static unit = REM;
     static colorful: boolean;
-    static rgbColors: Record<string, Record<string, string>> = {};
     static readonly values: Record<string, any>;
     static readonly semantics: { [key: string]: any };
     static readonly breakpoints: { [key: string]: number };
@@ -638,106 +635,11 @@ export class Style {
                     this.colors,
                     (colorName, data) => {
                         const colorNameIndex = this.colorNames.indexOf(colorName);
-                        if (colorNameIndex !== -1) {
-                            variablesSheet?.deleteRule(colorNameIndex);
-                        } else {
+                        if (colorNameIndex === -1) {
                             this.colorNames.push(colorName);
                         }
-
-                        const rgbColorLevels = {};
-                        if (typeof data === 'string') {
-                            data = { '': data };
-                        }
-
-                        const hasMainRgb = '' in data;
-                        if (hasMainRgb) {
-                            rgbColorLevels[''] = hexToRgb(data['']).join(' ');
-                        }
-
-                        let isLevelMore100 = false;
-                        for (const level in data) {
-                            if (level && +level >= 100) {
-                                isLevelMore100 = true;
-                                break;
-                            }
-                        }
-
-                        if (isLevelMore100) {
-                            for (const level in data) {
-                                rgbColorLevels[level] = hexToRgb(data[level]).join(' ');
-                            }
-                        } else {
-                            if (!hasMainRgb || Object.keys(data).length > 1) {
-                                let startLevel: number = 0,
-                                    startRgb: number[] = '0' in data
-                                        ? hexToRgb(data[0])
-                                        : [0, 0, 0],
-                                    endLevel: number,
-                                    endRgb: number[];
-
-                                const newLevels = [];
-                                const generateColor = () => {
-                                    const levelDiff = endLevel - startLevel;
-                                    const rgbDiff = endRgb.map((color, i) => (color - startRgb[i]) / levelDiff);
-                                    for (const eachNewLevel of newLevels) {
-                                        const currentLevelDiff = eachNewLevel - startLevel;
-                                        const newRgb = startRgb.map((color, i) => Math.round(color + rgbDiff[i] * currentLevelDiff));
-                                        rgbColorLevels[eachNewLevel] = newRgb.join(' ');
-                                        data[eachNewLevel] = rgbToHex.call(this, ...newRgb);
-                                    }
-                                };
-
-                                for (let i = 1; i < 100; i++) {
-                                    const isEven = i % 2 === 0;
-                                    if (i in data) {
-                                        if (newLevels.length) {
-                                            endLevel = i;
-                                            endRgb = hexToRgb(data[i]);
-
-                                            generateColor();
-
-                                            newLevels.length = 0;
-
-                                            startRgb = endRgb;
-                                        } else {
-                                            startRgb = hexToRgb(data[i]);
-                                        }
-
-                                        startLevel = i;
-                                        if (isEven) {
-                                            rgbColorLevels[i] = startRgb.join(' ');
-                                        }
-                                    } else if (isEven) {
-                                        newLevels.push(i);
-                                    }
-                                }
-
-                                if (newLevels.length) {
-                                    endLevel = 100;
-                                    endRgb = '100' in data
-                                        ? hexToRgb(data[100])
-                                        : [255, 255, 255];
-
-                                    generateColor();
-                                }
-                            }
-                        }
-
-                        if (!hasMainRgb) {
-                            const mainRgb = data[isLevelMore100 ? '500' : '50'];
-                            data[''] = mainRgb;
-                            rgbColorLevels[''] = hexToRgb(mainRgb).join(' ');
-                        }
-
-                        variablesSheet?.insertRule(
-                            generateColorVariablesText(colorName, rgbColorLevels),
-                            colorNameIndex === -1
-                                ? Object.keys(this.colors).length
-                                : colorNameIndex);
-
-                        this.rgbColors[colorName] = rgbColorLevels;
-
-                        return data;
+                        
+                        return generateLevelColors(data);
                     },
                     (colorName) => {
                         /**
@@ -747,10 +649,6 @@ export class Style {
                         if (colorNameIndex !== -1) {
                             this.colorNames.splice(colorNameIndex, 1);
                         }
-
-                        variablesSheet?.deleteRule(colorNameIndex);
-
-                        delete this.rgbColors[colorName];
                     });
                 break;
             default:
@@ -775,53 +673,6 @@ export interface Style {
 
 if (typeof window !== 'undefined') {
     window.MasterStyle = Style;
-}
-
-let variablesStyle: HTMLStyleElement;
-let variablesSheet: CSSStyleSheet;
-if (typeof document !== 'undefined') {
-    const colorsStyle: HTMLStyleElement = document.head.querySelector('[id="master-colors"]');
-    if (colorsStyle) {
-        const colorsMeta: HTMLMetaElement = document.head.querySelector('[name="master:colors"]');
-        if (colorsMeta && colorsMeta.content) {
-            variablesStyle = colorsStyle;
-
-            const colors = {};
-            const colorNames = colorsMeta.content.split(',');
-            for (let i = 0; i < variablesStyle.sheet.cssRules.length; i++) {
-                const variablesCssRules = variablesStyle.sheet.cssRules[i].cssText.slice(8, -1).split(';').slice(0, -1);
-                if (variablesCssRules.length) {
-                    const colorName = colorNames[i];
-                    const startIndex = colorName.length + 2;
-
-                    const data = {};
-                    for (const eachVariablesCssRule of variablesCssRules) {
-                        let [key, value] = eachVariablesCssRule.split(':');
-                        key = key.trim().slice(startIndex);
-
-                        if (key) {
-                            key = key.slice(1);
-                        }
-
-                        data[key] = rgbToHex.call(this, ...value.split(' ').map(eachValue => +eachValue));
-                    }
-
-                    colors[colorName] = data;
-                }
-            }
-
-            Style.extend('colors', colors);
-
-            variablesSheet = variablesStyle.sheet;
-        }
-    }
-
-    if (!variablesStyle) {
-        variablesStyle = document.createElement('style');
-        variablesStyle.id = 'master-colors';
-        document.head.prepend(variablesStyle);
-        variablesSheet = variablesStyle.sheet;
-    }
 }
 
 declare global {
