@@ -1,5 +1,6 @@
 import { normalizeCssCalcText } from './normalize-css-calc-text';
 
+const VAR_PATTERN = /var\(--(.*?)(?:,.+?)?\)/g;
 const UNIT_VALUE_PATTERN = /^([+-.]?\d+(\.?\d+)?)(.*)?/;
 const VAR_START = 'var(--';
 
@@ -19,33 +20,14 @@ export function parseValue(
         unit = defaultUnit || '';
     } else {
         if (colors) {
-            const [levelColor, opacityStr] = token.split('/');
-            for (const colorName in colors) {
-                if (levelColor.startsWith(colorName)) {
-                    const nextChar = levelColor[colorName.length];
-                    const level = !nextChar
-                        ? ''
-                        : nextChar === '-'
-                            ? levelColor.slice(colorName.length + 1)
-                            : undefined;
-                    if (level !== undefined) {
-                        const hexColor = colors[colorName][level];
-                        if (hexColor) {
-                            value = '#' + hexColor;
-                            if (opacityStr) {
-                                let opacity = +opacityStr;
-                                opacity = isNaN(opacity)
-                                    ? 1
-                                    : Math.min(Math.max(opacity, 0), 1);
-
-                                value += Math.round(opacity * 255).toString(16).toUpperCase().padStart(2, '0');
-                            }
-
-                            return { value, unit, unitToken };
-                        }
-                    }
-                }
+            const colorValue = getColorValue(colors, token);
+            if (colorValue) {
+                return { value: colorValue, unit, unitToken };
             }
+
+            token = token.replace(
+                VAR_PATTERN,
+                (origin, name) => getColorValue(colors, name) ?? origin);
         }
         if (defaultUnit) {
             const matches = token.match(UNIT_VALUE_PATTERN);
@@ -79,3 +61,37 @@ export function parseValue(
     }
     return { value, unit, unitToken }
 }
+
+const getColorValue = (colors: Record<string, Record<string, string>>, token: string) => {
+    let value: string;
+
+    const [levelColor, opacityStr] = token.split('/');
+    for (const colorName in colors) {
+        if (levelColor.startsWith(colorName)) {
+            const nextChar = levelColor[colorName.length];
+            const level = !nextChar
+                ? ''
+                : nextChar === '-'
+                    ? levelColor.slice(colorName.length + 1)
+                    : undefined;
+            if (level !== undefined) {
+                const hexColor = colors[colorName][level];
+                if (hexColor) {
+                    value = '#' + hexColor;
+                    if (opacityStr) {
+                        let opacity = +opacityStr;
+                        opacity = isNaN(opacity)
+                            ? 1
+                            : Math.min(Math.max(opacity, 0), 1);
+
+                        value += Math.round(opacity * 255).toString(16).toUpperCase().padStart(2, '0');
+                    }
+
+                    break;
+                }
+            }
+        }
+    }
+
+    return value;
+};
