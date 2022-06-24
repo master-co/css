@@ -38,7 +38,7 @@ export function parseValue(
                                     ? 1
                                     : Math.min(Math.max(opacity, 0), 1);
 
-                                value += Math.round(opacity * 255).toString(16).toUpperCase();
+                                value += Math.round(opacity * 255).toString(16).toUpperCase().padStart(2, '0');
                             }
 
                             return { value, unit, unitToken };
