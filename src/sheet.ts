@@ -7,7 +7,7 @@ const hasDocument = typeof document !== 'undefined';
 let STYLE_ELEMENT: HTMLStyleElement;
 if (hasDocument) {
     STYLE_ELEMENT = document.createElement('style');
-    STYLE_ELEMENT.id = 'master-styles'
+    STYLE_ELEMENT.id = 'master-css'
 }
 const MAX_WIDTH = 'max-width';
 const MIN_WIDTH = 'min-width';
@@ -192,7 +192,7 @@ export class StyleSheet extends MutationObserver {
         }
 
         if (container) {
-            const rootStyle: HTMLStyleElement = container.querySelector('[id="master-styles"]');
+            const rootStyle: HTMLStyleElement = container.querySelector('[id="master-css"]');
             if (rootStyle) {
                 this.element = rootStyle;
                 const checkDeep = (cssRule: any, parentCssRule: any) => {

@@ -2,12 +2,12 @@ import { StyleSheet } from './';
 import './polyfills/css-escape';
 
 export function render(html: string, options: { StyleSheet: typeof StyleSheet }): {
-    stylesCss: string,
+    css: string,
     html: string
 } {
     if (!html) {
         return {
-            stylesCss: '',
+            css: '',
             html
         };
     }
@@ -24,14 +24,11 @@ export function render(html: string, options: { StyleSheet: typeof StyleSheet })
             }
         }
     }
-    const stylesCss = styleSheet.styles.map(eachStyle => eachStyle.text).join('');
+    const css = styleSheet.styles.map(eachStyle => eachStyle.text).join('');
     return {
-        stylesCss,
+        css,
         html: html.includes('<head>')
-            ? html.replace(/(<head>)/,
-                `$1
-                <style id="master-styles">${stylesCss}</style>`
-            )
+            ? html.replace(/(<head>)/, `$1<style id="master-css">${css}</style>`)
             : html
     };
 }
