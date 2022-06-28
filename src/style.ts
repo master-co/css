@@ -47,9 +47,9 @@ const sliderRunnableTrackPseudoRegexp = new RegExp(SLIDER_RUNNABLE_TRACK_PSEUDO,
 const sliderThumbPseudoRegexp = new RegExp(SLIDER_THUMB_PSEUDO, 'g');
 const resizerPseudoRegexp = new RegExp(RESIZER_PSEUDO, 'g');
 const progressPseudoRegexp = new RegExp(PROGRESS_PSEUDO, 'g');
-const selectorSplitRegexp = /(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])/;
+const selectorSplitRegexp = /(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/;
 const transformSelectorUnderline = (selector: string) => selector.split(selectorSplitRegexp)
-    .map((eachToken, i) => i % 2 ? eachToken : eachToken.replace(/\_/g, ' '))
+    .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/\_/g, ' '))
     .join('');
 
 export interface StyleMatching {
