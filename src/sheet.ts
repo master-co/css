@@ -379,9 +379,9 @@ export class StyleSheet extends MutationObserver {
     }
 
     destroy() {
-        this.element.remove();
         this.disconnect();
         sheets.splice(sheets.indexOf(this), 1);
+        this.element.remove();
     }
 
     /**
