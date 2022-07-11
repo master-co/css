@@ -179,7 +179,7 @@ export class StyleSheet extends MutationObserver {
                          */
                         this.findAndInsert(className);
                     }
-                  
+
                     this.countOfName[className] = count;
                 }
             }
@@ -200,28 +200,28 @@ export class StyleSheet extends MutationObserver {
                         const selectorTexts = cssRule.selectorText.split(', ');
                         const escapedClassNames = selectorTexts[0].split(' ');
 
-                        for (let i = 0; i <  escapedClassNames.length; i++) {
+                        for (let i = 0; i < escapedClassNames.length; i++) {
                             const eachSelectorText = escapedClassNames[i];
                             if (eachSelectorText[0] === '.') {
                                 const escapedClassName = eachSelectorText.slice(1);
-                                
+
                                 let className = '';
                                 for (let j = 0; j < escapedClassName.length; j++) {
                                     const char = escapedClassName[j];
                                     const nextChar = escapedClassName[j + 1];
-        
+
                                     if (char === '\\') {
                                         j++;
-        
+
                                         if (nextChar !== '\\') {
                                             className += nextChar;
-        
+
                                             continue;
                                         }
                                     } else if (selectorSymbols.includes(char)) {
                                         break;
                                     }
-        
+
                                     className += char;
                                 }
 
@@ -298,8 +298,10 @@ export class StyleSheet extends MutationObserver {
         this.styles.length = 0;
 
         const sheet = this.element.sheet;
-        for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
-            sheet.deleteRule(i);
+        if (sheet) {
+            for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+                sheet.deleteRule(i);
+            }
         }
     }
 
