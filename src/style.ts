@@ -507,7 +507,10 @@ export class Style {
                     }
 
                     if (queryText) {
-                        this.at[type] = queryText.replace(/\_/g, ' ');
+                        this.at[type] = (type in this.at
+                            ? this.at[type] + ' and '
+                            : '')
+                            + queryText.replace(/\_/g, ' ');
                     }
                 }
             }
