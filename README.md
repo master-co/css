@@ -31,17 +31,15 @@ Community
 - [Github Discussions](https://github.com/master-co/css/discussions)
 - [Join Master Discord](https://discord.gg/sZNKpAAAw6)
 
-Extension
-- A [Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) for Master CSS. Provides code-completion and syntax highlighting.
+##### On this page
 
-On this page
 - [Quick Start](#quick-start)
   - [1. Download](#1-download)
-  - [2. Import into your js file](#2-import-into-your-js-file)
+  - [2. Import](#2-import)
   - [Hello World](#hello-world)
-- [Official Normal CSS](#official-normal-css)
 - [Original Design](#original-design)
 - [Inspiration](#inspiration)
+- [Related](#related)
 
 # Quick Start
 This is just a quick start guide, the official [documentation](https://docs.master.co/styles/setup) here.
@@ -55,7 +53,7 @@ Or use a CDN
 <script src="https://cdn.jsdelivr.net/npm/@master/css"></script>
 ```
 
-## 2. Import into your js file
+## 2. Import
 ```js
 import '@master/css'
 ```
@@ -67,18 +65,6 @@ import '@master/css'
 </h1>
 ```
 Next, learn the common [Syntax - Master CSS](https://docs.master.co/styles/syntax)!
-
-# Official Normal CSS
-Normalize browser's styles: [`@master/normal.css`](https://github.com/master-co/normal.css)
-
-import `@master/normal.css` into your global css file
-```css
-@import '@master/normal.css';
-```
-or use a CDN
-```html
-<link href="https://cdn.jsdelivr.net/npm/@master/normal.css" rel="stylesheet">
-```
 
 # Original Design
 - __Master CSS Syntax__: As a whole new language, Master created our own unique syntax.
@@ -92,3 +78,8 @@ or use a CDN
 Some of our core concepts and designs are inspired by these giants.
 - __Language__: Master is a language, but it was originally inspired by [ACSS](https://acss.io/)'s concept of atomic classes.
 - __Virtual CSS__: Difference algorithms, virtual models, etc. are inspired by  [Virtual DOM](https://reactjs.org/docs/faq-internals.html).
+
+# Related
+- [Master CSS Language Service](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) - A Visual Studio Code extension for Master CSS. Provides code-completion and syntax highlighting.
+- [@master/normal.css](https://github.com/master-co/normal.css) - Normalize browser's styles. ~1KB
+- [@master/style-element.react](https://github.com/master-co/style-element.react) - Quickly create styled React elements with conditional class names.
