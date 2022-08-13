@@ -507,7 +507,10 @@ export class Style {
                     }
 
                     if (queryText) {
-                        this.at[type] = queryText.replace(/\_/g, ' ');
+                        this.at[type] = (type in this.at
+                            ? this.at[type] + ' and '
+                            : '')
+                            + queryText.replace(/\_/g, ' ');
                     }
                 }
             }
@@ -529,7 +532,7 @@ export class Style {
             + CSS.escape(this.name)
             + this.suffixSelector
             + (this.name in Style.relations
-                ? Style.relations[this.name].map(eachClassName => ', ' + prefixText + '.' + eachClassName + this.suffixSelector).join('')
+                ? Style.relations[this.name].map(eachClassName => ', ' + prefixText + '.' + CSS.escape(eachClassName) + this.suffixSelector).join('')
                 : '')
             + '{'
             + (typeof this.value === 'object'
@@ -555,7 +558,7 @@ export class Style {
             this.order = 0;
         }
 
-        // console.log(this);
+        console.log(this);
     }
 
     static extend(
