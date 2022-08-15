@@ -7,7 +7,7 @@
 <p align="center">
     <b><!-- name -->CSS<!----></b>
 </p>
-<p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax. ( ~13KB )<!----></p>
+<p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax. ~13KB<!----></p>
 
 [![MIT License](https://flat.badgen.net/github/license/master-co/css?color=yellow)](https://github.com/master-co/css/blob/main/LICENSE)
 [![Latest Release](https://flat.badgen.net/npm/v/@master/css?icon=npm&label&color=yellow)](https://www.npmjs.com/package/@master/css)
@@ -22,12 +22,9 @@
 
 ![image](https://raw.githubusercontent.com/master-co/css-language-service/alpha/images/cover.jpg)
 
-Documentation
 - [Introduction](https://css.master.co)
 - [Setup](https://docs.master.co/css/setup)
-- [Why](https://docs.master.co/css/why)
-
-Community
+- [Why Master CSS](https://docs.master.co/css/why-master-css)
 - [Github Discussions](https://github.com/master-co/css/discussions)
 - [Join Master Discord](https://discord.gg/sZNKpAAAw6)
 
