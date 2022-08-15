@@ -82,4 +82,5 @@ Some of our core concepts and designs are inspired by these giants.
 # Related
 - [Master CSS Language Service](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) - A Visual Studio Code extension for Master CSS. Provides code-completion and syntax highlighting.
 - [@master/normal.css](https://github.com/master-co/normal.css) - Normalize browser's styles. ~1KB
+- [@master/keyframes.css](https://github.com/master-co/keyframes.css) - Simple and useful CSS keyframes. ~0.4KB
 - [@master/style-element.react](https://github.com/master-co/style-element.react) - Quickly create styled React elements with conditional class names.
