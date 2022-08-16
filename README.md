@@ -30,6 +30,7 @@
 
 ##### On this page
 
+- [Core Concept](#core-concept)
 - [Quick Start](#quick-start)
   - [1. Download](#1-download)
   - [2. Import](#2-import)
@@ -37,6 +38,34 @@
 - [Original Design](#original-design)
 - [Inspiration](#inspiration)
 - [Related](#related)
+
+# Core Concept
+This is your current/traditional code:
+```html
+<style>
+    .home-section {
+        background-color: blue;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .home-section:hover {
+        background-color: red;
+    }
+
+    @media (min-width: 1024px) {
+        .home-section {
+            padding: 3rem;
+        }
+    }
+</style>
+
+<section class="home-section">...</section>
+```
+Now, writing CSS in a whole new language makes UI development easier. ↓ 86% code
+```html
+<section class="bg:blue bg:red:hover p:32 p:48@md text:center">...</section>
+```
 
 # Quick Start
 This is just a quick start guide, the official [documentation](https://docs.master.co/styles/setup) here.
@@ -61,20 +90,20 @@ import '@master/css'
     Hello World
 </h1>
 ```
-Next, learn the common [Syntax - Master CSS](https://docs.master.co/styles/syntax)!
+Next, learn the structured [Syntax - Master CSS](https://docs.master.co/styles/syntax)!
 
 # Original Design
-- __Master CSS Syntax__: As a whole new language, Master created our own unique syntax.
-- __Class Highlight__: Master is the first language to highlight class names in markup.
-- __Hybrid Rendering__: Apply both JIT and AOT to CSS compilation. Similar to [Hydration](https://en.wikipedia.org/wiki/Hydration_(web_development)) technology.
-- __Group Styles__ ─ the one of groundbreaking features that allows you to extract the same selectors and media query styles and make it short. Inspired by [SerKo](https://github.com/serkodev).
-- __Reactive Styles__ ─ the one of groundbreaking features that allows you style an element based on parent/sibling state.
-- __Arbitrary selectors and media queries__: Apply arbitrary selectors and media queries directly in class="", which is the most powerful and comprehensive language on the market.
+- __Master CSS Syntax__ - As a whole new language, Master created our own unique syntax.
+- __Class Highlight__ - Master is the first language to highlight class names in markup.
+- __Hybrid Rendering__ - Apply both JIT and AOT to CSS compilation. Similar to [Hydration](https://en.wikipedia.org/wiki/Hydration_(web_development)) technology.
+- __Group Styles__ - The one of groundbreaking features that allows you to extract the same selectors and media query styles and make it short. Inspired by [SerKo](https://github.com/serkodev).
+- __Reactive Styles__ - The one of groundbreaking features that allows you style an element based on parent/sibling state.
+- __Arbitrary selectors and media queries__ - Apply arbitrary selectors and media queries directly in class="", which is the most powerful and comprehensive language on the market.
 
 # Inspiration
 Some of our core concepts and designs are inspired by these giants.
-- __Language__: Master is a language, but it was originally inspired by [ACSS](https://acss.io/)'s concept of atomic classes.
-- __Virtual CSS__: Difference algorithms, virtual models, etc. are inspired by  [Virtual DOM](https://reactjs.org/docs/faq-internals.html).
+- __Language__ - Master is a language, but it was originally inspired by [ACSS](https://acss.io/)'s concept of atomic classes.
+- __Virtual CSS__ - Difference algorithms, virtual models, etc. are inspired by  [Virtual DOM](https://reactjs.org/docs/faq-internals.html).
 
 # Related
 - [Master CSS Language Service](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) - A Visual Studio Code extension for Master CSS. Provides code-completion and syntax highlighting.
