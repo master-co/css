@@ -90,7 +90,7 @@ import '@master/css'
     Hello World
 </h1>
 ```
-Next, learn the structured [Syntax - Master CSS](https://docs.master.co/styles/syntax)!
+Next, learn the structured [Syntax - Master CSS](https://docs.master.co/css/syntax-tutorial)!
 
 # Original Design
 - __Master CSS Syntax__ - As a whole new language, Master created our own unique syntax.
