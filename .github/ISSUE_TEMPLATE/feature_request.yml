@@ -1,5 +1,5 @@
 name: "Feature Request"
-description: Propose a new feature in `@master/styles`
+description: Propose a new feature in `@master/css`
 labels: [enhancement]
 
 body:
