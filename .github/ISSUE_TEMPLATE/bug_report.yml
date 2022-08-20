@@ -1,5 +1,6 @@
 name: "Bug Report"
-description: Report an issue of `@master/css`
+description: Report an bug of Master CSS
+title: '🐞 '
 labels: [bug]
 
 body:
