@@ -32,9 +32,6 @@
 - [Features](#features)
 - [Why Master CSS](#why-master-css)
 - [Quick Start](#quick-start)
-  - [Install](#install)
-  - [Import](#import)
-  - [Hello world](#hello-world)
 - [Inspiration](#inspiration)
 - [Related](#related)
   - [Developer tools](#developer-tools)
@@ -45,20 +42,20 @@ Let's have a quick overview of the **groundbreaking features** of Master CSS:
 - 🔥 A whole new **CSS language** instead of utilities/libraries.
 - 🔓 Write CSS properties, functions, selectors and even media queries directly in `class="..."`.
 - 🧠 Automatically generate corresponding CSS rules based on class names.
-- 🍬 With CSS syntax enhancements, you can **create UIs with less code**.
-- ⚡️ The JIT mode is only **~13KB**.
-- 💖 Directly use **performant JIT mode in production**.
+- 💖 With enhanced CSS syntax, you can **build UIs with less code**.
+- ⚡️ Directly use **performant JIT in production**. **~13KB**
 - 🧬 [An enhanced and structured CSS syntax](https://docs.master.co/css/syntax-tutorial) for class names.
 - 🌈 [A forerunner to syntax highlighting](https://docs.master.co/css/why-master-css#a-forerunner-to-syntax-highlighting) for class names.
 - ✨ [Hybrid Rendering](https://docs.master.co/css/hybrid-rendering) that allows you to **pre-generate CSS from HTML on the server side**, and then continue to **use JIT on the client side**.
-- 🤩 [Group Styles](https://docs.master.co/css/syntax-tutorial#group-styles) that allows you to extract the same selectors and media query styles and make it short.
-- 😲 [Reactive Styles](https://docs.master.co/css/syntax-tutorial#style-an-element-based-on-target-state) that allows you to style an element based on parent/sibling state.
-- ... [css.master.co ](https://css.master.co)
+- ✨ [Group Styles](https://docs.master.co/css/syntax-tutorial#group-styles) that allows you to extract the same selectors and media query styles and make it short.
+- ✨ [Reactive Styles](https://docs.master.co/css/syntax-tutorial#style-an-element-based-on-target-state) that allows you to style an element based on parent/sibling state.
+
+To learn more, check out the [documentation](https://docs.master.co/css/why-master-css).
 
 # [Why Master CSS](https://docs.master.co/css/why-master-css)
 A brief introduction starts by giving you an understanding of **markup-driven CSS**.
 
-🙁 This is your current/traditional code:
+😐 Traditional
 ```html
 <style>
     .home-section {
@@ -84,32 +81,26 @@ A brief introduction starts by giving you an understanding of **markup-driven CS
 ```html
 <section class="bg:blue bg:red:hover p:32 p:48@md text:center">...</section>
 ```
-To learn more, check out the documentation [Why Master CSS](https://docs.master.co/css/why-master-css).
+To learn more, check out the [Why Master CSS](https://docs.master.co/css/why-master-css) documentation.
 
 # Quick Start
 This is a quick start guide, check out the [full setup guide](https://docs.master.co/css/setup) to integrate with your build tools and frameworks.
 
-## Install
 ```shell
 npm install @master/css
+```
+```js
+import '@master/css';
 ```
 or use a CDN
 ```html
 <script src="https://cdn.master.co/css"></script>
 ```
-
-## Import
-Import to your entry file. e.g: `src/main.js`
-```js
-import '@master/css';
-```
-
-## Hello world
-Now, start styling HTML with Master CSS 🎉
+Now, start styling HTML with Master CSS. 🎉
 ```html
 <h1 class="font:40 font:heavy italic m:50 text:center">Hello World</h1>
 ```
-To learn more, check out the documentation [Syntax tutorial](https://docs.master.co/css/syntax-tutorial).
+To learn more, check out the [Syntax tutorial](https://docs.master.co/css/syntax-tutorial) documentation.
 
 # Inspiration
 Some of our core concepts and designs are inspired by these giants.
