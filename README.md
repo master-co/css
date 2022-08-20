@@ -22,25 +22,43 @@
 
 ![image](https://raw.githubusercontent.com/master-co/css-language-service/alpha/images/cover.jpg)
 
-- [Introduction](https://css.master.co)
-- [Setup](https://docs.master.co/css/setup)
-- [Why Master CSS](https://docs.master.co/css/why-master-css)
-- [Github Discussions](https://github.com/master-co/css/discussions)
-- [Join Master Discord](https://discord.gg/sZNKpAAAw6)
+- Visit [css.master.co](https://css.master.co) for full documentation.
+- Browse our [discussion community](https://github.com/master-co/css/discussions).
+- Join our [discord channel](https://discord.gg/sZNKpAAAw6).
+- Follow our [twitter](https://twitter.com/mastercorg).
 
 ##### On this page
 
-- [Core Concept](#core-concept)
+- [Features](#features)
+- [Why Master CSS](#why-master-css)
 - [Quick Start](#quick-start)
-  - [1. Download](#1-download)
-  - [2. Import](#2-import)
-  - [Hello World](#hello-world)
-- [Original Design](#original-design)
+  - [Install](#install)
+  - [Import](#import)
+  - [Hello world](#hello-world)
 - [Inspiration](#inspiration)
 - [Related](#related)
+  - [Developer tools](#developer-tools)
 
-# Core Concept
-This is your current/traditional code:
+# Features
+Let's have a quick overview of the **groundbreaking features** of Master CSS:
+
+- 🔥 A whole new **CSS language** instead of utilities/libraries.
+- 🔓 Write CSS properties, functions, selectors and even media queries directly in `class="..."`.
+- 🧠 Automatically generate corresponding CSS rules based on class names.
+- 🍬 With CSS syntax enhancements, you can **create UIs with less code**.
+- ⚡️ The JIT mode is only **~13KB**.
+- 💖 Directly use **performant JIT mode in production**.
+- 🧬 [An enhanced and structured CSS syntax](https://docs.master.co/css/syntax-tutorial) for class names.
+- 🌈 [A forerunner to syntax highlighting](https://docs.master.co/css/why-master-css#a-forerunner-to-syntax-highlighting) for class names.
+- ✨ [Hybrid Rendering](https://docs.master.co/css/hybrid-rendering) that allows you to **pre-generate CSS from HTML on the server side**, and then continue to **use JIT on the client side**.
+- 🤩 [Group Styles](https://docs.master.co/css/syntax-tutorial#group-styles) that allows you to extract the same selectors and media query styles and make it short.
+- 😲 [Reactive Styles](https://docs.master.co/css/syntax-tutorial#style-an-element-based-on-target-state) that allows you to style an element based on parent/sibling state.
+- ... [css.master.co ](https://css.master.co)
+
+# [Why Master CSS](https://docs.master.co/css/why-master-css)
+A brief introduction starts by giving you an understanding of **markup-driven CSS**.
+
+🙁 This is your current/traditional code:
 ```html
 <style>
     .home-section {
@@ -62,43 +80,36 @@ This is your current/traditional code:
 
 <section class="home-section">...</section>
 ```
-Now, writing CSS in a whole new language makes UI development easier. ↓ 86% code
+🤩 Now, refactor it with a whole new CSS language to make it easier. ↓ 86% code
 ```html
 <section class="bg:blue bg:red:hover p:32 p:48@md text:center">...</section>
 ```
+To learn more, check out the documentation [Why Master CSS](https://docs.master.co/css/why-master-css).
 
 # Quick Start
-This is just a quick start guide, the official [documentation](https://docs.master.co/styles/setup) here.
+This is a quick start guide, check out the [full setup guide](https://docs.master.co/css/setup) to integrate with your build tools and frameworks.
 
-## 1. Download
+## Install
 ```shell
 npm install @master/css
 ```
-Or use a CDN
+or use a CDN
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@master/css"></script>
+<script src="https://cdn.master.co/css"></script>
 ```
 
-## 2. Import
+## Import
+Import to your entry file. e.g: `src/main.js`
 ```js
-import '@master/css'
+import '@master/css';
 ```
 
-## Hello World
+## Hello world
+Now, start styling HTML with Master CSS 🎉
 ```html
-<h1 class="font:40 font:heavy bg:blue:hover m:50 text:center@md">
-    Hello World
-</h1>
+<h1 class="font:40 font:heavy italic m:50 text:center">Hello World</h1>
 ```
-Next, learn the structured [Syntax - Master CSS](https://docs.master.co/styles/syntax)!
-
-# Original Design
-- __Master CSS Syntax__ - As a whole new language, Master created our own unique syntax.
-- __Class Highlight__ - Master is the first language to highlight class names in markup.
-- __Hybrid Rendering__ - Apply both JIT and AOT to CSS compilation. Similar to [Hydration](https://en.wikipedia.org/wiki/Hydration_(web_development)) technology.
-- __Group Styles__ - The one of groundbreaking features that allows you to extract the same selectors and media query styles and make it short. Inspired by [SerKo](https://github.com/serkodev).
-- __Reactive Styles__ - The one of groundbreaking features that allows you style an element based on parent/sibling state.
-- __Arbitrary selectors and media queries__ - Apply arbitrary selectors and media queries directly in class="", which is the most powerful and comprehensive language on the market.
+To learn more, check out the documentation [Syntax tutorial](https://docs.master.co/css/syntax-tutorial).
 
 # Inspiration
 Some of our core concepts and designs are inspired by these giants.
@@ -106,7 +117,9 @@ Some of our core concepts and designs are inspired by these giants.
 - __Virtual CSS__ - Difference algorithms, virtual models, etc. are inspired by  [Virtual DOM](https://reactjs.org/docs/faq-internals.html).
 
 # Related
-- [Master CSS Language Service](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) - A Visual Studio Code extension for Master CSS. Provides code-completion and syntax highlighting.
 - [@master/normal.css](https://github.com/master-co/normal.css) - Normalize browser's styles. ~1KB
 - [@master/keyframes.css](https://github.com/master-co/keyframes.css) - Simple and useful CSS keyframes. ~0.4KB
 - [@master/style-element.react](https://github.com/master-co/style-element.react) - Quickly create styled React elements with conditional class names.
+
+## Developer tools
+- [Master CSS Language Service](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) - A Visual Studio Code extension for Master CSS. Provides code-completion and syntax highlighting.
