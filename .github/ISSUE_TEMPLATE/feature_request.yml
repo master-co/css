@@ -1,0 +1,19 @@
+name: "✨ Feature"
+description: Propose a new feature
+title: '✨ '
+labels: [enhancement]
+
+body:
+  - type: markdown
+    attributes:
+      value: Have a great idea for a new feature? Let us know!
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: |
+        Please tell us what you want to see in the next release and why you want to see it. 
+        If you are going to make a pull request, please let us know your scheduling.
+    validations:
+      required: true

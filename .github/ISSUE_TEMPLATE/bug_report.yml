@@ -1,0 +1,47 @@
+name: "🐞 Bug"
+description: Report a bug
+title: '🐞 '
+labels: [bug]
+
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to make a bug report!
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please provide a detailed description to tell us what the bug is. Also tell us what is the expected behavior you think.
+      placeholder: When I am going to ... by using ..., the "..." error happens. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Please provide a step-by-step [minimal reproduction](https://stackoverflow.com/help/minimal-reproducible-example) of the bug. It helps us to efficiently track down the bug.
+      placeholder: |
+        1. ... 
+        2. ... 
+        3. ...
+    validations:
+      required: false
+
+  - type: textarea
+    id: system
+    attributes:
+      label: System Informations
+      description: Please provide the system informations related to the bug. Browser, OS, Node.js, Package Manager ...
+      placeholder: |
+        Browser: Chrome 99.0.1234.56
+        OS: macOS 12.0.1 (amd64)
+        Node.js: 16.31.1
+        Package Manager: pnpm 6.32.3
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: Thank you for the bug report! We will try to investigate the bug as soon as possible.
