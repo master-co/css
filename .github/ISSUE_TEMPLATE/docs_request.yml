@@ -1,0 +1,24 @@
+name: '📄 Documentation'
+description: A request to update or improve documentation
+title: '📄 '
+labels: [documentation]
+
+body:
+  - type: textarea
+    attributes:
+      label: What is the improvement or update you wish to see?
+      description: 'Example: I would like to see more examples of how to use the xxx. Or, the xxx docs are missing information.'
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Is there any context that might help us understand?
+      description: A clear description of any added context that might help us understand.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Does the docs page already exist? Please link to it.
+      placeholder: https://
+    validations:
+      required: false
