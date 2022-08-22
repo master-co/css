@@ -32,9 +32,9 @@
 - [Features](#features)
 - [Why Master CSS](#why-master-css)
 - [Quick Start](#quick-start)
+- [Developer Tools](#developer-tools)
 - [Inspiration](#inspiration)
 - [Related](#related)
-  - [Developer tools](#developer-tools)
 
 # Features
 Let's have a quick overview of the **groundbreaking features** of Master CSS:
@@ -102,6 +102,9 @@ Now, start styling HTML with Master CSS. 🎉
 ```
 To learn more, check out the [Syntax tutorial](https://docs.master.co/css/syntax-tutorial) documentation.
 
+# Developer Tools
+- [Master CSS Language Service](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) - A Visual Studio Code extension for Master CSS. Provides code-completion and syntax highlighting.
+
 # Inspiration
 Some of our core concepts and designs are inspired by these giants.
 - __Language__ - Master is a language, but it was originally inspired by [ACSS](https://acss.io/)'s concept of atomic classes.
@@ -110,7 +113,4 @@ Some of our core concepts and designs are inspired by these giants.
 # Related
 - [@master/normal.css](https://github.com/master-co/normal.css) - Normalize browser's styles. ~1KB
 - [@master/keyframes.css](https://github.com/master-co/keyframes.css) - Simple and useful CSS keyframes. ~0.4KB
-- [@master/style-element.react](https://github.com/master-co/style-element.react) - Quickly create styled React elements with conditional class names.
-
-## Developer tools
-- [Master CSS Language Service](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) - A Visual Studio Code extension for Master CSS. Provides code-completion and syntax highlighting.
+- [@master/style-element.react](https://github.com/master-co/style-element.react) - Quickly create styled React elements with conditional class names. ~800B
