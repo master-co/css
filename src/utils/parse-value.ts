@@ -7,7 +7,8 @@ export function parseValue(
     token: string | number,
     defaultUnit?: string,
     colors?: Record<string, Record<string, string>>,
-    values?: Record<string, Record<string, string>>
+    values?: Record<string, Record<string, string>>,
+    rootSize?: number
 ) {
     let value: any = values ? values[token] : '';
     let unit: string = '';
@@ -58,7 +59,7 @@ export function parseValue(
                      */
                     if (!unit) {
                         if (defaultUnit === 'rem' || defaultUnit === 'em') {
-                            value = value / 16;
+                            value = value / rootSize;
                         }
                         unit = defaultUnit || '';
                     }

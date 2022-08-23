@@ -87,6 +87,7 @@ export class Style {
     static symbol: string;
     static unit = REM;
     static colorful: boolean;
+    static rootSize: number = 16;
     static readonly values: Record<string, any>;
     static readonly semantics: { [key: string]: any };
     static readonly breakpoints: { [key: string]: number };
@@ -160,7 +161,7 @@ export class Style {
                 return;
             }
         }
-        let { id, semantics, unit, colors, key, values, colorful, breakpoints, mediaQueries, colorSchemes } = TargetStyle;
+        let { id, semantics, unit, colors, key, values, colorful, breakpoints, mediaQueries, colorSchemes, rootSize } = TargetStyle;
         let token = name;
 
         // 防止非色彩 style 的 token 被解析
@@ -243,7 +244,7 @@ export class Style {
                             if (isString) {
                                 valueTokens.push(currentValueToken);
                             } else {
-                                uv = parseValue(currentValueToken, unit, colors, values);
+                                uv = parseValue(currentValueToken, unit, colors, values, rootSize);
                                 valueTokens.push(uv.value + uv.unit);
                             }
 
@@ -256,7 +257,7 @@ export class Style {
                         analyze(START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func);
                     } else if (val === '|' && end !== '}' && (!isString || func === 'path')) {
                         if (!end) {
-                            uv = parseValue(currentValueToken, unit, colors, values);
+                            uv = parseValue(currentValueToken, unit, colors, values, rootSize);
                             valueTokens.push(uv.value + uv.unit);
                             currentValueToken = '';
                         } else {
@@ -271,7 +272,7 @@ export class Style {
                                     currentValueToken += '0';
                                 }
                             } else if (val === ',') {
-                                uv = parseValue(currentValueToken, unit, colors, values);
+                                uv = parseValue(currentValueToken, unit, colors, values, rootSize);
                                 valueTokens.push(uv.value + uv.unit, ',');
                                 currentValueToken = '';
                                 continue;
@@ -292,7 +293,7 @@ export class Style {
             })();
 
             if (currentValueToken) {
-                uv = parseValue(currentValueToken, unit, colors, values);
+                uv = parseValue(currentValueToken, unit, colors, values, rootSize);
                 valueTokens.push(uv.value + uv.unit);
             }
 
