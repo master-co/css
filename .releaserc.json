@@ -34,7 +34,17 @@
                 "prepareCmd": "npm run build"
             }
         ],
-        "@semantic-release/github",
+        [
+            "@semantic-release/github",
+            {
+                "assets": [
+                    {
+                        "path": "dist/master-css.min.js",
+                        "label": "master-css.min.js"
+                    }
+                ]
+            }
+        ],
         [
             "@semantic-release/npm",
             {
