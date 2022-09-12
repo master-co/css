@@ -57,7 +57,7 @@ module.exports = {
     output: {
         clean: true,
         library: {
-            name: '@master/styles',
+            name: '@master/css',
             type: 'umd',
         },
         globalObject: 'this'
