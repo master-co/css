@@ -558,8 +558,6 @@ export class Style {
             // @ts-ignore
             this.order = 0;
         }
-
-        console.log(this);
     }
 
     static extend(
@@ -642,7 +640,7 @@ export class Style {
                         if (colorNameIndex === -1) {
                             this.colorNames.push(colorName);
                         }
-                        
+
                         return generateLevelColors(data);
                     },
                     (colorName) => {
