@@ -88,6 +88,7 @@ export class Style {
     static unit = REM;
     static colorful: boolean;
     static rootSize: number = 16;
+    static remSize: number;
     static readonly values: Record<string, any>;
     static readonly semantics: { [key: string]: any };
     static readonly breakpoints: { [key: string]: number };
@@ -161,8 +162,17 @@ export class Style {
                 return;
             }
         }
-        let { id, semantics, unit, colors, key, values, colorful, breakpoints, mediaQueries, colorSchemes, rootSize } = TargetStyle;
+        let { id, semantics, unit, colors, key, values, colorful, breakpoints, mediaQueries, colorSchemes, rootSize, remSize } = TargetStyle;
         let token = name;
+
+
+        if (remSize) {
+            const remToPxDefault = 16;
+            const remRatio = remSize / remToPxDefault;
+
+            document.documentElement.style.setProperty('font-size', `${remRatio * 100}%`);
+            document.body.style.setProperty('font-size', `${remRatio}rem`);
+        }
 
         // 防止非色彩 style 的 token 被解析
         if (!colorful) {
