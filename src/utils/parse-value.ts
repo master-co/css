@@ -22,8 +22,8 @@ export function parseValue(
         if (colors) {
             const colorNames = Object.keys(colors);;
             token = token.replace(
-                new RegExp(`\\b(${colorNames.join('|')})(?:-([0-9]+))?(?:\\/(\\.?[0-9]+))?(\\)|\\}|,| |$)`, 'g'),
-                (origin, colorName, level, opacityStr, end) => {
+                new RegExp(`(^|,| |\\()(${colorNames.join('|')})(?:-([0-9]+))?(?:\\/(\\.?[0-9]+))?(?=(\\)|\\}|,| |$))`, 'gm'),
+                (origin, prefix, colorName, level, opacityStr, end) => {
                     const hexColor = colors[colorName][level || ''];
                     if (hexColor) {
                         let newValue = '#' + hexColor;
@@ -36,7 +36,7 @@ export function parseValue(
                             newValue += Math.round(opacity * 255).toString(16).toUpperCase().padStart(2, '0');
                         }
 
-                        return newValue + end;
+                        return prefix + newValue;
                     }
 
                     return origin;
