@@ -3,10 +3,10 @@ import { Style } from './style';
 
 test("classes", () => {
     Style.extend('classes', {
-        '?': 'font:14 text:center h:40 px:20 f:red:hover'
+        '?': 'font:14 text:center h:40 px:20 fg:#fff:hover'
     });
 
-    testCSS("?", ".px\\:20, .\\?{padding-left:1.25rem;padding-right:1.25rem}.h\\:40, .\\?{height:2.5rem}.text\\:center, .\\?{text-align:center}.font\\:14, .\\?{font-size:0.875rem}.f\\:red\\:hover:hover, .\\?:hover{color:#d11a1e}")
+    testCSS("?", ".px\\:20, .\\?{padding-left:1.25rem;padding-right:1.25rem}.h\\:40, .\\?{height:2.5rem}.text\\:center, .\\?{text-align:center}.font\\:14, .\\?{font-size:0.875rem}.fg\\:\\#fff\\:hover:hover, .\\?:hover{color:#fff}")
 });
 
 test("breakpoints", () => {
@@ -26,7 +26,7 @@ test("colors", () => {
         }
     });
 
-    testCSS("f:newColor", ".f\\:newColor{color:#63697c}")
+    testCSS("fg:newColor", ".fg\\:newColor{color:#63697c}")
 });
 
 test("mediaQueries", () => {
