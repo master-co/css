@@ -367,7 +367,9 @@ export class Style {
         }
 
         // 3. transform value
-        if (values && this.value in values) {
+        if (colorful && this.value === 'current') {
+            this.value = 'currentColor'
+        } else if (values && this.value in values) {
             this.value = values[this.value];
         }
 

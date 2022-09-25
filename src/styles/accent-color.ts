@@ -5,7 +5,4 @@ export class AccentColor extends Style {
     static override key = dash(ACCENT, COLOR);
     static override colorStarts = 'accent:';
     static override colorful = true;
-    static override values = {
-        current: CURRENT_COLOR
-    }
 }

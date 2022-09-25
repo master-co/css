@@ -11,7 +11,4 @@ export class TextFillColor extends Style {
             '-webkit-text-fill-color': this
         };
     }
-    static override values = {
-        current: CURRENT_COLOR
-    }
 }

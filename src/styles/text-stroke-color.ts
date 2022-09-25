@@ -11,7 +11,4 @@ export class TextStrokeColor extends Style {
             '-webkit-text-stroke-color': this
         };
     }
-    static override values = {
-        current: CURRENT_COLOR
-    }
 }

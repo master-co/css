@@ -6,7 +6,4 @@ export class BackgroundColor extends Style {
     static override key = dash(BACKGROUND, COLOR);
     static override unit = '';
     static override colorful = true;
-    static override values = {
-        current: CURRENT_COLOR
-    }
 }

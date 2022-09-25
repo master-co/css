@@ -13,7 +13,4 @@ export class BorderColor extends Style {
     override get order(): number {
         return (this.prefix === dash(BORDER, COLOR) + ":" || this.prefix === 'b:' || this.prefix === BORDER + ':') ? -1 : 0;
     }
-    static override values = {
-        current: CURRENT_COLOR
-    }
 }

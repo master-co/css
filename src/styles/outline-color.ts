@@ -5,7 +5,4 @@ export class OutlineColor extends Style {
     static override key = dash(OUTLINE, COLOR);
     static override colorStarts = 'outline:';
     static override colorful = true;
-    static override values = {
-        current: CURRENT_COLOR
-    }
 }

@@ -6,7 +6,4 @@ export class Color extends Style {
     static override colorful = true;
     static override key = COLOR;
     static override unit = '';
-    static override values = {
-        current: CURRENT_COLOR
-    }
 }
