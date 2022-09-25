@@ -103,7 +103,7 @@ import { Order } from './order';
 import { GridColumn } from './grid-column';
 import { ColumnSpan } from './column-span';
 import { GridRow } from './grid-row';
-import { FontColor } from './font-color';
+import { Color } from './color';
 import { AlignContent } from './align-content';
 import { AlignItems } from './align-items';
 import { AlignSelf } from './align-self';
@@ -208,7 +208,7 @@ export const Styles = [
     Variable,
     FontWeight,
     FontFamily,
-    FontColor,
+    Color,
     Spacing,
     Margin,
     Padding,
