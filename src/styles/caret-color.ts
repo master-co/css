@@ -3,7 +3,6 @@ import { CARET, COLOR, CURRENT_COLOR, dash } from '../constants/css-property-key
 
 export class CaretColor extends Style {
     static override key = dash(CARET, COLOR);
-    static override matches = /^caret:transparent(?!\|)/;
     static override colorStarts = 'caret:';
     static override colorful = true;
     static override values = {
