@@ -1,5 +1,5 @@
 import { Style } from '../style';
-import { BACKGROUND, COLOR, CURRENT_COLOR, dash } from '../constants/css-property-keyword';
+import { BACKGROUND, COLOR, dash } from '../constants/css-property-keyword';
 
 export class BackgroundColor extends Style {
     static override colorStarts = '(bg|background):';

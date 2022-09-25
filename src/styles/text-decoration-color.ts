@@ -1,4 +1,4 @@
-import { COLOR, CURRENT_COLOR, dash, DECORATION, TEXT } from '../constants/css-property-keyword';
+import { COLOR, dash, DECORATION, TEXT } from '../constants/css-property-keyword';
 import { Style } from '../style';
 
 export class TextDecorationColor extends Style {

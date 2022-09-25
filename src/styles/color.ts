@@ -1,4 +1,4 @@
-import { COLOR, CURRENT_COLOR } from '../constants/css-property-keyword';
+import { COLOR } from '../constants/css-property-keyword';
 import { Style } from '../style';
 
 export class Color extends Style {

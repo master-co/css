@@ -1,4 +1,3 @@
-import { CURRENT_COLOR } from '../constants/css-property-keyword';
 import { Style } from '../style';
 
 export class TextStrokeColor extends Style {

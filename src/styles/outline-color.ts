@@ -1,4 +1,4 @@
-import { COLOR, CURRENT_COLOR, dash, OUTLINE } from '../constants/css-property-keyword';
+import { COLOR, dash, OUTLINE } from '../constants/css-property-keyword';
 import { Style } from '../style';
 
 export class OutlineColor extends Style {

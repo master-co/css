@@ -1,5 +1,5 @@
 import { Style } from '../style';
-import { BORDER, COLOR, CURRENT_COLOR, dash } from '../constants/css-property-keyword';
+import { BORDER, COLOR, dash } from '../constants/css-property-keyword';
 import { getBorderProps } from '../utils/get-border-props';
 
 export class BorderColor extends Style {
