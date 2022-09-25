@@ -3,6 +3,7 @@ import { Style } from '../style';
 
 export class OutlineColor extends Style {
     static override key = dash(OUTLINE, COLOR);
+    static override matches = /^outline:(?:current|transparent)/;
     static override colorStarts = 'outline:';
     static override colorful = true;
     static override values = {
