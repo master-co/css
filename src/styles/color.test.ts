@@ -5,4 +5,6 @@ test("color", () => {
     testProp("fg:#fff", "color:#fff")
     testProp("fg:current", "color:currentColor")
     testProp("foreground:current", "color:currentColor")
+    testProp("fg:transparent", "color:transparent")
+    testProp("foreground:transparent", "color:transparent")
 })
