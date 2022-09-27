@@ -1,5 +1,6 @@
 {
     "name": "@master/css",
+    "sideEffects": false,
     "scripts": {
         "update": "git fetch package js && git merge package/js",
         "build": "npm i --production && cd src && npm i && cd .. && webpack --config webpack.prod.js && cp ./dist/index.js ./dist/master-css.min.js",

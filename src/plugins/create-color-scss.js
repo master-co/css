@@ -1,8 +1,7 @@
-const path = require('path');
 const webpack = require("webpack");
 const colors = require('../colors');
 const { RawSource } = require("webpack-sources");
-const generateLevelColors = require('../utils/generate-level-colors');
+const fillShades = require('../utils/fill-shades');
 
 module.exports = class CreateColorScssPlugin {
     apply(compiler) {
@@ -15,7 +14,7 @@ module.exports = class CreateColorScssPlugin {
                 async () => {
                     let data = '';
                     for (const colorName in colors) {
-                        const levelColors = generateLevelColors(colors[colorName]);
+                        const levelColors = fillShades(colors[colorName]);
                         for (const level in levelColors) {
                             let name = colorName;
                             if (level !== '') {

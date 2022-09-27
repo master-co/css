@@ -6,7 +6,7 @@ import { PRIORITY_SELECTORS } from './constants/priority-selectors';
 import { StyleSheet } from './sheet';
 import { START_SYMBOL } from './constants/start-symbol';
 import { GROUP } from './constants/css-property-keyword';
-const generateLevelColors = require('./utils/generate-level-colors');
+import { fillShades } from './utils/fill-shades';
 
 const MATCHES = 'matches';
 const SEMANTICS = 'semantics';
@@ -643,7 +643,7 @@ export class Style {
                             this.colorNames.push(colorName);
                         }
 
-                        return generateLevelColors(data);
+                        return fillShades(data);
                     },
                     (colorName) => {
                         /**

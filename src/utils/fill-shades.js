@@ -1,8 +1,7 @@
 const hexToRgb = require('./hex-to-rgb');
-const rgbToHex = require('../utils/rgb-to-hex');
-const colors = require('../colors');
+const rgbToHex = require('./rgb-to-hex');
 
-module.exports = function generateLevelColors(data) {
+module.exports = function fillShades(data) {
     if (typeof data === 'string') {
         data = { '': data };
     }
