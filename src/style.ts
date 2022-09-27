@@ -6,7 +6,7 @@ import { PRIORITY_SELECTORS } from './constants/priority-selectors';
 import { StyleSheet } from './sheet';
 import { START_SYMBOL } from './constants/start-symbol';
 import { GROUP } from './constants/css-property-keyword';
-import { fillShades } from './utils/fill-shades';
+const fillShades = require('./utils/fill-shades');
 
 const MATCHES = 'matches';
 const SEMANTICS = 'semantics';
