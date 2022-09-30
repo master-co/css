@@ -11,26 +11,25 @@ module.exports = {
         rules: [
             {
                 test: /\.ts$/,
-                loader: 'ts-loader',
+                loader: 'esbuild-loader',
                 options: {
-                    configFile: path.resolve(
-                        process.env.WEBPACK_SERVE
-                            ? './tsconfig.json'
-                            : './tsconfig.prod.json'
+                    loader: 'ts',
+                    target: 'es2015',
+                    tsconfigRaw: require(path.resolve(
+                            process.env.WEBPACK_SERVE
+                                ? './tsconfig.json'
+                                : './tsconfig.prod.json'
+                        )
                     )
                 }
             },
             {
                 test: /\.m?js$/,
                 exclude: /(node_modules|bower_components)/,
-                use: [
-                    {
-                        loader: 'babel-loader',
-                        options: {
-                            babelrc: true
-                        }
-                    }
-                ]
+                loader: 'esbuild-loader',
+                options: {
+                    target: 'es2015'
+                }
             },
         ]
     },

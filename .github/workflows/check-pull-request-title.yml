@@ -11,7 +11,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: aslafy-z/conventional-pr-title-action@master
+      - uses: aslafy-z/conventional-pr-title-action@main
         with:
           success-state: Title follows the specification.
           failure-state: Title does not follow the specification.
