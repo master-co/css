@@ -34,6 +34,7 @@
     "devDependencies": {
         "@master/cli": "^1.0.0-alpha.22",
         "@types/jest": "^27.5.2",
+        "dedent": "^0.7.0",
         "html-webpack-plugin": "^5.5.0",
         "jest": "^28.1.0",
         "ts-jest": "^28.0.3",

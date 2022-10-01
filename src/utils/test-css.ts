@@ -1,12 +1,7 @@
-import { StyleSheet } from '../../src';
 import { render } from '../../src/render';
 
-export const css = (cls: string): string => {
-    return render(`<html class="${cls}">`, { StyleSheet }).css
-}
-
 export const testCSS = (cls: string, expected: string): void => {
-    expect(css(cls)).toBe(expected)
+    expect(render(cls.split(' '))).toBe(expected)
 }
 
 // test class and prop, if expected === undefinded, will use cls as expected value
@@ -18,5 +13,5 @@ export const testProp = (cls: string, expected?: string): void => {
     if (expected === undefined) {
         expected = cls
     }
-    expect(css(cls)).toBe(`.${selector}{${expected}}`)
+    expect(render(cls.split(' '))).toBe(`.${selector}{${expected}}`)
 }
