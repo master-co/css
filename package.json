@@ -23,7 +23,6 @@
         "@types/node": "^16.11.11",
         "babel-loader": "^8.2.3",
         "copy-webpack-plugin": "^10.0.0",
-        "esbuild-loader": "^2.20.0",
         "glob": "^7.2.0",
         "terser-webpack-plugin": "^5.2.5",
         "ts-loader": "^9.2.6",
