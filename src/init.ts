@@ -1,31 +1,19 @@
-import { breakpoints, colors, MasterCSS, MasterCSSRule, Rules } from './';
+import { defaultConfig } from './configure'
+import { MasterCSS } from './css'
+import { MasterCSSConfig } from './interfaces/config'
 
-const isBrowser = typeof window !== 'undefined';
-
-export function init() {
-    if (isBrowser) {
-        const css = new MasterCSS(document.head);
-        MasterCSS.root = css;
-        css.observe(document.documentElement);
+export function init(config?: MasterCSSConfig) {
+    if (typeof window !== 'undefined') {
+        const css = new MasterCSS(config || defaultConfig, document.head)
+        MasterCSS.root = css
+        css.observe(document.documentElement)
+        return css
     }
 }
 
 // MasterCSSRule
 //     .extend('colors', colors)
-//     .extend('breakpoints', breakpoints);
-// MasterCSS.Rules.push(...Rules);
+//     .extend('breakpoints', breakpoints)
+// MasterCSS.Rules.push(...Rules)
 
-const MASTER_CSS = 'MasterCSS';
-if (isBrowser) {
-    window['init' + MASTER_CSS] = init;
-    window['MasterCSSRules'] = Rules;
-    if (!window[MASTER_CSS + 'Manual']) {
-        init();
-    }
-}
-
-declare global {
-    interface Window {
-        MasterCSSManual: boolean;
-    }
-}
+// const MASTER_CSS = 'MasterCSS'

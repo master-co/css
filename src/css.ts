@@ -1,3 +1,5 @@
+import { init } from './init';
+import { MasterCSSConfig } from './interfaces/config';
 import { MasterCSSRule } from './rule';
 
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@'];
@@ -22,7 +24,8 @@ const MutationObserver = isBrowser
 export class MasterCSS extends MutationObserver {
 
     constructor(
-        private container?: Element
+        public config: MasterCSSConfig,
+        public container?: Element
     ) {
         super((mutationRecords) => {
             console.time('css engine');
@@ -226,12 +229,12 @@ export class MasterCSS extends MutationObserver {
                                     className += char;
                                 }
 
-                                if (!(className in this.styleOfName) && !(className in MasterCSSRule.classes)) {
-                                    const style = MasterCSS.findAndNew(className) as MasterCSSRule;
+                                if (!(className in this.ruleOfName) && !(className in MasterCSSRule.classes)) {
+                                    const style = this.findAndNew(className) as MasterCSSRule;
                                     if (style) {
                                         style.cssRule = parentCssRule ?? cssRule;
                                         this.rules.push(style);
-                                        this.styleOfName[style.name] = style;
+                                        this.ruleOfName[style.name] = style;
                                     }
                                 }
                             }
@@ -255,13 +258,12 @@ export class MasterCSS extends MutationObserver {
 
     readonly element: HTMLStyleElement;
     readonly rules: MasterCSSRule[] = [];
-    readonly styleOfName = {};
+    readonly ruleOfName = {};
     readonly countOfName = {};
 
+    static init = init;
     static instances: MasterCSS[] = [];
     static root: MasterCSS;
-    static Rules: typeof MasterCSSRule[] = [];
-    config = {}
 
     observe(target: Node, options: MutationObserverInit = { subtree: true, childList: true }) {
         if (options.subtree) {
@@ -294,7 +296,7 @@ export class MasterCSS extends MutationObserver {
     disconnect(): void {
         super.disconnect();
         // @ts-ignore
-        this.styleOfName = {};
+        this.ruleOfName = {};
         // @ts-ignore
         this.countOfName = {};
 
@@ -309,11 +311,20 @@ export class MasterCSS extends MutationObserver {
     }
 
     /**
+     * 全部 sheet 根據目前蒐集到的所有 DOM class 重新 findAndNew
+     */
+    static refresh() {
+        for (const eachInstance of this.instances) {
+            eachInstance.refresh();
+        }
+    }
+
+    /**
      * 尋找匹配的 MasterCSSRule 生成實例
      */
-    static findAndNew(name: string) {
+    findAndNew(name: string) {
         const findAndNewRule = (className: string) => {
-            for (const EachRule of this.Rules) {
+            for (const EachRule of this.config.Rules) {
                 const matching = EachRule.match(className);
                 if (matching) {
                     return new EachRule(className, matching);
@@ -331,9 +342,9 @@ export class MasterCSS extends MutationObserver {
     /**
      * 尋找匹配的 MasterCSSRule
      */
-    static find(name: string) {
+    find(name: string) {
         const findRule = (className: string) => {
-            for (const EachRule of this.Rules) {
+            for (const EachRule of this.config.Rules) {
                 const matching = EachRule.match(className);
                 if (matching) {
                     return EachRule;
@@ -349,15 +360,6 @@ export class MasterCSS extends MutationObserver {
     }
 
     /**
-     * 全部 sheet 根據目前蒐集到的所有 DOM class 重新 findAndNew
-     */
-    static refresh() {
-        for (const eachInstance of this.instances) {
-            eachInstance.refresh();
-        }
-    }
-
-    /**
      * 根據目前蒐集到的所有 DOM class 重新 findAndNew
      */
     refresh() {
@@ -370,10 +372,10 @@ export class MasterCSS extends MutationObserver {
         this.element = element;
         this.rules.length = 0;
         // @ts-ignore
-        this.styleOfName = {};
+        this.ruleOfName = {};
 
         /**
-         * 拿當前所有的 classNames 按照最新的 colors, breakpoints, Rules 匹配並生成新的 style
+         * 拿當前所有的 classNames 按照最新的 colors, breakpoints, config.Rules 匹配並生成新的 style
          * 所以 refresh 過後 rules 可能會變多也可能會變少
          */
         for (const name in this.countOfName) {
@@ -401,7 +403,7 @@ export class MasterCSS extends MutationObserver {
      * 10. media width selectors
      */
     insert(style: MasterCSSRule) {
-        if (this.styleOfName[style.name]) {
+        if (this.ruleOfName[style.name]) {
             return;
         }
         const rule = style.text;
@@ -748,7 +750,7 @@ export class MasterCSS extends MutationObserver {
             }
 
             this.rules.splice(index, 0, style);
-            this.styleOfName[style.name] = style;
+            this.ruleOfName[style.name] = style;
         } catch (error) {
             console.error(error);
         }
@@ -761,7 +763,7 @@ export class MasterCSS extends MutationObserver {
          */
         const sheet = this.element.sheet;
         const deleteRule = (name: string) => {
-            const style = this.styleOfName[name];
+            const style = this.ruleOfName[name];
             if (
                 !style?.cssRule
                 || name in MasterCSSRule.relations && MasterCSSRule.relations[name].some(eachClassName => eachClassName in this.countOfName)
@@ -773,7 +775,7 @@ export class MasterCSS extends MutationObserver {
                 if (eachCssRule === style.cssRule) {
                     sheet.deleteRule(index);
                     this.rules.splice(index, 1);
-                    delete this.styleOfName[style.name];
+                    delete this.ruleOfName[style.name];
                 }
             }
         };
@@ -790,7 +792,7 @@ export class MasterCSS extends MutationObserver {
     }
 
     findAndInsert(className: string) {
-        const result = MasterCSS.findAndNew(className);
+        const result = this.findAndNew(className);
         if (Array.isArray(result)) {
             for (const eachRule of result) {
                 this.insert(eachRule);
