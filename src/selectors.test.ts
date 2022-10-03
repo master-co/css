@@ -14,6 +14,6 @@ test("shorthands", () => {
     testCSS("uppercase::first-letter", ".uppercase\\:\\:first-letter::first-letter{text-transform:uppercase}")
 })
 
-test("reactive-styles", ()=> {
+test("reactive-rules", ()=> {
     testCSS(":checked+{hide}", ":checked+.\\:checked\\+\\{hide\\}{display:none}")
 })

@@ -1,0 +1,8 @@
+import { MasterCSSRule } from '../rule';
+import { BOX, dash, SHADOW } from '../constants/css-property-keyword';
+
+export class BoxShadow extends MasterCSSRule {
+    static override matches = /^s(?:hadow)?:./;
+    static override key = dash(BOX, SHADOW);
+    static override colorful = true;
+}

@@ -1,4 +1,4 @@
-import { sheets, Style } from './style';
+import { sheets, MasterCSSRule } from './rule';
 
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@'];
 
@@ -18,7 +18,7 @@ const MutationObserver = hasWindow
     ? window.MutationObserver
     : Object;
 
-export class StyleSheet extends MutationObserver {
+export class MasterCSS extends MutationObserver {
 
     constructor(
         private container?: Element
@@ -225,11 +225,11 @@ export class StyleSheet extends MutationObserver {
                                     className += char;
                                 }
 
-                                if (!(className in this.styleOfName) && !(className in Style.classes)) {
-                                    const style = StyleSheet.findAndNew(className) as Style;
+                                if (!(className in this.styleOfName) && !(className in MasterCSSRule.classes)) {
+                                    const style = MasterCSS.findAndNew(className) as MasterCSSRule;
                                     if (style) {
                                         style.cssRule = parentCssRule ?? cssRule;
-                                        this.styles.push(style);
+                                        this.rules.push(style);
                                         this.styleOfName[style.name] = style;
                                     }
                                 }
@@ -244,7 +244,7 @@ export class StyleSheet extends MutationObserver {
                 checkDeep(rootStyle.sheet, undefined);
             } else {
                 this.element = STYLE_ELEMENT.cloneNode() as HTMLStyleElement;
-                /** 使用 prepend 而非 append 去降低 styles 類的優先層級，無法強制排在所有 <style> 之後 */
+                /** 使用 prepend 而非 append 去降低 rules 類的優先層級，無法強制排在所有 <style> 之後 */
                 container?.prepend(this.element);
             }
         }
@@ -253,17 +253,17 @@ export class StyleSheet extends MutationObserver {
     }
 
     readonly element: HTMLStyleElement;
-    readonly styles: Style[] = [];
+    readonly rules: MasterCSSRule[] = [];
     readonly styleOfName = {};
     readonly countOfName = {};
 
-    static root: StyleSheet;
-    static Styles: typeof Style[] = [];
+    static root: MasterCSS;
+    static Rules: typeof MasterCSSRule[] = [];
 
     observe(target: Node, options: MutationObserverInit = { subtree: true, childList: true }) {
         if (options.subtree) {
             /**
-             * 待所有 DOM 結構完成解析後，開始繪製 Style 樣式
+             * 待所有 DOM 結構完成解析後，開始繪製 MasterCSSRule 樣式
              */
             (target as Element)
                 .querySelectorAll('[class]')
@@ -295,7 +295,7 @@ export class StyleSheet extends MutationObserver {
         // @ts-ignore
         this.countOfName = {};
 
-        this.styles.length = 0;
+        this.rules.length = 0;
 
         const sheet = this.element.sheet;
         if (sheet) {
@@ -306,11 +306,11 @@ export class StyleSheet extends MutationObserver {
     }
 
     /**
-     * 尋找匹配的 Style 生成實例
+     * 尋找匹配的 MasterCSSRule 生成實例
      */
     static findAndNew(name: string) {
         const findAndNewStyle = (className: string) => {
-            for (const EachStyle of this.Styles) {
+            for (const EachStyle of this.Rules) {
                 const matching = EachStyle.match(className);
                 if (matching) {
                     return new EachStyle(className, matching);
@@ -318,19 +318,19 @@ export class StyleSheet extends MutationObserver {
             }
         };
 
-        return name in Style.classes
-            ? (Style.classes[name] as string[])
+        return name in MasterCSSRule.classes
+            ? (MasterCSSRule.classes[name] as string[])
                 .map(findAndNewStyle)
                 .filter(eachStyle => eachStyle)
             : findAndNewStyle(name);
     }
 
     /**
-     * 尋找匹配的 Style
+     * 尋找匹配的 MasterCSSRule
      */
     static find(name: string) {
         const findStyle = (className: string) => {
-            for (const EachStyle of this.Styles) {
+            for (const EachStyle of this.Rules) {
                 const matching = EachStyle.match(className);
                 if (matching) {
                     return EachStyle;
@@ -338,8 +338,8 @@ export class StyleSheet extends MutationObserver {
             }
         };
 
-        return name in Style.classes
-            ? (Style.classes[name] as string[])
+        return name in MasterCSSRule.classes
+            ? (MasterCSSRule.classes[name] as string[])
                 .map(findStyle)
                 .filter(eachStyleClass => eachStyleClass)
             : findStyle(name);
@@ -365,13 +365,13 @@ export class StyleSheet extends MutationObserver {
         this.element.replaceWith(element);
         // @ts-ignore
         this.element = element;
-        this.styles.length = 0;
+        this.rules.length = 0;
         // @ts-ignore
         this.styleOfName = {};
 
         /**
-         * 拿當前所有的 classNames 按照最新的 colors, breakpoints, Styles 匹配並生成新的 style
-         * 所以 refresh 過後 styles 可能會變多也可能會變少
+         * 拿當前所有的 classNames 按照最新的 colors, breakpoints, Rules 匹配並生成新的 style
+         * 所以 refresh 過後 rules 可能會變多也可能會變少
          */
         for (const name in this.countOfName) {
             this.findAndInsert(name);
@@ -396,7 +396,7 @@ export class StyleSheet extends MutationObserver {
      * 9. media width
      * 10. media width selectors
      */
-    insert(style: Style) {
+    insert(style: MasterCSSRule) {
         if (this.styleOfName[style.name]) {
             return;
         }
@@ -408,36 +408,36 @@ export class StyleSheet extends MutationObserver {
          * @example <1  <2  <3  ALL  >=1 >=2 >=3
          * @description
          */
-        const endIndex = this.styles.length - 1;
+        const endIndex = this.rules.length - 1;
         const media = style.media;
         const order = style.order;
         const prioritySelectorIndex = style.prioritySelectorIndex;
         const hasWhere = style.hasWhere;
         const findPrioritySelectorInsertIndex = (
-            styles: Style[],
-            findStartIndex?: (style: Style) => any,
-            findEndIndex?: (style: Style) => any,
-            ignoreStyle?: (style: Style) => any
+            rules: MasterCSSRule[],
+            findStartIndex?: (style: MasterCSSRule) => any,
+            findEndIndex?: (style: MasterCSSRule) => any,
+            ignoreStyle?: (style: MasterCSSRule) => any
         ) => {
-            let targetStyles: Style[];
+            let targetStyles: MasterCSSRule[];
             let sIndex = 0;
             let eIndex: number;
 
             // 1. 找尋目標陣列
             if (findStartIndex) {
-                sIndex = styles.findIndex(findStartIndex);
+                sIndex = rules.findIndex(findStartIndex);
             }
             if (findEndIndex) {
-                eIndex = styles.findIndex(findEndIndex);
+                eIndex = rules.findIndex(findEndIndex);
             }
             if (sIndex === -1) {
-                sIndex = styles.length;
+                sIndex = rules.length;
             }
             if (eIndex === undefined || eIndex === -1) {
-                eIndex = styles.length;
+                eIndex = rules.length;
             }
 
-            targetStyles = styles.slice(sIndex, eIndex);
+            targetStyles = rules.slice(sIndex, eIndex);
 
             // 2. 由目標陣列找尋插入點
             for (let i = 0; i < targetStyles.length; i++) {
@@ -462,7 +462,7 @@ export class StyleSheet extends MutationObserver {
         }
 
         if (media) {
-            const mediaStartIndex = this.styles.findIndex(eachStyle => eachStyle.media);
+            const mediaStartIndex = this.rules.findIndex(eachStyle => eachStyle.media);
             if (mediaStartIndex !== -1) {
                 const maxWidthFeature = media.features[MAX_WIDTH];
                 const minWidthFeature = media.features[MIN_WIDTH];
@@ -477,7 +477,7 @@ export class StyleSheet extends MutationObserver {
                     for (let i = endIndex; i >= mediaStartIndex; i--) {
                         index = i;
 
-                        const eachStyle = this.styles[i];
+                        const eachStyle = this.rules[i];
                         const eachMedia = eachStyle.media;
                         const eachMaxWidthFeature = eachMedia.features[MAX_WIDTH];
                         const eachMinWidthFeature = eachMedia.features[MIN_WIDTH];
@@ -492,9 +492,9 @@ export class StyleSheet extends MutationObserver {
                                 continue;
 
                             if (prioritySelectorIndex !== -1) {
-                                const sameRangeStyles = [this.styles[i]];
+                                const sameRangeStyles = [this.rules[i]];
                                 for (let j = i - 1; j >= mediaStartIndex; j--) {
-                                    const currentMediaStyle = this.styles[j];
+                                    const currentMediaStyle = this.rules[j];
                                     if (currentMediaStyle.hasWhere !== hasWhere)
                                         break;
 
@@ -508,11 +508,11 @@ export class StyleSheet extends MutationObserver {
                                     )
                                         break;
 
-                                    sameRangeStyles.unshift(this.styles[j]);
+                                    sameRangeStyles.unshift(this.rules[j]);
                                 }
 
                                 index = findPrioritySelectorInsertIndex(
-                                    this.styles,
+                                    this.rules,
                                     eachStyle => eachStyle.media && eachStyle.prioritySelectorIndex !== -1 && eachStyle.media.features[MIN_WIDTH] && eachStyle.media.features[MAX_WIDTH]);
                             }
 
@@ -529,7 +529,7 @@ export class StyleSheet extends MutationObserver {
                     for (let i = mediaStartIndex; i <= endIndex; i++) {
                         index = i;
 
-                        const eachStyle = this.styles[i];
+                        const eachStyle = this.rules[i];
                         const eachMedia = eachStyle.media;
                         const eachMaxWidthFeature = eachMedia.features[MAX_WIDTH];
                         const eachMinWidthFeature = eachMedia.features[MIN_WIDTH];
@@ -553,13 +553,13 @@ export class StyleSheet extends MutationObserver {
 
                             if (prioritySelectorIndex !== -1) {
                                 index = findPrioritySelectorInsertIndex(
-                                    this.styles,
+                                    this.rules,
                                     eachStyle => eachStyle.media,
                                     eachStyle => eachStyle.media && eachStyle.prioritySelectorIndex !== -1 && eachStyle.media.features[MIN_WIDTH] && eachStyle.media.features[MAX_WIDTH],
                                     eachStyle => !eachStyle.media.features[MIN_WIDTH] && !eachStyle.media.features[MAX_WIDTH]);
                             } else {
                                 for (let j = i; j <= endIndex; j++) {
-                                    const currentMediaStyle = this.styles[j];
+                                    const currentMediaStyle = this.rules[j];
                                     const currentMedia = currentMediaStyle.media;
                                     const currentMinWidthFeature = currentMedia.features[MIN_WIDTH];
                                     const currentMaxWidthFeature = currentMedia.features[MAX_WIDTH];
@@ -593,7 +593,7 @@ export class StyleSheet extends MutationObserver {
                     for (let i = endIndex; i >= mediaStartIndex; i--) {
                         index = i;
 
-                        const eachStyle = this.styles[i];
+                        const eachStyle = this.rules[i];
                         const eachMedia = eachStyle.media;
                         const eachMaxWidthFeature = eachMedia.features[MAX_WIDTH];
                         const eachMinWidthFeature = eachMedia.features[MIN_WIDTH];
@@ -614,14 +614,14 @@ export class StyleSheet extends MutationObserver {
 
                             if (prioritySelectorIndex !== -1) {
                                 index = findPrioritySelectorInsertIndex(
-                                    this.styles,
+                                    this.rules,
                                     eachStyle => eachStyle.media,
                                     eachStyle => eachStyle.media && eachStyle.prioritySelectorIndex !== -1 && eachStyle.media.features[MIN_WIDTH] && eachStyle.media.features[MAX_WIDTH],
                                     eachStyle => !eachStyle.media.features[MIN_WIDTH] && !eachStyle.media.features[MAX_WIDTH]);
                             } else {
-                                const sameRangeStyles = [this.styles[i]];
+                                const sameRangeStyles = [this.rules[i]];
                                 for (let j = i - 1; j >= mediaStartIndex; j--) {
-                                    const currentMediaStyle = this.styles[j];
+                                    const currentMediaStyle = this.rules[j];
                                     const currentMedia = currentMediaStyle.media;
                                     const currentMinWidthFeature = currentMedia.features[MIN_WIDTH];
                                     const currentMaxWidthFeature = currentMedia.features[MAX_WIDTH];
@@ -666,14 +666,14 @@ export class StyleSheet extends MutationObserver {
                     // 含有優先 selector
                     index = mediaStartIndex +
                         findPrioritySelectorInsertIndex(
-                            this.styles.slice(mediaStartIndex),
+                            this.rules.slice(mediaStartIndex),
                             undefined,
                             eachStyle => eachStyle.media.features[MAX_WIDTH] || eachStyle.media.features[MIN_WIDTH]);
                 } else if (hasWhere) {
                     // 不含優先 selector，且含有 where，優先級最低
                     let i = mediaStartIndex;
-                    for (; i < this.styles.length; i++) {
-                        const eachStyle = this.styles[i];
+                    for (; i < this.rules.length; i++) {
+                        const eachStyle = this.rules[i];
                         if (eachStyle.prioritySelectorIndex !== -1 || !eachStyle.hasWhere || eachStyle.order >= order) {
                             index = i;
                             break;
@@ -688,7 +688,7 @@ export class StyleSheet extends MutationObserver {
                     for (let i = mediaStartIndex; i <= endIndex; i++) {
                         index = i;
 
-                        const eachStyle = this.styles[i];
+                        const eachStyle = this.rules[i];
                         const eachMedia = eachStyle.media;
                         if (eachStyle.prioritySelectorIndex !== -1 || eachMedia.features[MAX_WIDTH] || eachMedia.features[MIN_WIDTH])
                             break;
@@ -706,7 +706,7 @@ export class StyleSheet extends MutationObserver {
                 // 不含優先 selector
                 if (hasWhere) {
                     // 含有 where，優先級最低
-                    index = this.styles.findIndex(eachStyle => !eachStyle.hasWhere
+                    index = this.rules.findIndex(eachStyle => !eachStyle.hasWhere
                         || eachStyle.media
                         || eachStyle.prioritySelectorIndex !== -1
                         || eachStyle.order >= order);
@@ -717,8 +717,8 @@ export class StyleSheet extends MutationObserver {
                 } else {
                     // 不含 where，優先級緊接 where 之後
                     let i = 0;
-                    for (; i < this.styles.length; i++) {
-                        const eachStyle = this.styles[i];
+                    for (; i < this.rules.length; i++) {
+                        const eachStyle = this.rules[i];
                         if (eachStyle.media || !eachStyle.hasWhere && (eachStyle.order >= order || eachStyle.prioritySelectorIndex !== -1)) {
                             index = i;
                             break;
@@ -731,7 +731,7 @@ export class StyleSheet extends MutationObserver {
                 }
             } else {
                 // 含有優先 selector
-                index = findPrioritySelectorInsertIndex(this.styles, undefined, eachStyle => eachStyle.media);
+                index = findPrioritySelectorInsertIndex(this.rules, undefined, eachStyle => eachStyle.media);
             }
         }
 
@@ -743,7 +743,7 @@ export class StyleSheet extends MutationObserver {
                 style.cssRule = sheet.cssRules[index];
             }
 
-            this.styles.splice(index, 0, style);
+            this.rules.splice(index, 0, style);
             this.styleOfName[style.name] = style;
         } catch (error) {
             console.error(error);
@@ -760,7 +760,7 @@ export class StyleSheet extends MutationObserver {
             const style = this.styleOfName[name];
             if (
                 !style?.cssRule
-                || name in Style.relations && Style.relations[name].some(eachClassName => eachClassName in this.countOfName)
+                || name in MasterCSSRule.relations && MasterCSSRule.relations[name].some(eachClassName => eachClassName in this.countOfName)
             )
                 return;
 
@@ -768,14 +768,14 @@ export class StyleSheet extends MutationObserver {
                 const eachCssRule = sheet.cssRules[index];
                 if (eachCssRule === style.cssRule) {
                     sheet.deleteRule(index);
-                    this.styles.splice(index, 1);
+                    this.rules.splice(index, 1);
                     delete this.styleOfName[style.name];
                 }
             }
         };
 
-        if (className in Style.classes) {
-            for (const eachClassName of Style.classes[className]) {
+        if (className in MasterCSSRule.classes) {
+            for (const eachClassName of MasterCSSRule.classes[className]) {
                 if (!(eachClassName in this.countOfName)) {
                     deleteRule(eachClassName);
                 }
@@ -786,7 +786,7 @@ export class StyleSheet extends MutationObserver {
     }
 
     findAndInsert(className: string) {
-        const result = StyleSheet.findAndNew(className);
+        const result = MasterCSS.findAndNew(className);
         if (Array.isArray(result)) {
             for (const eachStyle of result) {
                 this.insert(eachStyle);
@@ -798,11 +798,11 @@ export class StyleSheet extends MutationObserver {
 }
 
 if (hasWindow) {
-    window.MasterStyleSheet = StyleSheet;
+    window.MasterStyleSheet = MasterCSS;
 }
 
 declare global {
     interface Window {
-        MasterStyleSheet: typeof StyleSheet;
+        MasterStyleSheet: typeof MasterCSS;
     }
 }
