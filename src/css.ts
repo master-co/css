@@ -1,4 +1,4 @@
-import { sheets, MasterCSSRule } from './rule';
+import { MasterCSSRule } from './rule';
 
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@'];
 
@@ -13,8 +13,9 @@ const MAX_WIDTH = 'max-width';
 const MIN_WIDTH = 'min-width';
 const ATTRIBUTES = 'attributes';
 
-const hasWindow = typeof window !== 'undefined';
-const MutationObserver = hasWindow
+const isBrowser = typeof window !== 'undefined';
+
+const MutationObserver = isBrowser
     ? window.MutationObserver
     : Object;
 
@@ -191,8 +192,8 @@ export class MasterCSS extends MutationObserver {
             return;
         }
 
-        if (container) {
-            const rootStyle: HTMLStyleElement = container.querySelector('[id="master-css"]');
+        if (this.container) {
+            const rootStyle: HTMLStyleElement = this.container.querySelector('[id="master-css"]');
             if (rootStyle) {
                 this.element = rootStyle;
                 const checkDeep = (cssRule: any, parentCssRule: any) => {
@@ -245,11 +246,11 @@ export class MasterCSS extends MutationObserver {
             } else {
                 this.element = STYLE_ELEMENT.cloneNode() as HTMLStyleElement;
                 /** 使用 prepend 而非 append 去降低 rules 類的優先層級，無法強制排在所有 <style> 之後 */
-                container?.prepend(this.element);
+                this.container?.prepend(this.element);
             }
         }
 
-        sheets.push(this);
+        MasterCSS.instances.push(this);
     }
 
     readonly element: HTMLStyleElement;
@@ -257,8 +258,10 @@ export class MasterCSS extends MutationObserver {
     readonly styleOfName = {};
     readonly countOfName = {};
 
+    static instances: MasterCSS[] = [];
     static root: MasterCSS;
     static Rules: typeof MasterCSSRule[] = [];
+    config = {}
 
     observe(target: Node, options: MutationObserverInit = { subtree: true, childList: true }) {
         if (options.subtree) {
@@ -349,8 +352,8 @@ export class MasterCSS extends MutationObserver {
      * 全部 sheet 根據目前蒐集到的所有 DOM class 重新 findAndNew
      */
     static refresh() {
-        for (const eachSheet of sheets) {
-            eachSheet.refresh();
+        for (const eachInstance of this.instances) {
+            eachInstance.refresh();
         }
     }
 
@@ -379,8 +382,9 @@ export class MasterCSS extends MutationObserver {
     }
 
     destroy() {
+        const instances = MasterCSS.instances
         this.disconnect();
-        sheets.splice(sheets.indexOf(this), 1);
+        instances.splice(instances.indexOf(this), 1);
         this.element.remove();
     }
 
@@ -797,7 +801,7 @@ export class MasterCSS extends MutationObserver {
     }
 }
 
-if (hasWindow) {
+if (isBrowser) {
     window.MasterCSS = MasterCSS;
 }
 

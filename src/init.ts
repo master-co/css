@@ -10,9 +10,10 @@ export function init() {
     }
 }
 
-MasterCSSRule.extend('colors', colors)
-    .extend('breakpoints', breakpoints);
-MasterCSS.Rules.push(...Rules);
+// MasterCSSRule
+//     .extend('colors', colors)
+//     .extend('breakpoints', breakpoints);
+// MasterCSS.Rules.push(...Rules);
 
 const MASTER_CSS = 'MasterCSS';
 if (isBrowser) {

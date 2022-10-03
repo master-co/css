@@ -1,5 +1,5 @@
-const hexToRgb = require('./hex-to-rgb');
-const rgbToHex = require('./rgb-to-hex');
+const hexToRgb = require('./utils/hex-to-rgb');
+const rgbToHex = require('./utils/rgb-to-hex');
 
 module.exports = function fillShades(data) {
     if (typeof data === 'string') {
