@@ -4,9 +4,9 @@ const isBrowser = typeof window !== 'undefined';
 
 export function init() {
     if (isBrowser) {
-        const sheet = new MasterCSS(document.head);
-        MasterCSS.root = sheet;
-        sheet.observe(document.documentElement);
+        const css = new MasterCSS(document.head);
+        MasterCSS.root = css;
+        css.observe(document.documentElement);
     }
 }
 

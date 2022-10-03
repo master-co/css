@@ -1,5 +1,5 @@
 import { MasterCSSRule } from '../rule';
-import { MasterCSS } from '../sheet';
+import { MasterCSS } from '../css';
 import { START_SYMBOL } from '../constants/start-symbol';
 import { GROUP } from '../constants/css-property-keyword';
 
@@ -23,7 +23,7 @@ export class Group extends MasterCSSRule {
                 }
             }
         }
-        const handleStyle = (style: MasterCSSRule) => {
+        const handleRule = (style: MasterCSSRule) => {
             const cssProperties = style.text.slice(CSS.escape(style.name).length).match(bracketRegexp)[1].split(';');
             for (const eachCssProperty of cssProperties) {
                 addProp(eachCssProperty);
@@ -83,12 +83,12 @@ export class Group extends MasterCSSRule {
         for (const eachName of names) {
             const result = MasterCSS.findAndNew(eachName);
             if (Array.isArray(result)) {
-                for (const eachStyle of result) {
-                    handleStyle(eachStyle);
+                for (const eachRule of result) {
+                    handleRule(eachRule);
                 }
             } else {
                 if (result) {
-                    handleStyle(result);
+                    handleRule(result);
                 } else {
                     addProp(eachName);
                 }

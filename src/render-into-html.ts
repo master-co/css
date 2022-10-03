@@ -1,8 +1,8 @@
-import { MasterCSS as MasterCSSStyleSheet, renderFromHTML } from '.'
+import { MasterCSS, renderFromHTML } from '.'
 import './polyfills/css-escape'
 
-export function renderIntoHTML(html: string, MasterCSS: typeof MasterCSSStyleSheet = MasterCSSStyleSheet): string {
+export function renderIntoHTML(html: string,  _MasterCSS: typeof MasterCSS = MasterCSS): string {
     if (!html) return;
     return html
-        .replace(/(<head>)/, `$1<style id="master-css">${renderFromHTML(html, MasterCSS)}</style>`)
+        .replace(/(<head>)/, `$1<style id="master-css">${renderFromHTML(html, _MasterCSS)}</style>`)
 }

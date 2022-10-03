@@ -1,4 +1,4 @@
-export interface StyleMediaFeature {
+export interface MasterCSSMediaFeatureRule {
     token: string;
     tokenType?: string;
     operator?: string;

@@ -1,9 +1,9 @@
-import { MasterCSS as MasterCSSStyleSheet } from '.'
+import { MasterCSS } from '.'
 import './polyfills/css-escape'
 
-export function renderFromHTML(html: string, MasterCSS: typeof MasterCSSStyleSheet = MasterCSSStyleSheet): string {
+export function renderFromHTML(html: string, _MasterCSS: typeof MasterCSS = MasterCSS): string {
     if (!html) return
-    const styleSheet = new MasterCSS()
+    const styleSheet = new _MasterCSS()
     const regexp = /\sclass="([^"]*)"/gm
     let results: string[]
     while (results = regexp.exec(html)) {
@@ -15,5 +15,5 @@ export function renderFromHTML(html: string, MasterCSS: typeof MasterCSSStyleShe
             }
         }
     }
-    return styleSheet.rules.map(eachStyle => eachStyle.text).join('')
+    return styleSheet.rules.map(eachRule => eachRule.text).join('')
 }

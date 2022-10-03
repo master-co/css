@@ -1,9 +1,8 @@
-import { StyleMediaFeature } from './interfaces/style-media-feature';
-import { StyleMedia } from './interfaces/style-media';
+import { MasterCSSMediaFeatureRule } from './interfaces/media-feature-rule';
+import { MasterCSSMedia } from './interfaces/media';
 import { getCssPropertyText } from './utils/get-css-property-text';
 import { parseValue } from './utils/parse-value';
 import { PRIORITY_SELECTORS } from './constants/priority-selectors';
-import { MasterCSS } from './sheet';
 import { START_SYMBOL } from './constants/start-symbol';
 import { GROUP } from './constants/css-property-keyword';
 const fillShades = require('./utils/fill-shades');
@@ -52,12 +51,10 @@ const transformSelectorUnderline = (selector: string) => selector.split(selector
     .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/\_/g, ' '))
     .join('');
 
-export interface StyleMatching {
+export interface RuleMatching {
     origin: 'matches' | 'semantics' | 'symbol';
     value?: string;
 }
-
-export const sheets: MasterCSS[] = [];
 
 export class MasterCSSRule {
 
@@ -68,7 +65,7 @@ export class MasterCSSRule {
     readonly prefixSelector: string;
     readonly suffixSelector: string;
     readonly important: boolean;
-    readonly media: StyleMedia;
+    readonly media: MasterCSSMedia;
     readonly at: Record<string, string> = {};
     readonly direction: string;
     readonly colorScheme: string;
@@ -92,14 +89,13 @@ export class MasterCSSRule {
     static readonly semantics: { [key: string]: any };
     static readonly breakpoints: { [key: string]: number };
     static readonly mediaQueries: { [key: string]: string } = {};
-    static readonly sheets: MasterCSS[] = sheets;
     static readonly colors: Record<string, any> = {};
     static readonly classes: Record<string, string | string[]> = {};
     static readonly colorNames: string[] = [];
     static readonly relations: Record<string, string[]> = {};
     static readonly colorSchemes: string[] = ['dark', 'light'];
 
-    static match(name: string): StyleMatching {
+    static match(name: string): RuleMatching {
         /** 
          * STEP 1. matches
          */
@@ -151,17 +147,17 @@ export class MasterCSSRule {
 
     constructor(
         public readonly name: string,
-        public readonly matching?: StyleMatching
+        public readonly matching?: RuleMatching
     ) {
-        const TargetStyle = this.constructor as typeof MasterCSSRule;
+        const TargetRule = this.constructor as typeof MasterCSSRule;
         if (matching === undefined) {
-            matching = TargetStyle.match(name);
+            matching = TargetRule.match(name);
             if (!matching) {
                 console.warn(name + ' can\'t match any MasterCSSRule.');
                 return;
             }
         }
-        let { id, semantics, unit, colors, key, values, colorful, breakpoints, mediaQueries, colorSchemes, rootSize } = TargetStyle;
+        let { id, semantics, unit, colors, key, values, colorful, breakpoints, mediaQueries, colorSchemes, rootSize } = TargetRule;
         let token = name;
 
         // 防止非色彩 style 的 token 被解析
@@ -455,7 +451,7 @@ export class MasterCSSRule {
                                 } else if (typeOrFeatureToken in mediaQueries) {
                                     queryTexts.push(mediaQueries[typeOrFeatureToken]);
                                 } else {
-                                    const feature: StyleMediaFeature = {
+                                    const feature: MasterCSSMediaFeatureRule = {
                                         token: typeOrFeatureToken
                                     }
                                     let featureName = '';
@@ -676,11 +672,11 @@ export interface MasterCSSRule {
 }
 
 if (typeof window !== 'undefined') {
-    window.MasterStyle = MasterCSSRule;
+    window.MasterCSSRule = MasterCSSRule;
 }
 
 declare global {
     interface Window {
-        MasterStyle: typeof MasterCSSRule;
+        MasterCSSRule: typeof MasterCSSRule;
     }
 }

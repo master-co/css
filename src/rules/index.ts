@@ -1,5 +1,5 @@
 import { MasterCSSRule } from '../rule';
-import { MasterCSS } from '../sheet';
+import { MasterCSS } from '../css';
 
 import { FontWeight } from './font-weight';
 import { FontFamily } from './font-family';
@@ -415,8 +415,8 @@ export const Rules = [
 /**
  * @param query fontSize, 'font-size' 
  * */
-const get = Rules.get = (query: string) => Rules.find((EachStyle) =>
-    query === EachStyle.id || query === EachStyle.key?.replace(/-./g, (m) => m[1].toUpperCase()) || query === EachStyle.key
+const get = Rules.get = (query: string) => Rules.find((EachRule) =>
+    query === EachRule.id || query === EachRule.key?.replace(/-./g, (m) => m[1].toUpperCase()) || query === EachRule.key
 );
 
 /**
@@ -425,10 +425,10 @@ const get = Rules.get = (query: string) => Rules.find((EachStyle) =>
 Rules.extend = function (property, ...settings) {
     const assignedSettings = Object.assign({}, ...settings);
     for (const query in assignedSettings) {
-        const EachStyle = get(query);
-        if (EachStyle) {
+        const EachRule = get(query);
+        if (EachRule) {
             const eachSettings = assignedSettings[query];
-            EachStyle.extend(property as any, eachSettings);
+            EachRule.extend(property as any, eachSettings);
         }
     }
     return this;
