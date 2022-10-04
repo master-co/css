@@ -1,3 +1,4 @@
+import { defaultConfig } from './default-config';
 import { init } from './init';
 import { MasterCSSConfig } from './interfaces/config';
 import { MasterCSSRule } from './rule';
@@ -24,7 +25,7 @@ const MutationObserver = isBrowser
 export class MasterCSS extends MutationObserver {
 
     constructor(
-        public config: MasterCSSConfig,
+        public config: MasterCSSConfig = defaultConfig,
         public container?: Element
     ) {
         super((mutationRecords) => {
@@ -262,8 +263,9 @@ export class MasterCSS extends MutationObserver {
     readonly countOfName = {};
 
     static init = init;
-    static instances: MasterCSS[] = [];
-    static root: MasterCSS;
+    static defaultConfig: MasterCSSConfig = defaultConfig
+    static instances: MasterCSS[] = []
+    static root: MasterCSS
 
     observe(target: Node, options: MutationObserverInit = { subtree: true, childList: true }) {
         if (options.subtree) {
