@@ -4,8 +4,4 @@ import { MasterCSSRule } from '../rule';
 export class BoxSizing extends MasterCSSRule {
     static override matches = /^box:(content|border)(?!\|)/;
     static override key = dash(BOX, SIZING);
-    static override values = {
-        content: dash(CONTENT, BOX),
-        border: dash(BORDER, BOX)
-    }
 }

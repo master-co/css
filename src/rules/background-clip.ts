@@ -10,9 +10,4 @@ export class BackgroundClip extends MasterCSSRule {
             'background-clip': this
         }
     }
-    static override values = {
-        content: dash(CONTENT, BOX),
-        border: dash(BORDER, BOX),
-        padding: dash(PADDING, BOX)
-    }
 }
