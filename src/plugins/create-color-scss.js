@@ -1,7 +1,7 @@
 const webpack = require("webpack");
 const colors = require('../colors');
 const { RawSource } = require("webpack-sources");
-const fillShades = require('../utils/fill-shades');
+const fillShades = require('../fill-shades');
 
 module.exports = class CreateColorScssPlugin {
     apply(compiler) {

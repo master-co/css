@@ -1,4 +1,4 @@
-const { fillShades } = require('./fill-shades')
+const fillShades = require('./fill-shades')
 
 module.exports = {
     slate: fillShades({
