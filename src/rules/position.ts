@@ -6,12 +6,5 @@ export class Position extends MasterCSSRule {
     static override values = {
         'abs': ABSOLUTE,
         'rel': RELATIVE
-    };
-    static override semantics = {
-        static: 'static',
-        fixed: 'fixed',
-        abs: 'absolute',
-        rel: 'relative',
-        sticky: 'sticky'
-    };
+    }
 }

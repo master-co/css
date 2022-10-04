@@ -25,7 +25,4 @@ export class Overflow extends MasterCSSRule {
         }
         return -1;
     }
-    static override semantics = {
-        overflow: 'visible'
-    }
 }

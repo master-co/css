@@ -1,11 +1,14 @@
 import colors from './colors'
 import breakpoints from './breakpoints'
+import semantics from './semantics'
 import { Rules } from './rules'
 
 export const defaultConfig = {
     colors,
     breakpoints,
-    Rules
+    semantics,
+    Rules,
+
 }
 
 export function configure(...configurations: any) {

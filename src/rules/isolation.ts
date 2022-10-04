@@ -3,7 +3,4 @@ import { MasterCSSRule } from '../rule';
 
 export class Isolation extends MasterCSSRule {
     static override key = ISOLATION;
-    static override semantics = {
-        isolate: ISOLATE
-    }
 }
