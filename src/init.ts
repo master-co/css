@@ -8,7 +8,7 @@ export function init(config?: MasterCSSConfig) {
         css.observe(document.documentElement)
         return css
     } else {
-        new MasterCSS(config)
+        return new MasterCSS(config)
     }
 }
 
