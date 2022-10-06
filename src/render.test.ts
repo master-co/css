@@ -22,7 +22,7 @@ test("render", () => {
     expect(renderIntoHTML(html))
         .toBe(dedent`
             <html>
-                <head><style id="master-css">.font\:32{font-size:2rem}.text\:center{text-align:center}</style></head>
+                <head><style title="master">.font\:32{font-size:2rem}.text\:center{text-align:center}</style></head>
                 <body>
                     <h1 class="text:center font:32">Hello World</h1>
                 </body>

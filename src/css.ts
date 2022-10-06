@@ -7,10 +7,10 @@ const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@'];
 
 const hasDocument = typeof document !== 'undefined';
 
-let STYLE_ELEMENT: HTMLStyleElement;
+let STYLE: HTMLStyleElement;
 if (hasDocument) {
-    STYLE_ELEMENT = document.createElement('style');
-    STYLE_ELEMENT.id = 'master-css'
+    STYLE = document.createElement('style');
+    STYLE.title = 'master'
 }
 const MAX_WIDTH = 'max-width';
 const MIN_WIDTH = 'min-width';
@@ -196,10 +196,16 @@ export class MasterCSS extends MutationObserver {
             return;
         }
 
-        if (this.container) {
-            const rootStyle: HTMLStyleElement = this.container.querySelector('[id="master-css"]');
+        if (container) {
+            let rootStyle: HTMLStyleElement
+            // @ts-ignore
+            for (let sheet of (container.shadowRoot.styleSheets || document.styleSheets)) {
+                if (sheet.title === 'master') {
+                    rootStyle = sheet.ownerNode
+                }
+            }
             if (rootStyle) {
-                this.element = rootStyle;
+                this.style = rootStyle;
                 const checkDeep = (cssRule: any, parentCssRule: any) => {
                     if (cssRule.selectorText) {
                         const selectorTexts = cssRule.selectorText.split(', ');
@@ -248,16 +254,16 @@ export class MasterCSS extends MutationObserver {
                 };
                 checkDeep(rootStyle.sheet, undefined);
             } else {
-                this.element = STYLE_ELEMENT.cloneNode() as HTMLStyleElement;
+                this.style = STYLE.cloneNode() as HTMLStyleElement;
                 /** 使用 prepend 而非 append 去降低 rules 類的優先層級，無法強制排在所有 <style> 之後 */
-                this.container?.prepend(this.element);
+                this.container?.prepend(this.style);
             }
         }
 
         MasterCSS.instances.push(this);
     }
 
-    readonly element: HTMLStyleElement;
+    readonly style: HTMLStyleElement;
     readonly rules: MasterCSSRule[] = [];
     readonly ruleOfName = {};
     readonly countOfName = {};
@@ -304,7 +310,7 @@ export class MasterCSS extends MutationObserver {
 
         this.rules.length = 0;
 
-        const sheet = this.element.sheet;
+        const sheet = this.style.sheet;
         if (sheet) {
             for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
                 sheet.deleteRule(i);
@@ -365,13 +371,13 @@ export class MasterCSS extends MutationObserver {
      * 根據目前蒐集到的所有 DOM class 重新 findAndNew
      */
     refresh() {
-        if (!this.element) {
+        if (!this.style) {
             return;
         }
-        const element = STYLE_ELEMENT.cloneNode() as HTMLStyleElement;
-        this.element.replaceWith(element);
+        const style = STYLE.cloneNode() as HTMLStyleElement;
+        this.style.replaceWith(style);
         // @ts-ignore
-        this.element = element;
+        this.style = style;
         this.rules.length = 0;
         // @ts-ignore
         this.ruleOfName = {};
@@ -389,7 +395,7 @@ export class MasterCSS extends MutationObserver {
         const instances = MasterCSS.instances
         this.disconnect();
         instances.splice(instances.indexOf(this), 1);
-        this.element.remove();
+        this.style.remove();
     }
 
     /**
@@ -744,8 +750,8 @@ export class MasterCSS extends MutationObserver {
         }
 
         try {
-            if (this.element) {
-                const sheet = this.element.sheet;
+            if (this.style) {
+                const sheet = this.style.sheet;
                 sheet.insertRule(rule, index);
                 // @ts-ignore
                 style.cssRule = sheet.cssRules[index];
@@ -763,7 +769,7 @@ export class MasterCSS extends MutationObserver {
          * class name 從 DOM tree 中被移除，
          * 匹配並刪除對應的 rule
          */
-        const sheet = this.element.sheet;
+        const sheet = this.style.sheet;
         const deleteRule = (name: string) => {
             const style = this.ruleOfName[name];
             if (
