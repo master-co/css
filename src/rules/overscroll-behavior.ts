@@ -4,14 +4,14 @@ import { MasterCSSRule } from '../rule';
 export class OverscrollBehavior extends MasterCSSRule {
     static id = 'overscrollBehavior';
     static override matches = /^overscroll-behavior(?:-[xy])?:/;
-    override get props(): { [key: string]: any } {
+    override getProps(propertyInfo): { [key: string]: any } {
         switch (this.prefix.slice(-2, -1)) {
             case X:
-                return { [dash(OVERSCROLL_BEHAVIOR, X)]: this };
+                return { [dash(OVERSCROLL_BEHAVIOR, X)]: propertyInfo };
             case Y:
-                return { [dash(OVERSCROLL_BEHAVIOR, Y)]: this };
+                return { [dash(OVERSCROLL_BEHAVIOR, Y)]: propertyInfo };
             default:
-                return { [OVERSCROLL_BEHAVIOR]: this };
+                return { [OVERSCROLL_BEHAVIOR]: propertyInfo };
         }
     }
 }

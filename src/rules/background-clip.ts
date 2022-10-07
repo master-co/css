@@ -4,10 +4,10 @@ import { BACKGROUND, BORDER, BOX, CLIP, CONTENT, dash, PADDING } from '../consta
 export class BackgroundClip extends MasterCSSRule {
     static override matches = /^(bg|background):text(?!\|)/;
     static override key = dash(BACKGROUND, CLIP);
-    override get props(): { [key: string]: any } {
+    override getProps(propertyInfo): { [key: string]: any } {
         return {
-            '-webkit-background-clip': this,
-            'background-clip': this
+            '-webkit-background-clip': propertyInfo,
+            'background-clip': propertyInfo
         }
     }
 }

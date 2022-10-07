@@ -5,8 +5,7 @@ import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from '../constants/directi
 export class Spacing extends MasterCSSRule {
     static override id = 'spacing';
     static override matches = /^[pm][xytblr]?:./;
-    override get props(): { [key: string]: any } {
-        const props = {};
+    override getProps(propertyInfo): { [key: string]: any } {
         const charAt1 = this.prefix[0];
         const SPACING = charAt1 === 'm' ? MARGIN : PADDING;
         const SPACING_LEFT = dash(SPACING, LEFT);
@@ -16,33 +15,33 @@ export class Spacing extends MasterCSSRule {
         switch (this.prefix[1]) {
             case X:
                 return {
-                    [SPACING_LEFT]: this,
-                    [SPACING_RIGHT]: this
+                    [SPACING_LEFT]: propertyInfo,
+                    [SPACING_RIGHT]: propertyInfo
                 }
             case Y:
                 return {
-                    [SPACING_TOP]: this,
-                    [SPACING_BOTTOM]: this
+                    [SPACING_TOP]: propertyInfo,
+                    [SPACING_BOTTOM]: propertyInfo
                 }
             case L:
                 return {
-                    [SPACING_LEFT]: this
+                    [SPACING_LEFT]: propertyInfo
                 }
             case R:
                 return {
-                    [SPACING_RIGHT]: this
+                    [SPACING_RIGHT]: propertyInfo
                 }
             case T:
                 return {
-                    [SPACING_TOP]: this
+                    [SPACING_TOP]: propertyInfo
                 }
             case B:
                 return {
-                    [SPACING_BOTTOM]: this
+                    [SPACING_BOTTOM]: propertyInfo
                 }
             default:
                 return {
-                    [SPACING]: this
+                    [SPACING]: propertyInfo
                 }
         }
     }

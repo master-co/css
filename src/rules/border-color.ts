@@ -7,8 +7,8 @@ export class BorderColor extends MasterCSSRule {
     static override matches = /^border(-(left|right|top|bottom))?-color:./;
     static override colorStarts = 'b([xytblr]|(order(-(left|right|top|bottom))?))?:';
     static override colorful = true;
-    override get props(): { [key: string]: any } {
-        return getBorderProps(this.prefix, this, COLOR);
+    override getProps(propertyInfo): { [key: string]: any } {
+        return getBorderProps(this.prefix, propertyInfo, COLOR);
     }
     override get order(): number {
         return (this.prefix === dash(BORDER, COLOR) + ":" || this.prefix === 'b:' || this.prefix === BORDER + ':') ? -1 : 0;

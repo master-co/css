@@ -5,9 +5,9 @@ export class TextFillColor extends MasterCSSRule {
     static override matches = /^text-fill-color:./;
     static override colorStarts = '(text-fill|text):';
     static override colorful = true;
-    override get props(): { [key: string]: any } {
+    override getProps(propertyInfo): { [key: string]: any } {
         return {
-            '-webkit-text-fill-color': this
+            '-webkit-text-fill-color': propertyInfo
         };
     }
 }

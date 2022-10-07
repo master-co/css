@@ -10,22 +10,22 @@ export class FontSmoothing extends MasterCSSRule {
     static id = 'fontSmoothing';
     static override matches = /^f(ont)?:(antialiased|subpixel-antialiased)(?!\|)/;
     static override unit = '';
-    override get props(): { [key: string]: any } {
+    override getProps(propertyInfo): { [key: string]: any } {
         const props = {};
-        switch (this.value) {
+        switch (propertyInfo.value) {
             case SUBPIXEL_ANTIALIASED:
                 props[WEBKIT_FONT_SMOOTHING] = props[MOZ_OSXFONT_SMOOTHING] = {
-                    ...this,
+                    ...propertyInfo,
                     value: AUTO
                 }
                 break;
             case ANTIALIASED:
                 props[WEBKIT_FONT_SMOOTHING] = {
-                    ...this,
+                    ...propertyInfo,
                     value: ANTIALIASED
                 }
                 props[MOZ_OSXFONT_SMOOTHING] = {
-                    ...this,
+                    ...propertyInfo,
                     value: GRAYSCALE
                 }
                 break;

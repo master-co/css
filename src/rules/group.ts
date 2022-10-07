@@ -2,6 +2,7 @@ import { MasterCSSRule } from '../rule';
 import { MasterCSS } from '../css';
 import { START_SYMBOL } from '../constants/start-symbol';
 import { GROUP } from '../constants/css-property-keyword';
+import { CssPropertyInfo } from 'src/interfaces/css-property-info';
 
 const bracketRegexp = /\{(.*)\}/;
 
@@ -9,24 +10,42 @@ export class Group extends MasterCSSRule {
     static id = GROUP;
     static override matches = /^(?:.+?[*_>~+])?\{.+?\}/;
     static override unit = '';
-    override get props(): { [key: string]: any } {
-        const newProps = {};
-
-        const addProp = (propertyName: string) => {
+    override getThemeProps(propertyInfo: CssPropertyInfo, css: MasterCSS): Record<string, Record<string, string>> {
+        const themePropsMap: Record<string, Record<string, string>> = {};
+        
+        const addProp = (theme: string, propertyName: string) => {
             const indexOfColon = propertyName.indexOf(':');
             if (indexOfColon !== -1) {
+                const props = themePropsMap[theme];
+
                 const name = propertyName.slice(0, indexOfColon);
-                if (!(name in newProps)) {
-                    newProps[name] = {
-                        value: propertyName.slice(indexOfColon + 1)
-                    };
+                if (!(name in props)) {
+                    props[name] = propertyName.slice(indexOfColon + 1)
                 }
             }
         }
-        const handleRule = (style: MasterCSSRule) => {
-            const cssProperties = style.text.slice(CSS.escape(style.name).length).match(bracketRegexp)[1].split(';');
-            for (const eachCssProperty of cssProperties) {
-                addProp(eachCssProperty);
+        const handleRule = (rule: MasterCSSRule) => {
+            const addProps = (theme: string, cssText: string) => {
+                if (!(theme in themePropsMap)) {
+                    themePropsMap[theme] = {};
+                }
+
+                const cssProperties = cssText.slice(CSS.escape(rule.name).length).match(bracketRegexp)[1].split(';');
+                for (const eachCssProperty of cssProperties) {
+                    addProp(theme, eachCssProperty);
+                }
+            }
+
+            if (this.colorScheme) {
+                const currentThemeNative = rule.natives.find(eachNative => eachNative.theme ===  this.colorScheme) ?? rule.natives.find(eachNative => !eachNative.theme);
+                if (currentThemeNative) {
+                    addProps(this.colorScheme, currentThemeNative.text);
+                }
+            } else {
+                console.log(rule.natives);
+                for (const eachNative of rule.natives) {
+                    addProps(eachNative.theme, eachNative.text);
+                }
             }
         };
 
@@ -40,9 +59,9 @@ export class Group extends MasterCSSRule {
         };
 
         let i = 1;
-        const analyze = (end: string) => {
-            for (; i < this.value.length; i++) {
-                const char = this.value[i];
+        (function analyze(end: string) {
+            for (; i < propertyInfo.value.length; i++) {
+                const char = propertyInfo.value[i];
 
                 if (!end) {
                     if (char === ';') {
@@ -76,12 +95,11 @@ export class Group extends MasterCSSRule {
                     analyze(START_SYMBOL[char]);
                 }
             }
-        };
-        analyze(undefined);
+        })(undefined);
         addName();
         
         for (const eachName of names) {
-            const result = MasterCSS.findAndNew(eachName);
+            const result = css.findAndNew(eachName);
             if (Array.isArray(result)) {
                 for (const eachRule of result) {
                     handleRule(eachRule);
@@ -90,11 +108,11 @@ export class Group extends MasterCSSRule {
                 if (result) {
                     handleRule(result);
                 } else {
-                    addProp(eachName);
+                    addProp(this.colorScheme ?? '', eachName);
                 }
             }
         }
 
-        return newProps;
+        return themePropsMap;
     }
 }

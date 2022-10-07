@@ -14,5 +14,5 @@ export function renderFromHTML(html: string, css: MasterCSS = new MasterCSS()): 
             }
         }
     }
-    return css.rules.map(eachRule => eachRule.text).join('')
+    return css.rules.map(eachRule => eachRule.natives.reduce((a, b) => a + b.text, '')).join('')
 }

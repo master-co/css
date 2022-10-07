@@ -31,7 +31,7 @@ module.exports = function fillShades(data) {
             for (const eachNewLevel of newLevels) {
                 const currentLevelDiff = eachNewLevel - startLevel;
                 const newRgb = startRgb.map((color, i) => Math.round(color + rgbDiff[i] * currentLevelDiff));
-                data[eachNewLevel] = rgbToHex.call(this, ...newRgb);
+                data[eachNewLevel] = '#' + rgbToHex.call(this, ...newRgb);
             }
         };
 

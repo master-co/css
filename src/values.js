@@ -1,3 +1,6 @@
+const breakpoints = require('./breakpoints');
+const { dash, FIT, MAX, MIN, CONTENT, COLUMN } = require('./constants/css-property-keyword');
+
 const boxUnderneath = {
     content: 'content-box',
     border: 'border-box',
@@ -7,6 +10,16 @@ const boxUnderneath = {
 const contentExtrema = {
     min: 'min-content',
     max: 'max-content'
+}
+
+const sizingValues = {
+    full: '100%',
+    fit: dash(FIT, CONTENT),
+    max: dash(MAX, CONTENT),
+    min: dash(MIN, CONTENT),
+}
+for (const key in breakpoints) {
+    sizingValues[key] = (breakpoints[key] / 16) + 'rem'
 }
 
 module.exports = {
@@ -64,5 +77,12 @@ module.exports = {
         fill: 'fill-box',
         stroke: 'stroke-box',
         view: 'view-box'
-    }
+    },
+    'width': sizingValues,
+    'min-width': sizingValues,
+    'min-height': sizingValues,
+    'max-width': sizingValues,
+    'max-height': sizingValues,
+    'height': sizingValues,
+    'flex-basis': sizingValues
 }

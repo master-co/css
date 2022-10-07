@@ -5,7 +5,9 @@ import { parseValue } from './utils/parse-value';
 import { PRIORITY_SELECTORS } from './constants/priority-selectors';
 import { START_SYMBOL } from './constants/start-symbol';
 import { GROUP } from './constants/css-property-keyword';
-const fillShades = require('./utils/fill-shades');
+import { MasterCSSConfig } from './interfaces/config';
+import { MasterCSS } from './css';
+import { CssPropertyInfo } from './interfaces/css-property-info';
 
 const MATCHES = 'matches';
 const SEMANTICS = 'semantics';
@@ -60,7 +62,6 @@ export class MasterCSSRule {
 
     readonly prefix: string;
     readonly symbol: string;
-    readonly value: any | { [key: string]: string };
     readonly token: string;
     readonly prefixSelector: string;
     readonly suffixSelector: string;
@@ -69,13 +70,10 @@ export class MasterCSSRule {
     readonly at: Record<string, string> = {};
     readonly direction: string;
     readonly colorScheme: string;
-    readonly unit: string;
     readonly unitToken: string;
-    readonly text: string
     readonly hasWhere: boolean;
     readonly prioritySelectorIndex: number = -1;
-
-    cssRule: CSSRule;
+    readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, theme: string, cssRule?: CSSRule }[] = [];
 
     static id: string;
     static key: string;
@@ -85,60 +83,39 @@ export class MasterCSSRule {
     static unit = REM;
     static colorful: boolean;
     static rootSize: number = 16;
-    static readonly values: Record<string, any>;
-    static readonly semantics: { [key: string]: any };
-    static readonly breakpoints: { [key: string]: number };
-    static readonly mediaQueries: { [key: string]: string } = {};
-    static readonly colors: Record<string, any> = {};
-    static readonly classes: Record<string, string | string[]> = {};
-    static readonly colorNames: string[] = [];
-    static readonly relations: Record<string, string[]> = {};
-    static readonly colorSchemes: string[] = ['dark', 'light'];
 
-    static match(name: string): RuleMatching {
+    static match(
+        name: string,
+        colorNames: string[]
+    ): RuleMatching {
         /** 
          * STEP 1. matches
          */
         if (this.matches && this.matches.test(name)) {
             return { origin: MATCHES };
         }
-        /**
-         *  STEP 2. semantic
-         */
-        if (this.semantics) {
-            for (const semanticName in this.semantics) {
-                if (
-                    /** f:bold center */
-                    name === semanticName ||
-                    /** f:bold@>sm center! center@<sm center:hover center.abs */
-                    name.startsWith(semanticName) && semanticSuffixes.includes(name[semanticName.length])
-                ) {
-                    return { origin: SEMANTICS, value: semanticName };
-                }
-            }
-        }
         /** 
-         * STEP 3. color starts
+         * STEP 2. color starts
          */
         // TODO: 動態 new Regex 效能問題待優化
         if (this.colorStarts
             && (
                 name.match('^' + this.colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current))')
-                || this.colorNames.length
-                && name.match('^' + this.colorStarts + '(' + this.colorNames.join('|') + ')')
+                || colorNames.length
+                && name.match('^' + this.colorStarts + '(' + colorNames.join('|') + ')')
                 && name.indexOf('|') === -1
             )
         ) {
             return { origin: MATCHES };
         }
         /** 
-         * STEP 4. symbol
+         * STEP 3. symbol
          */
         if (this.symbol && name.startsWith(this.symbol)) {
             return { origin: SYMBOL };
         }
         /**
-         * STEP 5. key full name
+         * STEP 4. key full name
          */
         if (this.key && name.startsWith(this.key + ':')) {
             return { origin: MATCHES };
@@ -147,31 +124,30 @@ export class MasterCSSRule {
 
     constructor(
         public readonly name: string,
-        public readonly matching?: RuleMatching
+        { breakpoints, mediaQueries, semantics }: MasterCSSConfig,
+        values: Record<string, string | number>,
+        colorsThemesMap: Record<string, Record<string, Record<string, string>>>,
+        relationThemesMap: Record<string, string[]>,
+        colorSchemes: string[],
+        public readonly matching: RuleMatching,
+        css: MasterCSS
     ) {
         const TargetRule = this.constructor as typeof MasterCSSRule;
-        if (matching === undefined) {
-            matching = TargetRule.match(name);
-            if (!matching) {
-                console.warn(name + ' can\'t match any MasterCSSRule.');
-                return;
-            }
-        }
-        let { id, semantics, unit, colors, key, values, colorful, breakpoints, mediaQueries, colorSchemes, rootSize } = TargetRule;
+        let { id, unit, key, colorful, rootSize } = TargetRule;
         let token = name;
 
         // 防止非色彩 style 的 token 被解析
         if (!colorful) {
-            colors = null;
+            colorsThemesMap = null;
         }
 
         // 1. value / selectorToken
-        let valueToken: string, prefixToken: string, suffixToken: string;
+        let value: string | Record<string, string | number>, prefixToken: string, suffixToken: string, valueTokens: (string | { value: string })[];
         if (matching.origin === SEMANTICS) {
-            valueToken = matching.value;
             suffixToken = token.slice(matching.value.length);
-            this.value = semantics[matching.value];
+            value = semantics[matching.value];
         } else {
+            let valueToken: string;
             if (matching.origin === MATCHES) {
                 if (id === GROUP) {
                     let i = 0;
@@ -198,10 +174,9 @@ export class MasterCSSRule {
                 valueToken = token.slice(1);
             }
 
+            valueTokens = [];
             let currentValueToken = '';
-            let valueTokens = [];
             let i = 0;
-            let uv;
             (function analyze(end?, depth?, func: string = '') {
                 let varIndex: number;
                 let isString = false;
@@ -240,8 +215,7 @@ export class MasterCSSRule {
                             if (isString) {
                                 valueTokens.push(currentValueToken);
                             } else {
-                                uv = parseValue(currentValueToken, unit, colors, values, rootSize);
-                                valueTokens.push(uv.value + uv.unit);
+                                valueTokens.push({ value: currentValueToken });
                             }
 
                             func = '';
@@ -253,8 +227,7 @@ export class MasterCSSRule {
                         analyze(START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func);
                     } else if (val === '|' && end !== '}' && (!isString || func === 'path')) {
                         if (!end) {
-                            uv = parseValue(currentValueToken, unit, colors, values, rootSize);
-                            valueTokens.push(uv.value + uv.unit);
+                            valueTokens.push({ value: currentValueToken });
                             currentValueToken = '';
                         } else {
                             currentValueToken += ' ';
@@ -268,8 +241,7 @@ export class MasterCSSRule {
                                     currentValueToken += '0';
                                 }
                             } else if (val === ',') {
-                                uv = parseValue(currentValueToken, unit, colors, values, rootSize);
-                                valueTokens.push(uv.value + uv.unit, ',');
+                                valueTokens.push({ value: currentValueToken }, ',');
                                 currentValueToken = '';
                                 continue;
                             } else if (
@@ -289,23 +261,10 @@ export class MasterCSSRule {
             })();
 
             if (currentValueToken) {
-                uv = parseValue(currentValueToken, unit, colors, values, rootSize);
-                valueTokens.push(uv.value + uv.unit);
+                valueTokens.push({ value: currentValueToken });
             }
 
             suffixToken = valueToken.slice(i);
-
-            if (valueTokens.length === 1) {
-                if (uv) {
-                    this.value = uv.value;
-                    this.unit = uv.unit;
-                } else {
-                    this.value = valueTokens[0];
-                    this.unit = '';
-                }
-            } else {
-                this.value = valueTokens.reduce((previousVal, currentVal, i) => previousVal + currentVal + ((currentVal === ',' || valueTokens[i + 1] === ',' || i === valueTokens.length - 1) ? '' : ' '), '');
-            }
         }
 
         // ::scrollbar -> ::-webkit-scrollbar
@@ -357,30 +316,18 @@ export class MasterCSSRule {
             suffixToken = suffixToken.replace(/:nth\(/g, ':nth-child(');
         }
 
-        // 2. parseValue
-        if (this.parseValue) {
-            this.value = this.parseValue;
-        }
-
-        // 3. transform value
-        if (colorful && this.value === 'current') {
-            this.value = 'currentColor'
-        } else if (values && this.value in values) {
-            this.value = values[this.value];
-        }
-
-        // 4. !important
+        // 2. !important
         if (suffixToken[0] === '!') {
             this.important = true;
             suffixToken = suffixToken.slice(1);
         }
 
-        // 5. prefix selector
+        // 3. prefix selector
         this.prefixSelector = prefixToken
             ? transformSelectorUnderline(prefixToken)
             : '';
 
-        // 6. suffix selector
+        // 4. suffix selector
         const suffixTokens = suffixToken.split('@');
         let suffixSelector = suffixTokens[0];
         if (suffixSelector) {
@@ -395,7 +342,7 @@ export class MasterCSSRule {
         }
         this.suffixSelector = suffixSelector;
 
-        // 7. atTokens
+        // 5. atTokens
         for (let i = 1; i < suffixTokens.length; i++) {
             const atToken = suffixTokens[i];
             if (atToken) {
@@ -448,7 +395,7 @@ export class MasterCSSRule {
                                     queryTexts.push('(prefers-' + REDUCED_MOTION + ':'
                                         + (typeOrFeatureToken === MOTION ? 'no-preference' : REDUCE)
                                         + ')');
-                                } else if (typeOrFeatureToken in mediaQueries) {
+                                } else if (mediaQueries && typeOrFeatureToken in mediaQueries) {
                                     queryTexts.push(mediaQueries[typeOrFeatureToken]);
                                 } else {
                                     const feature: MasterCSSMediaFeatureRule = {
@@ -515,160 +462,166 @@ export class MasterCSSRule {
             }
         }
 
-        let prefixText = '';
-        if (this.colorScheme) {
-            prefixText += '.' + this.colorScheme + ' ';
-        }
-        if (this.prefixSelector) {
-            prefixText += this.prefixSelector;
-        }
-        if (this.direction) {
-            prefixText += '[dir=' + this.direction + '] ';
-        }
-
-        this.text = prefixText
-            + '.'
-            + CSS.escape(this.name)
-            + this.suffixSelector
-            + (this.name in MasterCSSRule.relations
-                ? MasterCSSRule.relations[this.name].map(eachClassName => ', ' + prefixText + '.' + CSS.escape(eachClassName) + this.suffixSelector).join('')
-                : '')
-            + '{'
-            + (typeof this.value === 'object'
-                ? Object.keys(this.value)
-                    .map((propertyName) => getCssPropertyText(propertyName, {
-                        ...this,
-                        unit: '',
-                        value: this.value[propertyName]
-                    }))
-                    .join(';')
-                : this.props
-                    ? Object.keys(this.props)
-                        .map((propertyName) => getCssPropertyText(propertyName, this.props[propertyName])).join(';')
-                    : getCssPropertyText(key, this)
-            )
-            + '}';
-        for (const key of Object.keys(this.at).sort((a, b) => b === 'supports' ? -1 : 1)) {
-            this.text = '@' + key + ' ' + this.at[key] + '{' + this.text + '}';
-        }
-
+        // 6. order
         if (this.order === undefined) {
             // @ts-ignore
             this.order = 0;
         }
-    }
 
-    static extend(
-        property: 'classes' | 'breakpoints' | 'colors' | 'mediaQueries',
-        ...settings: Record<string, any>[]
-    ) {
-        if (!settings.length)
-            return this;
+        // 7. value
+        const insertNewNative = (theme: string, bypassWhenUnmatchColor: boolean) => {
+            let newValue: string | Record<string, string | number>, newUnit: string;
 
-        const assignedSettings = Object.assign({}, ...settings);
+            const generateCssText = (
+                propertiesText: string,
+                theme: string
+            ) => {
+                let prefixText = '';
+                if (this.prefixSelector) {
+                    prefixText += this.prefixSelector;
+                }
+                if (this.direction) {
+                    prefixText += '[dir=' + this.direction + '] ';
+                }
 
-        const handleSettings = (oldSettings: any, onAdd?: (key: string, value: any) => any, onDelete?: (key: string) => void) => {
-            for (const key in assignedSettings) {
-                const value = assignedSettings[key];
-                if (value === null || value === undefined) {
-                    if (key in oldSettings) {
-                        onDelete?.(key);
+                let cssText = 
+                    (theme ? '.' + theme + ' ' : '')
+                    + prefixText
+                    + '.'
+                    + CSS.escape(this.name)
+                    + this.suffixSelector
+                    + (relationThemesMap
+                        ? Object
+                            .entries(relationThemesMap)
+                            .filter(() => !this.getThemeProps)
+                            .map(([theme, classNames]) => classNames.reduce((a, className) => a + ', ' + ((!colorful && theme) ? '.' + theme + ' ' : '') + prefixText + '.' + CSS.escape(className) + this.suffixSelector, ''))
+                            .join('')
+                        : '')
+                    + '{'
+                    + propertiesText
+                    + '}';
+            
+                for (const key of Object.keys(this.at).sort((a, b) => b === 'supports' ? -1 : 1)) {
+                    cssText = '@' + key + ' ' + this.at[key] + '{' + cssText + '}';
+                }
+            
+                return cssText;
+            };
 
-                        delete oldSettings[key];
+            const newValueTokens: string[] = [];
+            if (valueTokens) {
+                let uv;
+
+                for (const eachValueToken of valueTokens) {
+                    if (typeof eachValueToken === 'string') {
+                        newValueTokens.push(eachValueToken);
+                    } else {
+                        uv = parseValue(eachValueToken.value, unit, colorsThemesMap, values, rootSize, theme, bypassWhenUnmatchColor);
+                        if (!uv)
+                            return;
+    
+                        newValueTokens.push(uv.value + uv.unit);
+                    }
+                }
+    
+                if (newValueTokens.length === 1) {
+                    if (uv) {
+                        newValue = uv.value;
+                        newUnit = uv.unit;
+                    } else {
+                        newValue = newValueTokens[0];
                     }
                 } else {
-                    oldSettings[key] = onAdd?.(key, value) ?? value;
+                    newValue = newValueTokens.reduce((previousVal, currentVal, i) => previousVal + currentVal + ((currentVal === ',' || valueTokens[i + 1] === ',' || i === valueTokens.length - 1) ? '' : ' '), '');
                 }
+
+                if (typeof newValue !== 'object') {
+                    // 7. parseValue
+                    if (this.parseValue) {
+                        newValue = this.parseValue(newValue);
+                    }
+
+                    // 8. transform value
+                    if (colorful && newValue === 'current') {
+                        newValue = 'currentColor';
+                    } else if (values && newValue in values) {
+                        newValue = values[newValue].toString();
+                    }
+
+                    const propertyInfo = { unit: newUnit, value: newValue, important: this.important };
+                    if (this.getThemeProps) {
+                        const themeProps = this.getThemeProps(propertyInfo, css);
+                        for (const theme in themeProps) {
+                            this.natives.push({ 
+                                unit: newUnit, 
+                                value: newValue, 
+                                text: generateCssText(
+                                    Object
+                                        .entries(themeProps[theme])
+                                        .map(([propertyName, propertyValue]) => getCssPropertyText(propertyName, {
+                                            important: this.important,
+                                            unit: '',
+                                            value: propertyValue
+                                        }))
+                                        .join(';'),
+                                    theme
+                                ), 
+                                theme 
+                            });
+                        }
+                        return;
+                    } else if (this.getProps) {
+                        newValue = this.getProps(propertyInfo);
+                        console.log(newValue, propertyInfo);
+                    }
+                }
+            } else {
+                newValue = value;
             }
+
+            this.natives.push({ 
+                unit: newUnit, 
+                value: newValue, 
+                text: generateCssText(
+                    typeof newValue === 'object'
+                        ? Object
+                            .entries(newValue)
+                            .map(([propertyName, propertyValue]) => getCssPropertyText(propertyName, {
+                                ...(typeof propertyValue === 'object' 
+                                    ? propertyValue
+                                    : { unit: '', value: propertyValue }),
+                                important: this.important
+                            }))
+                            .join(';')
+                        : getCssPropertyText(key, { unit: newUnit, value: newValue, important: this.important }),
+                    theme
+                ), 
+                theme 
+            });
         };
 
-        switch (property) {
-            case 'classes':
-                handleSettings(
-                    this.classes,
-                    (semanticName, className: string | string[]) => {
-                        // clear old value
-                        if (semanticName in this.classes) {
-                            for (const eachClassName in this.relations) {
-                                const semanticNames = this.relations[eachClassName];
-                                const index = semanticNames.indexOf(semanticName);
-                                if (index !== -1) {
-                                    if (semanticNames.length > 1) {
-                                        semanticNames.splice(index, 1);
-                                    } else {
-                                        delete this.relations[eachClassName];
-                                    }
-                                }
-                            }
-                        }
-
-                        const classNames = Array.isArray(className) ?
-                            className :
-                            className
-                                .replace(/(?:\n(?:\s*))+/g, ' ')
-                                .trim()
-                                .split(' ')
-                        for (const eachClassName of classNames) {
-                            if (eachClassName in this.relations) {
-                                this.relations[eachClassName].push(semanticName);
-                            } else {
-                                this.relations[eachClassName] = [semanticName];
-                            }
-                        }
-
-                        return classNames;
-                    },
-                    (semanticName) => {
-                        for (const eachClassName of this.classes[semanticName]) {
-                            const relation = this.relations[eachClassName];
-                            if (relation.length > 1) {
-                                relation.splice(relation.indexOf(semanticName), 1);
-                            } else {
-                                delete this.relations[eachClassName];
-                            }
-                        }
-                    });
-
-                break;
-            case 'colors':
-                handleSettings(
-                    this.colors,
-                    (colorName, data) => {
-                        const colorNameIndex = this.colorNames.indexOf(colorName);
-                        if (colorNameIndex === -1) {
-                            this.colorNames.push(colorName);
-                        }
-
-                        return fillShades(data);
-                    },
-                    (colorName) => {
-                        /**
-                         * 移除對應的 :root colors variable
-                         */
-                        const colorNameIndex = this.colorNames.indexOf(colorName);
-                        if (colorNameIndex !== -1) {
-                            this.colorNames.splice(colorNameIndex, 1);
-                        }
-                    });
-                break;
-            default:
-                let oldSettings = this[property];
-                if (!oldSettings) {
-                    // @ts-ignore
-                    oldSettings = this[property] = {};
-                }
-                handleSettings(oldSettings);
-                break;
+        if (this.getThemeProps) {
+            insertNewNative(undefined, false);
+        } else if (this.colorScheme) {
+            insertNewNative(this.colorScheme, false);
+        } else if (colorful) {
+            for (const eachTheme of colorSchemes) {
+                insertNewNative(eachTheme, true);
+            }
+        } else {
+            insertNewNative('', false);
         }
-
-        return this;
-    };
+        
+        console.log(this);
+    }
 }
 
 export interface MasterCSSRule {
-    readonly parseValue?: any;
-    readonly props?: { [key: string]: any };
     readonly order?: number;
+
+    parseValue(value: string): string;
+    getProps(propertyInfo: CssPropertyInfo): Record<string, any>;
+    getThemeProps(propertyInfo: CssPropertyInfo, css: MasterCSS): Record<string, Record<string, string>>;
 }
 
 if (typeof window !== 'undefined') {

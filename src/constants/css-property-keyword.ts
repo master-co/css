@@ -1,5 +1,3 @@
-import breakpoints from '../breakpoints';
-
 export const dash = (...words: string[]) => words.join('-');
 export const DASH = '-';
 export const BORDER = 'border';
@@ -211,13 +209,3 @@ export const START = 'start';
 export const BLUR = 'blur';
 export const DROP = 'drop';
 export const HUE = 'hue';
-export const SIZING_VALUES = {
-    full: '100%',
-    fit: dash(FIT, CONTENT),
-    max: dash(MAX, CONTENT),
-    min: dash(MIN, CONTENT),
-}
-
-for(const key in breakpoints) {
-    SIZING_VALUES[key] = (breakpoints[key] / 16) + 'rem'
-}

@@ -4,9 +4,9 @@ import { MasterCSSRule } from '../rule';
 export class LineClamp extends MasterCSSRule {
     static override key = dash(LINE, CLAMP);
     static override unit = '';
-    override get props(): { [key: string]: any } {
+    override getProps(propertyInfo): { [key: string]: any } {
         return {
-            '-webkit-line-clamp': this
+            '-webkit-line-clamp': propertyInfo
         }
     }
 }

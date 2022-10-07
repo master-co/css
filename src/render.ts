@@ -1,3 +1,4 @@
+import { configure } from './configure'
 import { MasterCSS } from './css'
 import './polyfills/css-escape'
 
@@ -9,5 +10,5 @@ export function render(classes: string[], css: MasterCSS = new MasterCSS()): str
             css.countOfName[eachClassName] = 1
         }
     }
-    return css.rules.map(eachRule => eachRule.text).join('')
+    return css.rules.map(eachRule => eachRule.natives.reduce((a, b) => a + b.text, '')).join('')
 }

@@ -5,15 +5,15 @@ import { parseValueUnit } from '../utils/parse-value-unit';
 export class BackdropFilter extends MasterCSSRule {
     static override matches = /^bd:./;
     static override key = dash(BACKDROP, FILTER);
-    override get props(): { [key: string]: any } {
+    override getProps(propertyInfo): { [key: string]: any } {
         return {
-            'backdrop-filter': this,
-            '-webkit-backdrop-filter': this
+            'backdrop-filter': propertyInfo,
+            '-webkit-backdrop-filter': propertyInfo
         }
     };
-    override get parseValue() {
+    override parseValue(value: string): string {
         return parseValueUnit(
-            this.value,
+            value,
             method => {
                 switch (method) {
                     case BLUR:

@@ -1,7 +1,8 @@
+import { MasterCSS } from 'src/css';
 import { render } from '../../src/render';
 
-export const testCSS = (cls: string, expected: string): void => {
-    expect(render(cls.split(' '))).toBe(expected)
+export const testCSS = (cls: string, expected: string, css?: MasterCSS): void => {
+    expect(render(cls.split(' '), css)).toBe(expected)
 }
 
 // test class and prop, if expected === undefinded, will use cls as expected value

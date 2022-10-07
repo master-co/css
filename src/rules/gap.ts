@@ -4,14 +4,14 @@ import { MasterCSSRule } from '../rule';
 export class Gap extends MasterCSSRule {
     static id = 'gap';
     static override matches = /^gap(-x|-y)?:./;
-    override get props(): { [key: string]: any } {
+    override getProps(propertyInfo): { [key: string]: any } {
         switch (this.prefix[4]) {
             case X:
-                return { [dash(COLUMN, GAP)]: this };
+                return { [dash(COLUMN, GAP)]: propertyInfo };
             case Y:
-                return { [dash(ROW, GAP)]: this };
+                return { [dash(ROW, GAP)]: propertyInfo };
             default:
-                return { [GAP]: this };
+                return { [GAP]: propertyInfo };
         }
     }
     override order = -1;

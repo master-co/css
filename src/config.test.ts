@@ -1,23 +1,30 @@
 import { testCSS } from './utils/test-css';
-import { Rules } from './rules';
+import { MasterCSS } from './css';
+import { configure } from './configure';
 
 test("semantics", () => {
-    Rules.extend('semantics', {
-        'font-size': {
-            'fb': 999
-        }
-    });
-
-    testCSS("fb", ".fb{font-size:999}");
+    testCSS(
+        "fb", 
+        ".fb{font-size:999}",
+        new MasterCSS(configure({
+            semantics: {
+                'fb': 'font-size:999'
+            }
+        }))
+    );
 });
 
 test("values", () => {
-    Rules.extend('values', {
-        'font-size': {
-            'big': 999
-        }
-    });
-
-    testCSS("font-size:big", ".font-size\\:big{font-size:999}");
+    testCSS(
+        "font-size:big", 
+        ".font-size\\:big{font-size:999}",
+        new MasterCSS(configure({
+            values: {
+                'font-size': {
+                    'big': 999
+                }
+            }
+        }))
+    );
 });
 

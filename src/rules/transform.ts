@@ -5,8 +5,8 @@ export class Transform extends MasterCSSRule {
     static override matches = /^(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\(/;
     static override key = TRANSFORM;
     static override unit = '';
-    override get parseValue() {
-        return this.value.replace(
+    override parseValue(value: string): string {
+        return value.replace(
             /(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\((.*?)\)/g,
             (origin, method, type, valueStr: string) => {
                 let unit: string;

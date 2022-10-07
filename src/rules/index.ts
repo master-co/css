@@ -1,6 +1,3 @@
-import { MasterCSSRule } from '../rule';
-import { MasterCSS } from '../css';
-
 import { FontWeight } from './font-weight';
 import { FontFamily } from './font-family';
 import { FontSize } from './font-size';
@@ -194,10 +191,8 @@ import { BorderImageWidth } from './border-image-width';
 import { BorderImage } from './border-image';
 import { Group } from './group';
 import { CounterIncrement } from './counter-increment';
-import { Utility } from './utility';
 
 export const Rules = [
-    Utility,
     Group,
     Variable,
     FontWeight,
@@ -410,42 +405,4 @@ export const Rules = [
     ClipPath,
     Quotes,
     MaskImage
-] as Rules;
-
-/**
- * @param query fontSize, 'font-size' 
- * */
-const get = Rules.get = (query: string) => Rules.find((EachRule) =>
-    query === EachRule.id || query === EachRule.key?.replace(/-./g, (m) => m[1].toUpperCase()) || query === EachRule.key
-);
-
-/**
- * @param property 'values', 'semantics' and all of the MasterCSSRule members
- * */
-Rules.extend = function (property, ...settings) {
-    const assignedSettings = Object.assign({}, ...settings);
-    for (const query in assignedSettings) {
-        const EachRule = get(query);
-        if (EachRule) {
-            const eachSettings = assignedSettings[query];
-            EachRule.extend(property as any, eachSettings);
-        }
-    }
-    return this;
-}
-
-declare global {
-    interface Window {
-        MasterCSSRules: typeof Rules;
-    }
-}
-
-export interface Rules extends Array<typeof MasterCSSRule> {
-    extend: (
-        property: 'semantics' | 'values',
-        ...settings: {
-            [key: string]: { [key: string]: any }
-        }[]
-    ) => Rules;
-    get: (query: string) => typeof MasterCSSRule
-}
+]

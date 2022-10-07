@@ -4,14 +4,14 @@ import { MasterCSSRule } from '../rule';
 export class TextSize extends MasterCSSRule {
     static id = 'textSize';
     static override matches = /^t(ext)?:([0-9]|(max|min|calc|clamp)\(.*\))((?!\|).)*$/;
-    override get props(): { [key: string]: any } {
+    override getProps(propertyInfo): { [key: string]: any } {
         return {
-            'font-size': this,
+            'font-size': propertyInfo,
             'line-height': {
-                ...this,
-                value: this.unit === REM
-                    ? this.value + .375 + this.unit
-                    : 'calc(' + this.value + this.unit + ' + .375rem)',
+                ...propertyInfo,
+                value: propertyInfo.unit === REM
+                    ? propertyInfo.value + .375 + propertyInfo.unit
+                    : 'calc(' + propertyInfo.value + propertyInfo.unit + ' + .375rem)',
                 unit: ''
             }
         };

@@ -4,16 +4,16 @@ import { MasterCSSRule } from '../rule';
 export class Overflow extends MasterCSSRule {
     static id = 'overflow';
     static override matches = /^overflow(-x|-y)?:(?:visible|overlay|hidden|scroll|auto|clip|inherit|initial|revert|revert-layer|unset|\$|var)/;
-    override get props(): { [key: string]: any } {
+    override getProps(propertyInfo): { [key: string]: any } {
         if (this.prefix) {
             switch (this.prefix.slice(-2, -1)) {
                 case X:
-                    return { 'overflow-x': this };
+                    return { 'overflow-x': propertyInfo };
                 case Y:
-                    return { 'overflow-y': this };
+                    return { 'overflow-y': propertyInfo };
             }
         }
-        return { 'overflow': this };
+        return { 'overflow': propertyInfo };
     }
     override get order(): number {
         if (this.prefix) {

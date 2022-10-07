@@ -24,8 +24,156 @@ const MutationObserver = isBrowser
 
 export class MasterCSS extends MutationObserver {
 
+    static init = init;
+    static defaultConfig: MasterCSSConfig = defaultConfig
+    static instances: MasterCSS[] = []
+    static root: MasterCSS
+
+    /**
+     * 全部 sheet 根據目前蒐集到的所有 DOM class 重新 findAndNew
+     */
+    static refresh() {
+        for (const eachInstance of this.instances) {
+            eachInstance.refresh();
+        }
+    }
+
+    readonly style: HTMLStyleElement;
+    readonly rules: MasterCSSRule[] = [];
+    readonly ruleOfName: Record<string, MasterCSSRule> = {};
+    readonly countOfName = {};
+
+    #config: MasterCSSConfig;
+    public set config(value) {
+        this.#config = value;
+
+        this.semanticRegexpMap = new Map();
+        this.classesThemesMap = {};
+        this.colorsThemesMap = {};
+        this.relationThemesMap = {};
+        this.relations = {};
+        this.colorNames = [];
+        this.colorSchemes = [''];
+
+        if (value.semantics) {
+            for (const semanticName in value.semantics) {
+                this.semanticRegexpMap.set(
+                    new RegExp('^' + semanticName + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)'),
+                    { name: semanticName, value: value.semantics[semanticName] }
+                );
+            }
+        }
+
+        const mergeClasses = (theme: string, classes: Record<string, string>) => {
+            if (!classes)
+                return;
+
+            for (const semanticName in classes) {
+                const className = classes[semanticName];
+                const classNames: string[] = Array.isArray(className) 
+                    ? className 
+                    : className
+                        .replace(/(?:\n(?:\s*))+/g, ' ')
+                        .trim()
+                        .split(' ');
+                for (const eachClassName of classNames) {
+                    if (eachClassName in this.relationThemesMap) {
+                        if (theme in this.relationThemesMap[eachClassName]) {
+                            this.relationThemesMap[eachClassName][theme].push(semanticName);
+                        } else {
+                            this.relationThemesMap[eachClassName][theme] = [semanticName];
+                        }
+                    } else {
+                        this.relationThemesMap[eachClassName] = { [theme]: [semanticName] };
+                    }
+                }
+
+                if (semanticName in this.classesThemesMap) {
+                    const themesMap = this.classesThemesMap[semanticName];
+                    for (const eachClassName of classNames) {
+                        if (eachClassName in themesMap) {
+                            themesMap[eachClassName].push(theme);
+                        } else {
+                            themesMap[eachClassName] = [theme];
+                        }
+                    }
+                } else {
+                    this.classesThemesMap[semanticName] = classNames.reduce((obj, eachClassName) => {
+                        obj[eachClassName] = [theme];
+                        return obj;
+                    }, {});
+                }
+            }
+
+            for (const semanticName in this.relationThemesMap) {
+                this.relations[semanticName] = [];
+                for (const classNames of Object.values(this.relationThemesMap[semanticName])) {
+                    for (const eachClassName of classNames) {
+                        if (!this.relations[semanticName].includes(eachClassName)) {
+                            this.relations[semanticName].push(eachClassName);
+                        }
+                    }
+                }
+            }
+        };
+        const mergeColors = (theme: string, colors: Record<string, string | Record<string, string>>) => {
+            if (!colors)
+                return;
+
+            for (const colorName in colors) {
+                let levels = colors[colorName];
+                if (typeof levels === 'string') {
+                    levels = { '': levels };
+                }
+
+                if (colorName in this.colorsThemesMap) {
+                    const levelsThemes = this.colorsThemesMap[colorName];
+                    for (const level in levels) {
+                        const color = levels[level];
+
+                        if (level in levelsThemes) {
+                            levelsThemes[level][theme] = color;
+                        } else {
+                            levelsThemes[level] = { [theme]: color };
+                        }
+                    }
+                } else {
+                    this.colorNames.push(colorName);
+                    this.colorsThemesMap[colorName] = Object
+                        .entries(levels)
+                        .reduce((obj, [level, color]) => {
+                            obj[level] = { [theme]: color };
+                            return obj;
+                        }, {});
+                }
+            }
+        };
+
+        mergeClasses('', value.classes);
+        mergeColors('', value.colors);
+        if (value.themes) {
+            for (const eachTheme in value.themes) {
+                const themeValue = value.themes[eachTheme];
+                mergeClasses(eachTheme, themeValue.classes);
+                mergeColors(eachTheme, themeValue.colors);
+                this.colorSchemes.push(eachTheme);
+            }
+        }
+    }
+    public get config() {
+        return this.#config;
+    }
+
+    private semanticRegexpMap: Map<RegExp, { name: string, value: string | Record<string, string | number> }>;
+    private classesThemesMap: Record<string, Record<string, string[]>>
+    private colorsThemesMap: Record<string, Record<string, Record<string, string>>>
+    private colorNames: string[]
+    private colorSchemes: string[]
+    private relationThemesMap: Record<string, Record<string, string[]>>
+    private relations: Record<string, string[]>
+
     constructor(
-        public config: MasterCSSConfig = defaultConfig,
+        config: MasterCSSConfig = defaultConfig,
         public container?: Element
     ) {
         super((mutationRecords) => {
@@ -192,6 +340,8 @@ export class MasterCSS extends MutationObserver {
             console.timeEnd('css engine');
         });
 
+        this.config = config;
+
         if (!hasDocument) {
             return;
         }
@@ -199,60 +349,60 @@ export class MasterCSS extends MutationObserver {
         if (container) {
             let rootStyle: HTMLStyleElement
             // @ts-ignore
-            for (let sheet of (container.shadowRoot.styleSheets || document.styleSheets)) {
+            for (let sheet of (container.shadowRoot?.styleSheets || document.styleSheets)) {
                 if (sheet.title === 'master') {
                     rootStyle = sheet.ownerNode
                 }
             }
             if (rootStyle) {
                 this.style = rootStyle;
-                const checkDeep = (cssRule: any, parentCssRule: any) => {
-                    if (cssRule.selectorText) {
-                        const selectorTexts = cssRule.selectorText.split(', ');
-                        const escapedClassNames = selectorTexts[0].split(' ');
+                // const checkDeep = (cssRule: any, parentCssRule: any) => {
+                //     if (cssRule.selectorText) {
+                //         const selectorTexts = cssRule.selectorText.split(', ');
+                //         const escapedClassNames = selectorTexts[0].split(' ');
 
-                        for (let i = 0; i < escapedClassNames.length; i++) {
-                            const eachSelectorText = escapedClassNames[i];
-                            if (eachSelectorText[0] === '.') {
-                                const escapedClassName = eachSelectorText.slice(1);
+                //         for (let i = 0; i < escapedClassNames.length; i++) {
+                //             const eachSelectorText = escapedClassNames[i];
+                //             if (eachSelectorText[0] === '.') {
+                //                 const escapedClassName = eachSelectorText.slice(1);
 
-                                let className = '';
-                                for (let j = 0; j < escapedClassName.length; j++) {
-                                    const char = escapedClassName[j];
-                                    const nextChar = escapedClassName[j + 1];
+                //                 let className = '';
+                //                 for (let j = 0; j < escapedClassName.length; j++) {
+                //                     const char = escapedClassName[j];
+                //                     const nextChar = escapedClassName[j + 1];
 
-                                    if (char === '\\') {
-                                        j++;
+                //                     if (char === '\\') {
+                //                         j++;
 
-                                        if (nextChar !== '\\') {
-                                            className += nextChar;
+                //                         if (nextChar !== '\\') {
+                //                             className += nextChar;
 
-                                            continue;
-                                        }
-                                    } else if (selectorSymbols.includes(char)) {
-                                        break;
-                                    }
+                //                             continue;
+                //                         }
+                //                     } else if (selectorSymbols.includes(char)) {
+                //                         break;
+                //                     }
 
-                                    className += char;
-                                }
+                //                     className += char;
+                //                 }
 
-                                if (!(className in this.ruleOfName) && !(className in MasterCSSRule.classes)) {
-                                    const style = this.findAndNew(className) as MasterCSSRule;
-                                    if (style) {
-                                        style.cssRule = parentCssRule ?? cssRule;
-                                        this.rules.push(style);
-                                        this.ruleOfName[style.name] = style;
-                                    }
-                                }
-                            }
-                        }
-                    } else if (cssRule.cssRules) {
-                        for (let index = 0; index < cssRule.cssRules.length; index++) {
-                            checkDeep(cssRule.cssRules[index], parentCssRule ?? cssRule.cssRules[index]);
-                        }
-                    }
-                };
-                checkDeep(rootStyle.sheet, undefined);
+                //                 if (!(className in this.ruleOfName) && !(className in this.classesThemesMap)) {
+                //                     const style = this.findAndNew(className) as MasterCSSRule;
+                //                     if (style) {
+                //                         style.cssRule = parentCssRule ?? cssRule;
+                //                         this.rules.push(style);
+                //                         this.ruleOfName[style.name] = style;
+                //                     }
+                //                 }
+                //             }
+                //         }
+                //     } else if (cssRule.cssRules) {
+                //         for (let index = 0; index < cssRule.cssRules.length; index++) {
+                //             checkDeep(cssRule.cssRules[index], parentCssRule ?? cssRule.cssRules[index]);
+                //         }
+                //     }
+                // };
+                // checkDeep(rootStyle.sheet, undefined);
             } else {
                 this.style = STYLE.cloneNode() as HTMLStyleElement;
                 /** 使用 prepend 而非 append 去降低 rules 類的優先層級，無法強制排在所有 <style> 之後 */
@@ -262,16 +412,6 @@ export class MasterCSS extends MutationObserver {
 
         MasterCSS.instances.push(this);
     }
-
-    readonly style: HTMLStyleElement;
-    readonly rules: MasterCSSRule[] = [];
-    readonly ruleOfName = {};
-    readonly countOfName = {};
-
-    static init = init;
-    static defaultConfig: MasterCSSConfig = defaultConfig
-    static instances: MasterCSS[] = []
-    static root: MasterCSS
 
     observe(target: Node, options: MutationObserverInit = { subtree: true, childList: true }) {
         if (options.subtree) {
@@ -319,30 +459,46 @@ export class MasterCSS extends MutationObserver {
     }
 
     /**
-     * 全部 sheet 根據目前蒐集到的所有 DOM class 重新 findAndNew
-     */
-    static refresh() {
-        for (const eachInstance of this.instances) {
-            eachInstance.refresh();
-        }
-    }
-
-    /**
      * 尋找匹配的 MasterCSSRule 生成實例
      */
     findAndNew(name: string) {
-        const findAndNewRule = (className: string) => {
+        const findAndNewRule = (className: string, themes?: string[]) => {
+            if (className in this.ruleOfName)
+                return this.ruleOfName[className];
+
             for (const EachRule of this.config.Rules) {
-                const matching = EachRule.match(className);
-                if (matching) {
-                    return new EachRule(className, matching);
-                }
+                const matching = EachRule.match(className, this.colorNames);
+                if (matching)
+                    return new EachRule(
+                        className, 
+                        this.config, 
+                        this.config.values?.[EachRule.key], 
+                        this.colorsThemesMap, 
+                        this.relationThemesMap?.[className], 
+                        this.colorSchemes, 
+                        matching,
+                        this
+                    );
+            }
+
+            for (const entry of this.semanticRegexpMap.entries()) {
+                if (name.match(entry[0]))
+                    return new MasterCSSRule(
+                        name, 
+                        this.config, 
+                        undefined, 
+                        undefined, 
+                        this.relationThemesMap?.[name], 
+                        this.colorSchemes, 
+                        { origin: 'semantics', value: entry[1].name },
+                        this
+                    );
             }
         };
 
-        return name in MasterCSSRule.classes
-            ? (MasterCSSRule.classes[name] as string[])
-                .map(findAndNewRule)
+        return name in this.classesThemesMap
+            ? Object.entries(this.classesThemesMap[name])
+                .map(([className, themes]) => findAndNewRule(className, themes))
                 .filter(eachRule => eachRule)
             : findAndNewRule(name);
     }
@@ -351,31 +507,40 @@ export class MasterCSS extends MutationObserver {
      * 尋找匹配的 MasterCSSRule
      */
     find(name: string) {
-        const findRule = (className: string) => {
+        const findRule = (className: string, themes?: string[]) => {
             for (const EachRule of this.config.Rules) {
-                const matching = EachRule.match(className);
-                if (matching) {
+                const matching = EachRule.match(className, this.colorNames);
+                if (matching)
                     return EachRule;
-                }
+            }
+
+            for (const entry of this.semanticRegexpMap.entries()) {
+                if (name.match(entry[0]))
+                    return MasterCSSRule;
             }
         };
 
-        return name in MasterCSSRule.classes
-            ? (MasterCSSRule.classes[name] as string[])
-                .map(findRule)
-                .filter(eachRuleClass => eachRuleClass)
+        return name in this.classesThemesMap
+            ? Object.entries(this.classesThemesMap[name])
+                .map(([className, themes]) => findRule(className, themes))
+                .filter(eachRule => eachRule)
             : findRule(name);
     }
 
     /**
      * 根據目前蒐集到的所有 DOM class 重新 findAndNew
      */
-    refresh() {
+    refresh(config?: MasterCSSConfig) {
+        if (config) {
+            this.config = config;
+        }
+
         if (!this.style) {
             return;
         }
-        const style = STYLE.cloneNode() as HTMLStyleElement;
-        this.style.replaceWith(style);
+        
+        const element = STYLE.cloneNode() as HTMLStyleElement;
+        this.style.replaceWith(element);
         // @ts-ignore
         this.style = style;
         this.rules.length = 0;
@@ -410,11 +575,10 @@ export class MasterCSS extends MutationObserver {
      * 9. media width
      * 10. media width selectors
      */
-    insert(style: MasterCSSRule) {
-        if (this.ruleOfName[style.name]) {
+    insert(rule: MasterCSSRule) {
+        if (this.ruleOfName[rule.name])
             return;
-        }
-        const rule = style.text;
+            
         let index;
         /**
          * 必須按斷點值遞增，並透過索引插入，
@@ -423,15 +587,15 @@ export class MasterCSS extends MutationObserver {
          * @description
          */
         const endIndex = this.rules.length - 1;
-        const media = style.media;
-        const order = style.order;
-        const prioritySelectorIndex = style.prioritySelectorIndex;
-        const hasWhere = style.hasWhere;
+        const media = rule.media;
+        const order = rule.order;
+        const prioritySelectorIndex = rule.prioritySelectorIndex;
+        const hasWhere = rule.hasWhere;
         const findPrioritySelectorInsertIndex = (
             rules: MasterCSSRule[],
-            findStartIndex?: (style: MasterCSSRule) => any,
-            findEndIndex?: (style: MasterCSSRule) => any,
-            ignoreRule?: (style: MasterCSSRule) => any
+            findStartIndex?: (rule: MasterCSSRule) => any,
+            findEndIndex?: (rule: MasterCSSRule) => any,
+            ignoreRule?: (rule: MasterCSSRule) => any
         ) => {
             let targetRules: MasterCSSRule[];
             let sIndex = 0;
@@ -752,13 +916,14 @@ export class MasterCSS extends MutationObserver {
         try {
             if (this.style) {
                 const sheet = this.style.sheet;
-                sheet.insertRule(rule, index);
-                // @ts-ignore
-                style.cssRule = sheet.cssRules[index];
+                for (const eachNative of rule.natives) {
+                    sheet.insertRule(eachNative.text, index);
+                    eachNative.cssRule = sheet.cssRules[index++];
+                }
             }
 
-            this.rules.splice(index, 0, style);
-            this.ruleOfName[style.name] = style;
+            this.rules.splice(index, 0, rule);
+            this.ruleOfName[rule.name] = rule;
         } catch (error) {
             console.error(error);
         }
@@ -771,27 +936,35 @@ export class MasterCSS extends MutationObserver {
          */
         const sheet = this.style.sheet;
         const deleteRule = (name: string) => {
-            const style = this.ruleOfName[name];
+            const rule = this.ruleOfName[name];
             if (
-                !style?.cssRule
-                || name in MasterCSSRule.relations && MasterCSSRule.relations[name].some(eachClassName => eachClassName in this.countOfName)
+                !rule
+                || name in this.relations && this.relations[name].some(eachClassName => eachClassName in this.countOfName)
             )
                 return;
 
+            const firstNative = rule.natives[0];
             for (let index = 0; index < sheet.cssRules.length; index++) {
                 const eachCssRule = sheet.cssRules[index];
-                if (eachCssRule === style.cssRule) {
-                    sheet.deleteRule(index);
-                    this.rules.splice(index, 1);
-                    delete this.ruleOfName[style.name];
+                if (eachCssRule === firstNative.cssRule) {
+                    for (let i = 0; i < rule.natives.length; i++) {
+                        sheet.deleteRule(index + i);
+                    }
+
+                    this.rules.splice(this.rules.indexOf(rule), 1);
+                    delete this.ruleOfName[rule.name];
+
+                    break;
                 }
             }
         };
 
-        if (className in MasterCSSRule.classes) {
-            for (const eachClassName of MasterCSSRule.classes[className]) {
-                if (!(eachClassName in this.countOfName)) {
-                    deleteRule(eachClassName);
+        if (className in this.classesThemesMap) {
+            for (const classNames of Object.values(this.classesThemesMap[className])) {
+                for (const eachClassName of classNames) {
+                    if (!(eachClassName in this.countOfName)) {
+                        deleteRule(eachClassName);
+                    }
                 }
             }
         } else {
@@ -800,13 +973,13 @@ export class MasterCSS extends MutationObserver {
     }
 
     findAndInsert(className: string) {
-        const result = this.findAndNew(className);
-        if (Array.isArray(result)) {
-            for (const eachRule of result) {
+        const rule = this.findAndNew(className);
+        if (Array.isArray(rule)) {
+            for (const eachRule of rule) {
                 this.insert(eachRule);
             }
-        } else if (result) {
-            this.insert(result);
+        } else if (rule) {
+            this.insert(rule);
         }
     }
 }

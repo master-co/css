@@ -5,7 +5,7 @@ import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from '../constants/directi
 export class ScrollPadding extends MasterCSSRule {
     static id = 'scrollPadding';
     static override matches = /^scroll-p([xytblr]|adding(-(top|bottom|left|right))?)?:./;
-    override get props(): { [key: string]: any } {
+    override getProps(propertyInfo): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'p') {
             const SCROLL_PADDING_PREFIX = dash(SCROLL, PADDING) + '-',
                 SCROLL_PADDING_LEFT = SCROLL_PADDING_PREFIX + LEFT,
@@ -16,34 +16,34 @@ export class ScrollPadding extends MasterCSSRule {
             switch (this.prefix.slice(-2, -1)) {
                 case X:
                     return {
-                        [SCROLL_PADDING_LEFT]: this,
-                        [SCROLL_PADDING_RIGHT]: this
+                        [SCROLL_PADDING_LEFT]: propertyInfo,
+                        [SCROLL_PADDING_RIGHT]: propertyInfo
                     }
                 case Y:
                     return {
-                        [SCROLL_PADDING_TOP]: this,
-                        [SCROLL_PADDING_BOTTOM]: this
+                        [SCROLL_PADDING_TOP]: propertyInfo,
+                        [SCROLL_PADDING_BOTTOM]: propertyInfo
                     }
                 case L:
                     return {
-                        [SCROLL_PADDING_LEFT]: this
+                        [SCROLL_PADDING_LEFT]: propertyInfo
                     }
                 case R:
                     return {
-                        [SCROLL_PADDING_RIGHT]: this
+                        [SCROLL_PADDING_RIGHT]: propertyInfo
                     }
                 case T:
                     return {
-                        [SCROLL_PADDING_TOP]: this
+                        [SCROLL_PADDING_TOP]: propertyInfo
                     }
                 case B:
                     return {
-                        [SCROLL_PADDING_BOTTOM]: this
+                        [SCROLL_PADDING_BOTTOM]: propertyInfo
                     }
             }
         } else {
             return {
-                [this.prefix.replace(/-p(?!adding)/, '-' + PADDING).slice(0, -1)]: this
+                [this.prefix.replace(/-p(?!adding)/, '-' + PADDING).slice(0, -1)]: propertyInfo
             }
         }
     }

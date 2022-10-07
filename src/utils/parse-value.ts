@@ -6,9 +6,11 @@ const VAR_START = 'var(--';
 export function parseValue(
     token: string | number,
     defaultUnit?: string,
-    colors?: Record<string, Record<string, string>>,
-    values?: Record<string, Record<string, string>>,
-    rootSize?: number
+    colorsThemesMap?: Record<string, Record<string, Record<string, string>>>,
+    values?: Record<string, string | number>,
+    rootSize?: number,
+    theme?: string,
+    bypassWhenUnmatchColor?: boolean
 ) {
     let value: any = values ? values[token] : '';
     let unit: string = '';
@@ -19,14 +21,16 @@ export function parseValue(
         value = token;
         unit = defaultUnit || '';
     } else {
-        if (colors) {
-            const colorNames = Object.keys(colors);;
+        if (colorsThemesMap) {
+            const colorNames = Object.keys(colorsThemesMap);
+            let allMatched = true;
+            
             token = token.replace(
                 new RegExp(`(^|,| |\\()(${colorNames.join('|')})(?:-([0-9]+))?(?:\\/(\\.?[0-9]+))?(?=(\\)|\\}|,| |$))`, 'gm'),
-                (origin, prefix, colorName, level, opacityStr, end) => {
-                    const hexColor = colors[colorName][level || ''];
+                (origin, prefix, colorName, level, opacityStr) => {
+                    const hexColor = colorsThemesMap[colorName]?.[level || '']?.[theme];
                     if (hexColor) {
-                        let newValue = '#' + hexColor;
+                        let newValue = hexColor;
                         if (opacityStr) {
                             let opacity = +opacityStr;
                             opacity = isNaN(opacity)
@@ -37,10 +41,15 @@ export function parseValue(
                         }
 
                         return prefix + newValue;
+                    } else if (bypassWhenUnmatchColor) {
+                        allMatched = false;
                     }
 
                     return origin;
                 });
+
+            if (!allMatched)
+                return undefined;
         }
         if (defaultUnit) {
             const matches = token.match(UNIT_VALUE_PATTERN);

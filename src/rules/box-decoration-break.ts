@@ -4,10 +4,10 @@ import { BOX, BREAK, dash, DECORATION } from '../constants/css-property-keyword'
 export class BoxDecorationBreak extends MasterCSSRule {
     static override matches = /^box:(slice|clone)(?!\|)/;
     static override key = dash(BOX, DECORATION, BREAK);
-    override get props(): { [key: string]: any } {
+    override getProps(propertyInfo): { [key: string]: any } {
         return {
-            'box-decoration-break': this,
-            '-webkit-box-decoration-break': this
+            'box-decoration-break': propertyInfo,
+            '-webkit-box-decoration-break': propertyInfo
         }
     };
 }

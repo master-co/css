@@ -3,10 +3,10 @@ import { dash, IMAGE } from '../constants/css-property-keyword';
 
 export class MaskImage extends MasterCSSRule {
     static override key = dash('mask', IMAGE)
-    override get props(): { [key: string]: any } {
+    override getProps(propertyInfo): { [key: string]: any } {
         return {
-            'mask-image': this,
-            '-webkit-mask-image': this
+            'mask-image': propertyInfo,
+            '-webkit-mask-image': propertyInfo
         }
     }
 }

@@ -4,9 +4,9 @@ import { PADDING } from '../constants/css-property-keyword';
 export class Padding extends MasterCSSRule {
     static id = 'padding';
     static override matches = /^padding(?:-(?:left|right|top|bottom))?:./;
-    override get props(): { [key: string]: any } {
+    override getProps(propertyInfo): { [key: string]: any } {
         return {
-            [this.prefix.slice(0, -1)]: this
+            [this.prefix.slice(0, -1)]: propertyInfo
         }
     }
     override get order(): number {
