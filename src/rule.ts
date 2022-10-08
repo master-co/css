@@ -572,7 +572,6 @@ export class MasterCSSRule {
                         return;
                     } else if (this.get) {
                         newValue = this.get(declaration);
-                        console.log(newValue, declaration);
                     }
                 }
             } else {
@@ -612,7 +611,6 @@ export class MasterCSSRule {
             insertNewNative('', false);
         }
         
-        console.log(this);
     }
 }
 

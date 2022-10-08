@@ -7,10 +7,10 @@ module.exports = {
         20: '#262f3e',
         30: '#323e52',
         40: '#475063',
-        50: '#646a7d',
-        60: '#989daa',
-        70: '#a6abb8',
-        80: '#d8dae0',
+        50: '#616a84',
+        60: '#959db3',
+        70: '#a3abbf',
+        80: '#d7dae3',
         95: '#f6f7f8'
     }),
     gray: fillShades({
@@ -34,8 +34,8 @@ module.exports = {
         50: '#8d604b',
         60: '#b79788',
         70: '#c1a598',
-        80: '#e6d7d0',
-        95: '#f8f3f1'
+        80: '#efd5c9',
+        95: '#faf2ef'
     }),
     orange: fillShades({
         5: '#2e1907',
@@ -46,7 +46,7 @@ module.exports = {
         50: '#a15717',
         60: '#e38739',
         70: '#e79855',
-        80: '#f5d4b7',
+        80: '#f7d4b5',
         95: '#fcf1e7'
     }),
     gold: fillShades({
@@ -56,10 +56,10 @@ module.exports = {
         30: '#543800',
         40: '#6d4900',
         50: '#906000',
-        60: '#d88f00',
-        70: '#ea9b00',
-        80: '#f6d696',
-        95: '#fff3da'
+        60: '#d09100',
+        70: '#dca000',
+        80: '#fbd67f',
+        95: '#fff3d8'
     }),
     yellow: fillShades({
         5: '#251d00',
@@ -82,7 +82,7 @@ module.exports = {
         50: '#4e750e',
         60: '#74ae15',
         70: '#7dbc17',
-        80: '#c8e49a',
+        80: '#bfe87c',
         95: '#ebfad4'
     }),
     green: fillShades({
@@ -94,7 +94,7 @@ module.exports = {
         50: '#067b34',
         60: '#09b64d',
         70: '#0ac553',
-        80: '#99ecb3',
+        80: '#80f1a4',
         95: '#e0fae8'
     }),
     beryl: fillShades({
@@ -106,7 +106,7 @@ module.exports = {
         50: '#007954',
         60: '#00b37c',
         70: '#00c387',
-        80: '#84eeca',
+        80: '#72f0c5',
         95: '#d6fcef'
     }),
     teal: fillShades({
@@ -118,7 +118,7 @@ module.exports = {
         50: '#00776f',
         60: '#00b1a5',
         70: '#00bfb2',
-        80: '#95e9e3',
+        80: '#6aeee5',
         95: '#d4fcf8'
     }),
     cyan: fillShades({
@@ -130,7 +130,7 @@ module.exports = {
         50: '#007391',
         60: '#00abd7',
         70: '#00b9e9',
-        80: '#9ee5f7',
+        80: '#97e6fa',
         95: '#dff8ff'
     }),
     sky: fillShades({
@@ -142,7 +142,7 @@ module.exports = {
         50: '#086eb3',
         70: '#4db3f7',
         60: '#29a4f5',
-        80: '#b4dffc',
+        80: '#b3e0ff',
         95: '#eaf6fe'
     }),
     blue: fillShades({
@@ -154,7 +154,7 @@ module.exports = {
         50: '#175fe9',
         60: '#6b9ef1',
         70: '#81acf3',
-        80: '#c8dbfa',
+        80: '#c6dbfe',
         95: '#edf4fe'
     }),
     indigo: fillShades({
@@ -166,7 +166,7 @@ module.exports = {
         60: '#9393f5',
         50: '#5a5bd5',
         70: '#a1a5ee',
-        80: '#d6d8f9',
+        80: '#d5d7fe',
         95: '#f1f2ff'
     }),
     violet: fillShades({
@@ -178,7 +178,7 @@ module.exports = {
         50: '#7949e5',
         60: '#ac8af8',
         70: '#b89bf9',
-        80: '#e0d4fc',
+        80: '#e1d4fe',
         95: '#f5f1ff'
     }),
     purple: fillShades({
@@ -190,7 +190,7 @@ module.exports = {
         50: '#9832e4',
         60: '#c184ef',
         70: '#ca96f1',
-        80: '#e8d1fa',
+        80: '#ead1fe',
         95: '#f9f0ff'
     }),
     fuchsia: fillShades({
@@ -202,7 +202,7 @@ module.exports = {
         50: '#b61cbb',
         60: '#e66ee9',
         70: '#ea86ed',
-        80: '#f7ccf8',
+        80: '#facbfb',
         95: '#feefff'
     }),
     pink: fillShades({
@@ -214,7 +214,7 @@ module.exports = {
         50: '#ca1473',
         60: '#f170b4',
         70: '#f388c0',
-        80: '#fbcfe6',
+        80: '#fdcde6',
         95: '#fff0f8'
     }),
     crimson: fillShades({
@@ -226,7 +226,7 @@ module.exports = {
         50: '#ce1a4b',
         60: '#f37596',
         70: '#f58ba7',
-        80: '#fbd0db',
+        80: '#fdceda',
         95: '#fff1f4'
     }),
     red: fillShades({

@@ -42,7 +42,6 @@ export class Group extends MasterCSSRule {
                     addProps(this.colorScheme, currentThemeNative.text);
                 }
             } else {
-                console.log(rule.natives);
                 for (const eachNative of rule.natives) {
                     addProps(eachNative.theme, eachNative.text);
                 }
