@@ -408,7 +408,7 @@ export const Rules = [
 ]
 
 for (const Rule of Rules) {
-    if (!Rule.id) {
+    if (!Rule.id && Rule.propName) {
         Rule.id = Rule.propName.replace(/-./g, x => x[1].toUpperCase())
     }
 }
