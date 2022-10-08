@@ -7,7 +7,7 @@ import { START_SYMBOL } from './constants/start-symbol';
 import { GROUP } from './constants/css-property-keyword';
 import { MasterCSSConfig } from './interfaces/config';
 import { MasterCSS } from './css';
-import { CssPropertyInfo } from './interfaces/css-property-info';
+import { MasterCSSDeclaration } from './interfaces/css-property-info';
 
 const MATCHES = 'matches';
 const SEMANTICS = 'semantics';
@@ -548,9 +548,9 @@ export class MasterCSSRule {
                         newValue = values[newValue].toString();
                     }
 
-                    const propertyInfo = { unit: newUnit, value: newValue, important: this.important };
+                    const declaration = { unit: newUnit, value: newValue, important: this.important };
                     if (this.getThemeProps) {
-                        const themeProps = this.getThemeProps(propertyInfo, css);
+                        const themeProps = this.getThemeProps(declaration, css);
                         for (const theme in themeProps) {
                             this.natives.push({ 
                                 unit: newUnit, 
@@ -570,9 +570,9 @@ export class MasterCSSRule {
                             });
                         }
                         return;
-                    } else if (this.getProps) {
-                        newValue = this.getProps(propertyInfo);
-                        console.log(newValue, propertyInfo);
+                    } else if (this.get) {
+                        newValue = this.get(declaration);
+                        console.log(newValue, declaration);
                     }
                 }
             } else {
@@ -620,8 +620,8 @@ export interface MasterCSSRule {
     readonly order?: number;
 
     parseValue(value: string): string;
-    getProps(propertyInfo: CssPropertyInfo): Record<string, any>;
-    getThemeProps(propertyInfo: CssPropertyInfo, css: MasterCSS): Record<string, Record<string, string>>;
+    get(declaration: MasterCSSDeclaration): Record<string, any>;
+    getThemeProps(declaration: MasterCSSDeclaration, css: MasterCSS): Record<string, Record<string, string>>;
 }
 
 if (typeof window !== 'undefined') {

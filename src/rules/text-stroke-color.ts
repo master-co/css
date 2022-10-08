@@ -5,9 +5,9 @@ export class TextStrokeColor extends MasterCSSRule {
     static override matches = /^text-stroke-color:./;
     static override colorStarts = 'text-stroke:';
     static override colorful = true;
-    override getProps(propertyInfo): { [key: string]: any } {
+    override get(declaration): { [key: string]: any } {
         return {
-            '-webkit-text-stroke-color': propertyInfo
+            '-webkit-text-stroke-color': declaration
         };
     }
 }

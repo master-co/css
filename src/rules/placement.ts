@@ -5,27 +5,27 @@ import { MasterCSSRule } from '../rule';
 // TODO: id
 export class Placement extends MasterCSSRule {
     static override matches = /^(top|left|right|bottom|center|middle):./;
-    override getProps(propertyInfo): { [key: string]: any } {
+    override get(declaration): { [key: string]: any } {
         const propertyName = this.prefix.slice(0, -1);
         switch (propertyName) {
             case TOP:
             case LEFT:
             case RIGHT:
             case BOTTOM:
-                return { [propertyName]: propertyInfo }
+                return { [propertyName]: declaration }
             case CENTER:
                 return {
-                    left: propertyInfo,
-                    right: propertyInfo,
-                    'margin-left': { ...propertyInfo, unit: '' },
-                    'margin-right': { ...propertyInfo, unit: '' }
+                    left: declaration,
+                    right: declaration,
+                    'margin-left': { ...declaration, unit: '' },
+                    'margin-right': { ...declaration, unit: '' }
                 }
             case MIDDLE:
                 return {
-                    top: propertyInfo,
-                    bottom: propertyInfo,
-                    'margin-top': { ...propertyInfo, unit: '' },
-                    'margin-bottom': { ...propertyInfo, unit: '' }
+                    top: declaration,
+                    bottom: declaration,
+                    'margin-top': { ...declaration, unit: '' },
+                    'margin-bottom': { ...declaration, unit: '' }
                 }
         }
     }

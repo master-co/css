@@ -12,7 +12,7 @@ const BORDER_TOP_LEFT_RADIUS = dash(BORDER, TOP, LEFT, RADIUS),
 export class BorderRadius extends MasterCSSRule {
     static id = 'borderRadius';
     static override matches = /^((r[tblr]?[tblr]?|border(-(top|bottom)-(left|right))?-radius):.)/;
-    override getProps(propertyInfo): { [key: string]: any } {
+    override get(declaration): { [key: string]: any } {
         if (this.prefix) {
             let suffix = '';
             const splits = this.prefix.split('-');
@@ -26,54 +26,54 @@ export class BorderRadius extends MasterCSSRule {
             switch (suffix) {
                 case T:
                     return {
-                        [BORDER_TOP_LEFT_RADIUS]: propertyInfo,
-                        [BORDER_TOP_RIGHT_RADIUS]: propertyInfo
+                        [BORDER_TOP_LEFT_RADIUS]: declaration,
+                        [BORDER_TOP_RIGHT_RADIUS]: declaration
                     }
                 case 'tl':
                 case 'lt':
                     return {
-                        [BORDER_TOP_LEFT_RADIUS]: propertyInfo
+                        [BORDER_TOP_LEFT_RADIUS]: declaration
                     };
                 case 'rt':
                 case 'tr':
                     return {
-                        [BORDER_TOP_RIGHT_RADIUS]: propertyInfo
+                        [BORDER_TOP_RIGHT_RADIUS]: declaration
                     }
                 case B:
                     return {
-                        [BORDER_BOTTOM_LEFT_RADIUS]: propertyInfo,
-                        [BORDER_BOTTOM_RIGHT_RADIUS]: propertyInfo
+                        [BORDER_BOTTOM_LEFT_RADIUS]: declaration,
+                        [BORDER_BOTTOM_RIGHT_RADIUS]: declaration
                     }
                 case 'bl':
                 case 'lb':
                     return {
-                        [BORDER_BOTTOM_LEFT_RADIUS]: propertyInfo
+                        [BORDER_BOTTOM_LEFT_RADIUS]: declaration
                     }
                 case 'br':
                 case 'rb':
                     return {
-                        [BORDER_BOTTOM_RIGHT_RADIUS]: propertyInfo
+                        [BORDER_BOTTOM_RIGHT_RADIUS]: declaration
                     }
                 case L:
                     return {
-                        [BORDER_TOP_LEFT_RADIUS]: propertyInfo,
-                        [BORDER_BOTTOM_LEFT_RADIUS]: propertyInfo
+                        [BORDER_TOP_LEFT_RADIUS]: declaration,
+                        [BORDER_BOTTOM_LEFT_RADIUS]: declaration
                     }
                 case R:
                     return {
-                        [BORDER_TOP_RIGHT_RADIUS]: propertyInfo,
-                        [BORDER_BOTTOM_RIGHT_RADIUS]: propertyInfo
+                        [BORDER_TOP_RIGHT_RADIUS]: declaration,
+                        [BORDER_BOTTOM_RIGHT_RADIUS]: declaration
                     }
                 default:
                     return {
-                        [BORDER_RADIUS]: propertyInfo
+                        [BORDER_RADIUS]: declaration
                     }
             }
         }
 
         const prefix = this.prefix?.slice(0, -1);
         return {
-            [BORDER_RADIUS_S.includes(prefix) ? prefix : BORDER_RADIUS]: propertyInfo
+            [BORDER_RADIUS_S.includes(prefix) ? prefix : BORDER_RADIUS]: declaration
         }
     }
     override get order(): number {

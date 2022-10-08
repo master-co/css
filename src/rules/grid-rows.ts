@@ -4,14 +4,14 @@ import { MasterCSSRule } from '../rule';
 export class GridRows extends MasterCSSRule {
     static override propName = dash(GRID, ROWS);
     static override unit = '';
-    override getProps(propertyInfo): { [key: string]: any } {
+    override get(declaration): { [key: string]: any } {
         return {
-            [DISPLAY]: { ...propertyInfo, value: GRID },
-            [dash(GRID, AUTO, FLOW)]: { ...propertyInfo, value: COLUMN },
+            [DISPLAY]: { ...declaration, value: GRID },
+            [dash(GRID, AUTO, FLOW)]: { ...declaration, value: COLUMN },
             [dash(GRID, TEMPLATE, ROWS)]: {
-                ...propertyInfo,
+                ...declaration,
                 value: REPEAT
-                    + '(' + propertyInfo.value
+                    + '(' + declaration.value
                     + COMMA
                     + MIN + MAX
                     + '(' + 0 + COMMA + 1 + FR + '))'

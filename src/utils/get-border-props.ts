@@ -3,7 +3,7 @@ import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from '../constants/directi
 
 const BORDER_DASH = BORDER + DASH;
 
-export function getBorderProps(name: string, propertyInfo, suffix = '') {
+export function getBorderProps(name: string, declaration, suffix = '') {
     if (suffix) {
         suffix = DASH + suffix;
     }
@@ -16,33 +16,33 @@ export function getBorderProps(name: string, propertyInfo, suffix = '') {
     switch (direction) {
         case X:
             return {
-                [BORDER_LEFT]: propertyInfo,
-                [BORDER_RIGHT]: propertyInfo
+                [BORDER_LEFT]: declaration,
+                [BORDER_RIGHT]: declaration
             }
         case Y:
             return {
-                [BORDER_TOP]: propertyInfo,
-                [BORDER_BOTTOM]: propertyInfo
+                [BORDER_TOP]: declaration,
+                [BORDER_BOTTOM]: declaration
             }
         case L:
             return {
-                [BORDER_LEFT]: propertyInfo
+                [BORDER_LEFT]: declaration
             }
         case R:
             return {
-                [BORDER_RIGHT]: propertyInfo
+                [BORDER_RIGHT]: declaration
             }
         case T:
             return {
-                [BORDER_TOP]: propertyInfo
+                [BORDER_TOP]: declaration
             }
         case B:
             return {
-                [BORDER_BOTTOM]: propertyInfo
+                [BORDER_BOTTOM]: declaration
             }
         default:
             return {
-                [BORDER + suffix]: propertyInfo
+                [BORDER + suffix]: declaration
             }
     }
 }

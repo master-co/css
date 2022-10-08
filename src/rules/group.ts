@@ -2,7 +2,7 @@ import { MasterCSSRule } from '../rule';
 import { MasterCSS } from '../css';
 import { START_SYMBOL } from '../constants/start-symbol';
 import { GROUP } from '../constants/css-property-keyword';
-import { CssPropertyInfo } from 'src/interfaces/css-property-info';
+import { MasterCSSDeclaration } from 'src/interfaces/css-property-info';
 
 const bracketRegexp = /\{(.*)\}/;
 
@@ -10,7 +10,7 @@ export class Group extends MasterCSSRule {
     static id = GROUP;
     static override matches = /^(?:.+?[*_>~+])?\{.+?\}/;
     static override unit = '';
-    override getThemeProps(propertyInfo: CssPropertyInfo, css: MasterCSS): Record<string, Record<string, string>> {
+    override getThemeProps(declaration: MasterCSSDeclaration, css: MasterCSS): Record<string, Record<string, string>> {
         const themePropsMap: Record<string, Record<string, string>> = {};
         
         const addProp = (theme: string, propertyName: string) => {
@@ -60,8 +60,8 @@ export class Group extends MasterCSSRule {
 
         let i = 1;
         (function analyze(end: string) {
-            for (; i < propertyInfo.value.length; i++) {
-                const char = propertyInfo.value[i];
+            for (; i < declaration.value.length; i++) {
+                const char = declaration.value[i];
 
                 if (!end) {
                     if (char === ';') {

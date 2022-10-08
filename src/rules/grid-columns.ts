@@ -5,13 +5,13 @@ export class GridColumns extends MasterCSSRule {
     static override matches = /^grid-cols:./;
     static override propName = dash(GRID, COLUMNS);
     static override unit = '';
-    override getProps(propertyInfo): { [key: string]: any } {
+    override get(declaration): { [key: string]: any } {
         return {
-            [DISPLAY]: { ...propertyInfo, value: GRID },
+            [DISPLAY]: { ...declaration, value: GRID },
             [dash(GRID, TEMPLATE, COLUMNS)]: {
                 ...this,
                 value: REPEAT
-                    + '(' + propertyInfo.value
+                    + '(' + declaration.value
                     + COMMA
                     + MIN + MAX
                     + '(' + 0 + COMMA + 1 + FR + '))'

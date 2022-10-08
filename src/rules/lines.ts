@@ -6,14 +6,14 @@ export class Lines extends MasterCSSRule {
     static id = 'lines';
     static override matches = /^lines:./;
     static override unit = '';
-    override getProps(propertyInfo): { [key: string]: any } {
+    override get(declaration): { [key: string]: any } {
         return {
-            overflow: { ...propertyInfo, value: HIDDEN },
-            display: { ...propertyInfo, value: WEBKIT_PREFIX + BOX },
-            'overflow-wrap': { ...propertyInfo, value: dash(BREAK, WORD) },
-            'text-overflow': { ...propertyInfo, value: ELLIPSIS },
-            '-webkit-box-orient': { ...propertyInfo, value: VERTICAL },
-            '-webkit-line-clamp': propertyInfo
+            overflow: { ...declaration, value: HIDDEN },
+            display: { ...declaration, value: WEBKIT_PREFIX + BOX },
+            'overflow-wrap': { ...declaration, value: dash(BREAK, WORD) },
+            'text-overflow': { ...declaration, value: ELLIPSIS },
+            '-webkit-box-orient': { ...declaration, value: VERTICAL },
+            '-webkit-line-clamp': declaration
         }
     }
 }
