@@ -53,7 +53,7 @@ export class MasterCSS extends MutationObserver {
         this.relationThemesMap = {};
         this.relations = {};
         this.colorNames = [];
-        this.colorSchemes = [''];
+        this.themes = [''];
 
         if (value.semantics) {
             for (const semanticName in value.semantics) {
@@ -156,7 +156,7 @@ export class MasterCSS extends MutationObserver {
                 const themeValue = value.themes[eachTheme];
                 mergeClasses(eachTheme, themeValue.classes);
                 mergeColors(eachTheme, themeValue.colors);
-                this.colorSchemes.push(eachTheme);
+                this.themes.push(eachTheme);
             }
         }
     }
@@ -168,7 +168,7 @@ export class MasterCSS extends MutationObserver {
     private classesThemesMap: Record<string, Record<string, string[]>>
     private colorsThemesMap: Record<string, Record<string, Record<string, string>>>
     private colorNames: string[]
-    private colorSchemes: string[]
+    private themes: string[]
     private relationThemesMap: Record<string, Record<string, string[]>>
     private relations: Record<string, string[]>
 
@@ -475,7 +475,7 @@ export class MasterCSS extends MutationObserver {
                         this.config.values?.[EachRule.propName], 
                         this.colorsThemesMap, 
                         this.relationThemesMap?.[className], 
-                        this.colorSchemes, 
+                        this.themes, 
                         matching,
                         this
                     );
@@ -489,7 +489,7 @@ export class MasterCSS extends MutationObserver {
                         undefined, 
                         undefined, 
                         this.relationThemesMap?.[name], 
-                        this.colorSchemes, 
+                        this.themes, 
                         { origin: 'semantics', value: entry[1].name },
                         this
                     );

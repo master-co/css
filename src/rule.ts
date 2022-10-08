@@ -128,7 +128,7 @@ export class MasterCSSRule {
         values: Record<string, string | number>,
         colorsThemesMap: Record<string, Record<string, Record<string, string>>>,
         relationThemesMap: Record<string, string[]>,
-        colorSchemes: string[],
+        themes: string[],
         public readonly matching: RuleMatching,
         css: MasterCSS
     ) {
@@ -346,7 +346,7 @@ export class MasterCSSRule {
         for (let i = 1; i < suffixTokens.length; i++) {
             const atToken = suffixTokens[i];
             if (atToken) {
-                if (colorSchemes.includes(atToken)) {
+                if (themes.includes(atToken)) {
                     this.colorScheme = atToken;
                 } else if (
                     atToken === 'rtl'
@@ -604,7 +604,7 @@ export class MasterCSSRule {
         } else if (this.colorScheme) {
             insertNewNative(this.colorScheme, false);
         } else if (colorful) {
-            for (const eachTheme of colorSchemes) {
+            for (const eachTheme of themes) {
                 insertNewNative(eachTheme, true);
             }
         } else {
