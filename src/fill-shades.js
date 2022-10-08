@@ -36,7 +36,6 @@ module.exports = function fillShades(data) {
         };
 
         for (let i = 1; i < 100; i++) {
-            const isEven = i % 2 === 0;
             if (i in data) {
                 if (newLevels.length) {
                     endLevel = i;
@@ -52,7 +51,7 @@ module.exports = function fillShades(data) {
                 }
 
                 startLevel = i;
-            } else if (isEven) {
+            } else {
                 newLevels.push(i);
             }
         }
