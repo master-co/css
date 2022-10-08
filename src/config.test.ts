@@ -20,7 +20,7 @@ test("values", () => {
         ".font-size\\:big{font-size:999}",
         new MasterCSS(configure({
             values: {
-                'font-size': {
+                fontSize: {
                     'big': 999
                 }
             }

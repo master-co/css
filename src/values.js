@@ -23,29 +23,29 @@ for (const key in breakpoints) {
 }
 
 module.exports = {
-    'background-clip': boxUnderneath,
-    'background-origin': boxUnderneath,
-    'box-sizing': {
+    backgroundClip: boxUnderneath,
+    backgroundOrigin: boxUnderneath,
+    boxSizing: {
         content: 'content-box',
         border: 'border-box',
     },
-    'clip-path': {
+    clipPath: {
         ...boxUnderneath,
         margin: 'margin-box',
         fill: 'fill-box',
         stroke: 'stroke-box',
         view: 'view-box'
     },
-    'flex-direction': {
+    flexDirection: {
         col: COLUMN,
         'col-reverse': 'column-reverse'
     },
-    'font-family': {
+    fontFamily: {
         mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace',
         sans: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
         serif: 'ui-serif, Georgia, Cambria, Times New Roman, Times, serif'
     },
-    'font-weight': {
+    fontWeight: {
         thin: 100,
         extralight: 200,
         light: 300,
@@ -56,10 +56,10 @@ module.exports = {
         extrabold: 800,
         heavy: 900
     },
-    'grid-auto-columns': contentExtrema,
-    'grid-auto-rows': contentExtrema,
-    'grid-template-columns': contentExtrema,
-    'grid-template-rows': contentExtrema,
+    gridAutoColumns: contentExtrema,
+    gridAutoRows: contentExtrema,
+    gridTemplateColumns: contentExtrema,
+    gridTemplateRows: contentExtrema,
     order: {
         first: -999999,
         last: 999999
@@ -68,21 +68,21 @@ module.exports = {
         abs: 'absolute',
         rel: 'relative'
     },
-    'shape-outside': {
+    shapeOutside: {
         ...boxUnderneath,
         margin: 'margin-box'
     },
-    'transform-box': {
+    transformBox: {
         ...boxUnderneath,
         fill: 'fill-box',
         stroke: 'stroke-box',
         view: 'view-box'
     },
-    'width': sizingValues,
-    'min-width': sizingValues,
-    'min-height': sizingValues,
-    'max-width': sizingValues,
-    'max-height': sizingValues,
-    'height': sizingValues,
-    'flex-basis': sizingValues
+    width: sizingValues,
+    minWidth: sizingValues,
+    minHeight: sizingValues,
+    maxWidth: sizingValues,
+    maxHeight: sizingValues,
+    height: sizingValues,
+    flexBasis: sizingValues
 }
