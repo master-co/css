@@ -516,7 +516,7 @@ export class MasterCSSRule {
                     if (typeof eachValueToken === 'string') {
                         newValueTokens.push(eachValueToken);
                     } else {
-                        uv = parseValue(eachValueToken.value, unit, colorsThemesMap, values, rootSize, theme, bypassWhenUnmatchColor);
+                        uv = parseValue(eachValueToken.value, unit, colorsThemesMap, values, rootSize, this.colorScheme ? [this.colorScheme, ''] : [theme], bypassWhenUnmatchColor);
                         if (!uv)
                             return;
     
@@ -534,6 +534,8 @@ export class MasterCSSRule {
                 } else {
                     newValue = newValueTokens.reduce((previousVal, currentVal, i) => previousVal + currentVal + ((currentVal === ',' || valueTokens[i + 1] === ',' || i === valueTokens.length - 1) ? '' : ' '), '');
                 }
+
+                console.log(colorful, valueTokens);
 
                 if (typeof newValue !== 'object') {
                     // 7. parseValue
@@ -611,6 +613,7 @@ export class MasterCSSRule {
             insertNewNative('', false);
         }
         
+        console.log(this);
     }
 }
 

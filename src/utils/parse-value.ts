@@ -9,7 +9,7 @@ export function parseValue(
     colorsThemesMap?: Record<string, Record<string, Record<string, string>>>,
     values?: Record<string, string | number>,
     rootSize?: number,
-    theme?: string,
+    themes?: string[],
     bypassWhenUnmatchColor?: boolean
 ) {
     let value: any = values ? values[token] : '';
@@ -28,21 +28,28 @@ export function parseValue(
             token = token.replace(
                 new RegExp(`(^|,| |\\()(${colorNames.join('|')})(?:-([0-9]+))?(?:\\/(\\.?[0-9]+))?(?=(\\)|\\}|,| |$))`, 'gm'),
                 (origin, prefix, colorName, level, opacityStr) => {
-                    const hexColor = colorsThemesMap[colorName]?.[level || '']?.[theme];
-                    if (hexColor) {
-                        let newValue = hexColor;
-                        if (opacityStr) {
-                            let opacity = +opacityStr;
-                            opacity = isNaN(opacity)
-                                ? 1
-                                : Math.min(Math.max(opacity, 0), 1);
-
-                            newValue += Math.round(opacity * 255).toString(16).toUpperCase().padStart(2, '0');
+                    const themeHexColorMap =  colorsThemesMap[colorName]?.[level || ''];
+                    if (themeHexColorMap) {
+                        let hexColor: string;
+                        for (const eachTheme of themes) {
+                            if (hexColor = themeHexColorMap[eachTheme])
+                                break;
                         }
-
-                        return prefix + newValue;
-                    } else if (bypassWhenUnmatchColor) {
-                        allMatched = false;
+                        if (hexColor) {
+                            let newValue = hexColor;
+                            if (opacityStr) {
+                                let opacity = +opacityStr;
+                                opacity = isNaN(opacity)
+                                    ? 1
+                                    : Math.min(Math.max(opacity, 0), 1);
+    
+                                newValue += Math.round(opacity * 255).toString(16).toUpperCase().padStart(2, '0');
+                            }
+    
+                            return prefix + newValue;
+                        } else if (bypassWhenUnmatchColor) {
+                            allMatched = false;
+                        }
                     }
 
                     return origin;
