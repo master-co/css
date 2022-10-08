@@ -8,5 +8,5 @@ export interface MasterCSSConfig {
     semantics?: Record<string, string | Record<string, string | number>>
     values?: Record<string, Record<string, string | number>>
     Rules?: typeof MasterCSSRule[],
-    themes?: Record<string, { classes: Record<string, string>, colors?: Record<string, string | Record<string, string>> }>
+    themes?: Record<string, { classes: Record<string, string>, colors?: Record<string, string | Record<string, string>> }> | string[]
 }
