@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class TextDecorationStyle extends MasterCSSRule {
     static override matches = /^t(ext)?:(solid|double|dotted|dashed|wavy)(?!\|)/;
-    static override key = dash(TEXT, DECORATION, STYLE);
+    static override propName = dash(TEXT, DECORATION, STYLE);
 }

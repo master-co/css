@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class FlexWrap extends MasterCSSRule {
     static override matches = /^flex:(wrap(-reverse)?|nowrap)(?!\|)/;
-    static override key = dash(FLEX, WRAP);
+    static override propName = dash(FLEX, WRAP);
 }

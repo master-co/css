@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class TransitionProperty extends MasterCSSRule {
     static override matches = /^~property:./;
-    static override key = dash(TRANSITION, PROPERTY);
+    static override propName = dash(TRANSITION, PROPERTY);
 }

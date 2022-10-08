@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class TransformBox extends MasterCSSRule {
     static override matches = /^transform:(content|border|fill|stroke|view)(?!\|)/;
-    static override key = dash(TRANSFORM, BOX);
+    static override propName = dash(TRANSFORM, BOX);
 }

@@ -3,6 +3,6 @@ import { SQUARE, VIDEO, ASPECT, RATIO, dash } from '../constants/css-property-ke
 
 export class AspectRadio extends MasterCSSRule {
     static override matches = /^aspect:./;
-    static override key = dash(ASPECT, RATIO);
+    static override propName = dash(ASPECT, RATIO);
     static override unit = '';
 }

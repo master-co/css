@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class AnimationPlayState extends MasterCSSRule {
     static override matches = /^\@play-state:./;
-    static override key = dash(ANIMATION, PLAY_STATE);
+    static override propName = dash(ANIMATION, PLAY_STATE);
 }

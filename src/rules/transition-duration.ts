@@ -3,6 +3,6 @@ import { MasterCSSRule } from '../rule';
 
 export class TransitionDuration extends MasterCSSRule {
     static override matches = /^~duration:./;
-    static override key = dash(TRANSITION, DURATION);
+    static override propName = dash(TRANSITION, DURATION);
     static override unit = 'ms';
 }

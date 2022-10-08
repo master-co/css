@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class ColumnSpan extends MasterCSSRule {
     static override matches = /^col-span:./;
-    static override key = dash(COLUMN, SPAN);
+    static override propName = dash(COLUMN, SPAN);
 }

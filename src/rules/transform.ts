@@ -3,7 +3,7 @@ import { MasterCSSRule } from '../rule';
 
 export class Transform extends MasterCSSRule {
     static override matches = /^(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\(/;
-    static override key = TRANSFORM;
+    static override propName = TRANSFORM;
     static override unit = '';
     override parseValue(value: string): string {
         return value.replace(

@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class JustifySelf extends MasterCSSRule {
     static override matches =  /^js:./;
-    static override key = dash(JUSTIFY, SELF);
+    static override propName = dash(JUSTIFY, SELF);
 }

@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class ClipPath extends MasterCSSRule {
     static override matches = /^clip:./
-    static override key = dash(CLIP, 'path');
+    static override propName = dash(CLIP, 'path');
 }

@@ -3,7 +3,7 @@ import { MasterCSSRule } from '../rule';
 
 export class GridColumns extends MasterCSSRule {
     static override matches = /^grid-cols:./;
-    static override key = dash(GRID, COLUMNS);
+    static override propName = dash(GRID, COLUMNS);
     static override unit = '';
     override getProps(propertyInfo): { [key: string]: any } {
         return {

@@ -3,5 +3,5 @@ import { BACKGROUND, BORDER, BOX, CONTENT, dash, ORIGIN, PADDING } from '../cons
 
 export class BackgroundOrigin extends MasterCSSRule {
     static override matches = /^(bg|background):(content|border|padding)(?!\|)/;
-    static override key = dash(BACKGROUND, ORIGIN);
+    static override propName = dash(BACKGROUND, ORIGIN);
 }

@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class GridAutoColumns extends MasterCSSRule {
     static override matches = /^grid-auto-cols:./;
-    static override key = dash(GRID, AUTO, COLUMNS);
+    static override propName = dash(GRID, AUTO, COLUMNS);
 }

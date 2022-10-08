@@ -3,5 +3,5 @@ import { BORDER, BOX, CONTENT, dash, MARGIN, PADDING, SHAPE } from '../constants
 
 export class ShapeOutside extends MasterCSSRule {
     static override matches = /^shape:((margin|content|border|padding)(?!\|)|(inset|circle|ellipse|polygon|url|linear-gradient)\(.*\)((?!\|).)*$)/
-    static override key = dash(SHAPE, 'outside');
+    static override propName = dash(SHAPE, 'outside');
 }

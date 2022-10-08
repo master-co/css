@@ -76,7 +76,7 @@ export class MasterCSSRule {
     readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, theme: string, cssRule?: CSSRule }[] = [];
 
     static id: string;
-    static key: string;
+    static propName: string;
     static matches: RegExp;
     static colorStarts: string;
     static symbol: string;
@@ -117,7 +117,7 @@ export class MasterCSSRule {
         /**
          * STEP 4. key full name
          */
-        if (this.key && name.startsWith(this.key + ':')) {
+        if (this.propName && name.startsWith(this.propName + ':')) {
             return { origin: MATCHES };
         }
     };
@@ -133,7 +133,7 @@ export class MasterCSSRule {
         css: MasterCSS
     ) {
         const TargetRule = this.constructor as typeof MasterCSSRule;
-        let { id, unit, key, colorful, rootSize } = TargetRule;
+        let { id, unit, propName, colorful, rootSize } = TargetRule;
         let token = name;
 
         // 防止非色彩 style 的 token 被解析
@@ -593,7 +593,7 @@ export class MasterCSSRule {
                                 important: this.important
                             }))
                             .join(';')
-                        : getCssPropertyText(key, { unit: newUnit, value: newValue, important: this.important }),
+                        : getCssPropertyText(propName, { unit: newUnit, value: newValue, important: this.important }),
                     theme
                 ), 
                 theme 

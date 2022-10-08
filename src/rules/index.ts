@@ -406,3 +406,9 @@ export const Rules = [
     Quotes,
     MaskImage
 ]
+
+for (const Rule of Rules) {
+    if (!Rule.id) {
+        Rule.id = Rule.propName.replace(/-./g, x => x[1].toUpperCase())
+    }
+}

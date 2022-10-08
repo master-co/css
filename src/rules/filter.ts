@@ -4,7 +4,7 @@ import { parseValueUnit } from '../utils/parse-value-unit';
 
 export class Filter extends MasterCSSRule {
     static override matches = /^(blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)\(/
-    static override key = FILTER;
+    static override propName = FILTER;
     override parseValue(value: string): string {
         return parseValueUnit(
             value,

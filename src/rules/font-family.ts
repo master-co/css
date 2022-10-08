@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class FontFamily extends MasterCSSRule {
     static override matches = /^f(ont)?:(mono|sans|serif)(?!\|)/;
-    static override key = dash(FONT, FAMILY);
+    static override propName = dash(FONT, FAMILY);
 }

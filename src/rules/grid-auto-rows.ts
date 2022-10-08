@@ -2,5 +2,5 @@ import { AUTO, CONTENT, dash, GRID, MAX, MIN, ROWS } from '../constants/css-prop
 import { MasterCSSRule } from '../rule';
 
 export class GridAutoRows extends MasterCSSRule {
-    static override key = dash(GRID, AUTO, ROWS);
+    static override propName = dash(GRID, AUTO, ROWS);
 }

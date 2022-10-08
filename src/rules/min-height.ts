@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class MinHeight extends MasterCSSRule {
     static override matches = /^min-h:./;
-    static override key = MIN_HEIGHT;
+    static override propName = MIN_HEIGHT;
 }

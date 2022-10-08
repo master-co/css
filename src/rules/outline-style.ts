@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class OutlineStyle extends MasterCSSRule {
     static override matches = /^outline:(none|dotted|dashed|solid|double|groove|ridge|inset|outset)(?!\|)/;
-    static override key = dash(OUTLINE, STYLE);
+    static override propName = dash(OUTLINE, STYLE);
 }

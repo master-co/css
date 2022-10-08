@@ -2,7 +2,7 @@ import { ROWS, DISPLAY, FR, GRID, MAX, MIN, REPEAT, TEMPLATE, COMMA, AUTO, FLOW,
 import { MasterCSSRule } from '../rule';
 
 export class GridRows extends MasterCSSRule {
-    static override key = dash(GRID, ROWS);
+    static override propName = dash(GRID, ROWS);
     static override unit = '';
     override getProps(propertyInfo): { [key: string]: any } {
         return {

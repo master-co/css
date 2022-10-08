@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class FontSize extends MasterCSSRule {
     static override matches = /^f(ont)?:([0-9]|(max|min|calc|clamp)\(.*\))((?!\|).)*$/;
-    static override key = dash(FONT, SIZE);
+    static override propName = dash(FONT, SIZE);
 }

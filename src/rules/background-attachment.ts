@@ -3,5 +3,5 @@ import { ATTACHMENT, BACKGROUND, dash } from '../constants/css-property-keyword'
 
 export class BackgroundAttachment extends MasterCSSRule {
     static override matches = /^(bg|background):(fixed|local|scroll)(?!\|)/;
-    static override key = dash(BACKGROUND, ATTACHMENT);
+    static override propName = dash(BACKGROUND, ATTACHMENT);
 }

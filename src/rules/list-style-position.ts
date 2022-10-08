@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class ListStylePosition extends MasterCSSRule {
     static override matches = /^list-style:(inside|outside)(?!\|)/;
-    static override key = dash(LIST, STYLE, POSITION);
+    static override propName = dash(LIST, STYLE, POSITION);
 }

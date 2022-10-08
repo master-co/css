@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class Display extends MasterCSSRule {
     static override matches = /^d:./;
-    static override key = DISPLAY;
+    static override propName = DISPLAY;
 }

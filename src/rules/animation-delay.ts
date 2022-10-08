@@ -3,6 +3,6 @@ import { MasterCSSRule } from '../rule';
 
 export class AnimationDelay extends MasterCSSRule {
     static override matches = /^\@delay:./;
-    static override key = dash(ANIMATION, DELAY);
+    static override propName = dash(ANIMATION, DELAY);
     static override unit = 'ms';
 }

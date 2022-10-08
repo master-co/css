@@ -3,6 +3,6 @@ import { MasterCSSRule } from '../rule';
 
 export class JustifyContent extends MasterCSSRule {
     static override matches =  /^jc:./;
-    static override key = dash(JUSTIFY, CONTENT);
+    static override propName = dash(JUSTIFY, CONTENT);
 
 }

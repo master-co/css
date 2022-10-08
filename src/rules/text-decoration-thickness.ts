@@ -3,6 +3,6 @@ import { MasterCSSRule } from '../rule';
 
 export class TextDecorationThickness extends MasterCSSRule {
     static override matches = /^text-decoration:(from-font(?!\|)|([0-9]|(max|min|calc|clamp)\(.*\))((?!\|).)*$)/;
-    static override key = dash(TEXT, DECORATION, THICKNESS);
+    static override propName = dash(TEXT, DECORATION, THICKNESS);
     static override unit = 'em';
 }

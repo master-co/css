@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class WritingMode extends MasterCSSRule {
     static override matches = /^writing:./;
-    static override key = dash('writing', MODE);
+    static override propName = dash('writing', MODE);
 }

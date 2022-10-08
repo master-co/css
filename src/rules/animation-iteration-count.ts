@@ -3,6 +3,6 @@ import { MasterCSSRule } from '../rule';
 
 export class AnimationIterationCount extends MasterCSSRule {
     static override matches = /^\@iteration-count:./;
-    static override key = dash(ANIMATION, ITERATION, COUNT);
+    static override propName = dash(ANIMATION, ITERATION, COUNT);
     static override unit = '';
 }

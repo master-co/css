@@ -472,7 +472,7 @@ export class MasterCSS extends MutationObserver {
                     return new EachRule(
                         className, 
                         this.config, 
-                        this.config.values?.[EachRule.key], 
+                        this.config.values?.[EachRule.propName], 
                         this.colorsThemesMap, 
                         this.relationThemesMap?.[className], 
                         this.colorSchemes, 

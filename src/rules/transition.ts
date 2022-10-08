@@ -3,6 +3,6 @@ import { MasterCSSRule } from '../rule';
 
 export class Transition extends MasterCSSRule {
     static override symbol = '~'; 
-    static override key = TRANSITION;
+    static override propName = TRANSITION;
     override order = -1;
 }

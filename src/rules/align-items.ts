@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class AlignItems extends MasterCSSRule {
     static override matches =  /^ai:./;
-    static override key = dash(ALIGN, ITEMS);
+    static override propName = dash(ALIGN, ITEMS);
 }

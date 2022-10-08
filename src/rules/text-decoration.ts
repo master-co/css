@@ -3,7 +3,7 @@ import { MasterCSSRule } from '../rule';
 
 export class TextDecoration extends MasterCSSRule {
     static override matches = /^t(ext)?:(underline|line-through|overline)/;
-    static override key = dash(TEXT, DECORATION);
+    static override propName = dash(TEXT, DECORATION);
     static override colorful = true;
     override order = -1;
 }

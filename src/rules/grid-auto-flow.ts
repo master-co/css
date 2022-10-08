@@ -3,5 +3,5 @@ import { MasterCSSRule } from '../rule';
 
 export class GridAutoFlow extends MasterCSSRule {
     static override matches = /^grid-flow:./;
-    static override key = dash(GRID, AUTO, FLOW);
+    static override propName = dash(GRID, AUTO, FLOW);
 }
