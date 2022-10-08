@@ -69,7 +69,7 @@ export class MasterCSSRule {
     readonly media: MasterCSSMedia;
     readonly at: Record<string, string> = {};
     readonly direction: string;
-    readonly colorScheme: string;
+    readonly theme: string;
     readonly unitToken: string;
     readonly hasWhere: boolean;
     readonly prioritySelectorIndex: number = -1;
@@ -347,7 +347,7 @@ export class MasterCSSRule {
             const atToken = suffixTokens[i];
             if (atToken) {
                 if (themes.includes(atToken)) {
-                    this.colorScheme = atToken;
+                    this.theme = atToken;
                 } else if (
                     atToken === 'rtl'
                     || atToken === 'ltr'
@@ -522,7 +522,7 @@ export class MasterCSSRule {
                             colorsThemesMap, 
                             values, 
                             rootSize, 
-                            this.colorScheme ? [this.colorScheme, ''] : [theme], 
+                            this.theme ? [this.theme, ''] : [theme], 
                             bypassWhenUnmatchColor
                         );
                         if (!uv)
@@ -611,8 +611,8 @@ export class MasterCSSRule {
 
         if (this.getThemeProps) {
             insertNewNative(undefined, false);
-        } else if (this.colorScheme) {
-            insertNewNative(this.colorScheme, false);
+        } else if (this.theme) {
+            insertNewNative(this.theme, false);
         } else if (colorful) {
             for (const eachTheme of themes) {
                 insertNewNative(eachTheme, true);

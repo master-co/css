@@ -36,10 +36,10 @@ export class Group extends MasterCSSRule {
                 }
             }
 
-            if (this.colorScheme) {
-                const currentThemeNative = rule.natives.find(eachNative => eachNative.theme ===  this.colorScheme) ?? rule.natives.find(eachNative => !eachNative.theme);
+            if (this.theme) {
+                const currentThemeNative = rule.natives.find(eachNative => eachNative.theme ===  this.theme) ?? rule.natives.find(eachNative => !eachNative.theme);
                 if (currentThemeNative) {
-                    addProps(this.colorScheme, currentThemeNative.text);
+                    addProps(this.theme, currentThemeNative.text);
                 }
             } else {
                 for (const eachNative of rule.natives) {
@@ -107,7 +107,7 @@ export class Group extends MasterCSSRule {
                 if (result) {
                     handleRule(result);
                 } else {
-                    addProp(this.colorScheme ?? '', eachName);
+                    addProp(this.theme ?? '', eachName);
                 }
             }
         }
