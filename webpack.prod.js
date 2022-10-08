@@ -43,11 +43,6 @@ module.exports = {
                     },
                     compress: {
                         drop_console: true
-                    },
-                    mangle: {
-                        properties: {
-                            reserved: ['MasterCSS', 'MasterCSSRule']
-                        }
                     }
                 },
                 extractComments: false
