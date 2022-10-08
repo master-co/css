@@ -1,7 +1,7 @@
-const fillShades = require('./fill-shades')
+const fillColorScale = require('./fill-color-scale')
 
 module.exports = {
-    slate: fillShades({
+    slate: fillColorScale({
         5: '#141e2b',
         10: '#19212d',
         20: '#262f3e',
@@ -13,7 +13,7 @@ module.exports = {
         80: '#d7dae3',
         95: '#f6f7f8'
     }),
-    gray: fillShades({
+    gray: fillColorScale({
         5: '#1e1d1f', // 16.6
         10: '#212022', // 16.2
         20: '#2f2e30', // 13.5
@@ -25,7 +25,7 @@ module.exports = {
         80: '#dad9db',
         95: '#f5f4f7'
     }),
-    brown: fillShades({
+    brown: fillColorScale({
         5: '#271b15',
         10: '#2b1e18',
         20: '#3c2b22',
@@ -37,7 +37,7 @@ module.exports = {
         80: '#efd5c9',
         95: '#faf2ef'
     }),
-    orange: fillShades({
+    orange: fillColorScale({
         5: '#2e1907',
         10: '#331b07',
         20: '#47260b',
@@ -49,7 +49,7 @@ module.exports = {
         80: '#f7d4b5',
         95: '#fcf1e7'
     }),
-    gold: fillShades({
+    gold: fillColorScale({
         5: '#281b00',
         10: '#2d1e01',
         20: '#3f2a00',
@@ -61,7 +61,7 @@ module.exports = {
         80: '#fbd67f',
         95: '#fff3d8'
     }),
-    yellow: fillShades({
+    yellow: fillColorScale({
         5: '#251d00',
         10: '#282000',
         20: '#3a2e01',
@@ -73,7 +73,7 @@ module.exports = {
         80: '#edda8f',
         95: '#fff5ca'
     }),
-    grass: fillShades({
+    grass: fillColorScale({
         5: '#162106',
         10: '#182406',
         20: '#223308',
@@ -85,7 +85,7 @@ module.exports = {
         80: '#bfe87c',
         95: '#ebfad4'
     }),
-    green: fillShades({
+    green: fillColorScale({
         5: '#042311',
         10: '#032611',
         20: '#023717',
@@ -97,7 +97,7 @@ module.exports = {
         80: '#80f1a4',
         95: '#e0fae8'
     }),
-    beryl: fillShades({
+    beryl: fillColorScale({
         5: '#002319',
         10: '#00271c',
         20: '#003626',
@@ -109,7 +109,7 @@ module.exports = {
         80: '#72f0c5',
         95: '#d6fcef'
     }),
-    teal: fillShades({
+    teal: fillColorScale({
         5: '#012220',
         10: '#012624',
         20: '#003532',
@@ -121,7 +121,7 @@ module.exports = {
         80: '#6aeee5',
         95: '#d4fcf8'
     }),
-    cyan: fillShades({
+    cyan: fillColorScale({
         5: '#00222b',
         10: '#00252e',
         20: '#013340',
@@ -133,7 +133,7 @@ module.exports = {
         80: '#97e6fa',
         95: '#dff8ff'
     }),
-    sky: fillShades({
+    sky: fillColorScale({
         5: '#031f34',
         10: '#032339',
         20: '#04314e',
@@ -145,7 +145,7 @@ module.exports = {
         80: '#b3e0ff',
         95: '#eaf6fe'
     }),
-    blue: fillShades({
+    blue: fillColorScale({
         5: '#07194a',
         10: '#081c53',
         20: '#0a2773',
@@ -157,7 +157,7 @@ module.exports = {
         80: '#c6dbfe',
         95: '#edf4fe'
     }),
-    indigo: fillShades({
+    indigo: fillColorScale({
         5: '#1f1645',
         10: '#20174f',
         20: '#2b1f74',
@@ -169,7 +169,7 @@ module.exports = {
         80: '#d5d7fe',
         95: '#f1f2ff'
     }),
-    violet: fillShades({
+    violet: fillColorScale({
         5: '#2b0a4e',
         10: '#2e0b57',
         20: '#3d1179',
@@ -181,7 +181,7 @@ module.exports = {
         80: '#e1d4fe',
         95: '#f5f1ff'
     }),
-    purple: fillShades({
+    purple: fillColorScale({
         5: '#2e0c47',
         10: '#330c4e',
         20: '#460f6c',
@@ -193,7 +193,7 @@ module.exports = {
         80: '#ead1fe',
         95: '#f9f0ff'
     }),
-    fuchsia: fillShades({
+    fuchsia: fillColorScale({
         5: '#39092a',
         10: '#400932',
         20: '#560d4a',
@@ -205,7 +205,7 @@ module.exports = {
         80: '#facbfb',
         95: '#feefff'
     }),
-    pink: fillShades({
+    pink: fillColorScale({
         5: '#3d0722',
         10: '#430725',
         20: '#5d0933',
@@ -217,7 +217,7 @@ module.exports = {
         80: '#fdcde6',
         95: '#fff0f8'
     }),
-    crimson: fillShades({
+    crimson: fillColorScale({
         5: '#430213',
         10: '#470314',
         20: '#62041c',
@@ -229,7 +229,7 @@ module.exports = {
         80: '#fdceda',
         95: '#fff1f4'
     }),
-    red: fillShades({
+    red: fillColorScale({
         5: '#450001',
         10: '#490102',
         20: '#640304',
