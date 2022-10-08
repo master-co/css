@@ -914,6 +914,9 @@ export class MasterCSS extends MutationObserver {
         }
 
         try {
+            this.rules.splice(index, 0, rule);
+            this.ruleOfName[rule.name] = rule;
+
             if (this.style) {
                 const sheet = this.style.sheet;
                 for (const eachNative of rule.natives) {
@@ -921,9 +924,6 @@ export class MasterCSS extends MutationObserver {
                     eachNative.cssRule = sheet.cssRules[index++];
                 }
             }
-
-            this.rules.splice(index, 0, rule);
-            this.ruleOfName[rule.name] = rule;
         } catch (error) {
             console.error(error);
         }
@@ -948,7 +948,7 @@ export class MasterCSS extends MutationObserver {
                 const eachCssRule = sheet.cssRules[index];
                 if (eachCssRule === firstNative.cssRule) {
                     for (let i = 0; i < rule.natives.length; i++) {
-                        sheet.deleteRule(index + i);
+                        sheet.deleteRule(index);
                     }
 
                     this.rules.splice(this.rules.indexOf(rule), 1);
