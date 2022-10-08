@@ -24,10 +24,13 @@ export function parseValue(
         if (colorsThemesMap) {
             const colorNames = Object.keys(colorsThemesMap);
             let allMatched = true;
+            let hasColorName = false;
             
             token = token.replace(
                 new RegExp(`(^|,| |\\()(${colorNames.join('|')})(?:-([0-9]+))?(?:\\/(\\.?[0-9]+))?(?=(\\)|\\}|,| |$))`, 'gm'),
                 (origin, prefix, colorName, level, opacityStr) => {
+                    hasColorName = true;
+
                     const themeHexColorMap =  colorsThemesMap[colorName]?.[level || ''];
                     if (themeHexColorMap) {
                         let hexColor: string;
@@ -55,7 +58,7 @@ export function parseValue(
                     return origin;
                 });
 
-            if (!allMatched)
+            if (!allMatched || bypassWhenUnmatchColor && !hasColorName && themes[0])
                 return undefined;
         }
         if (defaultUnit) {

@@ -152,11 +152,15 @@ export class MasterCSS extends MutationObserver {
         mergeClasses('', value.classes);
         mergeColors('', value.colors);
         if (value.themes) {
-            for (const eachTheme in value.themes) {
-                const themeValue = value.themes[eachTheme];
-                mergeClasses(eachTheme, themeValue.classes);
-                mergeColors(eachTheme, themeValue.colors);
-                this.themes.push(eachTheme);
+            if (Array.isArray(value.themes)) {
+                this.themes.push(...value.themes);
+            } else {
+                for (const eachTheme in value.themes) {
+                    const themeValue = value.themes[eachTheme];
+                    mergeClasses(eachTheme, themeValue.classes);
+                    mergeColors(eachTheme, themeValue.colors);
+                    this.themes.push(eachTheme);
+                }
             }
         }
     }

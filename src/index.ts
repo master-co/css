@@ -1,8 +1,9 @@
 const colors = require('./colors')
+const themes = require('./themes')
 const breakpoints = require('./breakpoints')
 const fillShades = require('./fill-shades')
 
-export { colors, breakpoints, fillShades }
+export { colors, breakpoints, fillShades, themes }
 export * from './rule'
 export * from './css'
 export * from './rules'
