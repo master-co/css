@@ -1,14 +1,29 @@
 import { configure } from './configure';
 import { defaultConfig } from './default-config';
-import { deepEqual } from 'fast-equals';
+import { themes, values } from './index';
 
 test("configure", () => {
+    const custom = {
+        themes: ['red'],
+        values: {
+            width: {
+                'half': '50%'
+            }
+        }
+    }
     expect(
-        deepEqual(
-            configure({}),
+        configure(custom)
+    )
+        .toEqual(
             {
                 ...defaultConfig,
-            }
-        )
-    ).toBe(true)
+                themes: [...themes, ...custom.themes],
+                values: {
+                    ...values,
+                    width: {
+                        ...values.width,
+                        ...custom.values.width
+                    }
+                }
+            })
 });
