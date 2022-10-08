@@ -21,7 +21,7 @@ module.exports = class CreateColorScssPlugin {
                                 name += '-' + level;
                             }
 
-                            data += '$' + name + ': #' + levelColors[level] + ';';
+                            data += '$' + name + ':' + levelColors[level] + ';';
                         }
                     }
     
