@@ -58,7 +58,7 @@ export class MasterCSS extends MutationObserver {
         if (value.semantics) {
             for (const semanticName in value.semantics) {
                 this.semanticRegexpMap.set(
-                    new RegExp('^' + semanticName + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)'),
+                    new RegExp('^' + semanticName + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'),
                     { name: semanticName, value: value.semantics[semanticName] }
                 );
             }
@@ -466,7 +466,7 @@ export class MasterCSS extends MutationObserver {
      * 尋找匹配的 MasterCSSRule 生成實例
      */
     findAndNew(name: string) {
-        const findAndNewRule = (className: string, themes?: string[]) => {
+        const findAndNewRule = (className: string) => {
             if (className in this.ruleOfName)
                 return this.ruleOfName[className];
 
@@ -486,13 +486,13 @@ export class MasterCSS extends MutationObserver {
             }
 
             for (const entry of this.semanticRegexpMap.entries()) {
-                if (name.match(entry[0]))
+                if (className.match(entry[0]))
                     return new MasterCSSRule(
-                        name, 
+                        className, 
                         this.config, 
                         undefined, 
                         undefined, 
-                        this.relationThemesMap?.[name], 
+                        this.relationThemesMap?.[className], 
                         this.themes, 
                         { origin: 'semantics', value: entry[1].name },
                         this
@@ -500,9 +500,16 @@ export class MasterCSS extends MutationObserver {
             }
         };
 
+        if (name === 'btnFilled') {
+            console.log(
+                Object.keys(this.classesThemesMap[name])
+                .map(findAndNewRule)
+            );
+        }
+
         return name in this.classesThemesMap
-            ? Object.entries(this.classesThemesMap[name])
-                .map(([className, themes]) => findAndNewRule(className, themes))
+            ? Object.keys(this.classesThemesMap[name])
+                .map(findAndNewRule)
                 .filter(eachRule => eachRule)
             : findAndNewRule(name);
     }

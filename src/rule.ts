@@ -543,8 +543,6 @@ export class MasterCSSRule {
                     newValue = newValueTokens.reduce((previousVal, currentVal, i) => previousVal + currentVal + ((currentVal === ',' || valueTokens[i + 1] === ',' || i === valueTokens.length - 1) ? '' : ' '), '');
                 }
 
-                console.log(colorful, valueTokens, newValue);
-
                 if (typeof newValue !== 'object') {
                     // 7. parseValue
                     if (this.parseValue) {
