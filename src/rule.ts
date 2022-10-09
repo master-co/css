@@ -494,7 +494,13 @@ export class MasterCSSRule {
                         ? Object
                             .entries(relationThemesMap)
                             .filter(() => !this.getThemeProps)
-                            .map(([theme, classNames]) => classNames.reduce((a, className) => a + ', ' + ((!colorful && theme) ? '.' + theme + ' ' : '') + prefixText + '.' + CSS.escape(className) + this.suffixSelector, ''))
+                            .map(([relationTheme, classNames]) => 
+                                classNames.reduce((a, className) => {
+                                    const prefixTheme = this.theme ?? relationTheme;
+
+                                    return a + ', ' + (prefixTheme ? '.' + prefixTheme + ' ' : '') + prefixText + '.' + CSS.escape(className) + this.suffixSelector;
+                                }, '')
+                            )
                             .join('')
                         : '')
                     + '{'
@@ -542,8 +548,6 @@ export class MasterCSSRule {
                 } else {
                     newValue = newValueTokens.reduce((previousVal, currentVal, i) => previousVal + currentVal + ((currentVal === ',' || valueTokens[i + 1] === ',' || i === valueTokens.length - 1) ? '' : ' '), '');
                 }
-
-                console.log(colorful, valueTokens, newValue);
 
                 if (typeof newValue !== 'object') {
                     // 7. parseValue

@@ -58,7 +58,7 @@ export class MasterCSS extends MutationObserver {
         if (value.semantics) {
             for (const semanticName in value.semantics) {
                 this.semanticRegexpMap.set(
-                    new RegExp('^' + semanticName + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)'),
+                    new RegExp('^' + semanticName + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'),
                     { name: semanticName, value: value.semantics[semanticName] }
                 );
             }
@@ -466,7 +466,7 @@ export class MasterCSS extends MutationObserver {
      * 尋找匹配的 MasterCSSRule 生成實例
      */
     findAndNew(name: string) {
-        const findAndNewRule = (className: string, themes?: string[]) => {
+        const findAndNewRule = (className: string) => {
             if (className in this.ruleOfName)
                 return this.ruleOfName[className];
 
@@ -486,13 +486,13 @@ export class MasterCSS extends MutationObserver {
             }
 
             for (const entry of this.semanticRegexpMap.entries()) {
-                if (name.match(entry[0]))
+                if (className.match(entry[0]))
                     return new MasterCSSRule(
-                        name, 
+                        className, 
                         this.config, 
                         undefined, 
                         undefined, 
-                        this.relationThemesMap?.[name], 
+                        this.relationThemesMap?.[className], 
                         this.themes, 
                         { origin: 'semantics', value: entry[1].name },
                         this
@@ -501,8 +501,8 @@ export class MasterCSS extends MutationObserver {
         };
 
         return name in this.classesThemesMap
-            ? Object.entries(this.classesThemesMap[name])
-                .map(([className, themes]) => findAndNewRule(className, themes))
+            ? Object.keys(this.classesThemesMap[name])
+                .map(findAndNewRule)
                 .filter(eachRule => eachRule)
             : findAndNewRule(name);
     }
@@ -511,7 +511,7 @@ export class MasterCSS extends MutationObserver {
      * 尋找匹配的 MasterCSSRule
      */
     find(name: string) {
-        const findRule = (className: string, themes?: string[]) => {
+        const findRule = (className: string) => {
             for (const EachRule of this.config.Rules) {
                 const matching = EachRule.match(className, this.colorNames);
                 if (matching)
@@ -525,8 +525,8 @@ export class MasterCSS extends MutationObserver {
         };
 
         return name in this.classesThemesMap
-            ? Object.entries(this.classesThemesMap[name])
-                .map(([className, themes]) => findRule(className, themes))
+            ? Object.keys(this.classesThemesMap[name])
+                .map(findRule)
                 .filter(eachRule => eachRule)
             : findRule(name);
     }
@@ -923,9 +923,24 @@ export class MasterCSS extends MutationObserver {
 
             if (this.style) {
                 const sheet = this.style.sheet;
+
+                let cssRuleIndex: number = 0;
+
+                const previousRule = this.rules[index - 1];
+                if (previousRule) {
+                    const lastNativeCssRule = previousRule.natives[previousRule.natives.length - 1].cssRule;
+
+                    for (let i = 0; i < sheet.cssRules.length; i++) {
+                        if (sheet.cssRules[i] === lastNativeCssRule) {
+                            cssRuleIndex = i + 1;
+                            break;
+                        }
+                    }
+                }
+
                 for (const eachNative of rule.natives) {
-                    sheet.insertRule(eachNative.text, index);
-                    eachNative.cssRule = sheet.cssRules[index++];
+                    sheet.insertRule(eachNative.text, cssRuleIndex);
+                    eachNative.cssRule = sheet.cssRules[cssRuleIndex++];
                 }
             }
         } catch (error) {
@@ -964,11 +979,9 @@ export class MasterCSS extends MutationObserver {
         };
 
         if (className in this.classesThemesMap) {
-            for (const classNames of Object.values(this.classesThemesMap[className])) {
-                for (const eachClassName of classNames) {
-                    if (!(eachClassName in this.countOfName)) {
-                        deleteRule(eachClassName);
-                    }
+            for (const eachClassName of Object.keys(this.classesThemesMap[className])) {
+                if (!(eachClassName in this.countOfName)) {
+                    deleteRule(eachClassName);
                 }
             }
         } else {
