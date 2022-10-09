@@ -494,7 +494,13 @@ export class MasterCSSRule {
                         ? Object
                             .entries(relationThemesMap)
                             .filter(() => !this.getThemeProps)
-                            .map(([theme, classNames]) => classNames.reduce((a, className) => a + ', ' + ((!colorful && theme) ? '.' + theme + ' ' : '') + prefixText + '.' + CSS.escape(className) + this.suffixSelector, ''))
+                            .map(([relationTheme, classNames]) => 
+                                classNames.reduce((a, className) => {
+                                    const prefixTheme = this.theme ?? relationTheme;
+
+                                    return a + ', ' + (prefixTheme ? '.' + prefixTheme + ' ' : '') + prefixText + '.' + CSS.escape(className) + this.suffixSelector;
+                                }, '')
+                            )
                             .join('')
                         : '')
                     + '{'

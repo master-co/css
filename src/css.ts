@@ -500,13 +500,6 @@ export class MasterCSS extends MutationObserver {
             }
         };
 
-        if (name === 'btnFilled') {
-            console.log(
-                Object.keys(this.classesThemesMap[name])
-                .map(findAndNewRule)
-            );
-        }
-
         return name in this.classesThemesMap
             ? Object.keys(this.classesThemesMap[name])
                 .map(findAndNewRule)
@@ -518,7 +511,7 @@ export class MasterCSS extends MutationObserver {
      * 尋找匹配的 MasterCSSRule
      */
     find(name: string) {
-        const findRule = (className: string, themes?: string[]) => {
+        const findRule = (className: string) => {
             for (const EachRule of this.config.Rules) {
                 const matching = EachRule.match(className, this.colorNames);
                 if (matching)
@@ -532,8 +525,8 @@ export class MasterCSS extends MutationObserver {
         };
 
         return name in this.classesThemesMap
-            ? Object.entries(this.classesThemesMap[name])
-                .map(([className, themes]) => findRule(className, themes))
+            ? Object.keys(this.classesThemesMap[name])
+                .map(findRule)
                 .filter(eachRule => eachRule)
             : findRule(name);
     }
@@ -930,9 +923,24 @@ export class MasterCSS extends MutationObserver {
 
             if (this.style) {
                 const sheet = this.style.sheet;
+
+                let cssRuleIndex: number = 0;
+
+                const previousRule = this.rules[index - 1];
+                if (previousRule) {
+                    const lastNativeCssRule = previousRule.natives[previousRule.natives.length - 1].cssRule;
+
+                    for (let i = 0; i < sheet.cssRules.length; i++) {
+                        if (sheet.cssRules[i] === lastNativeCssRule) {
+                            cssRuleIndex = i + 1;
+                            break;
+                        }
+                    }
+                }
+
                 for (const eachNative of rule.natives) {
-                    sheet.insertRule(eachNative.text, index);
-                    eachNative.cssRule = sheet.cssRules[index++];
+                    sheet.insertRule(eachNative.text, cssRuleIndex);
+                    eachNative.cssRule = sheet.cssRules[cssRuleIndex++];
                 }
             }
         } catch (error) {
@@ -971,11 +979,9 @@ export class MasterCSS extends MutationObserver {
         };
 
         if (className in this.classesThemesMap) {
-            for (const classNames of Object.values(this.classesThemesMap[className])) {
-                for (const eachClassName of classNames) {
-                    if (!(eachClassName in this.countOfName)) {
-                        deleteRule(eachClassName);
-                    }
+            for (const eachClassName of Object.keys(this.classesThemesMap[className])) {
+                if (!(eachClassName in this.countOfName)) {
+                    deleteRule(eachClassName);
                 }
             }
         } else {
