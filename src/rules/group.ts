@@ -16,8 +16,11 @@ export class Group extends MasterCSSRule {
         const addProp = (theme: string, propertyName: string) => {
             const indexOfColon = propertyName.indexOf(':');
             if (indexOfColon !== -1) {
-                const props = themePropsMap[theme];
+                if (!(theme in themePropsMap)) {
+                    themePropsMap[theme] = {};
+                }
 
+                const props = themePropsMap[theme];
                 const name = propertyName.slice(0, indexOfColon);
                 if (!(name in props)) {
                     props[name] = propertyName.slice(indexOfColon + 1)
@@ -26,10 +29,6 @@ export class Group extends MasterCSSRule {
         }
         const handleRule = (rule: MasterCSSRule) => {
             const addProps = (theme: string, cssText: string) => {
-                if (!(theme in themePropsMap)) {
-                    themePropsMap[theme] = {};
-                }
-
                 const cssProperties = cssText.slice(CSS.escape(rule.name).length).match(bracketRegexp)[1].split(';');
                 for (const eachCssProperty of cssProperties) {
                     addProp(theme, eachCssProperty);
