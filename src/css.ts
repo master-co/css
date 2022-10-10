@@ -360,53 +360,65 @@ export class MasterCSS extends MutationObserver {
             }
             if (rootStyle) {
                 this.style = rootStyle;
-                // const checkDeep = (cssRule: any, parentCssRule: any) => {
-                //     if (cssRule.selectorText) {
-                //         const selectorTexts = cssRule.selectorText.split(', ');
-                //         const escapedClassNames = selectorTexts[0].split(' ');
 
-                //         for (let i = 0; i < escapedClassNames.length; i++) {
-                //             const eachSelectorText = escapedClassNames[i];
-                //             if (eachSelectorText[0] === '.') {
-                //                 const escapedClassName = eachSelectorText.slice(1);
+                for (let index = 0; index < this.style.sheet.cssRules.length; index++) {
+                    const getRule = (cssRule: any): MasterCSSRule => {
+                        if (cssRule.selectorText) {
+                            const selectorTexts = cssRule.selectorText.split(', ');
+                            const escapedClassNames = selectorTexts[0].split(' ');
+    
+                            for (let i = 0; i < escapedClassNames.length; i++) {
+                                const eachSelectorText = escapedClassNames[i];
+                                if (eachSelectorText[0] === '.') {
+                                    const escapedClassName = eachSelectorText.slice(1);
+    
+                                    let className = '';
+                                    for (let j = 0; j < escapedClassName.length; j++) {
+                                        const char = escapedClassName[j];
+                                        const nextChar = escapedClassName[j + 1];
+    
+                                        if (char === '\\') {
+                                            j++;
+    
+                                            if (nextChar !== '\\') {
+                                                className += nextChar;
+    
+                                                continue;
+                                            }
+                                        } else if (selectorSymbols.includes(char)) {
+                                            break;
+                                        }
+    
+                                        className += char;
+                                    }
+    
+                                    if (!(className in this.ruleOfName) && !(className in this.classesThemesMap)) {
+                                        const currentRule = this.findAndNew(className) as MasterCSSRule;
+                                        if (currentRule)
+                                            return currentRule;
+                                    }
+                                }
+                            }
+                        } else if (cssRule.cssRules) {
+                            for (let index = 0; index < cssRule.cssRules.length; index++) {
+                                const currentRule = getRule(cssRule.cssRules[index]);
+                                if (currentRule)
+                                    return currentRule;
+                            }
+                        }
+                    };
+                    const rule = getRule(this.style.sheet.cssRules[index]);
+                    if (rule) {
+                        this.rules.push(rule);
+                        this.ruleOfName[rule.name] = rule;
 
-                //                 let className = '';
-                //                 for (let j = 0; j < escapedClassName.length; j++) {
-                //                     const char = escapedClassName[j];
-                //                     const nextChar = escapedClassName[j + 1];
+                        for (let i = 0; i < rule.natives.length; i++) {
+                            rule.natives[i].cssRule = this.style.sheet.cssRules[index + i];
+                        }
 
-                //                     if (char === '\\') {
-                //                         j++;
-
-                //                         if (nextChar !== '\\') {
-                //                             className += nextChar;
-
-                //                             continue;
-                //                         }
-                //                     } else if (selectorSymbols.includes(char)) {
-                //                         break;
-                //                     }
-
-                //                     className += char;
-                //                 }
-
-                //                 if (!(className in this.ruleOfName) && !(className in this.classesThemesMap)) {
-                //                     const style = this.findAndNew(className) as MasterCSSRule;
-                //                     if (style) {
-                //                         style.cssRule = parentCssRule ?? cssRule;
-                //                         this.rules.push(style);
-                //                         this.ruleOfName[style.name] = style;
-                //                     }
-                //                 }
-                //             }
-                //         }
-                //     } else if (cssRule.cssRules) {
-                //         for (let index = 0; index < cssRule.cssRules.length; index++) {
-                //             checkDeep(cssRule.cssRules[index], parentCssRule ?? cssRule.cssRules[index]);
-                //         }
-                //     }
-                // };
-                // checkDeep(rootStyle.sheet, undefined);
+                        index += rule.natives.length - 1;
+                    }
+                }
             } else {
                 this.style = STYLE.cloneNode() as HTMLStyleElement;
                 /** 使用 prepend 而非 append 去降低 rules 類的優先層級，無法強制排在所有 <style> 之後 */

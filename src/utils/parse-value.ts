@@ -9,12 +9,18 @@ export function parseValue(
     colorsThemesMap?: Record<string, Record<string, Record<string, string>>>,
     values?: Record<string, string | number>,
     rootSize?: number,
-    themes?: string[],
-    bypassWhenUnmatchColor?: boolean
-) {
+    themes?: string[]
+): {
+    value: string,
+    unit: string,
+    unitToken: string,
+    colorMatched?: boolean
+} {
     let value: any = values ? values[token] : '';
     let unit: string = '';
     let unitToken: string = '';
+    let colorMatched: boolean = undefined; 
+
     if (value) {
         return { value, unit, unitToken }
     } else if (typeof token === 'number') {
@@ -23,7 +29,7 @@ export function parseValue(
     } else {
         if (colorsThemesMap) {
             const colorNames = Object.keys(colorsThemesMap);
-            let allMatched = true;
+            let anyMatched = false;
             let hasColorName = false;
             
             token = token.replace(
@@ -38,7 +44,10 @@ export function parseValue(
                             if (hexColor = themeHexColorMap[eachTheme])
                                 break;
                         }
+
                         if (hexColor) {
+                            anyMatched = true;
+
                             let newValue = hexColor;
                             if (opacityStr) {
                                 let opacity = +opacityStr;
@@ -50,16 +59,15 @@ export function parseValue(
                             }
     
                             return prefix + newValue;
-                        } else if (bypassWhenUnmatchColor) {
-                            allMatched = false;
                         }
                     }
 
                     return origin;
                 });
 
-            if (!allMatched || bypassWhenUnmatchColor && !hasColorName && themes[0])
-                return undefined;
+            if (hasColorName) {
+                colorMatched = anyMatched;
+            }
         }
         if (defaultUnit) {
             const matches = token.match(UNIT_VALUE_PATTERN);
@@ -91,5 +99,5 @@ export function parseValue(
             : normalizeCssCalcText(token))
             .replace(/\$\(((\w|-)+)\)/g, VAR_START + '$1)');;
     }
-    return { value, unit, unitToken }
+    return { value, unit, unitToken, colorMatched };
 }

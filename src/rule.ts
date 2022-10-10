@@ -516,8 +516,7 @@ export class MasterCSSRule {
 
             const newValueTokens: string[] = [];
             if (valueTokens) {
-                let uv;
-
+                let uv, anyColorMatched: boolean = undefined;
                 for (const eachValueToken of valueTokens) {
                     if (typeof eachValueToken === 'string') {
                         newValueTokens.push(eachValueToken);
@@ -528,16 +527,19 @@ export class MasterCSSRule {
                             colorsThemesMap, 
                             values, 
                             rootSize, 
-                            this.theme ? [this.theme, ''] : [theme], 
-                            bypassWhenUnmatchColor
+                            this.theme ? [this.theme, ''] : [theme]
                         );
-                        if (!uv)
-                            return;
+                        if (uv.colorMatched !== undefined && anyColorMatched !== true) {
+                            anyColorMatched = uv.colorMatched;
+                        }
     
                         newValueTokens.push(uv.value + uv.unit);
                     }
                 }
-    
+
+                if (bypassWhenUnmatchColor && (anyColorMatched === undefined ? theme : !anyColorMatched))
+                    return;
+
                 if (newValueTokens.length === 1) {
                     if (uv) {
                         newValue = uv.value;
