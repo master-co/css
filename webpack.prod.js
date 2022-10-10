@@ -27,6 +27,7 @@ module.exports = {
         }
         return entrypoint;
     }, {}),
+    devtool: 'source-map',
     resolve: jsConfig.resolve,
     externals: [
         ...Object.keys(package.peerDependencies || []),
