@@ -6,7 +6,7 @@ module.exports = configure({
         card: 'p:20 b:1|solid|gray-80 bg:white'
     },
     values: {
-        width: {
+        Width: {
             '2x': '2rem',
             '3x': '3rem',
         }

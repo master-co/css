@@ -82,11 +82,3 @@ test("colors", () => {
         new MasterCSS(config)
     );
 });
-
-test("colors", () => {
-    testCSS(
-        "fg:primary", 
-        ".fg\\:primary{color:#175fe9}.dark .fg\\:primary{color:#6b9ef1}",
-        new MasterCSS(config)
-    );
-});

@@ -3,7 +3,6 @@ import { dash, MARGIN, SCROLL } from '../constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from '../constants/direction';
 
 export class ScrollMargin extends MasterCSSRule {
-    static id = 'scrollMargin';
     static override matches = /^scroll-m([xytblr]|argin(-(top|bottom|left|right))?)?:./;
     override get(declaration): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'm') {

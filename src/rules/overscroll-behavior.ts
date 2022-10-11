@@ -2,7 +2,6 @@ import { dash, OVERSCROLL_BEHAVIOR, X, Y } from '../constants/css-property-keywo
 import { MasterCSSRule } from '../rule';
 
 export class OverscrollBehavior extends MasterCSSRule {
-    static id = 'overscrollBehavior';
     static override matches = /^overscroll-behavior(?:-[xy])?:/;
     override get(declaration): { [key: string]: any } {
         switch (this.prefix.slice(-2, -1)) {

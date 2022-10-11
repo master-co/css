@@ -415,7 +415,7 @@ export class MasterCSS extends MutationObserver {
                     const rule = getRule(this.style.sheet.cssRules[index]);
                     if (rule) {
                         this.rules.push(rule);
-                        this.ruleOfName[rule.name] = rule;
+                        this.ruleOfName[rule.className] = rule;
 
                         for (let i = 0; i < rule.natives.length; i++) {
                             rule.natives[i].cssRule = this.style.sheet.cssRules[index + i];
@@ -563,7 +563,7 @@ export class MasterCSS extends MutationObserver {
      * 10. media width selectors
      */
     insert(rule: MasterCSSRule) {
-        if (this.ruleOfName[rule.name])
+        if (this.ruleOfName[rule.className])
             return;
             
         let index;
@@ -902,7 +902,7 @@ export class MasterCSS extends MutationObserver {
 
         try {
             this.rules.splice(index, 0, rule);
-            this.ruleOfName[rule.name] = rule;
+            this.ruleOfName[rule.className] = rule;
 
             if (this.style) {
                 const sheet = this.style.sheet;
@@ -954,7 +954,7 @@ export class MasterCSS extends MutationObserver {
                     }
 
                     this.rules.splice(this.rules.indexOf(rule), 1);
-                    delete this.ruleOfName[rule.name];
+                    delete this.ruleOfName[rule.className];
 
                     break;
                 }

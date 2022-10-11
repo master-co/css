@@ -7,7 +7,6 @@ const WEBKIT_FONT_SMOOTHING = dash(WEBKIT_PREFIX + FONT, SMOOTHING);
 const MOZ_OSXFONT_SMOOTHING = dash(MOZ_PREFIX + 'osx' + FONT, SMOOTHING);
 
 export class FontSmoothing extends MasterCSSRule {
-    static id = 'fontSmoothing';
     static override matches = /^f(ont)?:(antialiased|subpixel-antialiased)(?!\|)/;
     static override unit = '';
     override get(declaration): { [key: string]: any } {

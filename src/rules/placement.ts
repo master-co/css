@@ -2,7 +2,6 @@ import { CENTER, MIDDLE } from '../constants/css-property-keyword';
 import { BOTTOM, LEFT, RIGHT, TOP } from '../constants/direction';
 import { MasterCSSRule } from '../rule';
 
-// TODO: id
 export class Placement extends MasterCSSRule {
     static override matches = /^(top|left|right|bottom|center|middle):./;
     override get(declaration): { [key: string]: any } {

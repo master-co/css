@@ -49,7 +49,6 @@ export class MasterCSSRule {
     readonly prioritySelectorIndex: number = -1;
     readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, themeName: string, cssRule?: CSSRule }[] = [];
 
-    static id: string;
     static propName: string;
     static matches: RegExp;
     static colorStarts: string;
@@ -96,18 +95,18 @@ export class MasterCSSRule {
     };
 
     constructor(
-        public readonly name: string,
+        public readonly className: string,
         public readonly matching: RuleMatching,
         css: MasterCSS
     ) {
         const TargetRule = this.constructor as typeof MasterCSSRule;
-        let { id, unit, propName, colorful } = TargetRule;
+        let { name, unit, propName, colorful } = TargetRule;
         const { breakpoints, mediaQueries, semantics, rootSize } = css.config;
-        const values = css.config.values[TargetRule.id];
-        const relationThemesMap = css.relationThemesMap[name];
+        const values = css.config.values[name];
+        const relationThemesMap = css.relationThemesMap[className];
         const { themeNames, colorsThemesMap, selectors } = css;
 
-        let token = name;
+        let token = className;
 
         // 1. value / selectorToken
         let value: string | Record<string, string | number>, prefixToken: string, suffixToken: string, valueTokens: (string | { value: string })[];
@@ -117,7 +116,7 @@ export class MasterCSSRule {
         } else {
             let valueToken: string;
             if (matching.origin === MATCHES) {
-                if (id === GROUP) {
+                if (name === GROUP) {
                     let i = 0;
                     for (; i < token.length; i++) {
                         if (token[i] === '{' && token[i - 1] !== '\\') {
@@ -483,7 +482,7 @@ export class MasterCSSRule {
                         .join(', ');
                 };
 
-                let cssText = getCssText(themeName, this.name)
+                let cssText = getCssText(themeName, className)
                     + (relationThemesMap
                         ? Object
                             .entries(relationThemesMap)

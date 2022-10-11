@@ -192,7 +192,7 @@ const { BorderImage } = require('../rules/border-image');
 const { Group } = require('../rules/group');
 const { CounterIncrement } = require('../rules/counter-increment');
 
-const Rules = [
+module.exports = [
     Group,
     Variable,
     FontWeight,
@@ -202,21 +202,17 @@ const Rules = [
     Margin,
     Padding,
     FontSize,
-    // flex
     FlexBasis,
     FlexWrap,
     FlexGrow,
     FlexShrink,
     FlexDirection,
-    Flex, // last
-    Display, // after FlexStyle
-    // area
-    // Area,
+    Flex,
+    Display,
     Width,
     Height,
     MinWidth,
     MinHeight,
-
     Contain,
     Content,
     CounterIncrement,
@@ -274,18 +270,15 @@ const Rules = [
     TextStroke,
     BoxShadow,
     TableLayout,
-    // transform
     TransformBox,
     TransformStyle,
     TransformOrigin,
-    Transform, // last
-    // transition
+    Transform,
     TransitionProperty,
     TransitionTimingFunction,
     TransitionDuration,
     TransitionDelay,
-    Transition, // last
-    // animation
+    Transition,
     AnimationDelay,
     AnimationDirection,
     AnimationDuration,
@@ -295,7 +288,6 @@ const Rules = [
     AnimationPlayState,
     AnimationTimingFunction,
     Animation,
-    // border
     BorderColor,
     BorderRadius,
     BorderStyle,
@@ -303,14 +295,12 @@ const Rules = [
     BorderCollapse,
     BorderSpacing,
     Border,
-    // border-image
     BorderImageOutset,
     BorderImageRepeat,
     BorderImageSlice,
     BorderImageSource,
     BorderImageWidth,
     BorderImage,
-    // background
     BackgroundAttachment,
     BackgroundBlendMode,
     BackgroundClip,
@@ -321,11 +311,9 @@ const Rules = [
     BackgroundSize,
     BackgroundImage,
     Background,
-    // effect
     MixBlendMode,
     BackdropFilter,
     Filter,
-    // svg
     Fill,
     StrokeDasharray,
     StrokeDashoffset,
@@ -337,7 +325,6 @@ const Rules = [
     Cy,
     Rx,
     Ry,
-    // grid
     GridColumnStart,
     GridColumnEnd,
     GridColumn,
@@ -357,22 +344,18 @@ const Rules = [
     Grid,
     Gap,
     Order,
-    // break
     BreakInside,
     BreakBefore,
     BreakAfter,
     BoxDecorationBreak,
     AspectRadio,
     ColumnSpan,
-    // align
     AlignContent,
     AlignItems,
     AlignSelf,
-    // justify
     JustifyContent,
     JustifyItems,
     JustifySelf,
-    // place
     PlaceContent,
     PlaceItems,
     PlaceSelf,
@@ -380,7 +363,6 @@ const Rules = [
     ListStyleType,
     ListStyleImage,
     ListStyle,
-    // outline
     OutlineColor,
     OutlineOffset,
     OutlineStyle,
@@ -389,7 +371,6 @@ const Rules = [
     AccentColor,
     Appearance,
     CaretColor,
-    // scroll
     ScrollBehavior,
     ScrollMargin,
     ScrollPadding,
@@ -405,12 +386,4 @@ const Rules = [
     ClipPath,
     Quotes,
     MaskImage
-]
-
-for (const Rule of Rules) {
-    if (!Rule.id && Rule.propName) {
-        Rule.id = Rule.propName.replace(/-./g, x => x[1].toUpperCase())
-    }
-}
-
-module.exports = Rules;
+];

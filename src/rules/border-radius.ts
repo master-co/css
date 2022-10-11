@@ -10,7 +10,6 @@ const BORDER_TOP_LEFT_RADIUS = dash(BORDER, TOP, LEFT, RADIUS),
     BORDER_RADIUS_S = [BORDER_TOP_LEFT_RADIUS, BORDER_TOP_RIGHT_RADIUS, BORDER_BOTTOM_LEFT_RADIUS, BORDER_BOTTOM_RIGHT_RADIUS];
 
 export class BorderRadius extends MasterCSSRule {
-    static id = 'borderRadius';
     static override matches = /^((r[tblr]?[tblr]?|border(-(top|bottom)-(left|right))?-radius):.)/;
     override get(declaration): { [key: string]: any } {
         if (this.prefix) {

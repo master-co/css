@@ -3,7 +3,6 @@ import { dash, MARGIN, PADDING } from '../constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from '../constants/direction';
 
 export class Spacing extends MasterCSSRule {
-    static override id = 'spacing';
     static override matches = /^[pm][xytblr]?:./;
     override get(declaration): { [key: string]: any } {
         const charAt1 = this.prefix[0];

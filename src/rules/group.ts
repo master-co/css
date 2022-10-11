@@ -7,7 +7,6 @@ import { MasterCSSDeclaration } from 'src/interfaces/declaration';
 const bracketRegexp = /\{(.*)\}/;
 
 export class Group extends MasterCSSRule {
-    static id = GROUP;
     static override matches = /^(?:.+?[*_>~+])?\{.+?\}/;
     static override unit = '';
     override getThemeProps(declaration: MasterCSSDeclaration, css: MasterCSS): Record<string, Record<string, string>> {
@@ -29,7 +28,7 @@ export class Group extends MasterCSSRule {
         }
         const handleRule = (rule: MasterCSSRule) => {
             const addProps = (themeName: string, cssText: string) => {
-                const cssProperties = cssText.slice(CSS.escape(rule.name).length).match(bracketRegexp)[1].split(';');
+                const cssProperties = cssText.slice(CSS.escape(rule.className).length).match(bracketRegexp)[1].split(';');
                 for (const eachCssProperty of cssProperties) {
                     addProp(themeName, eachCssProperty);
                 }
