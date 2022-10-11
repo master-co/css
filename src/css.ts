@@ -1,4 +1,4 @@
-import { defaultConfig } from './default-config';
+import { defaultConfig } from './configs';
 import { init } from './init';
 import { MasterCSSConfig } from './interfaces/config';
 import { MasterCSSRule } from './rule';

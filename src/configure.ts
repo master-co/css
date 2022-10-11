@@ -1,4 +1,4 @@
-import { defaultConfig } from './default-config';
+import { defaultConfig } from './configs';
 import { MasterCSSConfig } from './interfaces/config';
 import { mergeAndConcat } from './utils/merge';
 

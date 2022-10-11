@@ -4,10 +4,10 @@ import semantics from './semantics'
 import values from './values'
 import selectors from './selectors'
 import themes from './themes'
-import { Rules } from './rules'
-import { MasterCSSConfig } from './interfaces/config'
+import { Rules } from '../rules'
+import { MasterCSSConfig } from '../interfaces/config'
 
-export const defaultConfig: MasterCSSConfig = {
+const defaultConfig: MasterCSSConfig = {
     colors,
     breakpoints,
     semantics,
@@ -16,4 +16,14 @@ export const defaultConfig: MasterCSSConfig = {
     Rules,
     themes,
     rootSize: 16
+}
+
+export {
+    colors,
+    breakpoints,
+    semantics,
+    values,
+    selectors,
+    themes,
+    defaultConfig
 }
