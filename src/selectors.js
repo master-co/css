@@ -1,7 +1,7 @@
 module.exports = {
     '::scrollbar': '::-webkit-scrollbar',
     '::slider-thumb': ['::-webkit-slider-thumb', '::-moz-range-thumb'],
-    '::slider-runnable-track': '::-webkit-slider-runnable-track',
+    '::slider-runnable-track': ['::-webkit-slider-runnable-track', '::-moz-range-track'],
     '::meter': '::-webkit-meter',
     '::resizer': '::-webkit-resizer',
     '::progress': '::-webkit-progress',
