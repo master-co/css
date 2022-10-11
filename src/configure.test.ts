@@ -1,6 +1,5 @@
 import { configure } from './configure';
-import { defaultConfig } from './config';
-import { themes, values } from './index';
+import { defaultConfig, defaultThemes, defaultValues } from './config';
 
 test("configure", () => {
     const custom = {
@@ -17,11 +16,11 @@ test("configure", () => {
         .toEqual(
             {
                 ...defaultConfig,
-                themes: [...themes, ...custom.themes],
+                themes: [...defaultThemes, ...custom.themes],
                 values: {
-                    ...values,
+                    ...defaultValues,
                     width: {
-                        ...values.width,
+                        ...defaultValues.width,
                         ...custom.values.width
                     }
                 }

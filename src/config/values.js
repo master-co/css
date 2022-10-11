@@ -1,5 +1,5 @@
 const breakpoints = require('./breakpoints');
-const { dash, FIT, MAX, MIN, CONTENT, COLUMN } = require('./constants/css-property-keyword');
+const { dash, FIT, MAX, MIN, CONTENT, COLUMN } = require('../constants/css-property-keyword');
 
 const boxUnderneath = {
     content: 'content-box',

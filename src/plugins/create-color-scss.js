@@ -1,5 +1,5 @@
 const webpack = require("webpack");
-const colors = require('../colors');
+const colors = require('../config/colors');
 const { RawSource } = require("webpack-sources");
 const fillColorScale = require('../fill-color-scale');
 

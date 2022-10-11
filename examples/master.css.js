@@ -1,4 +1,4 @@
-const { configure } = require('@master/css')
+const { configure } = require('../src/configure');
 
 module.exports = configure({
     classes: {
@@ -21,7 +21,7 @@ module.exports = configure({
         desktop: '1280px',
     },
     selectors: {
-        custom: '>div>:first+button'
+        '>custom': '>div>:first+button'
     },
     mediaQueries: {
         watch: '(max-device-width:42mm) and (min-device-width:38mm)'

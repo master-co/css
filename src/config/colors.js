@@ -1,4 +1,4 @@
-const fillColorScale = require('./fill-color-scale')
+const fillColorScale = require('../fill-color-scale')
 
 module.exports = {
     slate: fillColorScale({
