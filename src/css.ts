@@ -48,7 +48,7 @@ export class MasterCSS extends MutationObserver {
         this.#config = value;
 
         this.semanticRegexpMap = new Map();
-        this.classesThemesMap = {};
+        this.classes = {};
         this.colorsThemesMap = {};
         this.relationThemesMap = {};
         this.relations = {};
@@ -76,6 +76,11 @@ export class MasterCSS extends MutationObserver {
                         .replace(/(?:\n(?:\s*))+/g, ' ')
                         .trim()
                         .split(' ');
+
+                if (!(semanticName in this.classes)) {
+                    this.classes[semanticName] = [];
+                }
+                const currentClass = this.classes[semanticName];
                 for (const eachClassName of classNames) {
                     if (eachClassName in this.relationThemesMap) {
                         if (theme in this.relationThemesMap[eachClassName]) {
@@ -86,22 +91,10 @@ export class MasterCSS extends MutationObserver {
                     } else {
                         this.relationThemesMap[eachClassName] = { [theme]: [semanticName] };
                     }
-                }
 
-                if (semanticName in this.classesThemesMap) {
-                    const themesMap = this.classesThemesMap[semanticName];
-                    for (const eachClassName of classNames) {
-                        if (eachClassName in themesMap) {
-                            themesMap[eachClassName].push(theme);
-                        } else {
-                            themesMap[eachClassName] = [theme];
-                        }
+                    if (!currentClass.includes(eachClassName)) {
+                        currentClass.push(eachClassName);
                     }
-                } else {
-                    this.classesThemesMap[semanticName] = classNames.reduce((obj, eachClassName) => {
-                        obj[eachClassName] = [theme];
-                        return obj;
-                    }, {});
                 }
             }
 
@@ -168,8 +161,8 @@ export class MasterCSS extends MutationObserver {
         return this.#config;
     }
 
-    private semanticRegexpMap: Map<RegExp, { name: string, value: string | Record<string, string | number> }>;
-    private classesThemesMap: Record<string, Record<string, string[]>>
+    private semanticRegexpMap: Map<RegExp, { name: string, value: string | Record<string, string | number> }>
+    private classes: Record<string, string[]>
     private colorsThemesMap: Record<string, Record<string, Record<string, string>>>
     private colorNames: string[]
     private themes: string[]
@@ -392,7 +385,7 @@ export class MasterCSS extends MutationObserver {
                                         className += char;
                                     }
     
-                                    if (!(className in this.ruleOfName) && !(className in this.classesThemesMap)) {
+                                    if (!(className in this.ruleOfName) && !(className in this.classes)) {
                                         const currentRule = this.findAndNew(className) as MasterCSSRule;
                                         if (currentRule)
                                             return currentRule;
@@ -512,8 +505,8 @@ export class MasterCSS extends MutationObserver {
             }
         };
 
-        return name in this.classesThemesMap
-            ? Object.keys(this.classesThemesMap[name])
+        return name in this.classes
+            ? this.classes[name]
                 .map(findAndNewRule)
                 .filter(eachRule => eachRule)
             : findAndNewRule(name);
@@ -536,8 +529,8 @@ export class MasterCSS extends MutationObserver {
             }
         };
 
-        return name in this.classesThemesMap
-            ? Object.keys(this.classesThemesMap[name])
+        return name in this.classes
+            ? this.classes[name]
                 .map(findRule)
                 .filter(eachRule => eachRule)
             : findRule(name);
@@ -990,8 +983,8 @@ export class MasterCSS extends MutationObserver {
             }
         };
 
-        if (className in this.classesThemesMap) {
-            for (const eachClassName of Object.keys(this.classesThemesMap[className])) {
+        if (className in this.classes) {
+            for (const eachClassName of this.classes[className]) {
                 if (!(eachClassName in this.countOfName)) {
                     deleteRule(eachClassName);
                 }

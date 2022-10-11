@@ -493,7 +493,6 @@ export class MasterCSSRule {
                     + (relationThemesMap
                         ? Object
                             .entries(relationThemesMap)
-                            .filter(() => !this.getThemeProps)
                             .map(([relationTheme, classNames]) => 
                                 classNames.reduce((a, className) => {
                                     const prefixTheme = this.theme ?? relationTheme;
@@ -627,6 +626,7 @@ export class MasterCSSRule {
             insertNewNative('', false);
         }
         
+        console.log(relationThemesMap);
         console.log(this);
     }
 }
