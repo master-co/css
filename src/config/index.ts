@@ -5,7 +5,7 @@ import defaultValues from './values'
 import defaultSelectors from './selectors'
 import defaultThemes from './themes'
 import defaultRootSize from './root-size'
-import { Rules as defaultRules } from '../rules';
+import defaultRules from './rules';
 import { MasterCSSConfig } from '../interfaces/config'
 
 const defaultConfig: MasterCSSConfig = {
