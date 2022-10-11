@@ -5,6 +5,7 @@ export interface MasterCSSConfig {
     colors?: Record<string, string | Record<string, string>>
     breakpoints?: Record<string, number>
     mediaQueries?: Record<string, string>
+    selectors?: Record<string, string>
     semantics?: Record<string, string | Record<string, string | number>>
     values?: Record<string, Record<string, string | number>>
     Rules?: typeof MasterCSSRule[],
