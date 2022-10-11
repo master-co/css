@@ -5,7 +5,6 @@ import { parseValue } from './utils/parse-value';
 import { PRIORITY_SELECTORS } from './constants/priority-selectors';
 import { START_SYMBOL } from './constants/start-symbol';
 import { GROUP } from './constants/css-property-keyword';
-import { MasterCSSConfig } from './interfaces/config';
 import { MasterCSS } from './css';
 import { MasterCSSDeclaration } from './interfaces/css-property-info';
 
@@ -15,38 +14,14 @@ const SYMBOL = 'symbol';
 const WIDTH = 'width';
 const MAX_WIDTH = 'max-' + WIDTH;
 const MIN_WIDTH = 'min-' + WIDTH;
-const SCROLLBAR = 'scrollbar';
-const SEARCH = 'search';
-const METER = 'meter';
-const PROGRESS = 'progress';
-const RESIZER = 'resizer';
-const SLIDER = 'slider';
-const SLIDER_THUMB = SLIDER + '-thumb';
-const SLIDER_RUNNABLE_TRACK = SLIDER + '-runnable-track';
 const MOTION = 'motion';
 const REDUCE = 'reduce';
 const REDUCED_MOTION = REDUCE + 'd-' + MOTION;
-const PSEUDO_PREFIX = '::';
-const SCROLLBAR_PSEUDO = PSEUDO_PREFIX + SCROLLBAR;
-const SLIDER_THUMB_PSEUDO = PSEUDO_PREFIX + SLIDER_THUMB;
-const SLIDER_RUNNABLE_TRACK_PSEUDO = PSEUDO_PREFIX + SLIDER_RUNNABLE_TRACK;
-const SEARCH_PSEUDO = PSEUDO_PREFIX + SEARCH;
-const METER_PSEUDO = PSEUDO_PREFIX + METER;
-const RESIZER_PSEUDO = PSEUDO_PREFIX + RESIZER;
-const PROGRESS_PSEUDO = PSEUDO_PREFIX + PROGRESS;
-const WEBKIT_PSEUDO_PREFIX = PSEUDO_PREFIX + '-webkit-';
 
 const PX = 'px';
 const REM = 'rem';
 
 const selectorSymbols = ['!', '*', '>', '+', '~', ':', '[', '@', '_'];
-const scrollbarPseudoRegexp = new RegExp(SCROLLBAR_PSEUDO, 'g');
-const searchPseudoRegexp = new RegExp(SEARCH_PSEUDO, 'g');
-const meterPseudoRegexp = new RegExp(METER_PSEUDO, 'g');
-const sliderRunnableTrackPseudoRegexp = new RegExp(SLIDER_RUNNABLE_TRACK_PSEUDO, 'g');
-const sliderThumbPseudoRegexp = new RegExp(SLIDER_THUMB_PSEUDO, 'g');
-const resizerPseudoRegexp = new RegExp(RESIZER_PSEUDO, 'g');
-const progressPseudoRegexp = new RegExp(PROGRESS_PSEUDO, 'g');
 const selectorSplitRegexp = /(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/;
 const transformSelectorUnderline = (selector: string) => selector.split(selectorSplitRegexp)
     .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/\_/g, ' '))
@@ -62,8 +37,8 @@ export class MasterCSSRule {
     readonly prefix: string;
     readonly symbol: string;
     readonly token: string;
-    readonly prefixSelector: string;
-    readonly suffixSelector: string;
+    readonly prefixSelectors: string[];
+    readonly suffixSelectors: string[];
     readonly important: boolean;
     readonly media: MasterCSSMedia;
     readonly at: Record<string, string> = {};
@@ -130,7 +105,7 @@ export class MasterCSSRule {
         const { breakpoints, mediaQueries, semantics, rootSize } = css.config;
         const values = css.config.values[TargetRule.id];
         const relationThemesMap = css.relationThemesMap[name];
-        const { themeNames, colorsThemesMap } = css;
+        const { themeNames, colorsThemesMap, selectors } = css;
 
         let token = name;
 
@@ -260,80 +235,61 @@ export class MasterCSSRule {
             suffixToken = valueToken.slice(i);
         }
 
-        // ::scrollbar -> ::-webkit-scrollbar
-        if (suffixToken.includes(SCROLLBAR_PSEUDO)) {
-            suffixToken = suffixToken.replace(scrollbarPseudoRegexp, WEBKIT_PSEUDO_PREFIX + SCROLLBAR);
-        }
-        // ::search -> ::-webkit-search
-        if (suffixToken.includes(SEARCH_PSEUDO)) {
-            suffixToken = suffixToken.replace(searchPseudoRegexp, WEBKIT_PSEUDO_PREFIX + SEARCH);
-        }
-        // ::slider-thumb -> ::-webkit-slider-thumb
-        if (suffixToken.includes(SLIDER_THUMB_PSEUDO)) {
-            suffixToken = suffixToken.replace(sliderThumbPseudoRegexp, WEBKIT_PSEUDO_PREFIX + SLIDER_THUMB);
-        }
-        // ::slider-runnable-track -> ::-webkit-slider-runnable-track
-        if (suffixToken.includes(SLIDER_RUNNABLE_TRACK_PSEUDO)) {
-            suffixToken = suffixToken.replace(sliderRunnableTrackPseudoRegexp, WEBKIT_PSEUDO_PREFIX + SLIDER_RUNNABLE_TRACK);
-        }
-        // ::meter -> ::-webkit-meter
-        if (suffixToken.includes(METER_PSEUDO)) {
-            suffixToken = suffixToken.replace(meterPseudoRegexp, WEBKIT_PSEUDO_PREFIX + METER);
-        }
-        // ::resizer -> ::-webkit-resizer
-        if (suffixToken.includes(RESIZER_PSEUDO)) {
-            suffixToken = suffixToken.replace(resizerPseudoRegexp, WEBKIT_PSEUDO_PREFIX + RESIZER);
-        }
-        // ::progress -> ::-webkit-progress
-        if (suffixToken.includes(PROGRESS_PSEUDO)) {
-            suffixToken = suffixToken.replace(progressPseudoRegexp, WEBKIT_PSEUDO_PREFIX + PROGRESS);
-        }
-        // :first -> :first-child
-        if (suffixToken.includes(':first')) {
-            suffixToken = suffixToken.replace(/:first(?![a-z-])/g, ':first-child');
-        }
-        // :last -> :last-child
-        if (suffixToken.includes(':last')) {
-            suffixToken = suffixToken.replace(/:last(?![a-z-])/g, ':last-child');
-        }
-        // :even -> :nth-child(2n)
-        if (suffixToken.includes(':even')) {
-            suffixToken = suffixToken.replace(/:even(?![a-z-])/g, ':nth-child(2n)');
-        }
-        // :odd -> :nth-child(odd)
-        if (suffixToken.includes(':odd')) {
-            suffixToken = suffixToken.replace(/:odd(?![a-z-])/g, ':nth-child(odd)');
-        }
-        // :nth( -> :nth-child(
-        if (suffixToken.includes(':nth(')) {
-            suffixToken = suffixToken.replace(/:nth\(/g, ':nth-child(');
-        }
-
         // 2. !important
         if (suffixToken[0] === '!') {
             this.important = true;
             suffixToken = suffixToken.slice(1);
         }
-
+       
         // 3. prefix selector
-        this.prefixSelector = prefixToken
-            ? transformSelectorUnderline(prefixToken)
-            : '';
+        this.prefixSelectors = prefixToken
+            ? transformSelectorUnderline(prefixToken).split(',')
+            : [''];
 
         // 4. suffix selector
         const suffixTokens = suffixToken.split('@');
         let suffixSelector = suffixTokens[0];
         if (suffixSelector) {
-            suffixSelector = transformSelectorUnderline(suffixSelector);
-            this.hasWhere = suffixSelector.includes(':where(');
-            for (let i = 0; i < PRIORITY_SELECTORS.length; i++) {
-                if (suffixSelector.includes(PRIORITY_SELECTORS[i])) {
-                    this.prioritySelectorIndex = i;
-                    break;
+            this.suffixSelectors = [];
+
+            const originalSuffixTokens = transformSelectorUnderline(suffixSelector).split(',');
+            for (let eachOriginalSuffixToken of originalSuffixTokens) {
+                for (const eachSingleSelectorEntry of selectors.single) {
+                    eachOriginalSuffixToken = eachOriginalSuffixToken.replace(eachSingleSelectorEntry[0], eachSingleSelectorEntry[1]);
+                }
+
+                const transform = (selectorText: string) => {
+                    for (const eachMultipleSelectorEntry of selectors.multiple) {
+                        if (eachMultipleSelectorEntry[0].test(selectorText)) {
+                            for (const eachSelectorText of eachMultipleSelectorEntry[1]) {
+                                transform(selectorText.replace(eachMultipleSelectorEntry[0], eachSelectorText));
+                            }
+                            return;
+                        }
+                    }
+
+                    this.suffixSelectors.push(selectorText);
+                };
+                transform(eachOriginalSuffixToken);
+            }
+
+            for (const eachSuffixSelector of this.suffixSelectors) {
+                if (this.hasWhere !== false) {
+                    this.hasWhere = eachSuffixSelector.includes(':where(');
+                }
+
+                for (let i = 0; i < PRIORITY_SELECTORS.length; i++) {
+                    if (eachSuffixSelector.includes(PRIORITY_SELECTORS[i])) {
+                        if (this.prioritySelectorIndex === -1 || this.prioritySelectorIndex > i) {
+                            this.prioritySelectorIndex = i;
+                        }
+                        break;
+                    }
                 }
             }
+        } else {
+            this.suffixSelectors = [''];
         }
-        this.suffixSelector = suffixSelector;
 
         // 5. atTokens
         for (let i = 1; i < suffixTokens.length; i++) {
@@ -470,35 +426,43 @@ export class MasterCSSRule {
                 themeName: string
             ) => {
                 let prefixText = '';
-                if (this.prefixSelector) {
-                    prefixText += this.prefixSelector;
-                }
                 if (this.direction) {
                     prefixText += '[dir=' + this.direction + '] ';
                 }
 
-                let cssText = 
-                    (themeName ? '.' + themeName + ' ' : '')
-                    + prefixText
-                    + '.'
-                    + CSS.escape(this.name)
-                    + this.suffixSelector
+                console.log(this.prefixSelectors, this.suffixSelectors);
+                const prefixTexts = this.prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText);
+                const getCssText = (themeName: string, name: string) => {
+                    const prefixThemeText = (themeName ? '.' + themeName + ' ' : '');
+                    const esacpedName = '.' + CSS.escape(name);
+                    return prefixTexts
+                        .map(eachPrefixText => prefixThemeText + eachPrefixText)
+                        .reduce((arr, eachPrefixText) => {
+                            arr.push(
+                                this.suffixSelectors
+                                    .reduce((_arr, eachSuffixSelector) => {
+                                        _arr.push(eachPrefixText + esacpedName + eachSuffixSelector);
+                                        return _arr;
+                                    }, [])
+                                    .join(', ')
+                            );
+                            return arr;
+                        }, [])
+                        .join(', ');
+                };
+
+                let cssText = getCssText(themeName, this.name)
                     + (relationThemesMap
                         ? Object
                             .entries(relationThemesMap)
                             .map(([relationTheme, classNames]) => 
-                                classNames.reduce((a, className) => {
-                                    const prefixThemeName = this.themeName ?? relationTheme;
-
-                                    return a + ', ' + (prefixThemeName ? '.' + prefixThemeName + ' ' : '') + prefixText + '.' + CSS.escape(className) + this.suffixSelector;
-                                }, '')
+                                classNames.reduce((str, className) => str + ', ' + getCssText(this.themeName ?? relationTheme, className), '')
                             )
                             .join('')
                         : '')
                     + '{'
                     + propertiesText
                     + '}';
-            
                 for (const key of Object.keys(this.at).sort((a, b) => b === 'supports' ? -1 : 1)) {
                     cssText = '@' + key + ' ' + this.at[key] + '{' + cssText + '}';
                 }
@@ -544,12 +508,12 @@ export class MasterCSSRule {
                 }
 
                 if (typeof newValue !== 'object') {
-                    // 7. parseValue
+                    // 8. parseValue
                     if (this.parseValue) {
                         newValue = this.parseValue(newValue);
                     }
 
-                    // 8. transform value
+                    // 9. transform value
                     if (colorful && newValue === 'current') {
                         newValue = 'currentColor';
                     } else if (values && newValue in values) {
@@ -559,20 +523,20 @@ export class MasterCSSRule {
                     const declaration = { unit: newUnit, value: newValue, important: this.important };
                     if (this.getThemeProps) {
                         const themeProps = this.getThemeProps(declaration, css);
-                        for (const theme in themeProps) {
+                        for (const themeName in themeProps) {
                             this.natives.push({ 
                                 unit: newUnit, 
                                 value: newValue, 
                                 text: generateCssText(
                                     Object
-                                        .entries(themeProps[theme])
+                                        .entries(themeProps[themeName])
                                         .map(([propertyName, propertyValue]) => getCssPropertyText(propertyName, {
                                             important: this.important,
                                             unit: '',
                                             value: propertyValue
                                         }))
                                         .join(';'),
-                                    theme
+                                    themeName
                                 ), 
                                 themeName 
                             });

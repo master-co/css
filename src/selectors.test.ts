@@ -14,6 +14,12 @@ test("shorthands", () => {
     testCSS("uppercase::first-letter", ".uppercase\\:\\:first-letter::first-letter{text-transform:uppercase}")
 })
 
-test("reactive-rules", ()=> {
+test("reactive-rules", () => {
     testCSS(":checked+{hide}", ":checked+.\\:checked\\+\\{hide\\}{display:none}")
+})
+
+test("multiple", () => {
+    testCSS("bg:black>li:nth(2):not(:nth(4))", ".bg\\:black\\>li\\:nth\\(2\\)\\:not\\(\\:nth\\(4\\)\\)>li:nth-child(2):not(:nth-child(4)){background-color:#000000}")
+    testCSS("bg:black::slider-thumb", ".bg\\:black\\:\\:slider-thumb::-webkit-slider-thumb, .bg\\:black\\:\\:slider-thumb::-moz-range-thumb{background-color:#000000}")
+    testCSS("content:'⦿':after,:before", ".content\\:\\'⦿\\'\\:after\\,\\:before:after, .content\\:\\'⦿\\'\\:after\\,\\:before:before{content:'⦿'}")
 })

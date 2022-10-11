@@ -54,13 +54,24 @@ export class MasterCSS extends MutationObserver {
         this.relations = {};
         this.colorNames = [];
         this.themeNames = [''];
+        this.selectors = { single: [], multiple: [] };
+
+        function escapeString(str) {
+            return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        }
 
         if (config.semantics) {
             for (const semanticName in config.semantics) {
-                this.semantics.push({
-                    name: semanticName,
-                    regexp: new RegExp('^' + semanticName + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm')
-                });
+                this.semantics.push([new RegExp('^' + escapeString(semanticName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'), semanticName]);
+            }
+        }
+        if (config.selectors) {
+            for (const entry of Object.entries(config.selectors)) {
+                const isSingle = typeof entry[1] === 'string';
+                this.selectors[isSingle ? 'single' : 'multiple'].push([
+                    new RegExp(escapeString(entry[0]) + '(?![a-z-])',  isSingle ? 'g' : ''),
+                    entry[1] as any
+                ]);
             }
         }
 
@@ -161,13 +172,14 @@ export class MasterCSS extends MutationObserver {
         return this._config;
     }
 
-    semantics: { name: string, regexp: RegExp }[]
+    semantics: [RegExp, string][];
     classes: Record<string, string[]>
     colorsThemesMap: Record<string, Record<string, Record<string, string>>>
     colorNames: string[]
     themeNames: string[]
     relationThemesMap: Record<string, Record<string, string[]>>
     relations: Record<string, string[]>
+    selectors: { single: [RegExp, string][], multiple: [RegExp, string[]][] }
 
     constructor(
         config: MasterCSSConfig = defaultConfig,
@@ -485,11 +497,11 @@ export class MasterCSS extends MutationObserver {
                     );
             }
 
-            for (const eachSemantic of this.semantics) {
-                if (className.match(eachSemantic.regexp))
+            for (const eachSemanticEntry of this.semantics) {
+                if (className.match(eachSemanticEntry[0]))
                     return new MasterCSSRule(
                         className,
-                        { origin: 'semantics', value: eachSemantic.name },
+                        { origin: 'semantics', value: eachSemanticEntry[1] },
                         this
                     );
             }
