@@ -23,29 +23,29 @@ for (const key in breakpoints) {
 }
 
 module.exports = {
-    backgroundClip: boxUnderneath,
-    backgroundOrigin: boxUnderneath,
-    boxSizing: {
+    BackgroundClip: boxUnderneath,
+    BackgroundOrigin: boxUnderneath,
+    BoxSizing: {
         content: 'content-box',
         border: 'border-box',
     },
-    clipPath: {
+    ClipPath: {
         ...boxUnderneath,
         margin: 'margin-box',
         fill: 'fill-box',
         stroke: 'stroke-box',
         view: 'view-box'
     },
-    flexDirection: {
+    FlexDirection: {
         col: COLUMN,
         'col-reverse': 'column-reverse'
     },
-    fontFamily: {
+    FontFamily: {
         mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace',
         sans: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
         serif: 'ui-serif, Georgia, Cambria, Times New Roman, Times, serif'
     },
-    fontWeight: {
+    FontWeight: {
         thin: 100,
         extralight: 200,
         light: 300,
@@ -56,33 +56,33 @@ module.exports = {
         extrabold: 800,
         heavy: 900
     },
-    gridAutoColumns: contentExtrema,
-    gridAutoRows: contentExtrema,
-    gridTemplateColumns: contentExtrema,
-    gridTemplateRows: contentExtrema,
-    order: {
+    GridAutoColumns: contentExtrema,
+    GridAutoRows: contentExtrema,
+    GridTemplateColumns: contentExtrema,
+    GridTemplateRows: contentExtrema,
+    Order: {
         first: -999999,
         last: 999999
     },
-    position: {
+    Position: {
         abs: 'absolute',
         rel: 'relative'
     },
-    shapeOutside: {
+    ShapeOutside: {
         ...boxUnderneath,
         margin: 'margin-box'
     },
-    transformBox: {
+    TransformBox: {
         ...boxUnderneath,
         fill: 'fill-box',
         stroke: 'stroke-box',
         view: 'view-box'
     },
-    width: sizingValues,
-    minWidth: sizingValues,
-    minHeight: sizingValues,
-    maxWidth: sizingValues,
-    maxHeight: sizingValues,
-    height: sizingValues,
-    flexBasis: sizingValues
+    Width: sizingValues,
+    MinWidth: sizingValues,
+    MinHeight: sizingValues,
+    MaxWidth: sizingValues,
+    MaxHeight: sizingValues,
+    Height: sizingValues,
+    FlexBasis: sizingValues
 }
