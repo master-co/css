@@ -6,7 +6,7 @@ import { PRIORITY_SELECTORS } from './constants/priority-selectors';
 import { START_SYMBOL } from './constants/start-symbol';
 import { GROUP } from './constants/css-property-keyword';
 import { MasterCSS } from './css';
-import { MasterCSSDeclaration } from './interfaces/css-property-info';
+import { MasterCSSDeclaration } from './interfaces/declaration';
 
 const MATCHES = 'matches';
 const SEMANTICS = 'semantics';
