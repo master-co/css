@@ -1,5 +1,5 @@
 import { MasterCSSRule } from '../rule';
-import { MasterCSS } from '../css';
+import MasterCSS from '../css'
 import { START_SYMBOL } from '../constants/start-symbol';
 import { GROUP } from '../constants/css-property-keyword';
 import { MasterCSSDeclaration } from 'src/interfaces/declaration';

@@ -1,4 +1,4 @@
-import { MasterCSS } from '.'
+import MasterCSS from './css'
 import './polyfills/css-escape'
 
 export function renderFromHTML(html: string, css: MasterCSS = new MasterCSS()): string {

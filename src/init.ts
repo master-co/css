@@ -1,4 +1,4 @@
-import { MasterCSS } from './css'
+import MasterCSS from './css'
 import { MasterCSSConfig } from './interfaces/config'
 
 export function init(config?: MasterCSSConfig) {

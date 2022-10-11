@@ -22,7 +22,7 @@ const MutationObserver = isBrowser
     ? window.MutationObserver
     : Object;
 
-export class MasterCSS extends MutationObserver {
+export default class MasterCSS extends MutationObserver {
 
     static init = init;
     static defaultConfig: MasterCSSConfig = defaultConfig

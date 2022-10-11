@@ -1,4 +1,4 @@
-import { configure, MasterCSS } from '../../src';
+import MasterCSS, { configure } from '../../src';
 
 MasterCSS.init(configure({
     'classes': {

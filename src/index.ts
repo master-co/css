@@ -1,5 +1,5 @@
+export { default } from './css'
 export * from './rule'
-export * from './css'
 export * from './init'
 export * from './render'
 export * from './render-from-html'

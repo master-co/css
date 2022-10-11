@@ -5,7 +5,7 @@ import { parseValue } from './utils/parse-value';
 import { PRIORITY_SELECTORS } from './constants/priority-selectors';
 import { START_SYMBOL } from './constants/start-symbol';
 import { GROUP } from './constants/css-property-keyword';
-import { MasterCSS } from './css';
+import MasterCSS from './css';
 import { MasterCSSDeclaration } from './interfaces/declaration';
 
 const MATCHES = 'matches';
