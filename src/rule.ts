@@ -242,8 +242,41 @@ export class MasterCSSRule {
         }
        
         // 3. prefix selector
+        const analyzeSelectorToken = (selectorText: string) => {
+            const transformedSelectorText = transformSelectorUnderline(selectorText);
+            const selectors = [];
+
+            let currentSelector: string = '';
+            let symbolCount = 0;
+            for (let i = 0; i < transformedSelectorText.length; i++) {
+                const char = transformedSelectorText[i];
+                if (char === '\\') {
+                    currentSelector += char + transformedSelectorText[++i];
+                    continue;
+                }
+
+                if (!symbolCount && char === ',') {
+                    selectors.push(currentSelector);
+                    currentSelector = '';
+                } else {
+                    currentSelector += char;
+
+                    if (symbolCount && char === ')') {
+                        symbolCount--;
+                    } else if (char === '(') {
+                        symbolCount++;
+                    }
+                }
+            }
+            if (currentSelector) {
+                selectors.push(currentSelector);
+            }
+
+            return selectors;
+        };
+
         this.prefixSelectors = prefixToken
-            ? transformSelectorUnderline(prefixToken).split(',')
+            ? analyzeSelectorToken(prefixToken)
             : [''];
 
         // 4. suffix selector
@@ -252,7 +285,7 @@ export class MasterCSSRule {
         if (suffixSelector) {
             this.suffixSelectors = [];
 
-            const originalSuffixTokens = transformSelectorUnderline(suffixSelector).split(',');
+            const originalSuffixTokens = analyzeSelectorToken(suffixSelector);
             for (let eachOriginalSuffixToken of originalSuffixTokens) {
                 for (const eachSingleSelectorEntry of selectors.single) {
                     eachOriginalSuffixToken = eachOriginalSuffixToken.replace(eachSingleSelectorEntry[0], eachSingleSelectorEntry[1]);
