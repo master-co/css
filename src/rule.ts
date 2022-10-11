@@ -430,7 +430,6 @@ export class MasterCSSRule {
                     prefixText += '[dir=' + this.direction + '] ';
                 }
 
-                console.log(this.prefixSelectors, this.suffixSelectors);
                 const prefixTexts = this.prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText);
                 const getCssText = (themeName: string, name: string) => {
                     const prefixThemeText = (themeName ? '.' + themeName + ' ' : '');
@@ -582,8 +581,6 @@ export class MasterCSSRule {
         } else {
             insertNewNative('', false);
         }
-        
-        console.log(this);
     }
 }
 
