@@ -1,5 +1,5 @@
 import { configure } from './configure';
-import { defaultConfig } from './configs';
+import { defaultConfig } from './config';
 import { themes, values } from './index';
 
 test("configure", () => {
