@@ -43,24 +43,24 @@ export class MasterCSS extends MutationObserver {
     readonly ruleOfName: Record<string, MasterCSSRule> = {};
     readonly countOfName = {};
 
-    #config: MasterCSSConfig;
-    public set config(value) {
-        this.#config = value;
+    private _config: MasterCSSConfig;
+    public set config(config) {
+        this._config = config;
 
-        this.semanticRegexpMap = new Map();
+        this.semantics = [];
         this.classes = {};
         this.colorsThemesMap = {};
         this.relationThemesMap = {};
         this.relations = {};
         this.colorNames = [];
-        this.themes = [''];
+        this.themeNames = [''];
 
-        if (value.semantics) {
-            for (const semanticName in value.semantics) {
-                this.semanticRegexpMap.set(
-                    new RegExp('^' + semanticName + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'),
-                    { name: semanticName, value: value.semantics[semanticName] }
-                );
+        if (config.semantics) {
+            for (const semanticName in config.semantics) {
+                this.semantics.push({
+                    name: semanticName,
+                    regexp: new RegExp('^' + semanticName + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm')
+                });
             }
         }
 
@@ -142,32 +142,32 @@ export class MasterCSS extends MutationObserver {
             }
         };
 
-        mergeClasses('', value.classes);
-        mergeColors('', value.colors);
-        if (value.themes) {
-            if (Array.isArray(value.themes)) {
-                this.themes.push(...value.themes);
+        mergeClasses('', config.classes);
+        mergeColors('', config.colors);
+        if (config.themes) {
+            if (Array.isArray(config.themes)) {
+                this.themeNames.push(...config.themes);
             } else {
-                for (const eachTheme in value.themes) {
-                    const themeValue = value.themes[eachTheme];
+                for (const eachTheme in config.themes) {
+                    const themeValue = config.themes[eachTheme];
                     mergeClasses(eachTheme, themeValue.classes);
                     mergeColors(eachTheme, themeValue.colors);
-                    this.themes.push(eachTheme);
+                    this.themeNames.push(eachTheme);
                 }
             }
         }
     }
     public get config() {
-        return this.#config;
+        return this._config;
     }
 
-    private semanticRegexpMap: Map<RegExp, { name: string, value: string | Record<string, string | number> }>
-    private classes: Record<string, string[]>
-    private colorsThemesMap: Record<string, Record<string, Record<string, string>>>
-    private colorNames: string[]
-    private themes: string[]
-    private relationThemesMap: Record<string, Record<string, string[]>>
-    private relations: Record<string, string[]>
+    semantics: { name: string, regexp: RegExp }[]
+    classes: Record<string, string[]>
+    colorsThemesMap: Record<string, Record<string, Record<string, string>>>
+    colorNames: string[]
+    themeNames: string[]
+    relationThemesMap: Record<string, Record<string, string[]>>
+    relations: Record<string, string[]>
 
     constructor(
         config: MasterCSSConfig = defaultConfig,
@@ -479,27 +479,17 @@ export class MasterCSS extends MutationObserver {
                 const matching = EachRule.match(className, this.colorNames);
                 if (matching)
                     return new EachRule(
-                        className, 
-                        this.config, 
-                        this.config.values?.[EachRule.id], 
-                        this.colorsThemesMap, 
-                        this.relationThemesMap?.[className], 
-                        this.themes, 
+                        className,
                         matching,
                         this
                     );
             }
 
-            for (const entry of this.semanticRegexpMap.entries()) {
-                if (className.match(entry[0]))
+            for (const eachSemantic of this.semantics) {
+                if (className.match(eachSemantic.regexp))
                     return new MasterCSSRule(
-                        className, 
-                        this.config, 
-                        undefined, 
-                        undefined, 
-                        this.relationThemesMap?.[className], 
-                        this.themes, 
-                        { origin: 'semantics', value: entry[1].name },
+                        className,
+                        { origin: 'semantics', value: eachSemantic.name },
                         this
                     );
             }
@@ -510,30 +500,6 @@ export class MasterCSS extends MutationObserver {
                 .map(findAndNewRule)
                 .filter(eachRule => eachRule)
             : findAndNewRule(name);
-    }
-
-    /**
-     * 尋找匹配的 MasterCSSRule
-     */
-    find(name: string) {
-        const findRule = (className: string) => {
-            for (const EachRule of this.config.Rules) {
-                const matching = EachRule.match(className, this.colorNames);
-                if (matching)
-                    return EachRule;
-            }
-
-            for (const entry of this.semanticRegexpMap.entries()) {
-                if (name.match(entry[0]))
-                    return MasterCSSRule;
-            }
-        };
-
-        return name in this.classes
-            ? this.classes[name]
-                .map(findRule)
-                .filter(eachRule => eachRule)
-            : findRule(name);
     }
 
     /**

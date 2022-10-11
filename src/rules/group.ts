@@ -13,14 +13,14 @@ export class Group extends MasterCSSRule {
     override getThemeProps(declaration: MasterCSSDeclaration, css: MasterCSS): Record<string, Record<string, string>> {
         const themePropsMap: Record<string, Record<string, string>> = {};
         
-        const addProp = (theme: string, propertyName: string) => {
+        const addProp = (themeName: string, propertyName: string) => {
             const indexOfColon = propertyName.indexOf(':');
             if (indexOfColon !== -1) {
-                if (!(theme in themePropsMap)) {
-                    themePropsMap[theme] = {};
+                if (!(themeName in themePropsMap)) {
+                    themePropsMap[themeName] = {};
                 }
 
-                const props = themePropsMap[theme];
+                const props = themePropsMap[themeName];
                 const name = propertyName.slice(0, indexOfColon);
                 if (!(name in props)) {
                     props[name] = propertyName.slice(indexOfColon + 1)
@@ -28,21 +28,21 @@ export class Group extends MasterCSSRule {
             }
         }
         const handleRule = (rule: MasterCSSRule) => {
-            const addProps = (theme: string, cssText: string) => {
+            const addProps = (themeName: string, cssText: string) => {
                 const cssProperties = cssText.slice(CSS.escape(rule.name).length).match(bracketRegexp)[1].split(';');
                 for (const eachCssProperty of cssProperties) {
-                    addProp(theme, eachCssProperty);
+                    addProp(themeName, eachCssProperty);
                 }
             }
 
-            if (this.theme) {
-                const currentThemeNative = rule.natives.find(eachNative => eachNative.theme ===  this.theme) ?? rule.natives.find(eachNative => !eachNative.theme);
+            if (this.themeName) {
+                const currentThemeNative = rule.natives.find(eachNative => eachNative.themeName ===  this.themeName) ?? rule.natives.find(eachNative => !eachNative.themeName);
                 if (currentThemeNative) {
-                    addProps(this.theme, currentThemeNative.text);
+                    addProps(this.themeName, currentThemeNative.text);
                 }
             } else {
                 for (const eachNative of rule.natives) {
-                    addProps(eachNative.theme, eachNative.text);
+                    addProps(eachNative.themeName, eachNative.text);
                 }
             }
         };
@@ -106,7 +106,7 @@ export class Group extends MasterCSSRule {
                 if (result) {
                     handleRule(result);
                 } else {
-                    addProp(this.theme ?? '', eachName);
+                    addProp(this.themeName ?? '', eachName);
                 }
             }
         }

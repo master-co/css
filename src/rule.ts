@@ -40,7 +40,6 @@ const PX = 'px';
 const REM = 'rem';
 
 const selectorSymbols = ['!', '*', '>', '+', '~', ':', '[', '@', '_'];
-const semanticSuffixes = [...selectorSymbols, undefined, '.'];
 const scrollbarPseudoRegexp = new RegExp(SCROLLBAR_PSEUDO, 'g');
 const searchPseudoRegexp = new RegExp(SEARCH_PSEUDO, 'g');
 const meterPseudoRegexp = new RegExp(METER_PSEUDO, 'g');
@@ -69,11 +68,11 @@ export class MasterCSSRule {
     readonly media: MasterCSSMedia;
     readonly at: Record<string, string> = {};
     readonly direction: string;
-    readonly theme: string;
+    readonly themeName: string;
     readonly unitToken: string;
     readonly hasWhere: boolean;
     readonly prioritySelectorIndex: number = -1;
-    readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, theme: string, cssRule?: CSSRule }[] = [];
+    readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, themeName: string, cssRule?: CSSRule }[] = [];
 
     static id: string;
     static propName: string;
@@ -124,22 +123,17 @@ export class MasterCSSRule {
 
     constructor(
         public readonly name: string,
-        { breakpoints, mediaQueries, semantics }: MasterCSSConfig,
-        values: Record<string, string | number>,
-        colorsThemesMap: Record<string, Record<string, Record<string, string>>>,
-        relationThemesMap: Record<string, string[]>,
-        themes: string[],
         public readonly matching: RuleMatching,
         css: MasterCSS
     ) {
         const TargetRule = this.constructor as typeof MasterCSSRule;
         let { id, unit, propName, colorful, rootSize } = TargetRule;
-        let token = name;
+        const { breakpoints, mediaQueries, semantics } = css.config;
+        const values = css.config.values[TargetRule.id];
+        const relationThemesMap = css.relationThemesMap[name];
+        const { themeNames, colorsThemesMap } = css;
 
-        // 防止非色彩 style 的 token 被解析
-        if (!colorful) {
-            colorsThemesMap = null;
-        }
+        let token = name;
 
         // 1. value / selectorToken
         let value: string | Record<string, string | number>, prefixToken: string, suffixToken: string, valueTokens: (string | { value: string })[];
@@ -346,8 +340,8 @@ export class MasterCSSRule {
         for (let i = 1; i < suffixTokens.length; i++) {
             const atToken = suffixTokens[i];
             if (atToken) {
-                if (themes.includes(atToken)) {
-                    this.theme = atToken;
+                if (themeNames.includes(atToken)) {
+                    this.themeName = atToken;
                 } else if (
                     atToken === 'rtl'
                     || atToken === 'ltr'
@@ -469,12 +463,12 @@ export class MasterCSSRule {
         }
 
         // 7. value
-        const insertNewNative = (theme: string, bypassWhenUnmatchColor: boolean) => {
+        const insertNewNative = (themeName: string, bypassWhenUnmatchColor: boolean) => {
             let newValue: string | Record<string, string | number>, newUnit: string;
 
             const generateCssText = (
                 propertiesText: string,
-                theme: string
+                themeName: string
             ) => {
                 let prefixText = '';
                 if (this.prefixSelector) {
@@ -485,7 +479,7 @@ export class MasterCSSRule {
                 }
 
                 let cssText = 
-                    (theme ? '.' + theme + ' ' : '')
+                    (themeName ? '.' + themeName + ' ' : '')
                     + prefixText
                     + '.'
                     + CSS.escape(this.name)
@@ -495,9 +489,9 @@ export class MasterCSSRule {
                             .entries(relationThemesMap)
                             .map(([relationTheme, classNames]) => 
                                 classNames.reduce((a, className) => {
-                                    const prefixTheme = this.theme ?? relationTheme;
+                                    const prefixThemeName = this.themeName ?? relationTheme;
 
-                                    return a + ', ' + (prefixTheme ? '.' + prefixTheme + ' ' : '') + prefixText + '.' + CSS.escape(className) + this.suffixSelector;
+                                    return a + ', ' + (prefixThemeName ? '.' + prefixThemeName + ' ' : '') + prefixText + '.' + CSS.escape(className) + this.suffixSelector;
                                 }, '')
                             )
                             .join('')
@@ -523,10 +517,10 @@ export class MasterCSSRule {
                         uv = parseValue(
                             eachValueToken.value, 
                             unit, 
-                            colorsThemesMap, 
+                            colorful && colorsThemesMap, 
                             values, 
                             rootSize, 
-                            this.theme ? [this.theme, ''] : [theme]
+                            this.themeName ? [this.themeName, ''] : [themeName]
                         );
                         if (uv.colorMatched !== undefined && anyColorMatched !== true) {
                             anyColorMatched = uv.colorMatched;
@@ -536,7 +530,7 @@ export class MasterCSSRule {
                     }
                 }
 
-                if (bypassWhenUnmatchColor && (anyColorMatched === undefined ? theme : !anyColorMatched))
+                if (bypassWhenUnmatchColor && (anyColorMatched === undefined ? themeName : !anyColorMatched))
                     return;
 
                 if (newValueTokens.length === 1) {
@@ -581,7 +575,7 @@ export class MasterCSSRule {
                                         .join(';'),
                                     theme
                                 ), 
-                                theme 
+                                themeName 
                             });
                         }
                         return;
@@ -608,25 +602,24 @@ export class MasterCSSRule {
                             }))
                             .join(';')
                         : getCssPropertyText(propName, { unit: newUnit, value: newValue, important: this.important }),
-                    theme
+                    themeName
                 ), 
-                theme 
+                themeName
             });
         };
 
         if (this.getThemeProps) {
             insertNewNative(undefined, false);
-        } else if (this.theme) {
-            insertNewNative(this.theme, false);
+        } else if (this.themeName) {
+            insertNewNative(this.themeName, false);
         } else if (colorful) {
-            for (const eachTheme of themes) {
-                insertNewNative(eachTheme, true);
+            for (const eachThemeName of themeNames) {
+                insertNewNative(eachThemeName, true);
             }
         } else {
             insertNewNative('', false);
         }
         
-        console.log(relationThemesMap);
         console.log(this);
     }
 }
