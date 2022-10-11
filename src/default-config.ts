@@ -15,4 +15,5 @@ export const defaultConfig: MasterCSSConfig = {
     selectors,
     Rules,
     themes,
+    rootSize: 16
 }

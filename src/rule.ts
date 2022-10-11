@@ -81,7 +81,6 @@ export class MasterCSSRule {
     static symbol: string;
     static unit = REM;
     static colorful: boolean;
-    static rootSize: number = 16;
 
     static match(
         name: string,
@@ -127,8 +126,8 @@ export class MasterCSSRule {
         css: MasterCSS
     ) {
         const TargetRule = this.constructor as typeof MasterCSSRule;
-        let { id, unit, propName, colorful, rootSize } = TargetRule;
-        const { breakpoints, mediaQueries, semantics } = css.config;
+        let { id, unit, propName, colorful } = TargetRule;
+        const { breakpoints, mediaQueries, semantics, rootSize } = css.config;
         const values = css.config.values[TargetRule.id];
         const relationThemesMap = css.relationThemesMap[name];
         const { themeNames, colorsThemesMap } = css;
