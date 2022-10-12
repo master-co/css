@@ -5,12 +5,12 @@ import config from '../examples/master.css.js';
 test("classes", () => {
     testCSS(
         "btn",
-        ".bg\\:white, .card, .dark .btn{background-color:#ffffff}.bg\\:red, .btn{background-color:#d11a1e}.text\\:center, .btn, .dark .btn{text-align:center}.h\\:40, .btn, .dark .btn{height:2.5rem}.font\\:14, .btn, .dark .btn{font-size:0.875rem}",
+        ".bg\\:white,.card,.dark .btn{background-color:#ffffff}.bg\\:red,.btn{background-color:#d11a1e}.text\\:center,.btn,.dark .btn{text-align:center}.h\\:40,.btn,.dark .btn{height:2.5rem}.font\\:14,.btn,.dark .btn{font-size:0.875rem}",
         new MasterCSS(config)
     );
     testCSS(
         "card",
-        ".b\\:1\\|solid\\|gray-80, .card{border:0.0625rem solid #dad9db}.p\\:20, .card{padding:1.25rem}.bg\\:white, .card, .dark .btn{background-color:#ffffff}",
+        ".b\\:1\\|solid\\|gray-80,.card{border:0.0625rem solid #dad9db}.p\\:20,.card{padding:1.25rem}.bg\\:white,.card,.dark .btn{background-color:#ffffff}",
         new MasterCSS(config)
     );
 });

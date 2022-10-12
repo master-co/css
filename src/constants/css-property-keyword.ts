@@ -159,7 +159,6 @@ export const INSIDE = 'inside';
 export const TABLE = 'table';
 // export const CAPTION = 'caption';
 // export const CELL = 'cell';
-export const GROUP = 'group';
 // export const FOOTER = 'footer';
 // export const HEADER = 'header';
 // export const ROOT = 'root';

@@ -4,7 +4,6 @@ import { getCssPropertyText } from './utils/get-css-property-text';
 import { parseValue } from './utils/parse-value';
 import { PRIORITY_SELECTORS } from './constants/priority-selectors';
 import { START_SYMBOL } from './constants/start-symbol';
-import { GROUP } from './constants/css-property-keyword';
 import MasterCSS from './css';
 import { MasterCSSDeclaration } from './interfaces/declaration';
 
@@ -116,7 +115,7 @@ export class MasterCSSRule {
         } else {
             let valueToken: string;
             if (matching.origin === MATCHES) {
-                if (name === GROUP) {
+                if (name === 'Group') {
                     let i = 0;
                     for (; i < token.length; i++) {
                         if (token[i] === '{' && token[i - 1] !== '\\') {
@@ -475,11 +474,11 @@ export class MasterCSSRule {
                                         _arr.push(eachPrefixText + esacpedName + eachSuffixSelector);
                                         return _arr;
                                     }, [])
-                                    .join(', ')
+                                    .join(',')
                             );
                             return arr;
                         }, [])
-                        .join(', ');
+                        .join(',');
                 };
 
                 let cssText = getCssText(themeName, className)
@@ -487,7 +486,7 @@ export class MasterCSSRule {
                         ? Object
                             .entries(relationThemesMap)
                             .map(([relationTheme, classNames]) => 
-                                classNames.reduce((str, className) => str + ', ' + getCssText(this.themeName ?? relationTheme, className), '')
+                                classNames.reduce((str, className) => str + ',' + getCssText(this.themeName ?? relationTheme, className), '')
                             )
                             .join('')
                         : '')
