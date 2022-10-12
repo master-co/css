@@ -1,7 +1,8 @@
 import { X, Y } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class Overflow extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'Overflow'
     static override matches = /^overflow(-x|-y)?:(?:visible|overlay|hidden|scroll|auto|clip|inherit|initial|revert|revert-layer|unset|\$|var)/;
     override get(declaration): { [key: string]: any } {
         if (this.prefix) {

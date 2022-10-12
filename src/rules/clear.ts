@@ -1,6 +1,7 @@
 import { CLEAR } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class Clear extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'Clear'
     static override propName = CLEAR;
 }

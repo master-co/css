@@ -1,7 +1,8 @@
 import { MasterCSSRule } from '../rule';
 import { MARGIN } from '../constants/css-property-keyword';
 
-export class Margin extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'Margin'
     static override matches = /^margin(-(left|right|top|bottom))?:./;
     override get(declaration): { [key: string]: any } {
         return {

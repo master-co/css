@@ -1,6 +1,7 @@
 import { MasterCSSRule } from '../rule';
 
-export class Cy extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'Cy'
     static override propName = 'cy';
     static override unit = '';
 }

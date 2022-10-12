@@ -2,7 +2,8 @@ import { CENTER, MIDDLE } from '../constants/css-property-keyword';
 import { BOTTOM, LEFT, RIGHT, TOP } from '../constants/direction';
 import { MasterCSSRule } from '../rule';
 
-export class Placement extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'Placement'
     static override matches = /^(top|left|right|bottom|center|middle):./;
     override get(declaration): { [key: string]: any } {
         const propertyName = this.prefix.slice(0, -1);

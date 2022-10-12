@@ -1,7 +1,8 @@
 import { MasterCSSRule } from '../rule';
 import { BACKGROUND } from '../constants/css-property-keyword';
 
-export class Background extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'Background'
     static override matches = /^bg:./;
     static override propName = BACKGROUND;
     static override colorful = true;

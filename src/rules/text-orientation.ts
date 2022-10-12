@@ -1,7 +1,8 @@
 import { dash, TEXT } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class TextOrientation extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'TextOrientation'
     static override matches = /^t(ext)?:(mixed|upright|sideways-right|sideways|use-glyph-orientation)(?!\|)/;
     static override propName = dash(TEXT, 'orientation');
 }

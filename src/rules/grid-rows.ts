@@ -1,7 +1,8 @@
 import { ROWS, DISPLAY, FR, GRID, MAX, MIN, REPEAT, TEMPLATE, COMMA, AUTO, FLOW, COLUMN, dash } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class GridRows extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'GridRows'
     static override propName = dash(GRID, ROWS);
     static override unit = '';
     override get(declaration): { [key: string]: any } {

@@ -1,7 +1,8 @@
 import { MasterCSSRule } from '../rule';
 import { dash, SELECT, USER } from '../constants/css-property-keyword';
 
-export class UserSelect extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'UserSelect'
     static override propName = dash(USER, SELECT);
     override get(declaration): { [key: string]: any } {
         return {

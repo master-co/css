@@ -1,6 +1,7 @@
 import { HIDDEN, INVISIBLE, VISIBILITY, VISIBLE } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class Visibility extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'Visibility'
     static override propName = VISIBILITY;
 }

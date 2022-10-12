@@ -1,6 +1,7 @@
 import { dash, INDENT, TEXT } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class TextIndent extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'TextIndent'
     static override propName = dash(TEXT, INDENT);
 }

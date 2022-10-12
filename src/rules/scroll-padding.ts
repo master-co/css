@@ -2,7 +2,8 @@ import { MasterCSSRule } from '../rule';
 import { dash, PADDING, SCROLL } from '../constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from '../constants/direction';
 
-export class ScrollPadding extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'ScrollPadding'
     static override matches = /^scroll-p([xytblr]|adding(-(top|bottom|left|right))?)?:./;
     override get(declaration): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'p') {

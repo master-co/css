@@ -48,6 +48,7 @@ export class MasterCSSRule {
     readonly prioritySelectorIndex: number = -1;
     readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, themeName: string, cssRule?: CSSRule }[] = [];
 
+    static id: string;
     static propName: string;
     static matches: RegExp;
     static colorStarts: string;
@@ -99,9 +100,9 @@ export class MasterCSSRule {
         css: MasterCSS
     ) {
         const TargetRule = this.constructor as typeof MasterCSSRule;
-        let { name, unit, propName, colorful } = TargetRule;
+        let { id, unit, propName, colorful } = TargetRule;
         const { breakpoints, mediaQueries, semantics, rootSize } = css.config;
-        const values = css.config.values[name];
+        const values = css.config.values[id];
         const relationThemesMap = css.relationThemesMap[className];
         const { themeNames, colorsThemesMap, selectors } = css;
 
@@ -115,7 +116,7 @@ export class MasterCSSRule {
         } else {
             let valueToken: string;
             if (matching.origin === MATCHES) {
-                if (name === 'Group') {
+                if (id === 'Group') {
                     let i = 0;
                     for (; i < token.length; i++) {
                         if (token[i] === '{' && token[i - 1] !== '\\') {

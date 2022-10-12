@@ -1,6 +1,7 @@
 import { MasterCSSRule } from '../rule';
 
-export class Inset extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'Inset'
     static override matches = /^(?:top|bottom|left|right):./;
     static override propName = 'inset';
     override get(declaration): { [key: string]: any } {

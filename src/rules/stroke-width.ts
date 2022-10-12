@@ -1,7 +1,8 @@
 import { dash, STROKE, WIDTH } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class StrokeWidth extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'StrokeWidth'
     static override matches = /^stroke:([0-9]|(max|min|calc|clamp)\(.*\))((?!\|).)*$/;
     static override propName = dash(STROKE, WIDTH);
 }

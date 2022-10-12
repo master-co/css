@@ -1,7 +1,8 @@
 import { MIN_HEIGHT } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class MinHeight extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'MinHeight'
     static override matches = /^min-h:./;
     static override propName = MIN_HEIGHT;
 }

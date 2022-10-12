@@ -1,7 +1,8 @@
 import { COLUMNS, COMMA, dash, DISPLAY, FR, GRID, MAX, MIN, REPEAT, TEMPLATE } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class GridColumns extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'GridColumns'
     static override matches = /^grid-cols:./;
     static override propName = dash(GRID, COLUMNS);
     static override unit = '';

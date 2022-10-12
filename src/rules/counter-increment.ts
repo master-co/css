@@ -1,6 +1,7 @@
 import { MasterCSSRule } from '../rule';
 
-export class CounterIncrement extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'CounterIncrement'
     static override propName = 'counter-increment';
     static override unit = '';
 }

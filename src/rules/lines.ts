@@ -2,7 +2,8 @@ import { BOX, BREAK, dash, ELLIPSIS, HIDDEN, VERTICAL, WORD } from '../constants
 import { WEBKIT_PREFIX } from '../constants/css-browser-prefix';
 import { MasterCSSRule } from '../rule';
 
-export class Lines extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'Lines'
     static override matches = /^lines:./;
     static override unit = '';
     override get(declaration): { [key: string]: any } {

@@ -1,7 +1,8 @@
 import { DEG, REM, ROTATE, SKEW, TRANSFORM, TRANSLATE } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class Transform extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'Transform'
     static override matches = /^(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\(/;
     static override propName = TRANSFORM;
     static override unit = '';

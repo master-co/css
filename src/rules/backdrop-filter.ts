@@ -2,7 +2,8 @@ import { MasterCSSRule } from '../rule';
 import { BACKDROP, BLUR, dash, DEG, DROP, FILTER, HUE, REM, ROTATE, SHADOW } from '../constants/css-property-keyword';
 import { parseValueUnit } from '../utils/parse-value-unit';
 
-export class BackdropFilter extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'BackdropFilter'
     static override matches = /^bd:./;
     static override propName = dash(BACKDROP, FILTER);
     override get(declaration): { [key: string]: any } {

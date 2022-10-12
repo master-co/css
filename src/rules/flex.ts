@@ -1,7 +1,8 @@
 import { FLEX } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class Flex extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'Flex'
     static override propName = FLEX;
     static override unit = '';
     override order = -1;

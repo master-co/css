@@ -1,7 +1,8 @@
 import { dash, GRID, ROW, SPAN } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class GridRow extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'GridRow'
     static override matches = /^grid-row-span:./;
     static override propName = dash(GRID, ROW);
     static override unit = '';

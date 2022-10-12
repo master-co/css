@@ -1,7 +1,8 @@
 import { WIDTH } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class Width extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'Width'
     static override matches = /^w:./;
     static override propName = WIDTH;
 }

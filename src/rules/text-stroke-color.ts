@@ -1,6 +1,7 @@
 import { MasterCSSRule } from '../rule';
 
-export class TextStrokeColor extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'TextStrokeColor'
     static override matches = /^text-stroke-color:./;
     static override colorStarts = 'text-stroke:';
     static override colorful = true;

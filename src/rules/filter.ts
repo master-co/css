@@ -2,7 +2,8 @@ import { BLUR, dash, DEG, DROP, FILTER, HUE, REM, ROTATE, SHADOW } from '../cons
 import { MasterCSSRule } from '../rule';
 import { parseValueUnit } from '../utils/parse-value-unit';
 
-export class Filter extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'Filter'
     static override matches = /^(blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)\(/
     static override propName = FILTER;
     override parseValue(value: string): string {

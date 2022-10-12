@@ -1,7 +1,8 @@
 import { REM } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
-export class TextSize extends MasterCSSRule {
+export default class extends MasterCSSRule {
+    static override id = 'TextSize'
     static override matches = /^t(ext)?:([0-9]|(max|min|calc|clamp)\(.*\))((?!\|).)*$/;
     override get(declaration): { [key: string]: any } {
         return {
