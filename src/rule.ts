@@ -486,8 +486,9 @@ export class MasterCSSRule {
                     + (relationThemesMap
                         ? Object
                             .entries(relationThemesMap)
+                            .filter(([relationTheme]) => this.themeName || !colorful || !themeName || !relationTheme || relationTheme === themeName)
                             .map(([relationTheme, classNames]) => 
-                                classNames.reduce((str, className) => str + ',' + getCssText(this.themeName ?? relationTheme, className), '')
+                                classNames.reduce((str, className) => str + ',' + getCssText(this.themeName ?? (colorful ? themeName || relationTheme : relationTheme), className), '')
                             )
                             .join('')
                         : '')

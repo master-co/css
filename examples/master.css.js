@@ -2,7 +2,7 @@ const { configure } = require('../src/configure');
 
 module.exports = configure({
     classes: {
-        btn: 'font:14 h:40 text:center bg:red',
+        btn: 'font:14 h:40 text:center bg:red fg:primary',
         card: 'p:20 b:1|solid|gray-80 bg:white'
     },
     values: {

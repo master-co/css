@@ -5,7 +5,7 @@ import config from '../examples/master.css.js';
 test("classes", () => {
     testCSS(
         "btn",
-        ".bg\\:white,.card,.dark .btn{background-color:#ffffff}.bg\\:red,.btn{background-color:#d11a1e}.text\\:center,.btn,.dark .btn{text-align:center}.h\\:40,.btn,.dark .btn{height:2.5rem}.font\\:14,.btn,.dark .btn{font-size:0.875rem}",
+        ".bg\\:white,.card,.dark .btn{background-color:#ffffff}.fg\\:primary,.btn{color:#175fe9}.dark .fg\\:primary,.dark .btn{color:#6b9ef1}.bg\\:red,.btn{background-color:#d11a1e}.text\\:center,.btn,.dark .btn{text-align:center}.h\\:40,.btn,.dark .btn{height:2.5rem}.font\\:14,.btn,.dark .btn{font-size:0.875rem}",
         new MasterCSS(config)
     );
     testCSS(
@@ -78,7 +78,7 @@ test("mediaQueries", () => {
 test("colors", () => {
     testCSS(
         "fg:primary", 
-        ".fg\\:primary{color:#175fe9}.dark .fg\\:primary{color:#6b9ef1}",
+        ".fg\\:primary,.btn{color:#175fe9}.dark .fg\\:primary,.dark .btn{color:#6b9ef1}",
         new MasterCSS(config)
     );
 });
