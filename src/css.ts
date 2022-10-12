@@ -32,9 +32,9 @@ export default class MasterCSS extends MutationObserver {
     /**
      * 全部 sheet 根據目前蒐集到的所有 DOM class 重新 findAndNew
      */
-    static refresh() {
+    static refresh(config: MasterCSSConfig) {
         for (const eachInstance of this.instances) {
-            eachInstance.refresh();
+            eachInstance.refresh(config);
         }
     }
 
@@ -43,10 +43,7 @@ export default class MasterCSS extends MutationObserver {
     readonly ruleOfName: Record<string, MasterCSSRule> = {};
     readonly countOfName = {};
 
-    private _config: MasterCSSConfig;
-    public set config(config) {
-        this._config = config;
-
+    private cache() {
         this.semantics = [];
         this.classes = {};
         this.colorsThemesMap = {};
@@ -54,22 +51,24 @@ export default class MasterCSS extends MutationObserver {
         this.relations = {};
         this.colorNames = [];
         this.themeNames = [''];
-        this.selectors = { single: [], multiple: [] };
+        this.selectors = { single: [], multiple: [] }
+
+        const { semantics, classes, selectors, themes, colors } = this.config
 
         function escapeString(str) {
             return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
         }
 
-        if (config.semantics) {
-            for (const semanticName in config.semantics) {
+        if (semantics) {
+            for (const semanticName in semantics) {
                 this.semantics.push([new RegExp('^' + escapeString(semanticName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'), semanticName]);
             }
         }
-        if (config.selectors) {
-            for (const entry of Object.entries(config.selectors)) {
+        if (selectors) {
+            for (const entry of Object.entries(selectors)) {
                 const isSingle = typeof entry[1] === 'string';
                 this.selectors[isSingle ? 'single' : 'multiple'].push([
-                    new RegExp(escapeString(entry[0]) + '(?![a-z-])',  isSingle ? 'g' : ''),
+                    new RegExp(escapeString(entry[0]) + '(?![a-z-])', isSingle ? 'g' : ''),
                     entry[1] as any
                 ]);
             }
@@ -81,8 +80,8 @@ export default class MasterCSS extends MutationObserver {
 
             for (const semanticName in classes) {
                 const className = classes[semanticName];
-                const classNames: string[] = Array.isArray(className) 
-                    ? className 
+                const classNames: string[] = Array.isArray(className)
+                    ? className
                     : className
                         .replace(/(?:\n(?:\s*))+/g, ' ')
                         .trim()
@@ -153,23 +152,20 @@ export default class MasterCSS extends MutationObserver {
             }
         };
 
-        mergeClasses('', config.classes);
-        mergeColors('', config.colors);
-        if (config.themes) {
-            if (Array.isArray(config.themes)) {
-                this.themeNames.push(...config.themes);
+        mergeClasses('', classes);
+        mergeColors('', colors);
+        if (themes) {
+            if (Array.isArray(themes)) {
+                this.themeNames.push(...themes);
             } else {
-                for (const eachTheme in config.themes) {
-                    const themeValue = config.themes[eachTheme];
+                for (const eachTheme in themes) {
+                    const themeValue = themes[eachTheme];
                     mergeClasses(eachTheme, themeValue.classes);
                     mergeColors(eachTheme, themeValue.colors);
                     this.themeNames.push(eachTheme);
                 }
             }
         }
-    }
-    public get config() {
-        return this._config;
     }
 
     semantics: [RegExp, string][];
@@ -182,7 +178,7 @@ export default class MasterCSS extends MutationObserver {
     selectors: { single: [RegExp, string][], multiple: [RegExp, string[]][] }
 
     constructor(
-        config: MasterCSSConfig = defaultConfig,
+        public config: MasterCSSConfig = defaultConfig,
         public container?: Element
     ) {
         super((mutationRecords) => {
@@ -349,7 +345,7 @@ export default class MasterCSS extends MutationObserver {
             console.timeEnd('css engine');
         });
 
-        this.config = config;
+        this.cache()
 
         if (!hasDocument) {
             return;
@@ -371,32 +367,32 @@ export default class MasterCSS extends MutationObserver {
                         if (cssRule.selectorText) {
                             const selectorTexts = cssRule.selectorText.split(', ');
                             const escapedClassNames = selectorTexts[0].split(' ');
-    
+
                             for (let i = 0; i < escapedClassNames.length; i++) {
                                 const eachSelectorText = escapedClassNames[i];
                                 if (eachSelectorText[0] === '.') {
                                     const escapedClassName = eachSelectorText.slice(1);
-    
+
                                     let className = '';
                                     for (let j = 0; j < escapedClassName.length; j++) {
                                         const char = escapedClassName[j];
                                         const nextChar = escapedClassName[j + 1];
-    
+
                                         if (char === '\\') {
                                             j++;
-    
+
                                             if (nextChar !== '\\') {
                                                 className += nextChar;
-    
+
                                                 continue;
                                             }
                                         } else if (selectorSymbols.includes(char)) {
                                             break;
                                         }
-    
+
                                         className += char;
                                     }
-    
+
                                     if (!(className in this.ruleOfName) && !(className in this.classes)) {
                                         const currentRule = this.findAndNew(className) as MasterCSSRule;
                                         if (currentRule)
@@ -517,15 +513,14 @@ export default class MasterCSS extends MutationObserver {
     /**
      * 根據目前蒐集到的所有 DOM class 重新 findAndNew
      */
-    refresh(config?: MasterCSSConfig) {
-        if (config) {
-            this.config = config;
-        }
+    refresh(config: MasterCSSConfig) {
+        this.config = config
+        this.cache()
 
         if (!this.style) {
             return;
         }
-        
+
         const element = STYLE.cloneNode() as HTMLStyleElement;
         this.style.replaceWith(element);
         // @ts-ignore
@@ -565,7 +560,7 @@ export default class MasterCSS extends MutationObserver {
     insert(rule: MasterCSSRule) {
         if (this.ruleOfName[rule.className])
             return;
-            
+
         let index;
         /**
          * 必須按斷點值遞增，並透過索引插入，
