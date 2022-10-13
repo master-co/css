@@ -33,7 +33,7 @@ export function parseValue(
             let hasColorName = false;
             
             token = token.replace(
-                new RegExp(`(^|,| |\\()(${colorNames.join('|')})(?:-([0-9]+))?(?:\\/(\\.?[0-9]+))?(?=(\\)|\\}|,| |$))`, 'gm'),
+                new RegExp(`(^|,| |\\()(${colorNames.join('|')})(?:-([0-9]+))?(?:\\/(\\.?[0-9]+%?))?(?=(\\)|\\}|,| |$))`, 'gm'),
                 (origin, prefix, colorName, level, opacityStr) => {
                     hasColorName = true;
 
@@ -50,7 +50,10 @@ export function parseValue(
 
                             let newValue = hexColor;
                             if (opacityStr) {
-                                let opacity = +opacityStr;
+                                let opacity = opacityStr.endsWith('%')
+                                    ? parseFloat(opacityStr) / 100.0
+                                    : +opacityStr;
+
                                 opacity = isNaN(opacity)
                                     ? 1
                                     : Math.min(Math.max(opacity, 0), 1);
