@@ -2,11 +2,11 @@ import { MasterCSSMediaFeatureRule } from './interfaces/media-feature-rule';
 import { MasterCSSMedia } from './interfaces/media';
 import { getCssPropertyText } from './utils/get-css-property-text';
 import { parseValue } from './utils/parse-value';
-import { PRIORITY_SELECTORS } from './constants/priority-selectors';
 import { START_SYMBOL } from './constants/start-symbol';
 import MasterCSS from './core';
 import { MasterCSSDeclaration } from './interfaces/declaration';
 
+export const PRIORITY_SELECTORS = [':disabled', ':active', ':focus', ':hover'];
 const MATCHES = 'matches';
 const SEMANTICS = 'semantics';
 const SYMBOL = 'symbol';

@@ -1,5 +1,3 @@
-import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from '../constants/direction';
-
 const BORDER_DASH = 'border-';
 
 export function getBorderProps(name: string, declaration, suffix = '') {
@@ -7,34 +5,34 @@ export function getBorderProps(name: string, declaration, suffix = '') {
         suffix = '-' + suffix;
     }
     const direction = /^b(order)?-?(.)?/.exec(name)[2];
-    const BORDER_LEFT = BORDER_DASH + LEFT + suffix;
-    const BORDER_RIGHT = BORDER_DASH + RIGHT + suffix;
-    const BORDER_TOP = BORDER_DASH + TOP + suffix;
-    const BORDER_BOTTOM = BORDER_DASH + BOTTOM + suffix;
+    const BORDER_LEFT = BORDER_DASH + 'left' + suffix;
+    const BORDER_RIGHT = BORDER_DASH + 'right' + suffix;
+    const BORDER_TOP = BORDER_DASH + 'top' + suffix;
+    const BORDER_BOTTOM = BORDER_DASH + 'bottom' + suffix;
     switch (direction) {
-        case X:
+        case 'x':
             return {
                 [BORDER_LEFT]: declaration,
                 [BORDER_RIGHT]: declaration
             }
-        case Y:
+        case 'y':
             return {
                 [BORDER_TOP]: declaration,
                 [BORDER_BOTTOM]: declaration
             }
-        case L:
+        case 'l':
             return {
                 [BORDER_LEFT]: declaration
             }
-        case R:
+        case 'r':
             return {
                 [BORDER_RIGHT]: declaration
             }
-        case T:
+        case 't':
             return {
                 [BORDER_TOP]: declaration
             }
-        case B:
+        case 'b':
             return {
                 [BORDER_BOTTOM]: declaration
             }

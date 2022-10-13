@@ -1,1 +1,0 @@
-export const PRIORITY_SELECTORS = [':disabled', ':active', ':focus', ':hover'];

@@ -1,4 +1,3 @@
-import { BOTTOM, LEFT, RIGHT, TOP } from '../constants/direction';
 import { MasterCSSRule } from '../rule';
 
 export default class extends MasterCSSRule {
@@ -7,10 +6,10 @@ export default class extends MasterCSSRule {
     override get(declaration): { [key: string]: any } {
         const propertyName = this.prefix.slice(0, -1);
         switch (propertyName) {
-            case TOP:
-            case LEFT:
-            case RIGHT:
-            case BOTTOM:
+            case 'top':
+            case 'left':
+            case 'right':
+            case 'bottom':
                 return { [propertyName]: declaration }
             case 'center':
                 return {
