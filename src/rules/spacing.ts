@@ -21,7 +21,7 @@ export default class extends MasterCSSRule {
                     [SPACING_TOP]: declaration,
                     [SPACING_BOTTOM]: declaration
                 }
-            case 'x':
+            case 'l':
                 return {
                     [SPACING_LEFT]: declaration
                 }

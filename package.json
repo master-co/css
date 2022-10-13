@@ -1,7 +1,7 @@
 {
     "name": "@master/css",
     "scripts": {
-        "build": "tsup src/index.ts --format esm,cjs --dts --minify --clean --sourcemap --legacy-output",
+        "build": "tsup src/index.ts --format esm,cjs --dts --minify --clean --sourcemap --legacy-output --treeshake",
         "package": "cp README.md LICENSE ./src/package.json ./dist",
         "update": "git fetch package js && git merge package/js",
         "update:readme": "m package render README.md",
