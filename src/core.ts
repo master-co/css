@@ -182,7 +182,7 @@ export default class MasterCSS extends MutationObserver {
         public container?: Element
     ) {
         super((mutationRecords) => {
-            console.time('css engine');
+            // console.time('css engine');
 
             const correctionOfClassName = {};
             const attributeMutationRecords: MutationRecord[] = [];
@@ -271,7 +271,7 @@ export default class MasterCSS extends MutationObserver {
             }
 
             if (!attributeMutationRecords.length && !Object.keys(correctionOfClassName).length) {
-                console.timeEnd('css engine');
+                // console.timeEnd('css engine');
                 return;
             }
 
@@ -342,7 +342,7 @@ export default class MasterCSS extends MutationObserver {
                 }
             }
 
-            console.timeEnd('css engine');
+            // console.timeEnd('css engine');
         });
 
         this.cache()

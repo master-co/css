@@ -96,7 +96,6 @@ module.exports = class CreateColorScssPlugin {
                     stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
                 },
                 async () => {
-                    console.log()
                     let data = '';
                     for (const colorName in defaultColors) {
                         const levelColors = fillColorScale(defaultColors[colorName]);

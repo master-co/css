@@ -135,7 +135,6 @@ module.exports = /** @class */ (function () {
             }, function () { return __awaiter(_this, void 0, void 0, function () {
                 var data, colorName, levelColors, level, name_1;
                 return __generator(this, function (_a) {
-                    console.log();
                     data = '';
                     for (colorName in colors_1.defaultColors) {
                         levelColors = fillColorScale(colors_1.defaultColors[colorName]);
