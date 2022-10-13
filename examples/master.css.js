@@ -1,9 +1,37 @@
 const { configure } = require('../src/configure');
 
 module.exports = configure({
+    colors: {
+        primary: '#175fe9',
+    },
     classes: {
-        btn: 'font:14 h:40 text:center bg:red fg:primary',
-        card: 'p:20 b:1|solid|gray-80 bg:white'
+        btn: 'font:14 h:40 text:center'
+    },
+    themes: {
+        light: {
+            colors: {
+                primary: '#ebbb40',
+                accent: defaultColors.gold['70'],
+                major: defaultColors.slate['10'],
+                content: defaultColors.slate['30'],
+                fade: defaultColors.slate['55']
+            },
+            classes: {
+                btn: 'bg:primary fg:white font:semibold'
+            }
+        },
+        dark: {
+            colors: {
+                primary: '#fbe09d',
+                accent: '#fbe09d',
+                major: defaultColors.gray['80'],
+                content: defaultColors.gray['60'],
+                fade: defaultColors.gray['60']
+            },
+            classes: {
+                btn: 'bg:white fg:primary font:medium'
+            }
+        }
     },
     values: {
         Width: {
@@ -26,30 +54,6 @@ module.exports = configure({
     mediaQueries: {
         watch: '(max-device-width:42mm) and (min-device-width:38mm)'
     },
-    colors: {
-        primary: '#175fe9',
-    },
-    themes: {
-        dark: {
-            colors: {
-                primary: '#6b9ef1',
-            },
-            classes: {
-                btn: 'font:14 h:40 text:center bg:white',
-            }
-        }
-    },
-    Rules: [],
     rootSize: 16,
-    // sources: {
-    //     files: ['./src/**/*.{html,js}'],
-    //     // 輸出成單一 CSS 檔案
-    //     output: './dist/master.css',
-    //     // 注入目標 HTML 檔案
-    //     output: './dist/index.html',
-    //     // 自訂輸出規則
-    //     output: ({ raw }) => {
-
-    //     }
-    // }
+    Rules: [],
 })
