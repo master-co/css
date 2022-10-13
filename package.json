@@ -1,45 +1,20 @@
 {
     "name": "@master/css",
-    "sideEffects": false,
     "scripts": {
+        "build": "tsup src/index.ts --format esm,cjs --dts --minify --clean --sourcemap",
+        "package": "cp README.md LICENSE ./src/package.json ./dist",
         "update": "git fetch package js && git merge package/js",
-        "build": "npm i --production && cd src && npm i && cd .. && npm run plugin && webpack --config webpack.prod.js && tsc --project tsconfig.prod.json -m esnext --declaration",
-        "dev": "cd src && npm i && cd .. && npm i && npm run plugin && webpack serve --config webpack.dev.js",
-        "plugin": "tsc ./create-color-scss --esModuleInterop",
-        "start": "cd src && npm i && cd .. && npm i && webpack serve --config webpack.dev.js --open",
         "update:readme": "m package render README.md",
         "test": "jest"
     },
     "dependencies": {
-        "@babel/core": "^7.16.0",
-        "@babel/plugin-proposal-class-properties": "^7.16.0",
-        "@babel/plugin-proposal-decorators": "^7.16.0",
-        "@babel/plugin-proposal-export-default-from": "^7.16.0",
-        "@babel/plugin-proposal-export-namespace-from": "^7.16.0",
-        "@babel/plugin-proposal-object-rest-spread": "^7.16.0",
-        "@babel/plugin-transform-runtime": "^7.16.4",
-        "@babel/preset-env": "^7.16.4",
-        "@babel/preset-typescript": "^7.16.0",
-        "@babel/runtime": "^7.16.3",
-        "@types/node": "^16.11.11",
-        "babel-loader": "^8.2.3",
-        "copy-webpack-plugin": "^10.0.0",
-        "glob": "^7.2.0",
-        "terser-webpack-plugin": "^5.2.5",
-        "ts-loader": "^9.2.6",
-        "typescript": "^4.5.2",
-        "webpack": "^5.64.4",
-        "webpack-cli": "^4.9.1"
+        "tsup": "^6.2.3"
     },
     "devDependencies": {
-        "@master/cli": "^1.0.0-alpha.22",
         "@types/jest": "^27.5.2",
         "dedent": "^0.7.0",
-        "html-webpack-plugin": "^5.5.0",
         "jest": "^28.1.0",
-        "ts-jest": "^28.0.3",
-        "tsconfig-paths-webpack-plugin": "^3.5.2",
-        "webpack-dev-server": "^4.6.0"
+        "ts-jest": "^28.0.3"
     },
     "files": [
         "dist"

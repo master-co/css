@@ -6,9 +6,8 @@
         "experimentalDecorators": true,
         "moduleResolution": "node",
         "esModuleInterop": true,
-        "target": "es2015",
-        "module": "es2020",
-        "allowJs": true,
+        "target": "ESNext",
+        "module": "ESNext",
         "skipLibCheck": true,
         "lib": [
             "es2021",
@@ -17,9 +16,7 @@
     },
     "include": [
         "./src/**/*.ts",
-        "./src/**/*.d.ts",
-        "./dev/src/**/*index.ts",
-        "./dev/src/**/*.d.ts"
+        "./src/**/*.d.ts"
     ],
     "exclude": [
         "./src/node_modules"

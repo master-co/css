@@ -3,9 +3,16 @@
     "license": "MIT",
     "description": "A Virtual CSS language with enhanced syntax. ( ~13KB )",
     "author": "Aoyue Design LLC.",
-    "main": "main.js",
-    "module": "index.js",
+    "main": "index.js",
+    "module": "index.esm.js",
     "types": "index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./index.js",
+            "import": "./index.esm.js",
+            "types": "./index.d.ts"
+        }
+    },
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",
     "private": false,
