@@ -9,24 +9,9 @@ const src = path.resolve('./src');
 const packagePath = path.join(src, 'package.json');
 const package = require(packagePath);
 const master = require('./master.json');
-const entries = [
-    ...glob.sync(path.join(src, 'colors.js')),
-    ...glob.sync(path.join(src, 'breakpoints.js')),
-    ...glob.sync(path.join(src, 'render.ts')),
-    ...glob.sync(path.join(src, 'index.ts')),
-];
 
 module.exports = {
-    entry: entries.reduce((entrypoint, eachPath) => {
-        const parsePath = path.parse(path.relative(src, eachPath));
-        const filename = path.join(parsePath.dir, parsePath.name);
-        if (entrypoint[filename]) {
-            entrypoint[filename].push(path.resolve(eachPath))
-        } else {
-            entrypoint[filename] = [path.resolve(eachPath)];
-        }
-        return entrypoint;
-    }, {}),
+    entry: './src/index.ts',
     devtool: 'source-map',
     resolve: jsConfig.resolve,
     externals: [

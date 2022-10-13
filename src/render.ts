@@ -1,4 +1,4 @@
-import MasterCSS from './css'
+import MasterCSS from './core'
 import './polyfills/css-escape'
 
 export function render(classes: string[], css: MasterCSS = new MasterCSS()): string {

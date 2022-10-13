@@ -4,7 +4,7 @@ import { getCssPropertyText } from './utils/get-css-property-text';
 import { parseValue } from './utils/parse-value';
 import { PRIORITY_SELECTORS } from './constants/priority-selectors';
 import { START_SYMBOL } from './constants/start-symbol';
-import MasterCSS from './css';
+import MasterCSS from './core';
 import { MasterCSSDeclaration } from './interfaces/declaration';
 
 const MATCHES = 'matches';

@@ -3,7 +3,6 @@
         "outDir": "./dist",
         "baseUrl": "./",
         "sourceMap": true,
-        "declaration": true,
         "experimentalDecorators": true,
         "moduleResolution": "node",
         "esModuleInterop": true,

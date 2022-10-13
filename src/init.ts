@@ -1,4 +1,4 @@
-import MasterCSS from './css'
+import MasterCSS from './core'
 import { MasterCSSConfig } from './interfaces/config'
 
 export function init(config?: MasterCSSConfig) {
@@ -11,10 +11,3 @@ export function init(config?: MasterCSSConfig) {
         return new MasterCSS(config)
     }
 }
-
-// MasterCSSRule
-//     .extend('colors', colors)
-//     .extend('breakpoints', breakpoints)
-// MasterCSS.Rules.push(...Rules)
-
-// const MASTER_CSS = 'MasterCSS'

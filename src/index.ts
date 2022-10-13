@@ -1,4 +1,4 @@
-export { default } from './css'
+export { default } from './core'
 export * from './rule'
 export * from './init'
 export * from './render'
