@@ -39,7 +39,7 @@
             {
                 "assets": [
                     {
-                        "path": "dist/master-css.min.js",
+                        "path": "dist/main.js",
                         "label": "master-css.min.js"
                     }
                 ]
