@@ -1,12 +1,10 @@
-import { REM } from '../constants/css-property-keyword';
-
 export function parseValueUnit(value: string, getUnit: (method: string) => string): string {
     let result = '';
- 
+
     let i = 0;
     (function analyze(end?, method?) {
         let current = '';
-        const unit = method 
+        const unit = method
             ? getUnit(method)
             : '';
 
@@ -14,15 +12,15 @@ export function parseValueUnit(value: string, getUnit: (method: string) => strin
             if (current) {
                 result += (!unit || Number.isNaN(+current))
                     ? current
-                    : (+current / (unit === REM ? 16 : 1)) + unit;
+                    : (+current / (unit === 'rem' ? this.css.config.rootSize : 1)) + unit;
 
                 current = '';
             }
         };
-        
+
         for (; i < value.length; i++) {
             const val = value[i];
-            
+
             if (val === end && (end !== '\'' || value[i + 1] === ')')) {
                 pushCurrent();
                 result += val;

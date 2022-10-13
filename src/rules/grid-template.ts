@@ -1,8 +1,7 @@
-import { dash, GRID, TEMPLATE } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
 export default class extends MasterCSSRule {
     static override id = 'GridTemplate'
-    static override propName = dash(GRID, TEMPLATE);
+    static override propName = 'grid-template'
     override order = -1;
 }

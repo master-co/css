@@ -1,14 +1,13 @@
 import { MasterCSSRule } from '../rule';
-import { BORDER, dash, WIDTH } from '../constants/css-property-keyword';
 import { getBorderProps } from '../utils/get-border-props';
 
 export default class extends MasterCSSRule {
     static override id = 'BorderWidth'
     static override matches = /^(border(-(left|right|top|bottom))?-width:.|b([xytblr]|order(-(left|right|top|bottom))?)?:(([0-9]|(max|min|calc|clamp)\(.*\))|(max|min|calc|clamp)\(.*\))((?!\|).)*$)/;
     override get(declaration): { [key: string]: any } {
-        return getBorderProps(this.prefix, declaration, WIDTH);
+        return getBorderProps(this.prefix, declaration, 'width');
     }
     override get order(): number {
-        return (this.prefix === dash(BORDER, WIDTH) + ":" || this.prefix === 'b:' || this.prefix === BORDER + ':') ? -1 : 0;
+        return (this.prefix === 'border-width' + ":" || this.prefix === 'b:' || this.prefix === 'border' + ':') ? -1 : 0;
     }
 }

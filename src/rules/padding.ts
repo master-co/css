@@ -1,5 +1,4 @@
 import { MasterCSSRule } from '../rule';
-import { PADDING } from '../constants/css-property-keyword';
 
 export default class extends MasterCSSRule {
     static override id = 'Padding'
@@ -10,6 +9,6 @@ export default class extends MasterCSSRule {
         }
     }
     override get order(): number {
-        return (this.prefix === PADDING + ':') ? -1 : 0;
+        return (this.prefix === 'padding' + ':') ? -1 : 0;
     }
 }

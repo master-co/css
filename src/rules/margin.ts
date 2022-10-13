@@ -1,5 +1,4 @@
 import { MasterCSSRule } from '../rule';
-import { MARGIN } from '../constants/css-property-keyword';
 
 export default class extends MasterCSSRule {
     static override id = 'Margin'
@@ -10,6 +9,6 @@ export default class extends MasterCSSRule {
         }
     }
     override get order(): number {
-        return (this.prefix === MARGIN + ":") ? -1 : 0;
+        return (this.prefix === 'margin' + ":") ? -1 : 0;
     }
 }

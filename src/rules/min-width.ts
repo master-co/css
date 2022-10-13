@@ -1,8 +1,7 @@
-import { MIN_WIDTH } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
 export default class extends MasterCSSRule {
     static override id = 'MinWidth'
     static override matches = /^min-w:./;
-    static override propName = MIN_WIDTH;
+    static override propName = 'min-width';
 }

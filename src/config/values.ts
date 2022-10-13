@@ -1,7 +1,5 @@
 import { defaultBreakpoints } from './breakpoints';
 
-const { dash, FIT, MAX, MIN, CONTENT, COLUMN } = require('../constants/css-property-keyword');
-
 const boxUnderneath = {
     content: 'content-box',
     border: 'border-box',
@@ -15,9 +13,9 @@ const contentExtrema = {
 
 const sizingValues = {
     full: '100%',
-    fit: dash(FIT, CONTENT),
-    max: dash(MAX, CONTENT),
-    min: dash(MIN, CONTENT),
+    fit: 'fit-content',
+    max: 'max-content',
+    min: 'min-content',
 }
 for (const key in defaultBreakpoints) {
     sizingValues[key] = (defaultBreakpoints[key] / 16) + 'rem'
@@ -38,7 +36,7 @@ export const defaultValues = {
         view: 'view-box'
     },
     FlexDirection: {
-        col: COLUMN,
+        col: 'column',
         'col-reverse': 'column-reverse'
     },
     FontFamily: {

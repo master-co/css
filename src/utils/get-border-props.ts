@@ -1,13 +1,11 @@
-import { BORDER, DASH } from '../constants/css-property-keyword';
 import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from '../constants/direction';
 
-const BORDER_DASH = BORDER + DASH;
+const BORDER_DASH = 'border-';
 
 export function getBorderProps(name: string, declaration, suffix = '') {
     if (suffix) {
-        suffix = DASH + suffix;
+        suffix = '-' + suffix;
     }
-
     const direction = /^b(order)?-?(.)?/.exec(name)[2];
     const BORDER_LEFT = BORDER_DASH + LEFT + suffix;
     const BORDER_RIGHT = BORDER_DASH + RIGHT + suffix;
@@ -42,7 +40,7 @@ export function getBorderProps(name: string, declaration, suffix = '') {
             }
         default:
             return {
-                [BORDER + suffix]: declaration
+                ['border' + suffix]: declaration
             }
     }
 }

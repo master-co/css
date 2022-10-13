@@ -1,21 +1,20 @@
-import { COLUMNS, COMMA, dash, DISPLAY, FR, GRID, MAX, MIN, REPEAT, TEMPLATE } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
 export default class extends MasterCSSRule {
     static override id = 'GridColumns'
     static override matches = /^grid-cols:./;
-    static override propName = dash(GRID, COLUMNS);
+    static override propName = 'grid-columns';
     static override unit = '';
     override get(declaration): { [key: string]: any } {
         return {
-            [DISPLAY]: { ...declaration, value: GRID },
-            [dash(GRID, TEMPLATE, COLUMNS)]: {
+            display: { ...declaration, value: 'grid' },
+            'grid-template-columns': {
                 ...this,
-                value: REPEAT
+                value: 'repeat'
                     + '(' + declaration.value
-                    + COMMA
-                    + MIN + MAX
-                    + '(' + 0 + COMMA + 1 + FR + '))'
+                    + ','
+                    + 'minmax'
+                    + '(' + 0 + ',' + 1 + 'fr' + '))'
             },
         };
     }

@@ -1,14 +1,13 @@
-import { dash, GRID, ROW, SPAN } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
 export default class extends MasterCSSRule {
     static override id = 'GridRow'
     static override matches = /^grid-row-span:./;
-    static override propName = dash(GRID, ROW);
+    static override propName = 'grid-row';
     static override unit = '';
     override parseValue(value: string): string {
         return this.prefix.slice(-5, -1) === 'span' && value !== 'auto'
-            ? SPAN + ' ' + value + '/' + SPAN + ' ' + value
+            ? 'span' + ' ' + value + '/' + 'span' + ' ' + value
             : value;
     }
     override order = -1;

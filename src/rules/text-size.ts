@@ -1,4 +1,3 @@
-import { REM } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
 export default class extends MasterCSSRule {
@@ -9,7 +8,7 @@ export default class extends MasterCSSRule {
             'font-size': declaration,
             'line-height': {
                 ...declaration,
-                value: declaration.unit === REM
+                value: declaration.unit === 'rem'
                     ? declaration.value + .375 + declaration.unit
                     : 'calc(' + declaration.value + declaration.unit + ' + .375rem)',
                 unit: ''

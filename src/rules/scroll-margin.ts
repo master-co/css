@@ -1,53 +1,45 @@
 import { MasterCSSRule } from '../rule';
-import { dash, MARGIN, SCROLL } from '../constants/css-property-keyword';
-import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from '../constants/direction';
 
 export default class extends MasterCSSRule {
     static override id = 'ScrollMargin'
     static override matches = /^scroll-m([xytblr]|argin(-(top|bottom|left|right))?)?:./;
     override get(declaration): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'm') {
-            const SCROLL_MARGIN_PREFIX = dash(SCROLL, MARGIN) + '-',
-                SCROLL_MARGIN_LEFT = SCROLL_MARGIN_PREFIX + LEFT,
-                SCROLL_MARGIN_RIGHT = SCROLL_MARGIN_PREFIX + RIGHT,
-                SCROLL_MARGIN_TOP = SCROLL_MARGIN_PREFIX + TOP,
-                SCROLL_MARGIN_BOTTOM = SCROLL_MARGIN_PREFIX + BOTTOM;
-
             switch (this.prefix.slice(-2, -1)) {
-                case X:
+                case 'x':
                     return {
-                        [SCROLL_MARGIN_LEFT]: declaration,
-                        [SCROLL_MARGIN_RIGHT]: declaration
+                        'scroll-margin-left': declaration,
+                        'scroll-margin-right': declaration
                     }
-                case Y:
+                case 'y':
                     return {
-                        [SCROLL_MARGIN_TOP]: declaration,
-                        [SCROLL_MARGIN_BOTTOM]: declaration
+                        'scroll-margin-top': declaration,
+                        'scroll-margin-bottom': declaration
                     }
-                case L:
+                case 'l':
                     return {
-                        [SCROLL_MARGIN_LEFT]: declaration
+                        'scroll-margin-left': declaration
                     }
-                case R:
+                case 'r':
                     return {
-                        [SCROLL_MARGIN_RIGHT]: declaration
+                        'scroll-margin-right': declaration
                     }
-                case T:
+                case 't':
                     return {
-                        [SCROLL_MARGIN_TOP]: declaration
+                        'scroll-margin-top': declaration
                     }
-                case B:
+                case 'b':
                     return {
-                        [SCROLL_MARGIN_BOTTOM]: declaration
+                        'scroll-margin-bottom': declaration
                     }
             }
         } else {
             return {
-                [this.prefix.replace(/-m(?!argin)/, '-' + MARGIN).slice(0, -1)]: declaration
+                [this.prefix.replace(/-m(?!argin)/, '-' + 'margin').slice(0, -1)]: declaration
             }
         }
     }
     override get order(): number {
-        return (this.prefix === dash(SCROLL, MARGIN) + ':' || this.prefix === dash(SCROLL, 'm:')) ? -1 : 0;
+        return (this.prefix === 'scroll-margin:' || this.prefix === 'scroll-m:') ? -1 : 0;
     }
 }

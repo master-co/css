@@ -1,10 +1,9 @@
-import { DEG, REM, ROTATE, SKEW, TRANSFORM, TRANSLATE } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
 export default class extends MasterCSSRule {
     static override id = 'Transform'
     static override matches = /^(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\(/;
-    static override propName = TRANSFORM;
+    static override propName = 'transform';
     static override unit = '';
     override parseValue(value: string): string {
         return value.replace(
@@ -13,17 +12,17 @@ export default class extends MasterCSSRule {
                 let unit: string;
                 let last: boolean;
                 switch (method) {
-                    case TRANSLATE:
-                        unit = REM;
+                    case 'translate':
+                        unit = 'rem';
                         break;
-                    case SKEW:
-                        unit = DEG;
+                    case 'skew':
+                        unit = 'deg';
                         break;
-                    case ROTATE:
+                    case 'rotate':
                         if (type === '3d') {
                             last = true;
                         }
-                        unit = DEG;
+                        unit = 'deg';
                         break;
                     default:
                         return origin;
@@ -38,7 +37,7 @@ export default class extends MasterCSSRule {
                                 const isNaN = Number.isNaN(+eachValue);
                                 return isNaN
                                     ? eachValue
-                                    : ((eachValue as any) / (unit === REM ? 16 : 1)) // 將無單位的 / 16 轉為 rem
+                                    : ((eachValue as any) / (unit === 'rem' ? this.css.config.rootSize : 1))
                                     + unit;
                             } else {
                                 return eachValue;

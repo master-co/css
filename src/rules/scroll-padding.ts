@@ -1,53 +1,46 @@
 import { MasterCSSRule } from '../rule';
-import { dash, PADDING, SCROLL } from '../constants/css-property-keyword';
-import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from '../constants/direction';
 
 export default class extends MasterCSSRule {
     static override id = 'ScrollPadding'
     static override matches = /^scroll-p([xytblr]|adding(-(top|bottom|left|right))?)?:./;
     override get(declaration): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'p') {
-            const SCROLL_PADDING_PREFIX = dash(SCROLL, PADDING) + '-',
-                SCROLL_PADDING_LEFT = SCROLL_PADDING_PREFIX + LEFT,
-                SCROLL_PADDING_RIGHT = SCROLL_PADDING_PREFIX + RIGHT,
-                SCROLL_PADDING_TOP = SCROLL_PADDING_PREFIX + TOP,
-                SCROLL_PADDING_BOTTOM = SCROLL_PADDING_PREFIX + BOTTOM;
 
             switch (this.prefix.slice(-2, -1)) {
-                case X:
+                case 'x':
                     return {
-                        [SCROLL_PADDING_LEFT]: declaration,
-                        [SCROLL_PADDING_RIGHT]: declaration
+                        'scroll-padding-left': declaration,
+                        'scroll-padding-right': declaration
                     }
-                case Y:
+                case 'y':
                     return {
-                        [SCROLL_PADDING_TOP]: declaration,
-                        [SCROLL_PADDING_BOTTOM]: declaration
+                        'scroll-padding-top': declaration,
+                        'scroll-padding-bottom': declaration
                     }
-                case L:
+                case 'l':
                     return {
-                        [SCROLL_PADDING_LEFT]: declaration
+                        'scroll-padding-left': declaration
                     }
-                case R:
+                case 'r':
                     return {
-                        [SCROLL_PADDING_RIGHT]: declaration
+                        'scroll-padding-right': declaration
                     }
-                case T:
+                case 't':
                     return {
-                        [SCROLL_PADDING_TOP]: declaration
+                        'scroll-padding-top': declaration
                     }
-                case B:
+                case 'b':
                     return {
-                        [SCROLL_PADDING_BOTTOM]: declaration
+                        'scroll-padding-bottom': declaration
                     }
             }
         } else {
             return {
-                [this.prefix.replace(/-p(?!adding)/, '-' + PADDING).slice(0, -1)]: declaration
+                [this.prefix.replace(/-p(?!adding)/, '-' + 'padding').slice(0, -1)]: declaration
             }
         }
     }
     override get order(): number {
-        return (this.prefix === dash(SCROLL, PADDING) + ':' || this.prefix === dash(SCROLL, 'p:')) ? -1 : 0;
+        return (this.prefix === 'scroll-padding:' || this.prefix === 'scroll-p:') ? -1 : 0;
     }
 }

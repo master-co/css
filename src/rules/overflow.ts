@@ -1,4 +1,3 @@
-import { X, Y } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
 export default class extends MasterCSSRule {
@@ -7,9 +6,9 @@ export default class extends MasterCSSRule {
     override get(declaration): { [key: string]: any } {
         if (this.prefix) {
             switch (this.prefix.slice(-2, -1)) {
-                case X:
+                case 'x':
                     return { 'overflow-x': declaration };
-                case Y:
+                case 'y':
                     return { 'overflow-y': declaration };
             }
         }
@@ -18,8 +17,8 @@ export default class extends MasterCSSRule {
     override get order(): number {
         if (this.prefix) {
             switch (this.prefix.slice(-2, -1)) {
-                case X:
-                case Y:
+                case 'x':
+                case 'y':
                     return 0;
             }
         }

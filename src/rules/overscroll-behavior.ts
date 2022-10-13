@@ -1,4 +1,3 @@
-import { dash, OVERSCROLL_BEHAVIOR, X, Y } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
 export default class extends MasterCSSRule {
@@ -6,12 +5,12 @@ export default class extends MasterCSSRule {
     static override matches = /^overscroll-behavior(?:-[xy])?:/;
     override get(declaration): { [key: string]: any } {
         switch (this.prefix.slice(-2, -1)) {
-            case X:
-                return { [dash(OVERSCROLL_BEHAVIOR, X)]: declaration };
-            case Y:
-                return { [dash(OVERSCROLL_BEHAVIOR, Y)]: declaration };
+            case 'x':
+                return { 'overscroll-behavior-x': declaration };
+            case 'y':
+                return { 'overscroll-behavior-y': declaration };
             default:
-                return { [OVERSCROLL_BEHAVIOR]: declaration };
+                return { 'overscroll-behavior': declaration };
         }
     }
 }

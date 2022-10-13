@@ -1,41 +1,39 @@
 import { MasterCSSRule } from '../rule';
-import { dash, MARGIN, PADDING } from '../constants/css-property-keyword';
-import { B, BOTTOM, L, LEFT, R, RIGHT, T, TOP, X, Y } from '../constants/direction';
 
 export default class extends MasterCSSRule {
     static override id = 'Spacing'
     static override matches = /^[pm][xytblr]?:./;
     override get(declaration): { [key: string]: any } {
         const charAt1 = this.prefix[0];
-        const SPACING = charAt1 === 'm' ? MARGIN : PADDING;
-        const SPACING_LEFT = dash(SPACING, LEFT);
-        const SPACING_RIGHT = dash(SPACING, RIGHT);
-        const SPACING_TOP = dash(SPACING, TOP);
-        const SPACING_BOTTOM = dash(SPACING, BOTTOM);
+        const SPACING = charAt1 === 'm' ? 'margin' : 'padding';
+        const SPACING_LEFT = SPACING + '-left'
+        const SPACING_RIGHT = SPACING + '-right'
+        const SPACING_TOP = SPACING + '-top'
+        const SPACING_BOTTOM = SPACING + '-bottom'
         switch (this.prefix[1]) {
-            case X:
+            case 'x':
                 return {
                     [SPACING_LEFT]: declaration,
                     [SPACING_RIGHT]: declaration
                 }
-            case Y:
+            case 'y':
                 return {
                     [SPACING_TOP]: declaration,
                     [SPACING_BOTTOM]: declaration
                 }
-            case L:
+            case 'x':
                 return {
                     [SPACING_LEFT]: declaration
                 }
-            case R:
+            case 'r':
                 return {
                     [SPACING_RIGHT]: declaration
                 }
-            case T:
+            case 't':
                 return {
                     [SPACING_TOP]: declaration
                 }
-            case B:
+            case 'b':
                 return {
                     [SPACING_BOTTOM]: declaration
                 }

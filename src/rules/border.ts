@@ -1,5 +1,4 @@
 import { MasterCSSRule } from '../rule';
-import { BORDER } from '../constants/css-property-keyword';
 import { getBorderProps } from '../utils/get-border-props';
 
 export default class extends MasterCSSRule {
@@ -10,6 +9,6 @@ export default class extends MasterCSSRule {
         return getBorderProps(this.prefix, declaration);
     }
     override get order(): number {
-        return (this.prefix === BORDER + ":" || this.prefix === 'b:') ? -2 : -1;
+        return (this.prefix === 'border' + ":" || this.prefix === 'b:') ? -2 : -1;
     }
 }

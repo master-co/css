@@ -1,4 +1,3 @@
-import { COLUMN, dash, GAP, ROW, X, Y } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
 export default class extends MasterCSSRule {
@@ -6,12 +5,12 @@ export default class extends MasterCSSRule {
     static override matches = /^gap(-x|-y)?:./;
     override get(declaration): { [key: string]: any } {
         switch (this.prefix[4]) {
-            case X:
-                return { [dash(COLUMN, GAP)]: declaration };
-            case Y:
-                return { [dash(ROW, GAP)]: declaration };
+            case 'x':
+                return { 'column-gap': declaration };
+            case 'y':
+                return { 'row-gap': declaration };
             default:
-                return { [GAP]: declaration };
+                return { gap: declaration };
         }
     }
     override order = -1;

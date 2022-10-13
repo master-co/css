@@ -1,4 +1,3 @@
-import { CENTER, MIDDLE } from '../constants/css-property-keyword';
 import { BOTTOM, LEFT, RIGHT, TOP } from '../constants/direction';
 import { MasterCSSRule } from '../rule';
 
@@ -13,14 +12,14 @@ export default class extends MasterCSSRule {
             case RIGHT:
             case BOTTOM:
                 return { [propertyName]: declaration }
-            case CENTER:
+            case 'center':
                 return {
                     left: declaration,
                     right: declaration,
                     'margin-left': { ...declaration, unit: '' },
                     'margin-right': { ...declaration, unit: '' }
                 }
-            case MIDDLE:
+            case 'middle':
                 return {
                     top: declaration,
                     bottom: declaration,

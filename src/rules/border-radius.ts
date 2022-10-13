@@ -1,12 +1,10 @@
 import { MasterCSSRule } from '../rule';
-import { TOP, RIGHT, BOTTOM, LEFT, T, B, L, R } from '../constants/direction';
-import { BORDER, dash, RADIUS, ROUND, ROUNDED } from '../constants/css-property-keyword';
 
-const BORDER_TOP_LEFT_RADIUS = dash(BORDER, TOP, LEFT, RADIUS),
-    BORDER_TOP_RIGHT_RADIUS = dash(BORDER, TOP, RIGHT, RADIUS),
-    BORDER_BOTTOM_LEFT_RADIUS = dash(BORDER, BOTTOM, LEFT, RADIUS),
-    BORDER_BOTTOM_RIGHT_RADIUS = dash(BORDER, BOTTOM, RIGHT, RADIUS),
-    BORDER_RADIUS = dash(BORDER, RADIUS),
+const BORDER_TOP_LEFT_RADIUS = 'border-top-left-radius',
+    BORDER_TOP_RIGHT_RADIUS = 'border-top-right-radius',
+    BORDER_BOTTOM_LEFT_RADIUS = 'border-bottom-left-radius',
+    BORDER_BOTTOM_RIGHT_RADIUS = 'border-bottom-right-radius',
+    BORDER_RADIUS = 'border-radius',
     BORDER_RADIUS_S = [BORDER_TOP_LEFT_RADIUS, BORDER_TOP_RIGHT_RADIUS, BORDER_BOTTOM_LEFT_RADIUS, BORDER_BOTTOM_RIGHT_RADIUS];
 
 export default class extends MasterCSSRule {
@@ -24,7 +22,7 @@ export default class extends MasterCSSRule {
                 suffix = this.prefix.slice(1, -1);
             }
             switch (suffix) {
-                case T:
+                case 't':
                     return {
                         [BORDER_TOP_LEFT_RADIUS]: declaration,
                         [BORDER_TOP_RIGHT_RADIUS]: declaration
@@ -39,7 +37,7 @@ export default class extends MasterCSSRule {
                     return {
                         [BORDER_TOP_RIGHT_RADIUS]: declaration
                     }
-                case B:
+                case 'b':
                     return {
                         [BORDER_BOTTOM_LEFT_RADIUS]: declaration,
                         [BORDER_BOTTOM_RIGHT_RADIUS]: declaration
@@ -54,12 +52,12 @@ export default class extends MasterCSSRule {
                     return {
                         [BORDER_BOTTOM_RIGHT_RADIUS]: declaration
                     }
-                case L:
+                case 'l':
                     return {
                         [BORDER_TOP_LEFT_RADIUS]: declaration,
                         [BORDER_BOTTOM_LEFT_RADIUS]: declaration
                     }
-                case R:
+                case 'r':
                     return {
                         [BORDER_TOP_RIGHT_RADIUS]: declaration,
                         [BORDER_BOTTOM_RIGHT_RADIUS]: declaration
@@ -77,6 +75,6 @@ export default class extends MasterCSSRule {
         }
     }
     override get order(): number {
-        return (this.prefix === dash(BORDER, RADIUS) + ":" || this.prefix === 'r:') ? -1 : 0;
+        return (this.prefix === 'border-radius' + ":" || this.prefix === 'r:') ? -1 : 0;
     }
 }

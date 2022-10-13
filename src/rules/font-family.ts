@@ -1,8 +1,7 @@
-import { dash, FAMILY, FONT } from '../constants/css-property-keyword';
 import { MasterCSSRule } from '../rule';
 
 export default class extends MasterCSSRule {
     static override id = 'FontFamily'
     static override matches = /^f(ont)?:(mono|sans|serif)(?!\|)/;
-    static override propName = dash(FONT, FAMILY);
+    static override propName = 'font-family'
 }

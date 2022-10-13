@@ -97,7 +97,7 @@ export class MasterCSSRule {
     constructor(
         public readonly className: string,
         public readonly matching: RuleMatching,
-        css: MasterCSS
+        public css: MasterCSS
     ) {
         const TargetRule = this.constructor as typeof MasterCSSRule;
         let { id, unit, propName, colorful } = TargetRule;
@@ -239,7 +239,7 @@ export class MasterCSSRule {
             this.important = true;
             suffixToken = suffixToken.slice(1);
         }
-       
+
         // 3. prefix selector
         const analyzeSelectorToken = (selectorText: string) => {
             const transformedSelectorText = transformSelectorUnderline(selectorText);
@@ -487,7 +487,7 @@ export class MasterCSSRule {
                         ? Object
                             .entries(relationThemesMap)
                             .filter(([relationTheme]) => this.themeName || !colorful || !themeName || !relationTheme || relationTheme === themeName)
-                            .map(([relationTheme, classNames]) => 
+                            .map(([relationTheme, classNames]) =>
                                 classNames.reduce((str, className) => str + ',' + getCssText(this.themeName ?? (colorful ? themeName || relationTheme : relationTheme), className), '')
                             )
                             .join('')
@@ -498,7 +498,7 @@ export class MasterCSSRule {
                 for (const key of Object.keys(this.at).sort((a, b) => b === 'supports' ? -1 : 1)) {
                     cssText = '@' + key + ' ' + this.at[key] + '{' + cssText + '}';
                 }
-            
+
                 return cssText;
             };
 
@@ -510,17 +510,17 @@ export class MasterCSSRule {
                         newValueTokens.push(eachValueToken);
                     } else {
                         uv = parseValue(
-                            eachValueToken.value, 
-                            unit, 
-                            colorful && colorsThemesMap, 
-                            values, 
-                            rootSize, 
+                            eachValueToken.value,
+                            unit,
+                            colorful && colorsThemesMap,
+                            values,
+                            rootSize,
                             this.themeName ? [this.themeName, ''] : [themeName]
                         );
                         if (uv.colorMatched !== undefined && anyColorMatched !== true) {
                             anyColorMatched = uv.colorMatched;
                         }
-    
+
                         newValueTokens.push(uv.value + uv.unit);
                     }
                 }
@@ -556,9 +556,9 @@ export class MasterCSSRule {
                     if (this.getThemeProps) {
                         const themeProps = this.getThemeProps(declaration, css);
                         for (const themeName in themeProps) {
-                            this.natives.push({ 
-                                unit: newUnit, 
-                                value: newValue, 
+                            this.natives.push({
+                                unit: newUnit,
+                                value: newValue,
                                 text: generateCssText(
                                     Object
                                         .entries(themeProps[themeName])
@@ -569,8 +569,8 @@ export class MasterCSSRule {
                                         }))
                                         .join(';'),
                                     themeName
-                                ), 
-                                themeName 
+                                ),
+                                themeName
                             });
                         }
                         return;
@@ -582,15 +582,15 @@ export class MasterCSSRule {
                 newValue = value;
             }
 
-            this.natives.push({ 
-                unit: newUnit, 
-                value: newValue, 
+            this.natives.push({
+                unit: newUnit,
+                value: newValue,
                 text: generateCssText(
                     typeof newValue === 'object'
                         ? Object
                             .entries(newValue)
                             .map(([propertyName, propertyValue]) => getCssPropertyText(propertyName, {
-                                ...(typeof propertyValue === 'object' 
+                                ...(typeof propertyValue === 'object'
                                     ? propertyValue
                                     : { unit: '', value: propertyValue }),
                                 important: this.important
@@ -598,7 +598,7 @@ export class MasterCSSRule {
                             .join(';')
                         : getCssPropertyText(propName, { unit: newUnit, value: newValue, important: this.important }),
                     themeName
-                ), 
+                ),
                 themeName
             });
         };
