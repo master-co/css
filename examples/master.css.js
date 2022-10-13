@@ -1,3 +1,4 @@
+const { defaultColors } = require('../src');
 const { configure } = require('../src/configure');
 
 module.exports = configure({

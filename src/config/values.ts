@@ -1,4 +1,5 @@
-const breakpoints = require('./breakpoints');
+import { defaultBreakpoints } from './breakpoints';
+
 const { dash, FIT, MAX, MIN, CONTENT, COLUMN } = require('../constants/css-property-keyword');
 
 const boxUnderneath = {
@@ -18,11 +19,11 @@ const sizingValues = {
     max: dash(MAX, CONTENT),
     min: dash(MIN, CONTENT),
 }
-for (const key in breakpoints) {
-    sizingValues[key] = (breakpoints[key] / 16) + 'rem'
+for (const key in defaultBreakpoints) {
+    sizingValues[key] = (defaultBreakpoints[key] / 16) + 'rem'
 }
 
-module.exports = {
+export const defaultValues = {
     BackgroundClip: boxUnderneath,
     BackgroundOrigin: boxUnderneath,
     BoxSizing: {

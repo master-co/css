@@ -5,7 +5,7 @@ test("configure", () => {
     const custom = {
         themes: ['red'],
         values: {
-            width: {
+            Width: {
                 'half': '50%'
             }
         }
@@ -19,9 +19,9 @@ test("configure", () => {
                 themes: [...defaultThemes, ...custom.themes],
                 values: {
                     ...defaultValues,
-                    width: {
-                        ...defaultValues.width,
-                        ...custom.values.width
+                    Width: {
+                        ...defaultValues.Width,
+                        ...custom.values.Width
                     }
                 }
             })

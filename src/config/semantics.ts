@@ -1,4 +1,4 @@
-module.exports = {
+export const defaultSemantics = {
     square: 'aspect-ratio:1/1',
     video: 'aspect-ratio:16/9',
     rounded: 'border-radius:1e9em',

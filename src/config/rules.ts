@@ -1,4 +1,4 @@
-module.exports = [
+export const DefaultRules = [
     require('../rules/font-size').default,
     require('../rules/font-weight').default,
     require('../rules/font-family').default,

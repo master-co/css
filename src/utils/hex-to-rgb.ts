@@ -1,4 +1,4 @@
-module.exports = function hexToRgb(hex) {
+export function hexToRgb(hex) {
     if (hex.startsWith('#')) {
         hex = hex.slice(1);
     }

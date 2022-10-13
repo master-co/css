@@ -1,7 +1,7 @@
-const hexToRgb = require('./utils/hex-to-rgb');
-const rgbToHex = require('./utils/rgb-to-hex');
+import { hexToRgb } from './utils/hex-to-rgb'
+import { rgbToHex } from './utils/rgb-to-hex';
 
-module.exports = function fillColorScale(data) {
+export function fillColorScale(data) {
     if (typeof data === 'string') {
         data = { '': data };
     }

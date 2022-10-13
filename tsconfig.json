@@ -8,6 +8,7 @@
         "esModuleInterop": true,
         "target": "es2015",
         "module": "es2020",
+        "allowJs": true,
         "skipLibCheck": true,
         "lib": [
             "es2021",

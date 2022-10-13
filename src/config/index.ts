@@ -1,12 +1,12 @@
-import defaultColors from './colors'
-import defaultBreakpoints from './breakpoints'
-import defaultSemantics from './semantics'
-import defaultValues from './values'
-import defaultSelectors from './selectors'
-import defaultThemes from './themes'
-import defaultRootSize from './root-size'
-import defaultRules from './rules';
 import { MasterCSSConfig } from '../interfaces/config'
+import { defaultBreakpoints } from './breakpoints'
+import { defaultColors } from './colors'
+import { defaultRootSize } from './root-size'
+import { defaultSelectors } from './selectors'
+import { defaultSemantics } from './semantics'
+import { defaultThemes } from './themes'
+import { defaultValues } from './values'
+import { DefaultRules } from './rules'
 
 const defaultConfig: MasterCSSConfig = {
     colors: defaultColors,
@@ -15,7 +15,7 @@ const defaultConfig: MasterCSSConfig = {
     values: defaultValues,
     selectors: defaultSelectors,
     themes: defaultThemes,
-    Rules: defaultRules,
+    Rules: DefaultRules,
     rootSize: defaultRootSize
 }
 
@@ -26,7 +26,7 @@ export {
     defaultValues,
     defaultSelectors,
     defaultThemes,
-    defaultRules,
+    DefaultRules,
     defaultRootSize,
     defaultConfig
 }

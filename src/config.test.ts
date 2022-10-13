@@ -5,12 +5,7 @@ import config from '../examples/master.css.js';
 test("classes", () => {
     testCSS(
         "btn",
-        ".bg\\:white,.card,.dark .btn{background-color:#ffffff}.fg\\:primary,.btn{color:#175fe9}.dark .fg\\:primary,.dark .btn{color:#6b9ef1}.bg\\:red,.btn{background-color:#d11a1e}.text\\:center,.btn,.dark .btn{text-align:center}.h\\:40,.btn,.dark .btn{height:2.5rem}.font\\:14,.btn,.dark .btn{font-size:0.875rem}",
-        new MasterCSS(config)
-    );
-    testCSS(
-        "card",
-        ".b\\:1\\|solid\\|gray-80,.card{border:0.0625rem solid #dad9db}.p\\:20,.card{padding:1.25rem}.bg\\:white,.card,.dark .btn{background-color:#ffffff}",
+        ".font\\:medium,.dark .btn{font-weight:500}.fg\\:primary,.dark .btn{color:#175fe9}.light .fg\\:primary{color:#ebbb40}.dark .fg\\:primary,.dark .btn{color:#fbe09d}.bg\\:white,.dark .btn{background-color:#ffffff}.font\\:semibold,.light .btn{font-weight:600}.fg\\:white,.light .btn{color:#ffffff}.bg\\:primary,.light .btn{background-color:#175fe9}.light .bg\\:primary,.light .btn{background-color:#ebbb40}.dark .bg\\:primary{background-color:#fbe09d}.text\\:center,.btn{text-align:center}.h\\:40,.btn{height:2.5rem}.font\\:14,.btn{font-size:0.875rem}",
         new MasterCSS(config)
     );
 });
@@ -78,7 +73,7 @@ test("mediaQueries", () => {
 test("colors", () => {
     testCSS(
         "fg:primary", 
-        ".fg\\:primary,.btn{color:#175fe9}.dark .fg\\:primary,.dark .btn{color:#6b9ef1}",
+        ".fg\\:primary,.dark .btn{color:#175fe9}.light .fg\\:primary{color:#ebbb40}.dark .fg\\:primary,.dark .btn{color:#fbe09d}",
         new MasterCSS(config)
     );
 });

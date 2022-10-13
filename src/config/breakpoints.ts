@@ -1,4 +1,4 @@
-module.exports = {
+export const defaultBreakpoints = {
     '3xs': 360,
     '2xs': 480,
     xs: 600,
