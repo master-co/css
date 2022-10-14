@@ -27,7 +27,7 @@ const transformSelectorUnderline = (selector: string) => selector.split(selector
     .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/\_/g, ' '))
     .join('');
 
-export interface RuleMatching {
+export interface MasterCSSRuleMatching {
     origin: 'matches' | 'semantics' | 'symbol';
     value?: string;
 }
@@ -60,7 +60,7 @@ export class MasterCSSRule {
     static match(
         name: string,
         colorNames: string[]
-    ): RuleMatching {
+    ): MasterCSSRuleMatching {
         /** 
          * STEP 1. matches
          */
@@ -97,7 +97,7 @@ export class MasterCSSRule {
 
     constructor(
         public readonly className: string,
-        public readonly matching: RuleMatching,
+        public readonly matching: MasterCSSRuleMatching,
         public css: MasterCSS
     ) {
         const TargetRule = this.constructor as typeof MasterCSSRule;

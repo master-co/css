@@ -8,7 +8,7 @@ import { defaultThemes } from './themes'
 import { defaultValues } from './values'
 import { DefaultRules } from './rules'
 
-const defaultConfig: MasterCSSConfig = {
+export const defaultConfig: MasterCSSConfig = {
     colors: defaultColors,
     breakpoints: defaultBreakpoints,
     semantics: defaultSemantics,
@@ -17,16 +17,4 @@ const defaultConfig: MasterCSSConfig = {
     themes: defaultThemes,
     Rules: DefaultRules,
     rootSize: defaultRootSize
-}
-
-export {
-    defaultColors,
-    defaultBreakpoints,
-    defaultSemantics,
-    defaultValues,
-    defaultSelectors,
-    defaultThemes,
-    DefaultRules,
-    defaultRootSize,
-    defaultConfig
 }
