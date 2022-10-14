@@ -77,7 +77,9 @@ export function mergeAndConcat<T extends Record<string, any>, Tn extends Record<
     object: T,
     ...otherObjects: Tn
 ): ExpandDeep<any> {
-    return otherObjects.reduce((result, newComer) => {
-        return mergeRecursively(result, newComer, concatArrays)
-    }, object) as any
+    return otherObjects
+        .filter((newComer) => isPlainObject(newComer))
+        .reduce((result, newComer) => {
+            return mergeRecursively(result, newComer, concatArrays)
+        }, object) as any
 }

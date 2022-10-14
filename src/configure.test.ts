@@ -28,3 +28,8 @@ test("configure", () => {
                 }
             })
 });
+
+test("configure undefined", () => {
+    expect(configure(undefined))
+        .toEqual(defaultConfig)
+})
