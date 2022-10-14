@@ -1,3 +1,4 @@
+import { MasterCSSConfig } from 'src/interfaces/config';
 import { MasterCSSRule } from '../rule';
 import { parseValueUnit } from '../utils/parse-value-unit';
 
@@ -11,7 +12,7 @@ export default class extends MasterCSSRule {
             '-webkit-backdrop-filter': declaration
         }
     };
-    override parseValue(value: string): string {
+    override parseValue(value: string, config: MasterCSSConfig): string {
         return parseValueUnit(
             value,
             method => {
@@ -23,6 +24,7 @@ export default class extends MasterCSSRule {
                         return 'deg';
                 }
                 return '';
-            });
+            },
+            config);
     }
 }

@@ -1,4 +1,6 @@
-export function parseValueUnit(value: string, getUnit: (method: string) => string): string {
+import { MasterCSSConfig } from 'src/interfaces/config';
+
+export function parseValueUnit(value: string, getUnit: (method: string) => string, { rootSize }: MasterCSSConfig): string {
     let result = '';
 
     let i = 0;
@@ -12,7 +14,7 @@ export function parseValueUnit(value: string, getUnit: (method: string) => strin
             if (current) {
                 result += (!unit || Number.isNaN(+current))
                     ? current
-                    : (+current / (unit === 'rem' ? this.css.config.rootSize : 1)) + unit;
+                    : (+current / (unit === 'rem' ? rootSize : 1)) + unit;
 
                 current = '';
             }

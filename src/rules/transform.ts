@@ -1,3 +1,4 @@
+import { MasterCSSConfig } from 'src/interfaces/config';
 import { MasterCSSRule } from '../rule';
 
 export default class extends MasterCSSRule {
@@ -5,7 +6,7 @@ export default class extends MasterCSSRule {
     static override matches = /^(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\(/;
     static override propName = 'transform';
     static override unit = '';
-    override parseValue(value: string): string {
+    override parseValue(value: string, {rootSize}: MasterCSSConfig): string {
         return value.replace(
             /(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\((.*?)\)/g,
             (origin, method, type, valueStr: string) => {
@@ -37,7 +38,7 @@ export default class extends MasterCSSRule {
                                 const isNaN = Number.isNaN(+eachValue);
                                 return isNaN
                                     ? eachValue
-                                    : ((eachValue as any) / (unit === 'rem' ? this.css.config.rootSize : 1))
+                                    : ((eachValue as any) / (unit === 'rem' ? rootSize : 1))
                                     + unit;
                             } else {
                                 return eachValue;

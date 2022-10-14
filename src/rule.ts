@@ -5,6 +5,7 @@ import { parseValue } from './utils/parse-value';
 import { START_SYMBOL } from './constants/start-symbol';
 import MasterCSS from './core';
 import { MasterCSSDeclaration } from './interfaces/declaration';
+import { MasterCSSConfig } from './interfaces/config';
 
 export const PRIORITY_SELECTORS = [':disabled', ':active', ':focus', ':hover'];
 const MATCHES = 'matches';
@@ -542,7 +543,7 @@ export class MasterCSSRule {
                 if (typeof newValue !== 'object') {
                     // 8. parseValue
                     if (this.parseValue) {
-                        newValue = this.parseValue(newValue);
+                        newValue = this.parseValue(newValue, this.css.config);
                     }
 
                     // 9. transform value
@@ -620,7 +621,7 @@ export class MasterCSSRule {
 export interface MasterCSSRule {
     readonly order?: number;
 
-    parseValue(value: string): string;
+    parseValue(value: string, config: MasterCSSConfig): string;
     get(declaration: MasterCSSDeclaration): Record<string, any>;
     getThemeProps(declaration: MasterCSSDeclaration, css: MasterCSS): Record<string, Record<string, string>>;
 }
