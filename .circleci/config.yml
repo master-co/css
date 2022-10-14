@@ -4,8 +4,6 @@ workflows:
   version: 2
   package:
     jobs:
-      - test:
-          context: Master
       - release:
           context: Master
 
@@ -13,17 +11,17 @@ jobs:
   test:
     docker:
       - image: "cimg/node:17.1.0"
-    parallelism: 10
+    steps:
+      - checkout
+  release:
+    docker:
+      - image: "cimg/node:17.1.0"
+    parallelism: 4
     steps:
       - checkout
       - run:
           name: test
           command: npm i && npx jest --maxWorkers=2
-  release:
-    docker:
-      - image: "cimg/node:17.1.0"
-    steps:
-      - checkout
       - run:
           name: Copy package.json to ./dist for verification release
           command: mkdir -p ./dist && cp ./src/package.json ./dist/package.json
