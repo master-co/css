@@ -3,7 +3,7 @@ import { MasterCSSMedia } from './interfaces/media';
 import { getCssPropertyText } from './utils/get-css-property-text';
 import { parseValue } from './utils/parse-value';
 import { START_SYMBOL } from './constants/start-symbol';
-import MasterCSS from './core';
+import MasterCSS from './css';
 import { MasterCSSDeclaration } from './interfaces/declaration';
 import { MasterCSSConfig } from './interfaces/config';
 

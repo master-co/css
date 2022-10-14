@@ -1,4 +1,4 @@
-import MasterCSS from './core';
+import MasterCSS from './css';
 import './polyfills/css-escape'
 import { renderFromHTML } from './render-from-html';
 

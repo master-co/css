@@ -1,4 +1,4 @@
-export { default } from './core'
+export { default } from './css'
 
 export { MasterCSSRule } from './rule'
 
