@@ -20,3 +20,4 @@ export { defaultThemes } from './config/themes'
 export { defaultValues } from './config/values'
 export { DefaultRules } from './config/rules'
 
+export { mergeAndConcat } from './utils/merge'
