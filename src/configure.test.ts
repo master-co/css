@@ -1,5 +1,7 @@
 import { configure } from './configure';
-import { defaultConfig, defaultThemes, defaultValues } from './config';
+import { defaultConfig } from './config';
+import { defaultThemes } from './config/themes';
+import { defaultValues } from './config/values';
 
 test("configure", () => {
     const custom = {
