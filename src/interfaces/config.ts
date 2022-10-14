@@ -1,3 +1,4 @@
+import MasterCSS from 'src/css'
 import { MasterCSSRule } from 'src/rule'
 
 export interface MasterCSSConfig {
@@ -11,4 +12,5 @@ export interface MasterCSSConfig {
     Rules?: typeof MasterCSSRule[],
     themes?: Record<string, { classes?: Record<string, string>, colors?: Record<string, string | Record<string, string>> }> | string[],
     rootSize?: number
+    validateRule?: (rule: MasterCSSRule, css?: MasterCSS) => boolean
 }

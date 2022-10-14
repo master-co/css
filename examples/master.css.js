@@ -57,4 +57,8 @@ module.exports = configure({
     },
     rootSize: 16,
     Rules: [],
+    validateRule: (rule, css) => {
+        console.log(rule)
+        return true
+    }
 })

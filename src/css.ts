@@ -40,7 +40,7 @@ export default class MasterCSS extends MutationObserver {
 
     readonly style: HTMLStyleElement;
     readonly rules: MasterCSSRule[] = [];
-    readonly ruleOfName: Record<string, MasterCSSRule> = {};
+    readonly ruleOfClass: Record<string, MasterCSSRule> = {};
     readonly countOfName = {};
 
     private cache() {
@@ -393,7 +393,7 @@ export default class MasterCSS extends MutationObserver {
                                         className += char;
                                     }
 
-                                    if (!(className in this.ruleOfName) && !(className in this.classes)) {
+                                    if (!(className in this.ruleOfClass) && !(className in this.classes)) {
                                         const currentRule = this.findAndNew(className) as MasterCSSRule;
                                         if (currentRule)
                                             return currentRule;
@@ -411,7 +411,7 @@ export default class MasterCSS extends MutationObserver {
                     const rule = getRule(this.style.sheet.cssRules[index]);
                     if (rule) {
                         this.rules.push(rule);
-                        this.ruleOfName[rule.className] = rule;
+                        this.ruleOfClass[rule.className] = rule;
 
                         for (let i = 0; i < rule.natives.length; i++) {
                             rule.natives[i].cssRule = this.style.sheet.cssRules[index + i];
@@ -461,7 +461,7 @@ export default class MasterCSS extends MutationObserver {
     disconnect(): void {
         super.disconnect();
         // @ts-ignore
-        this.ruleOfName = {};
+        this.ruleOfClass = {};
         // @ts-ignore
         this.countOfName = {};
 
@@ -480,8 +480,8 @@ export default class MasterCSS extends MutationObserver {
      */
     findAndNew(name: string) {
         const findAndNewRule = (className: string) => {
-            if (className in this.ruleOfName)
-                return this.ruleOfName[className];
+            if (className in this.ruleOfClass)
+                return this.ruleOfClass[className];
 
             for (const EachRule of this.config.Rules) {
                 const matching = EachRule.match(className, this.colorNames);
@@ -527,7 +527,7 @@ export default class MasterCSS extends MutationObserver {
         this.style = style;
         this.rules.length = 0;
         // @ts-ignore
-        this.ruleOfName = {};
+        this.ruleOfClass = {};
 
         /**
          * 拿當前所有的 classNames 按照最新的 colors, breakpoints, config.Rules 匹配並生成新的 style
@@ -558,8 +558,13 @@ export default class MasterCSS extends MutationObserver {
      * 10. media width selectors
      */
     insert(rule: MasterCSSRule) {
-        if (this.ruleOfName[rule.className])
+        if (this.ruleOfClass[rule.className])
             return;
+
+        const { validateRule } = this.config
+        if (validateRule && !validateRule(rule, this)) {
+            return
+        }
 
         let index;
         /**
@@ -569,10 +574,7 @@ export default class MasterCSS extends MutationObserver {
          * @description
          */
         const endIndex = this.rules.length - 1;
-        const media = rule.media;
-        const order = rule.order;
-        const prioritySelectorIndex = rule.prioritySelectorIndex;
-        const hasWhere = rule.hasWhere;
+        const { media, order, prioritySelectorIndex, hasWhere, className } = rule;
         const findPrioritySelectorInsertIndex = (
             rules: MasterCSSRule[],
             findStartIndex?: (rule: MasterCSSRule) => any,
@@ -895,11 +897,12 @@ export default class MasterCSS extends MutationObserver {
             }
         }
 
-        try {
-            this.rules.splice(index, 0, rule);
-            this.ruleOfName[rule.className] = rule;
+        this.rules.splice(index, 0, rule);
+        this.ruleOfClass[className] = rule;
 
-            if (this.style) {
+        // 只在瀏覽器端運行
+        if (this.style) {
+            try {
                 const sheet = this.style.sheet;
 
                 let cssRuleIndex: number = 0;
@@ -920,9 +923,9 @@ export default class MasterCSS extends MutationObserver {
                     sheet.insertRule(eachNative.text, cssRuleIndex);
                     eachNative.cssRule = sheet.cssRules[cssRuleIndex++];
                 }
+            } catch (error) {
+                console.error(error);
             }
-        } catch (error) {
-            console.error(error);
         }
     }
 
@@ -933,7 +936,7 @@ export default class MasterCSS extends MutationObserver {
          */
         const sheet = this.style.sheet;
         const deleteRule = (name: string) => {
-            const rule = this.ruleOfName[name];
+            const rule = this.ruleOfClass[name];
             if (
                 !rule
                 || name in this.relations && this.relations[name].some(eachClassName => eachClassName in this.countOfName)
@@ -949,7 +952,7 @@ export default class MasterCSS extends MutationObserver {
                     }
 
                     this.rules.splice(this.rules.indexOf(rule), 1);
-                    delete this.ruleOfName[rule.className];
+                    delete this.ruleOfClass[className];
 
                     break;
                 }
