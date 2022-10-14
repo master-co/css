@@ -9,6 +9,8 @@
         "target": "ESNext",
         "module": "ESNext",
         "skipLibCheck": true,
+        "declaration": true,
+        "emitDeclarationOnly": true,
         "lib": [
             "es2021",
             "dom"

@@ -4,12 +4,12 @@
     "description": "A Virtual CSS language with enhanced syntax. ( ~13KB )",
     "author": "Aoyue Design LLC.",
     "main": "index.js",
-    "module": "esm/index.js",
+    "module": "index.esm.js",
     "types": "index.d.ts",
     "exports": {
         ".": {
             "require": "./index.js",
-            "import": "./esm/index.js",
+            "import": "./index.esm.js",
             "types": "./index.d.ts"
         }
     },

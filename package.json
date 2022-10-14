@@ -1,14 +1,11 @@
 {
     "name": "@master/css",
     "scripts": {
-        "build": "tsup src/index.ts --format esm,cjs --dts --minify --clean --sourcemap --legacy-output --treeshake",
-        "package": "cp README.md LICENSE ./src/package.json ./dist",
+        "build": "node package.js && tsc",
+        "package": "npm run build && cp README.md LICENSE ./src/package.json ./dist",
         "update": "git fetch package js && git merge package/js",
         "update:readme": "m package render README.md",
         "test": "jest"
-    },
-    "dependencies": {
-        "tsup": "^6.2.3"
     },
     "devDependencies": {
         "@types/jest": "^27.5.2",
@@ -18,5 +15,8 @@
     },
     "files": [
         "dist"
-    ]
+    ],
+    "dependencies": {
+        "esbuild": "^0.15.10"
+    }
 }
