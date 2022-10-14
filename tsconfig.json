@@ -1,16 +1,15 @@
 {
     "compilerOptions": {
-        "outDir": "./dist",
+        "outDir": "./dist/esm",
         "baseUrl": "./",
-        "sourceMap": true,
         "experimentalDecorators": true,
         "moduleResolution": "Node",
         "esModuleInterop": true,
+        "allowJs": true,
         "target": "ESNext",
         "module": "ESNext",
         "skipLibCheck": true,
         "declaration": true,
-        "emitDeclarationOnly": true,
         "lib": [
             "es2021",
             "dom"
@@ -21,6 +20,7 @@
         "./src/**/*.d.ts"
     ],
     "exclude": [
-        "./src/node_modules"
+        "./src/node_modules",
+        "./src/**/*.test.ts"
     ]
 }
