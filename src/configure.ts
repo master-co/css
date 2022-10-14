@@ -1,10 +1,10 @@
 import { defaultConfig } from './config';
 import { MasterCSSConfig } from './interfaces/config';
-import { mergeAndConcat } from './utils/merge';
+import { extend } from './utils/extend';
 
 export function configure(...configurations: MasterCSSConfig[]): MasterCSSConfig {
     if (configurations.length) {
-        return mergeAndConcat(defaultConfig, ...configurations)
+        return extend(defaultConfig, ...configurations)
     } else {
         return defaultConfig
     }
