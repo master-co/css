@@ -15,6 +15,7 @@ jobs:
       - image: "cimg/node:17.1.0"
     parallelism: 10
     steps:
+      - checkout
       - run:
           name: test
           command: npm i && npx jest --maxWorkers=2
