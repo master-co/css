@@ -4,6 +4,8 @@ workflows:
   version: 2
   package:
     jobs:
+      - test:
+          context: Master
       - release:
           context: Master
 
@@ -16,7 +18,6 @@ jobs:
       - run:
           name: test
           command: npm i && npx jest --maxWorkers=2
-
   release:
     docker:
       - image: "cimg/node:17.1.0"
