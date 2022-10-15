@@ -87,51 +87,63 @@ export default class MasterCSS extends MutationObserver {
             }
         }
 
-        const mergeClasses = (theme: string, classes: Record<string, string>) => {
-            if (!classes)
+       
+        const semanticNames = [
+            ...(classes ? Object.keys(classes) : []), 
+            ...((themes && !Array.isArray(themes))
+                ? Object.entries(themes).flatMap(([_ ,{ classes }]) => Object.keys(classes))
+                : [])
+        ];
+        const handleSemanticName = (semanticName: string) => {
+            if (semanticName in this.classes)
                 return;
 
-            for (const semanticName in classes) {
-                const className = classes[semanticName];
+            const currentClass = this.classes[semanticName] = [];
+
+            const handleClassNames = (theme: string, className: string | string[]) => {
+                if (!className)
+                    return;
+
                 const classNames: string[] = Array.isArray(className)
                     ? className
                     : className
                         .replace(/(?:\n(?:\s*))+/g, ' ')
                         .trim()
                         .split(' ');
-
-                if (!(semanticName in this.classes)) {
-                    this.classes[semanticName] = [];
-                }
-                const currentClass = this.classes[semanticName];
                 for (const eachClassName of classNames) {
-                    if (eachClassName in this.relationThemesMap) {
-                        if (theme in this.relationThemesMap[eachClassName]) {
-                            this.relationThemesMap[eachClassName][theme].push(semanticName);
-                        } else {
-                            this.relationThemesMap[eachClassName][theme] = [semanticName];
-                        }
-                    } else {
-                        this.relationThemesMap[eachClassName] = { [theme]: [semanticName] };
-                    }
+                    if (semanticNames.includes(eachClassName)) {
+                        handleSemanticName(eachClassName);
 
-                    if (!currentClass.includes(eachClassName)) {
-                        currentClass.push(eachClassName);
+                        currentClass.push(...this.classes[eachClassName]);
+                    } else {
+                        if (eachClassName in this.relationThemesMap) {
+                            if (theme in this.relationThemesMap[eachClassName]) {
+                                this.relationThemesMap[eachClassName][theme].push(semanticName);
+                            } else {
+                                this.relationThemesMap[eachClassName][theme] = [semanticName];
+                            }
+                        } else {
+                            this.relationThemesMap[eachClassName] = { [theme]: [semanticName] };
+                        }
+
+                        if (!currentClass.includes(eachClassName)) {
+                            currentClass.push(eachClassName);
+                        }
                     }
                 }
-            }
+            };
 
-            for (const semanticName in this.relationThemesMap) {
-                this.relations[semanticName] = [];
-                for (const classNames of Object.values(this.relationThemesMap[semanticName])) {
-                    for (const eachClassName of classNames) {
-                        if (!this.relations[semanticName].includes(eachClassName)) {
-                            this.relations[semanticName].push(eachClassName);
-                        }
-                    }
+            handleClassNames('', classes?.[semanticName]);
+            if (themes && !Array.isArray(themes)) {
+                for (const [eachTheme, { classes }] of Object.entries(themes)) {
+                    handleClassNames(eachTheme, classes?.[semanticName]);
                 }
             }
         };
+        for (const eachSemanticName of semanticNames) {
+            handleSemanticName(eachSemanticName);
+        }
+
         const mergeColors = (theme: string, colors: Record<string, string | Record<string, string>>) => {
             if (!colors)
                 return;
@@ -165,7 +177,6 @@ export default class MasterCSS extends MutationObserver {
             }
         };
 
-        mergeClasses('', classes);
         mergeColors('', colors);
         if (themes) {
             if (Array.isArray(themes)) {
@@ -173,7 +184,6 @@ export default class MasterCSS extends MutationObserver {
             } else {
                 for (const eachTheme in themes) {
                     const themeValue = themes[eachTheme];
-                    mergeClasses(eachTheme, themeValue.classes);
                     mergeColors(eachTheme, themeValue.colors);
                     this.themeNames.push(eachTheme);
                 }

@@ -6,7 +6,8 @@ module.exports = configure({
         primary: '#175fe9',
     },
     classes: {
-        btn: 'font:14 h:40 text:center'
+        btn: 'font:14 h:40 text:center',
+        'blue-btn': 'btn bg:blue'
     },
     themes: {
         light: {

@@ -8,6 +8,11 @@ test("classes", () => {
         ".font\\:medium,.dark .btn{font-weight:500}.fg\\:primary,.dark .btn{color:#175fe9}.light .fg\\:primary{color:#ebbb40}.dark .fg\\:primary,.dark .btn{color:#fbe09d}.bg\\:white,.dark .btn{background-color:#ffffff}.font\\:semibold,.light .btn{font-weight:600}.fg\\:white,.light .btn{color:#ffffff}.bg\\:primary,.light .btn{background-color:#175fe9}.light .bg\\:primary,.light .btn{background-color:#ebbb40}.dark .bg\\:primary{background-color:#fbe09d}.text\\:center,.btn{text-align:center}.h\\:40,.btn{height:2.5rem}.font\\:14,.btn{font-size:0.875rem}",
         new MasterCSS(config)
     );
+    testCSS(
+        "blue-btn",
+        ".bg\\:blue,.blue-btn{background-color:#175fe9}.font\\:medium,.dark .btn{font-weight:500}.fg\\:primary,.dark .btn{color:#175fe9}.light .fg\\:primary{color:#ebbb40}.dark .fg\\:primary,.dark .btn{color:#fbe09d}.bg\\:white,.dark .btn{background-color:#ffffff}.font\\:semibold,.light .btn{font-weight:600}.fg\\:white,.light .btn{color:#ffffff}.bg\\:primary,.light .btn{background-color:#175fe9}.light .bg\\:primary,.light .btn{background-color:#ebbb40}.dark .bg\\:primary{background-color:#fbe09d}.text\\:center,.btn{text-align:center}.h\\:40,.btn{height:2.5rem}.font\\:14,.btn{font-size:0.875rem}",
+        new MasterCSS(config)
+    );
 });
 
 test("values", () => {
