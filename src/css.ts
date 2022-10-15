@@ -981,11 +981,11 @@ export default class MasterCSS extends MutationObserver {
                     }
 
                     this.rules.splice(this.rules.indexOf(rule), 1);
-                    delete this.ruleOfClass[className];
-
                     break;
                 }
             }
+
+            delete this.ruleOfClass[name];
         };
 
         if (className in this.classes) {
@@ -994,6 +994,8 @@ export default class MasterCSS extends MutationObserver {
                     deleteRule(eachClassName);
                 }
             }
+
+            delete this.ruleOfClass[className];
         } else {
             deleteRule(className);
         }
