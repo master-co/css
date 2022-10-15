@@ -91,7 +91,7 @@ export default class MasterCSS extends MutationObserver {
         const semanticNames = [
             ...(classes ? Object.keys(classes) : []), 
             ...((themes && !Array.isArray(themes))
-                ? Object.entries(themes).flatMap(([_ ,{ classes }]) => Object.keys(classes))
+                ? Object.entries(themes).flatMap(([_ ,{ classes }]) => classes ? Object.keys(classes) : [])
                 : [])
         ];
         const handleSemanticName = (semanticName: string) => {
