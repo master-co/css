@@ -4,6 +4,7 @@ import { MasterCSSConfig } from './interfaces/config';
 import { MasterCSSRule } from './rule';
 
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@'];
+const vendorPrefixSelectorRegExp = /^::-[a-z]+-/m;
 
 const hasDocument = typeof document !== 'undefined';
 
@@ -51,7 +52,7 @@ export default class MasterCSS extends MutationObserver {
         this.relations = {};
         this.colorNames = [];
         this.themeNames = [''];
-        this.selectors = { single: [], multiple: [] }
+        this.selectors = {};
 
         const { semantics, classes, selectors, themes, colors } = this.config
 
@@ -65,12 +66,24 @@ export default class MasterCSS extends MutationObserver {
             }
         }
         if (selectors) {
-            for (const entry of Object.entries(selectors)) {
-                const isSingle = typeof entry[1] === 'string';
-                this.selectors[isSingle ? 'single' : 'multiple'].push([
-                    new RegExp(escapeString(entry[0]) + '(?![a-z-])', isSingle ? 'g' : ''),
-                    entry[1] as any
-                ]);
+            for (const [replacedSelectorText, newSelectorText] of Object.entries(selectors)) {
+                const regexp = new RegExp(escapeString(replacedSelectorText) + '(?![a-z-])');
+                for (const eachNewSelectorText of Array.isArray(newSelectorText) ? newSelectorText : [newSelectorText]) {
+                    const vendor = eachNewSelectorText.match(vendorPrefixSelectorRegExp)?.[0] ?? '';
+                    
+                    let selectorValues = this.selectors[vendor];
+                    if (!selectorValues) {
+                        selectorValues = this.selectors[vendor] = [];
+                    }
+
+                    let currentSelectValue = selectorValues.find(([_valueRegexp]) => _valueRegexp === regexp);
+                    if (!currentSelectValue) {
+                        currentSelectValue = [regexp, []];
+                        selectorValues.push(currentSelectValue);
+                    }
+
+                    currentSelectValue[1].push(eachNewSelectorText);
+                }
             }
         }
 
@@ -175,7 +188,7 @@ export default class MasterCSS extends MutationObserver {
     themeNames: string[]
     relationThemesMap: Record<string, Record<string, string[]>>
     relations: Record<string, string[]>
-    selectors: { single: [RegExp, string][], multiple: [RegExp, string[]][] }
+    selectors: Record<string, [RegExp, string[]][]>;
 
     constructor(
         public config: MasterCSSConfig = defaultConfig,

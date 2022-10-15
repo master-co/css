@@ -57,7 +57,17 @@ test("breakpoints", () => {
 test("selectors", () => {
     testCSS(
         "hide>custom", 
-        ".hide\\>custom>div>:first+button{display:none}",
+        ".hide\\>custom>div>:first-child+button{display:none}",
+        new MasterCSS(config)
+    );
+    testCSS(
+        "hide_custom",
+        ".hide_custom::before,.hide_custom::after{display:none}",
+        new MasterCSS(config)
+    )
+    testCSS(
+        "hide::slider-thumb", 
+        ".hide\\:\\:slider-thumb::-webkit-slider-thumb{display:none}.hide\\:\\:slider-thumb::-moz-range-thumb{display:none}",
         new MasterCSS(config)
     );
 });

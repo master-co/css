@@ -50,7 +50,8 @@ module.exports = configure({
         desktop: '1280px',
     },
     selectors: {
-        '>custom': '>div>:first+button'
+        '>custom': '>div>:first+button',
+        '_custom': '::before,::after'
     },
     mediaQueries: {
         watch: '(max-device-width:42mm) and (min-device-width:38mm)'

@@ -38,7 +38,7 @@ export class MasterCSSRule {
     readonly symbol: string;
     readonly token: string;
     readonly prefixSelectors: string[];
-    readonly suffixSelectors: string[];
+    readonly vendorSuffixSelectors: Record<string, string[]>;
     readonly important: boolean;
     readonly media: MasterCSSMedia;
     readonly at: Record<string, string> = {};
@@ -283,45 +283,85 @@ export class MasterCSSRule {
         const suffixTokens = suffixToken.split('@');
         let suffixSelector = suffixTokens[0];
         if (suffixSelector) {
-            this.suffixSelectors = [];
+            this.vendorSuffixSelectors = {};
 
-            const originalSuffixTokens = analyzeSelectorToken(suffixSelector);
-            for (let eachOriginalSuffixToken of originalSuffixTokens) {
-                for (const eachSingleSelectorEntry of selectors.single) {
-                    eachOriginalSuffixToken = eachOriginalSuffixToken.replace(eachSingleSelectorEntry[0], eachSingleSelectorEntry[1]);
+            const transform = (selectorText: string, selectorValues: [RegExp, string[]][], selectors: string[], matched: boolean) => {
+                for (const [regexp, newSelectorTexts] of selectorValues) {
+                    if (regexp.test(selectorText)) {
+                        for (const eachNewSelectorText of newSelectorTexts) {
+                            transform(selectorText.replace(regexp, eachNewSelectorText), selectorValues, selectors, true);
+                        }
+                        return;
+                    }
                 }
 
-                const transform = (selectorText: string) => {
-                    for (const eachMultipleSelectorEntry of selectors.multiple) {
-                        if (eachMultipleSelectorEntry[0].test(selectorText)) {
-                            for (const eachSelectorText of eachMultipleSelectorEntry[1]) {
-                                transform(selectorText.replace(eachMultipleSelectorEntry[0], eachSelectorText));
-                            }
-                            return;
-                        }
-                    }
-
-                    this.suffixSelectors.push(selectorText);
-                };
-                transform(eachOriginalSuffixToken);
+                if (matched) {
+                    selectors.push(selectorText);
+                }
             }
 
-            for (const eachSuffixSelector of this.suffixSelectors) {
-                if (this.hasWhere !== false) {
-                    this.hasWhere = eachSuffixSelector.includes(':where(');
+            const suffixSelectors: string[] = [];
+            if ('' in selectors) {
+                transform(suffixSelector, selectors[''], suffixSelectors, true);
+            } else {
+                suffixSelectors.push(suffixSelector);
+            }
+
+            const vendorSelectors: Record<string, string[]> = {};
+            for (const [vendor, selectorValues] of Object.entries(selectors)) {
+                if (!vendor)
+                    continue;
+
+                const newVendorSelectors = [];
+                for (const eachSuffixSelector of suffixSelectors) {
+                    transform(eachSuffixSelector, selectorValues, newVendorSelectors, false);
                 }
 
-                for (let i = 0; i < PRIORITY_SELECTORS.length; i++) {
-                    if (eachSuffixSelector.includes(PRIORITY_SELECTORS[i])) {
-                        if (this.prioritySelectorIndex === -1 || this.prioritySelectorIndex > i) {
-                            this.prioritySelectorIndex = i;
+                if (newVendorSelectors.length) {
+                    vendorSelectors[vendor] = newVendorSelectors;
+                }
+            }
+
+            const insertVendorSuffixSelectors = (vendor: string, selectorTexts: string[]) => {
+                const groupedSelectorTexts = selectorTexts.reduce((arr, eachSuffixSelector) => {
+                    arr.push(...analyzeSelectorToken(eachSuffixSelector));
+                    return arr;
+                }, []);
+
+                if (vendor in this.vendorSuffixSelectors) {
+                    this.vendorSuffixSelectors[vendor].push(...groupedSelectorTexts);
+                } else {
+                    this.vendorSuffixSelectors[vendor] = groupedSelectorTexts;
+                }
+            };
+
+            const vendors = Object.keys(vendorSelectors);
+            if (vendors.length) {
+                for (const eachVendor of vendors) {
+                    insertVendorSuffixSelectors(eachVendor, vendorSelectors[eachVendor]);
+                }
+            } else {
+                insertVendorSuffixSelectors('', suffixSelectors);
+            }
+          
+            for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
+                for (const eachSuffixSelector of suffixSelectors) {
+                    if (this.hasWhere !== false) {
+                        this.hasWhere = eachSuffixSelector.includes(':where(');
+                    }
+    
+                    for (let i = 0; i < PRIORITY_SELECTORS.length; i++) {
+                        if (eachSuffixSelector.includes(PRIORITY_SELECTORS[i])) {
+                            if (this.prioritySelectorIndex === -1 || this.prioritySelectorIndex > i) {
+                                this.prioritySelectorIndex = i;
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
             }
         } else {
-            this.suffixSelectors = [''];
+            this.vendorSuffixSelectors = { '': [''] };
         }
 
         // 5. atTokens
@@ -456,7 +496,8 @@ export class MasterCSSRule {
 
             const generateCssText = (
                 propertiesText: string,
-                themeName: string
+                themeName: string,
+                suffixSelectors: string[]
             ) => {
                 let prefixText = '';
                 if (this.direction) {
@@ -471,7 +512,7 @@ export class MasterCSSRule {
                         .map(eachPrefixText => prefixThemeText + eachPrefixText)
                         .reduce((arr, eachPrefixText) => {
                             arr.push(
-                                this.suffixSelectors
+                                suffixSelectors
                                     .reduce((_arr, eachSuffixSelector) => {
                                         _arr.push(eachPrefixText + esacpedName + eachSuffixSelector);
                                         return _arr;
@@ -557,22 +598,25 @@ export class MasterCSSRule {
                     if (this.getThemeProps) {
                         const themeProps = this.getThemeProps(declaration, css);
                         for (const themeName in themeProps) {
-                            this.natives.push({
-                                unit: newUnit,
-                                value: newValue,
-                                text: generateCssText(
-                                    Object
-                                        .entries(themeProps[themeName])
-                                        .map(([propertyName, propertyValue]) => getCssPropertyText(propertyName, {
-                                            important: this.important,
-                                            unit: '',
-                                            value: propertyValue
-                                        }))
-                                        .join(';'),
+                            for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
+                                this.natives.push({
+                                    unit: newUnit,
+                                    value: newValue,
+                                    text: generateCssText(
+                                        Object
+                                            .entries(themeProps[themeName])
+                                            .map(([propertyName, propertyValue]) => getCssPropertyText(propertyName, {
+                                                important: this.important,
+                                                unit: '',
+                                                value: propertyValue
+                                            }))
+                                            .join(';'),
+                                        themeName,
+                                        suffixSelectors
+                                    ),
                                     themeName
-                                ),
-                                themeName
-                            });
+                                });
+                            }
                         }
                         return;
                     } else if (this.get) {
@@ -583,25 +627,28 @@ export class MasterCSSRule {
                 newValue = value;
             }
 
-            this.natives.push({
-                unit: newUnit,
-                value: newValue,
-                text: generateCssText(
-                    typeof newValue === 'object'
-                        ? Object
-                            .entries(newValue)
-                            .map(([propertyName, propertyValue]) => getCssPropertyText(propertyName, {
-                                ...(typeof propertyValue === 'object'
-                                    ? propertyValue
-                                    : { unit: '', value: propertyValue }),
-                                important: this.important
-                            }))
-                            .join(';')
-                        : getCssPropertyText(propName, { unit: newUnit, value: newValue, important: this.important }),
+            for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
+                this.natives.push({
+                    unit: newUnit,
+                    value: newValue,
+                    text: generateCssText(
+                        typeof newValue === 'object'
+                            ? Object
+                                .entries(newValue)
+                                .map(([propertyName, propertyValue]) => getCssPropertyText(propertyName, {
+                                    ...(typeof propertyValue === 'object'
+                                        ? propertyValue
+                                        : { unit: '', value: propertyValue }),
+                                    important: this.important
+                                }))
+                                .join(';')
+                            : getCssPropertyText(propName, { unit: newUnit, value: newValue, important: this.important }),
+                        themeName,
+                        suffixSelectors
+                    ),
                     themeName
-                ),
-                themeName
-            });
+                });
+            }
         };
 
         if (this.getThemeProps) {
