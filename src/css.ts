@@ -111,24 +111,30 @@ export default class MasterCSS extends MutationObserver {
                         .trim()
                         .split(' ');
                 for (const eachClassName of classNames) {
+                    const handle = (className: string) => {
+                        if (className in this.relationThemesMap) {
+                            if (theme in this.relationThemesMap[className]) {
+                                this.relationThemesMap[className][theme].push(semanticName);
+                            } else {
+                                this.relationThemesMap[className][theme] = [semanticName];
+                            }
+                        } else {
+                            this.relationThemesMap[className] = { [theme]: [semanticName] };
+                        }
+
+                        if (!currentClass.includes(className)) {
+                            currentClass.push(className);
+                        }
+                    };
+
                     if (semanticNames.includes(eachClassName)) {
                         handleSemanticName(eachClassName);
 
-                        currentClass.push(...this.classes[eachClassName]);
+                        for (const parentClassName of this.classes[eachClassName]) {
+                            handle(parentClassName);
+                        }
                     } else {
-                        if (eachClassName in this.relationThemesMap) {
-                            if (theme in this.relationThemesMap[eachClassName]) {
-                                this.relationThemesMap[eachClassName][theme].push(semanticName);
-                            } else {
-                                this.relationThemesMap[eachClassName][theme] = [semanticName];
-                            }
-                        } else {
-                            this.relationThemesMap[eachClassName] = { [theme]: [semanticName] };
-                        }
-
-                        if (!currentClass.includes(eachClassName)) {
-                            currentClass.push(eachClassName);
-                        }
+                        handle(eachClassName);
                     }
                 }
             };
