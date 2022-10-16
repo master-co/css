@@ -21,7 +21,7 @@ module.exports = {
     ],
     devServer: {
         host: 'localhost',
-        watchFiles: ['./src/**/*']
+        watchFiles: ['./dev/**/*']
     },
     stats: 'none',
     mode: 'development'
