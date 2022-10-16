@@ -5,18 +5,27 @@
         "package": "npm run build && cp README.md LICENSE ./src/package.json ./dist",
         "update": "git fetch package js && git merge package/js",
         "update:readme": "m package render README.md",
-        "test": "jest"
+        "test": "jest",
+        "webpack-build": "webpack --mode=production --node-env=production",
+        "webpack-build:dev": "webpack --mode=development",
+        "webpack-build:prod": "webpack --mode=production --node-env=production",
+        "webpack-watch": "webpack --watch",
+        "webpack-serve": "webpack serve"
     },
     "devDependencies": {
         "@types/jest": "^27.5.2",
         "dedent": "^0.7.0",
         "jest": "^28.1.0",
-        "ts-jest": "^28.0.3"
+        "ts-jest": "^28.0.3",
+        "ts-loader": "^9.4.1",
+        "webpack-cli": "^4.10.0",
+        "webpack-dev-server": "^4.11.1"
     },
     "files": [
         "dist"
     ],
     "dependencies": {
+        "chalk": "^5.1.2",
         "esbuild": "^0.15.10"
     }
 }

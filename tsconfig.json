@@ -18,7 +18,7 @@
     "include": [
         "./src/**/*.ts",
         "./src/**/*.d.ts"
-    ],
+, "src/plugins/libs/extractClasses.js", "src/plugins/libs/generateCSSTextFromChanges.js", "src/plugins/libs/initCSS.js", "src/plugins/webpack.js"    ],
     "exclude": [
         "./src/node_modules",
         "./src/**/*.test.ts"
