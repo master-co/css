@@ -150,6 +150,17 @@ export default class MasterCSS extends MutationObserver {
             handleSemanticName(eachSemanticName);
         }
 
+        for (const className in this.relationThemesMap) {
+            const currentRelation = this.relations[className] = [];
+            for (const semanticNames of Object.values(this.relationThemesMap[className])) {
+                for (const eachSemanticName of semanticNames) {
+                    if (!currentRelation.includes(eachSemanticName)) {
+                        currentRelation.push(eachSemanticName);
+                    }
+                }
+            }
+        }
+
         const mergeColors = (theme: string, colors: Record<string, string | Record<string, string>>) => {
             if (!colors)
                 return;
