@@ -931,15 +931,16 @@ export default class MasterCSS extends MutationObserver {
 
         // 只在瀏覽器端運行
         if (this.style) {
-            try {
-                const sheet = this.style.sheet;
+            const sheet = this.style.sheet;
 
-                let cssRuleIndex: number = 0;
-
-                const previousRule = this.rules[index - 1];
+            let cssRuleIndex: number = 0;
+            const getCssRuleIndex = (index: number) => {
+                const previousRule = this.rules[index];
                 if (previousRule) {
-                    const lastNativeCssRule = previousRule.natives[previousRule.natives.length - 1].cssRule;
+                    if (!previousRule.natives.length)
+                        return getCssRuleIndex(index - 1);
 
+                    const lastNativeCssRule = previousRule.natives[previousRule.natives.length - 1].cssRule;
                     for (let i = 0; i < sheet.cssRules.length; i++) {
                         if (sheet.cssRules[i] === lastNativeCssRule) {
                             cssRuleIndex = i + 1;
@@ -947,13 +948,20 @@ export default class MasterCSS extends MutationObserver {
                         }
                     }
                 }
+            };
+            getCssRuleIndex(index - 1);
+           
+            for (let i = 0; i < rule.natives.length; ) {
+                try {
+                    const native = rule.natives[i];
+                    sheet.insertRule(native.text, cssRuleIndex);
+                    native.cssRule = sheet.cssRules[cssRuleIndex++];
+                    i++;
+                } catch (error) {
+                    console.error(error);
 
-                for (const eachNative of rule.natives) {
-                    sheet.insertRule(eachNative.text, cssRuleIndex);
-                    eachNative.cssRule = sheet.cssRules[cssRuleIndex++];
+                    rule.natives.splice(i, 1);
                 }
-            } catch (error) {
-                console.error(error);
             }
         }
     }
@@ -972,16 +980,18 @@ export default class MasterCSS extends MutationObserver {
             )
                 return;
 
-            const firstNative = rule.natives[0];
-            for (let index = 0; index < sheet.cssRules.length; index++) {
-                const eachCssRule = sheet.cssRules[index];
-                if (eachCssRule === firstNative.cssRule) {
-                    for (let i = 0; i < rule.natives.length; i++) {
-                        sheet.deleteRule(index);
+            if (rule.natives.length) {
+                const firstNative = rule.natives[0];
+                for (let index = 0; index < sheet.cssRules.length; index++) {
+                    const eachCssRule = sheet.cssRules[index];
+                    if (eachCssRule === firstNative.cssRule) {
+                        for (let i = 0; i < rule.natives.length; i++) {
+                            sheet.deleteRule(index);
+                        }
+    
+                        this.rules.splice(this.rules.indexOf(rule), 1);
+                        break;
                     }
-
-                    this.rules.splice(this.rules.indexOf(rule), 1);
-                    break;
                 }
             }
 

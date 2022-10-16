@@ -35,7 +35,7 @@ export default class extends MasterCSSRule {
             }
 
             if (this.themeName) {
-                const currentThemeNative = rule.natives.find(eachNative => eachNative.themeName ===  this.themeName) ?? rule.natives.find(eachNative => !eachNative.themeName);
+                const currentThemeNative = rule.natives.find(eachNative => eachNative.themeName === this.themeName) ?? rule.natives.find(eachNative => !eachNative.themeName);
                 if (currentThemeNative) {
                     addProps(this.themeName, currentThemeNative.text);
                 }
