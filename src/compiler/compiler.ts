@@ -1,11 +1,11 @@
 import path from 'path'
 import chalk from 'chalk'
 import defaultOptions from './options'
-import { extend } from './utils/extend'
-import MasterCSS from './css'
-import configure from './configure'
+import { extend } from '../utils/extend'
+import MasterCSS from '../css'
+import configure from '../configure'
 
-export default class MasterCSSExtractor {
+export default class MasterCSSCompiler {
 
     constructor(
         public options

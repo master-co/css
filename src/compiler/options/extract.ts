@@ -1,4 +1,4 @@
-import defaultSemantics from '../config/semantics'
+import defaultSemantics from '../../config/semantics'
 
 export default function extract({ source }) {
     const blocks = source.match(/[^\s]+/g) ?? []

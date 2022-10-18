@@ -1,14 +1,8 @@
-const MasterCSSExtractor = require('../extractor')
+import MasterCSSCompiler from '../compiler';
 
 const NAME = 'MasterCSSWebpackPlugin'
 
-export default class MasterCSSWebpackPlugin {
-
-    aot
-
-    constructor(options) {
-        this.aot = new MasterCSSExtractor(options)
-    }
+export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
 
     apply(compiler) {
         const { webpack } = compiler;
@@ -25,20 +19,20 @@ export default class MasterCSSWebpackPlugin {
                     const source = eachModule._source?.source();
                     // 在 watch 模式下僅處理當下變更的檔案
                     if (watching && modifiedFiles?.size && !modifiedFiles.has(name)) { continue }
-                    eachExtractions.push(...this.extractor.extract({ name, source }))
+                    eachExtractions.push(...this.extract({ name, source }))
                 }
 
                 if (eachExtractions.length) {
                     /* 比對提取物並插入 CSS 規則 */
-                    this.extractor.insert(eachExtractions)
+                    this.insert(eachExtractions)
                     /* 根據 cssText 生成 `master.css` 並加入到 Webpack 的 assets 中 */
-                    const cssText = this.extractor.css.text
+                    const cssText = this.css.text
                     if (cssText) {
                         const newSource = new RawSource(cssText)
-                        if (compilation.getAsset(this.extractor.options.output)) {
-                            compilation.updateAsset(this.extractor.options.output, newSource);
+                        if (compilation.getAsset(this.options.output)) {
+                            compilation.updateAsset(this.options.output, newSource);
                         } else {
-                            compilation.emitAsset(this.extractor.options.output, newSource);
+                            compilation.emitAsset(this.options.output, newSource);
                         }
                     }
                 }
