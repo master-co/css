@@ -1,1 +1,0 @@
-console.log('test 20 bg:blue@2xl fg:red@2xl')

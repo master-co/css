@@ -11,11 +11,6 @@
             "require": "./index.js",
             "import": "./esm/index.js",
             "types": "./esm/index.d.ts"
-        },
-        "./compiler": {
-            "require": "./compiler.js",
-            "import": "./esm/compiler/index.js",
-            "types": "./esm/compiler/index.d.ts"
         }
     },
     "funding": "https://docs.master.co/css/donate",

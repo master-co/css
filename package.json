@@ -2,7 +2,6 @@
     "name": "@master/css",
     "scripts": {
         "build": "node package && tsc",
-        "dev": "node dev",
         "package": "npm run build && cp README.md LICENSE ./src/package.json ./dist",
         "update": "git fetch package js && git merge package/js",
         "update:readme": "m package render README.md",
