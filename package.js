@@ -8,6 +8,7 @@ build({
     outfile: './dist/index.js',
     minify: true,
     bundle: true,
-    format: 'cjs'
+    format: 'cjs',
+    sourcemap: true
 })
     .catch(() => process.exit(1))
