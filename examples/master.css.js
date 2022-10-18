@@ -58,9 +58,5 @@ module.exports = configure({
         watch: '(max-device-width:42mm) and (min-device-width:38mm)'
     },
     rootSize: 16,
-    Rules: [],
-    validateRule: (rule, css) => {
-        console.log(rule)
-        return true
-    }
+    Rules: []
 })
