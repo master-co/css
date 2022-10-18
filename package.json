@@ -3,8 +3,9 @@
     "scripts": {
         "build": "rm -rf dist && npm run build:cjs && npm run build:esm",
         "build:cjs": "esbuild src/index.ts --outfile=dist/index.js --minify --bundle --format=cjs --sourcemap",
-        "build:esm": "tsc --outDir dist/esm",
+        "build:esm": "tsc",
         "dev:cjs": "esbuild src/index.ts --outfile=dist/index.js --bundle --format=cjs --watch",
+        "dev:esm": "tsc --watch",
         "test": "jest"
     },
     "devDependencies": {
