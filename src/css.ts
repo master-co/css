@@ -57,7 +57,7 @@ export default class MasterCSS extends MutationObserver {
         const { semantics, classes, selectors, themes, colors } = this.config
 
         function escapeString(str) {
-            return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+            return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
         }
 
         if (semantics) {
@@ -621,7 +621,6 @@ export default class MasterCSS extends MutationObserver {
             findEndIndex?: (rule: MasterCSSRule) => any,
             ignoreRule?: (rule: MasterCSSRule) => any
         ) => {
-            let targetRules: MasterCSSRule[]
             let sIndex = 0
             let eIndex: number
 
@@ -639,7 +638,7 @@ export default class MasterCSS extends MutationObserver {
                 eIndex = rules.length
             }
 
-            targetRules = rules.slice(sIndex, eIndex)
+            const targetRules: MasterCSSRule[] = rules.slice(sIndex, eIndex)
 
             // 2. 由目標陣列找尋插入點
             for (let i = 0; i < targetRules.length; i++) {

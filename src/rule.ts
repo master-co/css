@@ -24,7 +24,7 @@ const REM = 'rem'
 const selectorSymbols = ['!', '*', '>', '+', '~', ':', '[', '@', '_']
 const selectorSplitRegexp = /(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/
 const transformSelectorUnderline = (selector: string) => selector.split(selectorSplitRegexp)
-    .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/\_/g, ' '))
+    .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/_/g, ' '))
     .join('')
 
 export interface MasterCSSRuleMatching {

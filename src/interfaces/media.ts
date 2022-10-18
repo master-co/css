@@ -1,4 +1,4 @@
-import { MasterCSSMediaFeatureRule } from './media-feature-rule';
+import { MasterCSSMediaFeatureRule } from './media-feature-rule'
 
 export interface MasterCSSMedia {
     token: string;

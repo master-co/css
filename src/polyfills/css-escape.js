@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /*! https://mths.be/cssescape v1.5.1 by @mathias | MIT license */
 (function (root, factory) {
     // https://github.com/umdjs/umd/blob/master/returnExports.js

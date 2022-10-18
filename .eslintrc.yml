@@ -13,7 +13,7 @@ plugins:
   - '@typescript-eslint'
 rules:
   indent:
-    - error
+    - off
     - 4
   linebreak-style:
     - error
@@ -24,3 +24,6 @@ rules:
   semi:
     - error
     - never
+  '@typescript-eslint/no-unused-vars': off
+  '@typescript-eslint/no-explicit-any': off
+  '@typescript-eslint/ban-ts-comment': off
