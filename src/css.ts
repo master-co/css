@@ -70,7 +70,7 @@ export default class MasterCSS extends MutationObserver {
                 const regexp = new RegExp(escapeString(replacedSelectorText) + '(?![a-z-])');
                 for (const eachNewSelectorText of Array.isArray(newSelectorText) ? newSelectorText : [newSelectorText]) {
                     const vendor = eachNewSelectorText.match(vendorPrefixSelectorRegExp)?.[0] ?? '';
-                    
+
                     let selectorValues = this.selectors[vendor];
                     if (!selectorValues) {
                         selectorValues = this.selectors[vendor] = [];
@@ -87,11 +87,11 @@ export default class MasterCSS extends MutationObserver {
             }
         }
 
-       
+
         const semanticNames = [
-            ...(classes ? Object.keys(classes) : []), 
+            ...(classes ? Object.keys(classes) : []),
             ...((themes && !Array.isArray(themes))
-                ? Object.entries(themes).flatMap(([_ ,{ classes }]) => classes ? Object.keys(classes) : [])
+                ? Object.entries(themes).flatMap(([_, { classes }]) => classes ? Object.keys(classes) : [])
                 : [])
         ];
         const handleSemanticName = (semanticName: string) => {
@@ -961,8 +961,8 @@ export default class MasterCSS extends MutationObserver {
                 }
             };
             getCssRuleIndex(index - 1);
-           
-            for (let i = 0; i < rule.natives.length; ) {
+
+            for (let i = 0; i < rule.natives.length;) {
                 try {
                     const native = rule.natives[i];
                     sheet.insertRule(native.text, cssRuleIndex);
@@ -999,7 +999,7 @@ export default class MasterCSS extends MutationObserver {
                         for (let i = 0; i < rule.natives.length; i++) {
                             sheet.deleteRule(index);
                         }
-    
+
                         this.rules.splice(this.rules.indexOf(rule), 1);
                         break;
                     }
@@ -1031,6 +1031,14 @@ export default class MasterCSS extends MutationObserver {
         } else if (rule) {
             this.insert(rule);
         }
+    }
+
+    get text() {
+        return this.rules.map((eachRule) =>
+            eachRule.natives
+                .map((eachNativeRule) => eachNativeRule.text)
+                .join('')
+        ).join('')
     }
 }
 
