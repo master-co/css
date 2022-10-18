@@ -1,4 +1,4 @@
-import MasterCSSCompiler from '../compiler';
+import MasterCSSCompiler from './compiler';
 
 const NAME = 'MasterCSSWebpackPlugin'
 

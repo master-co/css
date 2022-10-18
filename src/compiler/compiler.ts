@@ -4,6 +4,7 @@ import defaultOptions from './options'
 import { extend } from '../utils/extend'
 import MasterCSS from '../css'
 import configure from '../configure'
+import '../polyfills/css-escape'
 
 export default class MasterCSSCompiler {
 
