@@ -1,5 +1,5 @@
-import { testProp } from "../utils/test-css"
+import { testProp } from '../utils/test-css'
 
-test("area", () => {
-    testProp("full", "width:100%;height:100%")
+test('area', () => {
+    testProp('full', 'width:100%;height:100%')
 })

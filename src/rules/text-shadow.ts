@@ -1,7 +1,7 @@
-import { MasterCSSRule } from '../rule';
+import { MasterCSSRule } from '../rule'
 
 export default class extends MasterCSSRule {
     static override id = 'TextShadow'
     static override propName = 'text-shadow'
-    static override colorful = true;
+    static override colorful = true
 }

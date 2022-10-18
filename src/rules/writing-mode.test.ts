@@ -1,5 +1,5 @@
-import { testProp } from "../utils/test-css"
+import { testProp } from '../utils/test-css'
 
-test("writing", () => {
-    testProp("writing:rl", "writing-mode:rl")
+test('writing', () => {
+    testProp('writing:rl', 'writing-mode:rl')
 })

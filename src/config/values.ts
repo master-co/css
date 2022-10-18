@@ -1,4 +1,4 @@
-import defaultBreakpoints from './breakpoints';
+import defaultBreakpoints from './breakpoints'
 
 const boxUnderneath = {
     content: 'content-box',

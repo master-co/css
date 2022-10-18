@@ -1,9 +1,9 @@
-import { MasterCSSRule } from '../rule';
+import { MasterCSSRule } from '../rule'
 
 export default class extends MasterCSSRule {
     static override id = 'Lines'
-    static override matches = /^lines:./;
-    static override unit = '';
+    static override matches = /^lines:./
+    static override unit = ''
     override get(declaration): { [key: string]: any } {
         return {
             overflow: { ...declaration, value: 'hidden' },

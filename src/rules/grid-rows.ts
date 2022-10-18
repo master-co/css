@@ -1,9 +1,9 @@
-import { MasterCSSRule } from '../rule';
+import { MasterCSSRule } from '../rule'
 
 export default class extends MasterCSSRule {
     static override id = 'GridRows'
-    static override propName = 'grid-rows';
-    static override unit = '';
+    static override propName = 'grid-rows'
+    static override unit = ''
     override get(declaration): { [key: string]: any } {
         return {
             display: { ...declaration, value: 'grid' },
@@ -16,6 +16,6 @@ export default class extends MasterCSSRule {
                     + 'minmax'
                     + '(' + 0 + ',' + 1 + 'fr' + '))'
             },
-        };
+        }
     }
 }

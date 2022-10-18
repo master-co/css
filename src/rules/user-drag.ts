@@ -1,4 +1,4 @@
-import { MasterCSSRule } from '../rule';
+import { MasterCSSRule } from '../rule'
 
 export default class extends MasterCSSRule {
     static override id = 'UserDrag'
@@ -8,5 +8,5 @@ export default class extends MasterCSSRule {
             'user-drag': declaration,
             '-webkit-user-drag': declaration
         }
-    };
+    }
 }

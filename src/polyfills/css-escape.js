@@ -1,33 +1,33 @@
 /*! https://mths.be/cssescape v1.5.1 by @mathias | MIT license */
-; (function (root, factory) {
+(function (root, factory) {
     // https://github.com/umdjs/umd/blob/master/returnExports.js
     if (typeof exports == 'object') {
         // For Node.js.
-        module.exports = factory(root);
+        module.exports = factory(root)
     } else if (typeof define == 'function' && define.amd) {
         // For AMD. Register as an anonymous module.
-        define([], factory.bind(root, root));
+        define([], factory.bind(root, root))
     } else {
         // For browser globals (not exposing the function separately).
-        factory(root);
+        factory(root)
     }
 }(typeof global != 'undefined' ? global : this, function (root) {
 
     if (root.CSS && root.CSS.escape) {
-        return root.CSS.escape;
+        return root.CSS.escape
     }
 
     // https://drafts.csswg.org/cssom/#serialize-an-identifier
     var cssEscape = function (value) {
         if (arguments.length == 0) {
-            throw new TypeError('`CSS.escape` requires an argument.');
+            throw new TypeError('`CSS.escape` requires an argument.')
         }
-        var string = String(value);
-        var length = string.length;
-        var index = -1;
-        var codeUnit;
-        var result = '';
-        var firstCodeUnit = string.charCodeAt(0);
+        var string = String(value)
+        var length = string.length
+        var index = -1
+        var codeUnit
+        var result = ''
+        var firstCodeUnit = string.charCodeAt(0)
 
         if (
             // If the character is the first character and is a `-` (U+002D), and
@@ -35,19 +35,19 @@
             length == 1 &&
             firstCodeUnit == 0x002D
         ) {
-            return '\\' + string;
+            return '\\' + string
         }
 
         while (++index < length) {
-            codeUnit = string.charCodeAt(index);
+            codeUnit = string.charCodeAt(index)
             // Note: there’s no need to special-case astral symbols, surrogate
             // pairs, or lone surrogates.
 
             // If the character is NULL (U+0000), then the REPLACEMENT CHARACTER
             // (U+FFFD).
             if (codeUnit == 0x0000) {
-                result += '\uFFFD';
-                continue;
+                result += '\uFFFD'
+                continue
             }
 
             if (
@@ -66,8 +66,8 @@
                 )
             ) {
                 // https://drafts.csswg.org/cssom/#escape-a-character-as-code-point
-                result += '\\' + codeUnit.toString(16) + ' ';
-                continue;
+                result += '\\' + codeUnit.toString(16) + ' '
+                continue
             }
 
             // If the character is not handled by one of the above rules and is
@@ -83,22 +83,22 @@
                 codeUnit >= 0x0061 && codeUnit <= 0x007A
             ) {
                 // the character itself
-                result += string.charAt(index);
-                continue;
+                result += string.charAt(index)
+                continue
             }
 
             // Otherwise, the escaped character.
             // https://drafts.csswg.org/cssom/#escape-a-character
-            result += '\\' + string.charAt(index);
+            result += '\\' + string.charAt(index)
         }
-        return result;
-    };
-
-    if (!root.CSS) {
-        root.CSS = {};
+        return result
     }
 
-    root.CSS.escape = cssEscape;
-    return cssEscape;
+    if (!root.CSS) {
+        root.CSS = {}
+    }
 
-}));
+    root.CSS.escape = cssEscape
+    return cssEscape
+
+}))

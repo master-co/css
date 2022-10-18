@@ -1,4 +1,4 @@
-import { getType } from './get-type';
+import { getType } from './get-type'
 
 /**
  * Returns whether the payload is a Symbol

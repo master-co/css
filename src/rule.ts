@@ -1,31 +1,31 @@
-import { MasterCSSMediaFeatureRule } from './interfaces/media-feature-rule';
-import { MasterCSSMedia } from './interfaces/media';
-import { getCssPropertyText } from './utils/get-css-property-text';
-import { parseValue } from './utils/parse-value';
-import { START_SYMBOL } from './constants/start-symbol';
-import MasterCSS from './css';
-import { MasterCSSDeclaration } from './interfaces/declaration';
-import { MasterCSSConfig } from './interfaces/config';
+import { MasterCSSMediaFeatureRule } from './interfaces/media-feature-rule'
+import { MasterCSSMedia } from './interfaces/media'
+import { getCssPropertyText } from './utils/get-css-property-text'
+import { parseValue } from './utils/parse-value'
+import { START_SYMBOL } from './constants/start-symbol'
+import MasterCSS from './css'
+import { MasterCSSDeclaration } from './interfaces/declaration'
+import { MasterCSSConfig } from './interfaces/config'
 
-export const PRIORITY_SELECTORS = [':disabled', ':active', ':focus', ':hover'];
-const MATCHES = 'matches';
-const SEMANTICS = 'semantics';
-const SYMBOL = 'symbol';
-const WIDTH = 'width';
-const MAX_WIDTH = 'max-' + WIDTH;
-const MIN_WIDTH = 'min-' + WIDTH;
-const MOTION = 'motion';
-const REDUCE = 'reduce';
-const REDUCED_MOTION = REDUCE + 'd-' + MOTION;
+export const PRIORITY_SELECTORS = [':disabled', ':active', ':focus', ':hover']
+const MATCHES = 'matches'
+const SEMANTICS = 'semantics'
+const SYMBOL = 'symbol'
+const WIDTH = 'width'
+const MAX_WIDTH = 'max-' + WIDTH
+const MIN_WIDTH = 'min-' + WIDTH
+const MOTION = 'motion'
+const REDUCE = 'reduce'
+const REDUCED_MOTION = REDUCE + 'd-' + MOTION
 
-const PX = 'px';
-const REM = 'rem';
+const PX = 'px'
+const REM = 'rem'
 
-const selectorSymbols = ['!', '*', '>', '+', '~', ':', '[', '@', '_'];
-const selectorSplitRegexp = /(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/;
+const selectorSymbols = ['!', '*', '>', '+', '~', ':', '[', '@', '_']
+const selectorSplitRegexp = /(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/
 const transformSelectorUnderline = (selector: string) => selector.split(selectorSplitRegexp)
     .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/\_/g, ' '))
-    .join('');
+    .join('')
 
 export interface MasterCSSRuleMatching {
     origin: 'matches' | 'semantics' | 'symbol';
@@ -34,28 +34,28 @@ export interface MasterCSSRuleMatching {
 
 export class MasterCSSRule {
 
-    readonly prefix: string;
-    readonly symbol: string;
-    readonly token: string;
-    readonly prefixSelectors: string[];
-    readonly vendorSuffixSelectors: Record<string, string[]>;
-    readonly important: boolean;
-    readonly media: MasterCSSMedia;
-    readonly at: Record<string, string> = {};
-    readonly direction: string;
-    readonly themeName: string;
-    readonly unitToken: string;
-    readonly hasWhere: boolean;
-    readonly prioritySelectorIndex: number = -1;
-    readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, themeName: string, cssRule?: CSSRule }[] = [];
+    readonly prefix: string
+    readonly symbol: string
+    readonly token: string
+    readonly prefixSelectors: string[]
+    readonly vendorSuffixSelectors: Record<string, string[]>
+    readonly important: boolean
+    readonly media: MasterCSSMedia
+    readonly at: Record<string, string> = {}
+    readonly direction: string
+    readonly themeName: string
+    readonly unitToken: string
+    readonly hasWhere: boolean
+    readonly prioritySelectorIndex: number = -1
+    readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, themeName: string, cssRule?: CSSRule }[] = []
 
-    static id: string;
-    static propName: string;
-    static matches: RegExp;
-    static colorStarts: string;
-    static symbol: string;
-    static unit = REM;
-    static colorful: boolean;
+    static id: string
+    static propName: string
+    static matches: RegExp
+    static colorStarts: string
+    static symbol: string
+    static unit = REM
+    static colorful: boolean
 
     static match(
         name: string,
@@ -65,7 +65,7 @@ export class MasterCSSRule {
          * STEP 1. matches
          */
         if (this.matches && this.matches.test(name)) {
-            return { origin: MATCHES };
+            return { origin: MATCHES }
         }
         /** 
          * STEP 2. color starts
@@ -79,327 +79,327 @@ export class MasterCSSRule {
                 && name.indexOf('|') === -1
             )
         ) {
-            return { origin: MATCHES };
+            return { origin: MATCHES }
         }
         /** 
          * STEP 3. symbol
          */
         if (this.symbol && name.startsWith(this.symbol)) {
-            return { origin: SYMBOL };
+            return { origin: SYMBOL }
         }
         /**
          * STEP 4. key full name
          */
         if (this.propName && name.startsWith(this.propName + ':')) {
-            return { origin: MATCHES };
+            return { origin: MATCHES }
         }
-    };
+    }
 
     constructor(
         public readonly className: string,
         public readonly matching: MasterCSSRuleMatching,
         public css: MasterCSS
     ) {
-        const TargetRule = this.constructor as typeof MasterCSSRule;
-        let { id, unit, propName, colorful } = TargetRule;
-        const { breakpoints, mediaQueries, semantics, rootSize } = css.config;
-        const values = css.config.values[id];
-        const relationThemesMap = css.relationThemesMap[className];
-        const { themeNames, colorsThemesMap, selectors } = css;
+        const TargetRule = this.constructor as typeof MasterCSSRule
+        const { id, unit, propName, colorful } = TargetRule
+        const { breakpoints, mediaQueries, semantics, rootSize } = css.config
+        const values = css.config.values[id]
+        const relationThemesMap = css.relationThemesMap[className]
+        const { themeNames, colorsThemesMap, selectors } = css
 
-        let token = className;
+        const token = className
 
         // 1. value / selectorToken
-        let value: string | Record<string, string | number>, prefixToken: string, suffixToken: string, valueTokens: (string | { value: string })[];
+        let value: string | Record<string, string | number>, prefixToken: string, suffixToken: string, valueTokens: (string | { value: string })[]
         if (matching.origin === SEMANTICS) {
-            suffixToken = token.slice(matching.value.length);
-            value = semantics[matching.value];
+            suffixToken = token.slice(matching.value.length)
+            value = semantics[matching.value]
         } else {
-            let valueToken: string;
+            let valueToken: string
             if (matching.origin === MATCHES) {
                 if (id === 'Group') {
-                    let i = 0;
+                    let i = 0
                     for (; i < token.length; i++) {
                         if (token[i] === '{' && token[i - 1] !== '\\') {
-                            break;
+                            break
                         }
                     }
 
-                    prefixToken = token.slice(0, i);
-                    valueToken = token.slice(i);
+                    prefixToken = token.slice(0, i)
+                    valueToken = token.slice(i)
                 } else {
-                    const indexOfColon = token.indexOf(':');
-                    this.prefix = token.slice(0, indexOfColon + 1);
+                    const indexOfColon = token.indexOf(':')
+                    this.prefix = token.slice(0, indexOfColon + 1)
                     if (this.prefix.includes('(')) {
-                        this.prefix = undefined;
-                        valueToken = token;
+                        this.prefix = undefined
+                        valueToken = token
                     } else {
-                        valueToken = token.slice(indexOfColon + 1);
+                        valueToken = token.slice(indexOfColon + 1)
                     }
                 }
             } else if (matching.origin === SYMBOL) {
-                this.symbol = token[0];
-                valueToken = token.slice(1);
+                this.symbol = token[0]
+                valueToken = token.slice(1)
             }
 
-            valueTokens = [];
-            let currentValueToken = '';
+            valueTokens = []
+            let currentValueToken = ''
             let i = 0;
-            (function analyze(end?, depth?, func: string = '') {
-                let varIndex: number;
-                let isString = false;
+            (function analyze(end?, depth?, func = '') {
+                let varIndex: number
+                let isString = false
                 if (end) {
                     if (end === ')' && currentValueToken.slice(-1) === '$') {
-                        varIndex = currentValueToken.length - 1;
+                        varIndex = currentValueToken.length - 1
                     } else if (end === '\'') {
-                        isString = true;
+                        isString = true
                     }
 
-                    currentValueToken += valueToken[i++];
+                    currentValueToken += valueToken[i++]
                 }
 
                 for (; i < valueToken.length; i++) {
-                    const val = valueToken[i];
+                    const val = valueToken[i]
                     if (val === end) {
-                        currentValueToken += val;
+                        currentValueToken += val
                         if (isString) {
-                            let count = 0;
+                            let count = 0
                             for (let j = currentValueToken.length - 2; ; j--) {
                                 if (currentValueToken[j] !== '\\') {
-                                    break;
+                                    break
                                 }
-                                count++;
+                                count++
                             }
                             if (count % 2) {
-                                continue;
+                                continue
                             }
                         }
 
                         if (varIndex !== undefined) {
-                            currentValueToken = currentValueToken.slice(0, varIndex) + currentValueToken.slice(varIndex).replace(/\$\((.*)\)/, 'var(--$1)');
+                            currentValueToken = currentValueToken.slice(0, varIndex) + currentValueToken.slice(varIndex).replace(/\$\((.*)\)/, 'var(--$1)')
                         }
 
                         if (!depth) {
                             if (isString) {
-                                valueTokens.push(currentValueToken);
+                                valueTokens.push(currentValueToken)
                             } else {
-                                valueTokens.push({ value: currentValueToken });
+                                valueTokens.push({ value: currentValueToken })
                             }
 
-                            func = '';
-                            currentValueToken = '';
+                            func = ''
+                            currentValueToken = ''
                         }
 
-                        break;
+                        break
                     } else if (!isString && val in START_SYMBOL) {
-                        analyze(START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func);
+                        analyze(START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func)
                     } else if (val === '|' && end !== '}' && (!isString || func === 'path')) {
                         if (!end) {
-                            valueTokens.push({ value: currentValueToken });
-                            currentValueToken = '';
+                            valueTokens.push({ value: currentValueToken })
+                            currentValueToken = ''
                         } else {
-                            currentValueToken += ' ';
+                            currentValueToken += ' '
                         }
                     } else {
                         if (!end) {
                             if (val === '.') {
                                 if (isNaN(+valueToken[i + 1])) {
-                                    break;
+                                    break
                                 } else if (valueToken[i - 1] === '-') {
-                                    currentValueToken += '0';
+                                    currentValueToken += '0'
                                 }
                             } else if (val === ',') {
-                                valueTokens.push({ value: currentValueToken }, ',');
-                                currentValueToken = '';
-                                continue;
+                                valueTokens.push({ value: currentValueToken }, ',')
+                                currentValueToken = ''
+                                continue
                             } else if (
                                 val === '#'
                                 && (currentValueToken || valueTokens.length && valueToken[i - 1] !== '|')
                                 || selectorSymbols.includes(val)
                             ) {
-                                break;
+                                break
                             }
 
-                            func += val;
+                            func += val
                         }
 
-                        currentValueToken += val;
+                        currentValueToken += val
                     }
                 }
-            })();
+            })()
 
             if (currentValueToken) {
-                valueTokens.push({ value: currentValueToken });
+                valueTokens.push({ value: currentValueToken })
             }
 
-            suffixToken = valueToken.slice(i);
+            suffixToken = valueToken.slice(i)
         }
 
         // 2. !important
         if (suffixToken[0] === '!') {
-            this.important = true;
-            suffixToken = suffixToken.slice(1);
+            this.important = true
+            suffixToken = suffixToken.slice(1)
         }
 
         // 3. prefix selector
         const analyzeSelectorToken = (selectorText: string) => {
-            const transformedSelectorText = transformSelectorUnderline(selectorText);
-            const selectors = [];
+            const transformedSelectorText = transformSelectorUnderline(selectorText)
+            const selectors = []
 
-            let currentSelector: string = '';
-            let symbolCount = 0;
+            let currentSelector = ''
+            let symbolCount = 0
             for (let i = 0; i < transformedSelectorText.length; i++) {
-                const char = transformedSelectorText[i];
+                const char = transformedSelectorText[i]
                 if (char === '\\') {
-                    currentSelector += char + transformedSelectorText[++i];
-                    continue;
+                    currentSelector += char + transformedSelectorText[++i]
+                    continue
                 }
 
                 if (!symbolCount && char === ',') {
-                    selectors.push(currentSelector);
-                    currentSelector = '';
+                    selectors.push(currentSelector)
+                    currentSelector = ''
                 } else {
-                    currentSelector += char;
+                    currentSelector += char
 
                     if (symbolCount && char === ')') {
-                        symbolCount--;
+                        symbolCount--
                     } else if (char === '(') {
-                        symbolCount++;
+                        symbolCount++
                     }
                 }
             }
             if (currentSelector) {
-                selectors.push(currentSelector);
+                selectors.push(currentSelector)
             }
 
-            return selectors;
-        };
+            return selectors
+        }
 
         this.prefixSelectors = prefixToken
             ? analyzeSelectorToken(prefixToken)
-            : [''];
+            : ['']
 
         // 4. suffix selector
-        const suffixTokens = suffixToken.split('@');
-        let suffixSelector = suffixTokens[0];
+        const suffixTokens = suffixToken.split('@')
+        const suffixSelector = suffixTokens[0]
         if (suffixSelector) {
-            this.vendorSuffixSelectors = {};
+            this.vendorSuffixSelectors = {}
 
             const transform = (selectorText: string, selectorValues: [RegExp, string[]][], selectors: string[], matched: boolean) => {
                 for (const [regexp, newSelectorTexts] of selectorValues) {
                     if (regexp.test(selectorText)) {
                         for (const eachNewSelectorText of newSelectorTexts) {
-                            transform(selectorText.replace(regexp, eachNewSelectorText), selectorValues, selectors, true);
+                            transform(selectorText.replace(regexp, eachNewSelectorText), selectorValues, selectors, true)
                         }
-                        return;
+                        return
                     }
                 }
 
                 if (matched) {
-                    selectors.push(selectorText);
+                    selectors.push(selectorText)
                 }
             }
 
-            const suffixSelectors: string[] = [];
+            const suffixSelectors: string[] = []
             if ('' in selectors) {
-                transform(suffixSelector, selectors[''], suffixSelectors, true);
+                transform(suffixSelector, selectors[''], suffixSelectors, true)
             } else {
-                suffixSelectors.push(suffixSelector);
+                suffixSelectors.push(suffixSelector)
             }
 
-            const vendorSelectors: Record<string, string[]> = {};
+            const vendorSelectors: Record<string, string[]> = {}
             for (const [vendor, selectorValues] of Object.entries(selectors)) {
                 if (!vendor)
-                    continue;
+                    continue
 
-                const newVendorSelectors = [];
+                const newVendorSelectors = []
                 for (const eachSuffixSelector of suffixSelectors) {
-                    transform(eachSuffixSelector, selectorValues, newVendorSelectors, false);
+                    transform(eachSuffixSelector, selectorValues, newVendorSelectors, false)
                 }
 
                 if (newVendorSelectors.length) {
-                    vendorSelectors[vendor] = newVendorSelectors;
+                    vendorSelectors[vendor] = newVendorSelectors
                 }
             }
 
             const insertVendorSuffixSelectors = (vendor: string, selectorTexts: string[]) => {
                 const groupedSelectorTexts = selectorTexts.reduce((arr, eachSuffixSelector) => {
-                    arr.push(...analyzeSelectorToken(eachSuffixSelector));
-                    return arr;
-                }, []);
+                    arr.push(...analyzeSelectorToken(eachSuffixSelector))
+                    return arr
+                }, [])
 
                 if (vendor in this.vendorSuffixSelectors) {
-                    this.vendorSuffixSelectors[vendor].push(...groupedSelectorTexts);
+                    this.vendorSuffixSelectors[vendor].push(...groupedSelectorTexts)
                 } else {
-                    this.vendorSuffixSelectors[vendor] = groupedSelectorTexts;
+                    this.vendorSuffixSelectors[vendor] = groupedSelectorTexts
                 }
-            };
+            }
 
-            const vendors = Object.keys(vendorSelectors);
+            const vendors = Object.keys(vendorSelectors)
             if (vendors.length) {
                 for (const eachVendor of vendors) {
-                    insertVendorSuffixSelectors(eachVendor, vendorSelectors[eachVendor]);
+                    insertVendorSuffixSelectors(eachVendor, vendorSelectors[eachVendor])
                 }
             } else {
-                insertVendorSuffixSelectors('', suffixSelectors);
+                insertVendorSuffixSelectors('', suffixSelectors)
             }
           
             for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
                 for (const eachSuffixSelector of suffixSelectors) {
                     if (this.hasWhere !== false) {
-                        this.hasWhere = eachSuffixSelector.includes(':where(');
+                        this.hasWhere = eachSuffixSelector.includes(':where(')
                     }
     
                     for (let i = 0; i < PRIORITY_SELECTORS.length; i++) {
                         if (eachSuffixSelector.includes(PRIORITY_SELECTORS[i])) {
                             if (this.prioritySelectorIndex === -1 || this.prioritySelectorIndex > i) {
-                                this.prioritySelectorIndex = i;
+                                this.prioritySelectorIndex = i
                             }
-                            break;
+                            break
                         }
                     }
                 }
             }
         } else {
-            this.vendorSuffixSelectors = { '': [''] };
+            this.vendorSuffixSelectors = { '': [''] }
         }
 
         // 5. atTokens
         for (let i = 1; i < suffixTokens.length; i++) {
-            const atToken = suffixTokens[i];
+            const atToken = suffixTokens[i]
             if (atToken) {
                 if (themeNames.includes(atToken)) {
-                    this.themeName = atToken;
+                    this.themeName = atToken
                 } else if (
                     atToken === 'rtl'
                     || atToken === 'ltr'
                 ) {
-                    this.direction = atToken;
+                    this.direction = atToken
                 } else {
-                    let type: string;
-                    let queryText;
+                    let type: string
+                    let queryText
 
-                    const underscoreIndex = atToken.indexOf('_');
+                    const underscoreIndex = atToken.indexOf('_')
                     if (underscoreIndex !== -1) {
-                        type = atToken.slice(0, underscoreIndex);
-                        queryText = atToken.slice(underscoreIndex);
+                        type = atToken.slice(0, underscoreIndex)
+                        queryText = atToken.slice(underscoreIndex)
                     } else {
-                        const leftBracketIndex = atToken.indexOf('(');
+                        const leftBracketIndex = atToken.indexOf('(')
                         if (leftBracketIndex !== -1) {
-                            type = atToken.slice(0, leftBracketIndex);
-                            queryText = atToken.slice(leftBracketIndex);
+                            type = atToken.slice(0, leftBracketIndex)
+                            queryText = atToken.slice(leftBracketIndex)
                         }
                     }
 
                     if (!type) {
-                        type = 'media';
-                        const queryTexts = [];
+                        type = 'media'
+                        const queryTexts = []
 
                         this.media = {
                             token: atToken,
                             features: {}
-                        };
-                        const typeOrFeatureTokens = atToken.split('&');
+                        }
+                        const typeOrFeatureTokens = atToken.split('&')
                         for (const typeOrFeatureToken of typeOrFeatureTokens) {
                             if (
                                 typeOrFeatureToken === 'all'
@@ -407,70 +407,70 @@ export class MasterCSSRule {
                                 || typeOrFeatureToken === 'screen'
                                 || typeOrFeatureToken === 'speech'
                             ) {
-                                this.media.type = typeOrFeatureToken;
+                                this.media.type = typeOrFeatureToken
                             } else if (typeOrFeatureToken === '🖨') {
-                                this.media.type = 'print';
+                                this.media.type = 'print'
                             } else {
                                 if (typeOrFeatureToken === 'landscape' || typeOrFeatureToken === 'portrait') {
-                                    queryTexts.push('(orientation:' + typeOrFeatureToken + ')');
+                                    queryTexts.push('(orientation:' + typeOrFeatureToken + ')')
                                 } else if (typeOrFeatureToken === MOTION || typeOrFeatureToken === REDUCED_MOTION) {
                                     queryTexts.push('(prefers-' + REDUCED_MOTION + ':'
                                         + (typeOrFeatureToken === MOTION ? 'no-preference' : REDUCE)
-                                        + ')');
+                                        + ')')
                                 } else if (mediaQueries && typeOrFeatureToken in mediaQueries) {
-                                    queryTexts.push(mediaQueries[typeOrFeatureToken]);
+                                    queryTexts.push(mediaQueries[typeOrFeatureToken])
                                 } else {
                                     const feature: MasterCSSMediaFeatureRule = {
                                         token: typeOrFeatureToken
                                     }
-                                    let featureName = '';
-                                    let extremumOperator = '';
-                                    let correction = 0;
+                                    let featureName = ''
+                                    let extremumOperator = ''
+                                    let correction = 0
                                     if (typeOrFeatureToken.startsWith('<=')) {
-                                        extremumOperator = '<=';
-                                        featureName = MAX_WIDTH;
+                                        extremumOperator = '<='
+                                        featureName = MAX_WIDTH
                                     } else if (typeOrFeatureToken.startsWith('>=') || breakpoints[typeOrFeatureToken]) {
-                                        extremumOperator = '>=';
-                                        featureName = MIN_WIDTH;
+                                        extremumOperator = '>='
+                                        featureName = MIN_WIDTH
                                     } else if (typeOrFeatureToken.startsWith('>')) {
-                                        extremumOperator = '>';
-                                        featureName = MIN_WIDTH;
-                                        correction = .02;
+                                        extremumOperator = '>'
+                                        featureName = MIN_WIDTH
+                                        correction = .02
                                     } else if (typeOrFeatureToken.startsWith('<')) {
-                                        extremumOperator = '<';
-                                        featureName = MAX_WIDTH;
-                                        correction = -.02;
+                                        extremumOperator = '<'
+                                        featureName = MAX_WIDTH
+                                        correction = -.02
                                     }
                                     switch (featureName) {
-                                        case MAX_WIDTH:
-                                        case MIN_WIDTH:
-                                            const conditionUnitValueToken
+                                    case MAX_WIDTH:
+                                    case MIN_WIDTH:
+                                        const conditionUnitValueToken
                                                 = extremumOperator
                                                     ? typeOrFeatureToken.replace(extremumOperator, '')
-                                                    : typeOrFeatureToken;
-                                            const breakpoint = breakpoints[conditionUnitValueToken];
-                                            if (breakpoint) {
-                                                Object.assign(feature, parseValue(breakpoint, PX));
-                                            } else {
-                                                Object.assign(feature, parseValue(conditionUnitValueToken, PX));
-                                            }
-                                            if (feature.unit === PX) {
-                                                feature.value += correction;
-                                            }
-                                            this.media.features[featureName] = feature;
-                                            queryTexts.push('(' + featureName + ':' + (feature.value + feature.unit) + ')');
-                                            break;
+                                                    : typeOrFeatureToken
+                                        const breakpoint = breakpoints[conditionUnitValueToken]
+                                        if (breakpoint) {
+                                            Object.assign(feature, parseValue(breakpoint, PX))
+                                        } else {
+                                            Object.assign(feature, parseValue(conditionUnitValueToken, PX))
+                                        }
+                                        if (feature.unit === PX) {
+                                            feature.value += correction
+                                        }
+                                        this.media.features[featureName] = feature
+                                        queryTexts.push('(' + featureName + ':' + (feature.value + feature.unit) + ')')
+                                        break
                                     }
                                 }
                             }
                         }
 
-                        queryText = '';
+                        queryText = ''
                         if (this.media.type) {
-                            queryText = this.media.type;
+                            queryText = this.media.type
                         }
                         if (queryTexts.length) {
-                            queryText += (queryText ? ' and ' : '') + queryTexts.join(' and ');
+                            queryText += (queryText ? ' and ' : '') + queryTexts.join(' and ')
                         }
                     }
 
@@ -478,7 +478,7 @@ export class MasterCSSRule {
                         this.at[type] = (type in this.at
                             ? this.at[type] + ' and '
                             : '')
-                            + queryText.replace(/\_/g, ' ');
+                            + queryText.replace(/\_/g, ' ')
                     }
                 }
             }
@@ -487,42 +487,42 @@ export class MasterCSSRule {
         // 6. order
         if (this.order === undefined) {
             // @ts-ignore
-            this.order = 0;
+            this.order = 0
         }
 
         // 7. value
         const insertNewNative = (themeName: string, bypassWhenUnmatchColor: boolean) => {
-            let newValue: string | Record<string, string | number>, newUnit: string;
+            let newValue: string | Record<string, string | number>, newUnit: string
 
             const generateCssText = (
                 propertiesText: string,
                 themeName: string,
                 suffixSelectors: string[]
             ) => {
-                let prefixText = '';
+                let prefixText = ''
                 if (this.direction) {
-                    prefixText += '[dir=' + this.direction + '] ';
+                    prefixText += '[dir=' + this.direction + '] '
                 }
 
-                const prefixTexts = this.prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText);
+                const prefixTexts = this.prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText)
                 const getCssText = (themeName: string, name: string) => {
-                    const prefixThemeText = (themeName ? '.' + themeName + ' ' : '');
-                    const esacpedName = '.' + CSS.escape(name);
+                    const prefixThemeText = (themeName ? '.' + themeName + ' ' : '')
+                    const esacpedName = '.' + CSS.escape(name)
                     return prefixTexts
                         .map(eachPrefixText => prefixThemeText + eachPrefixText)
                         .reduce((arr, eachPrefixText) => {
                             arr.push(
                                 suffixSelectors
                                     .reduce((_arr, eachSuffixSelector) => {
-                                        _arr.push(eachPrefixText + esacpedName + eachSuffixSelector);
-                                        return _arr;
+                                        _arr.push(eachPrefixText + esacpedName + eachSuffixSelector)
+                                        return _arr
                                     }, [])
                                     .join(',')
-                            );
-                            return arr;
+                            )
+                            return arr
                         }, [])
-                        .join(',');
-                };
+                        .join(',')
+                }
 
                 let cssText = getCssText(themeName, className)
                     + (relationThemesMap
@@ -536,20 +536,20 @@ export class MasterCSSRule {
                         : '')
                     + '{'
                     + propertiesText
-                    + '}';
+                    + '}'
                 for (const key of Object.keys(this.at).sort((a, b) => b === 'supports' ? -1 : 1)) {
-                    cssText = '@' + key + ' ' + this.at[key] + '{' + cssText + '}';
+                    cssText = '@' + key + ' ' + this.at[key] + '{' + cssText + '}'
                 }
 
-                return cssText;
-            };
+                return cssText
+            }
 
-            const newValueTokens: string[] = [];
+            const newValueTokens: string[] = []
             if (valueTokens) {
-                let uv, anyColorMatched: boolean = undefined;
+                let uv, anyColorMatched: boolean = undefined
                 for (const eachValueToken of valueTokens) {
                     if (typeof eachValueToken === 'string') {
-                        newValueTokens.push(eachValueToken);
+                        newValueTokens.push(eachValueToken)
                     } else {
                         uv = parseValue(
                             eachValueToken.value,
@@ -558,45 +558,45 @@ export class MasterCSSRule {
                             values,
                             rootSize,
                             this.themeName ? [this.themeName, ''] : [themeName]
-                        );
+                        )
                         if (uv.colorMatched !== undefined && anyColorMatched !== true) {
-                            anyColorMatched = uv.colorMatched;
+                            anyColorMatched = uv.colorMatched
                         }
 
-                        newValueTokens.push(uv.value + uv.unit);
+                        newValueTokens.push(uv.value + uv.unit)
                     }
                 }
 
                 if (bypassWhenUnmatchColor && (anyColorMatched === undefined ? themeName : !anyColorMatched))
-                    return;
+                    return
 
                 if (newValueTokens.length === 1) {
                     if (uv) {
-                        newValue = uv.value;
-                        newUnit = uv.unit;
+                        newValue = uv.value
+                        newUnit = uv.unit
                     } else {
-                        newValue = newValueTokens[0];
+                        newValue = newValueTokens[0]
                     }
                 } else {
-                    newValue = newValueTokens.reduce((previousVal, currentVal, i) => previousVal + currentVal + ((currentVal === ',' || valueTokens[i + 1] === ',' || i === valueTokens.length - 1) ? '' : ' '), '');
+                    newValue = newValueTokens.reduce((previousVal, currentVal, i) => previousVal + currentVal + ((currentVal === ',' || valueTokens[i + 1] === ',' || i === valueTokens.length - 1) ? '' : ' '), '')
                 }
 
                 if (typeof newValue !== 'object') {
                     // 8. parseValue
                     if (this.parseValue) {
-                        newValue = this.parseValue(newValue, this.css.config);
+                        newValue = this.parseValue(newValue, this.css.config)
                     }
 
                     // 9. transform value
                     if (colorful && newValue === 'current') {
-                        newValue = 'currentColor';
+                        newValue = 'currentColor'
                     } else if (values && newValue in values) {
-                        newValue = values[newValue].toString();
+                        newValue = values[newValue].toString()
                     }
 
-                    const declaration = { unit: newUnit, value: newValue, important: this.important };
+                    const declaration = { unit: newUnit, value: newValue, important: this.important }
                     if (this.getThemeProps) {
-                        const themeProps = this.getThemeProps(declaration, css);
+                        const themeProps = this.getThemeProps(declaration, css)
                         for (const themeName in themeProps) {
                             for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
                                 this.natives.push({
@@ -615,16 +615,16 @@ export class MasterCSSRule {
                                         suffixSelectors
                                     ),
                                     themeName
-                                });
+                                })
                             }
                         }
-                        return;
+                        return
                     } else if (this.get) {
-                        newValue = this.get(declaration);
+                        newValue = this.get(declaration)
                     }
                 }
             } else {
-                newValue = value;
+                newValue = value
             }
 
             for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
@@ -647,20 +647,20 @@ export class MasterCSSRule {
                         suffixSelectors
                     ),
                     themeName
-                });
+                })
             }
-        };
+        }
 
         if (this.getThemeProps) {
-            insertNewNative(undefined, false);
+            insertNewNative(undefined, false)
         } else if (this.themeName) {
-            insertNewNative(this.themeName, false);
+            insertNewNative(this.themeName, false)
         } else if (colorful) {
             for (const eachThemeName of themeNames) {
-                insertNewNative(eachThemeName, true);
+                insertNewNative(eachThemeName, true)
             }
         } else {
-            insertNewNative('', false);
+            insertNewNative('', false)
         }
     }
 }
@@ -674,7 +674,7 @@ export interface MasterCSSRule {
 }
 
 if (typeof window !== 'undefined') {
-    window.MasterCSSRule = MasterCSSRule;
+    window.MasterCSSRule = MasterCSSRule
 }
 
 declare global {

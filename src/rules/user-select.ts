@@ -1,4 +1,4 @@
-import { MasterCSSRule } from '../rule';
+import { MasterCSSRule } from '../rule'
 
 export default class extends MasterCSSRule {
     static override id = 'UserSelect'
@@ -8,5 +8,5 @@ export default class extends MasterCSSRule {
             'user-select': declaration,
             '-webkit-user-select': declaration
         }
-    };
+    }
 }

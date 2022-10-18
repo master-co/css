@@ -1,14 +1,14 @@
-import { MasterCSSRule } from '../rule';
-import { getBorderProps } from '../utils/get-border-props';
+import { MasterCSSRule } from '../rule'
+import { getBorderProps } from '../utils/get-border-props'
 
 export default class extends MasterCSSRule {
     static override id = 'Border'
-    static override matches = /^b([xytblr]?|order(-(left|right|top|bottom))?):./;
-    static override colorful = true;
+    static override matches = /^b([xytblr]?|order(-(left|right|top|bottom))?):./
+    static override colorful = true
     override get(declaration): { [key: string]: any } {
-        return getBorderProps(this.prefix, declaration);
+        return getBorderProps(this.prefix, declaration)
     }
     override get order(): number {
-        return (this.prefix === 'border' + ":" || this.prefix === 'b:') ? -2 : -1;
+        return (this.prefix === 'border' + ':' || this.prefix === 'b:') ? -2 : -1
     }
 }

@@ -386,6 +386,6 @@ const DefaultRules = [
     ClipPath,
     Quotes,
     MaskImage
-];
+]
 
 export default DefaultRules

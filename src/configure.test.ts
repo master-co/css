@@ -1,9 +1,9 @@
-import configure from './configure';
-import defaultConfig from './config';
-import defaultThemes from './config/themes';
-import defaultValues from './config/values';
+import configure from './configure'
+import defaultConfig from './config'
+import defaultThemes from './config/themes'
+import defaultValues from './config/values'
 
-test("configure", () => {
+test('configure', () => {
     const custom = {
         themes: ['red'],
         values: {
@@ -27,9 +27,9 @@ test("configure", () => {
                     }
                 }
             })
-});
+})
 
-test("configure undefined", () => {
-    expect(configure(undefined))
+test('configure undefined', () => {
+    expect(configure(undefined as any))
         .toEqual(defaultConfig)
 })

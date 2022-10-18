@@ -1,7 +1,7 @@
 import { render } from './render'
 import { renderFromHTML } from './render-from-html'
 import { renderIntoHTML } from './render-into-html'
-import dedent from 'dedent';
+import dedent from 'dedent'
 
 const html = dedent`
     <html>
@@ -12,7 +12,7 @@ const html = dedent`
     </html>
 `
 
-test("render", () => {
+test('render', () => {
     expect(render(['text:center', 'font:32']))
         .toBe('.font\\:32{font-size:2rem}.text\\:center{text-align:center}')
 

@@ -1,7 +1,7 @@
-import { MasterCSSRule } from '../rule';
+import { MasterCSSRule } from '../rule'
 
 export default class extends MasterCSSRule {
     static override id = 'MinWidth'
-    static override matches = /^min-w:./;
-    static override propName = 'min-width';
+    static override matches = /^min-w:./
+    static override propName = 'min-width'
 }
