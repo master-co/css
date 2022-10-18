@@ -1,9 +1,10 @@
 {
     "name": "@master/css",
     "scripts": {
-        "build": "rm -rf dist && esbuild src/index.ts --outfile=dist/index.js --minify --bundle --format=cjs --sourcemap",
+        "build": "rm -rf dist && npm run build:cjs && npm run build:esm",
+        "build:cjs": "esbuild src/index.ts --outfile=dist/index.js --minify --bundle --format=cjs --sourcemap",
         "build:esm": "tsc --outDir dist/esm",
-        "package": "npm run build && cp README.md LICENSE ./src/package.json ./dist",
+        "dev:cjs": "esbuild src/index.ts --outfile=dist/index.js --bundle --format=cjs --watch",
         "test": "jest"
     },
     "devDependencies": {
