@@ -192,7 +192,7 @@ import BorderImage from '../rules/border-image'
 import Group from '../rules/group'
 import CounterIncrement from '../rules/counter-increment'
 
-export const DefaultRules = [
+const DefaultRules = [
     Group,
     Variable,
     FontSize,
@@ -387,3 +387,5 @@ export const DefaultRules = [
     Quotes,
     MaskImage
 ];
+
+export default DefaultRules

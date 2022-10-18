@@ -9,10 +9,11 @@
     },
     "devDependencies": {
         "@types/jest": "^27.5.2",
+        "@types/node": "^18.11.0",
         "dedent": "^0.7.0",
+        "esbuild": "^0.15.10",
         "jest": "^28.1.0",
-        "ts-jest": "^28.0.3",
-        "esbuild": "^0.15.10"
+        "ts-jest": "^28.0.3"
     },
     "files": [
         "dist"

@@ -30,7 +30,14 @@
         "css",
         "ui",
         "lightweight",
-        "class"
+        "class",
+        "webpack",
+        "plugin",
+        "integration",
+        "vite",
+        "parcel",
+        "build-tools",
+        "mastercss"
     ],
     "repository": {
         "type": "git",

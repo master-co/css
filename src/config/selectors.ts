@@ -1,4 +1,4 @@
-export const defaultSelectors = {
+const defaultSelectors = {
     '::scrollbar': '::-webkit-scrollbar',
     '::scrollbar-button': '::-webkit-scrollbar-button',
     '::scrollbar-thumb': '::-webkit-scrollbar-thumb',
@@ -16,3 +16,5 @@ export const defaultSelectors = {
     ':odd': ':nth-child(odd)',
     ':nth(': ':nth-child('
 }
+
+export default defaultSelectors

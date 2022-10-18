@@ -1,4 +1,4 @@
-import { defaultBreakpoints } from './breakpoints';
+import defaultBreakpoints from './breakpoints';
 
 const boxUnderneath = {
     content: 'content-box',
@@ -21,7 +21,7 @@ for (const key in defaultBreakpoints) {
     sizingValues[key] = (defaultBreakpoints[key] / 16) + 'rem'
 }
 
-export const defaultValues = {
+const defaultValues = {
     BackgroundClip: boxUnderneath,
     BackgroundOrigin: boxUnderneath,
     BoxSizing: {
@@ -85,3 +85,5 @@ export const defaultValues = {
     Height: sizingValues,
     FlexBasis: sizingValues
 }
+
+export default defaultValues

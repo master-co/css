@@ -1,1 +1,2 @@
-export const defaultRootSize = 16;
+const defaultRootSize = 16;
+export default defaultRootSize
