@@ -6,7 +6,8 @@
         "build:esm": "tsc",
         "dev:cjs": "esbuild src/index.ts --outfile=dist/index.js --bundle --format=cjs --watch",
         "dev:esm": "tsc --watch",
-        "test": "jest"
+        "test": "jest",
+        "lint": "eslint ./src"
     },
     "devDependencies": {
         "@types/jest": "^27.5.2",
