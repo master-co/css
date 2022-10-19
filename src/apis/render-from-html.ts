@@ -8,9 +8,9 @@ export function renderFromHTML(html: string, css: MasterCSS = new MasterCSS()): 
     while ((results = regexp.exec(html))) {
         const classNames = results[1].replace(/\n/g, '').split(' ').filter(css => css)
         for (const eachClassName of classNames) {
-            if (!(eachClassName in css.countOfName)) {
+            if (!(eachClassName in css.countOfClass)) {
                 css.findAndInsert(eachClassName)
-                css.countOfName[eachClassName] = 1
+                css.countOfClass[eachClassName] = 1
             }
         }
     }

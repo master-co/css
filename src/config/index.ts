@@ -5,6 +5,7 @@ import defaultRootSize from './root-size'
 import defaultSelectors from './selectors'
 import defaultSemantics from './semantics'
 import defaultThemes from './themes'
+import defaultScheme from './scheme'
 import defaultValues from './values'
 import DefaultRules from './rules'
 
@@ -15,6 +16,7 @@ const defaultConfig: MasterCSSConfig = {
     values: defaultValues,
     selectors: defaultSelectors,
     themes: defaultThemes,
+    scheme: defaultScheme,
     Rules: DefaultRules,
     rootSize: defaultRootSize
 }
@@ -27,6 +29,7 @@ export {
     defaultSelectors,
     defaultSemantics,
     defaultThemes,
+    defaultScheme,
     defaultValues,
     DefaultRules
 }

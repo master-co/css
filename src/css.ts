@@ -42,8 +42,8 @@ export default class MasterCSS extends MutationObserver {
     readonly style: HTMLStyleElement
     readonly rules: MasterCSSRule[] = []
     readonly ruleOfClass: Record<string, MasterCSSRule> = {}
-    readonly countOfName = {}
-    readonly host: Element | ShadowRoot
+    readonly countOfClass = {}
+    readonly host: Element
 
     semantics: [RegExp, string][]
     classes: Record<string, string[]>
@@ -53,6 +53,8 @@ export default class MasterCSS extends MutationObserver {
     relationThemesMap: Record<string, Record<string, string[]>>
     relations: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>
+
+    private schemeMQL: MediaQueryList
 
     constructor(
         public config: MasterCSSConfig = defaultConfig,
@@ -196,17 +198,17 @@ export default class MasterCSS extends MutationObserver {
 
             for (const className in correctionOfClassName) {
                 const correction = correctionOfClassName[className]
-                const count = (this.countOfName[className] || 0) + correction
+                const count = (this.countOfClass[className] || 0) + correction
                 if (count === 0) {
                     // remove
-                    delete this.countOfName[className]
+                    delete this.countOfClass[className]
                     /**
                      * class name 從 DOM tree 中被移除，
                      * 匹配並刪除對應的 rule
                      */
                     this.delete(className)
                 } else {
-                    if (!(className in this.countOfName)) {
+                    if (!(className in this.countOfClass)) {
                         // add
                         /**
                          * 新 class name 被 connected 至 DOM tree，
@@ -215,7 +217,7 @@ export default class MasterCSS extends MutationObserver {
                         this.findAndInsert(className)
                     }
 
-                    this.countOfName[className] = count
+                    this.countOfClass[className] = count
                 }
             }
 
@@ -224,13 +226,13 @@ export default class MasterCSS extends MutationObserver {
 
         this.cache()
 
-        if (!hasDocument) {
-            return
-        }
-
-        if (root) {
+        if (hasDocument && root) {
             const isDocumentRoot = root === document
             this.host = isDocumentRoot ? document.documentElement : (root as ShadowRoot).host
+
+            // sync theme
+            this.scheme = this.storageScheme || config.scheme.preference
+
             const container = isDocumentRoot ? document.head : root
             const styleSheets = isDocumentRoot ? document.styleSheets : root.styleSheets
             // @ts-ignore
@@ -306,6 +308,54 @@ export default class MasterCSS extends MutationObserver {
         }
 
         MasterCSS.instances.push(this)
+    }
+
+    get storageScheme() {
+        const { storage } = this.config.scheme
+        return localStorage.getItem(storage.key)
+    }
+
+    #scheme: string
+    theme
+
+    set scheme(scheme: string) {
+        if (scheme !== this.#scheme) {
+            this.#scheme = scheme
+            let theme = ''
+            const { storage } = this.config.scheme
+            if (scheme === 'system') {
+                // 按照系統的主題切換，目前只支援 light dark
+                this.schemeMQL = window.matchMedia('(prefers-color-scheme:dark)')
+                this.schemeMQL.addEventListener('change', this.onSchemeChange)
+                localStorage.removeItem(storage.key)
+                theme = this.schemeMQL.matches ? 'dark' : 'light'
+            } else {
+                this.removeSchemeListener()
+                theme = scheme
+                if (this.storageScheme !== theme && storage.sync) {
+                    localStorage.setItem(storage.key, theme)
+                }
+            }
+            if (this.theme) {
+                this.host.classList.remove(this.theme)
+            }
+            if (this.host === document.documentElement) {
+                (this.host as HTMLElement).style.colorScheme = theme
+            }
+            this.host.classList.add(theme)
+            this.theme = theme
+        }
+    }
+
+    private removeSchemeListener() {
+        if (this.schemeMQL) {
+            this.schemeMQL.removeEventListener('change', this.onSchemeChange)
+            this.schemeMQL = null
+        }
+    }
+
+    private onSchemeChange(mediaQueryList) {
+        this.scheme = mediaQueryList.matches ? 'dark' : 'light'
     }
 
     private cache() {
@@ -481,10 +531,10 @@ export default class MasterCSS extends MutationObserver {
                 .querySelectorAll('[class]')
                 .forEach((element) => {
                     element.classList.forEach((className) => {
-                        if (className in this.countOfName) {
-                            this.countOfName[className]++
+                        if (className in this.countOfClass) {
+                            this.countOfClass[className]++
                         } else {
-                            this.countOfName[className] = 1
+                            this.countOfClass[className] = 1
 
                             this.findAndInsert(className)
                         }
@@ -505,7 +555,7 @@ export default class MasterCSS extends MutationObserver {
         // @ts-ignore
         this.ruleOfClass = {}
         // @ts-ignore
-        this.countOfName = {}
+        this.countOfClass = {}
 
         this.rules.length = 0
 
@@ -575,7 +625,7 @@ export default class MasterCSS extends MutationObserver {
          * 拿當前所有的 classNames 按照最新的 colors, breakpoints, config.Rules 匹配並生成新的 style
          * 所以 refresh 過後 rules 可能會變多也可能會變少
          */
-        for (const name in this.countOfName) {
+        for (const name in this.countOfClass) {
             this.findAndInsert(name)
         }
     }
@@ -585,6 +635,7 @@ export default class MasterCSS extends MutationObserver {
         this.disconnect()
         instances.splice(instances.indexOf(this), 1)
         this.style.remove()
+        this.removeSchemeListener()
     }
 
     /**
@@ -988,7 +1039,7 @@ export default class MasterCSS extends MutationObserver {
             const rule = this.ruleOfClass[name]
             if (
                 !rule
-                || name in this.relations && this.relations[name].some(eachClassName => eachClassName in this.countOfName)
+                || name in this.relations && this.relations[name].some(eachClassName => eachClassName in this.countOfClass)
             )
                 return
 
@@ -1012,7 +1063,7 @@ export default class MasterCSS extends MutationObserver {
 
         if (className in this.classes) {
             for (const eachClassName of this.classes[className]) {
-                if (!(eachClassName in this.countOfName)) {
+                if (!(eachClassName in this.countOfClass)) {
                     deleteRule(eachClassName)
                 }
             }

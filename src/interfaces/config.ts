@@ -13,4 +13,11 @@ export interface MasterCSSConfig {
     themes?: Record<string, { classes?: Record<string, string>, colors?: Record<string, string | Record<string, string>> }> | string[],
     rootSize?: number
     validateRule?: (rule: MasterCSSRule, css?: MasterCSS) => boolean
+    scheme?: {
+        preference: string,
+        storage: {
+            sync: boolean
+            key: string
+        }
+    }
 }

@@ -1,4 +1,4 @@
-const { defaultColors, configure } = require('../src');
+const { defaultColors, configure } = require('../src')
 
 module.exports = configure({
     colors: {
