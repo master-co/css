@@ -37,7 +37,8 @@ executors:
 
 jobs:
     lint:
-        executor: node
+        docker:
+            - image: 'cimg/node:17.9.1'
         resource_class: small
         steps:
             - checkout
@@ -46,7 +47,8 @@ jobs:
                   name: Lint
                   command: npm run lint
     test:
-        executor: node
+        docker:
+            - image: 'cimg/node:17.9.1'
         resource_class: small
         parallelism: 8
         steps:
