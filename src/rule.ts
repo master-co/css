@@ -343,13 +343,13 @@ export class MasterCSSRule {
             } else {
                 insertVendorSuffixSelectors('', suffixSelectors)
             }
-          
+
             for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
                 for (const eachSuffixSelector of suffixSelectors) {
                     if (this.hasWhere !== false) {
                         this.hasWhere = eachSuffixSelector.includes(':where(')
                     }
-    
+
                     for (let i = 0; i < PRIORITY_SELECTORS.length; i++) {
                         if (eachSuffixSelector.includes(PRIORITY_SELECTORS[i])) {
                             if (this.prioritySelectorIndex === -1 || this.prioritySelectorIndex > i) {
@@ -441,25 +441,25 @@ export class MasterCSSRule {
                                         featureName = MAX_WIDTH
                                         correction = -.02
                                     }
+                                    const conditionUnitValueToken
+                                        = extremumOperator
+                                            ? typeOrFeatureToken.replace(extremumOperator, '')
+                                            : typeOrFeatureToken
+                                    const breakpoint = breakpoints[conditionUnitValueToken]
                                     switch (featureName) {
-                                    case MAX_WIDTH:
-                                    case MIN_WIDTH:
-                                        const conditionUnitValueToken
-                                                = extremumOperator
-                                                    ? typeOrFeatureToken.replace(extremumOperator, '')
-                                                    : typeOrFeatureToken
-                                        const breakpoint = breakpoints[conditionUnitValueToken]
-                                        if (breakpoint) {
-                                            Object.assign(feature, parseValue(breakpoint, PX))
-                                        } else {
-                                            Object.assign(feature, parseValue(conditionUnitValueToken, PX))
-                                        }
-                                        if (feature.unit === PX) {
-                                            feature.value += correction
-                                        }
-                                        this.media.features[featureName] = feature
-                                        queryTexts.push('(' + featureName + ':' + (feature.value + feature.unit) + ')')
-                                        break
+                                        case MAX_WIDTH:
+                                        case MIN_WIDTH:
+                                            if (breakpoint) {
+                                                Object.assign(feature, parseValue(breakpoint, PX))
+                                            } else {
+                                                Object.assign(feature, parseValue(conditionUnitValueToken, PX))
+                                            }
+                                            if (feature.unit === PX) {
+                                                feature.value += correction
+                                            }
+                                            this.media.features[featureName] = feature
+                                            queryTexts.push('(' + featureName + ':' + (feature.value + feature.unit) + ')')
+                                            break
                                     }
                                 }
                             }
@@ -478,7 +478,7 @@ export class MasterCSSRule {
                         this.at[type] = (type in this.at
                             ? this.at[type] + ' and '
                             : '')
-                            + queryText.replace(/\_/g, ' ')
+                            + queryText.replace(/_/g, ' ')
                     }
                 }
             }
