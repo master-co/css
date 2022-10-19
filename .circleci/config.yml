@@ -36,7 +36,6 @@ executors:
 
 jobs:
     lint:
-        resource_class: small
         executor: node
         steps:
             - checkout
@@ -45,7 +44,6 @@ jobs:
                   name: Lint
                   command: npm run lint
     test:
-        resource_class: small
         executor: node
         parallelism: 8
         steps:
@@ -55,7 +53,6 @@ jobs:
                   name: Test
                   command: npx jest --maxWorkers=8
     release:
-        resource_class: small
         executor: node
         steps:
             - checkout
