@@ -5,4 +5,7 @@ module.exports = {
     transform: {
         '^.+\\.(t|j)sx?$': '@swc/jest',
     },
+    modulePathIgnorePatterns: [
+        '<rootDir>/src/package.json'
+    ]
 }
