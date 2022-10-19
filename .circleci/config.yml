@@ -7,14 +7,10 @@ workflows:
                   context: Master
 
 jobs:
-    test:
-        docker:
-            - image: 'cimg/node:17.9.1'
-        steps:
-            - checkout
     release:
         docker:
             - image: 'cimg/node:17.9.1'
+        resource_class: large
         parallelism: 4
         steps:
             - checkout
