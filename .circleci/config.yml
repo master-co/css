@@ -10,7 +10,7 @@ jobs:
     release:
         docker:
             - image: 'cimg/node:17.9.1'
-        resource_class: large
+        resource_class: xlarge
         parallelism: 8
         steps:
             - checkout
