@@ -10,12 +10,12 @@ workflows:
 jobs:
     test:
         docker:
-            - image: 'cimg/node:18'
+            - image: 'cimg/node:18.11.0'
         steps:
             - checkout
     release:
         docker:
-            - image: 'cimg/node:18'
+            - image: 'cimg/node:18.11.0'
         parallelism: 4
         steps:
             - checkout
