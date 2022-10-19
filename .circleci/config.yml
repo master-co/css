@@ -11,7 +11,7 @@ jobs:
         docker:
             - image: 'cimg/node:17.9.1'
         resource_class: large
-        parallelism: 4
+        parallelism: 8
         steps:
             - checkout
             - restore_cache:
@@ -32,7 +32,7 @@ jobs:
                   command: npm run lint
             - run:
                   name: Test
-                  command: npx jest --maxWorkers=4
+                  command: npx jest --maxWorkers=8
             - run:
                   name: Copy src/package.json to dist for verification release
                   command: |
