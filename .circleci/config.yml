@@ -3,8 +3,13 @@ version: 2.1
 workflows:
     package:
         jobs:
-            - lint
-            - test
+            - setup
+            - lint:
+                  requires:
+                      - setup
+            - test:
+                  requires:
+                      - setup
             - release:
                   context: Master
                   requires:
@@ -13,7 +18,20 @@ workflows:
 
 commands:
     prepare_workspace:
+
+executors:
+    node:
+        docker:
+            - image: 'cimg/node:17.9.1'
+        resource_class: small
+
+jobs:
+    setup:
+        docker:
+            - image: 'cimg/node:17.9.1'
+        resource_class: small
         steps:
+            - checkout
             - restore_cache:
                   name: Restore npm package cache
                   keys:
@@ -27,21 +45,12 @@ commands:
                   key: npm-packages-{{ checksum "package-lock.json" }}
                   paths:
                       - node_modules
-
-executors:
-    node:
-        docker:
-            - image: 'cimg/node:17.9.1'
-        resource_class: small
-
-jobs:
     lint:
         docker:
             - image: 'cimg/node:17.9.1'
         resource_class: small
         steps:
             - checkout
-            - prepare_workspace
             - run:
                   name: Lint
                   command: npm run lint
@@ -49,20 +58,18 @@ jobs:
         docker:
             - image: 'cimg/node:17.9.1'
         resource_class: small
-        parallelism: 8
+        parallelism: 4
         steps:
             - checkout
-            - prepare_workspace
             - run:
                   name: Test
-                  command: npx jest --maxWorkers=8
+                  command: npx jest --maxWorkers=4
     release:
         docker:
             - image: 'cimg/node:17.9.1'
         resource_class: small
         steps:
             - checkout
-            - prepare_workspace
             - run:
                   name: Copy src/package.json to dist for verification release
                   command: |
