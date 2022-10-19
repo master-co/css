@@ -10,12 +10,12 @@ workflows:
 jobs:
     test:
         docker:
-            - image: 'cimg/node:18.11.0'
+            - image: znck/pnpm:latest
         steps:
             - checkout
     release:
         docker:
-            - image: 'cimg/node:18.11.0'
+            - image: znck/pnpm:latest
         parallelism: 4
         steps:
             - checkout
