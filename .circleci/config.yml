@@ -1,7 +1,6 @@
-version: 2
+version: 2.1
 
 workflows:
-    version: 2
     package:
         jobs:
             - lint
@@ -58,7 +57,8 @@ jobs:
                   name: Test
                   command: npx jest --maxWorkers=8
     release:
-        executor: node
+        docker:
+            - image: 'cimg/node:17.9.1'
         resource_class: small
         steps:
             - checkout
