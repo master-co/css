@@ -20,21 +20,17 @@ jobs:
         steps:
             - checkout
             - restore_cache:
-                  name: Restore pnpm Package Cache
+                  name: Restore npm Package Cache
                   keys:
-                      - pnpm-packages-{{ checksum "pnpm-lock.yaml" }}
-            - run:
-                  name: Install pnpm package manager
-                  command: |
-                      npm i -g pnpm@7
+                      - npm-packages-{{ checksum "package-lock.json" }}
             - run:
                   name: Install Dependencies
                   command: |
-                      pnpm install
-                      pnpm install semantic-release@19 @semantic-release/exec@6 -D
+                      npm install
+                      npm install semantic-release@19 @semantic-release/exec@6 -D
             - save_cache:
-                  name: Save pnpm Package Cache
-                  key: pnpm-packages-{{ checksum "pnpm-lock.yaml" }}
+                  name: Save npm Package Cache
+                  key: npm-packages-{{ checksum "package-lock.json" }}
                   paths:
                       - node_modules
             - run:
@@ -50,4 +46,4 @@ jobs:
                       cp ./src/package.json ./dist/package.json
             - run:
                   name: semantic release
-                  command: pnpm dlx semantic-release || true
+                  command: semantic-release || true
