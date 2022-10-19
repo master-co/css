@@ -24,13 +24,9 @@ jobs:
                   keys:
                       - pnpm-packages-{{ checksum "pnpm-lock.yaml" }}
             - run:
-                  name: Install pnpm package manager
-                  command: |
-                      sudo npx pnpm add -g pnpm
-            - run:
                   name: Install Dependencies
                   command: |
-                      pnpm install
+                      npx pnpm install
             - save_cache:
                   name: Save pnpm Package Cache
                   key: pnpm-packages-{{ checksum "pnpm-lock.yaml" }}
@@ -38,13 +34,13 @@ jobs:
                       - node_modules
             - run:
                   name: lint
-                  command: pnpm run lint
+                  command: npx pnpm run lint
             - run:
                   name: test
-                  command: pnpm run test --maxWorkers=4
+                  command: npx jest --maxWorkers=4
             - run:
                   name: Copy package.json to ./dist for verification release
                   command: mkdir -p ./dist && cp ./src/package.json ./dist/package.json
             - run:
                   name: semantic release
-                  command: semantic-release || true
+                  command: npx semantic-release || true
