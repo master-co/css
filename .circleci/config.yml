@@ -4,30 +4,17 @@ workflows:
     version: 2
     package:
         jobs:
-            - setup
-            - lint:
-                  requires:
-                      - setup
-            - test:
-                  requires:
-                      - setup
+            - lint
+            - test
             - release:
                   context: Master
                   requires:
                       - lint
                       - test
 
-executors:
-    node:
-        docker:
-            - image: 'cimg/node:17.9.1'
-
-jobs:
-    setup:
-        resource_class: small
-        executor: node
+commands:
+    prepare_workspace:
         steps:
-            - checkout
             - restore_cache:
                   name: Restore npm package cache
                   keys:
@@ -41,11 +28,19 @@ jobs:
                   key: npm-packages-{{ checksum "package-lock.json" }}
                   paths:
                       - node_modules
+
+executors:
+    node:
+        docker:
+            - image: 'cimg/node:17.9.1'
+
+jobs:
     lint:
         resource_class: small
         executor: node
         steps:
             - checkout
+            - prepare_workspace
             - run:
                   name: Lint
                   command: npm run lint
@@ -55,6 +50,7 @@ jobs:
         parallelism: 8
         steps:
             - checkout
+            - prepare_workspace
             - run:
                   name: Test
                   command: npx jest --maxWorkers=8
