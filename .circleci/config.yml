@@ -16,17 +16,27 @@ workflows:
                       - lint
                       - test
 
+aliases:
+    - &working_directory ~/repo
+
+commands:
+    prepare_workspace:
+        steps:
+            - attach_workspace:
+                  at: *working_directory
+
 executors:
     node17:
         docker:
             - image: 'cimg/node:17.9.1'
         resource_class: small
-        working_directory: ~/repo
+        working_directory: *working_directory
 
 jobs:
     setup:
         executor: node17
         steps:
+            - prepare_workspace
             - checkout
             - restore_cache:
                   name: Restore npm package cache
@@ -44,6 +54,7 @@ jobs:
     lint:
         executor: node17
         steps:
+            - prepare_workspace
             - checkout
             - run:
                   name: Lint
@@ -52,6 +63,7 @@ jobs:
         executor: node17
         parallelism: 4
         steps:
+            - prepare_workspace
             - checkout
             - run:
                   name: Test
@@ -59,6 +71,7 @@ jobs:
     release:
         executor: node17
         steps:
+            - prepare_workspace
             - checkout
             - run:
                   name: Copy src/package.json to dist for verification release
