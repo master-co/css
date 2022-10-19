@@ -327,14 +327,13 @@ export default class MasterCSS extends MutationObserver {
                 // 按照系統的主題切換，目前只支援 light dark
                 this.schemeMQL = window.matchMedia('(prefers-color-scheme:dark)')
                 this.schemeMQL.addEventListener('change', this.onSchemeChange)
-                localStorage.removeItem(storage.key)
                 theme = this.schemeMQL.matches ? 'dark' : 'light'
             } else {
                 this.removeSchemeListener()
                 theme = scheme
-                if (this.storageScheme !== theme && storage.sync) {
-                    localStorage.setItem(storage.key, theme)
-                }
+            }
+            if (this.storageScheme !== scheme && storage.sync) {
+                localStorage.setItem(storage.key, scheme)
             }
             if (this.theme) {
                 this.host.classList.remove(this.theme)
