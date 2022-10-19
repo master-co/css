@@ -46,4 +46,4 @@ jobs:
                       cp ./src/package.json ./dist/package.json
             - run:
                   name: semantic release
-                  command: semantic-release || true
+                  command: npx semantic-release || true
