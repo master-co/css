@@ -1,11 +1,11 @@
 {
     "name": "@master/css",
     "scripts": {
-        "build": "rm -rf dist && npm run build:cjs && npm run build:esm",
-        "build:cjs": "esbuild src/index.ts --outfile=dist/index.js --minify --bundle --format=cjs --sourcemap",
+        "build:cjs": "esbuild src/index.ts --outfile=dist/index.js --bundle --format=cjs",
         "build:esm": "tsc",
-        "dev:cjs": "esbuild src/index.ts --outfile=dist/index.js --bundle --format=cjs --watch",
-        "dev:esm": "tsc --watch",
+        "dev:cjs": "npm run build:cjs -- --watch",
+        "dev:esm": "npm run build:esm -- --watch",
+        "prod": "rm -rf dist && npm run build:cjs -- --minify --sourcemap && npm run build:esm",
         "test": "jest",
         "lint": "eslint ./src"
     },
