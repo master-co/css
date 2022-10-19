@@ -17,7 +17,7 @@ workflows:
                       - test
 
 aliases:
-    - &working_directory ~/repo
+    - &working_directory ~/tmp/repo
 
 commands:
     prepare_workspace:
@@ -36,7 +36,6 @@ jobs:
     setup:
         executor: node17
         steps:
-            - prepare_workspace
             - checkout
             - restore_cache:
                   name: Restore npm package cache
@@ -49,6 +48,10 @@ jobs:
             - save_cache:
                   name: Save npm package cache
                   key: npm-packages-{{ checksum "package-lock.json" }}
+                  paths:
+                      - node_modules
+            - persist_to_workspace:
+                  root: *working_directory
                   paths:
                       - node_modules
     lint:
