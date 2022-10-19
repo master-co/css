@@ -1,5 +1,5 @@
 import defaultConfig from './config'
-import { init } from './init'
+import { init } from './apis/init'
 import { MasterCSSConfig } from './interfaces/config'
 import { MasterCSSRule } from './rule'
 

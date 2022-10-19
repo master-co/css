@@ -1,5 +1,5 @@
-import MasterCSS from './css'
-import './polyfills/css-escape'
+import MasterCSS from '../css'
+import '../polyfills/css-escape'
 
 export function renderFromHTML(html: string, css: MasterCSS = new MasterCSS()): string {
     if (!html) return

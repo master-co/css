@@ -1,6 +1,6 @@
-import { concatArrays } from './concat-arrays'
-import { isPlainObject } from './is-plain-object'
-import { isSymbol } from './is-symbol'
+import { concatArrays } from '../utils/concat-arrays'
+import { isPlainObject } from '../utils/is-plain-object'
+import { isSymbol } from '../utils/is-symbol'
 
 function assignProp(
     carry: Record<string, any>,

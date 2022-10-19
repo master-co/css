@@ -1,5 +1,5 @@
-import MasterCSS from './css'
-import { MasterCSSConfig } from './interfaces/config'
+import MasterCSS from '../css'
+import { MasterCSSConfig } from '../interfaces/config'
 
 export function init(config?: MasterCSSConfig) {
     if (typeof window !== 'undefined') {

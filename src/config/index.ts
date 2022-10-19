@@ -19,4 +19,14 @@ const defaultConfig: MasterCSSConfig = {
     rootSize: defaultRootSize
 }
 
-export default defaultConfig
+export {
+    defaultConfig,
+    defaultBreakpoints,
+    defaultColors,
+    defaultRootSize,
+    defaultSelectors,
+    defaultSemantics,
+    defaultThemes,
+    defaultValues,
+    DefaultRules
+}
