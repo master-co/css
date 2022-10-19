@@ -16,11 +16,10 @@ jobs:
     release:
         docker:
             - image: 'cimg/node:17.9.1'
-        parallelism: 4
         steps:
             - checkout
             - restore_cache:
-                  name: Restore npm Package Cache
+                  name: Restore npm package cache
                   keys:
                       - npm-packages-{{ checksum "package-lock.json" }}
             - run:
@@ -28,21 +27,21 @@ jobs:
                   command: |
                       npm i
             - save_cache:
-                  name: Save npm Package Cache
+                  name: Save npm package cache
                   key: npm-packages-{{ checksum "package-lock.json" }}
                   paths:
                       - node_modules
             - run:
-                  name: lint
+                  name: Lint
                   command: npm run lint
             - run:
-                  name: test
+                  name: Test
                   command: npx jest --maxWorkers=4
             - run:
-                  name: Copy package.json to ./dist for verification release
+                  name: Copy src/package.json to dist for verification release
                   command: |
                       mkdir -p ./dist
-                      cp ./src/package.json ./dist/package.json
+                      cp src/package.json dist/package.json
             - run:
-                  name: semantic release
+                  name: Semantic Release
                   command: npx semantic-release
