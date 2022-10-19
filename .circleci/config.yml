@@ -16,20 +16,16 @@ workflows:
                       - lint
                       - test
 
-commands:
-    prepare_workspace:
-
 executors:
-    node:
+    node17:
         docker:
             - image: 'cimg/node:17.9.1'
         resource_class: small
+        working_directory: /tmp
 
 jobs:
     setup:
-        docker:
-            - image: 'cimg/node:17.9.1'
-        resource_class: small
+        executor: node17
         steps:
             - checkout
             - restore_cache:
@@ -46,18 +42,14 @@ jobs:
                   paths:
                       - node_modules
     lint:
-        docker:
-            - image: 'cimg/node:17.9.1'
-        resource_class: small
+        executor: node17
         steps:
             - checkout
             - run:
                   name: Lint
                   command: npm run lint
     test:
-        docker:
-            - image: 'cimg/node:17.9.1'
-        resource_class: small
+        executor: node17
         parallelism: 4
         steps:
             - checkout
@@ -65,9 +57,7 @@ jobs:
                   name: Test
                   command: npx jest --maxWorkers=4
     release:
-        docker:
-            - image: 'cimg/node:17.9.1'
-        resource_class: small
+        executor: node17
         steps:
             - checkout
             - run:
