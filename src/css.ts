@@ -43,170 +43,7 @@ export default class MasterCSS extends MutationObserver {
     readonly rules: MasterCSSRule[] = []
     readonly ruleOfClass: Record<string, MasterCSSRule> = {}
     readonly countOfName = {}
-
-    private cache() {
-        this.semantics = []
-        this.classes = {}
-        this.colorsThemesMap = {}
-        this.relationThemesMap = {}
-        this.relations = {}
-        this.colorNames = []
-        this.themeNames = ['']
-        this.selectors = {}
-
-        const { semantics, classes, selectors, themes, colors } = this.config
-
-        function escapeString(str) {
-            return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
-        }
-
-        if (semantics) {
-            for (const semanticName in semantics) {
-                this.semantics.push([new RegExp('^' + escapeString(semanticName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'), semanticName])
-            }
-        }
-        if (selectors) {
-            for (const [replacedSelectorText, newSelectorText] of Object.entries(selectors)) {
-                const regexp = new RegExp(escapeString(replacedSelectorText) + '(?![a-z-])')
-                for (const eachNewSelectorText of Array.isArray(newSelectorText) ? newSelectorText : [newSelectorText]) {
-                    const vendor = eachNewSelectorText.match(vendorPrefixSelectorRegExp)?.[0] ?? ''
-
-                    let selectorValues = this.selectors[vendor]
-                    if (!selectorValues) {
-                        selectorValues = this.selectors[vendor] = []
-                    }
-
-                    let currentSelectValue = selectorValues.find(([_valueRegexp]) => _valueRegexp === regexp)
-                    if (!currentSelectValue) {
-                        currentSelectValue = [regexp, []]
-                        selectorValues.push(currentSelectValue)
-                    }
-
-                    currentSelectValue[1].push(eachNewSelectorText)
-                }
-            }
-        }
-
-
-        const semanticNames = [
-            ...(classes ? Object.keys(classes) : []),
-            ...((themes && !Array.isArray(themes))
-                ? Object.entries(themes).flatMap(([_, { classes }]) => classes ? Object.keys(classes) : [])
-                : [])
-        ]
-        const handleSemanticName = (semanticName: string) => {
-            if (semanticName in this.classes)
-                return
-
-            const currentClass = this.classes[semanticName] = []
-
-            const handleClassNames = (theme: string, className: string | string[]) => {
-                if (!className)
-                    return
-
-                const classNames: string[] = Array.isArray(className)
-                    ? className
-                    : className
-                        .replace(/(?:\n(?:\s*))+/g, ' ')
-                        .trim()
-                        .split(' ')
-                for (const eachClassName of classNames) {
-                    const handle = (className: string) => {
-                        if (className in this.relationThemesMap) {
-                            if (theme in this.relationThemesMap[className]) {
-                                this.relationThemesMap[className][theme].push(semanticName)
-                            } else {
-                                this.relationThemesMap[className][theme] = [semanticName]
-                            }
-                        } else {
-                            this.relationThemesMap[className] = { [theme]: [semanticName] }
-                        }
-
-                        if (!currentClass.includes(className)) {
-                            currentClass.push(className)
-                        }
-                    }
-
-                    if (semanticNames.includes(eachClassName)) {
-                        handleSemanticName(eachClassName)
-
-                        for (const parentClassName of this.classes[eachClassName]) {
-                            handle(parentClassName)
-                        }
-                    } else {
-                        handle(eachClassName)
-                    }
-                }
-            }
-
-            handleClassNames('', classes?.[semanticName])
-            if (themes && !Array.isArray(themes)) {
-                for (const [eachTheme, { classes }] of Object.entries(themes)) {
-                    handleClassNames(eachTheme, classes?.[semanticName])
-                }
-            }
-        }
-        for (const eachSemanticName of semanticNames) {
-            handleSemanticName(eachSemanticName)
-        }
-
-        for (const className in this.relationThemesMap) {
-            const currentRelation = this.relations[className] = []
-            for (const semanticNames of Object.values(this.relationThemesMap[className])) {
-                for (const eachSemanticName of semanticNames) {
-                    if (!currentRelation.includes(eachSemanticName)) {
-                        currentRelation.push(eachSemanticName)
-                    }
-                }
-            }
-        }
-
-        const mergeColors = (theme: string, colors: Record<string, string | Record<string, string>>) => {
-            if (!colors)
-                return
-
-            for (const colorName in colors) {
-                let levels = colors[colorName]
-                if (typeof levels === 'string') {
-                    levels = { '': levels }
-                }
-
-                if (colorName in this.colorsThemesMap) {
-                    const levelsThemes = this.colorsThemesMap[colorName]
-                    for (const level in levels) {
-                        const color = levels[level]
-
-                        if (level in levelsThemes) {
-                            levelsThemes[level][theme] = color
-                        } else {
-                            levelsThemes[level] = { [theme]: color }
-                        }
-                    }
-                } else {
-                    this.colorNames.push(colorName)
-                    this.colorsThemesMap[colorName] = Object
-                        .entries(levels)
-                        .reduce((obj, [level, color]) => {
-                            obj[level] = { [theme]: color }
-                            return obj
-                        }, {})
-                }
-            }
-        }
-
-        mergeColors('', colors)
-        if (themes) {
-            if (Array.isArray(themes)) {
-                this.themeNames.push(...themes)
-            } else {
-                for (const eachTheme in themes) {
-                    const themeValue = themes[eachTheme]
-                    mergeColors(eachTheme, themeValue.colors)
-                    this.themeNames.push(eachTheme)
-                }
-            }
-        }
-    }
+    readonly host: Element | ShadowRoot
 
     semantics: [RegExp, string][]
     classes: Record<string, string[]>
@@ -219,7 +56,7 @@ export default class MasterCSS extends MutationObserver {
 
     constructor(
         public config: MasterCSSConfig = defaultConfig,
-        public container?: Element
+        public root?: Document | ShadowRoot
     ) {
         super((mutationRecords) => {
             // console.time('css engine');
@@ -391,17 +228,18 @@ export default class MasterCSS extends MutationObserver {
             return
         }
 
-        if (container) {
-            let rootStyle: HTMLStyleElement
+        if (root) {
+            const isDocumentRoot = root === document
+            this.host = isDocumentRoot ? document.documentElement : (root as ShadowRoot).host
+            const container = isDocumentRoot ? document.head : root
+            const styleSheets = isDocumentRoot ? document.styleSheets : root.styleSheets
             // @ts-ignore
-            for (const sheet of (container.shadowRoot?.styleSheets || document.styleSheets)) {
+            for (const sheet of styleSheets) {
                 if (sheet.title === 'master') {
-                    rootStyle = sheet.ownerNode
+                    this.style = sheet.ownerNode
                 }
             }
-            if (rootStyle) {
-                this.style = rootStyle
-
+            if (this.style) {
                 for (let index = 0; index < this.style.sheet.cssRules.length; index++) {
                     const getRule = (cssRule: any): MasterCSSRule => {
                         if (cssRule.selectorText) {
@@ -463,19 +301,183 @@ export default class MasterCSS extends MutationObserver {
             } else {
                 this.style = STYLE.cloneNode() as HTMLStyleElement
                 /** 使用 prepend 而非 append 去降低 rules 類的優先層級，無法強制排在所有 <style> 之後 */
-                this.container?.prepend(this.style)
+                container.prepend(this.style)
             }
         }
 
         MasterCSS.instances.push(this)
     }
 
-    observe(target: Node, options: MutationObserverInit = { subtree: true, childList: true }) {
+    private cache() {
+        this.semantics = []
+        this.classes = {}
+        this.colorsThemesMap = {}
+        this.relationThemesMap = {}
+        this.relations = {}
+        this.colorNames = []
+        this.themeNames = ['']
+        this.selectors = {}
+
+        const { semantics, classes, selectors, themes, colors } = this.config
+
+        function escapeString(str) {
+            return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+        }
+
+        if (semantics) {
+            for (const semanticName in semantics) {
+                this.semantics.push([new RegExp('^' + escapeString(semanticName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'), semanticName])
+            }
+        }
+        if (selectors) {
+            for (const [replacedSelectorText, newSelectorText] of Object.entries(selectors)) {
+                const regexp = new RegExp(escapeString(replacedSelectorText) + '(?![a-z-])')
+                for (const eachNewSelectorText of Array.isArray(newSelectorText) ? newSelectorText : [newSelectorText]) {
+                    const vendor = eachNewSelectorText.match(vendorPrefixSelectorRegExp)?.[0] ?? ''
+
+                    let selectorValues = this.selectors[vendor]
+                    if (!selectorValues) {
+                        selectorValues = this.selectors[vendor] = []
+                    }
+
+                    let currentSelectValue = selectorValues.find(([_valueRegexp]) => _valueRegexp === regexp)
+                    if (!currentSelectValue) {
+                        currentSelectValue = [regexp, []]
+                        selectorValues.push(currentSelectValue)
+                    }
+
+                    currentSelectValue[1].push(eachNewSelectorText)
+                }
+            }
+        }
+
+
+        const semanticNames = [
+            ...(classes ? Object.keys(classes) : []),
+            ...((themes && !Array.isArray(themes))
+                ? Object.entries(themes).flatMap(([_, { classes }]) => classes ? Object.keys(classes) : [])
+                : [])
+        ]
+        const handleSemanticName = (semanticName: string) => {
+            if (semanticName in this.classes)
+                return
+
+            const currentClass = this.classes[semanticName] = []
+
+            const handleClassNames = (theme: string, className: string | string[]) => {
+                if (!className)
+                    return
+
+                const classNames: string[] = Array.isArray(className)
+                    ? className
+                    : className
+                        .replace(/(?:\n(?:\s*))+/g, ' ')
+                        .trim()
+                        .split(' ')
+                for (const eachClassName of classNames) {
+                    const handle = (className: string) => {
+                        if (className in this.relationThemesMap) {
+                            if (theme in this.relationThemesMap[className]) {
+                                this.relationThemesMap[className][theme].push(semanticName)
+                            } else {
+                                this.relationThemesMap[className][theme] = [semanticName]
+                            }
+                        } else {
+                            this.relationThemesMap[className] = { [theme]: [semanticName] }
+                        }
+
+                        if (!currentClass.includes(className)) {
+                            currentClass.push(className)
+                        }
+                    }
+
+                    if (semanticNames.includes(eachClassName)) {
+                        handleSemanticName(eachClassName)
+
+                        for (const parentClassName of this.classes[eachClassName]) {
+                            handle(parentClassName)
+                        }
+                    } else {
+                        handle(eachClassName)
+                    }
+                }
+            }
+
+            handleClassNames('', classes?.[semanticName])
+            if (themes && !Array.isArray(themes)) {
+                for (const [eachTheme, { classes }] of Object.entries(themes)) {
+                    handleClassNames(eachTheme, classes?.[semanticName])
+                }
+            }
+        }
+        for (const eachSemanticName of semanticNames) {
+            handleSemanticName(eachSemanticName)
+        }
+
+        for (const className in this.relationThemesMap) {
+            const currentRelation = this.relations[className] = []
+            for (const semanticNames of Object.values(this.relationThemesMap[className])) {
+                for (const eachSemanticName of semanticNames) {
+                    if (!currentRelation.includes(eachSemanticName)) {
+                        currentRelation.push(eachSemanticName)
+                    }
+                }
+            }
+        }
+
+        const mergeColors = (theme: string, colors: Record<string, string | Record<string, string>>) => {
+            if (!colors)
+                return
+
+            for (const colorName in colors) {
+                let levels = colors[colorName]
+                if (typeof levels === 'string') {
+                    levels = { '': levels }
+                }
+
+                if (colorName in this.colorsThemesMap) {
+                    const levelsThemes = this.colorsThemesMap[colorName]
+                    for (const level in levels) {
+                        const color = levels[level]
+
+                        if (level in levelsThemes) {
+                            levelsThemes[level][theme] = color
+                        } else {
+                            levelsThemes[level] = { [theme]: color }
+                        }
+                    }
+                } else {
+                    this.colorNames.push(colorName)
+                    this.colorsThemesMap[colorName] = Object
+                        .entries(levels)
+                        .reduce((obj, [level, color]) => {
+                            obj[level] = { [theme]: color }
+                            return obj
+                        }, {})
+                }
+            }
+        }
+
+        mergeColors('', colors)
+        if (themes) {
+            if (Array.isArray(themes)) {
+                this.themeNames.push(...themes)
+            } else {
+                for (const eachTheme in themes) {
+                    const themeValue = themes[eachTheme]
+                    mergeColors(eachTheme, themeValue.colors)
+                    this.themeNames.push(eachTheme)
+                }
+            }
+        }
+    }
+
+    observe(options: MutationObserverInit = { subtree: true, childList: true }) {
         if (options.subtree) {
             /**
              * 待所有 DOM 結構完成解析後，開始繪製 MasterCSSRule 樣式
              */
-            (target as Element)
+            this.host
                 .querySelectorAll('[class]')
                 .forEach((element) => {
                     element.classList.forEach((className) => {
@@ -489,7 +491,7 @@ export default class MasterCSS extends MutationObserver {
                     })
                 })
         }
-        super.observe(target, {
+        super.observe(this.root, {
             ...options,
             attributes: true,
             attributeOldValue: true,
