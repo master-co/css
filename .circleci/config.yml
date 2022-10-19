@@ -10,13 +10,13 @@ workflows:
 jobs:
     test:
         docker:
-            - image: 'cimg/node:17.1.0'
+            - image: 'cimg/node:18'
         steps:
             - checkout
     release:
         docker:
-            - image: 'cimg/node:17.1.0'
-        parallelism: 10
+            - image: 'cimg/node:18'
+        parallelism: 4
         steps:
             - checkout
             - restore_cache:
@@ -24,9 +24,14 @@ jobs:
                   keys:
                       - pnpm-packages-{{ checksum "pnpm-lock.yaml" }}
             - run:
+                  name: Install pnpm package manager
+                  command: |
+                      curl -fsSL https://get.pnpm.io/install.sh | sh -
+            - run:
                   name: Install Dependencies
                   command: |
-                      npx pnpm install
+                      pnpm install
+                      pnpm install semantic-release@19 @semantic-release/exec@6 -D
             - save_cache:
                   name: Save pnpm Package Cache
                   key: pnpm-packages-{{ checksum "pnpm-lock.yaml" }}
@@ -34,13 +39,15 @@ jobs:
                       - node_modules
             - run:
                   name: lint
-                  command: npx pnpm run lint
+                  command: npm run lint
             - run:
                   name: test
-                  command: npx jest --maxWorkers=4
+                  command: npm run test --maxWorkers=4
             - run:
                   name: Copy package.json to ./dist for verification release
-                  command: mkdir -p ./dist && cp ./src/package.json ./dist/package.json
+                  command: |
+                      mkdir -p ./dist
+                      cp ./src/package.json ./dist/package.json
             - run:
                   name: semantic release
-                  command: npx semantic-release || true
+                  command: pnpm dlx semantic-release || true
