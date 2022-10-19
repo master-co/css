@@ -1,33 +1,33 @@
 version: 2
 
 workflows:
-  version: 2
-  package:
-    jobs:
-      - release:
-          context: Master
+    version: 2
+    package:
+        jobs:
+            - release:
+                  context: Master
 
 jobs:
-  test:
-    docker:
-      - image: 'cimg/node:17.1.0'
-    steps:
-      - checkout
-  release:
-    docker:
-      - image: 'cimg/node:17.1.0'
-    parallelism: 4
-    steps:
-      - checkout
-      - run:
-          name: lint
-          command: npm i && npm run lint
-      - run:
-          name: test
-          command: npx jest --maxWorkers=4
-      - run:
-          name: Copy package.json to ./dist for verification release
-          command: mkdir -p ./dist && cp ./src/package.json ./dist/package.json
-      - run:
-          name: semantic release
-          command: npm i semantic-release@18 @semantic-release/exec@6 && npx semantic-release || true
+    test:
+        docker:
+            - image: 'cimg/node:17.1.0'
+        steps:
+            - checkout
+    release:
+        docker:
+            - image: 'cimg/node:17.1.0'
+        parallelism: 4
+        steps:
+            - checkout
+            - run:
+                  name: lint
+                  command: npm i && npm run lint
+            - run:
+                  name: test
+                  command: npx jest --maxWorkers=4
+            - run:
+                  name: Copy package.json to ./dist for verification release
+                  command: mkdir -p ./dist && cp ./src/package.json ./dist/package.json
+            - run:
+                  name: semantic release
+                  command: npm i semantic-release@18 @semantic-release/exec@6 && npx semantic-release || true
