@@ -11,7 +11,7 @@ jobs:
         docker:
             - image: 'cimg/node:17.9.1'
         resource_class: xlarge
-        parallelism: 8
+        parallelism: 2
         steps:
             - checkout
             - restore_cache:
