@@ -10,12 +10,12 @@ workflows:
 jobs:
     test:
         docker:
-            - image: 'cimg/node:18.11.0'
+            - image: 'cimg/node:17.9.1'
         steps:
             - checkout
     release:
         docker:
-            - image: 'cimg/node:18.11.0'
+            - image: 'cimg/node:17.9.1'
         parallelism: 4
         steps:
             - checkout
@@ -26,8 +26,7 @@ jobs:
             - run:
                   name: Install Dependencies
                   command: |
-                      npm install
-                      npm install semantic-release@19 @semantic-release/exec@6 -D
+                      npm i
             - save_cache:
                   name: Save npm Package Cache
                   key: npm-packages-{{ checksum "package-lock.json" }}
@@ -38,7 +37,7 @@ jobs:
                   command: npm run lint
             - run:
                   name: test
-                  command: npm run test --maxWorkers=4
+                  command: npx jest --maxWorkers=4
             - run:
                   name: Copy package.json to ./dist for verification release
                   command: |
