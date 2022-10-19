@@ -1,4 +1,4 @@
-import defaultConfig from '../config'
+import { defaultConfig } from '../config'
 import { MasterCSSConfig } from '../interfaces/config'
 import { extend } from './extend'
 

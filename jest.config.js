@@ -7,5 +7,6 @@ module.exports = {
     },
     modulePathIgnorePatterns: [
         '<rootDir>/src/package.json'
-    ]
+    ],
+    testMatch: ['<rootDir>/tests/*.ts']
 }

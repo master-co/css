@@ -1,6 +1,4 @@
-import { render } from './render'
-import { renderFromHTML } from './render-from-html'
-import { renderIntoHTML } from './render-into-html'
+import { render, renderFromHTML, renderIntoHTML } from '../src'
 import dedent from 'dedent'
 
 const html = dedent`

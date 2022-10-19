@@ -1,5 +1,5 @@
-import { render } from '../render'
-import MasterCSS from '../css'
+import { render } from '../../src/apis/render'
+import MasterCSS from '../../src/css'
 
 export const testCSS = (cls: string, expected: string, css?: MasterCSS): void => {
     expect(render(cls.split(' '), css)).toBe(expected)

@@ -1,7 +1,7 @@
-import configure from './configure'
-import defaultConfig from './config'
-import defaultThemes from './config/themes'
-import defaultValues from './config/values'
+import configure from '../src/apis/configure'
+import { defaultConfig } from '../src/config'
+import defaultThemes from '../src/config/themes'
+import defaultValues from '../src/config/values'
 
 test('configure', () => {
     const custom = {

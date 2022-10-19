@@ -1,6 +1,5 @@
 import { testCSS } from './utils/test-css'
-import MasterCSS from './css'
-import configure from './configure'
+import MasterCSS, { configure } from '../src'
 
 test('classes', () => {
     testCSS(

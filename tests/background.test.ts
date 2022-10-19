@@ -1,4 +1,4 @@
-import { testProp, testCSS } from '../utils/test-css'
+import { testProp, testCSS } from './utils/test-css'
 
 test('background', () => {
     testProp('bg:red', 'background-color:#d11a1e')
