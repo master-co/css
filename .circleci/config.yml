@@ -10,7 +10,6 @@ jobs:
     release:
         docker:
             - image: 'cimg/node:17.9.1'
-        resource_class: xlarge
         steps:
             - checkout
             - restore_cache:
