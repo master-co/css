@@ -5,7 +5,7 @@ export function renderFromHTML(html: string, css: MasterCSS = new MasterCSS()): 
     if (!html) return
     const regexp = /\sclass="([^"]*)"/gm
     let results: string[]
-    while (results = regexp.exec(html)) {
+    while ((results = regexp.exec(html))) {
         const classNames = results[1].replace(/\n/g, '').split(' ').filter(css => css)
         for (const eachClassName of classNames) {
             if (!(eachClassName in css.countOfName)) {

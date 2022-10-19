@@ -41,7 +41,7 @@ export function parseValue(
                     if (themeHexColorMap) {
                         let hexColor: string
                         for (const eachTheme of themes) {
-                            if (hexColor = themeHexColorMap[eachTheme])
+                            if ((hexColor = themeHexColorMap[eachTheme]))
                                 break
                         }
 
