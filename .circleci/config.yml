@@ -21,7 +21,7 @@ executors:
         docker:
             - image: 'cimg/node:17.9.1'
         resource_class: small
-        working_directory: /tmp
+        working_directory: ~/repo
 
 jobs:
     setup:
