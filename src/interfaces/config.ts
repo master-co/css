@@ -1,5 +1,5 @@
-import MasterCSS from 'src/css'
-import { MasterCSSRule } from 'src/rule'
+import MasterCSS from '../css'
+import { MasterCSSRule } from '../rule'
 
 export interface MasterCSSConfig {
     classes?: Record<string, string>

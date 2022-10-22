@@ -1,4 +1,4 @@
-import { MasterCSSConfig } from 'src/interfaces/config'
+import { MasterCSSConfig } from '../interfaces/config'
 import { MasterCSSRule } from '../rule'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
