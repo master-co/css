@@ -31,7 +31,7 @@
         [
             "@semantic-release/exec",
             {
-                "prepareCmd": "npm run prod && cp README.md LICENSE src/package.json dist"
+                "prepareCmd": "npm run prod && cp README.md LICENSE package.json dist"
             }
         ],
         [
