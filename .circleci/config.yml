@@ -32,10 +32,10 @@ jobs:
                   name: Test
                   command: npx jest --maxWorkers=8
             - run:
-                  name: Copy src/package.json to dist for verification release
+                  name: Copy package.json to dist for verification release
                   command: |
                       mkdir -p ./dist
-                      cp src/package.json dist/package.json
+                      cp package.json dist/package.json
             - run:
                   name: Semantic Release
                   command: npx semantic-release
