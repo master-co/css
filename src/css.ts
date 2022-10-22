@@ -365,7 +365,7 @@ export default class MasterCSS extends MutationObserver {
         }
     }
 
-    private onThemeChange(mediaQueryList) {
+    private onThemeChange = (mediaQueryList) => {
         this.theme = mediaQueryList.matches ? 'dark' : 'light'
     }
 
