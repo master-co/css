@@ -346,6 +346,10 @@ export default class MasterCSS extends MutationObserver {
         }
     }
 
+    get scheme() {
+        return this.#scheme
+    }
+
     private removeSchemeListener() {
         if (this.schemeMQL) {
             this.schemeMQL.removeEventListener('change', this.onSchemeChange)
