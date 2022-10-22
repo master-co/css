@@ -316,33 +316,24 @@ export default class MasterCSS extends MutationObserver {
     }
 
     #scheme: string
-    theme
+    #theme: string
 
     set scheme(scheme: string) {
         if (scheme !== this.#scheme) {
             this.#scheme = scheme
-            let theme = ''
             const { storage } = this.config.scheme
             if (scheme === 'system') {
                 // 按照系統的主題切換，目前只支援 light dark
                 this.schemeMQL = window.matchMedia('(prefers-color-scheme:dark)')
-                this.schemeMQL.addEventListener('change', this.onSchemeChange)
-                theme = this.schemeMQL.matches ? 'dark' : 'light'
+                this.schemeMQL.addEventListener('change', this.onThemeChange)
+                this.theme = this.schemeMQL.matches ? 'dark' : 'light'
             } else {
                 this.removeSchemeListener()
-                theme = scheme
+                this.theme = scheme
             }
             if (this.storageScheme !== scheme && storage.sync) {
                 localStorage.setItem(storage.key, scheme)
             }
-            if (this.theme) {
-                this.host.classList.remove(this.theme)
-            }
-            if (this.host === document.documentElement) {
-                (this.host as HTMLElement).style.colorScheme = theme
-            }
-            this.host.classList.add(theme)
-            this.theme = theme
         }
     }
 
@@ -350,15 +341,32 @@ export default class MasterCSS extends MutationObserver {
         return this.#scheme
     }
 
+    set theme(theme: string) {
+        if (theme !== this.#theme) {
+            if (this.#theme) {
+                this.host.classList.remove(this.#theme)
+            }
+            this.#theme = theme
+            if (this.host === document.documentElement) {
+                (this.host as HTMLElement).style.colorScheme = theme
+            }
+            this.host.classList.add(theme)
+        }
+    }
+
+    get theme() {
+        return this.#theme
+    }
+
     private removeSchemeListener() {
         if (this.schemeMQL) {
-            this.schemeMQL.removeEventListener('change', this.onSchemeChange)
+            this.schemeMQL.removeEventListener('change', this.onThemeChange)
             this.schemeMQL = null
         }
     }
 
-    private onSchemeChange(mediaQueryList) {
-        this.scheme = mediaQueryList.matches ? 'dark' : 'light'
+    private onThemeChange(mediaQueryList) {
+        this.theme = mediaQueryList.matches ? 'dark' : 'light'
     }
 
     private cache() {
