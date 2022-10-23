@@ -13,6 +13,9 @@
             "types": "./esm/index.d.ts"
         }
     },
+    "sideEffects": [
+        "./src/polyfills/css-escape.js"
+    ],
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",
     "private": false,

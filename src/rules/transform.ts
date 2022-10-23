@@ -1,4 +1,4 @@
-import { MasterCSSConfig } from '../interfaces/config'
+import type { MasterCSSConfig } from '../config'
 import { MasterCSSRule } from '../rule'
 
 export default class extends MasterCSSRule {

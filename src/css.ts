@@ -1,6 +1,6 @@
 import { defaultConfig } from './config'
 import { init } from './apis/init'
-import { MasterCSSConfig } from './interfaces/config'
+import type { MasterCSSConfig } from './config'
 import { MasterCSSRule } from './rule'
 
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@']
@@ -428,7 +428,7 @@ export default class MasterCSS extends MutationObserver {
         const semanticNames = [
             ...(classes ? Object.keys(classes) : []),
             ...((themes && !Array.isArray(themes))
-                ? Object.entries(themes).flatMap(([_, { classes }]) => classes ? Object.keys(classes) : [])
+                ? Object.entries(themes).flatMap(([_, { classes }]: any) => classes ? Object.keys(classes) : [])
                 : [])
         ]
         const handleSemanticName = (semanticName: string) => {
@@ -478,7 +478,7 @@ export default class MasterCSS extends MutationObserver {
 
             handleClassNames('', classes?.[semanticName])
             if (themes && !Array.isArray(themes)) {
-                for (const [eachTheme, { classes }] of Object.entries(themes)) {
+                for (const [eachTheme, { classes }] of Object.entries(themes) as any) {
                     handleClassNames(eachTheme, classes?.[semanticName])
                 }
             }

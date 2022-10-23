@@ -1,4 +1,4 @@
-import { MasterCSSConfig } from '../interfaces/config'
+import type { MasterCSSConfig } from '../config'
 import { MasterCSSRule } from '../rule'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
@@ -11,11 +11,11 @@ export default class extends MasterCSSRule {
             value,
             method => {
                 switch (method) {
-                case 'blur':
-                case 'drop-shadow':
-                    return 'rem'
-                case 'hue-rotate':
-                    return 'deg'
+                    case 'blur':
+                    case 'drop-shadow':
+                        return 'rem'
+                    case 'hue-rotate':
+                        return 'deg'
                 }
 
                 return ''

@@ -1,4 +1,4 @@
-import { MasterCSSConfig } from '../interfaces/config'
+import type { MasterCSSConfig } from '../config'
 
 export function parseValueUnit(value: string, getUnit: (method: string) => string, { rootSize }: MasterCSSConfig): string {
     let result = ''

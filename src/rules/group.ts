@@ -1,7 +1,7 @@
 import { MasterCSSRule } from '../rule'
 import MasterCSS from '../css'
 import { START_SYMBOL } from '../constants/start-symbol'
-import { MasterCSSDeclaration } from '../interfaces/declaration'
+import type { MasterCSSDeclaration } from '../rule'
 
 const bracketRegexp = /\{(.*)\}/
 

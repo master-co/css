@@ -1,11 +1,7 @@
-import { MasterCSSMediaFeatureRule } from './interfaces/media-feature-rule'
-import { MasterCSSMedia } from './interfaces/media'
 import { getCssPropertyText } from './utils/get-css-property-text'
 import { parseValue } from './utils/parse-value'
 import { START_SYMBOL } from './constants/start-symbol'
 import MasterCSS from './css'
-import { MasterCSSDeclaration } from './interfaces/declaration'
-import { MasterCSSConfig } from './interfaces/config'
 
 export const PRIORITY_SELECTORS = [':disabled', ':active', ':focus', ':hover']
 const MATCHES = 'matches'
@@ -26,11 +22,6 @@ const selectorSplitRegexp = /(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)
 const transformSelectorUnderline = (selector: string) => selector.split(selectorSplitRegexp)
     .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/_/g, ' '))
     .join('')
-
-export interface MasterCSSRuleMatching {
-    origin: 'matches' | 'semantics' | 'symbol';
-    value?: string;
-}
 
 export class MasterCSSRule {
 
@@ -492,7 +483,8 @@ export class MasterCSSRule {
 
         // 7. value
         const insertNewNative = (themeName: string, bypassWhenUnmatchColor: boolean) => {
-            let newValue: string | Record<string, string | number>, newUnit: string
+            let newValue: any
+            let newUnit: string
 
             const generateCssText = (
                 propertiesText: string,
@@ -594,7 +586,11 @@ export class MasterCSSRule {
                         newValue = values[newValue].toString()
                     }
 
-                    const declaration = { unit: newUnit, value: newValue, important: this.important }
+                    const declaration: MasterCSSDeclaration = {
+                        unit: newUnit,
+                        value: newValue,
+                        important: this.important
+                    }
                     if (this.getThemeProps) {
                         const themeProps = this.getThemeProps(declaration, css)
                         for (const themeName in themeProps) {
@@ -665,14 +661,6 @@ export class MasterCSSRule {
     }
 }
 
-export interface MasterCSSRule {
-    readonly order?: number;
-
-    parseValue(value: string, config: MasterCSSConfig): string;
-    get(declaration: MasterCSSDeclaration): Record<string, any>;
-    getThemeProps(declaration: MasterCSSDeclaration, css: MasterCSS): Record<string, Record<string, string>>;
-}
-
 if (typeof window !== 'undefined') {
     window.MasterCSSRule = MasterCSSRule
 }
@@ -681,4 +669,40 @@ declare global {
     interface Window {
         MasterCSSRule: typeof MasterCSSRule;
     }
+}
+
+import type { MasterCSSConfig } from './config'
+
+export interface MasterCSSRule {
+    readonly order?: number;
+    parseValue(value: string, config: MasterCSSConfig): string;
+    get(declaration: MasterCSSDeclaration): Record<string, any>;
+    getThemeProps(declaration: MasterCSSDeclaration, css: MasterCSS): Record<string, Record<string, string>>;
+}
+
+export interface MasterCSSMediaFeatureRule {
+    token: string;
+    tokenType?: string;
+    operator?: string;
+    value?: number;
+    unit?: string;
+}
+
+export interface MasterCSSMedia {
+    token: string;
+    features?: {
+        [key: string]: MasterCSSMediaFeatureRule
+    }
+    type?: string;
+}
+
+export interface MasterCSSDeclaration {
+    value: any,
+    unit: string,
+    important: boolean
+}
+
+export interface MasterCSSRuleMatching {
+    origin: 'matches' | 'semantics' | 'symbol';
+    value?: string;
 }
