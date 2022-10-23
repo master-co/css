@@ -1,3 +1,4 @@
+export { default } from './css'
 export * from './css'
 export * from './rule'
 export * from './apis'
