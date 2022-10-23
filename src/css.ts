@@ -337,7 +337,7 @@ export default class MasterCSS extends MutationObserver {
                 localStorage.setItem(storage.key, scheme)
             }
             if (this.ready) {
-                this.host.dispatchEvent(new CustomEvent('scheme', { bubbles: false, detail: this }))
+                this.host.dispatchEvent(new CustomEvent('scheme', { detail: this }))
             }
         }
     }
@@ -356,6 +356,9 @@ export default class MasterCSS extends MutationObserver {
                 (this.host as HTMLElement).style.colorScheme = theme
             }
             this.host.classList.add(theme)
+            if (this.ready) {
+                this.host.dispatchEvent(new CustomEvent('theme', { detail: this }))
+            }
         }
     }
 
