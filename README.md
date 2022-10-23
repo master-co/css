@@ -111,6 +111,8 @@ Some of our core concepts and designs are inspired by these giants.
 - __Virtual CSS__ - Difference algorithms, virtual models, etc. are inspired by  [Virtual DOM](https://reactjs.org/docs/faq-internals.html).
 
 # Related
+- [@master/css.react](https://github.com/master-co/css.react) - React hooks for Master CSS
+- [@master/css-compiler](https://github.com/master-co/css-compiler) - Compile Master CSS ahead of time with zero-configuration integration with build tools
 - [@master/normal.css](https://github.com/master-co/normal.css) - Normalize browser's styles. ~1KB
 - [@master/keyframes.css](https://github.com/master-co/keyframes.css) - Simple and useful CSS keyframes. ~0.4KB
 - [@master/style-element.react](https://github.com/master-co/style-element.react) - Quickly create styled React elements with conditional class names. ~800B
