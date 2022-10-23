@@ -44,6 +44,7 @@ export default class MasterCSS extends MutationObserver {
     readonly ruleOfClass: Record<string, MasterCSSRule> = {}
     readonly countOfClass = {}
     readonly host: Element
+    readonly ready: boolean = false
 
     semantics: [RegExp, string][]
     classes: Record<string, string[]>
@@ -308,6 +309,7 @@ export default class MasterCSS extends MutationObserver {
         }
 
         MasterCSS.instances.push(this)
+        this.ready = true
     }
 
     get storageScheme() {
@@ -333,6 +335,9 @@ export default class MasterCSS extends MutationObserver {
             }
             if (this.storageScheme !== scheme && storage.sync) {
                 localStorage.setItem(storage.key, scheme)
+            }
+            if (this.ready) {
+                this.host.dispatchEvent(new CustomEvent('scheme', { bubbles: false, detail: this }))
             }
         }
     }
