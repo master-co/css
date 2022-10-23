@@ -235,11 +235,15 @@ export default class MasterCSS extends MutationObserver {
             this.scheme = this.storageScheme || config.scheme.preference
 
             const container = isDocumentRoot ? document.head : root
-            const styleSheets = isDocumentRoot ? document.styleSheets : root.styleSheets
+            const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : root.styleSheets
             // @ts-ignore
             for (const sheet of styleSheets) {
-                if (sheet.title === 'master') {
-                    this.style = sheet.ownerNode
+                const { title, href, ownerNode } = sheet
+                if (
+                    title === 'master'
+                    || href && /master(?:\..+)?\.css/.test(href)
+                ) {
+                    this.style = ownerNode
                 }
             }
             if (this.style) {
