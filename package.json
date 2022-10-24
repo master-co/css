@@ -8,7 +8,7 @@
     "types": "esm/index.d.ts",
     "exports": {
         ".": {
-            "require": "./index.js",
+            "require": "./index.cjs.js",
             "import": "./esm/index.js",
             "types": "./esm/index.d.ts"
         }
@@ -44,11 +44,13 @@
         "url": "https://github.com/master-co/css.git"
     },
     "scripts": {
-        "build:cjs": "esbuild src/index.ts --outfile=dist/index.js --bundle --format=cjs",
+        "build:iife": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=iife",
+        "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs.js --format=cjs",
         "build:esm": "tsc",
+        "dev:iife": "npm run build:iife -- --watch",
         "dev:cjs": "npm run build:cjs -- --watch",
         "dev:esm": "npm run build:esm -- --watch",
-        "prod": "rm -rf dist && npm run build:cjs -- --minify --sourcemap && npm run build:esm",
+        "prod": "rm -rf dist && npm run build:cjs -- --minify --sourcemap && npm run build:iife -- --minify --sourcemap && npm run build:esm",
         "test": "jest",
         "lint": "eslint ./src"
     },
