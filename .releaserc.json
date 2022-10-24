@@ -1,0 +1,61 @@
+{
+    "plugins": [
+        [
+            "@semantic-release/commit-analyzer",
+            {
+                "preset": "angular",
+                "releaseRules": [
+                    {
+                        "type": "docs",
+                        "scope": "README",
+                        "release": "patch"
+                    },
+                    {
+                        "type": "refactor",
+                        "release": "patch"
+                    },
+                    {
+                        "type": "style",
+                        "release": "patch"
+                    }
+                ],
+                "parserOpts": {
+                    "noteKeywords": [
+                        "BREAKING CHANGE",
+                        "BREAKING CHANGES"
+                    ]
+                }
+            }
+        ],
+        "@semantic-release/release-notes-generator",
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "npm run prod && cp README.md LICENSE package.json dist"
+            }
+        ],
+        [
+            "@semantic-release/github"
+        ],
+        [
+            "@semantic-release/npm",
+            {
+                "pkgRoot": "dist"
+            }
+        ]
+    ],
+    "branches": [
+        "+([0-9])?(.{+([0-9]),x}).x",
+        "main",
+        "next",
+        "next-major",
+        {
+            "name": "beta",
+            "prerelease": true
+        },
+        {
+            "name": "alpha",
+            "prerelease": true
+        }
+    ]
+}

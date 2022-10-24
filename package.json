@@ -1,0 +1,56 @@
+{
+    "name": "@master/package",
+    "license": "MIT",
+    "description": "An open-source project template",
+    "author": "Aoyue Design LLC.",
+    "main": "index.js",
+    "module": "esm/index.js",
+    "types": "esm/index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./index.cjs.js",
+            "import": "./esm/index.js",
+            "types": "./esm/index.d.ts"
+        }
+    },
+    "sideEffects": false,
+    "funding": "https://docs.master.co/package/donate",
+    "homepage": "https://master.co",
+    "private": false,
+    "keywords": [
+        "package"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/package.git"
+    },
+    "scripts": {
+        "build:iife": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=iife",
+        "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs.js --format=cjs",
+        "build:esm": "tsc",
+        "dev:iife": "npm run build:iife -- --watch",
+        "dev:cjs": "npm run build:cjs -- --watch",
+        "dev:esm": "npm run build:esm -- --watch",
+        "prod": "rm -rf dist && npm run build:cjs -- --minify --sourcemap && npm run build:iife -- --minify --sourcemap && npm run build:esm",
+        "test": "jest",
+        "lint": "eslint ./src"
+    },
+    "devDependencies": {
+        "@semantic-release/exec": "^6.0.3",
+        "@swc/core": "^1.3.9",
+        "@swc/jest": "^0.2.23",
+        "@types/jest": "^27.5.2",
+        "@types/node": "^18.11.0",
+        "@typescript-eslint/eslint-plugin": "^5.40.1",
+        "@typescript-eslint/parser": "^5.40.1",
+        "esbuild": "^0.15.10",
+        "eslint": "^8.25.0",
+        "jest": "^28.1.3",
+        "semantic-release": "^19.0.5",
+        "ts-jest": "^28.0.3",
+        "typescript": "^4.8.4"
+    },
+    "engines": {
+        "node": ">=17.1"
+    }
+}
