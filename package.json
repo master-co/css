@@ -26,6 +26,7 @@
     },
     "type": "module",
     "main": "./dist/index.js",
+    "esnext": "./dist/esm/index.js",
     "module": "./dist/esm/index.js",
     "types": "./dist/esm/index.d.ts",
     "exports": {
