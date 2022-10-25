@@ -32,3 +32,44 @@
 | `prod`       | Build and output archives in all formats for production |
 | `test`       | Test all of your JavaScript codes                       |
 | `lint`       | Find and fix problems in your JavaScript code           |
+
+# Toolchain
+[esbuild](https://esbuild.github.io) +
+[tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html) +
+[swc.rs](https://swc.rs) +
+[jest](https://jestjs.io) +
+[semantic-release](https://semantic-release.gitbook.io)
+
+#### Output & Bundle
+- ✅ **ESM** ( ECMAScript modules ) —— `tsc`
+  - ⛑ More reliable than `esbuild`
+- ✅ **CJS**, Node ( CommonJS modules ) —— `esbuild`
+- ✅ **IIFE**, Browser ( Immediately-invoked function expression ) —— `esbuild`
+
+#### Optimization
+- ✅ **Minification** —— `esbuild`
+- ✅ **Tree Shaking** of ES6 modules —— `tsc` & `sideEffects: false`
+
+#### Language & Type
+- ✅ **TypeScript** —— `esbuild` & `tsc`
+- ✅ **Type Declaration** —— `tsc`
+
+#### Development
+
+- ✅ **Source Maps** —— `esbuild` & `tsc`
+
+#### Test
+
+- ✅ **Javascript Test** —— `jest` & `swc`
+
+  - ⚡️ `@swc/jest` faster than `esbuild-jest`
+
+#### Linting & Coding Style
+
+- ✅ **Find problems in your JavaScript code** —— `eslint`
+
+
+#### Version & Release
+
+- ✅ **Version Management** - `semantic-release`
+- ✅ **Release** - `github` & `npm`
