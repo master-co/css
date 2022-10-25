@@ -27,17 +27,18 @@
 ---
 
 # Scripts
-| Script       | Description                                             |
-| ------------ | ------------------------------------------------------- |
-| `build:iife` | Build and output the IIFE format bundle for Browser     |
-| `build:cjs`  | Build and output the CommonJS format bundle for Node    |
-| `build:esm`  | Build and output ECMAScript modules and declarations    |
-| `dev:iife`   | Watch your source code for changes and `build:iife`     |
-| `dev:cjs`    | Watch your source code for changes and `build:cjs`      |
-| `dev:esm`    | Watch your source code for changes and `build:esm`      |
-| `prod`       | Build and output archives in all formats for production |
-| `test`       | Test all of your JavaScript codes                       |
-| `lint`       | Find and fix problems in your JavaScript code           |
+| Script       | Description                                                        |
+| ------------ | ------------------------------------------------------------------ |
+| `build:iife` | Build and output the IIFE format bundle for Browser                |
+| `build:cjs`  | Build and output the CommonJS format bundle for Node               |
+| `build:esm`  | Build and output ECMAScript modules and declarations               |
+| `build:css`  | Build and output CSS                                               |
+| `dev:iife`   | Watch your source code for changes and `build:iife`                |
+| `dev:cjs`    | Watch your source code for changes and `build:cjs`                 |
+| `dev:esm`    | Watch your source code for changes and `build:esm`                 |
+| `prod`       | Build and output archives in all Javascript formats for production |
+| `test`       | Test all of your JavaScript codes                                  |
+| `lint`       | Find and fix problems in your JavaScript code                      |
 
 ---
 
@@ -54,6 +55,7 @@
   - ⛑ More reliable than `esbuild`
 - ✅ **CJS**, Node ( CommonJS modules ) —— `esbuild`
 - ✅ **IIFE**, Browser ( Immediately-invoked function expression ) —— `esbuild`
+- ✅ **[CSS](https://esbuild.github.io/content-types/#css-from-js)** —— `esbuild`
 
 ##### Optimization
 - ✅ **Minification** —— `esbuild`

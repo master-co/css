@@ -17,6 +17,7 @@
         "build:iife": "esbuild src/index.ts --bundle --outfile=dist/index.browser.js --format=iife",
         "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs.js --format=cjs",
         "build:esm": "tsc",
+        "build:css": "esbuild src/index.css --bundle --outfile=dist/index.css",
         "dev:iife": "npm run build:iife -- --watch",
         "dev:cjs": "npm run build:cjs -- --watch",
         "dev:esm": "npm run build:esm -- --watch",
