@@ -33,7 +33,7 @@
         "./src/polyfills/css-escape.js"
     ],
     "scripts": {
-        "build:iife": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=iife",
+        "build:iife": "esbuild src/index.ts --bundle --outfile=dist/index.browser.js --format=iife",
         "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs.js --format=cjs",
         "build:esm": "tsc",
         "dev:iife": "npm run build:iife -- --watch",
@@ -44,6 +44,7 @@
         "lint": "eslint ./src"
     },
     "main": "./dist/index.js",
+    "browser": "./dist/index.browser.js",
     "esnext": "./dist/esm/index.js",
     "module": "./dist/esm/index.js",
     "types": "./dist/esm/index.d.ts",
