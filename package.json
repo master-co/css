@@ -29,7 +29,9 @@
         "build-tools",
         "mastercss"
     ],
-    "sideEffects": false,
+    "sideEffects": [
+        "./src/polyfills/css-escape.js"
+    ],
     "scripts": {
         "build:iife": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=iife",
         "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs.js --format=cjs",
