@@ -7,18 +7,24 @@
 <p align="center">
     <b>Package</b>
 </p>
-<p align="center">An open-source project template</p>
+<p align="center">A tool-ready open source package template 🛠 + 📦</p>
 
-[![MIT License](https://flat.badgen.net/github/license/master-co/package?color=yellow)](https://github.com/master-co/package/blob/main/LICENSE)
+<!-- Badges -->
+<!-- [![MIT License](https://flat.badgen.net/github/license/master-co/package?color=yellow)](https://github.com/master-co/package/blob/main/LICENSE)
 [![Latest Release](https://flat.badgen.net/npm/v/@master/package?icon=npm&label&color=yellow)](https://www.npmjs.com/package/@master/package)
 [![Bundle Size](https://flat.badgen.net/bundlephobia/minzip/@master/package?icon=packagephobia&label&color=yellow)](https://bundlephobia.com/package/@master/package 'gzip bundle size (including dependencies)')
 [![Package Size](https://flat.badgen.net/badgesize/brotli/https://cdn.jsdelivr.net/npm/@master/package?icon=jsdelivr&label&color=yellow)](https://unpkg.com/@master/package 'brotli package size (without dependencies)')
 [![Documentation](https://flat.badgen.net/badge/icon/Documentation?icon=awesome&label&color=yellow)](https://package.master.co)
 [![Github](https://flat.badgen.net/badge/icon/master-co%2Fpackage?icon=github&label&color=yellow)](https://github.com/master-co/package)
 [![Discord](https://flat.badgen.net/badge/icon/discord?icon=discord&label&color=yellow)](https://discord.gg/sZNKpAAAw6)
-[![CI](https://flat.badgen.net/github/status/master-co/package/main/ci/circleci?icon=circleci)](https://circleci.com/gh/master-co/workflows/package/tree/main)
+[![CI](https://flat.badgen.net/github/status/master-co/package/main/ci/circleci?icon=circleci)](https://circleci.com/gh/master-co/workflows/package/tree/main) -->
+
+[Scripts](#scripts)・[Toolchain](#toolchain)
 
 </div>
+
+
+---
 
 # Scripts
 | Script       | Description                                             |
@@ -33,43 +39,40 @@
 | `test`       | Test all of your JavaScript codes                       |
 | `lint`       | Find and fix problems in your JavaScript code           |
 
-# Toolchain
+---
+
+# Features
+
 [esbuild](https://esbuild.github.io) +
 [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html) +
 [swc.rs](https://swc.rs) +
 [jest](https://jestjs.io) +
 [semantic-release](https://semantic-release.gitbook.io)
 
-#### Output & Bundle
+##### Output & Bundle
 - ✅ **ESM** ( ECMAScript modules ) —— `tsc`
   - ⛑ More reliable than `esbuild`
 - ✅ **CJS**, Node ( CommonJS modules ) —— `esbuild`
 - ✅ **IIFE**, Browser ( Immediately-invoked function expression ) —— `esbuild`
 
-#### Optimization
+##### Optimization
 - ✅ **Minification** —— `esbuild`
 - ✅ **Tree Shaking** of ES6 modules —— `tsc` & `sideEffects: false`
 
-#### Language & Type
+##### Language & Type
 - ✅ **TypeScript** —— `esbuild` & `tsc`
 - ✅ **Type Declaration** —— `tsc`
 
-#### Development
-
+##### Development
 - ✅ **Source Maps** —— `esbuild` & `tsc`
 
-#### Test
-
+##### Test
 - ✅ **Javascript Test** —— `jest` & `swc`
-
   - ⚡️ `@swc/jest` faster than `esbuild-jest`
 
-#### Linting & Coding Style
-
+##### Linting & Coding Style
 - ✅ **Find problems in your JavaScript code** —— `eslint`
 
-
-#### Version & Release
-
+##### Version & Release
 - ✅ **Version Management** - `semantic-release`
 - ✅ **Release** - `github` & `npm`
