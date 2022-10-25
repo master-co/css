@@ -108,7 +108,15 @@
                 }
             ],
             [
-                "@semantic-release/github"
+                "@semantic-release/github",
+                {
+                    "assets": [
+                        {
+                            "path": "dist/index.browser.js",
+                            "label": "master-css.min.js"
+                        }
+                    ]
+                }
             ],
             [
                 "@semantic-release/npm"
