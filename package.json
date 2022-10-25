@@ -25,7 +25,7 @@
         "test": "jest",
         "lint": "eslint ./src"
     },
-    "main": "./dist/index.js",
+    "main": "./dist/index.cjs.js",
     "browser": "./dist/index.browser.js",
     "esnext": "./dist/esm/index.js",
     "module": "./dist/esm/index.js",
