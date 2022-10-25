@@ -24,15 +24,15 @@
         "test": "jest",
         "lint": "eslint ./src"
     },
-    "main": "index.js",
     "type": "module",
-    "module": "esm/index.js",
-    "types": "esm/index.d.ts",
+    "main": "./dist/index.js",
+    "module": "./dist/esm/index.js",
+    "types": "./dist/esm/index.d.ts",
     "exports": {
         ".": {
-            "require": "./index.cjs.js",
-            "import": "./esm/index.js",
-            "types": "./esm/index.d.ts"
+            "require": "./dist/index.cjs.js",
+            "import": "./dist/esm/index.js",
+            "types": "./dist/esm/index.d.ts"
         }
     },
     "jest": {
@@ -85,17 +85,14 @@
             [
                 "@semantic-release/exec",
                 {
-                    "prepareCmd": "npm run prod && cp README.md LICENSE package.json dist"
+                    "prepareCmd": "npm run prod"
                 }
             ],
             [
                 "@semantic-release/github"
             ],
             [
-                "@semantic-release/npm",
-                {
-                    "pkgRoot": "dist"
-                }
+                "@semantic-release/npm"
             ]
         ],
         "branches": [
@@ -113,6 +110,9 @@
             }
         ]
     },
+    "files": [
+        "dist"
+    ],
     "devDependencies": {
         "@semantic-release/exec": "^6.0.3",
         "@swc/core": "^1.3.9",
