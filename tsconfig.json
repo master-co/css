@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "dist/esm",
+        "outDir": "dist",
         "baseUrl": "./",
         "experimentalDecorators": true,
         "moduleResolution": "Node",
