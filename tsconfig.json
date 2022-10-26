@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "dist/esm",
+        "outDir": "dist",
         "baseUrl": "./",
         "experimentalDecorators": true,
         "moduleResolution": "Node",
@@ -10,6 +10,7 @@
         "module": "ESNext",
         "skipLibCheck": true,
         "declaration": true,
+        "emitDeclarationOnly": true,
         "sourceMap": true,
         "lib": [
             "es2021",

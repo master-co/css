@@ -1,6 +1,6 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { init } from '../../../dist/esm'
+import { init } from '@master/css'
 
 init()
 
