@@ -1,6 +1,6 @@
 const root = typeof global != 'undefined' ? global : window
 
-if (!root.CSS && !root.CSS.escape) {
+if (!root.CSS && !root.CSS?.escape) {
 
     // https://drafts.csswg.org/cssom/#serialize-an-identifier
     const cssEscape = function (value) {
