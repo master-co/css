@@ -40,7 +40,7 @@
         "dev:iife": "npm run build:iife -- --watch",
         "dev:cjs": "npm run build:cjs -- --watch",
         "dev:esm": "npm run build:esm -- --watch",
-        "prod": "rm -rf dist && npm run build:cjs -- --minify --sourcemap && npm run build:iife -- --minify --sourcemap && npm run build:esm -- --minify --sourcemap && tsc",
+        "prod": "rm -rf dist && npm run build:cjs -- --minify --sourcemap && npm run build:iife -- --minify --sourcemap && npm run build:esm -- --minify --sourcemap && tsc --emitDeclarationOnly",
         "test": "jest",
         "lint": "eslint ./src"
     },
