@@ -4,7 +4,6 @@ export { default as MasterCSSRule } from './rule'
 
 // api
 export { default as init } from './apis/init'
-export { default as configure } from './apis/configure'
 export { default as extend } from './apis/extend'
 export { default as render } from './apis/render'
 export { default as renderFromHTML } from './apis/render-from-html'

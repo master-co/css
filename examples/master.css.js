@@ -1,6 +1,6 @@
-const { defaultColors, configure } = require('../src')
+const { defaultColors } = require('../src')
 
-module.exports = configure({
+module.exports = {
     colors: {
         primary: '#175fe9',
     },
@@ -58,4 +58,4 @@ module.exports = configure({
     },
     rootSize: 16,
     Rules: []
-})
+}

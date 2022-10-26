@@ -1,5 +1,6 @@
 import defaultConfig from './config'
 import init from './apis/init'
+import extend from './apis/extend'
 import type { MasterCSSConfig } from './config'
 import MasterCSSRule from './rule'
 
@@ -58,9 +59,15 @@ export default class MasterCSS extends MutationObserver {
     private schemeMQL: MediaQueryList
 
     constructor(
-        public config: MasterCSSConfig = defaultConfig,
+        public config?: MasterCSSConfig,
         public root?: Document | ShadowRoot
     ) {
+        if (config && !config.override) {
+            config = extend(defaultConfig, config)
+        } else {
+            config = defaultConfig
+        }
+
         super((mutationRecords) => {
             // console.time('css engine');
 

@@ -1,10 +1,10 @@
-import configure from '../src/apis/configure'
+import extend from '../src/apis/extend'
 import defaultConfig from '../src/config'
 import defaultThemes from '../src/config/themes'
 import defaultValues from '../src/config/values'
 
 test('configure', () => {
-    const custom = {
+    const useConfig = {
         themes: ['red'],
         values: {
             Width: {
@@ -13,23 +13,18 @@ test('configure', () => {
         }
     }
     expect(
-        configure(custom)
+        extend(defaultConfig, useConfig)
     )
         .toEqual(
             {
                 ...defaultConfig,
-                themes: [...defaultThemes, ...custom.themes],
+                themes: [...defaultThemes, ...useConfig.themes],
                 values: {
                     ...defaultValues,
                     Width: {
                         ...defaultValues.Width,
-                        ...custom.values.Width
+                        ...useConfig.values.Width
                     }
                 }
             })
-})
-
-test('configure undefined', () => {
-    expect(configure(undefined as any))
-        .toEqual(defaultConfig)
 })
