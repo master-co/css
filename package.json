@@ -30,7 +30,7 @@
         "mastercss"
     ],
     "sideEffects": [
-        "./src/polyfills/css-escape.js"
+        "./src/polyfills/css-escape.ts"
     ],
     "scripts": {
         "build:iife": "esbuild src/index.ts --bundle --outfile=dist/index.browser.js --format=iife",

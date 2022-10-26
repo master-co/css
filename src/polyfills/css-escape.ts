@@ -1,34 +1,18 @@
-/* eslint-disable no-undef */
-/*! https://mths.be/cssescape v1.5.1 by @mathias | MIT license */
-(function (root, factory) {
-    // https://github.com/umdjs/umd/blob/master/returnExports.js
-    if (typeof exports == 'object') {
-        // For Node.js.
-        module.exports = factory(root)
-    } else if (typeof define == 'function' && define.amd) {
-        // For AMD. Register as an anonymous module.
-        define([], factory.bind(root, root))
-    } else {
-        // For browser globals (not exposing the function separately).
-        factory(root)
-    }
-}(typeof global != 'undefined' ? global : this, function (root) {
+const root = typeof global != 'undefined' ? global : window
 
-    if (root.CSS && root.CSS.escape) {
-        return root.CSS.escape
-    }
+if (!root.CSS && !root.CSS.escape) {
 
     // https://drafts.csswg.org/cssom/#serialize-an-identifier
-    var cssEscape = function (value) {
+    const cssEscape = function (value) {
         if (arguments.length == 0) {
             throw new TypeError('`CSS.escape` requires an argument.')
         }
-        var string = String(value)
-        var length = string.length
-        var index = -1
-        var codeUnit
-        var result = ''
-        var firstCodeUnit = string.charCodeAt(0)
+        const string = String(value)
+        const length = string.length
+        let index = -1
+        let result = ''
+        let codeUnit
+        const firstCodeUnit = string.charCodeAt(0)
 
         if (
             // If the character is the first character and is a `-` (U+002D), and
@@ -96,10 +80,9 @@
     }
 
     if (!root.CSS) {
-        root.CSS = {}
+        (root as any).CSS = {}
     }
 
     root.CSS.escape = cssEscape
-    return cssEscape
 
-}))
+}
