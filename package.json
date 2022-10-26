@@ -34,8 +34,8 @@
     ],
     "scripts": {
         "build:iife": "esbuild src/index.ts --bundle --outfile=dist/index.browser.js --format=iife",
-        "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs.js --format=cjs --platform=node",
-        "build:esm": "esbuild src/index.ts --bundle --outfile=dist/index.esm.js --format=esm --platform=node",
+        "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs --format=cjs --platform=node",
+        "build:esm": "esbuild src/index.ts --bundle --outfile=dist/index.mjs --format=esm --platform=node",
         "build:css": "esbuild src/index.css --bundle --outfile=dist/index.css",
         "dev:iife": "npm run build:iife -- --watch",
         "dev:cjs": "npm run build:cjs -- --watch",
@@ -44,17 +44,16 @@
         "test": "jest",
         "lint": "eslint ./src"
     },
-    "type": "module",
-    "main": "./dist/index.cjs.js",
-    "jsnext:main": "./dist/index.esm.js",
+    "main": "./dist/index.cjs",
+    "jsnext:main": "./dist/index.mjs",
     "browser": "./dist/index.browser.js",
-    "esnext": "./dist/index.esm.js",
-    "module": "./dist/index.esm.js",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/index.cjs.js",
-            "import": "./dist/index.esm.js",
+            "require": "./dist/index.cjs",
+            "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
         }
     },
