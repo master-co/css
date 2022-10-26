@@ -1,4 +1,4 @@
-import { MasterCSSRule } from '../rule'
+import MasterCSSRule from '../rule'
 
 const extreme = '999999'
 

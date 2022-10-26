@@ -2,8 +2,9 @@ import { getCssPropertyText } from './utils/get-css-property-text'
 import { parseValue } from './utils/parse-value'
 import { START_SYMBOL } from './constants/start-symbol'
 import MasterCSS from './css'
+import type { MasterCSSConfig } from './config'
 
-export const PRIORITY_SELECTORS = [':disabled', ':active', ':focus', ':hover']
+const PRIORITY_SELECTORS = [':disabled', ':active', ':focus', ':hover']
 const MATCHES = 'matches'
 const SEMANTICS = 'semantics'
 const SYMBOL = 'symbol'
@@ -23,7 +24,7 @@ const transformSelectorUnderline = (selector: string) => selector.split(selector
     .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/_/g, ' '))
     .join('')
 
-export class MasterCSSRule {
+export default class MasterCSSRule {
 
     readonly prefix: string
     readonly symbol: string
@@ -671,9 +672,7 @@ declare global {
     }
 }
 
-import type { MasterCSSConfig } from './config'
-
-export interface MasterCSSRule {
+export default interface MasterCSSRule {
     readonly order?: number;
     parseValue(value: string, config: MasterCSSConfig): string;
     get(declaration: MasterCSSDeclaration): Record<string, any>;

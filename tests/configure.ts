@@ -1,5 +1,5 @@
 import configure from '../src/apis/configure'
-import { defaultConfig } from '../src/config'
+import defaultConfig from '../src/config'
 import defaultThemes from '../src/config/themes'
 import defaultValues from '../src/config/values'
 

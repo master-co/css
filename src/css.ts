@@ -1,7 +1,7 @@
-import { defaultConfig } from './config'
-import { init } from './apis/init'
+import defaultConfig from './config'
+import init from './apis/init'
 import type { MasterCSSConfig } from './config'
-import { MasterCSSRule } from './rule'
+import MasterCSSRule from './rule'
 
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@']
 const vendorPrefixSelectorRegExp = /^::-[a-z]+-/m

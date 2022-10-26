@@ -1,7 +1,0 @@
-export { init } from './init'
-export { default as configure } from './configure'
-export { extend } from './extend'
-export { render } from './render'
-export { renderFromHTML } from './render-from-html'
-export { renderIntoHTML } from './render-into-html'
-export { fillColorScale } from './fill-color-scale'

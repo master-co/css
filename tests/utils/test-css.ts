@@ -1,4 +1,4 @@
-import { render } from '../../src/apis/render'
+import render from '../../src/apis/render'
 import MasterCSS from '../../src/css'
 
 export const testCSS = (cls: string, expected: string, css?: MasterCSS): void => {

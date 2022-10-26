@@ -1,6 +1,6 @@
-import { defaultConfig } from '../config'
+import defaultConfig from '../config'
 import type { MasterCSSConfig } from '../config'
-import { extend } from './extend'
+import extend from './extend'
 
 export default function configure(...configurations: MasterCSSConfig[]): MasterCSSConfig {
     if (configurations.length) {

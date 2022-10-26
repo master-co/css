@@ -1,7 +1,7 @@
 import MasterCSS from '../css'
 import '../polyfills/css-escape'
 
-export function render(classes: string[], css: MasterCSS = new MasterCSS()): string {
+export default function render(classes: string[], css: MasterCSS = new MasterCSS()): string {
     if (!classes?.length) return
     for (const eachClassName of classes) {
         if (!(eachClassName in css.countOfClass)) {

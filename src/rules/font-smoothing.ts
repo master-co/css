@@ -1,4 +1,4 @@
-import { MasterCSSRule } from '../rule'
+import MasterCSSRule from '../rule'
 
 const SUBPIXEL_ANTIALIASED = 'subpixel-antialiased'
 const WEBKIT_FONT_SMOOTHING = '-webkit-font-smoothing'

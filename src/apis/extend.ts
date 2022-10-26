@@ -73,7 +73,7 @@ type ExpandDeep<T> =
     ? Array<ExpandDeep<E>>
     : T
 
-export function extend<T extends Record<string, any>, Tn extends Record<string, any>[]>(
+export default function extend<T extends Record<string, any>, Tn extends Record<string, any>[]>(
     object: T,
     ...otherObjects: Tn
 ): ExpandDeep<any> {

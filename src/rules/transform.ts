@@ -1,5 +1,5 @@
 import type { MasterCSSConfig } from '../config'
-import { MasterCSSRule } from '../rule'
+import MasterCSSRule from '../rule'
 
 export default class extends MasterCSSRule {
     static override id = 'Transform'

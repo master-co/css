@@ -1,4 +1,4 @@
-import { MasterCSSRule } from '../rule'
+import MasterCSSRule from '../rule'
 import MasterCSS from '../css'
 import { START_SYMBOL } from '../constants/start-symbol'
 import type { MasterCSSDeclaration } from '../rule'

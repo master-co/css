@@ -1,3 +1,4 @@
+
 import defaultBreakpoints from './breakpoints'
 import defaultColors from './colors'
 import defaultRootSize from './root-size'
@@ -7,6 +8,8 @@ import defaultThemes from './themes'
 import defaultScheme from './scheme'
 import defaultValues from './values'
 import DefaultRules from './rules'
+import MasterCSSRule from '../rule'
+import MasterCSS from '../css'
 
 const defaultConfig: MasterCSSConfig = {
     colors: defaultColors,
@@ -20,21 +23,7 @@ const defaultConfig: MasterCSSConfig = {
     rootSize: defaultRootSize
 }
 
-export {
-    defaultConfig,
-    defaultBreakpoints,
-    defaultColors,
-    defaultRootSize,
-    defaultSelectors,
-    defaultSemantics,
-    defaultThemes,
-    defaultScheme,
-    defaultValues,
-    DefaultRules
-}
-
-import type MasterCSS from '../css'
-import type { MasterCSSRule } from '../rule'
+export default defaultConfig
 
 export interface MasterCSSConfig {
     classes?: Record<string, string>
@@ -49,10 +38,10 @@ export interface MasterCSSConfig {
     rootSize?: number
     validateRule?: (rule: MasterCSSRule, css?: MasterCSS) => boolean
     scheme?: {
-        preference: string,
-        storage: {
-            sync: boolean
-            key: string
+        preference?: string,
+        storage?: {
+            sync?: boolean
+            key?: string
         }
     }
 }

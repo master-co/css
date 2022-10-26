@@ -1,5 +1,5 @@
 import type { MasterCSSConfig } from '../config'
-import { MasterCSSRule } from '../rule'
+import MasterCSSRule from '../rule'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
 export default class extends MasterCSSRule {
