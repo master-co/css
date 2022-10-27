@@ -1,2 +1,2 @@
-import init from './apis/init'
-init(window['masterCSSConfig'])
+import MasterCSS from './css'
+new MasterCSS(window['masterCSSConfig'])

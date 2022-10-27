@@ -43,6 +43,5 @@ export interface MasterCSSConfig {
             sync?: boolean
             key?: string
         }
-    },
-    override?: boolean
+    }
 }

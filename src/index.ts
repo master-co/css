@@ -3,7 +3,6 @@ export { default } from './css'
 export { default as MasterCSSRule } from './rule'
 
 // api
-export { default as init } from './apis/init'
 export { default as extend } from './apis/extend'
 export { default as render } from './apis/render'
 export { default as renderFromHTML } from './apis/render-from-html'
@@ -25,3 +24,4 @@ export { default as DefaultRules } from './config/rules'
 // type
 export type { MasterCSSConfig } from './config'
 export type { MasterCSSDeclaration, MasterCSSMedia, MasterCSSMediaFeatureRule, MasterCSSRuleMatching } from './rule'
+export type { MasterCSSOptions } from './css'

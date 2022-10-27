@@ -6,10 +6,9 @@ import MasterCSSRule from './rule'
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@']
 const vendorPrefixSelectorRegExp = /^::-[a-z]+-/m
 
-const hasDocument = typeof document !== 'undefined'
-
 let STYLE: HTMLStyleElement
-if (hasDocument) {
+const isBrowser = typeof window !== 'undefined'
+if (isBrowser) {
     STYLE = document.createElement('style')
     STYLE.title = 'master'
 }
@@ -17,11 +16,15 @@ const MAX_WIDTH = 'max-width'
 const MIN_WIDTH = 'min-width'
 const ATTRIBUTES = 'attributes'
 
-const isBrowser = typeof window !== 'undefined'
-
 const MutationObserver = isBrowser
     ? window.MutationObserver
     : Object
+
+export declare type MasterCSSOptions = {
+    root?: Document | ShadowRoot
+    override?: boolean
+    observe?: boolean
+}
 
 export default class MasterCSS extends MutationObserver {
 
@@ -42,6 +45,7 @@ export default class MasterCSS extends MutationObserver {
     readonly ruleOfClass: Record<string, MasterCSSRule> = {}
     readonly countOfClass = {}
     readonly host: Element
+    readonly root: Document | ShadowRoot
     readonly ready: boolean = false
 
     semantics: [RegExp, string][]
@@ -57,14 +61,8 @@ export default class MasterCSS extends MutationObserver {
 
     constructor(
         public config?: MasterCSSConfig,
-        public root?: Document | ShadowRoot
+        public options?: MasterCSSOptions
     ) {
-        if (config && !config.override) {
-            config = extend(defaultConfig, config)
-        } else {
-            config = defaultConfig
-        }
-
         super((mutationRecords) => {
             // console.time('css engine');
 
@@ -229,14 +227,23 @@ export default class MasterCSS extends MutationObserver {
             // console.timeEnd('css engine');
         })
 
+        this.options = extend({ observe: true, root: isBrowser ? document : null }, options)
+        const root = this.root = this.options.root
+
+        if (config && !this.options.override) {
+            this.config = extend(defaultConfig, config)
+        } else {
+            this.config = defaultConfig
+        }
+
         this.cache()
 
-        if (hasDocument && root) {
+        if (isBrowser && root) {
             const isDocumentRoot = root === document
             this.host = isDocumentRoot ? document.documentElement : (root as ShadowRoot).host
 
             // sync theme
-            this.scheme = this.storageScheme || config.scheme.preference
+            this.scheme = this.storageScheme || this.config.scheme.preference
 
             const container = isDocumentRoot ? document.head : root
             const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : root.styleSheets
@@ -313,6 +320,11 @@ export default class MasterCSS extends MutationObserver {
                 this.style = STYLE.cloneNode() as HTMLStyleElement
                 /** 使用 prepend 而非 append 去降低 rules 類的優先層級，無法強制排在所有 <style> 之後 */
                 container.prepend(this.style)
+            }
+
+            if (isDocumentRoot) {
+                MasterCSS.root = this
+                this.options.observe && this.observe()
             }
         }
 
