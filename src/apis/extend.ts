@@ -73,9 +73,9 @@ type ExpandDeep<T> =
     ? Array<ExpandDeep<E>>
     : T
 
-export default function extend<T extends Record<string, any>, Tn extends Record<string, any>[]>(
+export default function extend<T extends Record<string, any>>(
     object: T,
-    ...otherObjects: Tn
+    ...otherObjects: any[]
 ): ExpandDeep<any> {
     return otherObjects
         .filter((newComer) => isPlainObject(newComer))
