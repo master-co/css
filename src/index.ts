@@ -21,6 +21,9 @@ export { default as defaultScheme } from './config/scheme'
 export { default as defaultValues } from './config/values'
 export { default as DefaultRules } from './config/rules'
 
+// other
+export const root: Document = typeof document !== 'undefined' && document
+
 // type
 export type { MasterCSSConfig } from './config'
 export type { MasterCSSDeclaration, MasterCSSMedia, MasterCSSMediaFeatureRule, MasterCSSRuleMatching } from './rule'

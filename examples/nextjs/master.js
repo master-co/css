@@ -1,3 +1,4 @@
-import MasterCSS from '@master/css'
+import MasterCSS, { root } from '@master/css'
 
-export const css = new MasterCSS()
+export const css = new MasterCSS({ root })
+    .observe()

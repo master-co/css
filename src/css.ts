@@ -21,9 +21,9 @@ const MutationObserver = isBrowser
     : Object
 
 export declare type MasterCSSOptions = {
+    config?: MasterCSSConfig
     root?: Document | ShadowRoot
     override?: boolean
-    observe?: boolean
 }
 
 export default class MasterCSS extends MutationObserver {
@@ -47,6 +47,7 @@ export default class MasterCSS extends MutationObserver {
     readonly host: Element
     readonly root: Document | ShadowRoot
     readonly ready: boolean = false
+    readonly config: MasterCSSConfig
 
     semantics: [RegExp, string][]
     classes: Record<string, string[]>
@@ -60,7 +61,6 @@ export default class MasterCSS extends MutationObserver {
     private schemeMQL: MediaQueryList
 
     constructor(
-        public config?: MasterCSSConfig,
         public options?: MasterCSSOptions
     ) {
         super((mutationRecords) => {
@@ -227,19 +227,23 @@ export default class MasterCSS extends MutationObserver {
             // console.timeEnd('css engine');
         })
 
-        this.options = extend({ observe: true, root: isBrowser ? document : null }, options)
-        const root = this.root = this.options.root
+        this.options = extend({ observe: true }, options)
 
-        if (config && !this.options.override) {
-            this.config = extend(defaultConfig, config)
+        if (this.options.config && !this.options.override) {
+            this.config = extend(defaultConfig, this.options.config)
         } else {
             this.config = defaultConfig
         }
+
+        const root = this.root = this.options.root
 
         this.cache()
 
         if (isBrowser && root) {
             const isDocumentRoot = root === document
+            if (isDocumentRoot) {
+                MasterCSS.root = this
+            }
             this.host = isDocumentRoot ? document.documentElement : (root as ShadowRoot).host
 
             // sync theme
@@ -320,11 +324,6 @@ export default class MasterCSS extends MutationObserver {
                 this.style = STYLE.cloneNode() as HTMLStyleElement
                 /** 使用 prepend 而非 append 去降低 rules 類的優先層級，無法強制排在所有 <style> 之後 */
                 container.prepend(this.style)
-            }
-
-            if (isDocumentRoot) {
-                MasterCSS.root = this
-                this.options.observe && this.observe()
             }
         }
 
@@ -562,6 +561,9 @@ export default class MasterCSS extends MutationObserver {
     }
 
     observe(options: MutationObserverInit = { subtree: true, childList: true }) {
+        if (!isBrowser) {
+            return this
+        }
         if (options.subtree) {
             /**
              * 待所有 DOM 結構完成解析後，開始繪製 MasterCSSRule 樣式
@@ -645,6 +647,7 @@ export default class MasterCSS extends MutationObserver {
      * 根據目前蒐集到的所有 DOM class 重新 findAndNew
      */
     refresh(config: MasterCSSConfig) {
+        // @ts-ignore
         this.config = config
         this.cache()
 
