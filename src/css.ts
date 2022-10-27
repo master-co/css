@@ -1,5 +1,4 @@
 import defaultConfig from './config'
-import init from './apis/init'
 import extend from './apis/extend'
 import type { MasterCSSConfig } from './config'
 import MasterCSSRule from './rule'
@@ -26,8 +25,6 @@ const MutationObserver = isBrowser
 
 export default class MasterCSS extends MutationObserver {
 
-    static init = init
-    static defaultConfig: MasterCSSConfig = defaultConfig
     static instances: MasterCSS[] = []
     static root: MasterCSS
 

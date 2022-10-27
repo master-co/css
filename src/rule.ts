@@ -662,16 +662,6 @@ export default class MasterCSSRule {
     }
 }
 
-if (typeof window !== 'undefined') {
-    window.MasterCSSRule = MasterCSSRule
-}
-
-declare global {
-    interface Window {
-        MasterCSSRule: typeof MasterCSSRule;
-    }
-}
-
 export default interface MasterCSSRule {
     readonly order?: number;
     parseValue(value: string, config: MasterCSSConfig): string;
