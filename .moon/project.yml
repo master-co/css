@@ -1,6 +1,116 @@
 # https://moonrepo.dev/docs/config/global-project
 $schema: 'https://moonrepo.dev/schemas/global-project.json'
 
+# A task is an action that is ran within the context of a project, and wraps
+# around an npm or system command. Tasks that are defined here and inherited by all projects
+# within the workspace, but can be overridden per project.
+#
+# This setting requires a map, where the key is a unique name for the task,
+# and the value is an object of task parameters.
+tasks:
+    # Name of the task.
+    lint:
+        command: 'eslint ./packages'
+    test:
+        command: 'jest'
+    check-type:
+        command: 'tsc --noEmit'
+    declarations:
+        command: 'tsc --emitDeclarationOnly'
+    build-cjs:
+        command:
+            - esbuild
+            - src/index.ts
+            - '--bundle'
+            - '--outfile=dist/index.cjs'
+            - '--format=cjs'
+            - '--platform=node'
+            - '--minify'
+            - '--sourcemap'
+    build-css:
+        command:
+            - esbuild
+            - src/index.css
+            - '--bundle'
+            - '--outfile=dist/index.css'
+            - '--minify'
+    build-esm:
+        command:
+            - esbuild
+            - src/index.ts
+            - '--bundle'
+            - '--outfile=dist/index.mjs'
+            - '--format=esm'
+            - '--platform=node'
+            - '--minify'
+            - '--sourcemap'
+    build-iife:
+        command:
+            - esbuild
+            - src/index.browser.ts
+            - '--bundle'
+            - '--outfile=dist/index.browser.js'
+            - '--format=iife'
+            - '--minify'
+            - '--sourcemap'
+    dev-cjs:
+        command:
+            - npm
+            - run
+            - 'build:cjs'
+            - '--'
+            - '--watch'
+        local: true
+    dev-esm:
+        command:
+            - npm
+            - run
+            - 'build:esm'
+            - '--'
+            - '--watch'
+        local: true
+    dev-iife:
+        command:
+            - npm
+            - run
+            - 'build-iife'
+            - '--'
+            - '--watch'
+        local: true
+    prod-css:
+        command: 
+            - rm -rf dist
+    prod-js:
+        command: 
+            - rm -rf dist
+    noop:
+        # The name of the binary/command on your system.
+        command: 'noop'
+
+        # List of arguments to pass on the command line when executing the task.
+        args: []
+
+        # List of targets that will be executed *before* this task.
+        deps: []
+
+        # Map of environment variables to pass when executing the command.
+        env: {}
+
+        # List of file paths/globs to calculate whether to execute the task based on files
+        # that have been modified since the last time the task has been ran. By default inputs are
+        # relative from the *project root*, and can reference file groups (above). To reference files
+        # from the workspace root (for example, config files), prefix the path with a "/".
+        inputs: []
+
+        # List of files and folders that are created as a result of executing this task,
+        # excluding cache related items. By default outputs are relative from the *project root*.
+        # To output files to the workspace root, prefix the path with a "/".
+        outputs: []
+
+        # The platform to run the command on, and where to locate it.
+        # Accepts "node" or "system". Defaults based on project `language`.
+        platform: 'node'
+
 # Extend and inherit an external configuration file. Must be a valid HTTPS URL or file system path.
 # extends: './shared/project.yml'
 
@@ -35,47 +145,3 @@ fileGroups:
         - 'static/**/*'
         - '**/*.{scss,css}'
         - '**/*.mdx'
-
-# A task is an action that is ran within the context of a project, and wraps
-# around an npm or system command. Tasks that are defined here and inherited by all projects
-# within the workspace, but can be overridden per project.
-#
-# This setting requires a map, where the key is a unique name for the task,
-# and the value is an object of task parameters.
-tasks:
-    # Name of the task.
-    lint:
-        command: 'eslint ./packages'
-    test:
-        command: 'jest'
-    check-type:
-        command: 'tsc --noEmit'
-    declarations:
-        command: 'tsc --emitDeclarationOnly'
-    noop:
-        # The name of the binary/command on your system.
-        command: 'noop'
-
-        # List of arguments to pass on the command line when executing the task.
-        args: []
-
-        # List of targets that will be executed *before* this task.
-        deps: []
-
-        # Map of environment variables to pass when executing the command.
-        env: {}
-
-        # List of file paths/globs to calculate whether to execute the task based on files
-        # that have been modified since the last time the task has been ran. By default inputs are
-        # relative from the *project root*, and can reference file groups (above). To reference files
-        # from the workspace root (for example, config files), prefix the path with a "/".
-        inputs: []
-
-        # List of files and folders that are created as a result of executing this task,
-        # excluding cache related items. By default outputs are relative from the *project root*.
-        # To output files to the workspace root, prefix the path with a "/".
-        outputs: []
-
-        # The platform to run the command on, and where to locate it.
-        # Accepts "node" or "system". Defaults based on project `language`.
-        platform: 'node'
