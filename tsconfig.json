@@ -13,5 +13,10 @@
             "es2021",
             "dom"
         ]
-    }
+    },
+    "references": [
+        {
+            "path": "packages/css"
+        }
+    ]
 }
