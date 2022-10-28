@@ -1,7 +1,7 @@
 import MasterCSS from '../css'
 import '../polyfills/css-escape'
 
-export default function renderFromHTML(html: string, css: MasterCSS = new MasterCSS()): string {
+export default function renderFromHTML(html: string, css: MasterCSS = new MasterCSS({ observe: false })): string {
     if (!html) return
     const regexp = /\sclass="([^"]*)"/gm
     let results: string[]
