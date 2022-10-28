@@ -22,7 +22,6 @@ const MutationObserver = isBrowser
 
 export declare type MasterCSSOptions = {
     config?: MasterCSSConfig
-    root?: Document | ShadowRoot
     override?: boolean
     observe?: boolean
 }
@@ -236,98 +235,10 @@ export default class MasterCSS extends MutationObserver {
             this.config = defaultConfig
         }
 
-        const root = this.root = this.options.root
-
         this.cache()
 
-        if (isBrowser && root) {
-            const isDocumentRoot = root === document
-            if (isDocumentRoot) {
-                MasterCSS.root = this
-            }
-            this.host = isDocumentRoot ? document.documentElement : (root as ShadowRoot).host
-
-            // sync theme
-            this.scheme = this.storageScheme || this.config.scheme.preference
-
-            const container = isDocumentRoot ? document.head : root
-            const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : root.styleSheets
-            // @ts-ignore
-            for (const sheet of styleSheets) {
-                const { title, href, ownerNode } = sheet
-                if (
-                    title === 'master'
-                    || href && /master(?:\..+)?\.css/.test(href)
-                ) {
-                    this.style = ownerNode
-                }
-            }
-            if (this.style) {
-                for (let index = 0; index < this.style.sheet.cssRules.length; index++) {
-                    const getRule = (cssRule: any): MasterCSSRule => {
-                        if (cssRule.selectorText) {
-                            const selectorTexts = cssRule.selectorText.split(', ')
-                            const escapedClassNames = selectorTexts[0].split(' ')
-
-                            for (let i = 0; i < escapedClassNames.length; i++) {
-                                const eachSelectorText = escapedClassNames[i]
-                                if (eachSelectorText[0] === '.') {
-                                    const escapedClassName = eachSelectorText.slice(1)
-
-                                    let className = ''
-                                    for (let j = 0; j < escapedClassName.length; j++) {
-                                        const char = escapedClassName[j]
-                                        const nextChar = escapedClassName[j + 1]
-
-                                        if (char === '\\') {
-                                            j++
-
-                                            if (nextChar !== '\\') {
-                                                className += nextChar
-
-                                                continue
-                                            }
-                                        } else if (selectorSymbols.includes(char)) {
-                                            break
-                                        }
-
-                                        className += char
-                                    }
-
-                                    if (!(className in this.ruleOfClass) && !(className in this.classes)) {
-                                        const currentRule = this.findAndNew(className) as MasterCSSRule
-                                        if (currentRule)
-                                            return currentRule
-                                    }
-                                }
-                            }
-                        } else if (cssRule.cssRules) {
-                            for (let index = 0; index < cssRule.cssRules.length; index++) {
-                                const currentRule = getRule(cssRule.cssRules[index])
-                                if (currentRule)
-                                    return currentRule
-                            }
-                        }
-                    }
-                    const rule = getRule(this.style.sheet.cssRules[index])
-                    if (rule) {
-                        this.rules.push(rule)
-                        this.ruleOfClass[rule.className] = rule
-
-                        for (let i = 0; i < rule.natives.length; i++) {
-                            rule.natives[i].cssRule = this.style.sheet.cssRules[index + i]
-                        }
-
-                        index += rule.natives.length - 1
-                    }
-                }
-            } else {
-                this.style = STYLE.cloneNode() as HTMLStyleElement
-                /** 使用 prepend 而非 append 去降低 rules 類的優先層級，無法強制排在所有 <style> 之後 */
-                container.prepend(this.style)
-            }
-
-            this.options.observe && this.observe()
+        if (isBrowser && this.options.observe) {
+            this.observe(document)
         }
 
         MasterCSS.instances.push(this)
@@ -563,34 +474,127 @@ export default class MasterCSS extends MutationObserver {
         }
     }
 
-    observe(options: MutationObserverInit = { subtree: true, childList: true }) {
-        if (!isBrowser) {
-            return this
-        }
-        if (options.subtree) {
-            /**
-             * 待所有 DOM 結構完成解析後，開始繪製 MasterCSSRule 樣式
-             */
-            this.host
-                .querySelectorAll('[class]')
-                .forEach((element) => {
-                    element.classList.forEach((className) => {
-                        if (className in this.countOfClass) {
-                            this.countOfClass[className]++
-                        } else {
-                            this.countOfClass[className] = 1
+    observe(root: Document | ShadowRoot, options: MutationObserverInit = { subtree: true, childList: true }) {
+        if (isBrowser && root) {
+            // @ts-ignore
+            this.root = root
+            const isDocumentRoot = root === document
+            if (isDocumentRoot) {
+                MasterCSS.root = this
+            }
 
-                            this.findAndInsert(className)
+            // @ts-ignore
+            this.host = isDocumentRoot ? document.documentElement : (root as ShadowRoot).host
+
+            // sync theme
+            this.scheme = this.storageScheme || this.config.scheme.preference
+
+            const container = isDocumentRoot ? document.head : root
+            const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : root.styleSheets
+            // @ts-ignore
+            for (const sheet of styleSheets) {
+                const { title, href, ownerNode } = sheet
+                if (
+                    title === 'master'
+                    || href && /master(?:\..+)?\.css/.test(href)
+                ) {
+                    // @ts-ignore
+                    this.style = ownerNode
+                }
+            }
+
+            if (this.style) {
+                for (let index = 0; index < this.style.sheet.cssRules.length; index++) {
+                    const getRule = (cssRule: any): MasterCSSRule => {
+                        if (cssRule.selectorText) {
+                            const selectorTexts = cssRule.selectorText.split(', ')
+                            const escapedClassNames = selectorTexts[0].split(' ')
+
+                            for (let i = 0; i < escapedClassNames.length; i++) {
+                                const eachSelectorText = escapedClassNames[i]
+                                if (eachSelectorText[0] === '.') {
+                                    const escapedClassName = eachSelectorText.slice(1)
+
+                                    let className = ''
+                                    for (let j = 0; j < escapedClassName.length; j++) {
+                                        const char = escapedClassName[j]
+                                        const nextChar = escapedClassName[j + 1]
+
+                                        if (char === '\\') {
+                                            j++
+
+                                            if (nextChar !== '\\') {
+                                                className += nextChar
+
+                                                continue
+                                            }
+                                        } else if (selectorSymbols.includes(char)) {
+                                            break
+                                        }
+
+                                        className += char
+                                    }
+
+                                    if (!(className in this.ruleOfClass) && !(className in this.classes)) {
+                                        const currentRule = this.findAndNew(className) as MasterCSSRule
+                                        if (currentRule)
+                                            return currentRule
+                                    }
+                                }
+                            }
+                        } else if (cssRule.cssRules) {
+                            for (let index = 0; index < cssRule.cssRules.length; index++) {
+                                const currentRule = getRule(cssRule.cssRules[index])
+                                if (currentRule)
+                                    return currentRule
+                            }
                         }
+                    }
+                    const rule = getRule(this.style.sheet.cssRules[index])
+                    if (rule) {
+                        this.rules.push(rule)
+                        this.ruleOfClass[rule.className] = rule
+
+                        for (let i = 0; i < rule.natives.length; i++) {
+                            rule.natives[i].cssRule = this.style.sheet.cssRules[index + i]
+                        }
+
+                        index += rule.natives.length - 1
+                    }
+                }
+            } else {
+                // @ts-ignore
+                this.style = STYLE.cloneNode() as HTMLStyleElement
+                /** 使用 prepend 而非 append 去降低 rules 類的優先層級，無法強制排在所有 <style> 之後 */
+                container.prepend(this.style)
+            }
+
+            if (options.subtree) {
+                /**
+                 * 待所有 DOM 結構完成解析後，開始繪製 MasterCSSRule 樣式
+                 */
+                this.host
+                    .querySelectorAll('[class]')
+                    .forEach((element) => {
+                        element.classList.forEach((className) => {
+                            if (className in this.countOfClass) {
+                                this.countOfClass[className]++
+                            } else {
+                                this.countOfClass[className] = 1
+
+                                this.findAndInsert(className)
+                            }
+                        })
                     })
-                })
+            }
+
+            super.observe(root, {
+                ...options,
+                attributes: true,
+                attributeOldValue: true,
+                attributeFilter: ['class'],
+            })
         }
-        super.observe(this.root, {
-            ...options,
-            attributes: true,
-            attributeOldValue: true,
-            attributeFilter: ['class'],
-        })
         return this
     }
 
