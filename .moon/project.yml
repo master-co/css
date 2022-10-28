@@ -53,35 +53,11 @@ tasks:
             - '--format=iife'
             - '--minify'
             - '--sourcemap'
-    dev-cjs:
-        command:
-            - npm
-            - run
-            - 'build:cjs'
-            - '--'
-            - '--watch'
-        local: true
-    dev-esm:
-        command:
-            - npm
-            - run
-            - 'build:esm'
-            - '--'
-            - '--watch'
-        local: true
-    dev-iife:
-        command:
-            - npm
-            - run
-            - 'build-iife'
-            - '--'
-            - '--watch'
-        local: true
     prod-css:
-        command: 
+        command:
             - rm -rf dist
     prod-js:
-        command: 
+        command:
             - rm -rf dist
     noop:
         # The name of the binary/command on your system.
