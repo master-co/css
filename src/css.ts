@@ -24,6 +24,7 @@ export declare type MasterCSSOptions = {
     config?: MasterCSSConfig
     root?: Document | ShadowRoot
     override?: boolean
+    observe?: boolean
 }
 
 export default class MasterCSS extends MutationObserver {
@@ -325,6 +326,8 @@ export default class MasterCSS extends MutationObserver {
                 /** 使用 prepend 而非 append 去降低 rules 類的優先層級，無法強制排在所有 <style> 之後 */
                 container.prepend(this.style)
             }
+
+            this.options.observe && this.observe()
         }
 
         MasterCSS.instances.push(this)
