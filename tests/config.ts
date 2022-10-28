@@ -92,4 +92,9 @@ test('colors', () => {
         '.fg\\:primary,.dark .btn,.blue-btn{color:#175fe9}.light .fg\\:primary,.light .blue-btn{color:#ebbb40}.dark .fg\\:primary,.dark .btn,.dark .blue-btn{color:#fbe09d}',
         new MasterCSS({ config })
     )
+    testCSS(
+        'fg:primary-code', 
+        '.fg\\:primary-code{color:#777777}',
+        new MasterCSS({ config })
+    )
 })

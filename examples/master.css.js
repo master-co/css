@@ -2,7 +2,10 @@ const { defaultColors } = require('../src')
 
 module.exports = {
     colors: {
-        primary: '#175fe9',
+        primary: {
+            '': '#175fe9',
+            code: '#777777'
+        },
     },
     classes: {
         btn: 'font:14 h:40 text:center',

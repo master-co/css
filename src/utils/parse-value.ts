@@ -33,7 +33,7 @@ export function parseValue(
             let hasColorName = false
             
             token = token.replace(
-                new RegExp(`(^|,| |\\()(${colorNames.join('|')})(?:-([0-9]+))?(?:\\/(\\.?[0-9]+%?))?(?=(\\)|\\}|,| |$))`, 'gm'),
+                new RegExp(`(^|,| |\\()(${colorNames.join('|')})(?:-([0-9A-Za-z]+))?(?:\\/(\\.?[0-9]+%?))?(?=(\\)|\\}|,| |$))`, 'gm'),
                 (origin, prefix, colorName, level, opacityStr) => {
                     hasColorName = true
 
