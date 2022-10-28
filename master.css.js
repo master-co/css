@@ -1,6 +1,6 @@
-const { defaultColors } = require('../src')
+import { defaultColors } from './packages/css/src'
 
-module.exports = {
+export default {
     colors: {
         primary: {
             '': '#175fe9',

@@ -16,6 +16,9 @@
   },
   "references": [
     {
+      "path": "examples/nextjs"
+    },
+    {
       "path": "packages/css"
     }
   ]
