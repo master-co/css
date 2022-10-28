@@ -1,62 +1,12 @@
 {
-    "name": "@master/css",
-    "license": "MIT",
-    "description": "A Virtual CSS language with enhanced syntax. ( ~13KB )",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://docs.master.co/css/donate",
-    "homepage": "https://css.master.co",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git"
-    },
-    "keywords": [
-        "style",
-        "styles",
-        "html",
-        "variants",
-        "virtual",
-        "virtual-css",
-        "utility",
-        "css",
-        "ui",
-        "lightweight",
-        "class",
-        "webpack",
-        "plugin",
-        "integration",
-        "vite",
-        "parcel",
-        "build-tools",
-        "mastercss"
-    ],
-    "sideEffects": [
-        "./src/polyfills/css-escape.ts"
-    ],
     "scripts": {
-        "build:iife": "esbuild src/index.browser.ts --bundle --outfile=dist/index.browser.js --format=iife",
-        "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs --format=cjs --platform=node",
-        "build:esm": "esbuild src/index.ts --bundle --outfile=dist/index.mjs --format=esm --platform=node",
-        "build:css": "esbuild src/index.css --bundle --outfile=dist/index.css",
-        "dev:iife": "npm run build:iife -- --watch",
-        "dev:cjs": "npm run build:cjs -- --watch",
-        "dev:esm": "npm run build:esm -- --watch",
-        "prod": "rm -rf dist && npm run build:cjs -- --minify --sourcemap && npm run build:iife -- --minify --sourcemap && npm run build:esm -- --minify --sourcemap && tsc --emitDeclarationOnly",
         "test": "jest",
         "lint": "eslint ./src"
     },
-    "main": "./dist/index.cjs",
-    "jsnext:main": "./dist/index.mjs",
-    "browser": "./dist/index.browser.js",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "require": "./dist/index.cjs",
-            "import": "./dist/index.mjs",
-            "types": "./dist/index.d.ts"
-        }
-    },
+    "workspaces": [
+        "packages/*",
+        "examples/*"
+    ],
     "jest": {
         "testEnvironment": "node",
         "transform": {
@@ -140,15 +90,9 @@
             }
         ]
     },
-    "files": [
-        "dist"
-    ],
-    "workspaces": [
-        "packages/*",
-        "examples/*"
-    ],
     "devDependencies": {
         "@changesets/cli": "^2.25.0",
+        "@moonrepo/cli": "^0.17.0",
         "@semantic-release/exec": "^6.0.3",
         "@swc/core": "^1.3.9",
         "@swc/jest": "^0.2.23",
