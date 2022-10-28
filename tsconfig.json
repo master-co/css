@@ -17,11 +17,11 @@
         ]
     },
     "include": [
-        "./src/**/*.ts",
-        "./src/**/*.d.ts"
+        "css/**/*.ts",
+        "css/**/*.d.ts"
     ],
     "exclude": [
-        "./src/node_modules",
-        "./src/**/*.test.ts"
+        "css/node_modules",
+        "css/**/*.test.ts"
     ]
 }

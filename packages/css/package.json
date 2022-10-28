@@ -143,12 +143,7 @@
     "files": [
         "dist"
     ],
-    "workspaces": [
-        "packages/*",
-        "examples/*"
-    ],
     "devDependencies": {
-        "@changesets/cli": "^2.25.0",
         "@semantic-release/exec": "^6.0.3",
         "@swc/core": "^1.3.9",
         "@swc/jest": "^0.2.23",
