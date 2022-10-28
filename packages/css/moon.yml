@@ -1,0 +1,99 @@
+language: typescript
+tasks:
+    build-cjs:
+        command:
+            - esbuild
+            - src/index.ts
+            - '--bundle'
+            - '--outfile=dist/index.cjs'
+            - '--format=cjs'
+            - '--platform=node'
+    build-css:
+        command:
+            - esbuild
+            - src/index.css
+            - '--bundle'
+            - '--outfile=dist/index.css'
+    build-esm:
+        command:
+            - esbuild
+            - src/index.ts
+            - '--bundle'
+            - '--outfile=dist/index.mjs'
+            - '--format=esm'
+            - '--platform=node'
+    build-iife:
+        command:
+            - esbuild
+            - src/index.browser.ts
+            - '--bundle'
+            - '--outfile=dist/index.browser.js'
+            - '--format=iife'
+    dev-cjs:
+        command:
+            - npm
+            - run
+            - 'build:cjs'
+            - '--'
+            - '--watch'
+        local: true
+    dev-esm:
+        command:
+            - npm
+            - run
+            - 'build:esm'
+            - '--'
+            - '--watch'
+        local: true
+    dev-iife:
+        command:
+            - npm
+            - run
+            - 'build-iife'
+            - '--'
+            - '--watch'
+        local: true
+    lint:
+        command:
+            - eslint
+            - './src'
+    prod:
+        command: 
+            - tsc --emitDeclarationOnly
+            - rm -rf dist
+        inputs:
+            - '@globs(sources)'
+        platform: system
+    prod-dep2:
+        command:
+            - moon
+            - run
+            - 'css:build-cjs'
+            - '--'
+            - '--minify'
+            - '--sourcemap'
+    prod-dep3:
+        command:
+            - moon
+            - run
+            - 'build:iife'
+            - '--'
+            - '--minify'
+            - '--sourcemap'
+    prod-dep4:
+        command:
+            - moon
+            - run
+            - 'build:esm'
+            - '--'
+            - '--minify'
+            - '--sourcemap'
+    test:
+        command: jest
+
+project:
+    name: 'css'
+    description: 'A Virtual CSS language with enhanced syntax. ~13KB'
+    owner: 'master.co'
+    channel: '#css'
+    maintainers: ['aron', 'benseage']

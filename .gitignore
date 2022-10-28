@@ -5,6 +5,10 @@
 /tmp
 /out-tsc
 
+# monorepo
+**/*dist
+**/*node_modules
+
 # Only exists if Bazel was run
 /bazel-out
 
@@ -45,3 +49,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+# Moon
+.moon/cache
+.moon/docker

@@ -11,36 +11,36 @@ export default class extends MasterCSSRule {
         const SPACING_TOP = SPACING + '-top'
         const SPACING_BOTTOM = SPACING + '-bottom'
         switch (this.prefix[1]) {
-        case 'x':
-            return {
-                [SPACING_LEFT]: declaration,
-                [SPACING_RIGHT]: declaration
-            }
-        case 'y':
-            return {
-                [SPACING_TOP]: declaration,
-                [SPACING_BOTTOM]: declaration
-            }
-        case 'l':
-            return {
-                [SPACING_LEFT]: declaration
-            }
-        case 'r':
-            return {
-                [SPACING_RIGHT]: declaration
-            }
-        case 't':
-            return {
-                [SPACING_TOP]: declaration
-            }
-        case 'b':
-            return {
-                [SPACING_BOTTOM]: declaration
-            }
-        default:
-            return {
-                [SPACING]: declaration
-            }
+            case 'x':
+                return {
+                    [SPACING_LEFT]: declaration,
+                    [SPACING_RIGHT]: declaration
+                }
+            case 'y':
+                return {
+                    [SPACING_TOP]: declaration,
+                    [SPACING_BOTTOM]: declaration
+                }
+            case 'l':
+                return {
+                    [SPACING_LEFT]: declaration
+                }
+            case 'r':
+                return {
+                    [SPACING_RIGHT]: declaration
+                }
+            case 't':
+                return {
+                    [SPACING_TOP]: declaration
+                }
+            case 'b':
+                return {
+                    [SPACING_BOTTOM]: declaration
+                }
+            default:
+                return {
+                    [SPACING]: declaration
+                }
         }
     }
     override get order(): number {
