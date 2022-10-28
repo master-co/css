@@ -59,11 +59,7 @@ tasks:
             - './src'
     prod:
         command: 
-            - tsc --emitDeclarationOnly
             - rm -rf dist
-        inputs:
-            - '@globs(sources)'
-        platform: system
     prod-dep2:
         command:
             - moon

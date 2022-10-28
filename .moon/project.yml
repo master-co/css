@@ -48,8 +48,10 @@ tasks:
         command: 'eslint ./packages'
     test:
         command: 'jest'
-    typecheck:
+    check-type:
         command: 'tsc --noEmit'
+    declarations:
+        command: 'tsc --emitDeclarationOnly'
     noop:
         # The name of the binary/command on your system.
         command: 'noop'
