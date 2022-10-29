@@ -1,4 +1,4 @@
-language: typescript
+$schema: 'https://moonrepo.dev/schemas/global-project.json'
 
 tasks:
     lint:
@@ -7,11 +7,10 @@ tasks:
         command: 'jest'
     check-type:
         command: 'tsc --noEmit'
-    # production build
-    clear:
-        command: rm -rf dist
     declarations:
         command: 'tsc --emitDeclarationOnly'
+    clear:
+        command: rm -rf dist
     build-cjs:
         command:
             - esbuild
@@ -41,11 +40,3 @@ tasks:
             - '--format=iife'
             - '--minify'
             - '--sourcemap'
-
-
-project:
-    name: 'css'
-    description: 'A Virtual CSS language with enhanced syntax. ~13KB'
-    owner: 'master.co'
-    channel: '#css'
-    maintainers: ['1aron', 'benseage']

@@ -5,8 +5,7 @@
     "test": "jest"
   },
   "workspaces": [
-    "packages/*",
-    "examples/*"
+    "packages/*"
   ],
   "private": false,
   "engines": {
