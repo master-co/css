@@ -1,134 +1,134 @@
 {
-  "name": "@master/css",
-  "license": "MIT",
-  "description": "A Virtual CSS language with enhanced syntax. ( ~13KB )",
-  "author": "Aoyue Design LLC.",
-  "funding": "https://docs.master.co/css/donate",
-  "homepage": "https://css.master.co",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/master-co/css.git"
-  },
-  "keywords": [
-    "style",
-    "styles",
-    "html",
-    "variants",
-    "virtual",
-    "virtual-css",
-    "utility",
-    "css",
-    "ui",
-    "lightweight",
-    "class",
-    "webpack",
-    "plugin",
-    "integration",
-    "vite",
-    "parcel",
-    "build-tools",
-    "mastercss"
-  ],
-  "sideEffects": [
-    "./src/polyfills/css-escape.ts"
-  ],
-  "main": "./dist/index.cjs",
-  "jsnext:main": "./dist/index.mjs",
-  "browser": "./dist/index.browser.js",
-  "esnext": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
-    }
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "transform": {
-      "^.+\\.(t|j)sx?$": "@swc/jest"
+    "name": "@master/css",
+    "license": "MIT",
+    "description": "A Virtual CSS language with enhanced syntax. ( ~13KB )",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://docs.master.co/css/donate",
+    "homepage": "https://css.master.co",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git"
     },
-    "testMatch": [
-      "<rootDir>/tests/*.ts",
-      "<rootDir>/src/**/*.test.ts"
-    ]
-  },
-  "private": false,
-  "publishConfig": {
-    "access": "public"
-  },
-  "engines": {
-    "node": ">=14"
-  },
-  "release": {
-    "plugins": [
-      [
-        "@semantic-release/commit-analyzer",
-        {
-          "preset": "angular",
-          "releaseRules": [
-            {
-              "type": "docs",
-              "scope": "README",
-              "release": "patch"
-            },
-            {
-              "type": "refactor",
-              "release": "patch"
-            },
-            {
-              "type": "style",
-              "release": "patch"
-            }
-          ],
-          "parserOpts": {
-            "noteKeywords": [
-              "BREAKING CHANGE",
-              "BREAKING CHANGES"
-            ]
-          }
-        }
-      ],
-      "@semantic-release/release-notes-generator",
-      [
-        "@semantic-release/exec",
-        {
-          "prepareCmd": "moon run prod"
-        }
-      ],
-      [
-        "@semantic-release/github",
-        {
-          "assets": [
-            {
-              "path": "dist/index.browser.js",
-              "label": "master-css.min.js"
-            }
-          ]
-        }
-      ],
-      [
-        "@semantic-release/npm"
-      ]
+    "keywords": [
+        "style",
+        "styles",
+        "html",
+        "variants",
+        "virtual",
+        "virtual-css",
+        "utility",
+        "css",
+        "ui",
+        "lightweight",
+        "class",
+        "webpack",
+        "plugin",
+        "integration",
+        "vite",
+        "parcel",
+        "build-tools",
+        "mastercss"
     ],
-    "branches": [
-      "+([0-9])?(.{+([0-9]),x}).x",
-      "main",
-      "next",
-      "next-major",
-      {
-        "name": "beta",
-        "prerelease": true
-      },
-      {
-        "name": "alpha",
-        "prerelease": true
-      }
+    "sideEffects": [
+        "./src/polyfills/css-escape.ts"
+    ],
+    "main": "./dist/index.cjs",
+    "jsnext:main": "./dist/index.mjs",
+    "browser": "./dist/index.browser.js",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./dist/index.cjs",
+            "import": "./dist/index.mjs",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "jest": {
+        "testEnvironment": "node",
+        "transform": {
+            "^.+\\.(t|j)sx?$": "@swc/jest"
+        },
+        "testMatch": [
+            "<rootDir>/tests/*.ts",
+            "<rootDir>/src/**/*.test.ts"
+        ]
+    },
+    "private": false,
+    "publishConfig": {
+        "access": "public"
+    },
+    "engines": {
+        "node": ">=14"
+    },
+    "release": {
+        "plugins": [
+            [
+                "@semantic-release/commit-analyzer",
+                {
+                    "preset": "angular",
+                    "releaseRules": [
+                        {
+                            "type": "docs",
+                            "scope": "README",
+                            "release": "patch"
+                        },
+                        {
+                            "type": "refactor",
+                            "release": "patch"
+                        },
+                        {
+                            "type": "style",
+                            "release": "patch"
+                        }
+                    ],
+                    "parserOpts": {
+                        "noteKeywords": [
+                            "BREAKING CHANGE",
+                            "BREAKING CHANGES"
+                        ]
+                    }
+                }
+            ],
+            "@semantic-release/release-notes-generator",
+            [
+                "@semantic-release/exec",
+                {
+                    "prepareCmd": "moon run prod"
+                }
+            ],
+            [
+                "@semantic-release/github",
+                {
+                    "assets": [
+                        {
+                            "path": "dist/index.browser.js",
+                            "label": "master-css.min.js"
+                        }
+                    ]
+                }
+            ],
+            [
+                "@semantic-release/npm"
+            ]
+        ],
+        "branches": [
+            "+([0-9])?(.{+([0-9]),x}).x",
+            "main",
+            "next",
+            "next-major",
+            {
+                "name": "beta",
+                "prerelease": true
+            },
+            {
+                "name": "alpha",
+                "prerelease": true
+            }
+        ]
+    },
+    "files": [
+        "dist"
     ]
-  },
-  "files": [
-    "dist"
-  ]
 }
