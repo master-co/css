@@ -353,7 +353,6 @@ export default class MasterCSS extends MutationObserver {
             }
         }
 
-
         const semanticNames = [
             ...(classes ? Object.keys(classes) : []),
             ...((themes && !Array.isArray(themes))
@@ -469,6 +468,41 @@ export default class MasterCSS extends MutationObserver {
                     const themeValue = themes[eachTheme]
                     mergeColors(eachTheme, themeValue.colors)
                     this.themeNames.push(eachTheme)
+                }
+            }
+        }
+
+        for (const [colorName, levelsThemes] of Object.entries(this.colorsThemesMap)) {
+            for (const [level, themesColor] of Object.entries(levelsThemes)) {
+                for (const [theme, color] of Object.entries(themesColor)) {
+                    if (!color.startsWith('#')) {
+                        const [_colorName, _level] = color.split('-')
+                        const assignedThemesColor = this.colorsThemesMap[_colorName]?.[_level]
+                        let newColor = ''
+
+                        if (assignedThemesColor) {
+                            newColor = (theme
+                                ? assignedThemesColor[theme] 
+                                : undefined)
+                                ?? assignedThemesColor['']
+                            if (newColor) {
+                                themesColor[theme] = newColor
+                            }
+                        }
+                        
+                        if (!newColor) {
+                            console.warn(`\`${color}\` doesn't exist in the extended config \`.colors\``)
+
+                            if (Object.keys(themesColor).length > 1) {
+                                delete themesColor[theme] 
+                            } else if (Object.keys(levelsThemes).length > 1) {
+                                delete levelsThemes[level]
+                            } else {
+                                delete this.colorsThemesMap[colorName]
+                                this.colorNames.splice(this.colorNames.indexOf(colorName), 1)
+                            }
+                        }
+                    }
                 }
             }
         }

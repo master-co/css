@@ -3,7 +3,7 @@ const { defaultColors } = require('../src')
 module.exports = {
     colors: {
         primary: {
-            '': '#175fe9',
+            '': 'blue-50',
             code: '#777777'
         },
     },
