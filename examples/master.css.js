@@ -26,7 +26,10 @@ module.exports = {
         },
         dark: {
             colors: {
-                primary: '#fbe09d',
+                primary: {
+                    '': '#fbe09d',
+                    code: 'gray'
+                },
                 accent: '#fbe09d',
                 major: defaultColors.gray['80'],
                 content: defaultColors.gray['60'],

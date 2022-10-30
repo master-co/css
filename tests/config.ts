@@ -94,7 +94,7 @@ test('colors', () => {
     )
     testCSS(
         'fg:primary-code', 
-        '.fg\\:primary-code{color:#777777}',
+        '.fg\\:primary-code{color:#777777}.dark .fg\\:primary-code{color:#6b6a6d}',
         new MasterCSS({ config })
     )
 })

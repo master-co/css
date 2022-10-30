@@ -477,7 +477,7 @@ export default class MasterCSS extends MutationObserver {
                 for (const [theme, color] of Object.entries(themesColor)) {
                     if (!color.startsWith('#')) {
                         const [_colorName, _level] = color.split('-')
-                        const assignedThemesColor = this.colorsThemesMap[_colorName]?.[_level]
+                        const assignedThemesColor = this.colorsThemesMap[_colorName]?.[_level ?? '']
                         let newColor = ''
 
                         if (assignedThemesColor) {
