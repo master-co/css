@@ -191,6 +191,7 @@ import BorderImageWidth from '../rules/border-image-width'
 import BorderImage from '../rules/border-image'
 import Group from '../rules/group'
 import CounterIncrement from '../rules/counter-increment'
+import counterReset from '../rules/counter-reset'
 
 const DefaultRules = [
     Group,
@@ -220,6 +221,7 @@ const DefaultRules = [
     Contain,
     Content,
     CounterIncrement,
+    counterReset,
     LetterSpacing,
     LineHeight,
     ObjectFit,
