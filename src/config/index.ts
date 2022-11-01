@@ -32,7 +32,7 @@ export interface MasterCSSConfig {
     mediaQueries?: Record<string, string>
     selectors?: Record<string, string | string[]>
     semantics?: Record<string, string | Record<string, string | number>>
-    values?: Record<string, Record<string, string | number>>
+    values?: Record<string, Record<string, string | number> | string | number>
     Rules?: typeof MasterCSSRule[],
     themes?: Record<string, { classes?: Record<string, string>, colors?: Record<string, string | Record<string, string>> }> | string[],
     rootSize?: number

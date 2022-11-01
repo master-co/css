@@ -95,9 +95,9 @@ export default class MasterCSSRule {
         const TargetRule = this.constructor as typeof MasterCSSRule
         const { id, unit, propName, colorful } = TargetRule
         const { breakpoints, mediaQueries, semantics, rootSize } = css.config
-        const values = css.config.values[id]
+        const { themeNames, colorsThemesMap, selectors, globalValues } = css
+        const values = css.values[id]
         const relationThemesMap = css.relationThemesMap[className]
-        const { themeNames, colorsThemesMap, selectors } = css
 
         const token = className
 
@@ -549,6 +549,7 @@ export default class MasterCSSRule {
                             unit,
                             colorful && colorsThemesMap,
                             values,
+                            globalValues,
                             rootSize,
                             this.themeName ? [this.themeName, ''] : [themeName]
                         )
@@ -585,6 +586,8 @@ export default class MasterCSSRule {
                         newValue = 'currentColor'
                     } else if (values && newValue in values) {
                         newValue = values[newValue].toString()
+                    } else if (newValue in globalValues) {
+                        newValue = globalValues[newValue].toString()
                     }
 
                     const declaration: MasterCSSDeclaration = {

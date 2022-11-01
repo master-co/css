@@ -41,10 +41,8 @@ module.exports = {
         }
     },
     values: {
-        Width: {
-            '2x': '2rem',
-            '3x': '3rem',
-        }
+        '2x': '2rem',
+        '3x': '3rem',
     },
     semantics: {
         show: 'display:block',

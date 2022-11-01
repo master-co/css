@@ -57,6 +57,8 @@ export default class MasterCSS extends MutationObserver {
     relationThemesMap: Record<string, Record<string, string[]>>
     relations: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>
+    values: Record<string, Record<string, string | number>>
+    globalValues: Record<string, string | number>
 
     private schemeMQL: MediaQueryList
 
@@ -319,8 +321,10 @@ export default class MasterCSS extends MutationObserver {
         this.colorNames = []
         this.themeNames = ['']
         this.selectors = {}
+        this.values = {}
+        this.globalValues = {}
 
-        const { semantics, classes, selectors, themes, colors } = this.config
+        const { semantics, classes, selectors, themes, colors, values } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -350,6 +354,13 @@ export default class MasterCSS extends MutationObserver {
 
                     currentSelectValue[1].push(eachNewSelectorText)
                 }
+            }
+        }
+        if (values) {
+            for (const [id, valueMap] of Object.entries(values)) {
+                (typeof valueMap === 'object'
+                    ? this.values
+                    : this.globalValues)[id] = valueMap
             }
         }
 
@@ -458,7 +469,6 @@ export default class MasterCSS extends MutationObserver {
                 }
             }
         }
-
         mergeColors('', colors)
         if (themes) {
             if (Array.isArray(themes)) {
