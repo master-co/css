@@ -65,7 +65,7 @@ export default class MasterCSSRule {
         // TODO: 動態 new Regex 效能問題待優化
         if (this.colorStarts
             && (
-                name.match('^' + this.colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current))')
+                name.match('^' + this.colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current|inherit))')
                 || colorNames.length
                 && name.match('^' + this.colorStarts + '(' + colorNames.join('|') + ')')
                 && name.indexOf('|') === -1

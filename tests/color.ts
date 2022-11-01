@@ -9,4 +9,5 @@ test('color', () => {
     testProp('foreground:current', 'color:currentColor')
     testProp('fg:transparent', 'color:transparent')
     testProp('foreground:transparent', 'color:transparent')
+    testProp('fg:inherit', 'color:inherit')
 })
