@@ -6,6 +6,7 @@ export default class extends MasterCSSRule {
     static override id = 'BackdropFilter'
     static override matches = /^bd:./
     static override propName = 'backdrop-filter'
+    static override colorful = true
     override get(declaration): { [key: string]: any } {
         return {
             'backdrop-filter': declaration,
