@@ -1,5 +1,6 @@
 {
     "name": "@master/css",
+    "version": "2.0.0",
     "license": "MIT",
     "description": "A Virtual CSS language with enhanced syntax. ( ~13KB )",
     "author": "Aoyue Design LLC.",
