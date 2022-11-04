@@ -3,6 +3,7 @@ import MasterCSSRule from '../rule'
 export default class extends MasterCSSRule {
     static override id = 'Spacing'
     static override matches = /^[pm][xytblr]?:./
+    static override prop = ''
     override get(declaration): { [key: string]: any } {
         const charAt1 = this.prefix[0]
         const SPACING = charAt1 === 'm' ? 'margin' : 'padding'

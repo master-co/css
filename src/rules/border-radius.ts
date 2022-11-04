@@ -10,6 +10,7 @@ const BORDER_TOP_LEFT_RADIUS = 'border-top-left-radius',
 export default class extends MasterCSSRule {
     static override id = 'BorderRadius'
     static override matches = /^((r[tblr]?[tblr]?|border(-(top|bottom)-(left|right))?-radius):.)/
+    static override prop = ''
     override get(declaration): { [key: string]: any } {
         if (this.prefix) {
             let suffix = ''

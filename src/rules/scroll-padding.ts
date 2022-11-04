@@ -3,6 +3,7 @@ import MasterCSSRule from '../rule'
 export default class extends MasterCSSRule {
     static override id = 'ScrollPadding'
     static override matches = /^scroll-p([xytblr]|adding(-(top|bottom|left|right))?)?:./
+    static override prop = ''
     override get(declaration): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'p') {
 

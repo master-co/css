@@ -3,6 +3,7 @@ import MasterCSSRule from '../rule'
 export default class extends MasterCSSRule {
     static override id = 'Overflow'
     static override matches = /^overflow(-x|-y)?:(?:visible|overlay|hidden|scroll|auto|clip|inherit|initial|revert|revert-layer|unset|\$|var)/
+    static override prop = ''
     override get(declaration): { [key: string]: any } {
         if (this.prefix) {
             switch (this.prefix.slice(-2, -1)) {

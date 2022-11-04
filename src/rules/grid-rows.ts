@@ -2,7 +2,6 @@ import MasterCSSRule from '../rule'
 
 export default class extends MasterCSSRule {
     static override id = 'GridRows'
-    static override propName = 'grid-rows'
     static override unit = ''
     override get(declaration): { [key: string]: any } {
         return {

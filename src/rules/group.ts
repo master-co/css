@@ -9,6 +9,7 @@ export default class extends MasterCSSRule {
     static override id = 'Group'
     static override matches = /^(?:.+?[*_>~+])?\{.+?\}/
     static override unit = ''
+    static override prop = ''
     override getThemeProps(declaration: MasterCSSDeclaration, css: MasterCSS): Record<string, Record<string, string>> {
         const themePropsMap: Record<string, Record<string, string>> = {}
         

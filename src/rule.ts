@@ -42,32 +42,36 @@ export default class MasterCSSRule {
     readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, themeName: string, cssRule?: CSSRule }[] = []
 
     static id: string
-    static propName: string
     static matches: RegExp
     static colorStarts: string
     static symbol: string
     static unit = REM
     static colorful: boolean
+    static get prop(): string {
+        return this.id?.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
+    }
+
 
     static match(
         name: string,
         colorNames: string[]
     ): MasterCSSRuleMatching {
+        const { matches, colorStarts, symbol, prop } = this
         /** 
          * STEP 1. matches
          */
-        if (this.matches && this.matches.test(name)) {
+        if (matches && matches.test(name)) {
             return { origin: MATCHES }
         }
         /** 
          * STEP 2. color starts
          */
         // TODO: 動態 new Regex 效能問題待優化
-        if (this.colorStarts
+        if (colorStarts
             && (
-                name.match('^' + this.colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current|inherit))')
+                name.match('^' + colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current|inherit))')
                 || colorNames.length
-                && name.match('^' + this.colorStarts + '(' + colorNames.join('|') + ')')
+                && name.match('^' + colorStarts + '(' + colorNames.join('|') + ')')
                 && name.indexOf('|') === -1
             )
         ) {
@@ -76,13 +80,13 @@ export default class MasterCSSRule {
         /** 
          * STEP 3. symbol
          */
-        if (this.symbol && name.startsWith(this.symbol)) {
+        if (symbol && name.startsWith(symbol)) {
             return { origin: SYMBOL }
         }
         /**
          * STEP 4. key full name
          */
-        if (this.propName && name.startsWith(this.propName + ':')) {
+        if (prop && name.startsWith(prop + ':')) {
             return { origin: MATCHES }
         }
     }
@@ -93,7 +97,7 @@ export default class MasterCSSRule {
         public css: MasterCSS
     ) {
         const TargetRule = this.constructor as typeof MasterCSSRule
-        const { id, unit, propName, colorful } = TargetRule
+        const { id, unit, colorful, prop } = TargetRule
         const { breakpoints, mediaQueries, semantics, rootSize } = css.config
         const { themeNames, colorsThemesMap, selectors, globalValues } = css
         const values = css.values[id]
@@ -642,7 +646,7 @@ export default class MasterCSSRule {
                                     important: this.important
                                 }))
                                 .join(';')
-                            : getCssPropertyText(propName, { unit: newUnit, value: newValue, important: this.important }),
+                            : getCssPropertyText(prop, { unit: newUnit, value: newValue, important: this.important }),
                         themeName,
                         suffixSelectors
                     ),

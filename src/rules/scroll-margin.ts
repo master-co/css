@@ -3,6 +3,7 @@ import MasterCSSRule from '../rule'
 export default class extends MasterCSSRule {
     static override id = 'ScrollMargin'
     static override matches = /^scroll-m([xytblr]|argin(-(top|bottom|left|right))?)?:./
+    static override prop = ''
     override get(declaration): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'm') {
             switch (this.prefix.slice(-2, -1)) {

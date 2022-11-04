@@ -4,7 +4,6 @@ import MasterCSSRule from '../rule'
 export default class extends MasterCSSRule {
     static override id = 'Transform'
     static override matches = /^(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\(/
-    static override propName = 'transform'
     static override unit = ''
     override parseValue(value: string, {rootSize}: MasterCSSConfig): string {
         return value.replace(

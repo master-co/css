@@ -4,6 +4,7 @@ import { getBorderProps } from '../utils/get-border-props'
 export default class extends MasterCSSRule {
     static override id = 'BorderStyle'
     static override matches = /^(border(-(left|right|top|bottom))?-style:.|b([xytblr]|order(-(left|right|top|bottom))?)?:(none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset)(?!\|))/
+    static override prop = ''
     override get(declaration): { [key: string]: any } {
         return getBorderProps(this.prefix, declaration, 'style')
     }

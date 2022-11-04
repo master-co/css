@@ -4,6 +4,5 @@ export default class extends MasterCSSRule {
     static override id = 'Color'
     static override colorStarts = '(?:color|fg|foreground):'
     static override colorful = true
-    static override propName = 'color'
     static override unit = ''
 }

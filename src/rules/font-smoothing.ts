@@ -8,6 +8,7 @@ export default class extends MasterCSSRule {
     static override id = 'FontSmoothing'
     static override matches = /^f(ont)?:(antialiased|subpixel-antialiased)(?!\|)/
     static override unit = ''
+    static override prop = ''
     override get(declaration): { [key: string]: any } {
         const props = {}
         switch (declaration.value) {
