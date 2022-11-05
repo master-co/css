@@ -540,7 +540,7 @@ export default class MasterCSS extends MutationObserver {
                 const { title, href, ownerNode } = sheet
                 if (
                     title === 'master'
-                    || href && /master(?:\..+)?\.css/.test(href)
+                    || href && href.startsWith(window.location.origin) && /master(?:\..+)?\.css/.test(href)
                 ) {
                     // @ts-ignore
                     this.style = ownerNode
