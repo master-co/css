@@ -35,12 +35,9 @@ body:
       label: System Informations
       description: Please provide the system informations related to the bug. Browser, OS, Node.js, Package Manager ...
       placeholder: |
-        Browser: Chrome 99.0.1234.56
-        OS: macOS 12.0.1 (amd64)
-        Node.js: 16.31.1
-        Package Manager: pnpm 6.32.3
+        Browser Version / OS Version / Node.js Version / Package Manager Version
     validations:
-      required: true
+      required: false
 
   - type: markdown
     attributes:
