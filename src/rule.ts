@@ -55,7 +55,7 @@ export default class MasterCSSRule {
     static match(
         name: string,
         colorNames: string[]
-    ): MasterCSSRuleMatching {
+    ): RuleMatching {
         const { matches, colorStarts, symbol, prop } = this
         /** 
          * STEP 1. matches
@@ -93,7 +93,7 @@ export default class MasterCSSRule {
 
     constructor(
         public readonly className: string,
-        public readonly matching: MasterCSSRuleMatching,
+        public readonly matching: RuleMatching,
         public css: MasterCSS
     ) {
         const TargetRule = this.constructor as typeof MasterCSSRule
@@ -698,7 +698,7 @@ export interface Declaration {
     important: boolean
 }
 
-export interface MasterCSSRuleMatching {
+export interface RuleMatching {
     origin: 'matches' | 'semantics' | 'symbol';
     value?: string;
 }
