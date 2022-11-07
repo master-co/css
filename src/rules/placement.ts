@@ -1,6 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
+export default class extends Rule {
     static override id = 'Placement'
     static override matches = /^(top|left|right|bottom|center|middle):./
     static override prop = ''

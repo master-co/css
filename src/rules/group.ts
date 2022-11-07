@@ -1,11 +1,11 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 import MasterCSS from '../css'
 import { START_SYMBOL } from '../constants/start-symbol'
 import type { Declaration } from '../rule'
 
 const bracketRegexp = /\{(.*)\}/
 
-export default class extends MasterCSSRule {
+export default class extends Rule {
     static override id = 'Group'
     static override matches = /^(?:.+?[*_>~+])?\{.+?\}/
     static override unit = ''
@@ -27,7 +27,7 @@ export default class extends MasterCSSRule {
                 }
             }
         }
-        const handleRule = (rule: MasterCSSRule) => {
+        const handleRule = (rule: Rule) => {
             const addProps = (themeName: string, cssText: string) => {
                 const cssProperties = cssText.slice(CSS.escape(rule.className).length).match(bracketRegexp)[1].split(';')
                 for (const eachCssProperty of cssProperties) {

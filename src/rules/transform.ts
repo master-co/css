@@ -1,7 +1,7 @@
 import type { MasterCSSConfig } from '../config'
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
+export default class extends Rule {
     static override id = 'Transform'
     static override matches = /^(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\(/
     static override unit = ''

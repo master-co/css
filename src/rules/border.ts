@@ -1,7 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 import { getBorderProps } from '../utils/get-border-props'
 
-export default class extends MasterCSSRule {
+export default class extends Rule {
     static override id = 'Border'
     static override matches = /^b([xytblr]?|order(-(left|right|top|bottom))?):./
     static override colorful = true

@@ -1,4 +1,4 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
 const BORDER_TOP_LEFT_RADIUS = 'border-top-left-radius',
     BORDER_TOP_RIGHT_RADIUS = 'border-top-right-radius',
@@ -7,7 +7,7 @@ const BORDER_TOP_LEFT_RADIUS = 'border-top-left-radius',
     BORDER_RADIUS = 'border-radius',
     BORDER_RADIUS_S = [BORDER_TOP_LEFT_RADIUS, BORDER_TOP_RIGHT_RADIUS, BORDER_BOTTOM_LEFT_RADIUS, BORDER_BOTTOM_RIGHT_RADIUS]
 
-export default class extends MasterCSSRule {
+export default class extends Rule {
     static override id = 'BorderRadius'
     static override matches = /^((r[tblr]?[tblr]?|border(-(top|bottom)-(left|right))?-radius):.)/
     static override prop = ''

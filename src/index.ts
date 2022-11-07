@@ -1,6 +1,6 @@
 // core
 export { default } from './css'
-export { default as MasterCSSRule } from './rule'
+export { default as Rule } from './rule'
 
 // api
 export { default as extend } from './apis/extend'

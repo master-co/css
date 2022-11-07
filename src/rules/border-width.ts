@@ -1,7 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 import { getBorderProps } from '../utils/get-border-props'
 
-export default class extends MasterCSSRule {
+export default class extends Rule {
     static override id = 'BorderWidth'
     static override matches = /^(border(-(left|right|top|bottom))?-width:.|b([xytblr]|order(-(left|right|top|bottom))?)?:(([0-9]|(max|min|calc|clamp)\(.*\))|(max|min|calc|clamp)\(.*\))((?!\|).)*$)/
     static override prop = ''

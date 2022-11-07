@@ -24,7 +24,7 @@ const transformSelectorUnderline = (selector: string) => selector.split(selector
     .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/_/g, ' '))
     .join('')
 
-export default class MasterCSSRule {
+export default class Rule {
 
     readonly prefix: string
     readonly symbol: string
@@ -96,7 +96,7 @@ export default class MasterCSSRule {
         public readonly matching: RuleMatching,
         public css: MasterCSS
     ) {
-        const TargetRule = this.constructor as typeof MasterCSSRule
+        const TargetRule = this.constructor as typeof Rule
         const { id, unit, colorful, prop } = TargetRule
         const { breakpoints, mediaQueries, semantics, rootSize } = css.config
         const { themeNames, colorsThemesMap, selectors, globalValues } = css
@@ -669,7 +669,7 @@ export default class MasterCSSRule {
     }
 }
 
-export default interface MasterCSSRule {
+export default interface Rule {
     readonly order?: number;
     parseValue(value: string, config: MasterCSSConfig): string;
     get(declaration: Declaration): Record<string, any>;

@@ -1,8 +1,8 @@
 import type { MasterCSSConfig } from '../config'
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
-export default class extends MasterCSSRule {
+export default class extends Rule {
     static override id = 'BackdropFilter'
     static override matches = /^bd:./
     static override colorful = true

@@ -8,7 +8,7 @@ import defaultThemes from './themes'
 import defaultScheme from './scheme'
 import defaultValues from './values'
 import DefaultRules from './rules'
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 import MasterCSS from '../css'
 
 const defaultConfig: MasterCSSConfig = {
@@ -33,10 +33,10 @@ export interface MasterCSSConfig {
     selectors?: Record<string, string | string[]>
     semantics?: Record<string, string | Record<string, string | number>>
     values?: Record<string, Record<string, string | number> | string | number>
-    Rules?: typeof MasterCSSRule[],
+    Rules?: typeof Rule[],
     themes?: Record<string, { classes?: Record<string, string>, colors?: Record<string, string | Record<string, string>> }> | string[],
     rootSize?: number
-    validateRule?: (rule: MasterCSSRule, css?: MasterCSS) => boolean
+    validateRule?: (rule: Rule, css?: MasterCSS) => boolean
     scheme?: {
         preference?: string,
         storage?: {

@@ -1,6 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
+export default class extends Rule {
     static override id = 'GridColumns'
     static override matches = /^grid-cols:./
     static override unit = ''

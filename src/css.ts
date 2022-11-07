@@ -1,7 +1,7 @@
 import defaultConfig from './config'
 import extend from './apis/extend'
 import type { MasterCSSConfig } from './config'
-import MasterCSSRule from './rule'
+import Rule from './rule'
 
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@']
 const vendorPrefixSelectorRegExp = /^::-[a-z]+-/m
@@ -41,8 +41,8 @@ export default class MasterCSS extends MutationObserver {
     }
 
     readonly style: HTMLStyleElement
-    readonly rules: MasterCSSRule[] = []
-    readonly ruleOfClass: Record<string, MasterCSSRule> = {}
+    readonly rules: Rule[] = []
+    readonly ruleOfClass: Record<string, Rule> = {}
     readonly countOfClass = {}
     readonly host: Element
     readonly root: Document | ShadowRoot
@@ -549,7 +549,7 @@ export default class MasterCSS extends MutationObserver {
 
             if (this.style) {
                 for (let index = 0; index < this.style.sheet.cssRules.length; index++) {
-                    const getRule = (cssRule: any): MasterCSSRule => {
+                    const getRule = (cssRule: any): Rule => {
                         if (cssRule.selectorText) {
                             const selectorTexts = cssRule.selectorText.split(', ')
                             const escapedClassNames = selectorTexts[0].split(' ')
@@ -580,7 +580,7 @@ export default class MasterCSS extends MutationObserver {
                                     }
 
                                     if (!(className in this.ruleOfClass) && !(className in this.classes)) {
-                                        const currentRule = this.findAndNew(className) as MasterCSSRule
+                                        const currentRule = this.findAndNew(className) as Rule
                                         if (currentRule)
                                             return currentRule
                                     }
@@ -615,7 +615,7 @@ export default class MasterCSS extends MutationObserver {
 
             if (options.subtree) {
                 /**
-                 * 待所有 DOM 結構完成解析後，開始繪製 MasterCSSRule 樣式
+                 * 待所有 DOM 結構完成解析後，開始繪製 Rule 樣式
                  */
                 this.host
                     .querySelectorAll('[class]')
@@ -660,7 +660,7 @@ export default class MasterCSS extends MutationObserver {
     }
 
     /**
-     * 尋找匹配的 MasterCSSRule 生成實例
+     * 尋找匹配的 Rule 生成實例
      */
     findAndNew(name: string) {
         const findAndNewRule = (className: string) => {
@@ -679,7 +679,7 @@ export default class MasterCSS extends MutationObserver {
 
             for (const eachSemanticEntry of this.semantics) {
                 if (className.match(eachSemanticEntry[0]))
-                    return new MasterCSSRule(
+                    return new Rule(
                         className,
                         { origin: 'semantics', value: eachSemanticEntry[1] },
                         this
@@ -743,7 +743,7 @@ export default class MasterCSS extends MutationObserver {
      * 9. media width
      * 10. media width selectors
      */
-    insert(rule: MasterCSSRule) {
+    insert(rule: Rule) {
         if (this.ruleOfClass[rule.className])
             return
 
@@ -762,10 +762,10 @@ export default class MasterCSS extends MutationObserver {
         const endIndex = this.rules.length - 1
         const { media, order, prioritySelectorIndex, hasWhere, className } = rule
         const findPrioritySelectorInsertIndex = (
-            rules: MasterCSSRule[],
-            findStartIndex?: (rule: MasterCSSRule) => any,
-            findEndIndex?: (rule: MasterCSSRule) => any,
-            ignoreRule?: (rule: MasterCSSRule) => any
+            rules: Rule[],
+            findStartIndex?: (rule: Rule) => any,
+            findEndIndex?: (rule: Rule) => any,
+            ignoreRule?: (rule: Rule) => any
         ) => {
             let sIndex = 0
             let eIndex: number
@@ -784,7 +784,7 @@ export default class MasterCSS extends MutationObserver {
                 eIndex = rules.length
             }
 
-            const targetRules: MasterCSSRule[] = rules.slice(sIndex, eIndex)
+            const targetRules: Rule[] = rules.slice(sIndex, eIndex)
 
             // 2. 由目標陣列找尋插入點
             for (let i = 0; i < targetRules.length; i++) {

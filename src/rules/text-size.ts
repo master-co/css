@@ -1,8 +1,8 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
 const diff = .5
 
-export default class extends MasterCSSRule {
+export default class extends Rule {
     static override id = 'TextSize'
     static override matches = /^t(ext)?:([0-9]|(max|min|calc|clamp)\(.*\))((?!\|).)*$/
     static override prop = ''

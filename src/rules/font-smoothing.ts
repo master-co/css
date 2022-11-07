@@ -1,10 +1,10 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
 const SUBPIXEL_ANTIALIASED = 'subpixel-antialiased'
 const WEBKIT_FONT_SMOOTHING = '-webkit-font-smoothing'
 const MOZ_OSXFONT_SMOOTHING = '-moz-osx-font-smoothing'
 
-export default class extends MasterCSSRule {
+export default class extends Rule {
     static override id = 'FontSmoothing'
     static override matches = /^f(ont)?:(antialiased|subpixel-antialiased)(?!\|)/
     static override unit = ''

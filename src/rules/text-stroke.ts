@@ -1,6 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
+export default class extends Rule {
     static override id = 'TextStroke'
     static override matches = /^text-stroke:./
     static override prop = ''

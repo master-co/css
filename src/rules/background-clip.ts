@@ -1,6 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
+export default class extends Rule {
     static override id = 'BackgroundClip'
     static override matches = /^(bg|background):text(?!\|)/
     override get(declaration): { [key: string]: any } {
