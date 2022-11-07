@@ -38,7 +38,7 @@ export default class Rule {
     readonly themeName: string
     readonly unitToken: string
     readonly hasWhere: boolean
-    readonly prioritySelectorIndex: number = -1
+    readonly priority: number = -1
     readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, themeName: string, cssRule?: CSSRule }[] = []
 
     static id: string
@@ -348,8 +348,8 @@ export default class Rule {
 
                     for (let i = 0; i < PRIORITY_SELECTORS.length; i++) {
                         if (eachSuffixSelector.includes(PRIORITY_SELECTORS[i])) {
-                            if (this.prioritySelectorIndex === -1 || this.prioritySelectorIndex > i) {
-                                this.prioritySelectorIndex = i
+                            if (this.priority === -1 || this.priority > i) {
+                                this.priority = i
                             }
                             break
                         }

@@ -760,7 +760,7 @@ export default class MasterCSS extends MutationObserver {
          * @description
          */
         const endIndex = this.rules.length - 1
-        const { media, order, prioritySelectorIndex, hasWhere, className } = rule
+        const { media, order, priority, hasWhere, className } = rule
         const findPrioritySelectorInsertIndex = (
             rules: Rule[],
             findStartIndex?: (rule: Rule) => any,
@@ -790,12 +790,12 @@ export default class MasterCSS extends MutationObserver {
             for (let i = 0; i < targetRules.length; i++) {
                 const currentRule = targetRules[i]
 
-                if (currentRule.prioritySelectorIndex === -1 || ignoreRule && ignoreRule(currentRule))
+                if (currentRule.priority === -1 || ignoreRule && ignoreRule(currentRule))
                     continue
 
                 if (
-                    currentRule.prioritySelectorIndex < prioritySelectorIndex
-                    || currentRule.prioritySelectorIndex === prioritySelectorIndex
+                    currentRule.priority < priority
+                    || currentRule.priority === priority
                     && (
                         hasWhere && !currentRule.hasWhere
                         || currentRule.order >= order
@@ -838,7 +838,7 @@ export default class MasterCSS extends MutationObserver {
                             if (hasWhere !== eachRule.hasWhere)
                                 continue
 
-                            if (prioritySelectorIndex !== -1) {
+                            if (priority !== -1) {
                                 const sameRangeRules = [this.rules[i]]
                                 for (let j = i - 1; j >= mediaStartIndex; j--) {
                                     const currentMediaRule = this.rules[j]
@@ -860,7 +860,7 @@ export default class MasterCSS extends MutationObserver {
 
                                 index = findPrioritySelectorInsertIndex(
                                     this.rules,
-                                    eachRule => eachRule.media && eachRule.prioritySelectorIndex !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH])
+                                    eachRule => eachRule.media && eachRule.priority !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH])
                             }
 
                             break
@@ -898,11 +898,11 @@ export default class MasterCSS extends MutationObserver {
                                 continue
                             }
 
-                            if (prioritySelectorIndex !== -1) {
+                            if (priority !== -1) {
                                 index = findPrioritySelectorInsertIndex(
                                     this.rules,
                                     eachRule => eachRule.media,
-                                    eachRule => eachRule.media && eachRule.prioritySelectorIndex !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH],
+                                    eachRule => eachRule.media && eachRule.priority !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH],
                                     eachRule => !eachRule.media.features[MIN_WIDTH] && !eachRule.media.features[MAX_WIDTH])
                             } else {
                                 for (let j = i; j <= endIndex; j++) {
@@ -959,11 +959,11 @@ export default class MasterCSS extends MutationObserver {
                             if (hasWhere && !eachRule.hasWhere)
                                 continue
 
-                            if (prioritySelectorIndex !== -1) {
+                            if (priority !== -1) {
                                 index = findPrioritySelectorInsertIndex(
                                     this.rules,
                                     eachRule => eachRule.media,
-                                    eachRule => eachRule.media && eachRule.prioritySelectorIndex !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH],
+                                    eachRule => eachRule.media && eachRule.priority !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH],
                                     eachRule => !eachRule.media.features[MIN_WIDTH] && !eachRule.media.features[MAX_WIDTH])
                             } else {
                                 const sameRangeRules = [this.rules[i]]
@@ -1009,7 +1009,7 @@ export default class MasterCSS extends MutationObserver {
                 if (mediaStartIndex === -1) {
                     // 無任何 media 時，優先級最高
                     index = endIndex + 1
-                } else if (prioritySelectorIndex !== -1) {
+                } else if (priority !== -1) {
                     // 含有優先 selector
                     index = mediaStartIndex +
                         findPrioritySelectorInsertIndex(
@@ -1021,7 +1021,7 @@ export default class MasterCSS extends MutationObserver {
                     let i = mediaStartIndex
                     for (; i < this.rules.length; i++) {
                         const eachRule = this.rules[i]
-                        if (eachRule.prioritySelectorIndex !== -1 || !eachRule.hasWhere || eachRule.order >= order) {
+                        if (eachRule.priority !== -1 || !eachRule.hasWhere || eachRule.order >= order) {
                             index = i
                             break
                         }
@@ -1037,7 +1037,7 @@ export default class MasterCSS extends MutationObserver {
 
                         const eachRule = this.rules[i]
                         const eachMedia = eachRule.media
-                        if (eachRule.prioritySelectorIndex !== -1 || eachMedia.features[MAX_WIDTH] || eachMedia.features[MIN_WIDTH])
+                        if (eachRule.priority !== -1 || eachMedia.features[MAX_WIDTH] || eachMedia.features[MIN_WIDTH])
                             break
 
                         if (eachRule.hasWhere) {
@@ -1049,13 +1049,13 @@ export default class MasterCSS extends MutationObserver {
                 }
             }
         } else {
-            if (prioritySelectorIndex === -1) {
+            if (priority === -1) {
                 // 不含優先 selector
                 if (hasWhere) {
                     // 含有 where，優先級最低
                     index = this.rules.findIndex(eachRule => !eachRule.hasWhere
                         || eachRule.media
-                        || eachRule.prioritySelectorIndex !== -1
+                        || eachRule.priority !== -1
                         || eachRule.order >= order)
 
                     if (index === -1) {
@@ -1066,7 +1066,7 @@ export default class MasterCSS extends MutationObserver {
                     let i = 0
                     for (; i < this.rules.length; i++) {
                         const eachRule = this.rules[i]
-                        if (eachRule.media || !eachRule.hasWhere && (eachRule.order >= order || eachRule.prioritySelectorIndex !== -1)) {
+                        if (eachRule.media || !eachRule.hasWhere && (eachRule.order >= order || eachRule.priority !== -1)) {
                             index = i
                             break
                         }
