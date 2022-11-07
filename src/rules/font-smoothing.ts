@@ -5,7 +5,7 @@ const WEBKIT_FONT_SMOOTHING = '-webkit-font-smoothing'
 const MOZ_OSXFONT_SMOOTHING = '-moz-osx-font-smoothing'
 
 export default class extends Rule {
-    static override id = 'FontSmoothing'
+    static override id: 'FontSmoothing' = 'FontSmoothing' as const
     static override matches = /^f(ont)?:(antialiased|subpixel-antialiased)(?!\|)/
     static override unit = ''
     static override prop = ''

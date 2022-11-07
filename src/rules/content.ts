@@ -1,5 +1,5 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id = 'Content'
+    static override id: 'Content' = 'Content' as const
 }

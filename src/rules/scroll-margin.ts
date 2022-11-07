@@ -1,7 +1,7 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id = 'ScrollMargin'
+    static override id: 'ScrollMargin' = 'ScrollMargin' as const
     static override matches = /^scroll-m([xytblr]|argin(-(top|bottom|left|right))?)?:./
     static override prop = ''
     override get(declaration): { [key: string]: any } {

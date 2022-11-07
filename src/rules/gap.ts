@@ -1,7 +1,7 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id = 'Gap'
+    static override id: 'Gap' = 'Gap' as const
     static override matches = /^gap(-x|-y)?:./
     static override prop = ''
     override get(declaration): { [key: string]: any } {

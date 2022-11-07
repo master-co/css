@@ -1,7 +1,7 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id = 'GridRow'
+    static override id: 'GridRow' = 'GridRow' as const
     static override matches = /^grid-row-span:./
     static override unit = ''
     override parseValue(value: string): string {

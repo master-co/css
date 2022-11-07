@@ -1,7 +1,7 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id = 'Overflow'
+    static override id: 'Overflow' = 'Overflow' as const
     static override matches = /^overflow(-x|-y)?:(?:visible|overlay|hidden|scroll|auto|clip|inherit|initial|revert|revert-layer|unset|\$|var)/
     static override prop = ''
     override get(declaration): { [key: string]: any } {

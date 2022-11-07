@@ -1,7 +1,7 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id = 'Spacing'
+    static override id: 'Spacing' = 'Spacing' as const
     static override matches = /^[pm][xytblr]?:./
     static override prop = ''
     override get(declaration): { [key: string]: any } {

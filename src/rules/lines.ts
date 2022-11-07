@@ -1,7 +1,7 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id = 'Lines'
+    static override id: 'Lines' = 'Lines' as const
     static override matches = /^lines:./
     static override unit = ''
     static override prop = ''

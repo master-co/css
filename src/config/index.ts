@@ -32,7 +32,11 @@ export interface Config {
     mediaQueries?: Record<string, string>
     selectors?: Record<string, string | string[]>
     semantics?: Record<string, string | Record<string, string | number>>
-    values?: Record<string, Record<string, string | number> | string | number>
+    values?: { 
+        [id in typeof DefaultRules[number]['id']]?: Record<string, string | number>
+    } & {
+        [key: string]: Record<string, string | number> | string | number
+    },
     Rules?: typeof Rule[],
     themes?: Record<string, { classes?: Record<string, string>, colors?: Record<string, string | Record<string, string>> }> | string[],
     rootSize?: number
