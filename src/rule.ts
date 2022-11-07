@@ -416,7 +416,7 @@ export default class MasterCSSRule {
                                 } else if (mediaQueries && typeOrFeatureToken in mediaQueries) {
                                     queryTexts.push(mediaQueries[typeOrFeatureToken])
                                 } else {
-                                    const feature: MasterCSSMediaFeatureRule = {
+                                    const feature: MediaFeatureRule = {
                                         token: typeOrFeatureToken
                                     }
                                     let featureName = ''
@@ -676,7 +676,7 @@ export default interface MasterCSSRule {
     getThemeProps(declaration: MasterCSSDeclaration, css: MasterCSS): Record<string, Record<string, string>>;
 }
 
-export interface MasterCSSMediaFeatureRule {
+export interface MediaFeatureRule {
     token: string;
     tokenType?: string;
     operator?: string;
@@ -687,7 +687,7 @@ export interface MasterCSSMediaFeatureRule {
 export interface MasterCSSMedia {
     token: string;
     features?: {
-        [key: string]: MasterCSSMediaFeatureRule
+        [key: string]: MediaFeatureRule
     }
     type?: string;
 }
