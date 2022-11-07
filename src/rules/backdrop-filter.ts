@@ -1,4 +1,4 @@
-import type { MasterCSSConfig } from '../config'
+import type { Config } from '../config'
 import Rule from '../rule'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
@@ -12,7 +12,7 @@ export default class extends Rule {
             '-webkit-backdrop-filter': declaration
         }
     }
-    override parseValue(value: string, config: MasterCSSConfig): string {
+    override parseValue(value: string, config: Config): string {
         return parseValueUnit(
             value,
             method => {

@@ -25,6 +25,6 @@ export { default as DefaultRules } from './config/rules'
 export const root: Document = typeof document !== 'undefined' && document
 
 // type
-export type { MasterCSSConfig } from './config'
+export type { Config } from './config'
 export type { Declaration, MediaQuery, MediaFeatureRule, RuleMatching } from './rule'
 export type { MasterCSSOptions } from './css'

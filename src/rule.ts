@@ -2,7 +2,7 @@ import { getCssPropertyText } from './utils/get-css-property-text'
 import { parseValue } from './utils/parse-value'
 import { START_SYMBOL } from './constants/start-symbol'
 import MasterCSS from './css'
-import type { MasterCSSConfig } from './config'
+import type { Config } from './config'
 
 const PRIORITY_SELECTORS = [':disabled', ':active', ':focus', ':hover']
 const MATCHES = 'matches'
@@ -671,7 +671,7 @@ export default class Rule {
 
 export default interface Rule {
     readonly order?: number;
-    parseValue(value: string, config: MasterCSSConfig): string;
+    parseValue(value: string, config: Config): string;
     get(declaration: Declaration): Record<string, any>;
     getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>>;
 }

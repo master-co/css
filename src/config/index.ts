@@ -11,7 +11,7 @@ import DefaultRules from './rules'
 import Rule from '../rule'
 import MasterCSS from '../css'
 
-const defaultConfig: MasterCSSConfig = {
+const defaultConfig: Config = {
     colors: defaultColors,
     breakpoints: defaultBreakpoints,
     semantics: defaultSemantics,
@@ -25,7 +25,7 @@ const defaultConfig: MasterCSSConfig = {
 
 export default defaultConfig
 
-export interface MasterCSSConfig {
+export interface Config {
     classes?: Record<string, string>
     colors?: Record<string, string | Record<string, string>>
     breakpoints?: Record<string, number>

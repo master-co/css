@@ -1,11 +1,11 @@
-import type { MasterCSSConfig } from '../config'
+import type { Config } from '../config'
 import Rule from '../rule'
 
 export default class extends Rule {
     static override id = 'Transform'
     static override matches = /^(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\(/
     static override unit = ''
-    override parseValue(value: string, {rootSize}: MasterCSSConfig): string {
+    override parseValue(value: string, {rootSize}: Config): string {
         return value.replace(
             /(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\((.*?)\)/g,
             (origin, method, type, valueStr: string) => {

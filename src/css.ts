@@ -1,6 +1,6 @@
 import defaultConfig from './config'
 import extend from './apis/extend'
-import type { MasterCSSConfig } from './config'
+import type { Config } from './config'
 import Rule from './rule'
 
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@']
@@ -21,7 +21,7 @@ const MutationObserver = isBrowser
     : Object
 
 export declare type MasterCSSOptions = {
-    config?: MasterCSSConfig
+    config?: Config
     override?: boolean
     observe?: boolean
 }
@@ -34,7 +34,7 @@ export default class MasterCSS extends MutationObserver {
     /**
      * 全部 sheet 根據目前蒐集到的所有 DOM class 重新 findAndNew
      */
-    static refresh(config: MasterCSSConfig) {
+    static refresh(config: Config) {
         for (const eachInstance of this.instances) {
             eachInstance.refresh(config)
         }
@@ -47,7 +47,7 @@ export default class MasterCSS extends MutationObserver {
     readonly host: Element
     readonly root: Document | ShadowRoot
     readonly ready: boolean = false
-    readonly config: MasterCSSConfig
+    readonly config: Config
 
     semantics: [RegExp, string][]
     classes: Record<string, string[]>
@@ -697,7 +697,7 @@ export default class MasterCSS extends MutationObserver {
     /**
      * 根據目前蒐集到的所有 DOM class 重新 findAndNew
      */
-    refresh(config: MasterCSSConfig) {
+    refresh(config: Config) {
         // @ts-ignore
         this.config = config
         this.cache()
