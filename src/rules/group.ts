@@ -1,7 +1,7 @@
 import MasterCSSRule from '../rule'
 import MasterCSS from '../css'
 import { START_SYMBOL } from '../constants/start-symbol'
-import type { MasterCSSDeclaration } from '../rule'
+import type { Declaration } from '../rule'
 
 const bracketRegexp = /\{(.*)\}/
 
@@ -10,7 +10,7 @@ export default class extends MasterCSSRule {
     static override matches = /^(?:.+?[*_>~+])?\{.+?\}/
     static override unit = ''
     static override prop = ''
-    override getThemeProps(declaration: MasterCSSDeclaration, css: MasterCSS): Record<string, Record<string, string>> {
+    override getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>> {
         const themePropsMap: Record<string, Record<string, string>> = {}
         
         const addProp = (themeName: string, propertyName: string) => {

@@ -594,7 +594,7 @@ export default class MasterCSSRule {
                         newValue = globalValues[newValue].toString()
                     }
 
-                    const declaration: MasterCSSDeclaration = {
+                    const declaration: Declaration = {
                         unit: newUnit,
                         value: newValue,
                         important: this.important
@@ -672,8 +672,8 @@ export default class MasterCSSRule {
 export default interface MasterCSSRule {
     readonly order?: number;
     parseValue(value: string, config: MasterCSSConfig): string;
-    get(declaration: MasterCSSDeclaration): Record<string, any>;
-    getThemeProps(declaration: MasterCSSDeclaration, css: MasterCSS): Record<string, Record<string, string>>;
+    get(declaration: Declaration): Record<string, any>;
+    getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>>;
 }
 
 export interface MediaFeatureRule {
@@ -692,7 +692,7 @@ export interface MediaQuery {
     type?: string;
 }
 
-export interface MasterCSSDeclaration {
+export interface Declaration {
     value: any,
     unit: string,
     important: boolean
