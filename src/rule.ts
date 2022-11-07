@@ -35,11 +35,11 @@ export default class Rule {
     readonly media: MediaQuery
     readonly at: Record<string, string> = {}
     readonly direction: string
-    readonly themeName: string
+    readonly theme: string
     readonly unitToken: string
     readonly hasWhere: boolean
     readonly priority: number = -1
-    readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, themeName: string, cssRule?: CSSRule }[] = []
+    readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, theme: string, cssRule?: CSSRule }[] = []
 
     static id: string
     static matches: RegExp
@@ -365,7 +365,7 @@ export default class Rule {
             const atToken = suffixTokens[i]
             if (atToken) {
                 if (themeNames.includes(atToken)) {
-                    this.themeName = atToken
+                    this.theme = atToken
                 } else if (
                     atToken === 'rtl'
                     || atToken === 'ltr'
@@ -487,13 +487,13 @@ export default class Rule {
         }
 
         // 7. value
-        const insertNewNative = (themeName: string, bypassWhenUnmatchColor: boolean) => {
+        const insertNewNative = (theme: string, bypassWhenUnmatchColor: boolean) => {
             let newValue: any
             let newUnit: string
 
             const generateCssText = (
                 propertiesText: string,
-                themeName: string,
+                theme: string,
                 suffixSelectors: string[]
             ) => {
                 let prefixText = ''
@@ -502,8 +502,8 @@ export default class Rule {
                 }
 
                 const prefixTexts = this.prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText)
-                const getCssText = (themeName: string, name: string) => {
-                    const prefixThemeText = (themeName ? '.' + themeName + ' ' : '')
+                const getCssText = (theme: string, name: string) => {
+                    const prefixThemeText = (theme ? '.' + theme + ' ' : '')
                     const esacpedName = '.' + CSS.escape(name)
                     return prefixTexts
                         .map(eachPrefixText => prefixThemeText + eachPrefixText)
@@ -521,13 +521,13 @@ export default class Rule {
                         .join(',')
                 }
 
-                let cssText = getCssText(themeName, className)
+                let cssText = getCssText(theme, className)
                     + (relationThemesMap
                         ? Object
                             .entries(relationThemesMap)
-                            .filter(([relationTheme]) => this.themeName || !colorful || !themeName || !relationTheme || relationTheme === themeName)
+                            .filter(([relationTheme]) => this.theme || !colorful || !theme || !relationTheme || relationTheme === theme)
                             .map(([relationTheme, classNames]) =>
-                                classNames.reduce((str, className) => str + ',' + getCssText(this.themeName ?? (colorful ? themeName || relationTheme : relationTheme), className), '')
+                                classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? (colorful ? theme || relationTheme : relationTheme), className), '')
                             )
                             .join('')
                         : '')
@@ -555,7 +555,7 @@ export default class Rule {
                             values,
                             globalValues,
                             rootSize,
-                            this.themeName ? [this.themeName, ''] : [themeName]
+                            this.theme ? [this.theme, ''] : [theme]
                         )
                         if (uv.colorMatched !== undefined && anyColorMatched !== true) {
                             anyColorMatched = uv.colorMatched
@@ -565,7 +565,7 @@ export default class Rule {
                     }
                 }
 
-                if (bypassWhenUnmatchColor && (anyColorMatched === undefined ? themeName : !anyColorMatched))
+                if (bypassWhenUnmatchColor && (anyColorMatched === undefined ? theme : !anyColorMatched))
                     return
 
                 if (newValueTokens.length === 1) {
@@ -601,24 +601,24 @@ export default class Rule {
                     }
                     if (this.getThemeProps) {
                         const themeProps = this.getThemeProps(declaration, css)
-                        for (const themeName in themeProps) {
+                        for (const theme in themeProps) {
                             for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
                                 this.natives.push({
                                     unit: newUnit,
                                     value: newValue,
                                     text: generateCssText(
                                         Object
-                                            .entries(themeProps[themeName])
+                                            .entries(themeProps[theme])
                                             .map(([propertyName, propertyValue]) => getCssPropertyText(propertyName, {
                                                 important: this.important,
                                                 unit: '',
                                                 value: propertyValue
                                             }))
                                             .join(';'),
-                                        themeName,
+                                        theme,
                                         suffixSelectors
                                     ),
-                                    themeName
+                                    theme
                                 })
                             }
                         }
@@ -647,18 +647,18 @@ export default class Rule {
                                 }))
                                 .join(';')
                             : getCssPropertyText(prop, { unit: newUnit, value: newValue, important: this.important }),
-                        themeName,
+                        theme,
                         suffixSelectors
                     ),
-                    themeName
+                    theme
                 })
             }
         }
 
         if (this.getThemeProps) {
             insertNewNative(undefined, false)
-        } else if (this.themeName) {
-            insertNewNative(this.themeName, false)
+        } else if (this.theme) {
+            insertNewNative(this.theme, false)
         } else if (colorful) {
             for (const eachThemeName of themeNames) {
                 insertNewNative(eachThemeName, true)

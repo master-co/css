@@ -13,14 +13,14 @@ export default class extends Rule {
     override getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>> {
         const themePropsMap: Record<string, Record<string, string>> = {}
         
-        const addProp = (themeName: string, propertyName: string) => {
+        const addProp = (theme: string, propertyName: string) => {
             const indexOfColon = propertyName.indexOf(':')
             if (indexOfColon !== -1) {
-                if (!(themeName in themePropsMap)) {
-                    themePropsMap[themeName] = {}
+                if (!(theme in themePropsMap)) {
+                    themePropsMap[theme] = {}
                 }
 
-                const props = themePropsMap[themeName]
+                const props = themePropsMap[theme]
                 const name = propertyName.slice(0, indexOfColon)
                 if (!(name in props)) {
                     props[name] = propertyName.slice(indexOfColon + 1)
@@ -28,21 +28,21 @@ export default class extends Rule {
             }
         }
         const handleRule = (rule: Rule) => {
-            const addProps = (themeName: string, cssText: string) => {
+            const addProps = (theme: string, cssText: string) => {
                 const cssProperties = cssText.slice(CSS.escape(rule.className).length).match(bracketRegexp)[1].split(';')
                 for (const eachCssProperty of cssProperties) {
-                    addProp(themeName, eachCssProperty)
+                    addProp(theme, eachCssProperty)
                 }
             }
 
-            if (this.themeName) {
-                const currentThemeNative = rule.natives.find(eachNative => eachNative.themeName === this.themeName) ?? rule.natives.find(eachNative => !eachNative.themeName)
+            if (this.theme) {
+                const currentThemeNative = rule.natives.find(eachNative => eachNative.theme === this.theme) ?? rule.natives.find(eachNative => !eachNative.theme)
                 if (currentThemeNative) {
-                    addProps(this.themeName, currentThemeNative.text)
+                    addProps(this.theme, currentThemeNative.text)
                 }
             } else {
                 for (const eachNative of rule.natives) {
-                    addProps(eachNative.themeName, eachNative.text)
+                    addProps(eachNative.theme, eachNative.text)
                 }
             }
         }
@@ -106,7 +106,7 @@ export default class extends Rule {
                 if (result) {
                     handleRule(result)
                 } else {
-                    addProp(this.themeName ?? '', eachName)
+                    addProp(this.theme ?? '', eachName)
                 }
             }
         }
