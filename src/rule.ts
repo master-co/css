@@ -32,7 +32,7 @@ export default class MasterCSSRule {
     readonly prefixSelectors: string[]
     readonly vendorSuffixSelectors: Record<string, string[]>
     readonly important: boolean
-    readonly media: MasterCSSMedia
+    readonly media: MediaQuery
     readonly at: Record<string, string> = {}
     readonly direction: string
     readonly themeName: string
@@ -684,7 +684,7 @@ export interface MediaFeatureRule {
     unit?: string;
 }
 
-export interface MasterCSSMedia {
+export interface MediaQuery {
     token: string;
     features?: {
         [key: string]: MediaFeatureRule
