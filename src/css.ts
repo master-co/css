@@ -20,7 +20,7 @@ const MutationObserver = isBrowser
     ? window.MutationObserver
     : Object
 
-export declare type MasterCSSOptions = {
+export declare type Options = {
     config?: Config
     override?: boolean
     observe?: boolean
@@ -63,7 +63,7 @@ export default class MasterCSS extends MutationObserver {
     private schemeMQL: MediaQueryList
 
     constructor(
-        public options?: MasterCSSOptions
+        public options?: Options
     ) {
         super((mutationRecords) => {
             // console.time('css engine');

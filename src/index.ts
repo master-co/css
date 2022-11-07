@@ -27,4 +27,4 @@ export const root: Document = typeof document !== 'undefined' && document
 // type
 export type { Config } from './config'
 export type { Declaration, MediaQuery, MediaFeatureRule, RuleMatching } from './rule'
-export type { MasterCSSOptions } from './css'
+export type { Options } from './css'
