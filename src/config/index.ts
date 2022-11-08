@@ -25,18 +25,21 @@ const defaultConfig: Config = {
 
 export default defaultConfig
 
+type Colors = { [key: string]: string | Colors }
+type Breakpoints = { [key: string]: number | Breakpoints }
+type Selectors = { [key: string]: string | string[] | Selectors }
+type Semantics = { [key: string]: string | Record<string, string | number | Semantics> }
+type Values = { [key: string]: string | number | Values }
 export interface Config {
     classes?: Record<string, string>
-    colors?: Record<string, string | Record<string, string>>
-    breakpoints?: Record<string, number>
+    colors?: Colors
+    breakpoints?: Breakpoints
     mediaQueries?: Record<string, string>
-    selectors?: Record<string, string | string[]>
-    semantics?: Record<string, string | Record<string, string | number>>
+    selectors?: Selectors
+    semantics?: Semantics
     values?: { 
-        [id in typeof DefaultRules[number]['id']]?: Record<string, string | number>
-    } & {
-        [key: string]: Record<string, string | number> | string | number
-    },
+        [id in typeof DefaultRules[number]['id']]?: Values
+    } & Values
     Rules?: typeof Rule[],
     themes?: Record<string, { classes?: Record<string, string>, colors?: Record<string, string | Record<string, string>> }> | string[],
     rootSize?: number

@@ -27,6 +27,16 @@ test('values', () => {
         '.w\\:3x{width:3rem}',
         new MasterCSS({ config })
     )
+    testCSS(
+        'w:x-1-2', 
+        '.w\\:x-1-2{width:50rem}',
+        new MasterCSS({ config })
+    )
+    testCSS(
+        'w:x-2', 
+        '.w\\:x-2{width:100rem}',
+        new MasterCSS({ config })
+    )
 })
 
 test('semantics', () => {
@@ -38,6 +48,16 @@ test('semantics', () => {
     testCSS(
         'hide-text', 
         '.hide-text{font-size:0px}',
+        new MasterCSS({ config })
+    )
+    testCSS(
+        'zero',
+        '.zero{font-size:0px;height:0px}',
+        new MasterCSS({ config })
+    )
+    testCSS(
+        'zero-h',
+        '.zero-h{height:0}',
         new MasterCSS({ config })
     )
 })
@@ -58,6 +78,11 @@ test('breakpoints', () => {
         '@media (min-width:1280px){.hide\\@desktop{display:none}}',
         new MasterCSS({ config })
     )
+    testCSS(
+        'hide@custom-1', 
+        '@media (min-width:2500px){.hide\\@custom-1{display:none}}',
+        new MasterCSS({ config })
+    )
 })
 
 test('selectors', () => {
@@ -69,6 +94,11 @@ test('selectors', () => {
     testCSS(
         'hide_custom',
         '.hide_custom::before,.hide_custom::after{display:none}',
+        new MasterCSS({ config })
+    )
+    testCSS(
+        'hide~custom-1',
+        '.hide\\~custom-1~div{display:none}',
         new MasterCSS({ config })
     )
     testCSS(
@@ -95,6 +125,11 @@ test('colors', () => {
     testCSS(
         'fg:primary-code', 
         '.fg\\:primary-code{color:#777777}.dark .fg\\:primary-code{color:#6b6a6d}',
+        new MasterCSS({ config })
+    )
+    testCSS(
+        'fg:primary-stage-1', 
+        '.fg\\:primary-stage-1{color:#999999}.light .fg\\:primary-stage-1{color:#888888}.dark .fg\\:primary-stage-1{color:#AAAAAA}',
         new MasterCSS({ config })
     )
 })

@@ -98,8 +98,8 @@ export default class Rule {
     ) {
         const TargetRule = this.constructor as typeof Rule
         const { id, unit, colorful, prop } = TargetRule
-        const { breakpoints, mediaQueries, semantics, rootSize } = css.config
-        const { themeNames, colorsThemesMap, selectors, globalValues } = css
+        const { mediaQueries, rootSize } = css.config
+        const { themeNames, colorsThemesMap, selectors, globalValues, breakpoints } = css
         const values = css.values[id]
         const relationThemesMap = css.relationThemesMap[className]
 
@@ -108,8 +108,9 @@ export default class Rule {
         // 1. value / selectorToken
         let value: string | Record<string, string | number>, prefixToken: string, suffixToken: string, valueTokens: (string | { value: string })[]
         if (matching.origin === SEMANTICS) {
-            suffixToken = token.slice(matching.value.length)
-            value = semantics[matching.value]
+            const [semanticName, semanticValue] = matching.value
+            suffixToken = token.slice(semanticName.length)
+            value = semanticValue
         } else {
             let valueToken: string
             if (matching.origin === MATCHES) {
@@ -700,5 +701,5 @@ export interface Declaration {
 
 export interface RuleMatching {
     origin: 'matches' | 'semantics' | 'symbol';
-    value?: string;
+    value?: [string, string | Record<string, string>];
 }

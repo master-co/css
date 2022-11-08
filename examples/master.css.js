@@ -4,7 +4,10 @@ module.exports = {
     colors: {
         primary: {
             '': 'blue-50',
-            code: '#777777'
+            code: '#777777',
+            stage: {
+                '1': '#999999'
+            }
         },
     },
     classes: {
@@ -14,7 +17,12 @@ module.exports = {
     themes: {
         light: {
             colors: {
-                primary: '#ebbb40',
+                primary: {
+                    '': '#ebbb40',
+                    stage: {
+                        '1': '#888888'
+                    }
+                },
                 accent: defaultColors.gold['70'],
                 major: defaultColors.slate['10'],
                 content: defaultColors.slate['30'],
@@ -28,7 +36,10 @@ module.exports = {
             colors: {
                 primary: {
                     '': '#fbe09d',
-                    code: 'gray'
+                    code: 'gray',
+                    stage: {
+                        '1': '#AAAAAA'
+                    }
                 },
                 accent: '#fbe09d',
                 major: defaultColors.gray['80'],
@@ -43,19 +54,42 @@ module.exports = {
     values: {
         '2x': '2rem',
         '3x': '3rem',
+        Width: {
+            x: {
+                '1': {
+                    '1': '25rem',
+                    '2': '50rem',
+                    '3': '75rem'
+                },
+                '2': '100rem'
+            }
+        }
     },
     semantics: {
         show: 'display:block',
-        'hide-text': 'font-size:0px'
+        'hide-text': 'font-size:0px',
+        zero: {
+            h: {
+                'height': 0
+            },
+            'font-size': '0px',
+            height: '0px'
+        }
     },
     breakpoints: {
         tablet: 768,
         laptop: 1024,
         desktop: 1280,
+        custom: {
+            '1': 2500
+        }
     },
     selectors: {
         '>custom': '>div>:first+button',
-        '_custom': '::before,::after'
+        '_custom': '::before,::after',
+        '~custom': {
+            '1': '~div'
+        }
     },
     mediaQueries: {
         watch: '(max-device-width:42mm) and (min-device-width:38mm)'

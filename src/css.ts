@@ -49,7 +49,7 @@ export default class MasterCSS extends MutationObserver {
     readonly ready: boolean = false
     readonly config: Config
 
-    semantics: [RegExp, string][]
+    semantics: [RegExp, [string, string | Record<string, string>]][]
     classes: Record<string, string[]>
     colorsThemesMap: Record<string, Record<string, Record<string, string>>>
     colorNames: string[]
@@ -59,6 +59,7 @@ export default class MasterCSS extends MutationObserver {
     selectors: Record<string, [RegExp, string[]][]>
     values: Record<string, Record<string, string | number>>
     globalValues: Record<string, string | number>
+    breakpoints: Record<string, number>
 
     private schemeMQL: MediaQueryList
 
@@ -323,20 +324,53 @@ export default class MasterCSS extends MutationObserver {
         this.selectors = {}
         this.values = {}
         this.globalValues = {}
+        this.breakpoints = {}
 
-        const { semantics, classes, selectors, themes, colors, values } = this.config
+        const { semantics, classes, selectors, themes, colors, values, breakpoints } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
         }
 
+        function getFlatData(obj: Record<string, any>, hasObjectValue: boolean, parentKey = '', newData: Record<string, any> = {}) {
+            const entries = Object.entries(obj)
+
+            if (hasObjectValue && parentKey) {
+                const newValue = {}
+
+                for (const [key, value] of entries) {
+                    if (typeof value === 'object' && !Array.isArray(value)) {
+                        getFlatData(value, hasObjectValue, parentKey + '-' + key, newData)
+                    } else {
+                        newValue[key] = value
+                    }
+                }
+
+                if (Object.keys(newValue).length) {
+                    newData[parentKey] = newValue
+                }
+            } else {
+                for (const [key, value] of entries) {
+                    const currentKey = (parentKey ? parentKey + '-' : '') + key
+
+                    if (typeof value === 'object' && !Array.isArray(value)) {
+                        getFlatData(value, hasObjectValue, currentKey, newData)
+                    } else {
+                        newData[currentKey] = value
+                    }
+                }
+            }
+
+            return newData
+        }
+
         if (semantics) {
-            for (const semanticName in semantics) {
-                this.semantics.push([new RegExp('^' + escapeString(semanticName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'), semanticName])
+            for (const [semanticName, semanticValue] of Object.entries(getFlatData(semantics, true))) {
+                this.semantics.push([new RegExp('^' + escapeString(semanticName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'), [semanticName, semanticValue]])
             }
         }
         if (selectors) {
-            for (const [replacedSelectorText, newSelectorText] of Object.entries(selectors)) {
+            for (const [replacedSelectorText, newSelectorText] of Object.entries(getFlatData(selectors, false))) {
                 const regexp = new RegExp(escapeString(replacedSelectorText) + '(?![a-z-])')
                 for (const eachNewSelectorText of Array.isArray(newSelectorText) ? newSelectorText : [newSelectorText]) {
                     const vendor = eachNewSelectorText.match(vendorPrefixSelectorRegExp)?.[0] ?? ''
@@ -358,10 +392,15 @@ export default class MasterCSS extends MutationObserver {
         }
         if (values) {
             for (const [id, valueMap] of Object.entries(values)) {
-                (typeof valueMap === 'object'
-                    ? this.values
-                    : this.globalValues)[id] = valueMap
+                if (typeof valueMap === 'object') {
+                    this.values[id] = getFlatData(valueMap, false)
+                } else {
+                    this.globalValues[id] = valueMap
+                }
             }
+        }
+        if (breakpoints) {
+            this.breakpoints = getFlatData(breakpoints)
         }
 
         const semanticNames = [
@@ -469,14 +508,14 @@ export default class MasterCSS extends MutationObserver {
                 }
             }
         }
-        mergeColors('', colors)
+        mergeColors('', getFlatData(colors, true))
         if (themes) {
             if (Array.isArray(themes)) {
                 this.themeNames.push(...themes)
             } else {
                 for (const eachTheme in themes) {
                     const themeValue = themes[eachTheme]
-                    mergeColors(eachTheme, themeValue.colors)
+                    mergeColors(eachTheme, getFlatData(themeValue.colors, true))
                     this.themeNames.push(eachTheme)
                 }
             }
