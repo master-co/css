@@ -52,7 +52,7 @@ module.exports = {
         }
     },
     values: {
-        '2x': '2rem',
+        '2x': '32',
         '3x': '3rem',
         Width: {
             x: {

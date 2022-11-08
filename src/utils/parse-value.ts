@@ -22,11 +22,19 @@ export function parseValue(
     let unitToken = ''
     let colorMatched: boolean = undefined 
 
-    if (values && token in values) {
-        return { value: values[token].toString(), unit, unitToken }
-    } else if (globalValues && token in globalValues) {
-        return { value: globalValues[token].toString(), unit, unitToken }
-    } else if (typeof token === 'number') {
+    const newValue = (values && token in values)
+        ? values[token]
+        : (globalValues && token in globalValues)
+            ? globalValues[token]
+            : ''
+    if (newValue) {
+        if (!defaultUnit)
+            return { value: newValue.toString(), unit, unitToken }
+
+        token = newValue
+    }
+
+    if (typeof token === 'number') {
         value = token
         unit = defaultUnit || ''
     } else {
