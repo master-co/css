@@ -400,7 +400,7 @@ export default class MasterCSS extends MutationObserver {
             }
         }
         if (breakpoints) {
-            this.breakpoints = getFlatData(breakpoints)
+            this.breakpoints = getFlatData(breakpoints, false)
         }
 
         const semanticNames = [
