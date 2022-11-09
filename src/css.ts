@@ -68,7 +68,7 @@ export default class MasterCSS extends MutationObserver {
     ) {
         super((mutationRecords) => {
             // console.time('css engine');
-
+            
             const correctionOfClassName = {}
             const attributeMutationRecords: MutationRecord[] = []
             const updatedElements: Element[] = []
@@ -652,23 +652,26 @@ export default class MasterCSS extends MutationObserver {
                 container.prepend(this.style)
             }
 
+            const handleClassList = (classList: DOMTokenList) => {
+                classList.forEach((className) => {
+                    if (className in this.countOfClass) {
+                        this.countOfClass[className]++
+                    } else {
+                        this.countOfClass[className] = 1
+
+                        this.findAndInsert(className)
+                    }
+                })
+            }
+            handleClassList(this.host.classList)
+
             if (options.subtree) {
                 /**
                  * 待所有 DOM 結構完成解析後，開始繪製 Rule 樣式
                  */
                 this.host
                     .querySelectorAll('[class]')
-                    .forEach((element) => {
-                        element.classList.forEach((className) => {
-                            if (className in this.countOfClass) {
-                                this.countOfClass[className]++
-                            } else {
-                                this.countOfClass[className] = 1
-
-                                this.findAndInsert(className)
-                            }
-                        })
-                    })
+                    .forEach((element) => handleClassList(element.classList))
             }
 
             super.observe(root, {
