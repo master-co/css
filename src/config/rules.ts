@@ -85,7 +85,7 @@ import GridRows from '../rules/grid-rows'
 import Gap from '../rules/gap'
 import WordSpacing from '../rules/word-spacing'
 import Variable from '../rules/variable'
-import AspectRadio from '../rules/aspect-radio'
+import AspectRatio from '../rules/aspect-ratio'
 import BoxDecorationBreak from '../rules/box-decoration-break'
 import BreakAfter from '../rules/break-after'
 import BreakBefore from '../rules/break-before'
@@ -350,7 +350,7 @@ const DefaultRules = [
     BreakBefore,
     BreakAfter,
     BoxDecorationBreak,
-    AspectRadio,
+    AspectRatio,
     ColumnSpan,
     AlignContent,
     AlignItems,
