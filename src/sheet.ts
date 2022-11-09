@@ -108,7 +108,11 @@ export class StyleSheet extends MutationObserver {
                 } else {
                     // 先判斷節點新增或移除
                     handleNodes(addedNodes, false);
-                    handleNodes(removedNodes, true);
+
+                    // 忽略處理新元素的已刪除子節點
+                    if (!target.isConnected || !updatedElements.includes(target)) {
+                        handleNodes(removedNodes, true);
+                    }
                 }
             }
 
