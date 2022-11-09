@@ -63,7 +63,7 @@ export class StyleSheet extends MutationObserver {
             const removeClassName = (className: string) => {
                 if (className in correctionOfClassName) {
                     correctionOfClassName[className]--;
-                } else {
+                } else if (className in this.countOfName) {
                     correctionOfClassName[className] = -1;
                 }
             }
@@ -261,23 +261,27 @@ export class StyleSheet extends MutationObserver {
     static Styles: typeof Style[] = [];
 
     observe(target: Node, options: MutationObserverInit = { subtree: true, childList: true }) {
+
+        const handleClassList = (classList: DOMTokenList) => {
+            classList.forEach((className) => {
+                if (className in this.countOfName) {
+                    this.countOfName[className]++
+                } else {
+                    this.countOfName[className] = 1
+
+                    this.findAndInsert(className)
+                }
+            })
+        }
+        handleClassList((target as Element).classList)
+
         if (options.subtree) {
             /**
              * 待所有 DOM 結構完成解析後，開始繪製 Style 樣式
              */
             (target as Element)
                 .querySelectorAll('[class]')
-                .forEach((element) => {
-                    element.classList.forEach((className) => {
-                        if (className in this.countOfName) {
-                            this.countOfName[className]++;
-                        } else {
-                            this.countOfName[className] = 1;
-
-                            this.findAndInsert(className);
-                        }
-                    })
-                });
+                .forEach((element) => handleClassList(element.classList));
         }
         super.observe(target, {
             ...options,
