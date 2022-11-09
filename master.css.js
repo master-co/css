@@ -64,6 +64,13 @@ export default {
                 },
                 '2': '100rem'
             }
+        },
+        FontSize: {
+            sm: 16,
+            md: 20
+        },
+        LetterSpacing: {
+            wide: .4
         }
     },
     semantics: {
