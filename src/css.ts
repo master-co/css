@@ -106,7 +106,7 @@ export default class MasterCSS extends MutationObserver {
             const removeClassName = (className: string) => {
                 if (className in correctionOfClassName) {
                     correctionOfClassName[className]--
-                } else {
+                } else if (className in this.countOfClass) {
                     correctionOfClassName[className] = -1
                 }
             }
