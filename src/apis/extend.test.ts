@@ -1,9 +1,19 @@
-import extend from '../src/apis/extend'
-import config from '../src/config'
-import themes from '../src/config/themes'
-import values from '../src/config/values'
+import extend from './extend'
+import config from '../config'
+import themes from '../config/themes'
+import values from '../config/values'
 
-test('configure', () => {
+test('extend', () => {
+    expect(
+        extend({ a: 1 }, undefined, { b: 2 })
+    )
+        .toEqual({ a: 1, b: 2 })
+
+    expect(
+        extend({ a: 1 }, { a: null })
+    )
+        .toEqual({ a: null })
+
     const useConfig = {
         themes: ['red'],
         values: {

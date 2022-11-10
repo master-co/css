@@ -1,4 +1,29 @@
-import { testCSS } from './utils/test-css'
+import { testCSS } from '../utils/test-css'
+import MasterCSS from '..'
+import config from '../../master.css.js'
+
+test('selectors', () => {
+    testCSS(
+        'hide>custom',
+        '.hide\\>custom>div>:first-child+button{display:none}',
+        new MasterCSS({ config })
+    )
+    testCSS(
+        'hide_custom',
+        '.hide_custom::before,.hide_custom::after{display:none}',
+        new MasterCSS({ config })
+    )
+    testCSS(
+        'hide~custom-1',
+        '.hide\\~custom-1~div{display:none}',
+        new MasterCSS({ config })
+    )
+    testCSS(
+        'hide::slider-thumb',
+        '.hide\\:\\:slider-thumb::-webkit-slider-thumb{display:none}.hide\\:\\:slider-thumb::-moz-range-thumb{display:none}',
+        new MasterCSS({ config })
+    )
+})
 
 test('breakpoints', () => {
     testCSS('hide@xs', '@media (min-width:600px){.hide\\@xs{display:none}}')
