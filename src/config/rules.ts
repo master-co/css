@@ -10,6 +10,7 @@ import LetterSpacing from '../rules/letter-spacing'
 import FontSmoothing from '../rules/font-smoothing'
 import FontStyle from '../rules/font-style'
 import FontVariantNumeric from '../rules/font-variant-numeric'
+import FontFeatureSettings from '../rules/font-feature-settings'
 import LineHeight from '../rules/line-height'
 import ObjectFit from '../rules/object-fit'
 import ObjectPosition from '../rules/object-position'
@@ -202,6 +203,7 @@ const Rules = [
     FontSmoothing,
     FontStyle,
     FontVariantNumeric,
+    FontFeatureSettings,
     Font,
     Color,
     Spacing,
