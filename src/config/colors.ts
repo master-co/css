@@ -1,6 +1,6 @@
 import fillColorScale from '../apis/fill-color-scale'
 
-const defaultColors = {
+const colors = {
     slate: fillColorScale({
         5: '#141e2b',
         10: '#19212d',
@@ -264,4 +264,4 @@ const defaultColors = {
     white: '#ffffff'
 }
 
-export default defaultColors
+export default colors

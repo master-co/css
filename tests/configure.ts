@@ -1,7 +1,7 @@
 import extend from '../src/apis/extend'
-import defaultConfig from '../src/config'
-import defaultThemes from '../src/config/themes'
-import defaultValues from '../src/config/values'
+import config from '../src/config'
+import themes from '../src/config/themes'
+import values from '../src/config/values'
 
 test('configure', () => {
     const useConfig = {
@@ -13,16 +13,16 @@ test('configure', () => {
         }
     }
     expect(
-        extend(defaultConfig, useConfig)
+        extend(config, useConfig)
     )
         .toEqual(
             {
-                ...defaultConfig,
-                themes: [...defaultThemes, ...useConfig.themes],
+                ...config,
+                themes: [...themes, ...useConfig.themes],
                 values: {
-                    ...defaultValues,
+                    ...values,
                     Width: {
-                        ...defaultValues.Width,
+                        ...values.Width,
                         ...useConfig.values.Width
                     }
                 }

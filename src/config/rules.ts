@@ -193,7 +193,7 @@ import Group from '../rules/group'
 import CounterIncrement from '../rules/counter-increment'
 import counterReset from '../rules/counter-reset'
 
-const DefaultRules = [
+const Rules = [
     Group,
     Variable,
     FontSize,
@@ -390,4 +390,4 @@ const DefaultRules = [
     MaskImage
 ]
 
-export default DefaultRules
+export default Rules

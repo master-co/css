@@ -1,2 +1,2 @@
-const defaultRootSize = 16
-export default defaultRootSize
+const rootSize = 16
+export default rootSize

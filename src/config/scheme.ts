@@ -1,8 +1,8 @@
-const defaultScheme = {
+const scheme = {
     storage: {
         sync: true,
         key: 'scheme'
     }
 }
 
-export default defaultScheme
+export default scheme

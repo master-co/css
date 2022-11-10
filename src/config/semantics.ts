@@ -1,4 +1,4 @@
-const defaultSemantics = {
+const semantics = {
     square: 'aspect-ratio:1/1',
     video: 'aspect-ratio:16/9',
     rounded: 'border-radius:1e9em',
@@ -80,4 +80,4 @@ const defaultSemantics = {
     }
 }
 
-export default defaultSemantics
+export default semantics

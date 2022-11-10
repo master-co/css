@@ -1,4 +1,4 @@
-import defaultConfig from './config'
+import config from './config'
 import extend from './apis/extend'
 import type { Config } from './config'
 import Rule from './rule'
@@ -236,9 +236,9 @@ export default class MasterCSS extends MutationObserver {
         this.options = extend({ observe: true }, options)
 
         if (this.options.config && !this.options.override) {
-            this.config = extend(defaultConfig, this.options.config)
+            this.config = extend(config, this.options.config)
         } else {
-            this.config = defaultConfig
+            this.config = config
         }
 
         this.cache()

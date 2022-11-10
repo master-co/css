@@ -10,16 +10,16 @@ export { default as renderIntoHTML } from './apis/render-into-html'
 export { default as fillColorScale } from './apis/fill-color-scale'
 
 // config
-export { default as defaultConfig } from './config'
-export { default as defaultBreakpoints } from './config/breakpoints'
-export { default as defaultColors } from './config/colors'
-export { default as defaultRootSize } from './config/root-size'
-export { default as defaultSelectors } from './config/selectors'
-export { default as defaultSemantics } from './config/semantics'
-export { default as defaultThemes } from './config/themes'
-export { default as defaultScheme } from './config/scheme'
-export { default as defaultValues } from './config/values'
-export { default as DefaultRules } from './config/rules'
+export { default as config } from './config'
+export { default as breakpoints } from './config/breakpoints'
+export { default as colors } from './config/colors'
+export { default as rootSize } from './config/root-size'
+export { default as selectors } from './config/selectors'
+export { default as semantics } from './config/semantics'
+export { default as themes } from './config/themes'
+export { default as scheme } from './config/scheme'
+export { default as values } from './config/values'
+export { default as Rules } from './config/rules'
 
 // other
 export const root: Document = typeof document !== 'undefined' && document

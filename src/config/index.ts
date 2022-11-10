@@ -1,35 +1,36 @@
 
-import defaultBreakpoints from './breakpoints'
-import defaultColors from './colors'
-import defaultRootSize from './root-size'
-import defaultSelectors from './selectors'
-import defaultSemantics from './semantics'
-import defaultThemes from './themes'
-import defaultScheme from './scheme'
-import defaultValues from './values'
-import DefaultRules from './rules'
+import breakpoints from './breakpoints'
+import colors from './colors'
+import rootSize from './root-size'
+import selectors from './selectors'
+import semantics from './semantics'
+import themes from './themes'
+import scheme from './scheme'
+import values from './values'
+import Rules from './rules'
 import Rule from '../rule'
 import MasterCSS from '../css'
 
-const defaultConfig: Config = {
-    colors: defaultColors,
-    breakpoints: defaultBreakpoints,
-    semantics: defaultSemantics,
-    values: defaultValues,
-    selectors: defaultSelectors,
-    themes: defaultThemes,
-    scheme: defaultScheme,
-    Rules: DefaultRules,
-    rootSize: defaultRootSize
+const config: Config = {
+    colors: colors,
+    breakpoints: breakpoints,
+    semantics: semantics,
+    values: values,
+    selectors: selectors,
+    themes: themes,
+    scheme: scheme,
+    Rules: Rules,
+    rootSize: rootSize
 }
 
-export default defaultConfig
+export default config
 
 type Colors = { [key: string]: string | Colors }
 type Breakpoints = { [key: string]: number | Breakpoints }
 type Selectors = { [key: string]: string | string[] | Selectors }
 type Semantics = { [key: string]: string | Record<string, string | number | Semantics> }
 type Values = { [key: string]: string | number | Values }
+
 export interface Config {
     classes?: Record<string, string>
     colors?: Colors
@@ -37,8 +38,8 @@ export interface Config {
     mediaQueries?: Record<string, string>
     selectors?: Selectors
     semantics?: Semantics
-    values?: { 
-        [id in typeof DefaultRules[number]['id']]?: Values
+    values?: {
+        [id in typeof Rules[number]['id']]?: Values
     } & Values
     Rules?: typeof Rule[],
     themes?: Record<string, { classes?: Record<string, string>, colors?: Record<string, string | Record<string, string>> }> | string[],

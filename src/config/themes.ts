@@ -1,2 +1,2 @@
-const defaultThemes = ['dark', 'light']
-export default defaultThemes
+const themes = ['dark', 'light']
+export default themes
