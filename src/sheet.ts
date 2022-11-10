@@ -94,8 +94,7 @@ export class StyleSheet extends MutationObserver {
                      * regardless of whether the value is being changed or set to the current value
                      */
                     if (
-                        target['className'] === oldValue // prevent same class to execute
-                        || attributeMutationRecords
+                        attributeMutationRecords
                             .find((eachAttributeMutationRecord) => eachAttributeMutationRecord.target === target)
                     ) {
                         continue;
