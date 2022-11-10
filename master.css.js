@@ -1,6 +1,7 @@
-const { defaultColors } = require('../src')
+import { defaultColors } from './src'
 
-module.exports = {
+/** @type {import('@master/css').Config} */
+export default {
     colors: {
         primary: {
             '': 'blue-50',
@@ -63,6 +64,13 @@ module.exports = {
                 },
                 '2': '100rem'
             }
+        },
+        FontSize: {
+            sm: 16,
+            md: 20
+        },
+        LetterSpacing: {
+            wide: .4
         }
     },
     semantics: {
