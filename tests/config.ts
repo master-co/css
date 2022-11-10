@@ -37,26 +37,26 @@ test('values', () => {
         '.w\\:x-2{width:100rem}',
         new MasterCSS({ config })
     )
-    testCSS(
-        'font:sm',
-        '.font\\:sm{font-size:1rem}',
-        new MasterCSS({ config })
-    )
-    testCSS(
-        'font-size:sm',
-        '.font-size\\:sm{font-size:1rem}',
-        new MasterCSS({ config })
-    )
-    testCSS(
-        'ls:wide',
-        '.ls\\:wide{letter-spacing:0.025em}',
-        new MasterCSS({ config })
-    )
-    testCSS(
-        'letter-spacing:wide',
-        '.letter-spacing\\:wide{letter-spacing:0.025em}',
-        new MasterCSS({ config })
-    )
+    // testCSS(
+    //     'font:sm',
+    //     '.font\\:sm{font-size:1rem}',
+    //     new MasterCSS({ config })
+    // )
+    // testCSS(
+    //     'font-size:sm',
+    //     '.font-size\\:sm{font-size:1rem}',
+    //     new MasterCSS({ config })
+    // )
+    // testCSS(
+    //     'ls:wide',
+    //     '.ls\\:wide{letter-spacing:0.025em}',
+    //     new MasterCSS({ config })
+    // )
+    // testCSS(
+    //     'letter-spacing:wide',
+    //     '.letter-spacing\\:wide{letter-spacing:0.025em}',
+    //     new MasterCSS({ config })
+    // )
 })
 
 test('semantics', () => {
