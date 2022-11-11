@@ -1153,7 +1153,6 @@ export default class MasterCSS extends MutationObserver {
                     i++
                 } catch (error) {
                     console.error(error)
-
                     rule.natives.splice(i, 1)
                 }
             }
