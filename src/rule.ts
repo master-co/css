@@ -206,8 +206,11 @@ export default class Rule {
                                     currentValueToken += '0'
                                 }
                             } else if (val === ',') {
-                                valueTokens.push({ value: currentValueToken }, ',')
-                                currentValueToken = ''
+                                if (currentValueToken) {
+                                    valueTokens.push({ value: currentValueToken })
+                                    currentValueToken = ''
+                                }
+                                valueTokens.push(',')
                                 continue
                             } else if (
                                 val === '#'
