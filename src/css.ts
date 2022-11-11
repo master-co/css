@@ -68,7 +68,7 @@ export default class MasterCSS extends MutationObserver {
     ) {
         super((mutationRecords) => {
             // console.time('css engine');
-
+            console.log(mutationRecords)
             const correctionOfClassName = {}
             const attributeMutationRecords: MutationRecord[] = []
             const updatedElements: Element[] = []
