@@ -185,20 +185,14 @@ export default class MasterCSS extends MutationObserver {
                             }
                         }
                     }
-                } else {
-                    if (target.isConnected) {
-                        classNames.forEach((className) => {
-                            if (!oldClassNames.includes(className)) {
-                                addClassName(className)
-                            }
-                        })
-                        for (const oldClassName of oldClassNames) {
-                            if (!classNames.contains(oldClassName)) {
-                                removeClassName(oldClassName)
-                            }
+                } else if (target.isConnected) {
+                    classNames.forEach((className) => {
+                        if (!oldClassNames.includes(className)) {
+                            addClassName(className)
                         }
-                    } else {
-                        for (const oldClassName of oldClassNames) {
+                    })
+                    for (const oldClassName of oldClassNames) {
+                        if (!classNames.contains(oldClassName)) {
                             removeClassName(oldClassName)
                         }
                     }
