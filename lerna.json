@@ -2,9 +2,8 @@
     "$schema": "node_modules/lerna/schemas/lerna-schema.json",
     "useWorkspaces": true,
     "version": "independent",
+    "changelogPreset": "conventionalcommits",
     "command": {
-        "publish": {
-        },
         "version": {
             "message": "chore(release): publish",
             "conventionalCommits": true
