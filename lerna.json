@@ -5,9 +5,7 @@
     "changelogPreset": "conventionalcommits",
     "command": {
         "version": {
-            "message": "chore(release): publish",
-            "conventionalCommits": true,
-            "conventionalBumpPrerelease": true
+            "message": "chore(release): publish"
         }
     }
 }
