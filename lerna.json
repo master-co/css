@@ -7,13 +7,8 @@
             "tempTag": true
         },
         "version": {
-            "allowBranch": [
-                "main",
-                "beta",
-                "alpha"
-            ],
-            "conventionalCommits": true,
-            "conventionalPrerelease": true
+            "message": "chore(release): publish %s",
+            "conventionalCommits": true
         }
     }
 }
