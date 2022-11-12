@@ -1,5 +1,5 @@
 {
-    "name": "@master/css.compiler",
+    "name": "@master/css.vite",
     "version": "2.0.0-beta.18",
     "scripts": {
         "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs --format=cjs --platform=node --target=es2019",
@@ -49,10 +49,9 @@
         "dist"
     ],
     "peerDependencies": {
-        "@master/css": "*",
-        "vite": "*"
+        "@master/css": "*"
     },
     "dependencies": {
-        "chalk": "^4.0.0"
+        "@master/css.compiler": "*"
     }
 }

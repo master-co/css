@@ -1,5 +1,5 @@
 import path from 'path'
-import MasterCSSCompiler from './compiler'
+import MasterCSSCompiler from '@master/css.compiler'
 import type { Compiler } from 'webpack'
 
 const NAME = 'MasterCSSWebpackPlugin'

@@ -1,7 +1,8 @@
-import MasterCSSCompiler from './compiler'
+import MasterCSSCompiler from '@master/css.compiler'
 import path from 'path'
 import writeFile from './utils/write-file'
-import type { CompilerOptions } from './options'
+
+import type { CompilerOptions } from '@master/css.compiler'
 import type { Plugin } from 'vite'
 
 export default async function (options?: CompilerOptions): Promise<Plugin> {
