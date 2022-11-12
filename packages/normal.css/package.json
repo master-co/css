@@ -2,7 +2,7 @@
     "name": "@master/normal.css",
     "version": "2.0.0-beta.4",
     "scripts": {
-        "build": "esbuild src/index.css --bundle --outfile=dist/index.css",
+        "build": "esbuild src/index.css --bundle --minify --sourcemap --outfile=dist/index.css",
         "dev": "npm run build -- --watch"
     },
     "license": "MIT",
