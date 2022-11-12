@@ -1,5 +1,8 @@
 {
     "scripts": {
+        "build": "lerna run build",
+        "test": "lerna test",
+        "dev": "lerna run dev:esm --parallel",
         "bootstrap": "lerna bootstrap",
         "version": "lerna version --conventional-commits",
         "publish": "lerna publish"
@@ -16,6 +19,7 @@
         "@types/node": "^18.11.0",
         "@typescript-eslint/eslint-plugin": "^5.40.1",
         "@typescript-eslint/parser": "^5.40.1",
+        "concurrently": "^7.5.0",
         "dedent": "^0.7.0",
         "esbuild": "^0.15.10",
         "eslint": "^8.25.0",

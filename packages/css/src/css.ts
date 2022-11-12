@@ -74,7 +74,7 @@ export default class MasterCSS extends MutationObserver {
             const unchangedElements: Element[] = []
 
             /**
-            * 取得所有深層後代的 class names 
+            * 取得所有深層後代的 class names
             */
             const handleClassNameDeeply = (element: Element, remove: boolean) => {
                 if (remove) {
@@ -130,9 +130,9 @@ export default class MasterCSS extends MutationObserver {
                 if (type === ATTRIBUTES) {
                     /**
                      * 防止同樣的 MutationRecord 重複執行
-                     * According to this history, 
-                     * MutationObserver was designed to work that way. 
-                     * Any call to setAttribute triggers a mutation, 
+                     * According to this history,
+                     * MutationObserver was designed to work that way.
+                     * Any call to setAttribute triggers a mutation,
                      * regardless of whether the value is being changed or set to the current value
                      */
                     if (
@@ -167,7 +167,7 @@ export default class MasterCSS extends MutationObserver {
                  * 如果被操作的元素中包含了屬性變更的目標，
                  * 則將該目標從 existedAttributeMutationTargets 中移除，
                  * 以防止執行接下來的屬性變更處理
-                 * 
+                 *
                  * 該批 mutationRecords 中，某個 target 同時有 attribute 及 childList 的變更，
                  * 則以 childList 節點插入及移除的 target.className 為主
                  */
@@ -527,19 +527,19 @@ export default class MasterCSS extends MutationObserver {
 
                         if (assignedThemesColor) {
                             newColor = (theme
-                                ? assignedThemesColor[theme] 
+                                ? assignedThemesColor[theme]
                                 : undefined)
                                 ?? assignedThemesColor['']
                             if (newColor) {
                                 themesColor[theme] = newColor
                             }
                         }
-                        
+
                         if (!newColor) {
                             console.warn(`\`${color}\` doesn't exist in the extended config \`.colors\``)
 
                             if (Object.keys(themesColor).length > 1) {
-                                delete themesColor[theme] 
+                                delete themesColor[theme]
                             } else if (Object.keys(levelsThemes).length > 1) {
                                 delete levelsThemes[level]
                             } else {
