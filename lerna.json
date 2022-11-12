@@ -6,7 +6,8 @@
     "command": {
         "version": {
             "message": "chore(release): publish",
-            "conventionalCommits": true
+            "conventionalCommits": true,
+            "conventionalBumpPrerelease": true
         }
     }
 }
