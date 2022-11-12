@@ -1,27 +1,13 @@
 {
+    "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "outDir": "dist",
-        "baseUrl": "./",
-        "experimentalDecorators": true,
-        "moduleResolution": "Node",
-        "esModuleInterop": true,
-        "allowJs": true,
-        "target": "ESNext",
-        "module": "ESNext",
-        "skipLibCheck": true,
-        "declaration": true,
-        "sourceMap": true,
-        "lib": [
-            "es2021",
-            "dom"
-        ]
+        "outDir": "dist"
     },
     "include": [
-        "./src/**/*.ts",
-        "./src/**/*.d.ts"
+        "src/**/*.ts",
+        "src/**/*.d.ts"
     ],
     "exclude": [
-        "./src/node_modules",
-        "./src/**/*.test.ts"
+        "src/**/*.test.ts"
     ]
 }
