@@ -4,7 +4,6 @@
     "version": "independent",
     "command": {
         "publish": {
-            "tempTag": true
         },
         "version": {
             "message": "chore(release): publish",
