@@ -1,5 +1,19 @@
 {
     "$schema": "node_modules/lerna/schemas/lerna-schema.json",
     "useWorkspaces": true,
-    "version": "independent"
+    "version": "independent",
+    "command": {
+        "publish": {
+            "tempTag": true
+        },
+        "version": {
+            "allowBranch": [
+                "main",
+                "beta",
+                "alpha"
+            ],
+            "conventionalCommits": true,
+            "conventionalPrerelease": true
+        }
+    }
 }
