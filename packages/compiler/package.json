@@ -52,7 +52,6 @@
         "@master/css": "*"
     },
     "dependencies": {
-        "@master/css": "*",
         "chalk": "^4.0.0"
     }
 }
