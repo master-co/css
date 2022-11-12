@@ -2,7 +2,7 @@
     "scripts": {
         "build": "lerna run build",
         "test": "lerna test",
-        "dev": "lerna run dev:esm --parallel",
+        "dev": "lerna run dev --parallel",
         "bootstrap": "lerna bootstrap",
         "version": "lerna version --conventional-commits",
         "publish": "lerna publish"

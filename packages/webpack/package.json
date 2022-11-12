@@ -2,9 +2,9 @@
     "name": "@master/css.webpack",
     "version": "2.0.0-beta.19",
     "scripts": {
-        "build:cjs": "esbuild --outfile=dist/index.cjs --format=cjs",
-        "build:esm": "esbuild --outfile=dist/index.mjs --format=esm",
-        "build": "concurrently 'npm:build:* -- src/index.ts --bundle --minify --sourcemap --platform=node' 'tsc --emitDeclarationOnly'",
+        "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs --format=cjs",
+        "build:esm": "esbuild src/index.ts --bundle --outfile=dist/index.mjs --format=esm",
+        "build": "concurrently 'npm:build:* -- --minify --sourcemap --platform=node' 'tsc --emitDeclarationOnly'",
         "dev": "concurrently 'npm:build:* -- --watch'",
         "test": "jest",
         "lint": "eslint ./src"
