@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'AlignContent'
+export default class extends Rule {
+    static override id: 'AlignContent' = 'AlignContent' as const
     static override matches = /^ac:./
-    static override propName = 'align-content'
 }

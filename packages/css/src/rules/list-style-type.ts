@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'ListStyleType'
+export default class extends Rule {
+    static override id: 'ListStyleType' = 'ListStyleType' as const
     static override matches = /^list-style:(disc|decimal)(?!\|)/
-    static override propName = 'list-style-type'
 }

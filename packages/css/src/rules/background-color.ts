@@ -1,9 +1,8 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'BackgroundColor'
+export default class extends Rule {
+    static override id: 'BackgroundColor' = 'BackgroundColor' as const
     static override colorStarts = '(bg|background):'
-    static override propName = 'background-color'
     static override unit = ''
     static override colorful = true
 }

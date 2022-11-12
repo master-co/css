@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'StrokeWidth'
+export default class extends Rule {
+    static override id: 'StrokeWidth' = 'StrokeWidth' as const
     static override matches = /^stroke:([0-9]|(max|min|calc|clamp)\(.*\))((?!\|).)*$/
-    static override propName = 'stroke-width'
 }

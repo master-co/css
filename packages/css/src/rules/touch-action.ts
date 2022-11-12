@@ -1,6 +1,5 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'TouchAction'
-    static override propName = 'touch-action'
+export default class extends Rule {
+    static override id: 'TouchAction' = 'TouchAction' as const
 }

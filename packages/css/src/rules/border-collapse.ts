@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'BorderCollapse'
+export default class extends Rule {
+    static override id: 'BorderCollapse' = 'BorderCollapse' as const
     static override matches = /^b(order)?:(collapse|separate)(?!\|)/
-    static override propName = 'border-collapse'
 }

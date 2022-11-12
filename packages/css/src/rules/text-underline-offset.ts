@@ -1,6 +1,5 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'TextUnderlineOffset'
-    static override propName = 'text-underline-offset'
+export default class extends Rule {
+    static override id: 'TextUnderlineOffset' = 'TextUnderlineOffset' as const
 }

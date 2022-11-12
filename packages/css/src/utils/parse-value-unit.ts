@@ -1,6 +1,6 @@
-import type { MasterCSSConfig } from '../config'
+import type { Config } from '../config'
 
-export function parseValueUnit(value: string, getUnit: (method: string) => string, { rootSize }: MasterCSSConfig): string {
+export function parseValueUnit(value: string, getUnit: (method: string) => string, { rootSize }: Config): string {
     let result = ''
 
     let i = 0;

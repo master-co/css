@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'WritingMode'
+export default class extends Rule {
+    static override id: 'WritingMode' = 'WritingMode' as const
     static override matches = /^writing:./
-    static override propName = 'writing-mode'
 }

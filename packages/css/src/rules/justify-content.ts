@@ -1,8 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'JustifyContent'
+export default class extends Rule {
+    static override id: 'JustifyContent' = 'JustifyContent' as const
     static override matches =  /^jc:./
-    static override propName = 'justify-content'
 
 }

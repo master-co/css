@@ -1,6 +1,5 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'ScrollBehavior'
-    static override propName = 'scroll-behavior'
+export default class extends Rule {
+    static override id: 'ScrollBehavior' = 'ScrollBehavior' as const
 }

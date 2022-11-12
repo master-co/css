@@ -1,8 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'TransformOrigin'
+export default class extends Rule {
+    static override id: 'TransformOrigin' = 'TransformOrigin' as const
     static override matches = /^transform:((top|bottom|right|left|center)|\d)/
-    static override propName = 'transform-origin'
     static override unit = 'px'
 }

@@ -1,6 +1,5 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'FlexBasis'
-    static override propName = 'flex-basis'
+export default class extends Rule {
+    static override id: 'FlexBasis' = 'FlexBasis' as const
 }

@@ -1,6 +1,5 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'BreakInside'
-    static override propName = 'break-inside'
+export default class extends Rule {
+    static override id: 'BreakInside' = 'BreakInside' as const
 }

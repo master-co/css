@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'BackgroundSize'
+export default class extends Rule {
+    static override id: 'BackgroundSize' = 'BackgroundSize' as const
     static override matches = /^(bg|background):((auto|cover|contain)(?!\|)|\.?\d((?!\|).)*$)/
-    static override propName = 'background-size'
 }

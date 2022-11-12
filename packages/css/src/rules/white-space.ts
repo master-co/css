@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'WhiteSpace'
-    static override propName = 'white-space'
+export default class extends Rule {
+    static override id: 'WhiteSpace' = 'WhiteSpace' as const
     static override unit = ''
 }

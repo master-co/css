@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'Stroke'
-    static override propName = 'stroke'
+export default class extends Rule {
+    static override id: 'Stroke' = 'Stroke' as const
     static override colorful = true
 }

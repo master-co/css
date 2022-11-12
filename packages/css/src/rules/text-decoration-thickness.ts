@@ -1,8 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'TextDecorationThickness'
+export default class extends Rule {
+    static override id: 'TextDecorationThickness' = 'TextDecorationThickness' as const
     static override matches = /^text-decoration:(from-font(?!\|)|([0-9]|(max|min|calc|clamp)\(.*\))((?!\|).)*$)/
-    static override propName = 'text-decoration-thickness'
     static override unit = 'em'
 }

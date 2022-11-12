@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'TextDecorationStyle'
+export default class extends Rule {
+    static override id: 'TextDecorationStyle' = 'TextDecorationStyle' as const
     static override matches = /^t(ext)?:(solid|double|dotted|dashed|wavy)(?!\|)/
-    static override propName = 'text-decoration-style'
 }

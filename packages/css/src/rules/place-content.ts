@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'PlaceContent'
-    static override propName = 'place-content'
+export default class extends Rule {
+    static override id: 'PlaceContent' = 'PlaceContent' as const
     override order = -1
 }

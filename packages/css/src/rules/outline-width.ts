@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'OutlineWidth'
+export default class extends Rule {
+    static override id: 'OutlineWidth' = 'OutlineWidth' as const
     static override matches = /^outline:(medium|thick|thin|[0-9]|(max|min|calc|clamp)\(.*\))((?!\|).)*$/
-    static override propName = 'outline-width'
 }

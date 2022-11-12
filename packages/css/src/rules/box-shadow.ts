@@ -1,8 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'BoxShadow'
+export default class extends Rule {
+    static override id: 'BoxShadow' = 'BoxShadow' as const
     static override matches = /^s(?:hadow)?:./
-    static override propName = 'box-shadow'
     static override colorful = true
 }

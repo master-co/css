@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'TextTransform'
+export default class extends Rule {
+    static override id: 'TextTransform' = 'TextTransform' as const
     static override matches = /^t(ext)?:(uppercase|lowercase|capitalize)(?!\|)/
-    static override propName = 'text-transform'
 }

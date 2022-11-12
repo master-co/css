@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'PlaceSelf'
-    static override propName = 'place-self'
+export default class extends Rule {
+    static override id: 'PlaceSelf' = 'PlaceSelf' as const
     override order = -1
 }

@@ -1,18 +1,18 @@
-import type { MasterCSSConfig } from '../config'
-import MasterCSSRule from '../rule'
+import type { Config } from '../config'
+import Rule from '../rule'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
-export default class extends MasterCSSRule {
-    static override id = 'BackdropFilter'
+export default class extends Rule {
+    static override id: 'BackdropFilter' = 'BackdropFilter' as const
     static override matches = /^bd:./
-    static override propName = 'backdrop-filter'
+    static override colorful = true
     override get(declaration): { [key: string]: any } {
         return {
             'backdrop-filter': declaration,
             '-webkit-backdrop-filter': declaration
         }
     }
-    override parseValue(value: string, config: MasterCSSConfig): string {
+    override parseValue(value: string, config: Config): string {
         return parseValueUnit(
             value,
             method => {

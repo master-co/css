@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'ListStylePosition'
+export default class extends Rule {
+    static override id: 'ListStylePosition' = 'ListStylePosition' as const
     static override matches = /^list-style:(inside|outside)(?!\|)/
-    static override propName = 'list-style-position'
 }

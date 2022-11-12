@@ -1,8 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'Transition'
+export default class extends Rule {
+    static override id: 'Transition' = 'Transition' as const
     static override symbol = '~' 
-    static override propName = 'transition'
     override order = -1
 }

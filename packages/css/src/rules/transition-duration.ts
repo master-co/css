@@ -1,8 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'TransitionDuration'
+export default class extends Rule {
+    static override id: 'TransitionDuration' = 'TransitionDuration' as const
     static override matches = /^~duration:./
-    static override propName = 'transition-duration'
     static override unit = 'ms'
 }

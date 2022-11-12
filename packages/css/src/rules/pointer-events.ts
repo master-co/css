@@ -1,6 +1,5 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'PointerEvents'
-    static override propName = 'pointer-events'
+export default class extends Rule {
+    static override id: 'PointerEvents' = 'PointerEvents' as const
 }

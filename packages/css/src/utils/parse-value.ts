@@ -8,6 +8,7 @@ export function parseValue(
     defaultUnit?: string,
     colorsThemesMap?: Record<string, Record<string, Record<string, string>>>,
     values?: Record<string, string | number>,
+    globalValues?: Record<string, string | number>,
     rootSize?: number,
     themes?: string[]
 ): {
@@ -16,14 +17,24 @@ export function parseValue(
     unitToken: string,
     colorMatched?: boolean
 } {
-    let value: any = values ? values[token] : ''
+    let value: any = ''
     let unit = ''
     let unitToken = ''
     let colorMatched: boolean = undefined 
 
-    if (value) {
-        return { value, unit, unitToken }
-    } else if (typeof token === 'number') {
+    const newValue = (values && token in values)
+        ? values[token]
+        : (globalValues && token in globalValues)
+            ? globalValues[token]
+            : ''
+    if (newValue) {
+        if (!defaultUnit)
+            return { value: newValue.toString(), unit, unitToken }
+
+        token = newValue
+    }
+
+    if (typeof token === 'number') {
         value = token
         unit = defaultUnit || ''
     } else {

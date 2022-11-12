@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'BorderImageWidth'
+export default class extends Rule {
+    static override id: 'BorderImageWidth' = 'BorderImageWidth' as const
     static override matches = /^border-image:(?:\.?[0-9]|(max|min|calc|clamp)\(.*\))(?:(?!\|).)*$/
-    static override propName = 'border-image-width'
 }

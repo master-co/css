@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'FlexWrap'
+export default class extends Rule {
+    static override id: 'FlexWrap' = 'FlexWrap' as const
     static override matches = /^flex:(wrap(-reverse)?|nowrap)(?!\|)/
-    static override propName = 'flex-wrap'
 }

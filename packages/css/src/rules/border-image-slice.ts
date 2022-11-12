@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'BorderImageSlice'
-    static override propName = 'border-image-slice'
+export default class extends Rule {
+    static override id: 'BorderImageSlice' = 'BorderImageSlice' as const
     static override unit = ''
 }

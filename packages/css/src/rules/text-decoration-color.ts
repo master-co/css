@@ -1,8 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'TextDecorationColor'
-    static override propName = 'text-decoration-color'
+export default class extends Rule {
+    static override id: 'TextDecorationColor' = 'TextDecorationColor' as const
     static override colorStarts = 'text-decoration:'
     static override colorful = true
 }

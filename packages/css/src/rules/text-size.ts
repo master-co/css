@@ -1,16 +1,20 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'TextSize'
+const diff = .5
+
+export default class extends Rule {
+    static override id: 'TextSize' = 'TextSize' as const
     static override matches = /^t(ext)?:([0-9]|(max|min|calc|clamp)\(.*\))((?!\|).)*$/
+    static override prop = ''
     override get(declaration): { [key: string]: any } {
+        const { unit, value } = declaration
         return {
             'font-size': declaration,
             'line-height': {
                 ...declaration,
-                value: declaration.unit === 'rem'
-                    ? declaration.value + .375 + declaration.unit
-                    : 'calc(' + declaration.value + declaration.unit + ' + .375rem)',
+                value: unit === 'rem'
+                    ? value + diff + unit
+                    : `calc(${value}${unit} + ${diff}rem)`,
                 unit: ''
             }
         }

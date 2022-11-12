@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'ObjectFit'
+export default class extends Rule {
+    static override id: 'ObjectFit' = 'ObjectFit' as const
     static override matches = /^(object|obj):(contain|cover|fill|scale-down)/
-    static override propName = 'object-fit'
 }

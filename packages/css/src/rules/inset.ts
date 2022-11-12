@@ -1,9 +1,8 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'Inset'
+export default class extends Rule {
+    static override id: 'Inset' = 'Inset' as const
     static override matches = /^(?:top|bottom|left|right):./
-    static override propName = 'inset'
     override get(declaration): { [key: string]: any } {
         return {
             [this.prefix.slice(0, -1)]: declaration

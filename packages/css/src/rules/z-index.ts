@@ -1,8 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'ZIndex'
+export default class extends Rule {
+    static override id: 'ZIndex' = 'ZIndex' as const
     static override matches = /^z:./
-    static override propName = 'z-index'
     static override unit = ''
 }

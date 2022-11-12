@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'ScrollSnapType'
+export default class extends Rule {
+    static override id: 'ScrollSnapType' = 'ScrollSnapType' as const
     static override matches = /^scroll-snap:(([xy]|block|inline|both)(\|(proximity|mandatory))?)(?!\|)/
-    static override propName = 'scroll-snap-type'
 }

@@ -1,8 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'LetterSpacing'
+export default class extends Rule {
+    static override id: 'LetterSpacing' = 'LetterSpacing' as const
     static override matches =  /^ls:./
-    static override propName = 'letter-spacing'
     static override unit = 'em'
 }

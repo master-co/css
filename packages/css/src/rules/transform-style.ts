@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'TransformStyle'
+export default class extends Rule {
+    static override id: 'TransformStyle' = 'TransformStyle' as const
     static override matches = /^transform:(flat|preserve-3d)(?!\|)/
-    static override propName = 'transform-style'
 }

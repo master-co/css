@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'AnimationFillMode'
+export default class extends Rule {
+    static override id: 'AnimationFillMode' = 'AnimationFillMode' as const
     static override matches = /^@fill-mode:./
-    static override propName = 'animation-fill-mode'
 }

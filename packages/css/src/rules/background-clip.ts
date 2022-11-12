@@ -1,9 +1,8 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'BackgroundClip'
+export default class extends Rule {
+    static override id: 'BackgroundClip' = 'BackgroundClip' as const
     static override matches = /^(bg|background):text(?!\|)/
-    static override propName = 'background-clip'
     override get(declaration): { [key: string]: any } {
         return {
             '-webkit-background-clip': declaration,

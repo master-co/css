@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'GridAutoColumns'
+export default class extends Rule {
+    static override id: 'GridAutoColumns' = 'GridAutoColumns' as const
     static override matches = /^grid-auto-cols:./
-    static override propName = 'grid-auto-columns'
 }

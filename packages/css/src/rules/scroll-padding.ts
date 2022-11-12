@@ -1,8 +1,9 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'ScrollPadding'
+export default class extends Rule {
+    static override id: 'ScrollPadding' = 'ScrollPadding' as const
     static override matches = /^scroll-p([xytblr]|adding(-(top|bottom|left|right))?)?:./
+    static override prop = ''
     override get(declaration): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'p') {
 

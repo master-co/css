@@ -2,7 +2,7 @@ import { getCssPropertyText } from './utils/get-css-property-text'
 import { parseValue } from './utils/parse-value'
 import { START_SYMBOL } from './constants/start-symbol'
 import MasterCSS from './css'
-import type { MasterCSSConfig } from './config'
+import type { Config } from './config'
 
 const PRIORITY_SELECTORS = [':disabled', ':active', ':focus', ':hover']
 const MATCHES = 'matches'
@@ -24,7 +24,7 @@ const transformSelectorUnderline = (selector: string) => selector.split(selector
     .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/_/g, ' '))
     .join('')
 
-export default class MasterCSSRule {
+export default class Rule {
 
     readonly prefix: string
     readonly symbol: string
@@ -32,42 +32,46 @@ export default class MasterCSSRule {
     readonly prefixSelectors: string[]
     readonly vendorSuffixSelectors: Record<string, string[]>
     readonly important: boolean
-    readonly media: MasterCSSMedia
+    readonly media: MediaQuery
     readonly at: Record<string, string> = {}
     readonly direction: string
-    readonly themeName: string
+    readonly theme: string
     readonly unitToken: string
     readonly hasWhere: boolean
-    readonly prioritySelectorIndex: number = -1
-    readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, themeName: string, cssRule?: CSSRule }[] = []
+    readonly priority: number = -1
+    readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, theme: string, cssRule?: CSSRule }[] = []
 
     static id: string
-    static propName: string
     static matches: RegExp
     static colorStarts: string
     static symbol: string
     static unit = REM
     static colorful: boolean
+    static get prop(): string {
+        return this.id?.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
+    }
+
 
     static match(
         name: string,
         colorNames: string[]
-    ): MasterCSSRuleMatching {
+    ): RuleMatching {
+        const { matches, colorStarts, symbol, prop } = this
         /** 
          * STEP 1. matches
          */
-        if (this.matches && this.matches.test(name)) {
+        if (matches && matches.test(name)) {
             return { origin: MATCHES }
         }
         /** 
          * STEP 2. color starts
          */
         // TODO: 動態 new Regex 效能問題待優化
-        if (this.colorStarts
+        if (colorStarts
             && (
-                name.match('^' + this.colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current))')
+                name.match('^' + colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current|inherit))')
                 || colorNames.length
-                && name.match('^' + this.colorStarts + '(' + colorNames.join('|') + ')')
+                && name.match('^' + colorStarts + '(' + colorNames.join('|') + ')')
                 && name.indexOf('|') === -1
             )
         ) {
@@ -76,36 +80,37 @@ export default class MasterCSSRule {
         /** 
          * STEP 3. symbol
          */
-        if (this.symbol && name.startsWith(this.symbol)) {
+        if (symbol && name.startsWith(symbol)) {
             return { origin: SYMBOL }
         }
         /**
          * STEP 4. key full name
          */
-        if (this.propName && name.startsWith(this.propName + ':')) {
+        if (prop && name.startsWith(prop + ':')) {
             return { origin: MATCHES }
         }
     }
 
     constructor(
         public readonly className: string,
-        public readonly matching: MasterCSSRuleMatching,
+        public readonly matching: RuleMatching,
         public css: MasterCSS
     ) {
-        const TargetRule = this.constructor as typeof MasterCSSRule
-        const { id, unit, propName, colorful } = TargetRule
-        const { breakpoints, mediaQueries, semantics, rootSize } = css.config
-        const values = css.config.values[id]
+        const TargetRule = this.constructor as typeof Rule
+        const { id, unit, colorful, prop } = TargetRule
+        const { mediaQueries, rootSize } = css.config
+        const { themeNames, colorsThemesMap, selectors, globalValues, breakpoints } = css
+        const values = css.values[id]
         const relationThemesMap = css.relationThemesMap[className]
-        const { themeNames, colorsThemesMap, selectors } = css
 
         const token = className
 
         // 1. value / selectorToken
         let value: string | Record<string, string | number>, prefixToken: string, suffixToken: string, valueTokens: (string | { value: string })[]
         if (matching.origin === SEMANTICS) {
-            suffixToken = token.slice(matching.value.length)
-            value = semantics[matching.value]
+            const [semanticName, semanticValue] = matching.value
+            suffixToken = token.slice(semanticName.length)
+            value = semanticValue
         } else {
             let valueToken: string
             if (matching.origin === MATCHES) {
@@ -201,8 +206,11 @@ export default class MasterCSSRule {
                                     currentValueToken += '0'
                                 }
                             } else if (val === ',') {
-                                valueTokens.push({ value: currentValueToken }, ',')
-                                currentValueToken = ''
+                                if (currentValueToken) {
+                                    valueTokens.push({ value: currentValueToken })
+                                    currentValueToken = ''
+                                }
+                                valueTokens.push(',')
                                 continue
                             } else if (
                                 val === '#'
@@ -344,8 +352,8 @@ export default class MasterCSSRule {
 
                     for (let i = 0; i < PRIORITY_SELECTORS.length; i++) {
                         if (eachSuffixSelector.includes(PRIORITY_SELECTORS[i])) {
-                            if (this.prioritySelectorIndex === -1 || this.prioritySelectorIndex > i) {
-                                this.prioritySelectorIndex = i
+                            if (this.priority === -1 || this.priority > i) {
+                                this.priority = i
                             }
                             break
                         }
@@ -361,7 +369,7 @@ export default class MasterCSSRule {
             const atToken = suffixTokens[i]
             if (atToken) {
                 if (themeNames.includes(atToken)) {
-                    this.themeName = atToken
+                    this.theme = atToken
                 } else if (
                     atToken === 'rtl'
                     || atToken === 'ltr'
@@ -412,7 +420,7 @@ export default class MasterCSSRule {
                                 } else if (mediaQueries && typeOrFeatureToken in mediaQueries) {
                                     queryTexts.push(mediaQueries[typeOrFeatureToken])
                                 } else {
-                                    const feature: MasterCSSMediaFeatureRule = {
+                                    const feature: MediaFeatureRule = {
                                         token: typeOrFeatureToken
                                     }
                                     let featureName = ''
@@ -483,13 +491,13 @@ export default class MasterCSSRule {
         }
 
         // 7. value
-        const insertNewNative = (themeName: string, bypassWhenUnmatchColor: boolean) => {
+        const insertNewNative = (theme: string, bypassWhenUnmatchColor: boolean) => {
             let newValue: any
             let newUnit: string
 
             const generateCssText = (
                 propertiesText: string,
-                themeName: string,
+                theme: string,
                 suffixSelectors: string[]
             ) => {
                 let prefixText = ''
@@ -498,8 +506,8 @@ export default class MasterCSSRule {
                 }
 
                 const prefixTexts = this.prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText)
-                const getCssText = (themeName: string, name: string) => {
-                    const prefixThemeText = (themeName ? '.' + themeName + ' ' : '')
+                const getCssText = (theme: string, name: string) => {
+                    const prefixThemeText = (theme ? '.' + theme + ' ' : '')
                     const esacpedName = '.' + CSS.escape(name)
                     return prefixTexts
                         .map(eachPrefixText => prefixThemeText + eachPrefixText)
@@ -517,13 +525,13 @@ export default class MasterCSSRule {
                         .join(',')
                 }
 
-                let cssText = getCssText(themeName, className)
+                let cssText = getCssText(theme, className)
                     + (relationThemesMap
                         ? Object
                             .entries(relationThemesMap)
-                            .filter(([relationTheme]) => this.themeName || !colorful || !themeName || !relationTheme || relationTheme === themeName)
+                            .filter(([relationTheme]) => this.theme || !colorful || !theme || !relationTheme || relationTheme === theme)
                             .map(([relationTheme, classNames]) =>
-                                classNames.reduce((str, className) => str + ',' + getCssText(this.themeName ?? (colorful ? themeName || relationTheme : relationTheme), className), '')
+                                classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? (colorful ? theme || relationTheme : relationTheme), className), '')
                             )
                             .join('')
                         : '')
@@ -549,8 +557,9 @@ export default class MasterCSSRule {
                             unit,
                             colorful && colorsThemesMap,
                             values,
+                            globalValues,
                             rootSize,
-                            this.themeName ? [this.themeName, ''] : [themeName]
+                            this.theme ? [this.theme, ''] : [theme]
                         )
                         if (uv.colorMatched !== undefined && anyColorMatched !== true) {
                             anyColorMatched = uv.colorMatched
@@ -560,7 +569,7 @@ export default class MasterCSSRule {
                     }
                 }
 
-                if (bypassWhenUnmatchColor && (anyColorMatched === undefined ? themeName : !anyColorMatched))
+                if (bypassWhenUnmatchColor && (anyColorMatched === undefined ? theme : !anyColorMatched))
                     return
 
                 if (newValueTokens.length === 1) {
@@ -585,33 +594,35 @@ export default class MasterCSSRule {
                         newValue = 'currentColor'
                     } else if (values && newValue in values) {
                         newValue = values[newValue].toString()
+                    } else if (newValue in globalValues) {
+                        newValue = globalValues[newValue].toString()
                     }
 
-                    const declaration: MasterCSSDeclaration = {
+                    const declaration: Declaration = {
                         unit: newUnit,
                         value: newValue,
                         important: this.important
                     }
                     if (this.getThemeProps) {
                         const themeProps = this.getThemeProps(declaration, css)
-                        for (const themeName in themeProps) {
+                        for (const theme in themeProps) {
                             for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
                                 this.natives.push({
                                     unit: newUnit,
                                     value: newValue,
                                     text: generateCssText(
                                         Object
-                                            .entries(themeProps[themeName])
+                                            .entries(themeProps[theme])
                                             .map(([propertyName, propertyValue]) => getCssPropertyText(propertyName, {
                                                 important: this.important,
                                                 unit: '',
                                                 value: propertyValue
                                             }))
                                             .join(';'),
-                                        themeName,
+                                        theme,
                                         suffixSelectors
                                     ),
-                                    themeName
+                                    theme
                                 })
                             }
                         }
@@ -639,19 +650,19 @@ export default class MasterCSSRule {
                                     important: this.important
                                 }))
                                 .join(';')
-                            : getCssPropertyText(propName, { unit: newUnit, value: newValue, important: this.important }),
-                        themeName,
+                            : getCssPropertyText(prop, { unit: newUnit, value: newValue, important: this.important }),
+                        theme,
                         suffixSelectors
                     ),
-                    themeName
+                    theme
                 })
             }
         }
 
         if (this.getThemeProps) {
             insertNewNative(undefined, false)
-        } else if (this.themeName) {
-            insertNewNative(this.themeName, false)
+        } else if (this.theme) {
+            insertNewNative(this.theme, false)
         } else if (colorful) {
             for (const eachThemeName of themeNames) {
                 insertNewNative(eachThemeName, true)
@@ -662,14 +673,14 @@ export default class MasterCSSRule {
     }
 }
 
-export default interface MasterCSSRule {
+export default interface Rule {
     readonly order?: number;
-    parseValue(value: string, config: MasterCSSConfig): string;
-    get(declaration: MasterCSSDeclaration): Record<string, any>;
-    getThemeProps(declaration: MasterCSSDeclaration, css: MasterCSS): Record<string, Record<string, string>>;
+    parseValue(value: string, config: Config): string;
+    get(declaration: Declaration): Record<string, any>;
+    getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>>;
 }
 
-export interface MasterCSSMediaFeatureRule {
+export interface MediaFeatureRule {
     token: string;
     tokenType?: string;
     operator?: string;
@@ -677,21 +688,21 @@ export interface MasterCSSMediaFeatureRule {
     unit?: string;
 }
 
-export interface MasterCSSMedia {
+export interface MediaQuery {
     token: string;
     features?: {
-        [key: string]: MasterCSSMediaFeatureRule
+        [key: string]: MediaFeatureRule
     }
     type?: string;
 }
 
-export interface MasterCSSDeclaration {
+export interface Declaration {
     value: any,
     unit: string,
     important: boolean
 }
 
-export interface MasterCSSRuleMatching {
+export interface RuleMatching {
     origin: 'matches' | 'semantics' | 'symbol';
-    value?: string;
+    value?: [string, string | Record<string, string>];
 }

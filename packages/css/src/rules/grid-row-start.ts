@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'GridRowStart'
-    static override propName = 'grid-row-start'
+export default class extends Rule {
+    static override id: 'GridRowStart' = 'GridRowStart' as const
     static override unit = ''
 }

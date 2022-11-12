@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'ClipPath'
+export default class extends Rule {
+    static override id: 'ClipPath' = 'ClipPath' as const
     static override matches = /^clip:./
-    static override propName = 'clip-path'
 }

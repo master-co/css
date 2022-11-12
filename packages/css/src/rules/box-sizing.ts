@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'BoxSizing'
+export default class extends Rule {
+    static override id: 'BoxSizing' = 'BoxSizing' as const
     static override matches = /^box:(content|border)(?!\|)/
-    static override propName = 'box-sizing'
 }

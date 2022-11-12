@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'FlexShrink'
-    static override propName = 'flex-shrink'
+export default class extends Rule {
+    static override id: 'FlexShrink' = 'FlexShrink' as const
     static override unit = ''
 }

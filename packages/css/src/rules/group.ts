@@ -1,47 +1,48 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 import MasterCSS from '../css'
 import { START_SYMBOL } from '../constants/start-symbol'
-import type { MasterCSSDeclaration } from '../rule'
+import type { Declaration } from '../rule'
 
 const bracketRegexp = /\{(.*)\}/
 
-export default class extends MasterCSSRule {
-    static override id = 'Group'
+export default class extends Rule {
+    static override id: 'Group' = 'Group' as const
     static override matches = /^(?:.+?[*_>~+])?\{.+?\}/
     static override unit = ''
-    override getThemeProps(declaration: MasterCSSDeclaration, css: MasterCSS): Record<string, Record<string, string>> {
+    static override prop = ''
+    override getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>> {
         const themePropsMap: Record<string, Record<string, string>> = {}
         
-        const addProp = (themeName: string, propertyName: string) => {
+        const addProp = (theme: string, propertyName: string) => {
             const indexOfColon = propertyName.indexOf(':')
             if (indexOfColon !== -1) {
-                if (!(themeName in themePropsMap)) {
-                    themePropsMap[themeName] = {}
+                if (!(theme in themePropsMap)) {
+                    themePropsMap[theme] = {}
                 }
 
-                const props = themePropsMap[themeName]
+                const props = themePropsMap[theme]
                 const name = propertyName.slice(0, indexOfColon)
                 if (!(name in props)) {
                     props[name] = propertyName.slice(indexOfColon + 1)
                 }
             }
         }
-        const handleRule = (rule: MasterCSSRule) => {
-            const addProps = (themeName: string, cssText: string) => {
+        const handleRule = (rule: Rule) => {
+            const addProps = (theme: string, cssText: string) => {
                 const cssProperties = cssText.slice(CSS.escape(rule.className).length).match(bracketRegexp)[1].split(';')
                 for (const eachCssProperty of cssProperties) {
-                    addProp(themeName, eachCssProperty)
+                    addProp(theme, eachCssProperty)
                 }
             }
 
-            if (this.themeName) {
-                const currentThemeNative = rule.natives.find(eachNative => eachNative.themeName === this.themeName) ?? rule.natives.find(eachNative => !eachNative.themeName)
+            if (this.theme) {
+                const currentThemeNative = rule.natives.find(eachNative => eachNative.theme === this.theme) ?? rule.natives.find(eachNative => !eachNative.theme)
                 if (currentThemeNative) {
-                    addProps(this.themeName, currentThemeNative.text)
+                    addProps(this.theme, currentThemeNative.text)
                 }
             } else {
                 for (const eachNative of rule.natives) {
-                    addProps(eachNative.themeName, eachNative.text)
+                    addProps(eachNative.theme, eachNative.text)
                 }
             }
         }
@@ -105,7 +106,7 @@ export default class extends MasterCSSRule {
                 if (result) {
                     handleRule(result)
                 } else {
-                    addProp(this.themeName ?? '', eachName)
+                    addProp(this.theme ?? '', eachName)
                 }
             }
         }

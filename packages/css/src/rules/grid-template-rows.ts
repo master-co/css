@@ -1,6 +1,5 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'GridTemplateRows'
-    static override propName = 'grid-template-rows'
+export default class extends Rule {
+    static override id: 'GridTemplateRows' = 'GridTemplateRows' as const
 }

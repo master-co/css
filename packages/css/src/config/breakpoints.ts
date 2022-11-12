@@ -1,4 +1,4 @@
-const defaultBreakpoints = {
+const breakpoints = {
     '3xs': 360,
     '2xs': 480,
     xs: 600,
@@ -11,4 +11,4 @@ const defaultBreakpoints = {
     '4xl': 2560
 }
 
-export default defaultBreakpoints
+export default breakpoints

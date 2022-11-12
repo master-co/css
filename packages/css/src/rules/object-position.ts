@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'ObjectPosition'
+export default class extends Rule {
+    static override id: 'ObjectPosition' = 'ObjectPosition' as const
     static override matches = /^(object|obj):(top|bottom|right|left|center)/
-    static override propName = 'object-position'
 }

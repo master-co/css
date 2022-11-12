@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'MaxWidth'
+export default class extends Rule {
+    static override id: 'MaxWidth' = 'MaxWidth' as const
     static override matches = /^max-w:./
-    static override propName = 'max-width'
 }

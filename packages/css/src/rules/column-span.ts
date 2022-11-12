@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'ColumnSpan'
+export default class extends Rule {
+    static override id: 'ColumnSpan' = 'ColumnSpan' as const
     static override matches = /^col-span:./
-    static override propName = 'column-span'
 }

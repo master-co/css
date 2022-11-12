@@ -1,6 +1,5 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'OutlineOffset'
-    static override propName = 'outline-offset'
+export default class extends Rule {
+    static override id: 'OutlineOffset' = 'OutlineOffset' as const
 }

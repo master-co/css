@@ -1,6 +1,5 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'TableLayout'
-    static override propName = 'table-layout'
+export default class extends Rule {
+    static override id: 'TableLayout' = 'TableLayout' as const
 }

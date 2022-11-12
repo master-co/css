@@ -1,9 +1,8 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'Columns'
+export default class extends Rule {
+    static override id: 'Columns' = 'Columns' as const
     static override matches = /^(columns|cols):./
-    static override propName = 'columns'
     static override unit = ''
     override order = -1
 }

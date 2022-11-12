@@ -1,9 +1,8 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'BoxDecorationBreak'
+export default class extends Rule {
+    static override id: 'BoxDecorationBreak' = 'BoxDecorationBreak' as const
     static override matches = /^box:(slice|clone)(?!\|)/
-    static override propName = 'box-decoration-break'
     override get(declaration): { [key: string]: any } {
         return {
             'box-decoration-break': declaration,

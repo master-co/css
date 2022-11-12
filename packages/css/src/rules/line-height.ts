@@ -1,8 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'LineHeight'
+export default class extends Rule {
+    static override id: 'LineHeight' = 'LineHeight' as const
     static override matches = /^lh:./
-    static override propName = 'line-height'
     static override unit = ''
 }

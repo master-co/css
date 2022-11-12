@@ -10,6 +10,7 @@ import LetterSpacing from '../rules/letter-spacing'
 import FontSmoothing from '../rules/font-smoothing'
 import FontStyle from '../rules/font-style'
 import FontVariantNumeric from '../rules/font-variant-numeric'
+import FontFeatureSettings from '../rules/font-feature-settings'
 import LineHeight from '../rules/line-height'
 import ObjectFit from '../rules/object-fit'
 import ObjectPosition from '../rules/object-position'
@@ -85,7 +86,7 @@ import GridRows from '../rules/grid-rows'
 import Gap from '../rules/gap'
 import WordSpacing from '../rules/word-spacing'
 import Variable from '../rules/variable'
-import AspectRadio from '../rules/aspect-radio'
+import AspectRatio from '../rules/aspect-ratio'
 import BoxDecorationBreak from '../rules/box-decoration-break'
 import BreakAfter from '../rules/break-after'
 import BreakBefore from '../rules/break-before'
@@ -191,8 +192,9 @@ import BorderImageWidth from '../rules/border-image-width'
 import BorderImage from '../rules/border-image'
 import Group from '../rules/group'
 import CounterIncrement from '../rules/counter-increment'
+import counterReset from '../rules/counter-reset'
 
-const DefaultRules = [
+const Rules = [
     Group,
     Variable,
     FontSize,
@@ -201,6 +203,7 @@ const DefaultRules = [
     FontSmoothing,
     FontStyle,
     FontVariantNumeric,
+    FontFeatureSettings,
     Font,
     Color,
     Spacing,
@@ -220,6 +223,7 @@ const DefaultRules = [
     Contain,
     Content,
     CounterIncrement,
+    counterReset,
     LetterSpacing,
     LineHeight,
     ObjectFit,
@@ -348,7 +352,7 @@ const DefaultRules = [
     BreakBefore,
     BreakAfter,
     BoxDecorationBreak,
-    AspectRadio,
+    AspectRatio,
     ColumnSpan,
     AlignContent,
     AlignItems,
@@ -388,4 +392,4 @@ const DefaultRules = [
     MaskImage
 ]
 
-export default DefaultRules
+export default Rules

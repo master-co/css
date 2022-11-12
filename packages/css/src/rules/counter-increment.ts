@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'CounterIncrement'
-    static override propName = 'counter-increment'
+export default class extends Rule {
+    static override id: 'CounterIncrement' = 'CounterIncrement' as const
     static override unit = ''
 }

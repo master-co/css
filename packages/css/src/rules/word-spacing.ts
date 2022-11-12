@@ -1,7 +1,6 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'WordSpacing'
-    static override propName = 'word-spacing'
+export default class extends Rule {
+    static override id: 'WordSpacing' = 'WordSpacing' as const
     static override unit = 'em'
 }

@@ -1,8 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'FontStyle'
+export default class extends Rule {
+    static override id: 'FontStyle' = 'FontStyle' as const
     static override matches = /^f(ont)?:(normal|italic|oblique)(?!\|)/
-    static override propName = 'font-style'
     static override unit = 'deg'
 }

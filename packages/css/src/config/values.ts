@@ -1,4 +1,4 @@
-import defaultBreakpoints from './breakpoints'
+import breakpoints from './breakpoints'
 
 const boxUnderneath = {
     content: 'content-box',
@@ -17,11 +17,11 @@ const sizingValues = {
     max: 'max-content',
     min: 'min-content',
 }
-for (const key in defaultBreakpoints) {
-    sizingValues[key] = (defaultBreakpoints[key] / 16) + 'rem'
+for (const key in breakpoints) {
+    sizingValues[key] = (breakpoints[key] / 16) + 'rem'
 }
 
-const defaultValues = {
+const values = {
     BackgroundClip: boxUnderneath,
     BackgroundOrigin: boxUnderneath,
     BoxSizing: {
@@ -40,9 +40,9 @@ const defaultValues = {
         'col-reverse': 'column-reverse'
     },
     FontFamily: {
-        mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace',
-        sans: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
-        serif: 'ui-serif, Georgia, Cambria, Times New Roman, Times, serif'
+        mono: 'ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace',
+        sans: 'ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
+        serif: 'ui-serif,Georgia,Cambria,Times New Roman,Times,serif'
     },
     FontWeight: {
         thin: 100,
@@ -86,4 +86,4 @@ const defaultValues = {
     FlexBasis: sizingValues
 }
 
-export default defaultValues
+export default values

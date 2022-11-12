@@ -1,8 +1,7 @@
-import MasterCSSRule from '../rule'
+import Rule from '../rule'
 
-export default class extends MasterCSSRule {
-    static override id = 'Outline'
-    static override propName = 'outline'
+export default class extends Rule {
+    static override id: 'Outline' = 'Outline' as const
     override order = -1
     static override colorful = true
 }

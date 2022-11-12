@@ -1,12 +1,12 @@
-import type { MasterCSSConfig } from '../config'
-import MasterCSSRule from '../rule'
+import type { Config } from '../config'
+import Rule from '../rule'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
-export default class extends MasterCSSRule {
-    static override id = 'Filter'
+export default class extends Rule {
+    static override id: 'Filter' = 'Filter' as const
     static override matches = /^(blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)\(/
-    static override propName = 'filter'
-    override parseValue(value: string, config: MasterCSSConfig): string {
+    static override colorful = true
+    override parseValue(value: string, config: Config): string {
         return parseValueUnit(
             value,
             method => {

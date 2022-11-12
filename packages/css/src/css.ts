@@ -1,7 +1,7 @@
-import defaultConfig from './config'
+import config from './config'
 import extend from './apis/extend'
-import type { MasterCSSConfig } from './config'
-import MasterCSSRule from './rule'
+import type { Config } from './config'
+import Rule from './rule'
 
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@']
 const vendorPrefixSelectorRegExp = /^::-[a-z]+-/m
@@ -20,8 +20,8 @@ const MutationObserver = isBrowser
     ? window.MutationObserver
     : Object
 
-export declare type MasterCSSOptions = {
-    config?: MasterCSSConfig
+export declare type Options = {
+    config?: Config
     override?: boolean
     observe?: boolean
 }
@@ -34,22 +34,22 @@ export default class MasterCSS extends MutationObserver {
     /**
      * 全部 sheet 根據目前蒐集到的所有 DOM class 重新 findAndNew
      */
-    static refresh(config: MasterCSSConfig) {
+    static refresh(config: Config) {
         for (const eachInstance of this.instances) {
             eachInstance.refresh(config)
         }
     }
 
     readonly style: HTMLStyleElement
-    readonly rules: MasterCSSRule[] = []
-    readonly ruleOfClass: Record<string, MasterCSSRule> = {}
+    readonly rules: Rule[] = []
+    readonly ruleOfClass: Record<string, Rule> = {}
     readonly countOfClass = {}
     readonly host: Element
     readonly root: Document | ShadowRoot
     readonly ready: boolean = false
-    readonly config: MasterCSSConfig
+    readonly config: Config
 
-    semantics: [RegExp, string][]
+    semantics: [RegExp, [string, string | Record<string, string>]][]
     classes: Record<string, string[]>
     colorsThemesMap: Record<string, Record<string, Record<string, string>>>
     colorNames: string[]
@@ -57,15 +57,17 @@ export default class MasterCSS extends MutationObserver {
     relationThemesMap: Record<string, Record<string, string[]>>
     relations: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>
+    values: Record<string, Record<string, string | number>>
+    globalValues: Record<string, string | number>
+    breakpoints: Record<string, number>
 
     private schemeMQL: MediaQueryList
 
     constructor(
-        public options?: MasterCSSOptions
+        public options?: Options
     ) {
         super((mutationRecords) => {
             // console.time('css engine');
-
             const correctionOfClassName = {}
             const attributeMutationRecords: MutationRecord[] = []
             const updatedElements: Element[] = []
@@ -103,7 +105,7 @@ export default class MasterCSS extends MutationObserver {
             const removeClassName = (className: string) => {
                 if (className in correctionOfClassName) {
                     correctionOfClassName[className]--
-                } else {
+                } else if (className in this.countOfClass) {
                     correctionOfClassName[className] = -1
                 }
             }
@@ -134,8 +136,7 @@ export default class MasterCSS extends MutationObserver {
                      * regardless of whether the value is being changed or set to the current value
                      */
                     if (
-                        target['className'] === oldValue // prevent same class to execute
-                        || attributeMutationRecords
+                        attributeMutationRecords
                             .find((eachAttributeMutationRecord) => eachAttributeMutationRecord.target === target)
                     ) {
                         continue
@@ -148,7 +149,11 @@ export default class MasterCSS extends MutationObserver {
                 } else {
                     // 先判斷節點新增或移除
                     handleNodes(addedNodes, false)
-                    handleNodes(removedNodes, true)
+
+                    // 忽略處理新元素的已刪除子節點
+                    if (!target.isConnected || !updatedElements.includes(target)) {
+                        handleNodes(removedNodes, true)
+                    }
                 }
             }
 
@@ -179,20 +184,14 @@ export default class MasterCSS extends MutationObserver {
                             }
                         }
                     }
-                } else {
-                    if (target.isConnected) {
-                        classNames.forEach((className) => {
-                            if (!oldClassNames.includes(className)) {
-                                addClassName(className)
-                            }
-                        })
-                        for (const oldClassName of oldClassNames) {
-                            if (!classNames.contains(oldClassName)) {
-                                removeClassName(oldClassName)
-                            }
+                } else if (target.isConnected) {
+                    classNames.forEach((className) => {
+                        if (!oldClassNames.includes(className)) {
+                            addClassName(className)
                         }
-                    } else {
-                        for (const oldClassName of oldClassNames) {
+                    })
+                    for (const oldClassName of oldClassNames) {
+                        if (!classNames.contains(oldClassName)) {
                             removeClassName(oldClassName)
                         }
                     }
@@ -230,9 +229,9 @@ export default class MasterCSS extends MutationObserver {
         this.options = extend({ observe: true }, options)
 
         if (this.options.config && !this.options.override) {
-            this.config = extend(defaultConfig, this.options.config)
+            this.config = extend(config, this.options.config)
         } else {
-            this.config = defaultConfig
+            this.config = config
         }
 
         this.cache()
@@ -319,20 +318,55 @@ export default class MasterCSS extends MutationObserver {
         this.colorNames = []
         this.themeNames = ['']
         this.selectors = {}
+        this.values = {}
+        this.globalValues = {}
+        this.breakpoints = {}
 
-        const { semantics, classes, selectors, themes, colors } = this.config
+        const { semantics, classes, selectors, themes, colors, values, breakpoints } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
         }
 
+        function getFlatData(obj: Record<string, any>, hasObjectValue: boolean, parentKey = '', newData: Record<string, any> = {}) {
+            const entries = Object.entries(obj)
+
+            if (hasObjectValue && parentKey) {
+                const newValue = {}
+
+                for (const [key, value] of entries) {
+                    if (typeof value === 'object' && !Array.isArray(value)) {
+                        getFlatData(value, hasObjectValue, parentKey + '-' + key, newData)
+                    } else {
+                        newValue[key] = value
+                    }
+                }
+
+                if (Object.keys(newValue).length) {
+                    newData[parentKey] = newValue
+                }
+            } else {
+                for (const [key, value] of entries) {
+                    const currentKey = (parentKey ? parentKey + '-' : '') + key
+
+                    if (typeof value === 'object' && !Array.isArray(value)) {
+                        getFlatData(value, hasObjectValue, currentKey, newData)
+                    } else {
+                        newData[currentKey] = value
+                    }
+                }
+            }
+
+            return newData
+        }
+
         if (semantics) {
-            for (const semanticName in semantics) {
-                this.semantics.push([new RegExp('^' + escapeString(semanticName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'), semanticName])
+            for (const [semanticName, semanticValue] of Object.entries(getFlatData(semantics, true))) {
+                this.semantics.push([new RegExp('^' + escapeString(semanticName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'), [semanticName, semanticValue]])
             }
         }
         if (selectors) {
-            for (const [replacedSelectorText, newSelectorText] of Object.entries(selectors)) {
+            for (const [replacedSelectorText, newSelectorText] of Object.entries(getFlatData(selectors, false))) {
                 const regexp = new RegExp(escapeString(replacedSelectorText) + '(?![a-z-])')
                 for (const eachNewSelectorText of Array.isArray(newSelectorText) ? newSelectorText : [newSelectorText]) {
                     const vendor = eachNewSelectorText.match(vendorPrefixSelectorRegExp)?.[0] ?? ''
@@ -352,7 +386,18 @@ export default class MasterCSS extends MutationObserver {
                 }
             }
         }
-
+        if (values) {
+            for (const [id, valueMap] of Object.entries(values)) {
+                if (typeof valueMap === 'object') {
+                    this.values[id] = getFlatData(valueMap, false)
+                } else {
+                    this.globalValues[id] = valueMap
+                }
+            }
+        }
+        if (breakpoints) {
+            this.breakpoints = getFlatData(breakpoints, false)
+        }
 
         const semanticNames = [
             ...(classes ? Object.keys(classes) : []),
@@ -459,16 +504,50 @@ export default class MasterCSS extends MutationObserver {
                 }
             }
         }
-
-        mergeColors('', colors)
+        mergeColors('', getFlatData(colors, true))
         if (themes) {
             if (Array.isArray(themes)) {
                 this.themeNames.push(...themes)
             } else {
                 for (const eachTheme in themes) {
                     const themeValue = themes[eachTheme]
-                    mergeColors(eachTheme, themeValue.colors)
+                    mergeColors(eachTheme, getFlatData(themeValue.colors, true))
                     this.themeNames.push(eachTheme)
+                }
+            }
+        }
+
+        for (const [colorName, levelsThemes] of Object.entries(this.colorsThemesMap)) {
+            for (const [level, themesColor] of Object.entries(levelsThemes)) {
+                for (const [theme, color] of Object.entries(themesColor)) {
+                    if (!color.startsWith('#')) {
+                        const [_colorName, _level] = color.split('-')
+                        const assignedThemesColor = this.colorsThemesMap[_colorName]?.[_level ?? '']
+                        let newColor = ''
+
+                        if (assignedThemesColor) {
+                            newColor = (theme
+                                ? assignedThemesColor[theme] 
+                                : undefined)
+                                ?? assignedThemesColor['']
+                            if (newColor) {
+                                themesColor[theme] = newColor
+                            }
+                        }
+                        
+                        if (!newColor) {
+                            console.warn(`\`${color}\` doesn't exist in the extended config \`.colors\``)
+
+                            if (Object.keys(themesColor).length > 1) {
+                                delete themesColor[theme] 
+                            } else if (Object.keys(levelsThemes).length > 1) {
+                                delete levelsThemes[level]
+                            } else {
+                                delete this.colorsThemesMap[colorName]
+                                this.colorNames.splice(this.colorNames.indexOf(colorName), 1)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -496,7 +575,7 @@ export default class MasterCSS extends MutationObserver {
                 const { title, href, ownerNode } = sheet
                 if (
                     title === 'master'
-                    || href && /master(?:\..+)?\.css/.test(href)
+                    || href && href.startsWith(window.location.origin) && /master(?:\..+)?\.css/.test(href)
                 ) {
                     // @ts-ignore
                     this.style = ownerNode
@@ -505,7 +584,7 @@ export default class MasterCSS extends MutationObserver {
 
             if (this.style) {
                 for (let index = 0; index < this.style.sheet.cssRules.length; index++) {
-                    const getRule = (cssRule: any): MasterCSSRule => {
+                    const getRule = (cssRule: any): Rule => {
                         if (cssRule.selectorText) {
                             const selectorTexts = cssRule.selectorText.split(', ')
                             const escapedClassNames = selectorTexts[0].split(' ')
@@ -536,7 +615,7 @@ export default class MasterCSS extends MutationObserver {
                                     }
 
                                     if (!(className in this.ruleOfClass) && !(className in this.classes)) {
-                                        const currentRule = this.findAndNew(className) as MasterCSSRule
+                                        const currentRule = this.findAndNew(className) as Rule
                                         if (currentRule)
                                             return currentRule
                                     }
@@ -569,23 +648,26 @@ export default class MasterCSS extends MutationObserver {
                 container.prepend(this.style)
             }
 
+            const handleClassList = (classList: DOMTokenList) => {
+                classList.forEach((className) => {
+                    if (className in this.countOfClass) {
+                        this.countOfClass[className]++
+                    } else {
+                        this.countOfClass[className] = 1
+
+                        this.findAndInsert(className)
+                    }
+                })
+            }
+            handleClassList(this.host.classList)
+
             if (options.subtree) {
                 /**
-                 * 待所有 DOM 結構完成解析後，開始繪製 MasterCSSRule 樣式
+                 * 待所有 DOM 結構完成解析後，開始繪製 Rule 樣式
                  */
                 this.host
                     .querySelectorAll('[class]')
-                    .forEach((element) => {
-                        element.classList.forEach((className) => {
-                            if (className in this.countOfClass) {
-                                this.countOfClass[className]++
-                            } else {
-                                this.countOfClass[className] = 1
-
-                                this.findAndInsert(className)
-                            }
-                        })
-                    })
+                    .forEach((element) => handleClassList(element.classList))
             }
 
             super.observe(root, {
@@ -616,7 +698,7 @@ export default class MasterCSS extends MutationObserver {
     }
 
     /**
-     * 尋找匹配的 MasterCSSRule 生成實例
+     * 尋找匹配的 Rule 生成實例
      */
     findAndNew(name: string) {
         const findAndNewRule = (className: string) => {
@@ -635,7 +717,7 @@ export default class MasterCSS extends MutationObserver {
 
             for (const eachSemanticEntry of this.semantics) {
                 if (className.match(eachSemanticEntry[0]))
-                    return new MasterCSSRule(
+                    return new Rule(
                         className,
                         { origin: 'semantics', value: eachSemanticEntry[1] },
                         this
@@ -653,7 +735,7 @@ export default class MasterCSS extends MutationObserver {
     /**
      * 根據目前蒐集到的所有 DOM class 重新 findAndNew
      */
-    refresh(config: MasterCSSConfig) {
+    refresh(config: Config) {
         // @ts-ignore
         this.config = config
         this.cache()
@@ -699,7 +781,7 @@ export default class MasterCSS extends MutationObserver {
      * 9. media width
      * 10. media width selectors
      */
-    insert(rule: MasterCSSRule) {
+    insert(rule: Rule) {
         if (this.ruleOfClass[rule.className])
             return
 
@@ -716,12 +798,12 @@ export default class MasterCSS extends MutationObserver {
          * @description
          */
         const endIndex = this.rules.length - 1
-        const { media, order, prioritySelectorIndex, hasWhere, className } = rule
+        const { media, order, priority, hasWhere, className } = rule
         const findPrioritySelectorInsertIndex = (
-            rules: MasterCSSRule[],
-            findStartIndex?: (rule: MasterCSSRule) => any,
-            findEndIndex?: (rule: MasterCSSRule) => any,
-            ignoreRule?: (rule: MasterCSSRule) => any
+            rules: Rule[],
+            findStartIndex?: (rule: Rule) => any,
+            findEndIndex?: (rule: Rule) => any,
+            ignoreRule?: (rule: Rule) => any
         ) => {
             let sIndex = 0
             let eIndex: number
@@ -740,18 +822,18 @@ export default class MasterCSS extends MutationObserver {
                 eIndex = rules.length
             }
 
-            const targetRules: MasterCSSRule[] = rules.slice(sIndex, eIndex)
+            const targetRules: Rule[] = rules.slice(sIndex, eIndex)
 
             // 2. 由目標陣列找尋插入點
             for (let i = 0; i < targetRules.length; i++) {
                 const currentRule = targetRules[i]
 
-                if (currentRule.prioritySelectorIndex === -1 || ignoreRule && ignoreRule(currentRule))
+                if (currentRule.priority === -1 || ignoreRule && ignoreRule(currentRule))
                     continue
 
                 if (
-                    currentRule.prioritySelectorIndex < prioritySelectorIndex
-                    || currentRule.prioritySelectorIndex === prioritySelectorIndex
+                    currentRule.priority < priority
+                    || currentRule.priority === priority
                     && (
                         hasWhere && !currentRule.hasWhere
                         || currentRule.order >= order
@@ -794,7 +876,7 @@ export default class MasterCSS extends MutationObserver {
                             if (hasWhere !== eachRule.hasWhere)
                                 continue
 
-                            if (prioritySelectorIndex !== -1) {
+                            if (priority !== -1) {
                                 const sameRangeRules = [this.rules[i]]
                                 for (let j = i - 1; j >= mediaStartIndex; j--) {
                                     const currentMediaRule = this.rules[j]
@@ -816,7 +898,7 @@ export default class MasterCSS extends MutationObserver {
 
                                 index = findPrioritySelectorInsertIndex(
                                     this.rules,
-                                    eachRule => eachRule.media && eachRule.prioritySelectorIndex !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH])
+                                    eachRule => eachRule.media && eachRule.priority !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH])
                             }
 
                             break
@@ -854,11 +936,11 @@ export default class MasterCSS extends MutationObserver {
                                 continue
                             }
 
-                            if (prioritySelectorIndex !== -1) {
+                            if (priority !== -1) {
                                 index = findPrioritySelectorInsertIndex(
                                     this.rules,
                                     eachRule => eachRule.media,
-                                    eachRule => eachRule.media && eachRule.prioritySelectorIndex !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH],
+                                    eachRule => eachRule.media && eachRule.priority !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH],
                                     eachRule => !eachRule.media.features[MIN_WIDTH] && !eachRule.media.features[MAX_WIDTH])
                             } else {
                                 for (let j = i; j <= endIndex; j++) {
@@ -915,11 +997,11 @@ export default class MasterCSS extends MutationObserver {
                             if (hasWhere && !eachRule.hasWhere)
                                 continue
 
-                            if (prioritySelectorIndex !== -1) {
+                            if (priority !== -1) {
                                 index = findPrioritySelectorInsertIndex(
                                     this.rules,
                                     eachRule => eachRule.media,
-                                    eachRule => eachRule.media && eachRule.prioritySelectorIndex !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH],
+                                    eachRule => eachRule.media && eachRule.priority !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH],
                                     eachRule => !eachRule.media.features[MIN_WIDTH] && !eachRule.media.features[MAX_WIDTH])
                             } else {
                                 const sameRangeRules = [this.rules[i]]
@@ -965,7 +1047,7 @@ export default class MasterCSS extends MutationObserver {
                 if (mediaStartIndex === -1) {
                     // 無任何 media 時，優先級最高
                     index = endIndex + 1
-                } else if (prioritySelectorIndex !== -1) {
+                } else if (priority !== -1) {
                     // 含有優先 selector
                     index = mediaStartIndex +
                         findPrioritySelectorInsertIndex(
@@ -977,7 +1059,7 @@ export default class MasterCSS extends MutationObserver {
                     let i = mediaStartIndex
                     for (; i < this.rules.length; i++) {
                         const eachRule = this.rules[i]
-                        if (eachRule.prioritySelectorIndex !== -1 || !eachRule.hasWhere || eachRule.order >= order) {
+                        if (eachRule.priority !== -1 || !eachRule.hasWhere || eachRule.order >= order) {
                             index = i
                             break
                         }
@@ -993,7 +1075,7 @@ export default class MasterCSS extends MutationObserver {
 
                         const eachRule = this.rules[i]
                         const eachMedia = eachRule.media
-                        if (eachRule.prioritySelectorIndex !== -1 || eachMedia.features[MAX_WIDTH] || eachMedia.features[MIN_WIDTH])
+                        if (eachRule.priority !== -1 || eachMedia.features[MAX_WIDTH] || eachMedia.features[MIN_WIDTH])
                             break
 
                         if (eachRule.hasWhere) {
@@ -1005,13 +1087,13 @@ export default class MasterCSS extends MutationObserver {
                 }
             }
         } else {
-            if (prioritySelectorIndex === -1) {
+            if (priority === -1) {
                 // 不含優先 selector
                 if (hasWhere) {
                     // 含有 where，優先級最低
                     index = this.rules.findIndex(eachRule => !eachRule.hasWhere
                         || eachRule.media
-                        || eachRule.prioritySelectorIndex !== -1
+                        || eachRule.priority !== -1
                         || eachRule.order >= order)
 
                     if (index === -1) {
@@ -1022,7 +1104,7 @@ export default class MasterCSS extends MutationObserver {
                     let i = 0
                     for (; i < this.rules.length; i++) {
                         const eachRule = this.rules[i]
-                        if (eachRule.media || !eachRule.hasWhere && (eachRule.order >= order || eachRule.prioritySelectorIndex !== -1)) {
+                        if (eachRule.media || !eachRule.hasWhere && (eachRule.order >= order || eachRule.priority !== -1)) {
                             index = i
                             break
                         }
@@ -1071,7 +1153,6 @@ export default class MasterCSS extends MutationObserver {
                     i++
                 } catch (error) {
                     console.error(error)
-
                     rule.natives.splice(i, 1)
                 }
             }
