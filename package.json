@@ -11,11 +11,6 @@
     "workspaces": [
         "packages/*"
     ],
-    "husky": {
-        "hooks": {
-            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-        }
-    },
     "devDependencies": {
         "@commitlint/cli": "^17.2.0",
         "@commitlint/config-conventional": "^17.2.0",
