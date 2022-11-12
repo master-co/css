@@ -1,6 +1,9 @@
 {
     "name": "root",
     "version": "0.0.0",
+    "scripts": {
+        "bootstrap": "lerna bootstrap"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git"

@@ -49,9 +49,10 @@
         "dist"
     ],
     "peerDependencies": {
-        "@master/css": "*"
+        "webpack": "*"
     },
     "dependencies": {
+        "@master/css": "*",
         "@master/css.compiler": "*"
     }
 }

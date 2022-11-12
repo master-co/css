@@ -49,10 +49,10 @@
         "dist"
     ],
     "peerDependencies": {
-        "@master/css": "*",
         "vite": "*"
     },
     "dependencies": {
+        "@master/css": "*",
         "chalk": "^4.0.0"
     }
 }
