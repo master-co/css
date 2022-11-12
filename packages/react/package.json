@@ -1,10 +1,10 @@
 {
-    "name": "@master/css",
-    "version": "2.0.0-beta.41",
+    "name": "@master/css.react",
+    "version": "2.0.0-beta.11",
     "scripts": {
-        "build:iife": "esbuild src/index.browser.ts --bundle --outfile=dist/index.browser.js --format=iife",
-        "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs --format=cjs --platform=node",
-        "build:esm": "esbuild src/index.ts --bundle --outfile=dist/index.mjs --format=esm --platform=node",
+        "build:iife": "esbuild src/index.tsx --bundle --outfile=dist/index.browser.js --format=iife --external:@master/css --external:react",
+        "build:cjs": "esbuild src/index.tsx --bundle --outfile=dist/index.cjs --format=cjs --platform=node --external:@master/css --external:react",
+        "build:esm": "esbuild src/index.tsx --bundle --outfile=dist/index.mjs --format=esm --platform=node --external:@master/css --external:react",
         "build": "rm -rf dist && npm run build:cjs -- --minify --sourcemap && npm run build:iife -- --minify --sourcemap && npm run build:esm -- --minify --sourcemap && tsc --emitDeclarationOnly",
         "dev:iife": "npm run build:iife -- --watch",
         "dev:cjs": "npm run build:cjs -- --watch",
@@ -13,7 +13,7 @@
         "lint": "eslint ./src"
     },
     "license": "MIT",
-    "description": "A Virtual CSS language with enhanced syntax. ( ~13KB )",
+    "description": "React hooks and components for Master CSS",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",
@@ -23,31 +23,16 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/css"
+        "directory": "packages/react"
     },
     "keywords": [
-        "style",
-        "styles",
-        "html",
-        "variants",
-        "virtual",
-        "virtual-css",
-        "utility",
+        "react",
+        "hooks",
+        "use",
         "css",
-        "ui",
-        "lightweight",
-        "class",
-        "webpack",
-        "plugin",
-        "integration",
-        "vite",
-        "parcel",
-        "build-tools",
         "mastercss"
     ],
-    "sideEffects": [
-        "./src/polyfills/css-escape.ts"
-    ],
+    "sideEffects": false,
     "main": "./dist/index.cjs",
     "browser": "./dist/index.browser.js",
     "module": "./dist/index.mjs",
@@ -61,5 +46,9 @@
     },
     "files": [
         "dist"
-    ]
+    ],
+    "peerDependencies": {
+        "@master/css": "*",
+        "react": ">=16.8.0"
+    }
 }
