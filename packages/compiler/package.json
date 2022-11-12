@@ -6,7 +6,9 @@
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",
-    "bugs": "https://github.com/master-co/css/issues",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",

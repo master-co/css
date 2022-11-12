@@ -1,25 +1,17 @@
 {
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "moduleResolution": "Node",
-    "esModuleInterop": true,
-    "allowJs": true,
-    "target": "ESNext",
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "declaration": true,
-    "sourceMap": true,
-    "lib": [
-      "es2021",
-      "dom"
-    ]
-  },
-  "references": [
-    {
-      "path": "examples/nextjs"
-    },
-    {
-      "path": "packages/css"
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "moduleResolution": "Node",
+        "esModuleInterop": true,
+        "allowJs": true,
+        "target": "ESNext",
+        "module": "ESNext",
+        "skipLibCheck": true,
+        "declaration": true,
+        "sourceMap": true,
+        "lib": [
+            "es2021",
+            "dom"
+        ]
     }
-  ]
 }
