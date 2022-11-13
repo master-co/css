@@ -1,6 +1,11 @@
 {
     "$schema": "https://turbo.build/schema.json",
     "pipeline": {
+        "dev": {
+            "outputs": [
+                "dist/**"
+            ]
+        },
         "build": {
             "dependsOn": [
                 "^build"
@@ -10,9 +15,6 @@
             ]
         },
         "test": {
-            "dependsOn": [
-                "build"
-            ],
             "outputs": [],
             "inputs": [
                 "src/**/*.tsx",

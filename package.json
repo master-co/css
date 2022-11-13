@@ -1,11 +1,9 @@
 {
     "scripts": {
-        "build": "lerna run build",
-        "test": "lerna test",
-        "dev": "lerna run dev --parallel",
-        "bootstrap": "lerna bootstrap",
-        "version": "lerna version --conventional-commits",
-        "publish": "lerna publish"
+        "build": "turbo run build",
+        "test": "turbo run test --parallel",
+        "dev": "turbo run dev --parallel --no-cache",
+        "bootstrap": "lerna bootstrap"
     },
     "workspaces": [
         "packages/*"
