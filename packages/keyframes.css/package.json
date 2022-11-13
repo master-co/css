@@ -1,12 +1,12 @@
 {
-    "name": "@master/normal.css",
-    "version": "2.0.0-beta.4",
+    "name": "@master/keyframes.css",
+    "version": "2.0.0-beta.1",
     "scripts": {
-        "build": "esbuild src/index.css --bundle --minify --outfile=dist/index.css",
+        "build": "esbuild src/*.css --bundle --minify --outdir=dist",
         "dev": "npm run build -- --watch"
     },
     "license": "MIT",
-    "description": "Normalize browser's styles. ~500B",
+    "description": "Simple and useful CSS keyframes. ~0.4KB",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",
@@ -16,20 +16,23 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/normal.css"
+        "directory": "packages/keyframes.css"
     },
     "keywords": [
-        "normalize",
-        "browser",
-        "style",
+        "animate",
+        "animation",
         "css",
-        "font",
-        "smoothing",
-        "box-sizing",
-        "text",
-        "rendering",
-        "lightweight",
-        "antialiased"
+        "effect",
+        "keyframes",
+        "fade",
+        "flash",
+        "heart",
+        "jump",
+        "pulse",
+        "rotate",
+        "shake",
+        "zoom",
+        "float"
     ],
     "main": "./dist/index.css",
     "style": "./dist/index.css",
