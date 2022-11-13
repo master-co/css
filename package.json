@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "build": "turbo run build",
+        "build": "turbo run build --parallel",
         "test": "turbo run test --parallel",
         "dev": "turbo run dev --parallel --no-cache",
         "bootstrap": "lerna bootstrap"
@@ -9,6 +9,7 @@
         "packages/*"
     ],
     "devDependencies": {
+        "@changesets/cli": "^2.25.2",
         "@commitlint/cli": "^17.2.0",
         "@commitlint/config-conventional": "^17.2.0",
         "@swc/core": "^1.3.9",
