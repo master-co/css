@@ -1,6 +1,6 @@
 {
     "name": "@master/keyframes.css",
-    "version": "2.0.0-beta.1",
+    "version": "2.0.0-beta",
     "scripts": {
         "build": "esbuild src/*.css --bundle --minify --outdir=dist",
         "dev": "npm run build -- --watch"
