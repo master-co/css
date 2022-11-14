@@ -2,7 +2,7 @@
 <div align="center">
 
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/33840671/201579086-97ac1b13-07cb-44c6-bed9-d3d12966c630.svg" alt="banner" width="100%">
+    <img src="https://user-images.githubusercontent.com/33840671/201699737-7f79a082-6b1f-4b8c-956a-84437988b3fc.svg" alt="Master CSS" width="100%">
 </p>
 <p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax ~15KB<!----></p>
 
@@ -40,7 +40,7 @@ Visit [css.master.co](https://css.master.co) to view the full documentation.
 
 Visit [official guides](https://css.master.co/docs/guides) to quickly get started with Master CSS.
 
-## Official Ecosystem
+## Ecosystem
 
 <table layout="fixed">
     <tr>
