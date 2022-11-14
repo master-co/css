@@ -38,18 +38,18 @@ Visit [css.master.co](https://css.master.co) to view the full documentation.
 
 ## Getting Started
 
-Visit [official guides](https://css.master.co/docs) to quickly get started with Master CSS.
+Visit [official guides](https://css.master.co/docs/guides) to quickly get started with Master CSS.
 
-## Ecosystem
+## Official Ecosystem
 
 <table>
     <tr>
-        <th>Master CSS</th>
+        <th align="left">Master CSS</th>
         <th align="left">Introduction</th>
         <th>Changelog</th>
     </tr>
     <tr>
-        <th align="left" colspan="3">Package</th>
+        <th align="left" colspan="3">Packages</th>
     </tr>
     <tr>
         <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/css">css</a></th>
@@ -87,17 +87,20 @@ Visit [official guides](https://css.master.co/docs) to quickly get started with 
         <td><a href="https://github.com/master-co/css/tree/beta/packages/keyframes.css/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/keyframes.css?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
     </tr>
     <tr>
+        <th align="left" colspan="3">Related Packages</th>
+    </tr>
+    <tr>
         <th align="left"><a href="https://github.com/master-co/style-element/tree/beta/packages/react">style-element.react</a></th>
         <td>Quickly create reusable React elements driven by class names</td>
         <td><a href="https://github.com/master-co/css/tree/beta/packages/react/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/style-element.react?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
     </tr>
     <tr>
-        <th align="left" colspan="3">Extension</th>
+        <th align="left" colspan="3">Extensions</th>
     </tr>
     <tr>
         <th align="left"><a href="https://github.com/master-co/css-language-service">Language Service for Visual Studio Code</a></th>
         <td>Code completion, syntax highlighting, CSS hover preview, inline color decorators</td>
-        <td><a href="https://github.com/master-co/css/tree/beta/packages/css/CHANGELOG.md"><img src="https://img.shields.io/github/v/release/master-co/css-language-service?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
+        <td><a href="https://github.com/master-co/css-language-service/releases"><img src="https://img.shields.io/github/v/release/master-co/css-language-service?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
     </tr>
 </table>
 
