@@ -8,26 +8,47 @@
 <p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax ~15KB<!----></p>
 
 <p align="center">
-    <a aria-label="NPM Version" href="https://www.npmjs.com/package/@master/css">
+    <a aria-label="NPM Version" href="https://www.npmjs.com/package/@master/css#gh-dark-mode-only">
         <img alt="NPM Version" src="https://img.shields.io/npm/v/@master/css?color=212022&label=&style=for-the-badge"/>
     </a>
-    <a aria-label="License" href="https://github.com/master-co/css/blob/main/LICENSE">
+    <a aria-label="NPM Version" href="https://www.npmjs.com/package/@master/css#gh-light-mode-only">
+        <img alt="NPM Version" src="https://img.shields.io/npm/v/@master/css?color=f6f7f8&label=&style=for-the-badge"/>
+    </a>
+    <a aria-label="License" href="https://github.com/master-co/css/blob/main/LICENSE#gh-dark-mode-only">
         <img alt="NPM" src="https://img.shields.io/npm/l/@master/css?color=212022&label=%20&style=for-the-badge">
     </a>
-    <a aria-label="NPM Package" href="https://www.jsdelivr.com/package/npm/@master/css">
+    <a aria-label="License" href="https://github.com/master-co/css/blob/main/LICENSE#gh-light-mode-only">
+        <img alt="NPM" src="https://img.shields.io/npm/l/@master/css?color=f6f7f8&label=%20&style=for-the-badge">
+    </a>
+    <a aria-label="NPM Package" href="https://www.jsdelivr.com/package/npm/@master/css#gh-dark-mode-only">
         <img alt="jsDelivr hits (npm scoped)" src="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=212022&label=%20&logo=jsdelivr&style=for-the-badge">
     </a>
-    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css">
+    <a aria-label="NPM Package" href="https://www.jsdelivr.com/package/npm/@master/css#gh-light-mode-only">
+        <img alt="jsDelivr hits (npm scoped)" src="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
+    </a>
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css#gh-dark-mode-only">
         <img alt="npm" src="https://img.shields.io/npm/dm/@master/css?color=212022&label=%20&logo=npm&style=for-the-badge">
     </a>
-    <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css#gh-light-mode-only">
+        <img alt="npm" src="https://img.shields.io/npm/dm/@master/css?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+    </a>
+    <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6#gh-dark-mode-only">
         <img alt="Discord" src="https://img.shields.io/discord/917780624314613760?color=212022&label=%20&logo=discord&style=for-the-badge"/>
     </a>
-    <a aria-label="Follow @mastercorg" href="https://twitter.com/mastercorg">
+    <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6#gh-light-mode-only">
+        <img alt="Discord" src="https://img.shields.io/discord/917780624314613760?color=f6f7f8&label=%20&logo=discord&style=for-the-badge"/>
+    </a>
+    <a aria-label="Follow @mastercorg" href="https://twitter.com/mastercorg#gh-dark-mode-only">
         <img alt="Twitter" src="https://img.shields.io/static/v1?label=%20&message=twitter&color=212022&logo=twitter&style=for-the-badge">
     </a>
-    <a aria-label="Circle CI" href="https://circleci.com/gh/master-co/workflows/css/tree/main">
+    <a aria-label="Follow @mastercorg" href="https://twitter.com/mastercorg#gh-light-mode-only">
+        <img alt="Twitter" src="https://img.shields.io/static/v1?label=%20&message=twitter&color=f6f7f8&logo=twitter&style=for-the-badge">
+    </a>
+    <a aria-label="Circle CI" href="https://circleci.com/gh/master-co/workflows/css/tree/main#gh-dark-mode-only">
         <img alt="CircleCI" src="https://img.shields.io/circleci/build/gh/master-co/css?color=212022&label=%20&logo=circleci&style=for-the-badge">
+    </a>
+    <a aria-label="Circle CI" href="https://circleci.com/gh/master-co/workflows/css/tree/main#gh-light-mode-only">
+        <img alt="CircleCI" src="https://img.shields.io/circleci/build/gh/master-co/css?color=f6f7f8&label=%20&logo=circleci&style=for-the-badge&&logoColor=000">
     </a>
 </p>
 
