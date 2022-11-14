@@ -99,7 +99,7 @@ Visit [official guides](https://css.master.co/docs) to quickly get started with 
         <td>Code completion, syntax highlighting, CSS hover preview, inline color decorators</td>
         <td><a href="https://github.com/master-co/css/tree/beta/packages/css/CHANGELOG.md"><img src="https://img.shields.io/github/v/release/master-co/css-language-service?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
     </tr>
-</table>​
+</table>
 
 ## Inspiration
 Some of our core concepts and designs are inspired by these giants.
