@@ -2,7 +2,8 @@
 <div align="center">
 
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/33840671/201699737-7f79a082-6b1f-4b8c-956a-84437988b3fc.svg" alt="Master CSS" width="100%">
+    <img src="https://user-images.githubusercontent.com/33840671/201701649-3bb7d698-abec-4d5f-ac30-ccc4d7bafcd4.svg#gh-dark-mode-only" alt="Master CSS" width="100%">
+    <img src="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg#gh-light-mode-only" alt="Master CSS" width="100%">
 </p>
 <p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax ~15KB<!----></p>
 
