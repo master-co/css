@@ -1,0 +1,14 @@
+{
+  "mode": "pre",
+  "tag": "beta",
+  "initialVersions": {
+    "@master/css.compiler": "2.0.0-beta.17",
+    "@master/css": "2.0.0-beta.39",
+    "@master/keyframes.css": "2.0.0-beta",
+    "@master/normal.css": "2.0.0-beta.3",
+    "@master/css.react": "2.0.0-beta.10",
+    "@master/css.vite": "2.0.0-beta",
+    "@master/css.webpack": "2.0.0-beta"
+  },
+  "changesets": []
+}
