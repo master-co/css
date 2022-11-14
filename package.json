@@ -35,5 +35,6 @@
         "extends": [
             "@commitlint/config-conventional"
         ]
-    }
+    },
+    "packageManager": "pnpm@7.15.0"
 }
