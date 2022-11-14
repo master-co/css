@@ -3,7 +3,7 @@
         "build": "turbo run build --parallel",
         "test": "turbo run test --parallel",
         "dev": "turbo run dev --parallel --no-cache",
-        "bootstrap": "lerna bootstrap"
+        "bootstrap": "pnpm install"
     },
     "workspaces": [
         "packages/*"
