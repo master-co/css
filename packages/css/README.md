@@ -60,7 +60,7 @@ Visit [css.master.co](https://css.master.co) to view the full documentation.
 
 ## Getting Started
 
-Visit [official guides](https://css.master.co/docs/guides) to quickly get started with Master CSS.
+Check out the [guides](https://css.master.co/docs/guides) to get started quickly with Master CSS.
 
 ## Ecosystem
 
