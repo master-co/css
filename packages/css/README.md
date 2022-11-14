@@ -44,9 +44,9 @@ Visit [official guides](https://css.master.co/docs/guides) to quickly get starte
 
 <table layout="fixed">
     <tr>
-        <th width="200px" align="left">Master CSS</th>
+        <th width="250px" align="left">Master CSS</th>
         <th width="800px" align="left">Introduction</th>
-        <th width="160px">Changelog</th>
+        <th width="250px">Changelog</th>
     </tr>
     <tr>
         <th align="left" colspan="3">Packages</th>
