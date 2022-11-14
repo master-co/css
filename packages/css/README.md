@@ -42,11 +42,11 @@ Visit [official guides](https://css.master.co/docs/guides) to quickly get starte
 
 ## Official Ecosystem
 
-<table>
+<table layout="fixed">
     <tr>
-        <th align="left">Master CSS</th>
-        <th align="left">Introduction</th>
-        <th>Changelog</th>
+        <th width="200px" align="left">Master CSS</th>
+        <th width="800px" align="left">Introduction</th>
+        <th width="160px">Changelog</th>
     </tr>
     <tr>
         <th align="left" colspan="3">Packages</th>
@@ -98,7 +98,7 @@ Visit [official guides](https://css.master.co/docs/guides) to quickly get starte
         <th align="left" colspan="3">Extensions</th>
     </tr>
     <tr>
-        <th align="left"><a href="https://github.com/master-co/css-language-service">Language Service for Visual Studio Code</a></th>
+        <th align="left"><a href="https://github.com/master-co/css-language-service">Language Service<br><sub>Visual Studio Code</sub></a></th>
         <td>Code completion, syntax highlighting, CSS hover preview, inline color decorators</td>
         <td><a href="https://github.com/master-co/css-language-service/releases"><img src="https://img.shields.io/github/v/release/master-co/css-language-service?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
     </tr>
