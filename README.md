@@ -2,117 +2,106 @@
 <div align="center">
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/master-co/package/document/images/logo-and-text.svg" alt="logo" width="142">
+    <img src="https://user-images.githubusercontent.com/33840671/201579086-97ac1b13-07cb-44c6-bed9-d3d12966c630.svg" alt="banner" width="100%">
 </p>
-<p align="center">
-    <b><!-- name -->CSS<!----></b>
-</p>
-<p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax. ~13KB<!----></p>
+<p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax ~15KB<!----></p>
 
-[![MIT License](https://flat.badgen.net/github/license/master-co/css?color=yellow)](https://github.com/master-co/css/blob/main/LICENSE)
-[![Latest Release](https://flat.badgen.net/npm/v/@master/css?icon=npm&label&color=yellow)](https://www.npmjs.com/package/@master/css)
-[![Bundle Size](https://flat.badgen.net/bundlephobia/minzip/@master/css?icon=packagephobia&label&color=yellow)](https://bundlephobia.com/package/@master/css 'gzip bundle size (including dependencies)')
-[![Package Size](https://flat.badgen.net/badgesize/brotli/https://cdn.jsdelivr.net/npm/@master/css?icon=jsdelivr&label&color=yellow)](https://unpkg.com/@master/css 'brotli package size (without dependencies)')
-[![Documentation](https://flat.badgen.net/badge/icon/Documentation?icon=awesome&label&color=yellow)](https://css.master.co)
-[![Github](https://flat.badgen.net/badge/icon/master-co%2Fcss?icon=github&label&color=yellow)](https://github.com/master-co/css)
-[![Discord](https://flat.badgen.net/badge/icon/discord?icon=discord&label&color=yellow)](https://discord.gg/sZNKpAAAw6)
-[![CI](https://flat.badgen.net/github/status/master-co/css/main/ci/circleci?icon=circleci)](https://circleci.com/gh/master-co/workflows/css/tree/main)
+<p align="center">
+    <a aria-label="NPM Version" href="https://www.npmjs.com/package/@master/css">
+        <img alt="NPM Version" src="https://img.shields.io/npm/v/@master/css?color=212022&label=&style=for-the-badge"/>
+    </a>
+    <a aria-label="License" href="https://github.com/master-co/css/blob/main/LICENSE">
+        <img alt="NPM" src="https://img.shields.io/npm/l/@master/css?color=212022&label=%20&style=for-the-badge">
+    </a>
+    <a aria-label="NPM Package" href="https://www.jsdelivr.com/package/npm/@master/css">
+        <img alt="jsDelivr hits (npm scoped)" src="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=212022&label=%20&logo=jsdelivr&style=for-the-badge">
+    </a>
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css">
+        <img alt="npm" src="https://img.shields.io/npm/dm/@master/css?color=212022&label=%20&logo=npm&style=for-the-badge">
+    </a>
+    <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
+        <img alt="Discord" src="https://img.shields.io/discord/917780624314613760?color=212022&label=%20&logo=discord&style=for-the-badge"/>
+    </a>
+    <a aria-label="Follow @mastercorg" href="https://twitter.com/mastercorg">
+        <img alt="Twitter" src="https://img.shields.io/static/v1?label=%20&message=twitter&color=212022&logo=twitter&style=for-the-badge">
+    </a>
+    <a aria-label="Circle CI" href="https://circleci.com/gh/master-co/workflows/css/tree/main">
+        <img alt="CircleCI" src="https://img.shields.io/circleci/build/gh/master-co/css?color=212022&label=%20&logo=circleci&style=for-the-badge">
+    </a>
+</p>
 
 </div>
 
-![image](https://raw.githubusercontent.com/master-co/css-language-service/alpha/images/cover.jpg)
+## Documentation
 
-- Visit [css.master.co](https://css.master.co) for full documentation.
-- Browse our [discussion community](https://github.com/master-co/css/discussions).
-- Join our [discord channel](https://discord.gg/sZNKpAAAw6).
-- Follow our [twitter](https://twitter.com/mastercorg).
+Visit [css.master.co](https://css.master.co) to view the full documentation.
 
-##### On this page
+## Getting Started
 
-- [Features](#features)
-- [Why Master CSS](#why-master-css)
-- [Quick Start](#quick-start)
-- [Developer Tools](#developer-tools)
-- [Inspiration](#inspiration)
-- [Related](#related)
+Visit [official guides](https://css.master.co/docs) to quickly get started with Master CSS.
 
-# Features
-Let's have a quick overview of the **groundbreaking features** of Master CSS:
+## Ecosystem
 
-- 🔥 A whole new **CSS language** instead of utilities/libraries.
-- 🔓 Write CSS properties, functions, selectors and even media queries directly in `class="..."`.
-- 🧠 Automatically generate corresponding CSS rules based on class names.
-- 💖 With enhanced CSS syntax, you can **build UIs with less code**.
-- ⚡️ Directly use **performant JIT in production**. **~13KB**
-- 🧬 [An enhanced and structured CSS syntax](https://docs.master.co/css/syntax-tutorial) for class names.
-- 🌈 [A forerunner to syntax highlighting](https://docs.master.co/css/why-master-css#a-forerunner-to-syntax-highlighting) for class names.
-- ✨ [Hybrid Rendering](https://docs.master.co/css/hybrid-rendering) that allows you to **pre-generate CSS from HTML on the server side**, and then continue to **use JIT on the client side**.
-- ✨ [Group Styles](https://docs.master.co/css/syntax-tutorial#group-styles) that allows you to extract the same selectors and media query styles and make it short.
-- ✨ [Reactive Styles](https://docs.master.co/css/syntax-tutorial#style-an-element-based-on-target-state) that allows you to style an element based on parent/sibling state.
+<table>
+    <tr>
+        <th>Master CSS</th>
+        <th align="left">Introduction</th>
+        <th>Changelog</th>
+    </tr>
+    <tr>
+        <th align="left" colspan="3">Package</th>
+    </tr>
+    <tr>
+        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/css">css</a></th>
+        <td>The core engine of the Master CSS language</td>
+        <td><a href="https://github.com/master-co/css/tree/beta/packages/css/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/css?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
+    </tr>
+    <tr>
+        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/compiler">css.compiler</a></th>
+        <td>Ahead-of-time compiler for Master CSS</td>
+        <td><a href="https://github.com/master-co/css/tree/beta/packages/compiler/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/css.compiler?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
+    </tr>
+    <tr>
+        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/vite">css.vite</a></th>
+        <td>A vite plugin that integrates with the AOT compilation of Master CSS</td>
+        <td><a href="https://github.com/master-co/css/tree/beta/packages/vite/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/css.vite?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
+    </tr>
+    <tr>
+        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/webpack">css.webpack</a></th>
+        <td>A webpack plugin that integrates with the AOT compilation of Master CSS</td>
+        <td><a href="https://github.com/master-co/css/tree/beta/packages/webpack/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/css.webpack?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
+    </tr>
+    <tr>
+        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/react">css.react</a></th>
+        <td>React hooks for Master CSS</td>
+        <td><a href="https://github.com/master-co/css/tree/beta/packages/react/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/css.react?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
+    </tr>
+    <tr>
+        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/normal.css">normal.css</a></th>
+        <td>Normalize browser's styles</td>
+        <td><a href="https://github.com/master-co/css/tree/beta/packages/normal.css/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/normal.css?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
+    </tr>
+    <tr>
+        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/keyframes.css">keyframes.css</a></th>
+        <td>Simple and useful CSS keyframes</td>
+        <td><a href="https://github.com/master-co/css/tree/beta/packages/keyframes.css/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/keyframes.css?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
+    </tr>
+    <tr>
+        <th align="left"><a href="https://github.com/master-co/style-element/tree/beta/packages/react">style-element.react</a></th>
+        <td>Quickly create reusable React elements driven by class names</td>
+        <td><a href="https://github.com/master-co/css/tree/beta/packages/react/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/style-element.react?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
+    </tr>
+    <tr>
+        <th align="left" colspan="3">Extension</th>
+    </tr>
+    <tr>
+        <th align="left"><a href="https://github.com/master-co/css-language-service">Language Service for Visual Studio Code</a></th>
+        <td>Code completion, syntax highlighting, CSS hover preview, inline color decorators</td>
+        <td><a href="https://github.com/master-co/css/tree/beta/packages/css/CHANGELOG.md"><img src="https://img.shields.io/github/v/release/master-co/css-language-service?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
+    </tr>
+</table>​
 
-To learn more, check out the [documentation](https://docs.master.co/css/why-master-css).
-
-# [Why Master CSS](https://docs.master.co/css/why-master-css)
-A brief introduction starts by giving you an understanding of **markup-driven CSS**.
-
-😐 Traditional
-```html
-<style>
-    .home-section {
-        background-color: blue;
-        padding: 2rem;
-        text-align: center;
-    }
-
-    .home-section:hover {
-        background-color: red;
-    }
-
-    @media (min-width: 1024px) {
-        .home-section {
-            padding: 3rem;
-        }
-    }
-</style>
-
-<section class="home-section">...</section>
-```
-🤩 Now, refactor it with a whole new CSS language to make it easier. ↓ 86% code
-```html
-<section class="bg:blue bg:red:hover p:32 p:48@md text:center">...</section>
-```
-To learn more, check out the [Why Master CSS](https://docs.master.co/css/why-master-css) documentation.
-
-# Quick Start
-This is a quick start guide, check out the [full setup guide](https://docs.master.co/css/setup) to integrate with your build tools and frameworks.
-
-```shell
-npm install @master/css
-```
-```js
-import '@master/css';
-```
-or use a CDN
-```html
-<script src="https://cdn.master.co/css"></script>
-```
-Now, start styling HTML with Master CSS. 🎉
-```html
-<h1 class="font:40 font:heavy italic m:50 text:center">Hello World</h1>
-```
-To learn more, check out the [Syntax tutorial](https://docs.master.co/css/syntax-tutorial) documentation.
-
-# Developer Tools
-- [Master CSS Language Service](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) - A Visual Studio Code extension for Master CSS. Provides code-completion and syntax highlighting.
-
-# Inspiration
+## Inspiration
 Some of our core concepts and designs are inspired by these giants.
-- __Language__ - Master is a language, but it was originally inspired by [ACSS](https://acss.io/)'s concept of atomic classes.
-- __Virtual CSS__ - Difference algorithms, virtual models, etc. are inspired by  [Virtual DOM](https://reactjs.org/docs/faq-internals.html).
-
-# Related
-- [@master/css.react](https://github.com/master-co/css.react) - React hooks for Master CSS
-- [@master/css-compiler](https://github.com/master-co/css-compiler) - Compile Master CSS ahead of time with zero-configuration integration with build tools
-- [@master/normal.css](https://github.com/master-co/normal.css) - Normalize browser's styles. ~1KB
-- [@master/keyframes.css](https://github.com/master-co/keyframes.css) - Simple and useful CSS keyframes. ~0.4KB
-- [@master/style-element.react](https://github.com/master-co/style-element.react) - Quickly create styled React elements with conditional class names. ~800B
+- The concept of enhanced syntax is inspired by [SASS](https://sass-lang.com/) and [Typescript](https://www.typescriptlang.org/).
+- The concept of __Virtual CSS__ is inspired by the [Virtual DOM](https://reactjs.org/docs/faq-internals.html).
