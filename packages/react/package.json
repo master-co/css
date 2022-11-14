@@ -46,7 +46,7 @@
         "dist"
     ],
     "peerDependencies": {
-        "@master/css": "*",
+        "@master/css": "workspace:*",
         "react": ">=16.8.0"
     }
 }

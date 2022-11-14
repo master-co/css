@@ -48,10 +48,10 @@
         "dist"
     ],
     "peerDependencies": {
-        "@master/css": "*",
-        "vite": "*"
+        "@master/css": "workspace:*",
+        "vite": ">=3.0.0"
     },
     "dependencies": {
-        "@master/css.compiler": "*"
+        "@master/css.compiler": "workspace:*"
     }
 }

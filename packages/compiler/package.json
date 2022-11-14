@@ -48,7 +48,7 @@
         "dist"
     ],
     "peerDependencies": {
-        "@master/css": "*"
+        "@master/css": "workspace:*"
     },
     "dependencies": {
         "chalk": "^4.0.0"

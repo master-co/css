@@ -48,10 +48,10 @@
         "dist"
     ],
     "peerDependencies": {
-        "@master/css": "*",
-        "webpack": "*"
+        "@master/css": "workspace:*",
+        "webpack": ">=5.0.0"
     },
     "dependencies": {
-        "@master/css.compiler": "*"
+        "@master/css.compiler": "workspace:*"
     }
 }
