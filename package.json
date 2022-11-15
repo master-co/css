@@ -2,6 +2,7 @@
     "scripts": {
         "build": "turbo run build --parallel",
         "test": "turbo run test --parallel",
+        "lint": "turbo run lint --parallel",
         "dev": "turbo run dev --parallel --no-cache",
         "bootstrap": "pnpm install"
     },

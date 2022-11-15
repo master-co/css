@@ -676,7 +676,7 @@ export default class Rule {
 export default interface Rule {
     readonly order?: number
     parseValue(value: string, config: Config): string
-    get: (declaration: Declaration) => Record<string, any> | string
+    get(declaration: Declaration): Record<string, any>
     getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>>
 }
 
