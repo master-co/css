@@ -33,8 +33,6 @@ jobs:
 
             - name: Install dependencies
               run: pnpm install
-              env:
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
             - name: Check in parallel
               run: pnpm check
@@ -51,3 +49,5 @@ jobs:
                   title: 'ci: update versions'
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
