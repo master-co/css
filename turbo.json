@@ -14,16 +14,6 @@
                 "dist/**"
             ]
         },
-        "build:ci": {
-            "dependsOn": [
-                "^build",
-                "test",
-                "lint"
-            ],
-            "outputs": [
-                "dist/**"
-            ]
-        },
         "test": {
             "outputs": [],
             "inputs": [
