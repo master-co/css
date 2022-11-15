@@ -35,7 +35,7 @@ jobs:
               run: pnpm config set store-dir $PNPM_CACHE_FOLDER
 
             - name: Test, Lint, Build
-              run: pnpm run build:ci
+              run: pnpm build:ci
 
             - name: Create and publish versions
               uses: changesets/action@v1
