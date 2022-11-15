@@ -2,8 +2,11 @@
 export default {
     colors: {
         primary: {
-            '': '#175fe9',
-            code: '#777777'
+            '': 'blue-50',
+            code: '#777777',
+            stage: {
+                '1': '#999999'
+            }
         },
     },
     classes: {
@@ -13,7 +16,12 @@ export default {
     themes: {
         light: {
             colors: {
-                primary: '#ebbb40',
+                primary: {
+                    '': '#ebbb40',
+                    stage: {
+                        '1': '#888888'
+                    }
+                },
                 accent: 'gold-70',
                 major: 'slate-10',
                 content: 'slate-30',
@@ -25,7 +33,13 @@ export default {
         },
         dark: {
             colors: {
-                primary: '#fbe09d',
+                primary: {
+                    '': '#fbe09d',
+                    code: 'gray',
+                    stage: {
+                        '1': '#AAAAAA'
+                    }
+                },
                 accent: '#fbe09d',
                 major: 'gray-80',
                 content: 'gray-60',
@@ -37,23 +51,51 @@ export default {
         }
     },
     values: {
+        '2x': '32',
+        '3x': '3rem',
         Width: {
-            '2x': '2rem',
-            '3x': '3rem',
+            x: {
+                '1': {
+                    '1': '25rem',
+                    '2': '50rem',
+                    '3': '75rem'
+                },
+                '2': '100rem'
+            }
+        },
+        FontSize: {
+            sm: 16,
+            md: 20
+        },
+        LetterSpacing: {
+            wide: .4
         }
     },
     semantics: {
         show: 'display:block',
-        'hide-text': 'font-size:0px'
+        'hide-text': 'font-size:0px',
+        zero: {
+            h: {
+                'height': 0
+            },
+            'font-size': '0px',
+            height: '0px'
+        }
     },
     breakpoints: {
         tablet: 768,
         laptop: 1024,
         desktop: 1280,
+        custom: {
+            '1': 2500
+        }
     },
     selectors: {
         '>custom': '>div>:first+button',
-        '_custom': '::before,::after'
+        '_custom': '::before,::after',
+        '~custom': {
+            '1': '~div'
+        }
     },
     mediaQueries: {
         watch: '(max-device-width:42mm) and (min-device-width:38mm)'
