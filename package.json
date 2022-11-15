@@ -1,7 +1,7 @@
 {
     "scripts": {
         "build:ci": "turbo run test lint build --parallel",
-        "build": "turbo run build --parallel",
+        "build": "turbo run build",
         "test": "turbo run test --parallel",
         "lint": "turbo run lint --parallel",
         "dev": "turbo run dev --parallel --no-cache",
