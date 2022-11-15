@@ -1,0 +1,54 @@
+name: Release
+on:
+    push:
+        branches:
+            - main
+            - beta
+
+env:
+    CI: true
+    PNPM_CACHE_FOLDER: .pnpm-store
+
+jobs:
+    version:
+        timeout-minutes: 15
+        runs-on: ubuntu-20.04
+        strategy:
+            matrix:
+                node-version: [18]
+        steps:
+            - uses: actions/checkout@v3
+            - uses: pnpm/action-setup@v2.2.4
+              with:
+                  version: 7
+
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'pnpm'
+
+            - name: Install dependencies
+              run: pnpm install
+
+            - name: Setup .npmrc
+              run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+
+            - name: Setup PNPM config
+              run: pnpm config set store-dir $PNPM_CACHE_FOLDER
+
+            - name: Install dependencies
+              run: pnpm install
+
+            - name: Build packages
+              run: pnpm run build
+
+            - name: Create and publish versions
+              uses: changesets/action@v1
+              with:
+                  version: pnpm ci:version
+                  publish: pnpm ci:publish
+                  commit: 'ci: update versions'
+                  title: 'ci: update versions'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
