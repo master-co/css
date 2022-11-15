@@ -6,7 +6,7 @@
         "lint": "turbo run lint --parallel",
         "dev": "turbo run dev --parallel --no-cache",
         "version": "changeset version",
-        "publish": "changset publish",
+        "publish": "changeset publish",
         "bootstrap": "pnpm install"
     },
     "workspaces": [
