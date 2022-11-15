@@ -1,4 +1,4 @@
-name: Checking title of pull request
+name: Check title of pull request
 on:
     pull_request_target:
         types:
@@ -13,9 +13,9 @@ jobs:
         steps:
             - uses: aslafy-z/conventional-pr-title-action@main
               with:
-                  success-state: Title follows the specification.
-                  failure-state: Title doesn't follow the specification.
-                  context-name: conventional-pr-title
+                  success-state: follows the conventional commit.
+                  failure-state: doesn't follow the conventional commit.
+                  context-name: Title of pull request
                   preset: conventional-changelog-conventionalcommits@5.0.0
               env:
-                  GITHUB_TOKEN: ${{ secrets.MASTER_GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
