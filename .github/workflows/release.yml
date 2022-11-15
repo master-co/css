@@ -51,4 +51,4 @@ jobs:
                   commit: 'ci: update versions'
                   title: 'ci: update versions'
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ GH_TOKEN }}
