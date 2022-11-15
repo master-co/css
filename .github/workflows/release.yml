@@ -28,6 +28,9 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   cache: 'pnpm'
 
+            - name: Append NPM_TOKEN to .npmrc
+              run: echo "\n//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
+
             - name: Setup PNPM config
               run: pnpm config set store-dir $PNPM_CACHE_FOLDER
 
