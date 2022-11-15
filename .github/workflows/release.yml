@@ -28,11 +28,6 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   cache: 'pnpm'
 
-            - name: Append NPM_TOKEN to .npmrc
-              run: echo "\n//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
-              env:
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
             - name: Setup PNPM config
               run: pnpm config set store-dir $PNPM_CACHE_FOLDER
 
@@ -48,9 +43,10 @@ jobs:
             - name: Create and publish versions
               uses: changesets/action@v1
               with:
-                  version: pnpm ci:version
-                  publish: pnpm ci:publish
+                  version: pnpm run version
+                  publish: pnpm run publish
                   commit: 'ci: update versions'
                   title: 'ci: update versions'
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
