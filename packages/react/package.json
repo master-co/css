@@ -7,7 +7,6 @@
         "build:esm": "esbuild src/index.tsx --bundle --outfile=dist/index.mjs --format=esm --platform=node",
         "build": "concurrently 'npm:build:* -- --minify --sourcemap --external:@master/css --external:react' 'tsc --emitDeclarationOnly'",
         "dev": "concurrently 'npm:build:* -- --watch'",
-        "test": "jest --passWithNoTests",
         "lint": "eslint ./src"
     },
     "license": "MIT",

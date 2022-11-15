@@ -4,9 +4,8 @@
     "scripts": {
         "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs --format=cjs --platform=node",
         "build:esm": "esbuild src/index.ts --bundle --outfile=dist/index.mjs --format=esm --platform=node",
-        "build": "concurrently 'npm:build:* -- --minify --sourcemap' 'tsc --emitDeclarationOnly'",
+        "build": "concurrently 'npm:build:* -- --minify --sourcemap --external:@master/css' 'tsc --emitDeclarationOnly'",
         "dev": "concurrently 'npm:build:* -- --watch'",
-        "test": "jest --passWithNoTests",
         "lint": "eslint ./src"
     },
     "license": "MIT",

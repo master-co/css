@@ -5,10 +5,10 @@ export default {
     transform: {
         '^.+\\.(t|j)sx?$': '@swc/jest'
     },
-    'globals': {
+    globals: {
         'ts-jest': {
-            'tsConfig': {
-                'importHelpers': true
+            tsConfig: {
+                importHelpers: true
             }
         }
     }
