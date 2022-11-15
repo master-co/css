@@ -10,5 +10,7 @@
     "@master/css.vite": "2.0.0-beta",
     "@master/css.webpack": "2.0.0-beta"
   },
-  "changesets": []
+  "changesets": [
+    "proud-buses-agree"
+  ]
 }
