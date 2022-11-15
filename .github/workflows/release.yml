@@ -7,7 +7,6 @@ on:
 
 env:
     CI: true
-    PNPM_CACHE_FOLDER: .pnpm-store
 
 jobs:
     version:
@@ -27,9 +26,6 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'pnpm'
-
-            - name: Setup PNPM config
-              run: pnpm config set store-dir $PNPM_CACHE_FOLDER
 
             - name: Install dependencies
               run: pnpm install
