@@ -1,4 +1,4 @@
-import MasterCSS from './css'
+import MasterCSS from './'
 import delay from './utils/delay'
 
 /**

@@ -1,5 +1,4 @@
-import { defaultColors } from './packages/css/src'
-
+/** @type {import('@master/css').Config} */
 export default {
     colors: {
         primary: {
@@ -15,10 +14,10 @@ export default {
         light: {
             colors: {
                 primary: '#ebbb40',
-                accent: defaultColors.gold['70'],
-                major: defaultColors.slate['10'],
-                content: defaultColors.slate['30'],
-                fade: defaultColors.slate['55']
+                accent: 'gold-70',
+                major: 'slate-10',
+                content: 'slate-30',
+                fade: 'slate-55'
             },
             classes: {
                 btn: 'bg:primary fg:white font:semibold'
@@ -28,9 +27,9 @@ export default {
             colors: {
                 primary: '#fbe09d',
                 accent: '#fbe09d',
-                major: defaultColors.gray['80'],
-                content: defaultColors.gray['60'],
-                fade: defaultColors.gray['60']
+                major: 'gray-80',
+                content: 'gray-60',
+                fade: 'gray-60'
             },
             classes: {
                 btn: 'bg:white fg:primary font:medium'

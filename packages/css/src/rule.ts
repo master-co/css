@@ -57,13 +57,13 @@ export default class Rule {
         colorNames: string[]
     ): RuleMatching {
         const { matches, colorStarts, symbol, prop } = this
-        /** 
+        /**
          * STEP 1. matches
          */
         if (matches && matches.test(name)) {
             return { origin: MATCHES }
         }
-        /** 
+        /**
          * STEP 2. color starts
          */
         // TODO: 動態 new Regex 效能問題待優化
@@ -77,7 +77,7 @@ export default class Rule {
         ) {
             return { origin: MATCHES }
         }
-        /** 
+        /**
          * STEP 3. symbol
          */
         if (symbol && name.startsWith(symbol)) {
@@ -674,10 +674,10 @@ export default class Rule {
 }
 
 export default interface Rule {
-    readonly order?: number;
-    parseValue(value: string, config: Config): string;
-    get(declaration: Declaration): Record<string, any>;
-    getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>>;
+    readonly order?: number
+    parseValue(value: string, config: Config): string
+    get: (declaration: Declaration) => Record<string, any> | string
+    getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>>
 }
 
 export interface MediaFeatureRule {
