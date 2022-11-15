@@ -34,8 +34,19 @@ jobs:
             - name: Setup PNPM config
               run: pnpm config set store-dir $PNPM_CACHE_FOLDER
 
-            - name: Test, Lint, Build
-              run: pnpm build:ci
+            - name: Check in parallel
+              run: pnpm check
+
+            - name: Build
+              run: pnpm build
+
+            - name: Create .npmrc
+              run: |
+                  cat << EOF > "$HOME/.npmrc"
+                      //registry.npmjs.org/:_authToken=$NPM_TOKEN
+                  EOF
+              env:
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
             - name: Create and publish versions
               uses: changesets/action@v1
@@ -46,4 +57,3 @@ jobs:
                   title: 'ci: update versions'
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
