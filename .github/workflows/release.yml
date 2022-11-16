@@ -23,8 +23,12 @@ jobs:
                   cache: 'npm'
             - run: npm ci
 
+            - name: Add NPM_TOKEN to .npmrc
+              run: echo '\n//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}' >> .npmrc
+              env:
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
             - name: Release
               run: npm run release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
