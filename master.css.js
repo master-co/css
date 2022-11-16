@@ -1,5 +1,3 @@
-import { colors } from './src'
-
 /** @type {import('@master/css').Config} */
 export default {
     colors: {
@@ -24,10 +22,10 @@ export default {
                         '1': '#888888'
                     }
                 },
-                accent: colors.gold['70'],
-                major: colors.slate['10'],
-                content: colors.slate['30'],
-                fade: colors.slate['55']
+                accent: 'gold-70',
+                major: 'slate-10',
+                content: 'slate-30',
+                fade: 'slate-55'
             },
             classes: {
                 btn: 'bg:primary fg:white font:semibold'
@@ -43,9 +41,9 @@ export default {
                     }
                 },
                 accent: '#fbe09d',
-                major: colors.gray['80'],
-                content: colors.gray['60'],
-                fade: colors.gray['60']
+                major: 'gray-80',
+                content: 'gray-60',
+                fade: 'gray-60'
             },
             classes: {
                 btn: 'bg:white fg:primary font:medium'
