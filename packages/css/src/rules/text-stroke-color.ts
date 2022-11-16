@@ -5,7 +5,7 @@ export default class extends Rule {
     static override matches = /^text-stroke-color:./
     static override colorStarts = 'text-stroke:'
     static override colorful = true
-    static override prop = ''
+    static override get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         return {
             '-webkit-text-stroke-color': declaration

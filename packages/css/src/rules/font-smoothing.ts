@@ -8,7 +8,7 @@ export default class extends Rule {
     static override id: 'FontSmoothing' = 'FontSmoothing' as const
     static override matches = /^f(ont)?:(antialiased|subpixel-antialiased)(?!\|)/
     static override unit = ''
-    static override prop = ''
+    static override get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         const props = {}
         switch (declaration.value) {

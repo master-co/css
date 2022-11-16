@@ -3,7 +3,7 @@ import Rule from '../rule'
 export default class extends Rule {
     static override id: 'ScrollMargin' = 'ScrollMargin' as const
     static override matches = /^scroll-m([xytblr]|argin(-(top|bottom|left|right))?)?:./
-    static override prop = ''
+    static override get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'm') {
             switch (this.prefix.slice(-2, -1)) {

@@ -5,7 +5,7 @@ const diff = .5
 export default class extends Rule {
     static override id: 'TextSize' = 'TextSize' as const
     static override matches = /^t(ext)?:([0-9]|(max|min|calc|clamp)\(.*\))((?!\|).)*$/
-    static override prop = ''
+    static override get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         const { unit, value } = declaration
         return {

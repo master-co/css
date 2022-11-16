@@ -4,7 +4,7 @@ export default class extends Rule {
     static override id: 'Lines' = 'Lines' as const
     static override matches = /^lines:./
     static override unit = ''
-    static override prop = ''
+    static override get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         return {
             overflow: { ...declaration, value: 'hidden' },

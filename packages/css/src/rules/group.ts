@@ -9,10 +9,10 @@ export default class extends Rule {
     static override id: 'Group' = 'Group' as const
     static override matches = /^(?:.+?[*_>~+])?\{.+?\}/
     static override unit = ''
-    static override prop = ''
+    static override get prop() { return '' }
     override getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>> {
         const themePropsMap: Record<string, Record<string, string>> = {}
-        
+
         const addProp = (theme: string, propertyName: string) => {
             const indexOfColon = propertyName.indexOf(':')
             if (indexOfColon !== -1) {
@@ -95,7 +95,7 @@ export default class extends Rule {
             }
         })(undefined)
         addName()
-        
+
         for (const eachName of names) {
             const result = css.findAndNew(eachName)
             if (Array.isArray(result)) {

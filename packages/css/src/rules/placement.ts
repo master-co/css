@@ -3,7 +3,7 @@ import Rule from '../rule'
 export default class extends Rule {
     static override id: 'Placement' = 'Placement' as const
     static override matches = /^(top|left|right|bottom|center|middle):./
-    static override prop = ''
+    static override get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         const propertyName = this.prefix.slice(0, -1)
         switch (propertyName) {
