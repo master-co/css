@@ -1,7 +1,5 @@
 {
     "compilerOptions": {
-        "outDir": "dist",
-        "baseUrl": "./",
         "experimentalDecorators": true,
         "moduleResolution": "Node",
         "esModuleInterop": true,
@@ -14,14 +12,20 @@
         "lib": [
             "es2021",
             "dom"
-        ]
-    },
-    "include": [
-        "./src/**/*.ts",
-        "./src/**/*.d.ts"
-    ],
-    "exclude": [
-        "./src/node_modules",
-        "./src/**/*.test.ts"
-    ]
+        ],
+        "paths": {
+            "@master/css": [
+                "./packages/css/src/index.ts"
+            ],
+            "@master/css.compiler": [
+                "./packages/compiler/src/index.ts"
+            ],
+            "@master/css.react": [
+                "./packages/react/src/index.ts"
+            ],
+            "@master/css.vite": [
+                "./packages/vite/src/index.ts"
+            ],
+        }
+    }
 }

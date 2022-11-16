@@ -3,9 +3,9 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev -p 3202",
+        "dev": "next dev -p 3200",
         "build": "next build",
-        "start": "next start -p 3202",
+        "start": "next start -p 3200",
         "lint": "next lint",
         "link": "npm link ../../",
         "unlink": "npm rm ../../"
@@ -16,7 +16,7 @@
         "react-dom": "18.2.0"
     },
     "devDependencies": {
-        "@types/node": "18.11.2",
+        "@types/node": "18.11.0",
         "@types/react": "18.0.21",
         "@types/react-dom": "18.0.6",
         "eslint": "8.25.0",

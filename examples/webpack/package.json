@@ -5,7 +5,7 @@
         "build:dev": "webpack --mode=development",
         "build:prod": "webpack --mode=production --node-env=production",
         "watch": "webpack --watch",
-        "serve": "webpack serve --port 8082",
+        "serve": "webpack serve",
         "link": "npm link ../../",
         "unlink": "npm rm ../../"
     },

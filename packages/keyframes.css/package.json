@@ -1,0 +1,42 @@
+{
+    "name": "@master/keyframes.css",
+    "version": "2.0.0-beta.40",
+    "scripts": {
+        "build": "esbuild src/*.css --bundle --minify --outdir=dist",
+        "dev": "npm run build -- --watch"
+    },
+    "license": "MIT",
+    "description": "Simple and useful CSS keyframes. ~0.4KB",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://docs.master.co/css/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/keyframes.css"
+    },
+    "keywords": [
+        "animate",
+        "animation",
+        "css",
+        "effect",
+        "keyframes",
+        "fade",
+        "flash",
+        "heart",
+        "jump",
+        "pulse",
+        "rotate",
+        "shake",
+        "zoom",
+        "float"
+    ],
+    "main": "./dist/index.css",
+    "style": "./dist/index.css",
+    "files": [
+        "dist"
+    ]
+}

@@ -1,0 +1,56 @@
+{
+    "name": "@master/css.webpack",
+    "version": "2.0.0-beta.40",
+    "scripts": {
+        "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs --format=cjs",
+        "build:esm": "esbuild src/index.ts --bundle --outfile=dist/index.mjs --format=esm",
+        "build": "concurrently 'npm:build:* -- --minify --sourcemap --platform=node --external:@master/css --external:@master/css.compiler' 'tsc --emitDeclarationOnly'",
+        "dev": "concurrently 'npm:build:* -- --watch'",
+        "lint": "eslint ./src"
+    },
+    "license": "MIT",
+    "description": "Compile Master CSS ahead of time with zero-configuration integration with build tools",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://docs.master.co/css/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/compiler"
+    },
+    "keywords": [
+        "webpack",
+        "plugin",
+        "integration",
+        "vite",
+        "parcel",
+        "build tools",
+        "css",
+        "mastercss",
+        "vite-plugin"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./dist/index.cjs",
+            "import": "./dist/index.mjs",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "peerDependencies": {
+        "webpack": ">=5.0.0"
+    },
+    "dependencies": {
+        "@master/css": "*",
+        "@master/css.compiler": "*"
+    }
+}
