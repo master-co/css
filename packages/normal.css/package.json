@@ -6,7 +6,7 @@
         "dev": "npm run build -- --watch"
     },
     "license": "MIT",
-    "description": "Normalize browser's styles. ~500B",
+    "description": "Normalize browser's styles ~500B",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",

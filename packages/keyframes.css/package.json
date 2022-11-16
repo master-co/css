@@ -6,7 +6,7 @@
         "dev": "npm run build -- --watch"
     },
     "license": "MIT",
-    "description": "Simple and useful CSS keyframes. ~0.4KB",
+    "description": "Simple and useful CSS keyframes ~304B",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",
