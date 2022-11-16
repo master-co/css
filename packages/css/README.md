@@ -66,63 +66,52 @@ Check out the [guides](https://css.master.co/docs/guides) to get started quickly
 
 <table layout="fixed">
     <tr>
-        <th width="250px" align="left">Master CSS</th>
-        <th width="800px" align="left">Introduction</th>
-        <th width="250px">Changelog</th>
+        <th align="left">Packages</th>
+        <th align="left">Introduction</th>
     </tr>
     <tr>
-        <th align="left" colspan="3">Packages</th>
+        <th align="left" colspan="2">Integrations</th>
     </tr>
     <tr>
-        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/css">css</a></th>
-        <td>The core engine of the Master CSS language</td>
-        <td><a href="https://github.com/master-co/css/tree/beta/packages/css/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/css?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
-    </tr>
-    <tr>
-        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/compiler">css.compiler</a></th>
+        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/compiler"><img src="https://img.shields.io/npm/dm/@master/css.compiler?color=212022&label=css%20compiler&style=for-the-badge" alt="Package" valign="middle"/></a></th>
         <td>Ahead-of-time compiler for Master CSS</td>
-        <td><a href="https://github.com/master-co/css/tree/beta/packages/compiler/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/css.compiler?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
     </tr>
     <tr>
-        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/vite">css.vite</a></th>
+        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/vite"><img src="https://img.shields.io/npm/dm/@master/css.vite?color=212022&label=css%20vite&style=for-the-badge" alt="Package" valign="middle"/></a></th>
         <td>A vite plugin that integrates with the AOT compilation of Master CSS</td>
-        <td><a href="https://github.com/master-co/css/tree/beta/packages/vite/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/css.vite?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
     </tr>
     <tr>
-        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/webpack">css.webpack</a></th>
+        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/webpack"><img src="https://img.shields.io/npm/dm/@master/css.webpack?color=212022&label=css%20webpack&style=for-the-badge" alt="Package" valign="middle"/></a></th>
         <td>A webpack plugin that integrates with the AOT compilation of Master CSS</td>
-        <td><a href="https://github.com/master-co/css/tree/beta/packages/webpack/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/css.webpack?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
     </tr>
     <tr>
-        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/react">css.react</a></th>
+        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/react"><img src="https://img.shields.io/npm/dm/@master/css.react?color=212022&label=css%20react&style=for-the-badge" alt="Package" valign="middle"/></a></th>
         <td>React hooks for Master CSS</td>
-        <td><a href="https://github.com/master-co/css/tree/beta/packages/react/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/css.react?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
     </tr>
     <tr>
-        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/normal.css">normal.css</a></th>
+        <th align="left" colspan="2">Native CSS</th>
+    </tr>
+    <tr>
+        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/normal.css"><img src="https://img.shields.io/npm/dm/@master/normal.css?color=212022&label=normal.css&style=for-the-badge" alt="Package" valign="middle"/></a></th>
         <td>Normalize browser's styles</td>
-        <td><a href="https://github.com/master-co/css/tree/beta/packages/normal.css/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/normal.css?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
     </tr>
     <tr>
-        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/keyframes.css">keyframes.css</a></th>
+        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/keyframes.css"><img src="https://img.shields.io/npm/dm/@master/keyframes.css?color=212022&label=keyframes.css&style=for-the-badge" alt="Package" valign="middle"/></a></th>
         <td>Simple and useful CSS keyframes</td>
-        <td><a href="https://github.com/master-co/css/tree/beta/packages/keyframes.css/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/keyframes.css?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
     </tr>
     <tr>
-        <th align="left" colspan="3">Related Packages</th>
+        <th align="left" colspan="2">Related</th>
     </tr>
     <tr>
-        <th align="left"><a href="https://github.com/master-co/style-element/tree/beta/packages/react">style-element.react</a></th>
+        <th align="left"><a href="https://github.com/master-co/style-element.react"><img src="https://img.shields.io/npm/dm/@master/style-element.react?color=212022&label=style-element.react&style=for-the-badge" alt="Package" valign="middle"/></a></th>
         <td>Quickly create reusable React elements driven by class names</td>
-        <td><a href="https://github.com/master-co/css/tree/beta/packages/react/CHANGELOG.md"><img src="https://img.shields.io/npm/v/@master/style-element.react?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
     </tr>
     <tr>
-        <th align="left" colspan="3">Extensions</th>
+        <th align="left" colspan="2">Others</th>
     </tr>
     <tr>
-        <th align="left"><a href="https://github.com/master-co/css-language-service">Language Service<br><sub>Visual Studio Code</sub></a></th>
+        <th align="left"><a href="https://github.com/master-co/css-language-service"><img src="https://img.shields.io/github/v/release/master-co/css-language-service?color=212022&label=css%20languser%20service&style=for-the-badge" alt="Package" valign="middle"/><br><sub>Visual Studio Code Extension</sub></a></th>
         <td>Code completion, syntax highlighting, CSS hover preview, inline color decorators</td>
-        <td><a href="https://github.com/master-co/css-language-service/releases"><img src="https://img.shields.io/github/v/release/master-co/css-language-service?color=212022&label=&style=for-the-badge" alt="Release Notes" valign="middle"/></a></td>
     </tr>
 </table>
 
