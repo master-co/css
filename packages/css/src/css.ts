@@ -60,6 +60,7 @@ export default class MasterCSS extends MutationObserver {
     values: Record<string, Record<string, string | number>>
     globalValues: Record<string, string | number>
     breakpoints: Record<string, number>
+    mediaQueries: Record<string, string>
 
     private schemeMQL: MediaQueryList
 
@@ -321,8 +322,9 @@ export default class MasterCSS extends MutationObserver {
         this.values = {}
         this.globalValues = {}
         this.breakpoints = {}
+        this.mediaQueries = {}
 
-        const { semantics, classes, selectors, themes, colors, values, breakpoints } = this.config
+        const { semantics, classes, selectors, themes, colors, values, breakpoints, mediaQueries } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -398,12 +400,20 @@ export default class MasterCSS extends MutationObserver {
         if (breakpoints) {
             this.breakpoints = getFlatData(breakpoints, false)
         }
+        if (mediaQueries) {
+            this.mediaQueries = getFlatData(mediaQueries, false)
+        }
 
+        const flattedClasses: Record<string, string> = classes ? getFlatData(classes, false) : {}
+        const flattedThemeClasses: Record<string, Record<string, string>> = (themes && !Array.isArray(themes))
+            ? Object.entries(themes).filter(([, { classes }]) => classes).reduce((obj, [themeName, { classes }]) => {
+                obj[themeName] = getFlatData(classes, false)
+                return obj
+            }, {})
+            : {}
         const semanticNames = [
-            ...(classes ? Object.keys(classes) : []),
-            ...((themes && !Array.isArray(themes))
-                ? Object.entries(themes).flatMap(([_, { classes }]: any) => classes ? Object.keys(classes) : [])
-                : [])
+            ...Object.keys(flattedClasses),
+            ...Object.entries(flattedThemeClasses).flatMap(([_, classes]) => Object.keys(classes))
         ]
         const handleSemanticName = (semanticName: string) => {
             if (semanticName in this.classes)
@@ -450,11 +460,9 @@ export default class MasterCSS extends MutationObserver {
                 }
             }
 
-            handleClassNames('', classes?.[semanticName])
-            if (themes && !Array.isArray(themes)) {
-                for (const [eachTheme, { classes }] of Object.entries(themes) as any) {
-                    handleClassNames(eachTheme, classes?.[semanticName])
-                }
+            handleClassNames('', flattedClasses?.[semanticName])
+            for (const [eachTheme, classes] of Object.entries(flattedThemeClasses)) {
+                handleClassNames(eachTheme, classes?.[semanticName])
             }
         }
         for (const eachSemanticName of semanticNames) {

@@ -98,8 +98,8 @@ export default class Rule {
     ) {
         const TargetRule = this.constructor as typeof Rule
         const { id, unit, colorful, prop } = TargetRule
-        const { mediaQueries, rootSize } = css.config
-        const { themeNames, colorsThemesMap, selectors, globalValues, breakpoints } = css
+        const { rootSize } = css.config
+        const { themeNames, colorsThemesMap, selectors, globalValues, breakpoints, mediaQueries } = css
         const values = css.values[id]
         const relationThemesMap = css.relationThemesMap[className]
 

@@ -25,24 +25,26 @@ const config: Config = {
 
 export default config
 
+type Classes = { [key: string]: string | Classes }
 type Colors = { [key: string]: string | Colors }
 type Breakpoints = { [key: string]: number | Breakpoints }
+type MediaQueries = { [key: string]: string | MediaQueries }
 type Selectors = { [key: string]: string | string[] | Selectors }
 type Semantics = { [key: string]: string | Record<string, string | number | Semantics> }
 type Values = { [key: string]: string | number | Values }
 
 export interface Config {
-    classes?: Record<string, string>
+    classes?: Classes
     colors?: Colors
     breakpoints?: Breakpoints
-    mediaQueries?: Record<string, string>
+    mediaQueries?: MediaQueries
     selectors?: Selectors
     semantics?: Semantics
     values?: {
         [id in typeof Rules[number]['id']]?: Values
     } & Values
     Rules?: typeof Rule[],
-    themes?: Record<string, { classes?: Record<string, string>, colors?: Record<string, string | Record<string, string>> }> | string[],
+    themes?: Record<string, { classes?: Classes, colors?: Colors }> | string[],
     rootSize?: number
     validateRule?: (rule: Rule, css?: MasterCSS) => boolean
     scheme?: {

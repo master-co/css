@@ -11,7 +11,9 @@ export default {
     },
     classes: {
         btn: 'font:14 h:40 text:center',
-        'blue-btn': 'btn bg:blue'
+        blue: {
+            btn: 'btn bg:blue'
+        }
     },
     themes: {
         light: {
@@ -28,7 +30,10 @@ export default {
                 fade: 'slate-55'
             },
             classes: {
-                btn: 'bg:primary fg:white font:semibold'
+                btn: 'bg:primary fg:white font:semibold',
+                blue: {
+                    btn: 'f:20'
+                }
             }
         },
         dark: {
@@ -98,7 +103,10 @@ export default {
         }
     },
     mediaQueries: {
-        watch: '(max-device-width:42mm) and (min-device-width:38mm)'
+        watch: '(max-device-width:42mm) and (min-device-width:38mm)',
+        device: {
+            watch: '(max-device-width:42mm) and (min-device-width:38mm)'
+        }
     },
     rootSize: 16,
     Rules: []
