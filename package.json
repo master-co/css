@@ -41,11 +41,11 @@
         "typescript": "^4.8.4"
     },
     "release": {
+        "preset": "eslint",
         "plugins": [
             [
                 "@semantic-release/commit-analyzer",
                 {
-                    "preset": "eslint",
                     "releaseRules": [
                         {
                             "type": "Docs",
@@ -75,12 +75,7 @@
                     ]
                 }
             ],
-            [
-                "@semantic-release/release-notes-generator",
-                {
-                    "preset": "eslint"
-                }
-            ],
+            "@semantic-release/release-notes-generator",
             [
                 "@semantic-release/exec",
                 {
