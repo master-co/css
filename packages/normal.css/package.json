@@ -1,6 +1,5 @@
 {
     "name": "@master/normal.css",
-    "version": "2.0.0-beta.39",
     "scripts": {
         "build": "esbuild src/index.css --bundle --minify --outfile=dist/index.css",
         "dev": "npm run build -- --watch"

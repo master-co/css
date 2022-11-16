@@ -1,6 +1,5 @@
 {
     "name": "@master/css",
-    "version": "2.0.0-beta.39",
     "scripts": {
         "build:iife": "esbuild src/index.browser.ts --bundle --outfile=dist/index.browser.js --format=iife",
         "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs --format=cjs --platform=node",
