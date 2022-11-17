@@ -1,8 +1,8 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id: 'Lines' = 'Lines' as const
-    static override matches = /^lines:./
+    static override id = 'Lines' as const
+    static override matches = '^lines:.'
     static override unit = ''
     static override get prop() { return '' }
     override get(declaration): { [key: string]: any } {

@@ -31,7 +31,7 @@ export function parseValue(
         if (!defaultUnit)
             return { value: newValue.toString(), unit, unitToken }
 
-        token = newValue
+        token = newValue.toString()
     }
 
     if (typeof token === 'number') {

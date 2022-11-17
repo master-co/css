@@ -1,7 +1,7 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id: 'MaskImage' = 'MaskImage' as const
+    static override id = 'MaskImage' as const
     override get(declaration): { [key: string]: any } {
         return {
             'mask-image': declaration,

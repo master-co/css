@@ -61,6 +61,7 @@ export default class MasterCSS extends MutationObserver {
     globalValues: Record<string, string | number>
     breakpoints: Record<string, number>
     mediaQueries: Record<string, string>
+    matches: Record<string, RegExp>
 
     private schemeMQL: MediaQueryList
 
@@ -323,8 +324,9 @@ export default class MasterCSS extends MutationObserver {
         this.globalValues = {}
         this.breakpoints = {}
         this.mediaQueries = {}
+        this.matches = {}
 
-        const { semantics, classes, selectors, themes, colors, values, breakpoints, mediaQueries } = this.config
+        const { semantics, classes, selectors, themes, colors, values, breakpoints, mediaQueries, Rules } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -559,6 +561,23 @@ export default class MasterCSS extends MutationObserver {
                 }
             }
         }
+        
+        if (Rules) {
+            for (const EachRule of Rules) {
+                const matches = EachRule.matches
+                if (matches) {
+                    const valueKeys = Object.keys(this.values[EachRule.id] ?? {})
+                    const index = matches.indexOf('$values')
+                    this.matches[EachRule.id] = new RegExp(
+                        index === -1
+                            ? matches
+                            : valueKeys.length
+                                ? matches.slice(0, index) + valueKeys.join('|') + matches.slice(index + 7)
+                                : matches.slice(0, index - (matches[index - 1] === '|' ? 1 : 0)) + matches.slice(index + 7 + (matches[index + 7] === '|' ? 1 : 0))
+                    )
+                }
+            }
+        }
     }
 
     observe(root: Document | ShadowRoot, options: MutationObserverInit = { subtree: true, childList: true }) {
@@ -714,7 +733,7 @@ export default class MasterCSS extends MutationObserver {
                 return this.ruleOfClass[className]
 
             for (const EachRule of this.config.Rules) {
-                const matching = EachRule.match(className, this.colorNames)
+                const matching = EachRule.match(className, this.matches[EachRule.id], this.colorNames)
                 if (matching)
                     return new EachRule(
                         className,

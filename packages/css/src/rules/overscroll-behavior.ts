@@ -1,8 +1,8 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id: 'OverscrollBehavior' = 'OverscrollBehavior' as const
-    static override matches = /^overscroll-behavior(?:-[xy])?:/
+    static override id = 'OverscrollBehavior' as const
+    static override matches = '^overscroll-behavior(?:-[xy])?:'
     static override get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         switch (this.prefix.slice(-2, -1)) {

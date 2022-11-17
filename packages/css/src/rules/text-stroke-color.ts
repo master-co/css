@@ -1,8 +1,8 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id: 'TextStrokeColor' = 'TextStrokeColor' as const
-    static override matches = /^text-stroke-color:./
+    static override id = 'TextStrokeColor' as const
+    static override matches = '^text-stroke-color:.'
     static override colorStarts = 'text-stroke:'
     static override colorful = true
     static override get prop() { return '' }

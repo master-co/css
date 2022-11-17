@@ -1,5 +1,5 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id: 'StrokeDasharray' = 'StrokeDasharray' as const
+    static override id = 'StrokeDasharray' as const
 }

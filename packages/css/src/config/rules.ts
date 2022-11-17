@@ -65,7 +65,6 @@ import BackgroundImage from '../rules/background-image'
 import Background from '../rules/background'
 import MixBlendMode from '../rules/mix-blend-mode'
 import Position from '../rules/position'
-import Placement from '../rules/placement'
 import BackdropFilter from '../rules/backdrop-filter'
 import Fill from '../rules/fill'
 import Stroke from '../rules/stroke'
@@ -257,7 +256,6 @@ const Rules = [
     OverscrollBehavior,
     ZIndex,
     Position,
-    Placement,
     Cursor,
     PointerEvents,
     Resize,

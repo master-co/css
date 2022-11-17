@@ -3,8 +3,8 @@ import Rule from '../rule'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
 export default class extends Rule {
-    static override id: 'BackdropFilter' = 'BackdropFilter' as const
-    static override matches = /^bd:./
+    static override id = 'BackdropFilter' as const
+    static override matches = '^bd:.'
     static override colorful = true
     override get(declaration): { [key: string]: any } {
         return {

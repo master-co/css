@@ -1,5 +1,5 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id: 'ScrollBehavior' = 'ScrollBehavior' as const
+    static override id = 'ScrollBehavior' as const
 }

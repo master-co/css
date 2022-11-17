@@ -1,5 +1,5 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id: 'TextIndent' = 'TextIndent' as const
+    static override id = 'TextIndent' as const
 }

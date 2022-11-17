@@ -2,8 +2,8 @@ import type { Config } from '../config'
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id: 'Transform' = 'Transform' as const
-    static override matches = /^(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\(/
+    static override id = 'Transform' as const
+    static override matches = '^(?:translate|scale|skew|rotate|perspective|matrix)(?:3d|[XYZ])?\\('
     static override unit = ''
     override parseValue(value: string, {rootSize}: Config): string {
         return value.replace(

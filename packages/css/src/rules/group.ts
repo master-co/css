@@ -6,8 +6,8 @@ import type { Declaration } from '../rule'
 const bracketRegexp = /\{(.*)\}/
 
 export default class extends Rule {
-    static override id: 'Group' = 'Group' as const
-    static override matches = /^(?:.+?[*_>~+])?\{.+?\}/
+    static override id = 'Group' as const
+    static override matches = '^(?:.+?[*_>~+])?\\{.+?\\}'
     static override unit = ''
     static override get prop() { return '' }
     override getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>> {

@@ -1,7 +1,7 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id: 'BackgroundPosition' = 'BackgroundPosition' as const
-    static override matches = /^(bg|background):(top|bottom|right|left|center)(?!\|)/
+    static override id = 'BackgroundPosition' as const
+    static override matches = '^(?:bg|background):(?:top|bottom|right|left|center|$values)(?!\\|)'
     static override unit = 'px'
 }

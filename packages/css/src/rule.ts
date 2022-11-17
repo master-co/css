@@ -42,7 +42,7 @@ export default class Rule {
     readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, theme: string, cssRule?: CSSRule }[] = []
 
     static id: string
-    static matches: RegExp
+    static matches: string
     static colorStarts: string
     static symbol: string
     static unit = REM
@@ -54,9 +54,10 @@ export default class Rule {
 
     static match(
         name: string,
+        matches: RegExp,
         colorNames: string[]
     ): RuleMatching {
-        const { matches, colorStarts, symbol, prop } = this
+        const { colorStarts, symbol, prop } = this
         /** 
          * STEP 1. matches
          */

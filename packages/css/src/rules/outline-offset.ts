@@ -1,5 +1,5 @@
 import Rule from '../rule'
 
 export default class extends Rule {
-    static override id: 'OutlineOffset' = 'OutlineOffset' as const
+    static override id = 'OutlineOffset' as const
 }
