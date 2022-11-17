@@ -1,13 +1,12 @@
 {
     "scripts": {
         "build": "turbo run build",
-        "build:force": "turbo run build --force --no-cache",
+        "build:clean": "rm -rf ./packages/**/*dist && turbo run build --force --no-cache",
         "check": "turbo run test lint --parallel",
         "test": "turbo run test --parallel",
         "lint": "turbo run lint --parallel",
         "dev": "turbo run dev --parallel --no-cache",
-        "release": "semantic-release",
-        "clean:build": "rm -rf ./packages/**/*dist"
+        "release": "semantic-release"
     },
     "repository": {
         "type": "git",

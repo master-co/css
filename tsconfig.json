@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "experimentalDecorators": true,
+        "baseUrl": ".",
         "moduleResolution": "Node",
         "esModuleInterop": true,
         "allowJs": true,
@@ -15,16 +16,16 @@
         ],
         "paths": {
             "@master/css": [
-                "./packages/css/src/index.ts"
+                "/packages/css/src/index.ts"
             ],
             "@master/css.compiler": [
-                "./packages/compiler/src/index.ts"
+                "/packages/compiler/src/index.ts"
             ],
             "@master/css.react": [
-                "./packages/react/src/index.ts"
+                "/packages/react/src/index.ts"
             ],
             "@master/css.vite": [
-                "./packages/vite/src/index.ts"
+                "/packages/vite/src/index.ts"
             ],
         }
     }
