@@ -5,7 +5,7 @@ import writeFile from './utils/write-file'
 import type { CompilerOptions } from '@master/css.compiler'
 import type { Plugin } from 'vite'
 
-export default async function (options?: CompilerOptions): Promise<Plugin> {
+export default async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Plugin> {
     const compiler = new MasterCSSCompiler(options)
     await compiler.initializing
     const outputPath = path.join(compiler.options.output.dir || '', compiler.options.output.name)

@@ -13,7 +13,8 @@
         "url": "https://github.com/master-co/css.git"
     },
     "workspaces": [
-        "packages/*"
+        "packages/*",
+        "examples/*"
     ],
     "devDependencies": {
         "@commitlint/cli": "^17.2.0",
