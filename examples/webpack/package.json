@@ -1,5 +1,6 @@
 {
     "name": "master-css-compiler-with-webpack",
+    "private": true,
     "scripts": {
         "build": "webpack --mode=production --node-env=production",
         "build:dev": "webpack --mode=development",

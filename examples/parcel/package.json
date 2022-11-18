@@ -1,5 +1,6 @@
 {
     "name": "master-css-compiler-with-parcel",
+    "private": true,
     "version": "1.0.0",
     "description": "",
     "main": "index.js",

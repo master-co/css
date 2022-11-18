@@ -80,7 +80,7 @@
                 "@semantic-release/exec",
                 {
                     "prepareCmd": "npm run check && npm run build",
-                    "publishCmd": "npm version ${nextRelease.version} --workspace packages/* && npm publish --workspace packages/* --access public"
+                    "publishCmd": "npm version ${nextRelease.version} && npm publish --access public"
                 }
             ],
             [
