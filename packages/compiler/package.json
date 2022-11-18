@@ -51,7 +51,7 @@
     "peerDependencies": {
         "@master/css": "*"
     },
-    "dependencies": {
-        "chalk": "^4.0.0"
+    "devDependencies": {
+        "chalk": "^5.1.2"
     }
 }
