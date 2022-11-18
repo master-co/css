@@ -2,9 +2,9 @@
     "scripts": {
         "build": "turbo run build --filter=./packages/*",
         "build:clean": "rm -rf ./packages/**/*dist && turbo run build --force --no-cache --filter=./packages/*",
-        "check": "turbo run test lint --parallel",
-        "test": "turbo run test --parallel",
-        "lint": "turbo run lint --parallel",
+        "check": "turbo run test lint --parallel --filter=./packages/*",
+        "test": "turbo run test --parallel --filter=./packages/*",
+        "lint": "turbo run lint --parallel --filter=./packages/*",
         "dev": "turbo run dev:iife dev:cjs dev:esm --parallel --filter=./packages/*",
         "release": "semantic-release"
     },
