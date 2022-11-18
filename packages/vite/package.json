@@ -49,6 +49,9 @@
         "dist"
     ],
     "peerDependencies": {
+        "vite": ">= 3.0.0"
+    },
+    "dependencies": {
         "@master/css": "*",
         "@master/css.compiler": "*"
     },

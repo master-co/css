@@ -48,7 +48,7 @@
     "files": [
         "dist"
     ],
-    "peerDependencies": {
+    "dependencies": {
         "@master/css": "*"
     },
     "devDependencies": {
