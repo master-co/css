@@ -62,5 +62,9 @@
     },
     "files": [
         "dist"
-    ]
+    ],
+    "dependencies": {
+        "@master/normal.css": "*",
+        "@master/keyframes.css": "*"
+    }
 }
