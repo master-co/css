@@ -32,6 +32,7 @@
         "esbuild": "^0.15.10",
         "eslint": "^8.25.0",
         "eslint-plugin-react-hooks": "^4.6.0",
+        "glob-run": "^0.1.7",
         "jest": "^29.3.1",
         "jest-environment-jsdom": "^29.3.1",
         "jest-puppeteer": "^6.1.1",
