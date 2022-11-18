@@ -81,7 +81,7 @@
                 "@semantic-release/exec",
                 {
                     "prepareCmd": "npm run check && npm run build",
-                    "publishCmd": "npm version ${nextRelease.version} && npm publish --access public"
+                    "publishCmd": "glob-run 'npm version ${nextRelease.version} -w packages/*' && glob-run 'npm publish --access public -w packages/*'"
                 }
             ],
             [
