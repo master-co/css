@@ -19,6 +19,7 @@ export default class MasterCSSCompiler {
             } catch (err) { }
             this.css = new MasterCSS({ config: userConfig })
         })()
+        process.env.TESTESR = 'fuck'
     }
 
     initializing: Promise<any>

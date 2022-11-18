@@ -1,11 +1,13 @@
 {
     "name": "@master/css",
     "scripts": {
-        "build:iife": "esbuild src/index.browser.ts --bundle --outfile=dist/index.browser.js --format=iife",
-        "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs --format=cjs --platform=node",
-        "build:esm": "esbuild src/index.ts --bundle --outfile=dist/index.mjs --format=esm --platform=node",
-        "build": "concurrently 'npm:build:* -- --minify --sourcemap' 'tsc --emitDeclarationOnly'",
-        "dev": "concurrently 'npm:build:* -- --watch'",
+        "build:iife": "esbuild src/index.browser.ts --bundle --outfile=dist/index.browser.js --format=iife --minify --sourcemap",
+        "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs --format=cjs --platform=node --minify --sourcemap",
+        "build:esm": "esbuild src/index.ts --bundle --outfile=dist/index.mjs --format=esm --platform=node --minify --sourcemap",
+        "build": "npm run build:iife && npm run build:cjs && npm run build:esm && tsc --emitDeclarationOnly",
+        "dev:iife": "npm run build:cjs -- --watch",
+        "dev:cjs": "npm run build:cjs -- --watch",
+        "dev:esm": "npm run build:esm -- --watch",
         "test": "jest",
         "lint": "eslint ./src"
     },

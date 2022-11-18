@@ -5,7 +5,7 @@
         "check": "turbo run test lint --parallel",
         "test": "turbo run test --parallel",
         "lint": "turbo run lint --parallel",
-        "dev": "turbo run dev --parallel --no-cache --filter=./packages/*",
+        "dev": "turbo run dev:iife dev:cjs dev:esm --parallel --filter=./packages/*",
         "release": "semantic-release"
     },
     "repository": {

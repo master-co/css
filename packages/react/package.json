@@ -1,11 +1,13 @@
 {
     "name": "@master/css.react",
     "scripts": {
-        "build:iife": "esbuild src/index.tsx --bundle --outfile=dist/index.browser.js --format=iife",
-        "build:cjs": "esbuild src/index.tsx --bundle --outfile=dist/index.cjs --format=cjs --platform=node",
-        "build:esm": "esbuild src/index.tsx --bundle --outfile=dist/index.mjs --format=esm",
-        "build": "concurrently 'npm:build:* -- --minify --sourcemap --external:@master/css --external:react' 'tsc --emitDeclarationOnly'",
-        "dev": "concurrently 'npm:build:* -- --watch'",
+        "build:iife": "esbuild src/index.tsx --bundle --outfile=dist/index.browser.js --format=iife --minify --sourcemap --external:@master/css --external:react",
+        "build:cjs": "esbuild src/index.tsx --bundle --outfile=dist/index.cjs --format=cjs --platform=node --minify --sourcemap --external:@master/css --external:react",
+        "build:esm": "esbuild src/index.tsx --bundle --outfile=dist/index.mjs --format=esm --minify --sourcemap --external:@master/css --external:react",
+        "build": "npm run build:iife && npm run build:cjs && npm run build:esm && tsc --emitDeclarationOnly",
+        "dev:iife": "npm run build:cjs -- --watch",
+        "dev:cjs": "npm run build:cjs -- --watch",
+        "dev:esm": "npm run build:esm -- --watch",
         "lint": "eslint ./src"
     },
     "license": "MIT",

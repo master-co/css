@@ -1,7 +1,20 @@
 {
     "$schema": "https://turbo.build/schema.json",
     "pipeline": {
-        "dev": {
+        "dev:iife": {
+            "cache": false,
+            "outputs": [
+                "dist/**"
+            ]
+        },
+        "dev:esm": {
+            "cache": false,
+            "outputs": [
+                "dist/**"
+            ]
+        },
+        "dev:cjs": {
+            "cache": false,
             "outputs": [
                 "dist/**"
             ]
