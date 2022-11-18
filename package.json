@@ -1,11 +1,11 @@
 {
     "scripts": {
-        "build": "turbo run build",
-        "build:clean": "rm -rf ./packages/**/*dist && turbo run build --force --no-cache",
+        "build": "turbo run build --filter=./packages/*",
+        "build:clean": "rm -rf ./packages/**/*dist && turbo run build --force --no-cache --filter=./packages/*",
         "check": "turbo run test lint --parallel",
         "test": "turbo run test --parallel",
         "lint": "turbo run lint --parallel",
-        "dev": "turbo run dev --parallel --no-cache",
+        "dev": "turbo run dev --parallel --no-cache --filter=./packages/*",
         "release": "semantic-release"
     },
     "repository": {
