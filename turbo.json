@@ -2,22 +2,13 @@
     "$schema": "https://turbo.build/schema.json",
     "pipeline": {
         "dev:iife": {
-            "cache": false,
-            "outputs": [
-                "dist/**"
-            ]
+            "cache": false
         },
         "dev:esm": {
-            "cache": false,
-            "outputs": [
-                "dist/**"
-            ]
+            "cache": false
         },
         "dev:cjs": {
-            "cache": false,
-            "outputs": [
-                "dist/**"
-            ]
+            "cache": false
         },
         "build": {
             "dependsOn": [
