@@ -13,20 +13,6 @@
         "lib": [
             "es2021",
             "dom"
-        ],
-        "paths": {
-            "@master/css": [
-                "/packages/css/src/index.ts"
-            ],
-            "@master/css.compiler": [
-                "/packages/compiler/src/index.ts"
-            ],
-            "@master/css.react": [
-                "/packages/react/src/index.ts"
-            ],
-            "@master/css.vite": [
-                "/packages/vite/src/index.ts"
-            ],
-        }
+        ]
     }
 }
