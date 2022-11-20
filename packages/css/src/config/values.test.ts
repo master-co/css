@@ -1,8 +1,9 @@
 import { testCSS } from '../utils/test-css'
 import MasterCSS from '..'
-import config from '../../../../master.css.js'
+import config from '../../../../master.css'
 
 test('values', () => {
+    console.log(config)
     testCSS(
         'w:2x',
         '.w\\:2x{width:2rem}',
@@ -41,6 +42,11 @@ test('values', () => {
     testCSS(
         'letter-spacing:wide',
         '.letter-spacing\\:wide{letter-spacing:0.025em}',
+        new MasterCSS({ config })
+    )
+    testCSS(
+        'shadow:2x',
+        '.shadow\\:2x{box-shadow:0 25px 50px -12px rgb(0 0 0 / 25%)}',
         new MasterCSS({ config })
     )
 })
