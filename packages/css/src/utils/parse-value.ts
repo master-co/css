@@ -7,8 +7,6 @@ export function parseValue(
     token: string | number,
     defaultUnit?: string,
     colorsThemesMap?: Record<string, Record<string, Record<string, string>>>,
-    values?: Record<string, string | number>,
-    globalValues?: Record<string, string | number>,
     rootSize?: number,
     themes?: string[]
 ): {
@@ -20,19 +18,7 @@ export function parseValue(
     let value: any = ''
     let unit = ''
     let unitToken = ''
-    let colorMatched: boolean = undefined 
-
-    const newValue = (values && token in values)
-        ? values[token]
-        : (globalValues && token in globalValues)
-            ? globalValues[token]
-            : ''
-    if (newValue) {
-        if (!defaultUnit)
-            return { value: newValue.toString(), unit, unitToken }
-
-        token = newValue.toString()
-    }
+    let colorMatched: boolean = undefined
 
     if (typeof token === 'number') {
         value = token
@@ -89,8 +75,8 @@ export function parseValue(
             if (matches) {
                 if (token.includes('/')) {
                     // w:1/2 -> width: 50%
-                    const splits = token.split('/')
-                    return { value: (+splits[0] / +splits[1]) * 100 + '%', unit, unitToken }
+                    const [dividend, divisor] = token.split('/')
+                    return { value: (+dividend / +divisor) * 100 + '%', unit, unitToken }
                 } else {
                     value = +matches[1]
                     unit = unitToken = matches[3] || ''

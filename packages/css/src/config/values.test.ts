@@ -3,7 +3,6 @@ import MasterCSS from '..'
 import config from '../../../../master.css'
 
 test('values', () => {
-    console.log(config)
     testCSS(
         'w:2x',
         '.w\\:2x{width:2rem}',
@@ -46,7 +45,7 @@ test('values', () => {
     )
     testCSS(
         'shadow:2x',
-        '.shadow\\:2x{box-shadow:0 25px 50px -12px rgb(0 0 0 / 25%)}',
+        '.shadow\\:2x{box-shadow:0rem 25px 50px -12px rgb(0 0 0 / 25%)}',
         new MasterCSS({ config })
     )
 })

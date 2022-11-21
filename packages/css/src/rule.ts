@@ -143,7 +143,7 @@ export default class Rule {
             valueTokens = []
             let currentValueToken = ''
             let i = 0;
-            (function analyze(end?, depth?, func = '') {
+            (function analyze(valueToken, end?, depth?, func = '') {
                 let varIndex: number
                 let isString = false
                 if (end) {
@@ -154,6 +154,25 @@ export default class Rule {
                     }
 
                     currentValueToken += valueToken[i++]
+                }
+
+                const transformAndPushValueToken = () => {
+                    const value = currentValueToken
+                    currentValueToken = ''
+
+                    if (values && value in values) {
+                        const originalIndex = i
+                        i = 0
+                        analyze(values[value].toString())
+                        i = originalIndex
+                    } else if (globalValues && value in globalValues) {
+                        const originalIndex = i
+                        i = 0
+                        analyze(globalValues[value].toString())
+                        i = originalIndex
+                    } else {
+                        valueTokens.push({ value })
+                    }
                 }
 
                 for (; i < valueToken.length; i++) {
@@ -181,7 +200,7 @@ export default class Rule {
                             if (isString) {
                                 valueTokens.push(currentValueToken)
                             } else {
-                                valueTokens.push({ value: currentValueToken })
+                                transformAndPushValueToken()
                             }
 
                             func = ''
@@ -190,11 +209,10 @@ export default class Rule {
 
                         break
                     } else if (!isString && val in START_SYMBOL) {
-                        analyze(START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func)
-                    } else if (val === '|' && end !== '}' && (!isString || func === 'path')) {
+                        analyze(valueToken, START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func)
+                    } else if ((val === '|' || val === ' ') && end !== '}' && (!isString || func === 'path')) {
                         if (!end) {
-                            valueTokens.push({ value: currentValueToken })
-                            currentValueToken = ''
+                            transformAndPushValueToken()
                         } else {
                             currentValueToken += ' '
                         }
@@ -208,14 +226,13 @@ export default class Rule {
                                 }
                             } else if (val === ',') {
                                 if (currentValueToken) {
-                                    valueTokens.push({ value: currentValueToken })
-                                    currentValueToken = ''
+                                    transformAndPushValueToken()
                                 }
                                 valueTokens.push(',')
                                 continue
                             } else if (
                                 val === '#'
-                                && (currentValueToken || valueTokens.length && valueToken[i - 1] !== '|')
+                                && (currentValueToken || valueTokens.length && (valueToken[i - 1] !== '|' || valueTokens[i - 1] !== ' '))
                                 || selectorSymbols.includes(val)
                             ) {
                                 break
@@ -227,11 +244,11 @@ export default class Rule {
                         currentValueToken += val
                     }
                 }
-            })()
 
-            if (currentValueToken) {
-                valueTokens.push({ value: currentValueToken })
-            }
+                if (depth === undefined && currentValueToken) {
+                    transformAndPushValueToken()
+                }
+            })(valueToken)
 
             suffixToken = valueToken.slice(i)
         }
@@ -557,8 +574,6 @@ export default class Rule {
                             eachValueToken.value,
                             unit,
                             colorful && colorsThemesMap,
-                            values,
-                            globalValues,
                             rootSize,
                             this.theme ? [this.theme, ''] : [theme]
                         )
@@ -593,10 +608,6 @@ export default class Rule {
                     // 9. transform value
                     if (colorful && newValue === 'current') {
                         newValue = 'currentColor'
-                    } else if (values && newValue in values) {
-                        newValue = values[newValue].toString()
-                    } else if (newValue in globalValues) {
-                        newValue = globalValues[newValue].toString()
                     }
 
                     const declaration: Declaration = {
