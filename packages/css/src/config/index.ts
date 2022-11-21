@@ -30,7 +30,7 @@ type Colors = { [key: string]: string | Colors }
 type Breakpoints = { [key: string]: number | Breakpoints }
 type MediaQueries = { [key: string]: string | MediaQueries }
 type Selectors = { [key: string]: string | string[] | Selectors }
-type Semantics = { [key: string]: string | Record<string, string | number | Semantics> }
+type Semantics = { [key: string]: string | number | Record<string, string | number | Semantics> }
 type Values = { [key: string]: string | number | Values }
 
 export interface Config {
