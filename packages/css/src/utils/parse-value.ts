@@ -1,7 +1,5 @@
+import { analyzeUnitValue } from './analyze-unit-value'
 import { normalizeCssCalcText } from './normalize-css-calc-text'
-
-const UNIT_VALUE_PATTERN = /^([+-.]?\d+(\.?\d+)?)(.*)?/
-const VAR_START = 'var(--'
 
 export function parseValue(
     token: string | number,
@@ -12,12 +10,10 @@ export function parseValue(
 ): {
     value: string,
     unit: string,
-    unitToken: string,
     colorMatched?: boolean
 } {
     let value: any = ''
     let unit = ''
-    let unitToken = ''
     let colorMatched: boolean = undefined
 
     if (typeof token === 'number') {
@@ -69,35 +65,15 @@ export function parseValue(
                 colorMatched = anyMatched
             }
         }
-        if (defaultUnit) {
-            const matches = token.match(UNIT_VALUE_PATTERN)
-            // ['0.5deg', '0.5', 'deg', index: 0, input: '0.5deg', groups: undefined]
-            if (matches) {
-                if (token.includes('/')) {
-                    // w:1/2 -> width: 50%
-                    const [dividend, divisor] = token.split('/')
-                    return { value: (+dividend / +divisor) * 100 + '%', unit, unitToken }
-                } else {
-                    value = +matches[1]
-                    unit = unitToken = matches[3] || ''
-                    /**
-                     * 當無單位值且 defaultUnit === 'rem'，
-                     * 將 pxValue / 16 轉為 remValue
-                     */
-                    if (!unit) {
-                        if (defaultUnit === 'rem' || defaultUnit === 'em') {
-                            value = value / rootSize
-                        }
-                        unit = defaultUnit || ''
-                    }
-                    return { value, unit, unitToken }
-                }
-            }
-        }
+
+        const result = analyzeUnitValue(token, rootSize, defaultUnit)
+        if (result)
+            return result
+
         value = (token.indexOf('calc(') === -1
             ? token
-            : normalizeCssCalcText(token))
-            .replace(/\$\(((\w|-)+)\)/g, VAR_START + '$1)')
+            : normalizeCssCalcText(token, rootSize, defaultUnit))
+            .replace(/\$\(((\w|-)+)\)/g, 'var(--$1)')
     }
-    return { value, unit, unitToken, colorMatched }
+    return { value, unit, colorMatched }
 }
