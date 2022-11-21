@@ -48,4 +48,9 @@ test('values', () => {
         '.shadow\\:2x{box-shadow:0rem 25px 50px -12px rgb(0 0 0 / 25%)}',
         new MasterCSS({ config })
     )
+    testCSS(
+        'inset:sm|md|md|sm',
+        '.inset\\:sm\\|md\\|md\\|sm{inset:0.625rem 1.25rem 1.25rem 0.625rem}',
+        new MasterCSS({ config })
+    )
 })

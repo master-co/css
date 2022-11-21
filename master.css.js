@@ -77,6 +77,10 @@ export default {
         },
         BoxShadow: {
             '2x': '0 25px 50px -12px rgb(0 0 0 / 25%)'
+        },
+        Inset: {
+            sm: 10,
+            md: 20
         }
     },
     semantics: {
