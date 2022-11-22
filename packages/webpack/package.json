@@ -49,7 +49,7 @@
         "dist"
     ],
     "dependencies": {
-        "@master/css": "*",
-        "@master/css.compiler": "*"
+        "@master/css": "",
+        "@master/css.compiler": ""
     }
 }

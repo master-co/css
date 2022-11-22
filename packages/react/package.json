@@ -51,6 +51,6 @@
         "react": ">= 16.8.0"
     },
     "dependencies": {
-        "@master/css": "*"
+        "@master/css": ""
     }
 }

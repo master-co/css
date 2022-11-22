@@ -49,7 +49,7 @@
         "dist"
     ],
     "dependencies": {
-        "@master/css": "*"
+        "@master/css": ""
     },
     "devDependencies": {
         "chalk": "^5.1.2"

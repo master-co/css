@@ -64,7 +64,7 @@
         "dist"
     ],
     "dependencies": {
-        "@master/normal.css": "*",
-        "@master/keyframes.css": "*"
+        "@master/normal.css": "",
+        "@master/keyframes.css": ""
     }
 }
