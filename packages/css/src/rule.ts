@@ -1,8 +1,8 @@
 import { getCssPropertyText } from './utils/get-css-property-text'
 import { parseValue } from './utils/parse-value'
-import { START_SYMBOL } from './constants/start-symbol'
 import MasterCSS from './css'
 import type { Config } from './config'
+import { analyzeValueToken } from './utils/analyze-value-token'
 
 const PRIORITY_SELECTORS = [':disabled', ':active', ':focus', ':hover']
 const MATCHES = 'matches'
@@ -18,7 +18,6 @@ const REDUCED_MOTION = REDUCE + 'd-' + MOTION
 const PX = 'px'
 const REM = 'rem'
 
-const selectorSymbols = ['!', '*', '>', '+', '~', ':', '[', '@', '_']
 const selectorSplitRegexp = /(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/
 const transformSelectorUnderline = (selector: string) => selector.split(selectorSplitRegexp)
     .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/_/g, ' '))
@@ -113,19 +112,11 @@ export default class Rule {
             suffixToken = token.slice(semanticName.length)
             value = semanticValue
         } else {
-            let valueToken: string
-            if (matching.origin === MATCHES) {
-                if (id === 'Group') {
-                    let i = 0
-                    for (; i < token.length; i++) {
-                        if (token[i] === '{' && token[i - 1] !== '\\') {
-                            break
-                        }
-                    }
-
-                    prefixToken = token.slice(0, i)
-                    valueToken = token.slice(i)
-                } else {
+            if (this.analyzeToken) {
+                [prefixToken, valueTokens, suffixToken] = this.analyzeToken(token, values, globalValues)
+            } else {
+                let valueToken: string
+                if (matching.origin === MATCHES) {
                     const indexOfColon = token.indexOf(':')
                     this.prefix = token.slice(0, indexOfColon + 1)
                     if (this.prefix.includes('(')) {
@@ -134,123 +125,13 @@ export default class Rule {
                     } else {
                         valueToken = token.slice(indexOfColon + 1)
                     }
+                } else if (matching.origin === SYMBOL) {
+                    this.symbol = token[0]
+                    valueToken = token.slice(1)
                 }
-            } else if (matching.origin === SYMBOL) {
-                this.symbol = token[0]
-                valueToken = token.slice(1)
+
+                [valueTokens, suffixToken] = analyzeValueToken(valueToken, values, globalValues)
             }
-
-            valueTokens = []
-            let currentValueToken = ''
-            let i = 0;
-            (function analyze(valueToken, end?, depth?, func = '') {
-                let varIndex: number
-                let isString = false
-                if (end) {
-                    if (end === ')' && currentValueToken.slice(-1) === '$') {
-                        varIndex = currentValueToken.length - 1
-                    } else if (end === '\'') {
-                        isString = true
-                    }
-
-                    currentValueToken += valueToken[i++]
-                }
-
-                const transformAndPushValueToken = () => {
-                    const value = currentValueToken
-                    currentValueToken = ''
-
-                    if (values && value in values) {
-                        const originalIndex = i
-                        i = 0
-                        analyze(values[value].toString())
-                        i = originalIndex
-                    } else if (globalValues && value in globalValues) {
-                        const originalIndex = i
-                        i = 0
-                        analyze(globalValues[value].toString())
-                        i = originalIndex
-                    } else {
-                        valueTokens.push({ value })
-                    }
-                }
-
-                for (; i < valueToken.length; i++) {
-                    const val = valueToken[i]
-                    if (val === end) {
-                        currentValueToken += val
-                        if (isString) {
-                            let count = 0
-                            for (let j = currentValueToken.length - 2; ; j--) {
-                                if (currentValueToken[j] !== '\\') {
-                                    break
-                                }
-                                count++
-                            }
-                            if (count % 2) {
-                                continue
-                            }
-                        }
-
-                        if (varIndex !== undefined) {
-                            currentValueToken = currentValueToken.slice(0, varIndex) + currentValueToken.slice(varIndex).replace(/\$\((.*)\)/, 'var(--$1)')
-                        }
-
-                        if (!depth) {
-                            if (isString) {
-                                valueTokens.push(currentValueToken)
-                            } else {
-                                transformAndPushValueToken()
-                            }
-
-                            func = ''
-                            currentValueToken = ''
-                        }
-
-                        break
-                    } else if (!isString && val in START_SYMBOL) {
-                        analyze(valueToken, START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func)
-                    } else if ((val === '|' || val === ' ') && end !== '}' && (!isString || func === 'path')) {
-                        if (!end) {
-                            transformAndPushValueToken()
-                        } else {
-                            currentValueToken += ' '
-                        }
-                    } else {
-                        if (!end) {
-                            if (val === '.') {
-                                if (isNaN(+valueToken[i + 1])) {
-                                    break
-                                } else if (valueToken[i - 1] === '-') {
-                                    currentValueToken += '0'
-                                }
-                            } else if (val === ',') {
-                                if (currentValueToken) {
-                                    transformAndPushValueToken()
-                                }
-                                valueTokens.push(',')
-                                continue
-                            } else if (
-                                val === '#'
-                                && (currentValueToken || valueTokens.length && (valueToken[i - 1] !== '|' || valueTokens[i - 1] !== ' '))
-                                || selectorSymbols.includes(val)
-                            ) {
-                                break
-                            }
-
-                            func += val
-                        }
-
-                        currentValueToken += val
-                    }
-                }
-
-                if (depth === undefined && currentValueToken) {
-                    transformAndPushValueToken()
-                }
-            })(valueToken)
-
-            suffixToken = valueToken.slice(i)
         }
 
         // 2. !important
@@ -687,6 +568,7 @@ export default class Rule {
 
 export default interface Rule {
     readonly order?: number;
+    analyzeToken(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | { value: string }>, string];
     parseValue(value: string, config: Config): string;
     get(declaration: Declaration): Record<string, any>;
     getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>>;

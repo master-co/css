@@ -2,6 +2,7 @@ import Rule from '../rule'
 import MasterCSS from '../css'
 import { START_SYMBOL } from '../constants/start-symbol'
 import type { Declaration } from '../rule'
+import { analyzeValueToken } from '../utils/analyze-value-token'
 
 const bracketRegexp = /\{(.*)\}/
 
@@ -10,6 +11,16 @@ export default class extends Rule {
     static override matches = '^(?:.+?[*_>~+])?\\{.+?\\}'
     static override unit = ''
     static override get prop() { return '' }
+    override analyzeToken(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | { value: string }>, string] {
+        let i = 0
+        for (; i < token.length; i++) {
+            if (token[i] === '{' && token[i - 1] !== '\\') {
+                break
+            }
+        }
+
+        return [token.slice(0, i), ...analyzeValueToken(token.slice(i), values, globalValues)]
+    }
     override getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>> {
         const themePropsMap: Record<string, Record<string, string>> = {}
 

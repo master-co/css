@@ -192,6 +192,7 @@ import BorderImage from '../rules/border-image'
 import Group from '../rules/group'
 import CounterIncrement from '../rules/counter-increment'
 import counterReset from '../rules/counter-reset'
+import WH from '../rules/wh'
 
 const Rules = [
     Group,
@@ -219,6 +220,7 @@ const Rules = [
     Height,
     MinWidth,
     MinHeight,
+    WH,
     Contain,
     Content,
     CounterIncrement,
