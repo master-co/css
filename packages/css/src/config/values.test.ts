@@ -1,6 +1,6 @@
 import { testCSS } from '../utils/test-css'
 import MasterCSS from '..'
-import config from '../../../../master.css.js'
+import config from '../../../../master.css'
 
 test('values', () => {
     testCSS(
@@ -41,6 +41,16 @@ test('values', () => {
     testCSS(
         'letter-spacing:wide',
         '.letter-spacing\\:wide{letter-spacing:0.025em}',
+        new MasterCSS({ config })
+    )
+    testCSS(
+        'shadow:2x',
+        '.shadow\\:2x{box-shadow:0rem 25px 50px -12px rgb(0 0 0 / 25%)}',
+        new MasterCSS({ config })
+    )
+    testCSS(
+        'inset:sm|md|md|sm',
+        '.inset\\:sm\\|md\\|md\\|sm{inset:0.625rem 1.25rem 1.25rem 0.625rem}',
         new MasterCSS({ config })
     )
 })

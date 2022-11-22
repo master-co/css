@@ -1,4 +1,4 @@
-/** @type {import('@master/css').Config} */
+/** @type {import('./packages/css/src/config').Config} */
 export default {
     colors: {
         primary: {
@@ -74,6 +74,13 @@ export default {
         },
         LetterSpacing: {
             wide: .4
+        },
+        BoxShadow: {
+            '2x': '0 25px 50px -12px rgb(0 0 0 / 25%)'
+        },
+        Inset: {
+            sm: 10,
+            md: 20
         }
     },
     semantics: {
