@@ -149,7 +149,7 @@ export default class Rule {
                 if (end) {
                     if (end === ')' && currentValueToken.slice(-1) === '$') {
                         varIndex = currentValueToken.length - 1
-                    } else if (end === '\'') {
+                    } else if (end === '\'' || end === '"') {
                         isString = true
                     }
 

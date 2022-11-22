@@ -73,7 +73,7 @@ test('values', () => {
             config: {
                 values: {
                     Content: {
-                        delimiter: '\'|\''
+                        delimiter: '"|"'
                     }
                 }
             }

@@ -74,7 +74,7 @@ export default class extends Rule {
                 currentName += char
 
                 if (end === char) {
-                    if (end === '\'') {
+                    if (end === '\'' || end === '"') {
                         let count = 0
                         for (let j = currentName.length - 2;; j--)  {
                             if (currentName[j] !== '\\') {
@@ -88,7 +88,7 @@ export default class extends Rule {
                     }
 
                     break
-                } else if (char in START_SYMBOL && end !== '\'') {
+                } else if (char in START_SYMBOL && (end !== '\'' && end !== '"')) {
                     i++
                     analyze(START_SYMBOL[char])
                 }
