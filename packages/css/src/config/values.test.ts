@@ -53,4 +53,30 @@ test('values', () => {
         '.inset\\:sm\\|md\\|md\\|sm{inset:0.625rem 1.25rem 1.25rem 0.625rem}',
         new MasterCSS({ config })
     )
+    testCSS(
+        'content:delimiter',
+        '.content\\:delimiter{content:"123"}',
+        new MasterCSS({
+            config: {
+                values: {
+                    Content: {
+                        delimiter: '"123"'
+                    }
+                }
+            }
+        })
+    )
+    testCSS(
+        'content:delimiter',
+        '.content\\:delimiter{content:"|"}',
+        new MasterCSS({
+            config: {
+                values: {
+                    Content: {
+                        delimiter: '\'|\''
+                    }
+                }
+            }
+        })
+    )
 })
