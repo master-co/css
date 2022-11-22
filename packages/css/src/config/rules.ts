@@ -194,6 +194,7 @@ import CounterIncrement from '../rules/counter-increment'
 import counterReset from '../rules/counter-reset'
 import WH from '../rules/wh'
 import MinWH from '../rules/min-wh'
+import MaxWH from '../rules/max-wh'
 
 const Rules = [
     Group,
@@ -223,6 +224,7 @@ const Rules = [
     MinHeight,
     WH,
     MinWH,
+    MaxWH,
     Contain,
     Content,
     CounterIncrement,
