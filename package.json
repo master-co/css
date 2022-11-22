@@ -5,8 +5,8 @@
         "check": "turbo run test lint --parallel --filter=./packages/*",
         "test": "turbo run test --parallel --filter=./packages/*",
         "lint": "turbo run lint --parallel --filter=./packages/*",
-        "dev": "turbo run dev:iife dev:cjs dev:esm --parallel --filter=./packages/*",
-        "release": "semantic-release"
+        "dev": "turbo run dev --filter=./packages/*",
+        "clean": "rm -rf ./packages/**/*dist"
     },
     "repository": {
         "type": "git",
@@ -18,7 +18,7 @@
     ],
     "devDependencies": {
         "aronrepo": "^1.0.0-beta.14",
-        "concurrently": "^7.5.0",
+        "concurrently": "^7.6.0",
         "dedent": "^0.7.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "glob-run": "^0.1.7",

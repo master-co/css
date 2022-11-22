@@ -1,14 +1,11 @@
 {
     "$schema": "https://turbo.build/schema.json",
     "pipeline": {
-        "dev:iife": {
-            "cache": false
-        },
-        "dev:esm": {
-            "cache": false
-        },
-        "dev:cjs": {
-            "cache": false
+        "dev": {
+            "cache": false,
+            "dependsOn": [
+                "^build"
+            ]
         },
         "build": {
             "dependsOn": [
