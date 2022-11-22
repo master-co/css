@@ -193,6 +193,7 @@ import Group from '../rules/group'
 import CounterIncrement from '../rules/counter-increment'
 import counterReset from '../rules/counter-reset'
 import WH from '../rules/wh'
+import MinWH from '../rules/min-wh'
 
 const Rules = [
     Group,
@@ -221,6 +222,7 @@ const Rules = [
     MinWidth,
     MinHeight,
     WH,
+    MinWH,
     Contain,
     Content,
     CounterIncrement,
