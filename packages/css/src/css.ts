@@ -340,7 +340,7 @@ export default class MasterCSS extends MutationObserver {
 
                 for (const [key, value] of entries) {
                     if (typeof value === 'object' && !Array.isArray(value)) {
-                        getFlatData(value, hasObjectValue, parentKey + '-' + key, newData)
+                        getFlatData(value, hasObjectValue, key ? parentKey + '-' + key : parentKey, newData)
                     } else {
                         newValue[key] = value
                     }
@@ -351,7 +351,7 @@ export default class MasterCSS extends MutationObserver {
                 }
             } else {
                 for (const [key, value] of entries) {
-                    const currentKey = (parentKey ? parentKey + '-' : '') + key
+                    const currentKey = key ? (parentKey ? parentKey + '-' : '') + key : parentKey
 
                     if (typeof value === 'object' && !Array.isArray(value)) {
                         getFlatData(value, hasObjectValue, currentKey, newData)

@@ -12,7 +12,9 @@ export default {
     classes: {
         btn: 'font:14 h:40 text:center',
         blue: {
-            btn: 'btn bg:blue'
+            btn: {
+                '': 'btn bg:blue'
+            }
         }
     },
     themes: {
