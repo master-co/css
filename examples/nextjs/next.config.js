@@ -1,4 +1,4 @@
-const { MasterCSSWebpackPlugin } = require('@master/css-compiler')
+const MasterCSSWebpackPlugin = require('@master/css.webpack').default
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

@@ -1,5 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { MasterCSSWebpackPlugin } = require('@master/css-compiler')
+const MasterCSSWebpackPlugin = require('@master/css.webpack').default
 
 module.exports = {
     entry: './src/index.ts',
