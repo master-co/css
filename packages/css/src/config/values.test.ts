@@ -79,4 +79,22 @@ test('values', () => {
             }
         })
     )
+    testCSS(
+        'b:input',
+        '.b\\:input{border:0.0625rem solid #000}',
+        new MasterCSS({
+            config: {
+                colors: {
+                    base: {
+                        70: '#000'
+                    }
+                },
+                values: {
+                    Border: {
+                        input: '1|solid|base-70'
+                    }
+                }
+            }
+        })
+    )
 })
