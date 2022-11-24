@@ -14,12 +14,11 @@ export default class MasterCSSCompiler {
         (async () => {
             let userConfig: Config
             try {
-                userConfig = (await import(path.resolve(process.cwd(), this.options.config))).default
+                userConfig = (await import('file:///' + path.resolve(process.cwd(), this.options.config))).default
                 // eslint-disable-next-line no-empty
             } catch (err) { }
             this.css = new MasterCSS({ config: userConfig })
         })()
-        process.env.TESTESR = 'fuck'
     }
 
     initializing: Promise<any>

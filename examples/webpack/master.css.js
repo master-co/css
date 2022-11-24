@@ -1,6 +1,6 @@
 module.exports = {
     colors: {
-        foo: '#ff0000',
+        foo: '#ff5555',
         base: {
             70: '#000'
         }
