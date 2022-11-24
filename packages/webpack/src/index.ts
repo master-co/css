@@ -78,7 +78,7 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
                     // 從記憶體或快取取得當前 module 的原始碼
                     const content = eachModule['_source']?.source()
                     // 在 watch 模式下僅處理當下變更的檔案
-                    if (watching && modifiedFiles?.size && !modifiedFiles.has(name)) { continue }
+                    if (watching && modifiedFiles?.size && (!modifiedFiles.has(this.userConfigPath) && !modifiedFiles.has(name))) { continue }
                     eachExtractions.push(...this.extract({ name, content }))
                 }
 
@@ -107,6 +107,16 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
                     chunk.files.add(outputPath)
                 })
             })
+        })
+
+        compiler.hooks.afterCompile.tap(NAME, async (compilation) => {
+            compilation.fileDependencies.add(this.userConfigPath)
+        })
+
+        compiler.hooks.watchRun.tap(NAME, async (compiler) => {
+            if (compiler.modifiedFiles?.has(this.userConfigPath)) {
+                await this.reload()
+            }
         })
     }
 }

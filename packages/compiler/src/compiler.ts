@@ -10,21 +10,26 @@ export default class MasterCSSCompiler {
     constructor(
         public options?: CompilerOptions
     ) {
-        this.options = extend(defaultOptions, options);
-        (async () => {
-            let userConfig: Config
-            try {
-                userConfig = (await import(path.resolve(process.cwd(), this.options.config))).default
-                // eslint-disable-next-line no-empty
-            } catch (err) { }
-            this.css = new MasterCSS({ config: userConfig })
-        })()
-        process.env.TESTESR = 'fuck'
+        this.options = extend(defaultOptions, options)
+        this.userConfigPath = path.resolve(process.cwd(), this.options.config)
+        this.initializing = this.reload()
     }
 
+    userConfigPath: string
     initializing: Promise<any>
     css: MasterCSS
     extractions = new Set<string>()
+
+    async reload() {
+        let userConfig: Config
+        try {
+            delete require.cache[this.userConfigPath]
+            userConfig = (await import(`file:///${this.userConfigPath}?t=${Date.now()}`)).default
+            // eslint-disable-next-line no-empty
+        } catch (err) { }
+        this.css = new MasterCSS({ config: userConfig })
+        this.extractions.clear()
+    }
 
     extract({ name, content }: CompilerSource) {
         if (
