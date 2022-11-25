@@ -8,6 +8,9 @@ export default {
                 '1': '#999999'
             }
         },
+        input: {
+            '': '#123456'
+        }
     },
     classes: {
         btn: 'font:14 h:40 text:center',
@@ -76,6 +79,9 @@ export default {
         },
         LetterSpacing: {
             wide: .4
+        },
+        Border: {
+            'inputborder': '2|solid|red'
         },
         BoxShadow: {
             '2x': '0 25px 50px -12px rgb(0 0 0 / 25%)'

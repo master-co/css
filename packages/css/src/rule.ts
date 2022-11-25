@@ -55,6 +55,7 @@ export default class Rule {
     static match(
         name: string,
         matches: RegExp,
+        colorsThemesMap: Record<string, Record<string, Record<string, string>>>,
         colorNames: string[]
     ): RuleMatching {
         const { colorStarts, symbol, prop } = this
@@ -68,15 +69,15 @@ export default class Rule {
          * STEP 2. color starts
          */
         // TODO: 動態 new Regex 效能問題待優化
-        if (colorStarts
-            && (
-                name.match('^' + colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current|inherit))')
-                || colorNames.length
-                && name.match('^' + colorStarts + '(' + colorNames.join('|') + ')')
-                && name.indexOf('|') === -1
-            )
-        ) {
-            return { origin: MATCHES }
+        if (colorStarts) {
+            if (name.match('^' + colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current|inherit))'))
+                return { origin: MATCHES }
+
+            if (colorNames.length && name.indexOf('|') === -1) {
+                const result = name.match('^' + colorStarts + '(' + colorNames.join('|') + ')([0-9a-zA-Z-]*)')
+                if (result && (!result[2] || (result[2].slice(1) in colorsThemesMap[result[1]])))
+                    return { origin: MATCHES } 
+            }
         }
         /** 
          * STEP 3. symbol

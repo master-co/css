@@ -96,5 +96,10 @@ test('values', () => {
                 }
             }
         })
+    ),
+    testCSS(
+        'b:inputborder',
+        '.b\\:inputborder{border:0.125rem solid #d11a1e}',
+        new MasterCSS({ config })
     )
 })

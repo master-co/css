@@ -733,7 +733,7 @@ export default class MasterCSS extends MutationObserver {
                 return this.ruleOfClass[className]
 
             for (const EachRule of this.config.Rules) {
-                const matching = EachRule.match(className, this.matches[EachRule.id], this.colorNames)
+                const matching = EachRule.match(className, this.matches[EachRule.id], this.colorsThemesMap, this.colorNames)
                 if (matching)
                     return new EachRule(
                         className,

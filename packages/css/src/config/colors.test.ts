@@ -17,5 +17,10 @@ test('colors', () => {
         'fg:primary-stage-1',
         '.fg\\:primary-stage-1{color:#999999}.light .fg\\:primary-stage-1{color:#888888}.dark .fg\\:primary-stage-1{color:#AAAAAA}',
         new MasterCSS({ config })
+    ),
+    testCSS(
+        'b:input',
+        '.b\\:input{border-color:#123456}',
+        new MasterCSS({ config })
     )
 })
