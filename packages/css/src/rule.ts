@@ -232,7 +232,7 @@ export default class Rule {
                                 continue
                             } else if (
                                 val === '#'
-                                && (currentValueToken || valueTokens.length && (valueToken[i - 1] !== '|' || valueTokens[i - 1] !== ' '))
+                                && (currentValueToken || valueTokens.length && (valueToken[i - 1] !== '|' && valueTokens[i - 1] !== ' '))
                                 || selectorSymbols.includes(val)
                             ) {
                                 break
