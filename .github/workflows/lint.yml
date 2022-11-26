@@ -1,0 +1,24 @@
+name: Lint
+on:
+    push:
+        branches:
+            - main
+            - beta
+
+jobs:
+    version:
+        timeout-minutes: 15
+        runs-on: ubuntu-20.04
+        strategy:
+            matrix:
+                node-version: [18.12.1]
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'npm'
+            - run: npm i
+
+            - name: Lint
+              run: npm run lint
