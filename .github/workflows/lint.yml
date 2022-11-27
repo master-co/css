@@ -4,6 +4,10 @@ on:
         branches:
             - main
             - beta
+    pull_request_target:
+        types:
+            - opened
+            - synchronize
 
 jobs:
     version:
@@ -18,7 +22,5 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
-            - run: npm i
-
-            - name: Lint
-              run: npm run lint
+            - run: npm ci
+            - run: npm run lint

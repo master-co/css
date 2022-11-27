@@ -1,4 +1,4 @@
-name: Test
+name: Type Check
 on:
     push:
         branches:
@@ -24,4 +24,4 @@ jobs:
                   cache: 'npm'
             - run: npm ci
             - run: npm run build
-            - run: npm run test
+            - run: npm run type-check
