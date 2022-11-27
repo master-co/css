@@ -1,7 +1,7 @@
 {
     "name": "@master/normal.css",
     "scripts": {
-        "build": "esbuild src/index.css --bundle --minify --outfile=dist/index.css",
+        "build": "aron pack",
         "dev": "npm run build -- --watch"
     },
     "license": "MIT",

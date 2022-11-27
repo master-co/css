@@ -1,12 +1,10 @@
 {
     "name": "@master/css.webpack",
     "scripts": {
-        "build:cjs": "esbuild src/index.ts --bundle --outfile=dist/index.cjs --format=cjs --minify --sourcemap --platform=node --external:@master/css --external:@master/css.compiler",
-        "build:esm": "esbuild src/index.ts --bundle --outfile=dist/index.mjs --format=esm --minify --sourcemap --platform=node --external:@master/css --external:@master/css.compiler",
-        "build:type": "tsc --emitDeclarationOnly --preserveWatchOutput",
-        "build": "conc 'npm:build:*'",
-        "dev": "conc 'npm:build:* -- --watch'",
-        "lint": "eslint ./src"
+        "build": "aron pack --platform=node",
+        "dev": "npm run build -- --watch",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint src"
     },
     "license": "MIT",
     "description": "Compile Master CSS ahead of time with zero-configuration integration with build tools",

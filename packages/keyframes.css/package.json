@@ -1,7 +1,7 @@
 {
     "name": "@master/keyframes.css",
     "scripts": {
-        "build": "esbuild src/*.css --bundle --minify --outdir=dist",
+        "build": "aron pack src/*.css",
         "dev": "npm run build -- --watch"
     },
     "license": "MIT",
