@@ -9,13 +9,17 @@ on:
 
 jobs:
     lint:
-        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        runs-on: ubuntu-20.04
+        strategy:
+            matrix:
+                node-version: [18.12.1]
         steps:
             - uses: aslafy-z/conventional-pr-title-action@main
               with:
-                  success-state: follows the conventional commit.
-                  failure-state: doesn't follow the conventional commit.
+                  success-state: follows the aron-conventional-commits
+                  failure-state: doesn't follow the aron-conventional-commits
                   context-name: Title of pull request
-                  preset: conventional-changelog-conventionalcommits@5.0.0
+                  preset: conventional-changelog-aron@latest
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
