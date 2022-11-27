@@ -20,6 +20,7 @@ jobs:
                   success-state: follows the aron-conventional-commits
                   failure-state: doesn't follow the aron-conventional-commits
                   context-name: Title of pull request
-                  preset: conventional-changelog-aron@latest
+                  preset: conventional-changelog-aron
+                  target-url: https://github.com/1aron/aronrepo/tree/beta/packages/conventional-commits
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
