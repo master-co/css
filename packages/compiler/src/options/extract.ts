@@ -52,7 +52,7 @@ const peelString = (content) => {
 
 const checkToExclude = (content, css: MasterCSS) => {
     return !content
-        || (!content.match(/(?:^\{?[\w-]+:[\w$#]+)|(?:^[@~][\w-]+$)/) && !Object.keys(css.config.semantics ?? semantics).includes(content))
+        || (!content.match(/(?:\S*\{\S*\})|(?:^[\w-]+:[\w$#]+)|(?:^[@~][\w-]+$)/) && !Object.keys(css.config.semantics ?? semantics).includes(content))
         || content.match(/\*\*/)
         || content.match(/:\[/)
         || content.match(/\$\{/)
