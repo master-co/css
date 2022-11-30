@@ -16,7 +16,7 @@ jobs:
                 node-version: [18.12.1]
         steps:
             - name: Aron Actions
-              uses: 1aron/aronrepo@v1.0.0-beta.26
+              uses: 1aron/aronrepo@v1.0.0-beta.27
               with:
                   action: 'check-pull-request-title'
               env:
