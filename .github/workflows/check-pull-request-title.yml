@@ -1,21 +1,23 @@
-name: Checking title of pull request
+name: Check title of pull request
 on:
-  pull_request_target:
-    types:
-      - opened
-      - reopened
-      - edited
-      - synchronize
+    pull_request_target:
+        types:
+            - opened
+            - reopened
+            - edited
+            - synchronize
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: aslafy-z/conventional-pr-title-action@main
-        with:
-          success-state: Title follows the specification.
-          failure-state: Title does not follow the specification.
-          context-name: conventional-pr-title
-          preset: conventional-changelog-angular@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.MASTER_GITHUB_TOKEN }}
+    lint:
+        timeout-minutes: 15
+        runs-on: ubuntu-20.04
+        strategy:
+            matrix:
+                node-version: [18.12.1]
+        steps:
+            - name: Aron Actions
+              uses: 1aron/aronrepo@latest
+              with:
+                  action: 'check-pull-request-title'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
