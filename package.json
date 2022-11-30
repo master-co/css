@@ -19,7 +19,7 @@
         "examples/*"
     ],
     "devDependencies": {
-        "aronrepo": "^1.0.0-beta.18",
+        "aronrepo": "^1.0.0-beta.21",
         "concurrently": "^7.6.0",
         "dedent": "^0.7.0",
         "eslint-plugin-react-hooks": "^4.6.0",
