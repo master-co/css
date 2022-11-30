@@ -15,12 +15,9 @@ jobs:
             matrix:
                 node-version: [18.12.1]
         steps:
-            - uses: aslafy-z/conventional-pr-title-action@main
+            - name: Aron Actions
+              uses: 1aron/aronrepo@latest
               with:
-                  success-state: follows the aron-conventional-commits
-                  failure-state: doesn't follow the aron-conventional-commits
-                  context-name: Title of pull request
-                  preset: conventional-changelog-aron
-                  target-url: https://github.com/1aron/aronrepo/tree/beta/packages/conventional-commits
+                  action: 'check-pull-request-title'
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
