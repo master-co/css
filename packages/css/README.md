@@ -76,58 +76,26 @@ Check out the [guides](https://css.master.co/docs/guides) to get started quickly
 
 ## Ecosystem
 
-<table layout="fixed">
-    <tr>
-        <th align="left">Packages</th>
-        <th align="left">Introduction</th>
-    </tr>
-    <tr>
-        <th align="left" colspan="2">Integrations</th>
-    </tr>
-    <tr>
-        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/compiler">Master CSS Compiler</a></th>
-        <td>Ahead-of-time compiler for Master CSS</td>
-    </tr>
-    <tr>
-        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/vite">Master CSS Vite</a></th>
-        <td>A vite plugin that integrates with the AOT compilation of Master CSS</td>
-    </tr>
-    <tr>
-        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/webpack">Master CSS Webpack</a></th>
-        <td>A webpack plugin that integrates with the AOT compilation of Master CSS</td>
-    </tr>
-    <tr>
-        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/react">Master CSS React</a></th>
-        <td>React hooks for Master CSS</td>
-    </tr>
-    <tr>
-        <th align="left" colspan="2">Native CSS</th>
-    </tr>
-    <tr>
-        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/normal.css">Master Normal CSS</a></th>
-        <td>Normalize browser's styles</td>
-    </tr>
-    <tr>
-        <th align="left"><a href="https://github.com/master-co/css/tree/beta/packages/keyframes.css">Master Keyframes CSS</a></th>
-        <td>Simple and useful CSS keyframes</td>
-    </tr>
-    <tr>
-        <th align="left" colspan="2">Related</th>
-    </tr>
-    <tr>
-        <th align="left"><a href="https://github.com/master-co/style-element.react">Style Element for React</a></th>
-        <td>Quickly create reusable React elements driven by class names</td>
-    </tr>
-    <tr>
-        <th align="left" colspan="2">Others</th>
-    </tr>
-    <tr>
-        <th align="left"><a href="https://github.com/master-co/css-language-service">Master CSS Language Service<br><sub>Visual Studio Code Extension</sub></a></th>
-        <td>Code completion, syntax highlighting, CSS hover preview, inline color decorators</td>
-    </tr>
-</table>
+#### Integrations
+
+- [Master CSS Compiler](https://github.com/master-co/css/tree/beta/packages/compiler) - Ahead-of-time compiler for Master CSS
+- [Master CSS Vite](https://github.com/master-co/css/tree/beta/packages/vite) - A vite plugin that integrates with the AOT compilation of Master CSS
+- [Master CSS Webpack](https://github.com/master-co/css/tree/beta/packages/webpack) - A webpack plugin that integrates with the AOT compilation of Master CSS
+- [Master CSS React](https://github.com/master-co/css/tree/beta/packages/react) - React hooks for Master CSS
+
+#### Native CSS
+
+- [Master Normal CSS](https://github.com/master-co/css/tree/beta/packages/normal.css) - Normalize the browser's styles
+- [Master Keyframes CSS](https://github.com/master-co/css/tree/beta/packages/keyframes.css) - Simple and useful CSS keyframes
+
+#### Extensions
+- [Master CSS Language Service](https://github.com/master-co/css-language-service) for Visual Studio Code - Code completion, syntax highlighting, CSS hover preview, inline color decorators
+
+#### Related
+
+- [Style Element for React](https://github.com/master-co/style-element.react) - Quickly create reusable React elements driven by class names
 
 ## Inspiration
 Some of our core concepts and designs are inspired by these giants.
-- The concept of enhanced syntax is inspired by [SASS](https://sass-lang.com/) and [Typescript](https://www.typescriptlang.org/).
-- The concept of __Virtual CSS__ is inspired by the [Virtual DOM](https://reactjs.org/docs/faq-internals.html).
+- The concept of enhanced syntax is inspired by [SASS](https://sass-lang.com/) and [Typescript](https://www.typescriptlang.org/)
+- The concept of Virtual CSS is inspired by the [Virtual DOM](https://reactjs.org/docs/faq-internals.html)
