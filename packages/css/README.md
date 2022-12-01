@@ -95,8 +95,8 @@ The Master CSS community can be found here:
 ###### [《 Code of Conduct 》](https://github.com/master-co/css/blob/main/CODE_OF_CONDUCT.md) applies to all Master CSS community channels.
 
 ## Contributing
-Please see our [CONTRIBUTING.md](https://github.com/master-co/css/blob/beta/.github/CONTRIBUTING.yml) for workflow.
-
+Please see our *🚧 CONTRIBUTING.md* for workflow.
+<!-- Please see our [🚧 CONTRIBUTING.md](https://github.com/master-co/css/blob/beta/.github/CONTRIBUTING.yml) for workflow. -->
 
 ## Inspiration
 Some of the core concepts and designs are inspired by these giants.
