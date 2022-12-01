@@ -89,10 +89,10 @@ We've built various integrations and tools around Master CSS:
 ## Community
 The Master CSS community can be found here:
 
-- [Discuss on GitHub](https://github.com/master-co/css/discussions) - Ask questions, voice ideas, and do any other discussion.
-- [Join our Discord Server](https://discord.com/invite/sZNKpAAAw6) - Casually chat with other people using the language. <sup><sub>✓ 中文</sub></sup>
+- [Discuss on GitHub](https://github.com/master-co/css/discussions) - Ask questions, voice ideas, and do any other discussion
+- [Join our Discord Server](https://discord.com/invite/sZNKpAAAw6) - Casually chat with other people using the language <sup><sub>✓ 中文</sub></sup>
 
-<sub>[《 Code of Conduct 》](https://github.com/master-co/css/blob/main/CODE_OF_CONDUCT.md) applies to all Master CSS community channels.</sub>
+<sub>Our [《 Code of Conduct 》](https://github.com/master-co/css/blob/main/CODE_OF_CONDUCT.md) applies to all Master CSS community channels.</sub>
 
 ## Contributing
 Please see our *🚧 CONTRIBUTING.md* for workflow.
@@ -100,5 +100,5 @@ Please see our *🚧 CONTRIBUTING.md* for workflow.
 
 ## Inspiration
 Some of the core concepts and designs are inspired by these giants.
-- The concept of enhanced syntax is inspired by [SASS](https://sass-lang.com/) and [Typescript](https://www.typescriptlang.org/)
+- The concept of enhanced syntax is inspired by [SASS](https://sass-lang.com/) and [TypeScript](https://www.typescriptlang.org/)
 - The concept of Virtual CSS is inspired by the [Virtual DOM](https://reactjs.org/docs/faq-internals.html)
