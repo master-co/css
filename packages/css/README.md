@@ -66,25 +66,25 @@ Visit [css.master.co](https://css.master.co) to view the full documentation
 Check out the [guides](https://css.master.co/docs/guides) to get started with Master CSS
 
 ## Ecosystem
+We've built various integrations and tools around Master CSS:
 
-#### Integrations
+##### Build Tools
 
-- [Compiler](https://github.com/master-co/css/tree/beta/packages/compiler) - The ahead-of-time compiler of Master CSS
 - [Vite Plugin](https://github.com/master-co/css/tree/beta/packages/vite) - A vite plugin for integrating Master CSS AOT compilation
 - [Webpack Plugin](https://github.com/master-co/css/tree/beta/packages/webpack) - A webpack plugin for integrating Master CSS AOT compilation
-- [React](https://github.com/master-co/css/tree/beta/packages/react) - React hooks for Master CSS
+- [Compiler](https://github.com/master-co/css/tree/beta/packages/compiler) - The ahead-of-time compiler of Master CSS
 
-#### Native Plugins
+##### Libraries and Frameworks
+- [React](https://github.com/master-co/css/tree/beta/packages/react) - React hooks for Master CSS
+- [Style Element for React](https://github.com/master-co/style-element.react) - Quickly create reusable React elements driven by class names
+
+##### Native Plugins
 
 - [Normal CSS](https://github.com/master-co/css/tree/beta/packages/normal.css) - Normalize the browser's styles
 - [Keyframes CSS](https://github.com/master-co/css/tree/beta/packages/keyframes.css) - Simple and useful CSS keyframes
 
-#### Extensions
+##### Extensions
 - [Master CSS Language Service](https://github.com/master-co/css-language-service) <sub><sup>Visual Studio Code</sup></sub> - Includes code completion, syntax highlighting, CSS hover preview, and inline color decorators
-
-#### Related
-
-- [Style Element for React](https://github.com/master-co/style-element.react) - Quickly create reusable React elements driven by class names
 
 ## Community
 The Master CSS community can be found here:
@@ -92,7 +92,7 @@ The Master CSS community can be found here:
 - [Discuss on GitHub](https://github.com/master-co/css/discussions) - Ask questions, voice ideas, and do any other discussion.
 - [Join our Discord Server](https://discord.com/invite/sZNKpAAAw6) - Casually chat with other people using the language. <sup><sub>✓ 中文</sub></sup>
 
-###### [《 Code of Conduct 》](https://github.com/master-co/css/blob/main/CODE_OF_CONDUCT.md) applies to all Master CSS community channels.
+<sub>[《 Code of Conduct 》](https://github.com/master-co/css/blob/main/CODE_OF_CONDUCT.md) applies to all Master CSS community channels.</sub>
 
 ## Contributing
 Please see our *🚧 CONTRIBUTING.md* for workflow.
