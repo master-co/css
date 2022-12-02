@@ -10,18 +10,20 @@ import {
     InitializeResult,
     DocumentColorParams,
     ColorInformation,
-    ColorPresentationParams} from 'vscode-languageserver/node'
+    ColorPresentationParams
+} from 'vscode-languageserver/node'
 
 import { WorkspaceFolder } from 'vscode-languageserver'
 import MasterCSS from '@master/css'
+import uri2path from 'file-uri-to-path'
 
-import * as minimatch from 'minimatch'
+import minimatch from 'minimatch'
 
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { GetLastInstance, GetCompletionItem } from './completionProvider'
 import { doHover } from './hoverProvider'
 import { PositionCheck } from './masterCss'
-import { GetDocumentColors, GetColorPresentation,GetColorRender } from './documentColorProvider'
+import { GetDocumentColors, GetColorPresentation, GetColorRender } from './documentColorProvider'
 
 
 
@@ -65,7 +67,7 @@ const defaultSettings: MasterCSSSettings = {
         '(class(?:Name)?={)([^}]*)}',
         '(?:(\\$|(?:element\\.[^\\s.`]+)`)([^`]+)`)',
         '(classList.(?:add|remove|replace|replace|toggle)\\()([^)]*)\\)'
-      ],
+    ],
     files: { exclude: ['**/.git/**', '**/node_modules/**', '**/.hg/**'] },
     suggestions: true,
     PreviewOnHovers: true,
@@ -117,11 +119,10 @@ async function getDocumentSettings(resource: string): Promise<MasterCSSSettings>
         try {
             let userConfig = null
             try {
-                const uri2path = await import('file-uri-to-path')
                 userConfig = await import(uri2path(root.uri.replace('%3A', ':') + '/master.css.js'))
             } catch (_) { /* empty */ }
             MasterCSSObject = new MasterCSS(userConfig)
-        } catch(_) { /* empty */ }
+        } catch (_) { /* empty */ }
     }
     return result
 }
@@ -193,7 +194,7 @@ connection.onInitialized(() => {
 })
 
 connection.onCompletion(
-    (_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {        
+    (_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
         if (settings.suggestions == true && CheckFilesExclude(_textDocumentPosition.textDocument.uri)) {
 
             const inMasterCSS = PositionCheck(_textDocumentPosition.textDocument.uri, _textDocumentPosition.position, documents, settings.classNameMatches).IsMatch
@@ -220,7 +221,7 @@ connection.onDocumentColor(
             return []
         }
         if (settings.PreviewColor == true && CheckFilesExclude(documentColor.textDocument.uri)) {
-            let colorInformation = await GetDocumentColors(documentColor, documents,settings.classNameMatches, MasterCSSObject)
+            let colorInformation = await GetDocumentColors(documentColor, documents, settings.classNameMatches, MasterCSSObject)
             colorInformation = colorInformation.concat(await GetColorRender(documentColor, documents))
             return colorInformation
         }
@@ -231,8 +232,8 @@ connection.onColorPresentation((params: ColorPresentationParams) => {
     if (settings.PreviewColor == true && CheckFilesExclude(params.textDocument.uri)) {
         const colorRender = ['(?<=colors:\\s*{\\s*.*)([^}]*)}']
         const isColorRender = PositionCheck(params.textDocument.uri, params.range.start, documents, colorRender)
-        
-        return GetColorPresentation(params,isColorRender.IsMatch)
+
+        return GetColorPresentation(params, isColorRender.IsMatch)
     }
     return []
 })

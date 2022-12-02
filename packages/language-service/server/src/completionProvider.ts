@@ -88,7 +88,7 @@ export function GetCompletionItem(instance: string, triggerKey: string, startWit
 
     let masterCssValues: Array<string | CompletionItem> = []
     const masterCustomSelectors = Object.keys(masterCss.config.selectors ?? {})
-        .map(x => x.endsWith('(') ? `${x})` : x)    
+        .map(x => x.endsWith('(') ? `${x})` : x)
         .filter(x => x.match(/:[^:]+/) && !masterCssSelectors.find(existedSelector => (typeof existedSelector === 'string' ? existedSelector : existedSelector.label) === `:${x}`))
         .map(x => {
             x = x.substring(1)
@@ -108,11 +108,11 @@ export function GetCompletionItem(instance: string, triggerKey: string, startWit
             }
             return x
         })
-    
+
     masterCssKeyValues.forEach(x => {
         if (x.key.includes(key)) {
             masterCssValues = masterCssValues.concat(
-                x.values.filter(cssValue => 
+                x.values.filter(cssValue =>
                     !masterCssValues.find(existedValue => (typeof existedValue === 'string' ? existedValue : existedValue.label) === (typeof cssValue === 'string' ? cssValue : cssValue.label))
                 )
             )
@@ -121,7 +121,7 @@ export function GetCompletionItem(instance: string, triggerKey: string, startWit
                 const masterCustomValues = Object.keys(masterCss.config.values[pascalCaseFullKey])
                 masterCssValues = masterCssValues.concat(
                     masterCustomValues
-                        .filter(customValue => 
+                        .filter(customValue =>
                             !masterCssValues.find(existedValue => (typeof existedValue === 'string' ? existedValue : existedValue.label) === customValue)
                         )
                 )
@@ -188,7 +188,7 @@ export function GetCompletionItem(instance: string, triggerKey: string, startWit
     }
     else if (masterCssKeys.includes(key) && haveValue <= 2 && !(haveValue == 2 && triggerKey === ':')) {  //show value
         masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(masterCssValues, CompletionItemKind.Enum))
-        masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(masterCssCommonValues, CompletionItemKind.Enum).map(x => {x.sortText = 'z'+x; return x}))
+        masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(masterCssCommonValues, CompletionItemKind.Enum).map(x => { x.sortText = 'z' + x; return x }))
 
         if (isColorful) {
             masterStyleCompletionItem = masterStyleCompletionItem.concat(getColorsItem(masterCss))

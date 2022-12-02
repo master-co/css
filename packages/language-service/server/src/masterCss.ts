@@ -28,7 +28,7 @@ export function PositionCheck(documentUri: string, position: Position, documents
     let text = document?.getText() ?? ''
     const positionIndex = document?.offsetAt(position) ?? 0
 
-    const startIndex = document?.offsetAt({ line: position.line - 100, character: 0}) ?? 0
+    const startIndex = document?.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
     const endIndex = document?.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
     text = text.substring(startIndex, endIndex)
 
@@ -39,7 +39,7 @@ export function PositionCheck(documentUri: string, position: Position, documents
 
     RegExpList.forEach(x => {
         const classPattern = new RegExp(x, 'g')
-        
+
         while ((classMatch = classPattern.exec(text)) !== null) {
             if ((classMatch.index <= positionIndex && classMatch.index + classMatch[0].length - 1 >= positionIndex) == true) {
                 result.IsMatch = true

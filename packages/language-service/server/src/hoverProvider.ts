@@ -101,7 +101,7 @@ export function GetHoverInstance(textDocumentPosition: TextDocumentPositionParam
 
     if (tsxclassNameMode) {
         instanceStart = instanceStart > lineText.substring(0, position.character).lastIndexOf('{') ? instanceStart : lineText.substring(0, position.character).lastIndexOf('{')
-        instanceEnd = instanceEnd < lineText.indexOf('}', position.character) ? instanceEnd : (lineText.indexOf('}', position.character)==-1?instanceEnd:lineText.indexOf('}', position.character))
+        instanceEnd = instanceEnd < lineText.indexOf('}', position.character) ? instanceEnd : (lineText.indexOf('}', position.character) == -1 ? instanceEnd : lineText.indexOf('}', position.character))
     }
     else {
         instanceStart = instanceStart > lineText.substring(0, position.character).lastIndexOf(classIndexAddTwo) ? instanceStart : lineText.substring(0, position.character).lastIndexOf(classIndexAddTwo)

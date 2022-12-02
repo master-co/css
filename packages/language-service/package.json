@@ -7,6 +7,7 @@
     "homepage": "https://css.master.co",
     "license": "MIT",
     "publisher": "masterco",
+    "version": "2.0.0-beta.90",
     "icon": "icon.png",
     "repository": {
         "type": "git",
