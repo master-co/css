@@ -157,7 +157,7 @@
         }
     },
     "scripts": {
-        "publish": "rm ../../package.json && npx vsce package",
+        "publish": "rm ../../package.json && npm i vsce && vsce publish",
         "build": "tsc -b"
     },
     "devDependencies": {
