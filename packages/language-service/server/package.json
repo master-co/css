@@ -1,7 +1,7 @@
 {
     "name": "@master/css-language-server",
     "scripts": {
-        "build": "aron pack"
+        "build": "aron pack --platform=node"
     },
     "description": "VSCode part of a language server",
     "author": "Aoyue Design LLC.",
@@ -23,16 +23,16 @@
         "@types/js-beautify": "^1.13.3",
         "@types/minimatch": "^5.1.2"
     },
-    "main": "./dist/index.cjs",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+    "main": "./dist/server.cjs",
+    "jsnext:main": "./dist/server.mjs",
+    "esnext": "./dist/server.mjs",
+    "module": "./dist/server.mjs",
+    "types": "./dist/server.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/index.cjs",
-            "import": "./dist/index.mjs",
-            "types": "./dist/index.d.ts"
+            "require": "./dist/server.cjs",
+            "import": "./dist/server.mjs",
+            "types": "./dist/server.d.ts"
         }
     },
     "files": [

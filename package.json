@@ -1,12 +1,12 @@
 {
     "scripts": {
-        "build": "turbo run build --filter=./packages/*",
-        "build:clean": "rm -rf ./packages/**/*dist && turbo run build --force --no-cache --filter=./packages/*",
-        "check": "turbo run test lint --parallel --filter=./packages/*",
-        "test": "turbo run test --parallel --filter=./packages/*",
-        "lint": "turbo run lint --parallel --filter=./packages/*",
-        "type-check": "turbo run type-check --parallel --filter=./packages/*",
-        "dev": "turbo run dev --filter=./packages/*",
+        "build": "turbo run build --filter=./packages/**/*",
+        "build:clean": "rm -rf ./packages/**/*dist && turbo run build --force --no-cache --filter=./packages/**/*",
+        "check": "turbo run test lint --parallel --filter=./packages/**/*",
+        "test": "turbo run test --parallel --filter=./packages/**/*",
+        "lint": "turbo run lint --parallel --filter=./packages/**/*",
+        "type-check": "turbo run type-check --parallel --filter=./packages/**/*",
+        "dev": "turbo run dev --filter=./packages/**/*",
         "clean": "rm -rf ./packages/**/*dist"
     },
     "repository": {

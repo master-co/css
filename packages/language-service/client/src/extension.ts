@@ -8,7 +8,7 @@ import {
     ServerOptions,
     TransportKind
 } from 'vscode-languageclient/node'
-import * as vscode from 'vscode'
+import vscode from 'vscode'
 
 let client: LanguageClient
 
