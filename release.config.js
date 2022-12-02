@@ -17,5 +17,9 @@ module.exports = configure({
             name: 'master-keyframes.css',
             label: 'master-keyframes.css'
         }
-    ]
+    ],
+    scripts: {
+        prepare: 'npm run check && npm run build',
+        publish: 'aron version ${nextRelease.version} && npm publish --workspaces --access public && npm run publish'
+    }
 })
