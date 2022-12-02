@@ -8,8 +8,7 @@
         "publish": "turbo run publish --parallel --filter=./packages/*",
         "type-check": "turbo run type-check --parallel --filter=./packages/*",
         "dev": "turbo run dev --filter=./packages/*",
-        "clean": "rm -rf ./packages/**/*dist",
-        "aron": "aron"
+        "clean": "rm -rf ./packages/**/*dist"
     },
     "repository": {
         "type": "git",
