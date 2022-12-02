@@ -4,6 +4,7 @@ import { default as defaultOptions, CompilerOptions, CompilerSource } from './op
 import MasterCSS, { extend } from '@master/css'
 import { performance } from 'perf_hooks'
 import type { Config } from '@master/css'
+import { pathToFileURL } from 'url'
 
 export default class MasterCSSCompiler {
 
@@ -11,7 +12,7 @@ export default class MasterCSSCompiler {
         public options?: CompilerOptions
     ) {
         this.options = extend(defaultOptions, options)
-        this.userConfigPath = path.resolve(process.cwd(), this.options.config)
+        this.userConfigPath = path.resolve(process.cwd(), this.options.config || 'master.css.js')
         this.initializing = this.reload()
     }
 
@@ -23,10 +24,14 @@ export default class MasterCSSCompiler {
     async reload() {
         let userConfig: Config
         try {
-            delete require.cache[this.userConfigPath]
-            userConfig = (await import(`file:///${this.userConfigPath}?t=${Date.now()}`)).default
+            if (require.cache?.[this.userConfigPath]) {
+                delete require.cache[this.userConfigPath]
+            }
+            userConfig = (await import(pathToFileURL(this.userConfigPath).href)).default
             // eslint-disable-next-line no-empty
-        } catch (err) { }
+        } catch (err) {
+            console.error(err)
+        }
         this.css = new MasterCSS({ config: userConfig })
         this.extractions.clear()
     }
@@ -50,6 +55,7 @@ export default class MasterCSSCompiler {
                 eachExtractions.push(eachNewExtraction)
             }
         }
+        console.log(eachExtractions)
         return eachExtractions
     }
 
