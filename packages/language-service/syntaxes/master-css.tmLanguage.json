@@ -1,0 +1,447 @@
+{
+    "name": "master-css",
+    "scopeName": "source.master-css",
+    "patterns": [
+        {
+            "include": "#master-css-group"
+        },
+        {
+            "include": "#master-css-media"
+        },
+        {
+            "include": "#master-css-key"
+        },
+        {
+            "include": "#master-css-selector"
+        },
+        {
+            "include": "#master-css-value"
+        }
+    ],
+    "repository": {
+        "master-css-group": {
+            "begin": "(\\{)",
+            "end": "(\\})",
+            "captures": {
+                "1": {
+                    "name": "variable punctuation.section.property-list.begin"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "variable punctuation.section.property-list.end"
+                }
+            },
+            "contentName": "meta.embedded master-css.class.group",
+            "patterns": [
+                {
+                    "include": "#master-css-key"
+                },
+                {
+                    "include": "#master-css-value"
+                },
+                {
+                    "include": "#master-css-group-split-sign"
+                },
+                {
+                    "include": "#master-css-value-string"
+                },
+                {
+                    "include": "#master-css-value-string-quoted-single"
+                }
+            ]
+        },
+        "master-css-group-split-sign": {
+            "patterns": [
+                {
+                    "match": "(;)",
+                    "captures": {
+                        "1": {
+                            "name": "master-css.class.split"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-key": {
+            "patterns": [
+                {
+                    "match": "(?<![^\\s;\"'`<_\\@\\+>~\\[]+)([@~])",
+                    "captures": {
+                        "1": {
+                            "name": "support.type.property-name.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<![^\\s;:{]+:[^\\s;]*)([^\\s;:\"'`{]+)(:)(?!:)(?!\\-webkit\\-|\\-moz\\-|\\-o\\-|\\-ms\\-)(?!out\\-of\\-range|first\\-of\\-type|last\\-of\\-type|only\\-of\\-type|first\\-selector\\-button|scrollbar\\-track\\-piece|search\\-cancel\\-button|search\\-results\\-button|any\\-link|focus\\-visible|focus\\-within|read\\-only|read\\-write|placeholder\\-showen|in\\-range|first\\-letter|first\\-child|last\\-child|only\\-child|first\\-letter|first\\-line|scrollbar\\-button|scrollbar\\-thumb|scrollbar\\-track|scrollbar\\-corner|link|visited|target|scope|hover|has|active|focus|autofill|enabled|disabled|default|checked|indeterminate|valid|invalid|required|optional|root|empty|defined|fullscreen|odd|even|first|last|after|before|backdrop|cue|marker|placeholder|selection|scrollbar|resizer|nth\\-last\\-of\\-type|nth\\-last\\-child|nth\\-of\\-type|nth\\-child|host\\-context|lang|host|is|not|nth|where|part|slotted)",
+                    "captures": {
+                        "1": {
+                            "name": "support.type.property-name.css"
+                        },
+                        "2": {
+                            "name": "variable punctuation.separator.key-value.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<![^\\s;:{]+:[^\\s;]*)(order)(:)(?=first|last)",
+                    "captures": {
+                        "1": {
+                            "name": "support.type.property-name.css"
+                        },
+                        "2": {
+                            "name": "variable punctuation.separator.key-value.css"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-value": {
+            "patterns": [
+                {
+                    "match": "(?<=[^\\s;:]+:)(var)(\\()(\\-\\-[^\\s;\"'`]*)(\\))",
+                    "captures": {
+                        "1": {
+                            "name": "support.function.misc.css"
+                        },
+                        "2": {
+                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                        },
+                        "3": {
+                            "name": "variable.argument.css"
+                        },
+                        "4": {
+                            "name": "variable punctuation.section.function.end.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[^\\s;:\"'`]+:)(\\$)(\\()([^\\s;\"'`]*)(\\))",
+                    "captures": {
+                        "1": {
+                            "name": "support.function.misc.css"
+                        },
+                        "2": {
+                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                        },
+                        "3": {
+                            "name": "variable.argument.css"
+                        },
+                        "4": {
+                            "name": "variable punctuation.section.function.end.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "([^\\s;\\:\\|,@\"'`\\)]+)(\\()",
+                    "captures": {
+                        "1": {
+                            "name": "support.function.misc.css"
+                        },
+                        "2": {
+                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<![\\-])\\b(sr\\-only|center\\-content|break\\-word|inline\\-block|inline\\-flex|inline\\-grid|inline\\-table|untouchable|capitalize|invisible|lowercase|uppercase|contents|oblique|visible|rounded|italic|static|sticky|hidden|inline|square|fixed|block|table|round|hide|full|grid|(?:flex(?!\\:(?:row|col|column|wrap|nowrap|\\d)(?:\\-reverse)?))|abs|rel)",
+                    "captures": {
+                        "1": {
+                            "name": "support.constant.property-value.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(\\+|\\-|\\*|\\/)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.operator.css"
+                        },
+                        "2": {
+                            "name": "constant.numeric.css"
+                        },
+                        "3": {
+                            "name": "keyword.other.unit"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\.\\d+)",
+                    "captures": {
+                        "1": {
+                            "name": "constant.numeric.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\|)",
+                    "captures": {
+                        "1": {
+                            "name": "comment.block"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(,)",
+                    "captures": {
+                        "1": {
+                            "name": "variable punctuation.separator.list.comma.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(!)",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.other.important.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\()",
+                    "captures": {
+                        "1": {
+                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[^\\s;\\:\\|,]+\\([^\\s;\\:]*)(\\))",
+                    "captures": {
+                        "1": {
+                            "name": "variable punctuation.section.function.end.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[^\\s;:]+:)(#?[0-9a-zA-Z\\-]+)",
+                    "captures": {
+                        "1": {
+                            "name": "support.constant.property-value.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[@~|,])(#?[0-9a-zA-Z\\-]+)",
+                    "captures": {
+                        "1": {
+                            "name": "support.constant.property-value.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[^\\s;\\:\\|,]+\\()(#?[0-9a-zA-Z\\-]+)",
+                    "captures": {
+                        "1": {
+                            "name": "support.constant.property-value.css"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-selector": {
+            "patterns": [
+                {
+                    "match": "(?<![\\|/])(\\.)(?!\\d)([^\\s;'\"`@:><.\\[\\]_\\+\\(\\),]*)",
+                    "captures": {
+                        "1": {
+                            "name": "entity.other.attribute-name.class.css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.class.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<![\\|/]|:)(\\#)(?!\\d)([^\\s;'\"`@:><.\\[\\]_\\+\\(\\),]*)",
+                    "captures": {
+                        "1": {
+                            "name": "entity.other.attribute-name.id.css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.id.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(\\:{1,2})(slotted|part)(\\()",
+                    "captures": {
+                        "1": {
+                            "name": "entity.other.attribute-name.pseudo-element.css punctuation.definition.entity.css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.pseudo-element.css"
+                        },
+                        "3": {
+                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(\\:)(nth\\-last\\-of\\-type|nth\\-last\\-child|nth\\-of\\-type|host\\-context|nth\\-child|where|lang|host|not|nth|is)(\\()",
+                    "captures": {
+                        "1": {
+                            "name": "entity.other.attribute-name.pseudo-class.css punctuation.definition.entity.css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.pseudo-class.css"
+                        },
+                        "3": {
+                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=\\:{1,2}(?:nth\\-last\\-of\\-type|nth\\-last\\-child|nth\\-of\\-type|nth\\-child|host\\-context|lang|host|is|not|nth|where|part|slotted)\\([^\\s;\\(]*)(\\))",
+                    "captures": {
+                        "1": {
+                            "name": "variable punctuation.section.function.end.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(\\:)((?:\\-webkit\\-|\\-moz\\-|\\-o\\-|\\-ms\\-)?(?:out\\-of\\-range|only\\-of\\-type|last\\-of\\-type|first\\-of\\-type|placeholder\\-showen|focus\\-visible|focus\\-within|first\\-letter|first\\-child|last\\-child|only\\-child|read\\-write|read\\-only|any\\-link|in\\-range|indeterminate|fullscreen|autofill|disabled|required|optional|visited|enabled|default|checked|invalid|defined|target|active|hover|scope|focus|valid|empty|first|link|root|even|last|odd|has))",
+                    "captures": {
+                        "1": {
+                            "name": "entity.other.attribute-name.pseudo-class.css punctuation.definition.entity.css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.pseudo-class.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(\\:{1,2})((?:\\-webkit\\-|\\-moz\\-|\\-o\\-|\\-ms\\-)?(?:range\\-thumb|slider\\-thumb|file\\-selector-button|search\\-cancel\\-button|search\\-results\\-button|scrollbar\\-track\\-piece|scrollbar\\-button|scrollbar\\-track|scrollbar\\-thumb|scrollbar\\-corner|first\\-letter|first\\-line|placeholder|scrollbar|selection|backdrop|resizer|before|after|marker|cue))",
+                    "captures": {
+                        "1": {
+                            "name": "entity.other.attribute-name.pseudo-element.css punctuation.definition.entity.css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.pseudo-element.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(\\[)([^\\s\\]]+)(\\])",
+                    "captures": {
+                        "1": {
+                            "name": "variable punctuation.definition.entity.begin.bracket.square.css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.css"
+                        },
+                        "3": {
+                            "name": "variable punctuation.definition.entity.end.bracket.square.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?:(_)|(\\+(?!\\d)|>|~))(\\*?[^\\s;'\"`@:><.\\[\\],_\\+\\(\\)\\{]*)",
+                    "captures": {
+                        "1": {
+                            "name": "comment.block"
+                        },
+                        "2": {
+                            "name": "keyword.operator.combinator"
+                        },
+                        "3": {
+                            "name": "entity.name.tag.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<!{[^\\s\\{]*)(\\*?[^\\s;'\"`@:><.\\[\\],_\\+\\(\\)\\{]+)(?=[^\\s\\{\"'`]*{)",
+                    "captures": {
+                        "1": {
+                            "name": "entity.name.tag.css"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-media": {
+            "patterns": [
+                {
+                    "match": "(?<!(?:\\s+)|(?:\\=[\"'`]))(@[^\\s;\"`'\\(]+)(?:(\\()([^\\s:\\)]+)(:)(\\d+)?(\\%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?([^\\s\\)]+)?(\\)))?",
+                    "captures": {
+                        "1": {
+                            "name": "constant.character.escape"
+                        },
+                        "2": {
+                            "name": "variable punctuation.definition.parameters.begin.bracket.round.css"
+                        },
+                        "3": {
+                            "name": "support.type.property-name.media.css"
+                        },
+                        "4": {
+                            "name": "variable punctuation.separator.key-value.css"
+                        },
+                        "5": {
+                            "name": "constant.numeric.css"
+                        },
+                        "6": {
+                            "name": "keyword.other.unit"
+                        },
+                        "7": {
+                            "name": "support.constant.property-value.css"
+                        },
+                        "8": {
+                            "name": "variable punctuation.definition.parameters.end.bracket.round.css"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-value-string": {
+            "begin": "(\")",
+            "end": "(\")",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.double.html"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.double.html"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#class-string"
+                }
+            ]
+        },
+        "master-css-value-string-quoted-single": {
+            "begin": "(')",
+            "end": "(')",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.single.html"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.single.html"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#class-string"
+                }
+            ]
+        },
+        "class-string": {
+            "patterns": [
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

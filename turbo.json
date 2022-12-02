@@ -26,6 +26,9 @@
         "lint": {
             "outputs": []
         },
+        "publish": {
+            "outputs": []
+        },
         "type-check": {
             "outputs": [
                 "dist/**"

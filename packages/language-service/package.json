@@ -1,0 +1,182 @@
+{
+    "name": "master-css-language-service",
+    "description": "Master CSS language service and code highlight for Visual Studio Code",
+    "displayName": "Master CSS Language Service",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://docs.master.co/css/donate",
+    "homepage": "https://css.master.co",
+    "private": true,
+    "license": "MIT",
+    "publisher": "masterco",
+    "icon": "images/icon.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/language-service"
+    },
+    "engines": {
+        "vscode": "^1.63.0"
+    },
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./client/out/extension",
+    "contributes": {
+        "languages": [
+            {
+                "id": "master-css",
+                "aliases": [
+                    "master-css",
+                    "mastercss"
+                ],
+                "extensions": [
+                    ".mastercss"
+                ]
+            }
+        ],
+        "grammars": [
+            {
+                "language": "master-css",
+                "scopeName": "source.master-css",
+                "path": "./syntaxes/master-css.tmLanguage.json"
+            },
+            {
+                "scopeName": "source.master-css.injection-class",
+                "path": "./syntaxes/master-css.injection-class.tmLanguage.json",
+                "injectTo": [
+                    "source",
+                    "text"
+                ]
+            },
+            {
+                "scopeName": "source.master-css.injection-react",
+                "path": "./syntaxes/master-css.injection-react.tmLanguage.json",
+                "injectTo": [
+                    "source.js.jsx",
+                    "source.ts.tsx",
+                    "source.jsx",
+                    "source.tsx"
+                ]
+            },
+            {
+                "scopeName": "source.master-css.injection-vue",
+                "path": "./syntaxes/master-css.injection-vue.tmLanguage.json",
+                "injectTo": [
+                    "source.vue"
+                ]
+            },
+            {
+                "scopeName": "source.master-css.injection-js",
+                "path": "./syntaxes/master-css.injection-js.tmLanguage.json",
+                "injectTo": [
+                    "source.js.jsx",
+                    "source.ts.tsx",
+                    "source.jsx",
+                    "source.tsx",
+                    "source.js",
+                    "source.ts"
+                ],
+                "embeddedLanguages": {
+                    "meta.embedded.block.master-css.class": "master-css"
+                }
+            },
+            {
+                "scopeName": "source.master-css.injection-string",
+                "path": "./syntaxes/master-css.injection-string.tmLanguage.json",
+                "injectTo": [
+                    "source.js.jsx",
+                    "source.ts.tsx",
+                    "source.jsx",
+                    "source.tsx",
+                    "source.js",
+                    "source.ts",
+                    "source.vue"
+                ]
+            }
+        ],
+        "configuration": {
+            "title": "Master CSS IntelliSense",
+            "properties": {
+                "masterCSS.languages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        "html",
+                        "php",
+                        "javascript",
+                        "typescript",
+                        "javascriptreact",
+                        "typescriptreact",
+                        "vue",
+                        "svelte",
+                        "rust"
+                    ]
+                },
+                "masterCSS.files.exclude": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        "**/.git/**",
+                        "**/node_modules/**",
+                        "**/.hg/**"
+                    ],
+                    "description": "Configure glob patterns to exclude from all Master Language Service features."
+                },
+                "masterCSS.classNameMatches": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        "(class(?:Name)?\\s?=\\s?)((?:\"[^\"]+\")|(?:'[^']+')|(?:`[^`]+`))",
+                        "(class(?:Name)?={)([^}]*)}",
+                        "(?:(\\$|(?:(?:element|el)\\.[^\\s.`]+)`)([^`]+)`)",
+                        "(classList.(?:add|remove|replace|replace|toggle)\\()([^)]*)\\)",
+                        "(template\\s*\\:\\s*)((?:\"[^\"]+\")|(?:'[^']+')|(?:`[^`]+`))",
+                        "(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^']*)('[^']*')",
+                        "(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^\"]*)(\"[^\"]*\")",
+                        "(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^`]*)(`[^`]*`)"
+                    ]
+                },
+                "masterCSS.suggestions": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "masterCSS.PreviewOnHovers": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "masterCSS.PreviewColor": {
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        }
+    },
+    "scripts": {
+        "publish": "vsce publish",
+        "build": "tsc -b"
+    },
+    "devDependencies": {
+        "@types/mocha": "^9.1.0",
+        "@types/node": "^14.17.0",
+        "@typescript-eslint/eslint-plugin": "^5.13.0",
+        "@typescript-eslint/parser": "^5.13.0",
+        "eslint": "^8.10.0",
+        "mocha": "^9.2.1",
+        "typescript": "^4.6.2",
+        "vsce": "^2.14.0"
+    },
+    "dependencies": {
+        "@master/css": "^2.0.0-alpha.72",
+        "@types/js-beautify": "^1.13.3",
+        "file-uri-to-path": "^2.0.0",
+        "js-beautify": "^1.14.3",
+        "minimatch": "^5.1.0",
+        "pascal-case": "^3.1.2"
+    }
+}

@@ -1,0 +1,595 @@
+{
+    "name": "master-css",
+    "scopeName": "source.master-css.injection-vue",
+    "injectionSelector": "L:source.vue",
+    "patterns": [
+        {
+            "include": "#highlight-vue-class-quoted-double"
+        },
+        {
+            "include": "#highlight-vue-class-quoted-single"
+        },
+        {
+            "include": "#highlight-vue-class-array-literal"
+        },
+        {
+            "include": "#highlight-vue-class-object-literal"
+        }
+    ],
+    "repository": {
+        "highlight-vue-class-quoted-double": {
+            "begin": "(:)(class)\\s*(\\=)\\s*(\")",
+            "end": "(\")",
+            "captures": {
+                "1": {
+                    "name": "punctuation.attribute-shorthand.bind.html.vue"
+                },
+                "2": {
+                    "name": "entity.other.attribute-name.html.vue"
+                },
+                "3": {
+                    "name": "punctuation.separator.key-value.html.vue"
+                },
+                "4": {
+                    "name": "punctuation.definition.string.begin.html.vue"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.definition.string.end.html.vue"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#vue-class-round"
+                },
+                {
+                    "include": "#vue-class-array-literal"
+                },
+                {
+                    "include": "#vue-class-object-literal"
+                },
+                {
+                    "include": "source.ts"
+                }
+            ]
+        },
+        "highlight-vue-class-quoted-single": {
+            "begin": "(:)(class)\\s*(\\=)\\s*(')",
+            "end": "(')",
+            "captures": {
+                "1": {
+                    "name": "punctuation.attribute-shorthand.bind.html.vue"
+                },
+                "2": {
+                    "name": "entity.other.attribute-name.html.vue"
+                },
+                "3": {
+                    "name": "punctuation.separator.key-value.html.vue"
+                },
+                "4": {
+                    "name": "punctuation.definition.string.begin.html.vue"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.definition.string.end.html.vue"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#vue-class-round"
+                },
+                {
+                    "include": "#vue-class-array-literal"
+                },
+                {
+                    "include": "#vue-class-object-literal"
+                },
+                {
+                    "include": "source.ts"
+                }
+            ]
+        },
+        "highlight-vue-class-array-literal": {
+            "begin": "(:)(class)\\s*(\\=)\\s*(\\[)",
+            "end": "(\\])",
+            "captures": {
+                "1": {
+                    "name": "punctuation.attribute-shorthand.bind.html.vue"
+                },
+                "2": {
+                    "name": "entity.other.attribute-name.html.vue"
+                },
+                "3": {
+                    "name": "punctuation.separator.key-value.html.vue"
+                },
+                "4": {
+                    "name": "meta.attribute.directive.vue source.ts.embedded.html.vue meta.array.literal.ts meta.brace.square"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "meta.attribute.directive.vue source.ts.embedded.html.vue meta.array.literal.ts meta.brace.square"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#class-string-template"
+                },
+                {
+                    "include": "#class-string-quoted-double"
+                },
+                {
+                    "include": "#class-string-quoted-single"
+                },
+                {
+                    "include": "#vue-class-round"
+                },
+                {
+                    "include": "#vue-class-array-literal"
+                },
+                {
+                    "include": "#vue-class-object-literal"
+                },
+                {
+                    "include": "source.ts"
+                }
+            ]
+        },
+        "highlight-vue-class-object-literal": {
+            "begin": "(:)(class)\\s*(\\=)\\s*(\\{)",
+            "end": "(\\})",
+            "captures": {
+                "1": {
+                    "name": "punctuation.attribute-shorthand.bind.html.vue"
+                },
+                "2": {
+                    "name": "entity.other.attribute-name.html.vue"
+                },
+                "3": {
+                    "name": "punctuation.separator.key-value.html.vue"
+                },
+                "4": {
+                    "name": "meta.attribute.directive.vue source.ts.embedded.html.vue meta.array.literal.ts meta.objectliteral.ts punctuation.definition.block"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "meta.attribute.directive.vue source.ts.embedded.html.vue meta.array.literal.ts meta.objectliteral.ts punctuation.definition.block"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#class-string-template"
+                },
+                {
+                    "include": "#class-string-quoted-double"
+                },
+                {
+                    "include": "#class-string-quoted-single"
+                },
+                {
+                    "include": "#vue-class-round"
+                },
+                {
+                    "include": "#vue-class-array-literal"
+                },
+                {
+                    "include": "#vue-class-object-literal"
+                },
+                {
+                    "include": "source.ts"
+                }
+            ]
+        },
+        "vue-class-array-literal": {
+            "begin": "(\\[)",
+            "end": "(\\])",
+            "captures": {
+                "1": {
+                    "name": "meta.attribute.directive.vue source.ts.embedded.html.vue meta.array.literal.ts meta.brace.square"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "meta.attribute.directive.vue source.ts.embedded.html.vue meta.array.literal.ts meta.brace.square"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#class-string-template"
+                },
+                {
+                    "include": "#class-string-quoted-double"
+                },
+                {
+                    "include": "#class-string-quoted-single"
+                },
+                {
+                    "include": "#vue-class-round"
+                },
+                {
+                    "include": "#vue-class-array-literal"
+                },
+                {
+                    "include": "#vue-class-object-literal"
+                },
+                {
+                    "include": "source.ts"
+                }
+            ]
+        },
+        "vue-class-object-literal": {
+            "begin": "(\\{)",
+            "end": "(\\})",
+            "captures": {
+                "1": {
+                    "name": "meta.attribute.directive.vue source.ts.embedded.html.vue meta.array.literal.ts meta.objectliteral.ts punctuation.definition.block"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "meta.attribute.directive.vue source.ts.embedded.html.vue meta.array.literal.ts meta.objectliteral.ts punctuation.definition.block"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#class-string-template"
+                },
+                {
+                    "include": "#class-string-quoted-double"
+                },
+                {
+                    "include": "#class-string-quoted-single"
+                },
+                {
+                    "include": "#vue-class-round"
+                },
+                {
+                    "include": "#vue-class-array-literal"
+                },
+                {
+                    "include": "#vue-class-object-literal"
+                },
+                {
+                    "include": "source.ts"
+                }
+            ]
+        },
+        "vue-class-round": {
+            "begin": "(\\()",
+            "end": "(\\))",
+            "captures": {
+                "1": {
+                    "name": "meta.brace.round"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "meta.brace.round"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#class-string-template"
+                },
+                {
+                    "include": "#class-string-quoted-double"
+                },
+                {
+                    "include": "#class-string-quoted-single"
+                },
+                {
+                    "include": "#vue-class-round"
+                },
+                {
+                    "include": "#vue-class-array-literal"
+                },
+                {
+                    "include": "#vue-class-object-literal"
+                },
+                {
+                    "include": "source.ts"
+                }
+            ]
+        },
+        "class-string-template": {
+            "begin": "(\\w*)(`)",
+            "end": "`",
+            "captures": {
+                "1": {
+                    "name": "punctuation.definition.string.template.begin"
+                },
+                "2": {
+                    "name": "string.template"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.template"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-template-expression"
+                },
+                {
+                    "include": "#master-css-value-string-quoted-double"
+                },
+                {
+                    "include": "#master-css-value-string-quoted-single"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.template"
+                        }
+                    }
+                }
+            ]
+        },
+        "class-string-quoted-double": {
+            "begin": "(\")",
+            "end": "(\")",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.double"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.double"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-value-string-quoted-single"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.double"
+                        }
+                    }
+                }
+            ]
+        },
+        "class-string-quoted-single": {
+            "begin": "(')",
+            "end": "(')",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.single"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.single"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-value-string-quoted-double"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.single"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-template-expression": {
+            "begin": "(\\${)",
+            "end": "(})",
+            "contentName": "meta.embedded.block.master-css.class",
+            "captures": {
+                "1": {
+                    "name": "punctuation.definition.template-expression.begin"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.definition.template-expression.end"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-template-expression-round"
+                },
+                {
+                    "include": "#master-css-template-expression-string-quoted-double"
+                },
+                {
+                    "include": "#master-css-template-expression-string-quoted-single"
+                },
+                {
+                    "include": "#master-css-template-expression-string-template"
+                },
+                {
+                    "include": "source.ts"
+                }
+            ]
+        },
+        "master-css-template-expression-round": {
+            "begin": "(\\()",
+            "end": "(\\))",
+            "captures": {
+                "1": {
+                    "name": "meta.brace.round"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "meta.brace.round"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-template-expression-string-quoted-double"
+                },
+                {
+                    "include": "#master-css-template-expression-string-quoted-single"
+                },
+                {
+                    "include": "#master-css-template-expression-string-template"
+                },
+                {
+                    "include": "source.ts"
+                }
+            ]
+        },
+        "master-css-template-expression-string-quoted-double": {
+            "begin": "(\")",
+            "end": "(\")",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.double"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.double"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-value-string-quoted-single"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.double"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-template-expression-string-quoted-single": {
+            "begin": "(')",
+            "end": "(')",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.single"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.single"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-value-string-quoted-double"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.single"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-template-expression-string-template": {
+            "begin": "(`)",
+            "end": "(`)",
+            "captures": {
+                "1": {
+                    "name": "string.template"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.template"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-value-string-quoted-double"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.template"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-value-string-quoted-double": {
+            "begin": "(\")",
+            "end": "(\")",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.double.html"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.double.html"
+                }
+            },
+            "patterns": [
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.double"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-value-string-quoted-single": {
+            "begin": "(')",
+            "end": "(')",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.single.html"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.single.html"
+                }
+            },
+            "patterns": [
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.single"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,467 @@
+{
+    "name": "master-css",
+    "scopeName": "source.master-css.injection-react",
+    "injectionSelector": "L:meta.tag",
+    "patterns": [
+        {
+            "include": "#highlight-class-quoted-double"
+        },
+        {
+            "include": "#highlight-class-quoted-single"
+        },
+        {
+            "include": "#highlight-react-class"
+        }
+    ],
+    "repository": {
+        "highlight-react-class": {
+            "begin": "(?:\\s*)?(className|class)(\\=)(\\s?\\{)",
+            "end": "(\\})",
+            "captures": {
+                "1": {
+                    "name": "entity.other.attribute-name"
+                },
+                "2": {
+                    "name": "keyword.operator.assignment"
+                },
+                "3": {
+                    "name": "punctuation.section.embedded.begin"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.section.embedded.end"
+                }
+            },
+            "contentName": "meta.embedded.block.master-css.class",
+            "patterns": [
+                {
+                    "include": "#react-class-function"
+                },
+                {
+                    "include": "#react-class-template-string"
+                },
+                {
+                    "include": "#react-class-quoted-double-string"
+                },
+                {
+                    "include": "#react-class-quoted-single-string"
+                },
+                {
+                    "include": "source.tsx"
+                }
+            ]
+        },
+        "highlight-class-quoted-double": {
+            "begin": "(?:\\s*)?(className|class)(\\=)(\")",
+            "end": "(\")",
+            "captures": {
+                "1": {
+                    "name": "entity.other.attribute-name"
+                },
+                "2": {
+                    "name": "keyword.operator.assignment"
+                },
+                "3": {
+                    "name": "string.quoted.double.html"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.double.html"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-value-string-quoted-single"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.double"
+                        }
+                    }
+                }
+            ]
+        },
+        "highlight-class-quoted-single": {
+            "begin": "(?:\\s*)?(className|class)(\\=)(')",
+            "end": "(')",
+            "captures": {
+                "1": {
+                    "name": "entity.other.attribute-name"
+                },
+                "2": {
+                    "name": "keyword.operator.assignment"
+                },
+                "3": {
+                    "name": "string.quoted.double.html"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.double.html"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-value-string-quoted-double"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.double"
+                        }
+                    }
+                }
+            ]
+        },
+        "react-class-function": {
+            "begin": "(\\w*)(\\()",
+            "end": "(\\))",
+            "captures": {
+                "1": {
+                    "name": "entity.other.attribute-name"
+                }
+            },
+            "endCaptures": {},
+            "patterns": [
+                {
+                    "include": "#react-class-function-quoted"
+                },
+                {
+                    "include": "#react-class-template-string"
+                },
+                {
+                    "include": "#react-class-quoted-double-string"
+                },
+                {
+                    "include": "#react-class-quoted-single-string"
+                }
+            ]
+        },
+        "react-class-function-quoted": {
+            "begin": "({)",
+            "end": "(})",
+            "patterns": [
+                {
+                    "include": "#react-class-template-string"
+                },
+                {
+                    "include": "#react-class-quoted-double-string"
+                },
+                {
+                    "include": "#react-class-quoted-single-string"
+                },
+                {
+                    "include": "source.tsx"
+                }
+            ]
+        },
+        "react-class-template-string": {
+            "begin": "(\\w*)(`)",
+            "end": "(`)",
+            "captures": {
+                "1": {
+                    "name": "punctuation.definition.string.template.begin"
+                },
+                "2": {
+                    "name": "string.template"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.template"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-template-expression"
+                },
+                {
+                    "include": "#master-css-value-string-quoted-double"
+                },
+                {
+                    "include": "#master-css-value-string-quoted-single"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.template"
+                        }
+                    }
+                }
+            ]
+        },
+        "react-class-quoted-double-string": {
+            "begin": "(\")",
+            "end": "(\")",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.double"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.double"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-value-string-quoted-single"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.double"
+                        }
+                    }
+                }
+            ]
+        },
+        "react-class-quoted-single-string": {
+            "begin": "(')",
+            "end": "(')",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.single"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.single"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-value-string-quoted-double"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.single"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-template-expression": {
+            "begin": "(\\${)",
+            "end": "(})",
+            "contentName": "meta.embedded.block.master-css.class",
+            "captures": {
+                "1": {
+                    "name": "punctuation.definition.template-expression.begin"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.definition.template-expression.end"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-template-expression-round"
+                },
+                {
+                    "include": "#master-css-template-expression-string-quoted-double"
+                },
+                {
+                    "include": "#master-css-template-expression-string-quoted-single"
+                },
+                {
+                    "include": "#master-css-template-expression-string-template"
+                },
+                {
+                    "include": "source.tsx"
+                }
+            ]
+        },
+        "master-css-template-expression-round": {
+            "begin": "(\\()",
+            "end": "(\\))",
+            "captures": {
+                "1": {
+                    "name": "meta.brace.round"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "meta.brace.round"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-template-expression-string-quoted-double"
+                },
+                {
+                    "include": "#master-css-template-expression-string-quoted-single"
+                },
+                {
+                    "include": "#master-css-template-expression-string-template"
+                },
+                {
+                    "include": "source.tsx"
+                }
+            ]
+        },
+        "master-css-template-expression-string-quoted-double": {
+            "begin": "(\")",
+            "end": "(\")",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.double"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.double"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-value-string-quoted-single"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.double"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-template-expression-string-quoted-single": {
+            "begin": "(')",
+            "end": "(')",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.single"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.single"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-value-string-quoted-double"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.single"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-template-expression-string-template": {
+            "begin": "(`)",
+            "end": "(`)",
+            "captures": {
+                "1": {
+                    "name": "string.template"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.template"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-value-string-quoted-double"
+                },
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.template"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-value-string-quoted-double": {
+            "begin": "(\")",
+            "end": "(\")",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.double.html"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.double.html"
+                }
+            },
+            "patterns": [
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.double"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-value-string-quoted-single": {
+            "begin": "(')",
+            "end": "(')",
+            "captures": {
+                "1": {
+                    "name": "string.quoted.single.html"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.single.html"
+                }
+            },
+            "patterns": [
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.single"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
