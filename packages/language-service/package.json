@@ -157,7 +157,7 @@
         }
     },
     "scripts": {
-        "publish": "cd ./packages/language-service && vsce publish",
+        "publish": "vsce publish",
         "build": "tsc -b"
     },
     "devDependencies": {
