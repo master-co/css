@@ -172,8 +172,7 @@
         }
     },
     "scripts": {
-        "deploy": "mv ../../package.json ../../_package.json && npm i vsce -D && vsce publish && mv ../../_package.json ../../package.json",
-        "publish": "vsce publish"
+        "deploy": "mv ../../package.json ../../_package.json && npm i vsce -D && vsce publish && mv ../../_package.json ../../package.json"
     },
     "devDependencies": {
         "vsce": "^2.14.0"
