@@ -5,7 +5,6 @@
         "check": "turbo run test lint --parallel --filter=./packages/*",
         "test": "turbo run test --parallel --filter=./packages/*",
         "lint": "turbo run lint --parallel --filter=./packages/*",
-        "publish": "turbo run publish --parallel --filter=./packages/*",
         "type-check": "turbo run type-check --parallel --filter=./packages/*",
         "dev": "turbo run dev --filter=./packages/*",
         "clean": "rm -rf ./packages/**/*dist"
