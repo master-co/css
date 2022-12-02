@@ -8,7 +8,6 @@ import type { Plugin } from 'vite'
 export default async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Plugin> {
     const compiler = new MasterCSSCompiler(options)
     await compiler.initializing
-    const outputPath = path.join(compiler.options.output.dir || '', compiler.options.output.name)
 
     let server
     let outputFilePath: string
@@ -56,11 +55,11 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
             server = _server
         },
         buildStart() {
-            outputFilePath = path.resolve(server?.config.cacheDir ?? process.cwd(), outputPath)
+            outputFilePath = path.resolve(server?.config.cacheDir ?? process.cwd(), compiler.outputPath)
             if (server) {
                 writeFile(outputFilePath, '')
 
-                linkHref = (server.config.cacheDir.slice(process.cwd().length) + '/' + outputPath).replace(/\\/g, '/')
+                linkHref = (server.config.cacheDir.slice(process.cwd().length) + '/' + compiler.outputPath).replace(/\\/g, '/')
             }
         },
         resolveId(source) {
@@ -82,7 +81,7 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
         generateBundle() {
             const referenceId = this.emitFile({
                 type: 'asset',
-                name: outputPath,
+                name: compiler.outputPath,
                 source: compiler.css.text
             })
             linkHref = '/' + this.getFileName(referenceId)

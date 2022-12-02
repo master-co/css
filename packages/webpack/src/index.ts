@@ -12,9 +12,7 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
         const { Template, RuntimeGlobals, RuntimeModule } = webpack
         const { RawSource } = webpack.sources
         const { Compilation } = webpack
-        const { options } = this
-        const outputPath = path.join(options.output.dir || '', options.output.name)
-        const linkHref = outputPath.replace(/\\/g, '/')
+        const linkHref = this.outputPath.replace(/\\/g, '/')
 
         compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
 
@@ -90,10 +88,10 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
                     const cssText = this.css.text
                     if (cssText !== originalCssText) {
                         const newSource = new RawSource(cssText)
-                        if (compilation.getAsset(outputPath)) {
-                            compilation.updateAsset(outputPath, newSource)
+                        if (compilation.getAsset(this.outputPath)) {
+                            compilation.updateAsset(this.outputPath, newSource)
                         } else {
-                            compilation.emitAsset(outputPath, newSource)
+                            compilation.emitAsset(this.outputPath, newSource)
                         }
                     }
                 }
@@ -104,7 +102,7 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
                 stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
             }, () => {
                 compilation.chunks.forEach((chunk) => {
-                    chunk.files.add(outputPath)
+                    chunk.files.add(this.outputPath)
                 })
             })
         })

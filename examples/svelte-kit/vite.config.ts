@@ -8,7 +8,7 @@ const config: UserConfig = {
         MasterCSSVitePlugin({
             output: {
                 name: 'master.css',
-                dir: path.join(process.cwd(), 'src/routes')
+                dir: 'src/routes'
             }
         }),
         sveltekit()

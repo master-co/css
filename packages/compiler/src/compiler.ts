@@ -12,11 +12,13 @@ export default class MasterCSSCompiler {
         public options?: CompilerOptions
     ) {
         this.options = extend(defaultOptions, options)
-        this.userConfigPath = path.resolve(process.cwd(), this.options.config || 'master.css.js')
+        this.userConfigPath = path.join(process.cwd(), this.options.config || 'master.css.js')
+        this.outputPath = path.join(process.cwd(), this.options.output.dir, this.options.output.name)
         this.initializing = this.reload()
     }
 
     userConfigPath: string
+    outputPath: string
     initializing: Promise<any>
     css: MasterCSS
     extractions = new Set<string>()
@@ -55,7 +57,6 @@ export default class MasterCSSCompiler {
                 eachExtractions.push(eachNewExtraction)
             }
         }
-        console.log(eachExtractions)
         return eachExtractions
     }
 
@@ -71,7 +72,7 @@ export default class MasterCSSCompiler {
         const validClasses = this.css.rules.map((rule) => rule.className)
 
         /* 印出 Master CSS 編譯時間 */
-        console.log(`[Master CSS] process ${chalk.green(extractions.length)} extractions in ${chalk.green(spent)} µs [${chalk.green(this.css.rules.length)} rules in ${chalk.green(path.join(this.options.output.dir, this.options.output.name))}]`)
+        console.log(`[Master CSS] process ${chalk.green(extractions.length)} extractions in ${chalk.green(spent)} µs [${chalk.green(this.css.rules.length)} rules in ${chalk.green(this.outputPath)}]`)
 
         this.log('extractions', `  → ${chalk.green(extractions.length)} extractions: ${chalk.blue(extractions.join(' '))}`)
         this.log('validClasses', `  → ${chalk.green(validClasses.length)} total valid classes: ${chalk.blue(validClasses.join(' '))}`)
