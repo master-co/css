@@ -12,7 +12,7 @@
     },
     "dependencies": {
         "vue": "^3.2.37",
-        "@master/css.vite": "*"
+        "@master/css.vite": ""
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^3.1.0",

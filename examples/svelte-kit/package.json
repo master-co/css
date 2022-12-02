@@ -14,8 +14,8 @@
         "unlink": "npm rm ../../"
     },
     "devDependencies": {
-        "@master/css.vite": "*",
         "@fontsource/fira-mono": "^4.5.0",
+        "@master/css.vite": "",
         "@neoconfetti/svelte": "^1.0.0",
         "@sveltejs/adapter-auto": "next",
         "@sveltejs/kit": "next",

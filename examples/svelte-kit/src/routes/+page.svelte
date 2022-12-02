@@ -11,7 +11,7 @@
 
 <section>
 	<h1>
-		<span class="welcome">
+		<span class="welcome bg:red">
 			<picture>
 				<source srcset={welcome} type="image/webp" />
 				<img src={welcome_fallback} alt="Welcome" />
@@ -19,6 +19,8 @@
 		</span>
 
 		to your new<br />SvelteKit app
+
+        <button class="btn">Button</button>
 	</h1>
 
 	<h2>
