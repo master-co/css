@@ -1,10 +1,11 @@
 import path from 'path'
-import chalk from 'chalk'
+import log from 'aronlog'
 import { default as defaultOptions, CompilerOptions, CompilerSource } from './options'
 import MasterCSS, { extend } from '@master/css'
 import { performance } from 'perf_hooks'
 import type { Config } from '@master/css'
 import { pathToFileURL } from 'url'
+import fs from 'fs'
 
 export default class MasterCSSCompiler {
 
@@ -29,10 +30,17 @@ export default class MasterCSSCompiler {
             if (require.cache?.[this.userConfigPath]) {
                 delete require.cache[this.userConfigPath]
             }
-            userConfig = (await import(pathToFileURL(this.userConfigPath).href)).default
+            if (fs.existsSync(this.userConfigPath)) {
+                const userConfigPath = pathToFileURL(this.userConfigPath).href
+                const userConfigModule = await import(userConfigPath)
+                userConfig = userConfigModule.default || userConfigModule
+                log.info`${'master.css.js'} imported from ${userConfigPath}`
+            } else {
+                log.info`No master.css.js in the project root`
+            }
             // eslint-disable-next-line no-empty
         } catch (err) {
-            console.error(err)
+            log.error(err)
         }
         this.css = new MasterCSS({ config: userConfig })
         this.extractions.clear()
@@ -72,10 +80,10 @@ export default class MasterCSSCompiler {
         const validClasses = this.css.rules.map((rule) => rule.className)
 
         /* 印出 Master CSS 編譯時間 */
-        console.log(`[Master CSS] process ${chalk.green(extractions.length)} extractions in ${chalk.green(spent)} µs [${chalk.green(this.css.rules.length)} rules in ${chalk.green(this.outputPath)}]`)
-
-        this.log('extractions', `  → ${chalk.green(extractions.length)} extractions: ${chalk.blue(extractions.join(' '))}`)
-        this.log('validClasses', `  → ${chalk.green(validClasses.length)} total valid classes: ${chalk.blue(validClasses.join(' '))}`)
+        log.info`${'Master'} process ${extractions.length} extractions in ${spent} µs ${this.css.rules.length} rules`
+        log.info`${'Master'} extractions: ${extractions.join(' ')}`
+        log.info`${'Master'} valid classes ${validClasses.length}: ${validClasses.join(' ')}`
+        log.info`${'Master'} ${this.outputPath}`
     }
 
     log(name, content) {

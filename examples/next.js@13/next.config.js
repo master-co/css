@@ -12,7 +12,7 @@ const nextConfig = {
                     dir: 'static/css'
                 },
                 debug: ['accepts']
-            }),
+            })
         )
         return config
     }
