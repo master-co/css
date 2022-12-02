@@ -157,7 +157,7 @@
         }
     },
     "scripts": {
-        "publish": "rm ../../package.json && npm i vsce && vsce publish",
+        "deploy": "mv ../../package.json ../../_package.json && npm i vsce -D && vsce publish && mv ../../_package.json ../../package.json",
         "build": "tsc -b"
     },
     "devDependencies": {
