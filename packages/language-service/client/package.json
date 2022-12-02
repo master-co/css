@@ -1,5 +1,8 @@
 {
     "name": "@master/css-language-client",
+    "scripts": {
+        "build": "aron pack"
+    },
     "description": "VSCode part of a language server",
     "author": "Aoyue Design LLC.",
     "license": "MIT",
@@ -13,5 +16,20 @@
     "devDependencies": {
         "@types/vscode": "^1.63.0",
         "@vscode/test-electron": "^2.1.2"
-    }
+    },
+    "main": "./dist/index.cjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./dist/index.cjs",
+            "import": "./dist/index.mjs",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ]
 }
