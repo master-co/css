@@ -7,7 +7,7 @@
         "lint": "eslint src"
     },
     "license": "MIT",
-    "description": "Compile Master CSS ahead of time with zero-configuration integration with build tools",
+    "description": "A webpack plugin for integrating Master CSS ahead-of-time compilation",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",

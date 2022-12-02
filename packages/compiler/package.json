@@ -6,7 +6,7 @@
         "lint": "eslint ./src"
     },
     "license": "MIT",
-    "description": "Compile Master CSS ahead of time with zero-configuration integration with build tools",
+    "description": "The ahead-of-time compiler of Master CSS",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",

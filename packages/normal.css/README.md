@@ -1,39 +1,71 @@
-<br><br>
+<br>
 <div align="center">
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/master-co/package/document/images/logo-and-text.svg" alt="logo" width="142">
+    <a href="https://css.master.co">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/33840671/201701649-3bb7d698-abec-4d5f-ac30-ccc4d7bafcd4.svg">
+            <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg">
+            <img alt="Master CSS" src="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg" width="100%">
+        </picture>
+    </a>
 </p>
-<p align="center">
-    <b><!-- name -->@master/normal.css<!----></b>
-</p>
-<p align="center"><!-- package.description -->Normalize browser's styles. ~500B<!----></p>
-<p align="center">
-<!-- badges.map((badge) => `\n[![${badge.alt}](${badge.src})](${badge.href})`).join('&nbsp;')-->
+<p align="center">Normalize the browser's styles ~500B</p>
 
-[![MIT License](https://flat.badgen.net/github/license/master-co/normal.css?color=yellow)](https://github.com/master-co/css/blob/main/LICENSE)
-[![Latest Release](https://flat.badgen.net/npm/v/@master/normal.css?icon=npm&label&color=yellow)](https://www.npmjs.com/package/@master/normal.css)
-[![Bundle Size](https://flat.badgen.net/bundlephobia/minzip/@master/normal.css?icon=packagephobia&label&color=yellow)](https://bundlephobia.com/package/@master/normal.css 'gzip bundle size (including dependencies)')
-[![Package Size](https://flat.badgen.net/badgesize/brotli/https://cdn.jsdelivr.net/npm/@master/normal.css?icon=jsdelivr&label&color=yellow)](https://unpkg.com/@master/normal.css 'brotli package size (without dependencies)')
-[![Github](https://flat.badgen.net/badge/icon/master-co%2Fnormal.css?icon=github&label&color=yellow)](https://github.com/master-co/normal.css)
-[![CI](https://flat.badgen.net/github/status/master-co/normal.css/main/ci/circleci?icon=circleci)](https://circleci.com/gh/master-co/workflows/normal.css/tree/main)
-<!-- -->
+<p align="center">
+    <a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=212022&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=f6f7f8&style=for-the-badge">
+            <img alt="NPM Version" src="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=f6f7f8&style=for-the-badge">
+        </picture>
+    </a>
+    <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=212022&label=&style=for-the-badge&logo=github&logoColor=fff">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github&logoColor=%23000">
+            <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
+        </picture>
+    </a>
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css?color=212022&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+        </picture>
+    </a>
+    <a aria-label="JSDelivr" href="https://www.jsdelivr.com/package/npm/@master/css">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=212022&label=%20&logo=jsdelivr&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
+            <img alt="JSDelivr hits (npm scoped)" src="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
+        </picture>
+    </a>
+    <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/discord/917780624314613760?color=212022&label=%20&logo=discord&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/discord/917780624314613760?color=f6f7f8&label=%20&logo=discord&style=for-the-badge">
+            <img alt="Discord online" src="https://img.shields.io/discord/917780624314613760?color=f6f7f8&label=%20&logo=discord&style=for-the-badge">
+        </picture>
+    </a>
+    <a aria-label="Follow @mastercorg" href="https://twitter.com/mastercorg">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/static/v1?label=%20&message=twitter&color=212022&logo=twitter&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/static/v1?label=%20&message=twitter&color=f6f7f8&logo=twitter&style=for-the-badge">
+            <img alt="Follow @mastercorg" src="https://img.shields.io/static/v1?label=%20&message=twitter&color=f6f7f8&logo=twitter&style=for-the-badge">
+        </picture>
+    </a>
+    <a aria-label="Github Actions" href="https://github.com/1aron/repo/actions/workflows/release.yml">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/workflow/status/master-co/css/Release?label=%20&message=twitter&color=212022&logo=githubactions&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/workflow/status/master-co/css/Release?label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+            <img alt="Github release actions" src="https://img.shields.io/github/workflow/status/master-co/css/Release?label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+        </picture>
+    </a>
 </p>
+
 </div>
 
-###### CONTENTS
-
-- [Documentation](#documentation)
-- [Feature](#feature)
-- [Install](#install)
-- [Import](#import)
-- [CDN](#cdn)
-- [Related](#related)
-
-# Documentation
-[Preset Global Styles - Master CSS](https://docs.master.co/css/preset-global-styles)
-
-# Feature
 - Geometric precision rendering for prettier text
 - Antialiased font smoothing looks great
 - Set most tags to `margin: 0` and `padding: 0`
@@ -52,27 +84,30 @@
 
 [View the source code](https://github.com/master-co/normal.css/blob/main/src/index.scss)
 
-# Install
+## Documentation
+For the full documentation, check out the [Preset Global Styles - Master CSS](https://docs.master.co/css/preset-global-styles)
+
+## Installation
 ```sh
 npm install @master/normal.css
 ```
-
-# Import
+Import into your global CSS entry file like `styles.css`:
 ```css
 @import '@master/normal.css';
 ```
 
-# CDN
+## Using CDNs
 
-[jsdelivr](https://www.jsdelivr.com/package/npm/@master/normal.css)
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@master/normal.css">
-```
-[unpkg](https://unpkg.com/@master/normal.css)
-```html
-<link rel="stylesheet" href="https://unpkg.com/@master/normal.css">
+<link rel="stylesheet" href="https://cdn.master.co/normal.css">
 ```
 
-# Related
-- [@master/css](https://github.com/master-co/css) - A Virtual CSS language with enhanced syntax. ~13KB
-- [@master/keyframes.css](https://github.com/master-co/keyframes.css) - Simple and useful CSS keyframes. ~0.4KB
+<br>
+
+<a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=212022&style=for-the-badge">
+        <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=f6f7f8&style=for-the-badge">
+        <img alt="NPM Version" src="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=f6f7f8&style=for-the-badge">
+    </picture>
+</a>

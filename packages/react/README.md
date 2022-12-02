@@ -1,46 +1,79 @@
-<br><br>
+<br>
 <div align="center">
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/master-co/package/document/images/logo-and-text.svg" alt="logo" width="142">
+    <a href="https://css.master.co">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/33840671/201701649-3bb7d698-abec-4d5f-ac30-ccc4d7bafcd4.svg">
+            <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg">
+            <img alt="Master CSS" src="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg" width="100%">
+        </picture>
+    </a>
 </p>
-<p align="center">
-    <b><!-- name -->CSS React<!----></b>
-</p>
-<p align="center"><!-- package.description -->React hooks for Master CSS<!----></p>
+<p align="center">React hooks and components for Master CSS</p>
 
-[![MIT License](https://flat.badgen.net/github/license/master-co/css.react?color=yellow)](https://github.com/master-co/css.react/blob/main/LICENSE)
-[![Latest Release](https://flat.badgen.net/npm/v/@master/css.react?icon=npm&label&color=yellow)](https://www.npmjs.com/package/@master/css.react)
-[![Bundle Size](https://flat.badgen.net/bundlephobia/minzip/@master/css.react?icon=packagephobia&label&color=yellow)](https://bundlephobia.com/package/@master/css.react 'gzip bundle size (including dependencies)')
-[![Package Size](https://flat.badgen.net/badgesize/brotli/https://cdn.jsdelivr.net/npm/@master/css.react?icon=jsdelivr&label&color=yellow)](https://unpkg.com/@master/css.react 'brotli package size (without dependencies)')
-[![Documentation](https://flat.badgen.net/badge/icon/Documentation?icon=awesome&label&color=yellow)](https://css.master.co)
-[![Github](https://flat.badgen.net/badge/icon/master-co%2Fcss.react?icon=github&label&color=yellow)](https://github.com/master-co/css.react)
-[![Discord](https://flat.badgen.net/badge/icon/discord?icon=discord&label&color=yellow)](https://discord.gg/sZNKpAAAw6)
-[![CI](https://flat.badgen.net/github/status/master-co/css.react/main/ci/circleci?icon=circleci)](https://circleci.com/gh/master-co/workflows/css/tree/main)
+<p align="center">
+    <a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=212022&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=f6f7f8&style=for-the-badge">
+            <img alt="NPM Version" src="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=f6f7f8&style=for-the-badge">
+        </picture>
+    </a>
+    <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=212022&label=&style=for-the-badge&logo=github&logoColor=fff">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github&logoColor=%23000">
+            <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
+        </picture>
+    </a>
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css?color=212022&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+        </picture>
+    </a>
+    <a aria-label="JSDelivr" href="https://www.jsdelivr.com/package/npm/@master/css">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=212022&label=%20&logo=jsdelivr&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
+            <img alt="JSDelivr hits (npm scoped)" src="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
+        </picture>
+    </a>
+    <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/discord/917780624314613760?color=212022&label=%20&logo=discord&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/discord/917780624314613760?color=f6f7f8&label=%20&logo=discord&style=for-the-badge">
+            <img alt="Discord online" src="https://img.shields.io/discord/917780624314613760?color=f6f7f8&label=%20&logo=discord&style=for-the-badge">
+        </picture>
+    </a>
+    <a aria-label="Follow @mastercorg" href="https://twitter.com/mastercorg">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/static/v1?label=%20&message=twitter&color=212022&logo=twitter&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/static/v1?label=%20&message=twitter&color=f6f7f8&logo=twitter&style=for-the-badge">
+            <img alt="Follow @mastercorg" src="https://img.shields.io/static/v1?label=%20&message=twitter&color=f6f7f8&logo=twitter&style=for-the-badge">
+        </picture>
+    </a>
+    <a aria-label="Github Actions" href="https://github.com/1aron/repo/actions/workflows/release.yml">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/workflow/status/master-co/css/Release?label=%20&message=twitter&color=212022&logo=githubactions&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/workflow/status/master-co/css/Release?label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+            <img alt="Github release actions" src="https://img.shields.io/github/workflow/status/master-co/css/Release?label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+        </picture>
+    </a>
+</p>
 
 </div>
 
-##### On this page
-- [Installation](#installation)
-- [Preparation](#preparation)
-- [Hooks](#hooks)
-  - [`useScheme`](#usescheme)
-  - [`useEffected`](#useeffected)
-  - [`useBreakpoints` 🚧](#usebreakpoints-)
-- [Related](#related)
-
----
-
-# Installation
+## Installation
 
 ```shell
 npm install @master/css.react
 ```
-`@master/css` requires `>=2`
+Required `@master/css^2`
 
----
-
-# Preparation
+## Preparation
 Let's say `./src/master.js` is the file where you manage the Master CSS.
 ```ts
 import MasterCSS from '@master/css'
@@ -48,11 +81,9 @@ import config from './master.css'
 export const css = new MasterCSS({ config })
 ```
 
----
+## Hooks
 
-# Hooks
-
-## `useScheme`
+### `useScheme`
 Hook `css.scheme` and `css.theme` changes.
 ```tsx
 import { useScheme, useRendered } from '@master/css.react'
@@ -79,7 +110,7 @@ export default function ThemeButton() {
 ```
 Use `setScheme` to change the theme scheme for Master CSS.
 
-## `useEffected`
+### `useEffected`
 Hook side effects for binding `document`, `window`, `localStorage`, etc.
 ```tsx
 import { useScheme, useEffected } from '@master/css.react'
@@ -93,7 +124,7 @@ export default function ThemeButton({ onChange, className }: any) {
 ```
 Often used to prevent server-side use of the browser API result in a hydration error.
 
-## `useBreakpoints` 🚧
+### `useBreakpoints` 🚧
 ```tsx
 import { useBreakpoints } from '@master/css.react'
 import { css } from './master'
@@ -112,8 +143,12 @@ export default function Home() {
 }
 ```
 
----
+<br>
 
-# Related
-- [@master/css](https://github.com/master-co/css) - A Virtual CSS language with enhanced syntax. ( ~13KB )
-- [@master/style-element.react](https://github.com/master-co/style-element.react) - Quickly create styled React elements with conditional class names. ~800B
+<a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=212022&style=for-the-badge">
+        <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=f6f7f8&style=for-the-badge">
+        <img alt="NPM Version" src="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=f6f7f8&style=for-the-badge">
+    </picture>
+</a>
