@@ -1,13 +1,13 @@
 {
     "name": "master-css-language-service",
-    "description": "Master CSS language service and code highlight for Visual Studio Code",
+    "description": "Master CSS Language Service for Visual Studio Code",
     "displayName": "Master CSS Language Service",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",
     "license": "MIT",
     "publisher": "masterco",
-    "icon": "images/icon.png",
+    "icon": "icon.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
