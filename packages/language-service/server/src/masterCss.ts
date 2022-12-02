@@ -1,12 +1,12 @@
 import {
     TextDocuments,
     Position,
-} from 'vscode-languageserver/node';
-import { Range, TextDocument } from 'vscode-languageserver-textdocument';
+} from 'vscode-languageserver/node'
+import { Range, TextDocument } from 'vscode-languageserver-textdocument'
 import { instancePattern } from './utils/regex'
 
 export function PositionCheck(documentUri: string, position: Position, documents: TextDocuments<TextDocument>, RegExpList: string[]) {
-    let result: {
+    const result: {
         IsMatch: boolean,
         PositionIndex: number,
         classStartIndex: number,
@@ -19,34 +19,34 @@ export function PositionCheck(documentUri: string, position: Position, documents
         PositionIndex: 0,
         classStartIndex: 0,
         classEndIndex: 0,
-        classString: "",
+        classString: '',
         instance: { range: { start: Position.create(0, 0), end: Position.create(0, 0) }, instanceString: '' },
         instanceList: [],
-    };
+    }
 
-    let document = documents.get(documentUri);
-    let text = document?.getText() ?? '';
-    let positionIndex = document?.offsetAt(position) ?? 0;
+    const document = documents.get(documentUri)
+    let text = document?.getText() ?? ''
+    const positionIndex = document?.offsetAt(position) ?? 0
 
-    const startIndex = document?.offsetAt({ line: position.line - 100, character: 0}) ?? 0;
-    const endIndex = document?.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined;
-    text = text.substring(startIndex, endIndex);
+    const startIndex = document?.offsetAt({ line: position.line - 100, character: 0}) ?? 0
+    const endIndex = document?.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
+    text = text.substring(startIndex, endIndex)
 
-    let instanceMatch: RegExpExecArray | null;
-    let classMatch: RegExpExecArray | null;
+    let instanceMatch: RegExpExecArray | null
+    let classMatch: RegExpExecArray | null
 
-    result.PositionIndex = positionIndex;
+    result.PositionIndex = positionIndex
 
     RegExpList.forEach(x => {
-        let classPattern = new RegExp(x, "g")
+        const classPattern = new RegExp(x, 'g')
         
         while ((classMatch = classPattern.exec(text)) !== null) {
             if ((classMatch.index <= positionIndex && classMatch.index + classMatch[0].length - 1 >= positionIndex) == true) {
-                result.IsMatch = true;
-                result.PositionIndex = positionIndex;
-                result.classStartIndex = classMatch.index;
-                result.classEndIndex = classMatch.index + classMatch[0].length - 1;
-                result.classString = classMatch[0];
+                result.IsMatch = true
+                result.PositionIndex = positionIndex
+                result.classStartIndex = classMatch.index
+                result.classEndIndex = classMatch.index + classMatch[0].length - 1
+                result.classString = classMatch[0]
 
                 while ((instanceMatch = instancePattern.exec(classMatch[2])) !== null) {
                     result.instanceList.push(
@@ -57,7 +57,7 @@ export function PositionCheck(documentUri: string, position: Position, documents
                             },
                             instanceString: instanceMatch[0]
                         }
-                    );
+                    )
                     if ((classMatch.index + classMatch[1].length + instanceMatch.index <= positionIndex && classMatch.index + classMatch[1].length + instanceMatch.index + instanceMatch[0].length >= positionIndex) == true) {
                         result.instance = {
                             range: {
@@ -69,12 +69,12 @@ export function PositionCheck(documentUri: string, position: Position, documents
                     }
                 }
 
-                return result;
+                return result
             }
             else if (classMatch.index > positionIndex) {
-                break;
+                break
             }
         }
     })
-    return result;
+    return result
 }

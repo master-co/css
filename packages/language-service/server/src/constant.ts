@@ -1,4 +1,4 @@
-import { CompletionItem, CompletionItemKind } from 'vscode-languageserver';
+import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 
 interface MasterCssKey {
     key: string[];
@@ -21,23 +21,23 @@ export const masterCssSelectors = [
     { label: 'not()', kind: CompletionItemKind.Function },
     'right',
     { label: 'where()', kind: CompletionItemKind.Function }
-];
+]
 
 export const masterCssElements = ['after', 'before', 'backdrop', 'cue', 'first-letter', 'first-line', 'file-selector-button', 'marker',
     { label: 'part()', kind: CompletionItemKind.Function }, 'placeholder'
     , 'selection',
     { label: 'slotted()', kind: CompletionItemKind.Function }, 'resizer',
     'search-cancel-button', 'search-results-button'
-];
+]
 
 export const masterCssMedia = [
     'all', 'print', 'screen', 'portrait', 'landscape', 'motion', 'reduced-motion',
     { label: 'media()', kind: CompletionItemKind.Function }
-];
+]
 
 export const masterCssOtherKeys = [
     'ext', 'gap', 'ont', 'ovf', 'quotes', 'bottom', 'center', 'left', 'middle', 'top', 'right', 'px', 'py', 'pt', 'pb', 'pl', 'pr', 'mx', 'my', 'mt', 'mb', 'ml', 'mr'
-];
+]
 
 export const masterCssCommonValues = [
     { label: 'var()', kind: CompletionItemKind.Function },
@@ -45,7 +45,7 @@ export const masterCssCommonValues = [
     'inherit',
     'initial',
     'unset'
-];
+]
 
 export const masterCssKeyValues: MasterCssKey[] = [
     {
@@ -340,24 +340,24 @@ export const masterCssKeyValues: MasterCssKey[] = [
         key: ['font-family', 'font', 'f'],
         colorful: false,
         values: [
-            "'CourierNew',Courier,monospace",
-            "'FranklinGothicMedium','ArialNarrow',Arial,sans-serif",
-            "'GillSans','GillSansMT',Calibri,'TrebuchetMS',sans-serif",
-            "'LucidaSans','LucidaSansRegular','LucidaGrande','LucidaSansUnicode',Geneva,Verdana,sans-serif",
-            "'SegoeUI',Tahoma,Geneva,Verdana,sans-serif",
-            "'TimesNewRoman',Times,serif",
-            "'TrebuchetMS','LucidaSansUnicode','LucidaGrande','LucidaSans',Arial,sans-serif",
-            "Arial,Helvetica,sans-serif",
-            "Cambria,Cochin,Georgia,Times,'TimesNewRoman',serif",
-            "Georgia,'TimesNewRoman',Times,serif",
-            "Impact,Haettenschweiler,'ArialNarrowBold',sans-serif",
-            "Verdana,Geneva,Tahoma,sans-serif",
+            '\'CourierNew\',Courier,monospace',
+            '\'FranklinGothicMedium\',\'ArialNarrow\',Arial,sans-serif',
+            '\'GillSans\',\'GillSansMT\',Calibri,\'TrebuchetMS\',sans-serif',
+            '\'LucidaSans\',\'LucidaSansRegular\',\'LucidaGrande\',\'LucidaSansUnicode\',Geneva,Verdana,sans-serif',
+            '\'SegoeUI\',Tahoma,Geneva,Verdana,sans-serif',
+            '\'TimesNewRoman\',Times,serif',
+            '\'TrebuchetMS\',\'LucidaSansUnicode\',\'LucidaGrande\',\'LucidaSans\',Arial,sans-serif',
+            'Arial,Helvetica,sans-serif',
+            'Cambria,Cochin,Georgia,Times,\'TimesNewRoman\',serif',
+            'Georgia,\'TimesNewRoman\',Times,serif',
+            'Impact,Haettenschweiler,\'ArialNarrowBold\',sans-serif',
+            'Verdana,Geneva,Tahoma,sans-serif',
             'cursive',
             'fantasy',
             'monospace',
             'sans-serif',
             'serif',
-            "-apple-system,BlinkMacSystemFont,'SegoeUI',Roboto,Oxygen,Ubuntu,Cantarell,'OpenSans','HelveticaNeue',sans-serif"
+            '-apple-system,BlinkMacSystemFont,\'SegoeUI\',Roboto,Oxygen,Ubuntu,Cantarell,\'OpenSans\',\'HelveticaNeue\',sans-serif'
         ]
     },
     {
@@ -1158,7 +1158,7 @@ export const masterCssKeyValues: MasterCssKey[] = [
         colorful: false,
         values: []
     }
-];
+]
 
 export const masterCssType = [
     {
@@ -1167,4 +1167,4 @@ export const masterCssType = [
             { label: 'rgb()', kind: CompletionItemKind.Function },
             { label: 'hsl()', kind: CompletionItemKind.Function }]
     }
-];
+]
