@@ -1,7 +1,8 @@
 {
     "name": "@master/css-language-server",
     "scripts": {
-        "build": "aron pack --platform=node"
+        "build": "aron pack --platform=node",
+        "dev": "npm run build -- --watch"
     },
     "description": "VSCode part of a language server",
     "author": "Aoyue Design LLC.",
