@@ -3,3 +3,4 @@
 **/*.yml
 .gitignore
 **/tsconfig.json
+**/*node_modules
