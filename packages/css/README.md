@@ -74,9 +74,9 @@ We've built various integrations and tools around Master CSS:
 - [Webpack Plugin](https://github.com/master-co/css/tree/beta/packages/webpack) - A webpack plugin for integrating Master CSS AOT compilation
 - [Compiler](https://github.com/master-co/css/tree/beta/packages/compiler) - The ahead-of-time compiler of Master CSS
 
-##### Libraries and Frameworks
+##### Frameworks
 - [React](https://github.com/master-co/css/tree/beta/packages/react) - React hooks for Master CSS
-- [Style Element for React](https://github.com/master-co/style-element.react) - Quickly create reusable React elements driven by class names
+- [Style Element](https://github.com/master-co/style-element) <sub><sup>React, Vue, ...</sup></sub> - Create reusable style elements using class names in one-linear.
 
 ##### Native Plugins
 
@@ -84,7 +84,7 @@ We've built various integrations and tools around Master CSS:
 - [Keyframes CSS](https://github.com/master-co/css/tree/beta/packages/keyframes.css) - Simple and useful CSS keyframes
 
 ##### Extensions
-- [Master CSS Language Service](https://github.com/master-co/css-language-service) <sub><sup>Visual Studio Code</sup></sub> - Includes code completion, syntax highlighting, CSS hover preview, and inline color decorators
+- [Language Service](https://github.com/master-co/css/tree/beta/packages/language-service) <sub><sup>Visual Studio Code</sup></sub> - Includes code completion, syntax highlighting, CSS hover preview, and inline color decorators
 
 ## Community
 The Master CSS community can be found here:
