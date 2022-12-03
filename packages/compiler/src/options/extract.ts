@@ -55,7 +55,7 @@ const checkToExclude = (content, css: MasterCSS) => {
         || (
             !content.match(/(?:\S*\{\S*\})|(?:^[\w-]+:[\w$#]+)|(?:^[@~][\w-]+$)/)
             && !Object.keys(css.config.semantics ?? semantics).includes(content)
-            && !Object.keys(css.config.classes).includes(content)
+            && !Object.keys(css.classes).includes(content)
         )
         || content.match(/\*\*/)
         || content.match(/:\[/)
