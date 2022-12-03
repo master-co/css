@@ -7,7 +7,8 @@
         "lint": "turbo run lint --parallel --filter=./packages/**/*",
         "type-check": "turbo run type-check --parallel --filter=./packages/**/*",
         "dev": "turbo run dev --filter=./packages/**/*",
-        "clean": "rm -rf ./packages/**/*dist"
+        "clean:dist": "rm -rf ./packages/**/*dist",
+        "clean:node": "rm -rf ./packages/**/*node_modules"
     },
     "repository": {
         "type": "git",
