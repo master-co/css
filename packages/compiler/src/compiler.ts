@@ -80,10 +80,11 @@ export default class MasterCSSCompiler {
         const validClasses = this.css.rules.map((rule) => rule.className)
 
         /* 印出 Master CSS 編譯時間 */
-        log.info`${'Master'} process ${extractions.length} extractions in ${spent} µs ${this.css.rules.length} rules`
-        log.info`${'Master'} extractions: ${extractions.join(' ')}`
-        log.info`${'Master'} valid classes ${validClasses.length}: ${validClasses.join(' ')}`
-        log.info`${'Master'} ${this.outputPath}`
+        console.log()
+        log.info`${'Master'} process ${`*${extractions.length}*`} extractions in ${spent}µs ${this.css.rules.length} rules`
+        log.info`${'Master'} extractions: ${`.${extractions.join(' ')}.`}`
+        log.info`${'Master'} ${`+${validClasses.length}+`} valid classes: ${`+${validClasses.join(' ')}+`}`
+        log.info`${'Master'} ${`.${this.outputPath}.`}`
     }
 
     log(name, content) {
