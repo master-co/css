@@ -87,7 +87,7 @@ export default class MasterCSSCompiler {
         log.info`${'Master'} ${`*${extractions.length}*`} extractions in ${spent}µs ${this.css.rules.length} rules`
         // log.info`${'Master'} extractions: ${`.${extractions.join(' ')}.`}`
         // log.info`${'Master'} ${`+${validClasses.length}+`} valid classes: ${`+${validClasses.join(' ')}+`}`
-        log.info`${'Master'} ${`.${this.outputHref}.`}`
+        // log.info`${'Master'} ${`.${this.outputHref}.`}`
     }
 
     log(name, content) {
