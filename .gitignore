@@ -52,6 +52,3 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-# Moon
-.moon/cache
-.moon/docker
