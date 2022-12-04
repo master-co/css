@@ -1,4 +1,3 @@
-import path from 'path'
 import MasterCSSCompiler from '@master/css.compiler'
 import type { Compiler } from 'webpack'
 
@@ -12,23 +11,17 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
         const { Template, RuntimeGlobals, RuntimeModule } = webpack
         const { RawSource } = webpack.sources
         const { Compilation } = webpack
-        const linkHref = this.outputPath.replace(/\\/g, '/')
+        const outputHref = this.outputHref
 
         compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
-
             const enabledChunks = new WeakSet()
-
             const handler = (chunk, set) => {
                 if (enabledChunks.has(chunk))
                     return
-
                 enabledChunks.add(chunk)
-
                 set.add(RuntimeGlobals.publicPath)
-
                 compilation.addRuntimeModule(chunk, new CssLoadingRuntimeModule(set))
             }
-
             compilation.hooks.runtimeRequirementInTree
                 .for(RuntimeGlobals.ensureChunkHandlers)
                 .tap(NAME, handler)
@@ -54,7 +47,7 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
 
                     return Template.asString([
                         Date.now().toString(),
-                        `const link = document.querySelector('[href*=\\'${linkHref}\\'][rel=stylesheet]')`,
+                        `const link = document.querySelector('[href*=\\'${outputHref}\\'][rel=stylesheet]')`,
                         'if (link) {',
                         Template.indent([
                             'link.href = link.href.replace(/ts=[0-9]+/, \'ts=\' + Date.now())'

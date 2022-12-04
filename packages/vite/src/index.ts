@@ -8,12 +8,10 @@ import type { Plugin } from 'vite'
 export default async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Plugin> {
     const compiler = new MasterCSSCompiler(options)
     await compiler.initializing
-
     let server
-    let outputFilePath: string
+    let devOutputFilePath: string
     let linkHref: string
     let rendered = false
-
     const extract = (name, content) => {
         const eachExtractions = compiler.extract({ name, content })
         if (eachExtractions.length) {
@@ -22,27 +20,23 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
             compiler.insert(eachExtractions)
             /* 根據 cssText 生成 `master.css` 並加入到 Webpack 的 assets 中 */
             const cssText = compiler.css.text
-            if (cssText !== originalCssText) {
-                if (server) {
-                    writeFile(outputFilePath, cssText)
-
-                    const notify = () => {
-                        server.ws.send({
-                            type: 'update',
-                            updates: [{
-                                path: linkHref,
-                                timestamp: Date.now()
-                            }]
-                        })
-                    }
-
-                    if (rendered) {
-                        notify()
-                    } else {
-                        setTimeout(notify, 500)
-
-                        rendered = true
-                    }
+            if (server && cssText !== originalCssText) {
+                writeFile(devOutputFilePath, cssText)
+                writeFile(compiler.outputPath, cssText)
+                const notify = () => {
+                    server.ws.send({
+                        type: 'update',
+                        updates: [{
+                            path: linkHref,
+                            timestamp: Date.now()
+                        }]
+                    })
+                }
+                if (rendered) {
+                    notify()
+                } else {
+                    setTimeout(notify, 500)
+                    rendered = true
                 }
             }
         }
@@ -55,11 +49,13 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
             server = _server
         },
         buildStart() {
-            outputFilePath = path.resolve(server?.config.cacheDir ?? process.cwd(), compiler.outputPath)
+            devOutputFilePath = path.resolve(server?.config.cacheDir ?? process.cwd(), compiler.outputPath)
             if (server) {
-                writeFile(outputFilePath, '')
-
+                /** 防止首次執行時 import 找不到生成的 ./master.css */
+                writeFile(devOutputFilePath, '')
+                writeFile(compiler.outputPath, '')
                 linkHref = (server.config.cacheDir.slice(process.cwd().length) + '/' + compiler.outputPath).replace(/\\/g, '/')
+                console.log(linkHref)
             }
         },
         resolveId(source) {

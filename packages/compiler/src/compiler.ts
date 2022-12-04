@@ -6,6 +6,7 @@ import { performance } from 'perf_hooks'
 import type { Config } from '@master/css'
 import { pathToFileURL } from 'url'
 import fs from 'fs'
+import normalizePath from 'normalize-path'
 
 export default class MasterCSSCompiler {
 
@@ -14,12 +15,14 @@ export default class MasterCSSCompiler {
     ) {
         this.options = extend(defaultOptions, options)
         this.userConfigPath = path.join(process.cwd(), this.options.config || 'master.css.js')
-        this.outputPath = path.join(process.cwd(), this.options.output.dir, this.options.output.name)
+        this.outputPath = path.join(this.options.output.dir, this.options.output.name)
+        this.outputHref = normalizePath(this.outputPath)
         this.initializing = this.reload()
     }
 
     userConfigPath: string
     outputPath: string
+    outputHref: string
     initializing: Promise<any>
     css: MasterCSS
     extractions = new Set<string>()
@@ -81,10 +84,10 @@ export default class MasterCSSCompiler {
 
         /* 印出 Master CSS 編譯時間 */
         console.log()
-        log.info`${'Master'} process ${`*${extractions.length}*`} extractions in ${spent}µs ${this.css.rules.length} rules`
-        log.info`${'Master'} extractions: ${`.${extractions.join(' ')}.`}`
-        log.info`${'Master'} ${`+${validClasses.length}+`} valid classes: ${`+${validClasses.join(' ')}+`}`
-        log.info`${'Master'} ${`.${this.outputPath}.`}`
+        log.info`${'Master'} ${`*${extractions.length}*`} extractions in ${spent}µs ${this.css.rules.length} rules`
+        // log.info`${'Master'} extractions: ${`.${extractions.join(' ')}.`}`
+        // log.info`${'Master'} ${`+${validClasses.length}+`} valid classes: ${`+${validClasses.join(' ')}+`}`
+        log.info`${'Master'} ${`.${this.outputHref}.`}`
     }
 
     log(name, content) {

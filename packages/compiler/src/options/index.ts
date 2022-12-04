@@ -25,8 +25,8 @@ export declare type CompilerSource = {
 
 export interface CompilerOptions {
     output?: {
-        name: string
-        dir: string
+        name?: string
+        dir?: string
     },
     accept?: (source: CompilerSource) => boolean
     extract?: (source: CompilerSource, css: MasterCSS) => string[]
