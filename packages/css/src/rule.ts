@@ -720,6 +720,7 @@ export interface Declaration {
 }
 
 export interface RuleMatching {
-    origin: 'matches' | 'semantics' | 'symbol';
-    value?: [string, string | Record<string, string>];
+    origin: 'matches' | 'semantics' | 'symbol'
+    value?: [string, string | Record<string, string>]
+    Rule?: typeof Rule
 }

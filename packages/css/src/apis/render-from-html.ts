@@ -9,7 +9,7 @@ export default function renderFromHTML(html: string, css: MasterCSS = new Master
         const classNames = results[1].replace(/\n/g, '').split(' ').filter(css => css)
         for (const eachClassName of classNames) {
             if (!(eachClassName in css.countOfClass)) {
-                css.findAndInsert(eachClassName)
+                css.insert(eachClassName)
                 css.countOfClass[eachClassName] = 1
             }
         }

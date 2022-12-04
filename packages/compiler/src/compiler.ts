@@ -73,7 +73,7 @@ export default class MasterCSSCompiler {
 
         /* 根據類名尋找並插入規則 ( MasterCSS 本身帶有快取機制，重複的類名不會再編譯及產生 ) */
         for (const eachExtraction of extractions) {
-            this.css.findAndInsert(eachExtraction)
+            this.css.insert(eachExtraction)
         }
 
         const spent = Math.round((performance.now() - p1) * 1000)

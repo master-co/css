@@ -46,7 +46,6 @@ export interface Config {
     Rules?: typeof Rule[],
     themes?: Record<string, { classes?: Classes, colors?: Colors }> | string[],
     rootSize?: number
-    validateRule?: (rule: Rule, css?: MasterCSS) => boolean
     scheme?: {
         preference?: string,
         storage?: {

@@ -97,7 +97,7 @@ export default class extends Rule {
         addName()
 
         for (const eachName of names) {
-            const result = css.findAndNew(eachName)
+            const result = css.create(eachName)
             if (Array.isArray(result)) {
                 for (const eachRule of result) {
                     handleRule(eachRule)
