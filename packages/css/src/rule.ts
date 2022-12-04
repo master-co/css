@@ -59,13 +59,13 @@ export default class Rule {
         colorNames: string[]
     ): RuleMatching {
         const { colorStarts, symbol, prop } = this
-        /** 
+        /**
          * STEP 1. matches
          */
         if (matches && matches.test(name)) {
             return { origin: MATCHES }
         }
-        /** 
+        /**
          * STEP 2. color starts
          */
         // TODO: 動態 new Regex 效能問題待優化
@@ -76,10 +76,10 @@ export default class Rule {
             if (colorNames.length && name.indexOf('|') === -1) {
                 const result = name.match('^' + colorStarts + '(' + colorNames.join('|') + ')([0-9a-zA-Z-]*)')
                 if (result && (!result[2] || (result[2].slice(1) in colorsThemesMap[result[1]])))
-                    return { origin: MATCHES } 
+                    return { origin: MATCHES }
             }
         }
-        /** 
+        /**
          * STEP 3. symbol
          */
         if (symbol && name.startsWith(symbol)) {
@@ -683,6 +683,10 @@ export default class Rule {
         } else {
             insertNewNative('', false)
         }
+    }
+
+    get text() {
+        return this.natives.map((eachNative) => eachNative.text).join('')
     }
 }
 
