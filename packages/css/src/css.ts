@@ -763,7 +763,7 @@ export default class MasterCSS extends MutationObserver {
             }
         }
         return (className in this.classes ? this.classes[className].map(create) : [create(className)])
-            .filter(eachRule => eachRule)
+            .filter(eachRule => eachRule?.text)
     }
 
     /**
