@@ -2,6 +2,7 @@ import MasterCSS, { semantics } from '@master/css'
 import type { CompilerSource } from './index'
 
 export default function extract({ content }: CompilerSource, masterCss: MasterCSS) {
+    content = preExclude(content)
     const blocks = content.match(/[^\s]+/g) ?? []
     const strings = new Set<string>()
     for (const block of blocks) {
@@ -17,12 +18,16 @@ export default function extract({ content }: CompilerSource, masterCss: MasterCS
     return [...strings].filter(x => x && !checkToExclude(x, masterCss))
 }
 
-const trimString = (content) => {
+const trimString = (content: string) => {
     const originContent = content
-    content = content.replace(/^([\w={[(\\]*["'`])/, '')
-    if (!content.match(/^content:((?<!\\)["'`])((?:\\\1|(?:(?!\1))[\S\s])*)((?<!\\)\1)$/)) {
-        content = content.replace(/(\.*|[([{\\:#]*|["'`].*)$/, '')
-    }
+
+    content = keepCompleteStringAndProcessContent(
+        content,
+        c => c
+            .replace(/^.*(?:["'`]|(?<!@>?)=)/, '')
+            .replace(/(?:[([{\\:#=.]+|["'`].*)$/, '')
+    )
+
     if (originContent === content) {
         return content
     } else {
@@ -30,10 +35,33 @@ const trimString = (content) => {
     }
 }
 
+
+const findCompleteString = (content) => {
+    const completeStrings = content.match(/((?<!\\)["'`])(?:\\\1|(?:(?!\1))[\S\s])*(?<!\\)\1/)
+    return completeStrings
+}
+
+const replaceCompleteString = (content, completeStrings) => {
+    completeStrings?.forEach((completeString, index) => {
+        content = content.replace(completeString, `COMPLETE-STRING--${index}`)
+    })
+    return content
+}
+
+const keepCompleteStringAndProcessContent = (content: string, process: (content: string) => string) => {
+    const completeStrings = findCompleteString(content)
+    content = replaceCompleteString(content, completeStrings)
+    content = process(content)
+    completeStrings?.forEach((completeString, index) => {
+        content = content.replace(`COMPLETE-STRING--${index}`, completeString)
+    })
+    return content
+}
+
 const peelString = (content) => {
     const strings = new Set<string>()
     const stringRegx = /((?<!\\)["'`])((?:\\\1|(?:(?!\1))[\S\s])*)((?<!\\)\1)/g
-    let m
+    let m: RegExpExecArray
     while ((m = stringRegx.exec(content)) !== null) {
         if (m.index === stringRegx.lastIndex) {
             stringRegx.lastIndex++
@@ -50,17 +78,33 @@ const peelString = (content) => {
     return strings
 }
 
+const preExclude = (content) => {
+    return keepCompleteStringAndProcessContent(
+        content,
+        c => c
+            .replace(/\/\*((?!\*\/)\S*\s*)*\*\//g, '')
+            .replace(/<!--((?!-->)\S*\s*)*-->/g, '')
+            .replace(/<style[^>]*>[\s\S]*<\/style>/g, '')
+            .replace(/(<[\w-]+\s(?:(?:(["'])(?:\\\2|[\s\S])*\2)|[^>])*\s*)style=(?:(?:(["'])(?:\\\3|[\s\S])*\3)|[^\s]+)/g, '$1')
+    )
+}
+
 const checkToExclude = (content, css: MasterCSS) => {
-    return !content
+    const completeStrings = findCompleteString(content)
+    const checkContent = replaceCompleteString(content, completeStrings)
+
+    return !checkContent
         || (
-            !content.match(/(?:\S*\{\S*\})|(?:^[\w-]+:[\w$#]+)|(?:^[@~][\w-]+$)/)
-            && !Object.keys(css.config.semantics ?? semantics).includes(content)
-            && !Object.keys(css.classes).includes(content)
+            !checkContent.match(/(?:\S*\{\S*\})|(?:^[\w-]+:[\w$#]+)|(?:^[@~][\w-]+$)/)
+            && !Object.keys(css.config.semantics ?? semantics).includes(checkContent)
+            && !Object.keys(css.classes).includes(checkContent)
         )
-        || content.match(/\*\*/)
-        || content.match(/:\[/)
-        || content.match(/\$\{/)
-        || content.match(/\{\{/)
-        || content.match(/\(\{[^}]*\}/)
-        || content.match(/<\w+>|<\/\w+>/)
+        || checkContent.match(/\*\*/)
+        || checkContent.match(/:\[/)
+        || checkContent.match(/\$\{/)
+        || checkContent.match(/\{\{/)
+        || checkContent.match(/\(\{[^}]*\}/)
+        || checkContent.match(/<\w+>|<\/\w+>/)
+        || checkContent.match(/;$/)
+        || checkContent.match(/@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer)\b[^-]/)
 }
