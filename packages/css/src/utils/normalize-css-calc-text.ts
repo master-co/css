@@ -46,7 +46,7 @@ export function normalizeCssCalcText(value: string, rootSize: number, defaultUni
                     break
                 default:
                     if (endWithBracket) {
-                        current += ' '
+                        newValue += ' '
                     }
 
                     if (!isNaN(+char)) {
@@ -57,7 +57,11 @@ export function normalizeCssCalcText(value: string, rootSize: number, defaultUni
                     break
             }
 
-            current += char
+            if (type) {
+                current += char
+            } else {
+                newValue += char
+            }
         }
     }
 
