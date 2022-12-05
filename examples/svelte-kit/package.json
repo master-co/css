@@ -1,39 +1,25 @@
 {
-    "name": "svelte-kit",
-    "private": true,
-    "version": "0.0.1",
-    "scripts": {
-        "dev": "vite dev",
-        "build": "vite build",
-        "preview": "vite preview",
-        "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-        "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-        "lint": "prettier --plugin-search-dir . --check . && eslint .",
-        "format": "prettier --plugin-search-dir . --write .",
-        "clear-build": "rm -rf **/*master.css .svelte-kit node_modules/.vite && npm run build"
-    },
-    "devDependencies": {
-        "@fontsource/fira-mono": "^4.5.0",
-        "@master/css.vite": "",
-        "@neoconfetti/svelte": "^1.0.0",
-        "@sveltejs/adapter-auto": "next",
-        "@sveltejs/kit": "next",
-        "@types/cookie": "^0.5.1",
-        "@typescript-eslint/eslint-plugin": "^5.27.0",
-        "@typescript-eslint/parser": "^5.27.0",
-        "eslint": "^8.16.0",
-        "eslint-config-prettier": "^8.3.0",
-        "eslint-plugin-svelte3": "^4.0.0",
-        "prettier": "^2.6.2",
-        "prettier-plugin-svelte": "^2.7.0",
-        "rollup": "^2.79.1",
-        "sorcery": "^0.10.0",
-        "svelte": "^3.46.0",
-        "svelte-check": "^2.7.1",
-        "svelte-preprocess": "^4.10.6",
-        "tslib": "^2.3.1",
-        "typescript": "^4.7.4",
-        "vite": "^3.1.0"
-    },
-    "type": "module"
+	"name": "svelte-kit",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+	},
+	"devDependencies": {
+		"@fontsource/fira-mono": "^4.5.10",
+		"@neoconfetti/svelte": "^1.0.0",
+		"@sveltejs/adapter-auto": "next",
+		"@sveltejs/kit": "next",
+		"@types/cookie": "^0.5.1",
+		"svelte": "^3.53.1",
+		"svelte-check": "^2.9.2",
+		"svelte-preprocess": "^4.10.7",
+		"tslib": "^2.4.1",
+		"typescript": "^4.9.3",
+		"vite": "^3.2.4"
+	},
+	"type": "module"
 }

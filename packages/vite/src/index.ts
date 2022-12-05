@@ -50,7 +50,7 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
         configureServer(_server) {
             server = _server
         },
-        buildStart() {
+        buildStart(this, options) {
             /** 防止首次執行時 import 找不到生成的 ./master.css */
             writeFile(compiler.outputPath, '')
             devOutputFilePath = path.resolve(server?.config.cacheDir ?? process.cwd(), compiler.outputPath)
