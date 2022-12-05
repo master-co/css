@@ -3,12 +3,12 @@ import path from 'path'
 import writeFile from './utils/write-file'
 
 import type { CompilerOptions } from '@master/css.compiler'
-import type { Plugin } from 'vite'
+import type { Plugin, ViteDevServer } from 'vite'
 
 export default async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Plugin> {
     const compiler = new MasterCSSCompiler(options)
     await compiler.initializing
-    let server
+    let server: ViteDevServer
     let devOutputFilePath: string
     let linkHref: string
     let rendered = false
@@ -27,6 +27,8 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
                     server.ws.send({
                         type: 'update',
                         updates: [{
+                            type: 'css-update',
+                            acceptedPath: devOutputFilePath,
                             path: linkHref,
                             timestamp: Date.now()
                         }]
@@ -49,11 +51,12 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
             server = _server
         },
         buildStart() {
+            /** 防止首次執行時 import 找不到生成的 ./master.css */
+            writeFile(compiler.outputPath, '')
             devOutputFilePath = path.resolve(server?.config.cacheDir ?? process.cwd(), compiler.outputPath)
             if (server) {
                 /** 防止首次執行時 import 找不到生成的 ./master.css */
                 writeFile(devOutputFilePath, '')
-                writeFile(compiler.outputPath, '')
                 linkHref = (server.config.cacheDir.slice(process.cwd().length) + '/' + compiler.outputPath).replace(/\\/g, '/')
             }
         },

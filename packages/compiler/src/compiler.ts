@@ -80,10 +80,8 @@ export default class MasterCSSCompiler {
         }
 
         const spent = Math.round((performance.now() - p1) * 1000)
-        const validClasses = this.css.rules.map((rule) => rule.className)
+        // const validClasses = this.css.rules.map((rule) => rule.className)
 
-        /* 印出 Master CSS 編譯時間 */
-        console.log()
         log.info`${'Master'} ${`*${extractions.length}*`} extractions in ${spent}µs ${this.css.rules.length} rules`
         // log.info`${'Master'} extractions: ${`.${extractions.join(' ')}.`}`
         // log.info`${'Master'} ${`+${validClasses.length}+`} valid classes: ${`+${validClasses.join(' ')}+`}`
