@@ -4,8 +4,8 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "vite",
-        "build": "vue-tsc --noEmit && vite build",
+        "dev": "rm -rf **/*master.css && vite",
+        "build": "vite build",
         "preview": "vite preview",
         "link": "npm link ../../",
         "unlink": "npm rm ../../"

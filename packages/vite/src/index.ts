@@ -12,7 +12,7 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
     let devOutputFilePath: string
     let linkHref: string
     let rendered = false
-    const extract = (name, content) => {
+    const extract = (name: string, content: string) => {
         const eachExtractions = compiler.extract({ name, content })
         if (eachExtractions.length) {
             const originalCssText = compiler.css.text
@@ -55,7 +55,6 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
                 writeFile(devOutputFilePath, '')
                 writeFile(compiler.outputPath, '')
                 linkHref = (server.config.cacheDir.slice(process.cwd().length) + '/' + compiler.outputPath).replace(/\\/g, '/')
-                console.log(linkHref)
             }
         },
         resolveId(source) {
@@ -65,11 +64,13 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
         transform(code, id) {
             extract(id, code)
         },
-        transformIndexHtml(html) {
-            return html.replace(
-                /(<head>)/,
-                `$1<link rel="stylesheet" href="${linkHref}">`
-            )
+        transformIndexHtml(html, { path: filePath }) {
+            html = html.replace(/(<head>)/, `$1<link rel="stylesheet" href="${linkHref}">`)
+            /**
+             * 修正 dev server 啟動時沒有掃描到 index.html
+             */
+            extract(filePath, html)
+            return html
         },
         async handleHotUpdate(hmrContext) {
             extract(hmrContext.file, await hmrContext.read())
