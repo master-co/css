@@ -8,7 +8,7 @@ on:
             - synchronize
 
 jobs:
-    lint:
+    check:
         timeout-minutes: 15
         runs-on: ubuntu-20.04
         strategy:

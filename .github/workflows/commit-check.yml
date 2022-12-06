@@ -1,4 +1,4 @@
-name: Type Check
+name: Commit Check
 on:
     push:
         branches:
@@ -19,10 +19,11 @@ jobs:
                 node-version: [18.12.1]
         steps:
             - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
             - uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
             - run: npm ci
-            - run: npm run build
-            - run: npm run type-check
+            - run: npm run commit-check

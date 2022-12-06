@@ -2,15 +2,16 @@ name: Test
 on:
     push:
         branches:
-            - main
-            - beta
+            - '**'
     pull_request_target:
         types:
             - opened
+            - reopened
+            - edited
             - synchronize
 
 jobs:
-    version:
+    test:
         timeout-minutes: 15
         runs-on: ubuntu-20.04
         strategy:

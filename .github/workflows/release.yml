@@ -20,11 +20,9 @@ jobs:
                   registry-url: 'https://registry.npmjs.org'
                   cache: 'npm'
             - run: npm i
-
-            - name: Release
-              run: npx semantic-release
+            - run: npx --no -- semantic-release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
                   VSCE_PAT: ${{ secrets.VSCE_PAT }}
-                  
+
