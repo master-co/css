@@ -10,7 +10,8 @@ const config = {
                 dir: 'src/routes'
             }
         })
-    ]
+    ],
+    logLevel: 'error'
 }
 
 export default config

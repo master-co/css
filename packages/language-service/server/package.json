@@ -24,7 +24,7 @@
         "@types/js-beautify": "^1.13.3",
         "@types/minimatch": "^5.1.2"
     },
-    "main": "./dist/server.cjs",
+    "main": "./dist/server.js",
     "jsnext:main": "./dist/server.mjs",
     "esnext": "./dist/server.mjs",
     "module": "./dist/server.mjs",

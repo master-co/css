@@ -10,8 +10,9 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
     await compiler.initializing
     let server: ViteDevServer
     let devOutputFilePath: string
-    let linkHref: string
+    let masterCSSAssetURL: string
     let rendered = false
+    let masterCSSAssetRefId: string
     const extract = (name: string, content: string) => {
         const eachExtractions = compiler.extract({ name, content })
         if (eachExtractions.length) {
@@ -21,15 +22,15 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
             /* 根據 cssText 生成 `master.css` 並加入到 Webpack 的 assets 中 */
             const cssText = compiler.css.text
             if (server && cssText !== originalCssText) {
-                writeFile(devOutputFilePath, cssText)
                 writeFile(compiler.outputPath, cssText)
+                writeFile(devOutputFilePath, cssText)
                 const notify = () => {
                     server.ws.send({
                         type: 'update',
                         updates: [{
                             type: 'css-update',
                             acceptedPath: devOutputFilePath,
-                            path: linkHref,
+                            path: masterCSSAssetURL,
                             timestamp: Date.now()
                         }]
                     })
@@ -37,7 +38,9 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
                 if (rendered) {
                     notify()
                 } else {
-                    setTimeout(notify, 500)
+                    setTimeout(() => {
+                        notify()
+                    }, 500)
                     rendered = true
                 }
             }
@@ -49,16 +52,29 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
         enforce: 'pre',
         configureServer(_server) {
             server = _server
+            /**
+             * Dev Server 啟動時首次執行
+             * 解決 HMR 在特定框架 (如 Svelte Kit) 於啟動時沒有提供 HTML entry 上下文供掃描的問題
+             */
+            server.ws.on('connection', async () => {
+                const localDevUrl = server.resolvedUrls.local[0]
+                const response = await fetch(localDevUrl)
+                const entryHTML = await response.text()
+                extract(localDevUrl, entryHTML)
+            })
         },
-        buildStart(this, options) {
+        buildStart() {
             /** 防止首次執行時 import 找不到生成的 ./master.css */
             writeFile(compiler.outputPath, '')
-            devOutputFilePath = path.resolve(server?.config.cacheDir ?? process.cwd(), compiler.outputPath)
             if (server) {
+                devOutputFilePath = path.resolve(server?.config.cacheDir ?? process.cwd(), compiler.outputPath)
                 /** 防止首次執行時 import 找不到生成的 ./master.css */
                 writeFile(devOutputFilePath, '')
-                linkHref = (server.config.cacheDir.slice(process.cwd().length) + '/' + compiler.outputPath).replace(/\\/g, '/')
+                masterCSSAssetURL = (server.config.cacheDir.slice(process.cwd().length) + '/' + compiler.outputPath).replace(/\\/g, '/')
             }
+        },
+        buildEnd(err?) {
+            console.log('end')
         },
         resolveId(source) {
             if (source.endsWith('master.css?direct'))
@@ -67,24 +83,27 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
         transform(code, id) {
             extract(id, code)
         },
-        transformIndexHtml(html, { path: filePath }) {
-            html = html.replace(/(<head>)/, `$1<link rel="stylesheet" href="${linkHref}">`)
-            /**
-             * 修正 dev server 啟動時沒有掃描到 index.html
-             */
-            extract(filePath, html)
+        /* 不一定會被其他整合的工具如 Svelte Kit Hook */
+        transformIndexHtml(html, { filename }) {
+            html = html.replace(/(<head>)/, `$1<link rel="stylesheet" href="${masterCSSAssetURL}">`)
+            extract(filename, html)
             return html
         },
-        async handleHotUpdate(hmrContext) {
-            extract(hmrContext.file, await hmrContext.read())
+        async handleHotUpdate({ file, read }) {
+            extract(file, await read())
         },
         generateBundle() {
-            const referenceId = this.emitFile({
-                type: 'asset',
-                name: compiler.outputPath,
-                source: compiler.css.text
-            })
-            linkHref = '/' + this.getFileName(referenceId)
-        }
+            console.log('🟢', masterCSSAssetRefId)
+            if (masterCSSAssetRefId) {
+                this.setAssetSource(masterCSSAssetRefId, compiler.css.text)
+            } else {
+                masterCSSAssetRefId = this.emitFile({
+                    type: 'asset',
+                    name: compiler.outputPath,
+                    source: compiler.css.text
+                })
+            }
+            masterCSSAssetURL = '/' + this.getFileName(masterCSSAssetRefId)
+        },
     }
 }
