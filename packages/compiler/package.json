@@ -1,53 +1,54 @@
 {
-    "name": "@master/css.compiler",
-    "scripts": {
-        "build": "aron pack --platform=node",
-        "dev": "npm run build -- --watch",
-        "lint": "eslint ./src"
-    },
-    "license": "MIT",
-    "description": "The ahead-of-time compiler of Master CSS",
-    "author": "Aoyue Design LLC.",
-    "funding": "https://docs.master.co/css/donate",
-    "homepage": "https://css.master.co",
-    "bugs": {
-        "url": "https://github.com/master-co/css/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/master-co/css.git",
-        "directory": "packages/compiler"
-    },
-    "keywords": [
-        "webpack",
-        "plugin",
-        "integration",
-        "vite",
-        "parcel",
-        "build tools",
-        "css",
-        "mastercss",
-        "vite-plugin"
-    ],
-    "sideEffects": false,
-    "main": "./dist/index.cjs",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "require": "./dist/index.cjs",
-            "import": "./dist/index.mjs",
-            "types": "./dist/index.d.ts"
-        }
-    },
-    "files": [
-        "dist"
-    ],
-    "dependencies": {
-        "@master/css": "",
-        "aronlog": "^1.0.0-beta.32",
-        "normalize-path": "^3.0.0"
+  "name": "@master/css.compiler",
+  "scripts": {
+    "build": "aron pack --platform=node",
+    "dev": "npm run build -- --watch",
+    "lint": "eslint ./src",
+    "test": "jest"
+  },
+  "license": "MIT",
+  "description": "The ahead-of-time compiler of Master CSS",
+  "author": "Aoyue Design LLC.",
+  "funding": "https://docs.master.co/css/donate",
+  "homepage": "https://css.master.co",
+  "bugs": {
+    "url": "https://github.com/master-co/css/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/master-co/css.git",
+    "directory": "packages/compiler"
+  },
+  "keywords": [
+    "webpack",
+    "plugin",
+    "integration",
+    "vite",
+    "parcel",
+    "build tools",
+    "css",
+    "mastercss",
+    "vite-plugin"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "jsnext:main": "./dist/index.mjs",
+  "esnext": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@master/css": "",
+    "aronlog": "^1.0.0-beta.32",
+    "normalize-path": "^3.0.0"
+  }
 }
