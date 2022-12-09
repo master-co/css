@@ -17,13 +17,12 @@
         "url": "https://github.com/master-co/css.git"
     },
     "workspaces": [
-        "packages/*",
-        "packages/language-service/server",
-        "packages/language-service/client",
+        "packages/**",
         "examples/*"
     ],
     "devDependencies": {
-        "aronrepo": "^1.0.0-beta.38",
+        "aron-browser-jest": "^1.0.0-beta.42",
+        "aronrepo": "^1.0.0-beta.42",
         "concurrently": "^7.6.0",
         "dedent": "^0.7.0",
         "eslint-plugin-react-hooks": "^4.6.0",

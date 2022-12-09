@@ -4,10 +4,6 @@
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
-    "scripts": {
-        "link": "npm link @master/css-compiler",
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
     "author": "",
     "license": "ISC",
     "devDependencies": {
