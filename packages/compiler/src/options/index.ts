@@ -1,5 +1,6 @@
 import MasterCSS from '@master/css'
 import extract from './extract'
+import type { Pattern as FastGlobPattern } from 'fast-glob'
 
 const options: CompilerOptions = {
     config: './master.css.js',
@@ -7,6 +8,8 @@ const options: CompilerOptions = {
         name: 'master.css',
         dir: ''
     },
+    additions: [],
+    cwd: process.cwd(),
     accept({ name }) {
         if (name.match(/[\\/]node_modules[\\/]/)) {
             return false
@@ -28,10 +31,12 @@ export interface CompilerOptions {
         name?: string
         dir?: string
     },
+    additions?: FastGlobPattern[]
     accept?: (source: CompilerSource) => boolean
     extract?: (source: CompilerSource, css: MasterCSS) => string[]
     config?: string
     debug?: boolean
+    cwd?: string
 }
 
 export default options

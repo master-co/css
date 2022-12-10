@@ -1,4 +1,3 @@
-/** @type {import('./packages/css/src/config').Config} */
 export default {
     colors: {
         primary: {

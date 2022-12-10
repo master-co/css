@@ -104,9 +104,9 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
             compilation.fileDependencies.add(this.userConfigPath)
         })
 
-        compiler.hooks.watchRun.tap(NAME, async (compiler) => {
+        compiler.hooks.watchRun.tap(NAME, (compiler) => {
             if (compiler.modifiedFiles?.has(this.userConfigPath)) {
-                await this.reload()
+                this.reload()
             }
         })
     }

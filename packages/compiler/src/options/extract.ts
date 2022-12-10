@@ -92,7 +92,6 @@ const preExclude = (content) => {
 const checkToExclude = (content, css: MasterCSS) => {
     const completeStrings = findCompleteString(content)
     const checkContent = replaceCompleteString(content, completeStrings)
-
     return !checkContent
         || (
             !checkContent.match(/(?:\S*\{\S*\})|(?:^[\w-]+:[\w$#]+)|(?:^[@~][\w-]+$)/)

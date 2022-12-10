@@ -4,9 +4,12 @@ import { default as defaultOptions, CompilerOptions, CompilerSource } from './op
 import MasterCSS, { extend } from '@master/css'
 import { performance } from 'perf_hooks'
 import type { Config } from '@master/css'
-import { pathToFileURL } from 'url'
 import fs from 'fs'
+import fg from 'fast-glob'
 import normalizePath from 'normalize-path'
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
 
 export default class MasterCSSCompiler {
 
@@ -14,10 +17,11 @@ export default class MasterCSSCompiler {
         public options?: CompilerOptions
     ) {
         this.options = extend(defaultOptions, options)
-        this.userConfigPath = path.join(process.cwd(), this.options.config || 'master.css.js')
-        this.outputPath = path.join(this.options.output.dir, this.options.output.name)
+        const { cwd, config, output } = this.options
+        this.userConfigPath = path.join(cwd, config || 'master.css.js')
+        this.outputPath = path.join(output.dir, output.name)
         this.outputHref = normalizePath(this.outputPath)
-        this.initializing = this.reload()
+        this.reload()
     }
 
     userConfigPath: string
@@ -27,15 +31,15 @@ export default class MasterCSSCompiler {
     css: MasterCSS
     extractions = new Set<string>()
 
-    async reload() {
+    reload() {
         let userConfig: Config
         try {
             if (require.cache?.[this.userConfigPath]) {
                 delete require.cache[this.userConfigPath]
             }
             if (fs.existsSync(this.userConfigPath)) {
-                const userConfigPath = pathToFileURL(this.userConfigPath).href
-                const userConfigModule = await import(userConfigPath)
+                const userConfigPath = normalizePath(this.userConfigPath)
+                const userConfigModule = require(userConfigPath)
                 userConfig = userConfigModule.default || userConfigModule
                 log.info`${'master.css.js'} imported from ${userConfigPath}`
             } else {
@@ -47,6 +51,16 @@ export default class MasterCSSCompiler {
         }
         this.css = new MasterCSS({ config: userConfig })
         this.extractions.clear()
+        if (this.options.additions?.length) {
+            fg.sync(this.options.additions, { cwd: this.options.cwd })
+                .forEach((eachFilePath) => {
+                    const eachFileContent = fs.readFileSync(eachFilePath, { encoding: 'utf-8' }).toString()
+                    this.extract({
+                        name: eachFilePath,
+                        content: eachFileContent
+                    })
+                })
+        }
     }
 
     extract({ name, content }: CompilerSource) {
