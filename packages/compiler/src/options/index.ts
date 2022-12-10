@@ -31,7 +31,7 @@ export interface CompilerOptions {
     accept?: (source: CompilerSource) => boolean
     extract?: (source: CompilerSource, css: MasterCSS) => string[]
     config?: string
-    debug?: string[] | boolean
+    debug?: boolean
 }
 
 export default options

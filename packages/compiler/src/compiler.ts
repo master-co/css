@@ -58,7 +58,7 @@ export default class MasterCSSCompiler {
         }
         const eachExtractions: string[] = []
 
-        this.log('accepts', `  → ${path.relative(process.cwd(), name)}`)
+        log.info`${'Master'} ${path.relative(process.cwd(), name)}`
 
         for (const eachNewExtraction of this.options.extract({ content, name }, this.css)) {
             if (this.extractions.has(eachNewExtraction)) {
@@ -73,24 +73,17 @@ export default class MasterCSSCompiler {
 
     insert(extractions) {
         const p1 = performance.now()
-
         /* 根據類名尋找並插入規則 ( MasterCSS 本身帶有快取機制，重複的類名不會再編譯及產生 ) */
         for (const eachExtraction of extractions) {
             this.css.insert(eachExtraction)
         }
-
         const spent = Math.round((performance.now() - p1) * 1000)
-        // const validClasses = this.css.rules.map((rule) => rule.className)
-
         log.info`${'Master'} ${`*${extractions.length}*`} extractions in ${spent}µs ${this.css.rules.length} rules`
-        // log.info`${'Master'} extractions: ${`.${extractions.join(' ')}.`}`
-        // log.info`${'Master'} ${`+${validClasses.length}+`} valid classes: ${`+${validClasses.join(' ')}+`}`
-        // log.info`${'Master'} ${`.${this.outputHref}.`}`
-    }
-
-    log(name, content) {
-        if (this.options.debug === true || Array.isArray(this.options.debug) && this.options.debug.includes(name)) {
-            console.log(content)
+        if (this.options.debug) {
+            const validClasses = this.css.rules.map((rule) => rule.className)
+            log.info`${'Master'} extractions: ${`.${extractions.join(' ')}.`}`
+            log.info`${'Master'} ${`+${validClasses.length}+`} valid classes: ${`+${validClasses.join(' ')}+`}`
+            log.info`${'Master'} ${`.${this.outputHref}.`}`
         }
     }
 }

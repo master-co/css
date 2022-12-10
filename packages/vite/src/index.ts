@@ -73,9 +73,6 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
                 masterCSSAssetURL = (server.config.cacheDir.slice(process.cwd().length) + '/' + compiler.outputPath).replace(/\\/g, '/')
             }
         },
-        buildEnd(err?) {
-            console.log('end')
-        },
         resolveId(source) {
             if (source.endsWith('master.css?direct'))
                 return '\0' + source
@@ -93,7 +90,6 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
             extract(file, await read())
         },
         generateBundle() {
-            console.log('🟢', masterCSSAssetRefId)
             if (masterCSSAssetRefId) {
                 this.setAssetSource(masterCSSAssetRefId, compiler.css.text)
             } else {
