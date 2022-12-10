@@ -1,12 +1,39 @@
 import MasterCSS from '@master/css'
 import extract from '../src/options/extract'
 
-test('style tag', () => {
+
+test('basic', () => {
     const css = new MasterCSS()
     expect(extract({
         name: 'test',
         content: `
-<style data-sveltekit>.app.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;min-height:100vh}main.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{flex:1;display:flex;flex-direction:column;padding:1rem;width:100%;max-width:64rem;margin:0 auto;box-sizing:border-box}footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px}footer.s-7IPF32Wcq3s8 a.s-7IPF32Wcq3s8{font-weight:bold}@media(min-width: 480px){footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{padding:12px 0}}.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{}
+        bg:black
+        <div class="f:16"></div>
+        const test = {
+            'f:24': true
+        }
+        `
+    }, css)).toStrictEqual(['bg:black', 'f:16', 'f:24'])
+})
+
+test('comment', () => {
+    const css = new MasterCSS()
+    expect(extract({
+        name: 'test',
+        content: `
+        /* bg:black */
+        /*
+            f:16
+        */
+        `
+    }, css)).toStrictEqual([])
+})
+
+test('style tag', () => {
+    const css = new MasterCSS()
+    expect(extract({
+        name: 'test',
+        content: `<style data-sveltekit>.app.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;min-height:100vh}main.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{flex:1;display:flex;flex-direction:column;padding:1rem;width:100%;max-width:64rem;margin:0 auto;box-sizing:border-box}footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px}footer.s-7IPF32Wcq3s8 a.s-7IPF32Wcq3s8{font-weight:bold}@media(min-width: 480px){footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{padding:12px 0}}.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{}
 /* fira-mono-cyrillic-ext-400-normal*/
 @font-face {
   font-family: 'Fira Mono';
@@ -76,7 +103,6 @@ test('style tag', () => {
 	font-family: var(--font-body);
 	color: var(--color-text);
 }
-</style>
-        `
-    }, css)).toBe([])
+</style>`
+    }, css)).toStrictEqual([])
 })

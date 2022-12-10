@@ -82,9 +82,9 @@ const preExclude = (content) => {
     return keepCompleteStringAndProcessContent(
         content,
         c => c
-            .replace(/\/\*((?!\*\/)\S*\s*)*\*\//g, '')
-            .replace(/<!--((?!-->)\S*\s*)*-->/g, '')
-            .replace(/<style[^>]*>[\s\S]*<\/style>/g, '')
+            .replace(/\/\*(?:(?!\*\/)[\S\s])*\*\//g, '')
+            .replace(/<!--(?:(?!-->)[\S\s])*-->/g, '')
+            .replace(/<style[^>]*>(?:(?!<\/style>)[\S\s])*<\/style>/g, '')
             .replace(/(<[\w-]+\s(?:(?:(["'])(?:\\\2|[\s\S])*\2)|[^>])*\s*)style=(?:(?:(["'])(?:\\\3|[\s\S])*\3)|[^\s]+)/g, '$1')
     )
 }

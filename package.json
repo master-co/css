@@ -1,6 +1,7 @@
 {
     "private": true,
     "scripts": {
+        "install": "husky install && npm ls --link=true",
         "build": "turbo run build --filter=./packages/**/*",
         "build:clean": "rm -rf ./packages/**/*dist && turbo run build --force --no-cache --filter=./packages/**/*",
         "check": "npm run commit-check && turbo run test lint --parallel --filter=./packages/**/*",
@@ -21,15 +22,12 @@
         "examples/*"
     ],
     "devDependencies": {
-        "aron-browser-jest": "^1.0.0-beta.42",
-        "aronrepo": "^1.0.0-beta.42",
+        "aron-web-jest": "^1.0.0-beta.45",
+        "aronrepo": "^1.0.0-beta.45",
         "concurrently": "^7.6.0",
         "dedent": "^0.7.0",
         "eslint-plugin-react-hooks": "^4.6.0",
-        "fast-glob": "^3.2.12",
-        "jest-environment-jsdom": "^29.3.1",
-        "jest-puppeteer": "^6.1.1",
-        "puppeteer": "^19.2.2"
+        "fast-glob": "^3.2.12"
     },
     "engines": {
         "node": "^18"

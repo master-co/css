@@ -11,11 +11,11 @@
         "test": "jest"
     },
     "devDependencies": {
-        "@master/css.vite": "",
         "@fontsource/fira-mono": "^4.5.10",
+        "@master/css.vite": "",
         "@neoconfetti/svelte": "^1.0.0",
-        "@sveltejs/adapter-auto": "next",
-        "@sveltejs/kit": "next",
+        "@sveltejs/adapter-auto": "^1.0.0-next.90",
+        "@sveltejs/kit": "^1.0.0-next.573",
         "@types/cookie": "^0.5.1",
         "svelte": "^3.53.1",
         "svelte-check": "^2.9.2",
