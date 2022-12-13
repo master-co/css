@@ -5,6 +5,6 @@ test('additions', () => {
         additions: ['./test.html'],
         cwd: __dirname
     })
-    expect(compiler.css.text)
+    expect(compiler.css.rules.map((eachRule) => eachRule.className).length)
         .toBeNull()
 })

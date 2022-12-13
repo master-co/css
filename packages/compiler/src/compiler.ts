@@ -54,8 +54,11 @@ export default class MasterCSSCompiler {
         if (this.options.additions?.length) {
             fg.sync(this.options.additions, { cwd: this.options.cwd })
                 .forEach((eachFilePath) => {
-                    const eachFileContent = fs.readFileSync(eachFilePath, { encoding: 'utf-8' }).toString()
-                    this.extract({
+                    const eachFileContent = fs.readFileSync(
+                        path.resolve(this.options.cwd, eachFilePath),
+                        { encoding: 'utf-8' }
+                    ).toString()
+                    this.insert({
                         name: eachFilePath,
                         content: eachFileContent
                     })
@@ -85,7 +88,16 @@ export default class MasterCSSCompiler {
         return eachExtractions
     }
 
-    insert(extractions) {
+    insert({ name, content }: CompilerSource): boolean {
+        const extractions = this.extract({ name, content })
+        if (!extractions.length) {
+            return false
+        }
+        this.insertExtractions(extractions)
+        return true
+    }
+
+    insertExtractions(extractions: string[]) {
         const p1 = performance.now()
         /* 根據類名尋找並插入規則 ( MasterCSS 本身帶有快取機制，重複的類名不會再編譯及產生 ) */
         for (const eachExtraction of extractions) {

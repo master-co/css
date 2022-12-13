@@ -76,7 +76,7 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
                 if (eachExtractions.length) {
                     const originalCssText = this.css.text
                     /* 比對提取物並插入 CSS 規則 */
-                    this.insert(eachExtractions)
+                    this.insertExtractions(eachExtractions)
                     /* 根據 cssText 生成 `master.css` 並加入到 Webpack 的 assets 中 */
                     const cssText = this.css.text
                     if (cssText !== originalCssText) {
