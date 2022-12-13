@@ -9,8 +9,7 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
     const compiler = new MasterCSSCompiler(options)
     await compiler.initializing
     let server: ViteDevServer
-    let devOutputFilePath: string
-    let masterCSSAssetURL: string
+    let masterCSSPublicURL: string
     let rendered = false
     const extract = (name: string, content: string) => {
         const originalCssText = compiler.css.text
@@ -20,14 +19,14 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
             if (cssText !== originalCssText) {
                 writeFile(compiler.outputPath, cssText)
                 if (server) {
-                    writeFile(devOutputFilePath, cssText)
+                    // writeFile(devOutputFilePath, cssText)
                     const notify = () => {
                         server.ws.send({
                             type: 'update',
                             updates: [{
                                 type: 'css-update',
-                                acceptedPath: devOutputFilePath,
-                                path: masterCSSAssetURL,
+                                acceptedPath: compiler.options.publicURL,
+                                path: masterCSSPublicURL,
                                 timestamp: Date.now()
                             }]
                         })
@@ -60,20 +59,11 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
                 const entryHTML = await response.text()
                 extract(localDevUrl, entryHTML)
             })
+            masterCSSPublicURL = compiler.options.publicURL
         },
         buildStart() {
             /** 防止首次執行時 import 找不到生成的 ./master.css */
             writeFile(compiler.outputPath, '')
-            if (server) {
-                devOutputFilePath = path.resolve(server?.config.cacheDir ?? compiler.options.cwd, compiler.outputPath)
-                /** 防止首次執行時 import 找不到生成的 ./master.css */
-                writeFile(devOutputFilePath, '')
-                masterCSSAssetURL = (
-                    server.config.cacheDir
-                        .slice(compiler.options.cwd.length) + '/' + compiler.publicURL
-                )
-                    .replace(/\\/g, '/')
-            }
         },
         resolveId(source) {
             if (source.endsWith('master.css?direct'))
@@ -84,7 +74,7 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
         },
         /* 不一定會被其他整合的工具如 Svelte Kit Hook */
         transformIndexHtml(html, { filename }) {
-            html = html.replace(/(<head>)/, `$1<link rel="stylesheet" href="${masterCSSAssetURL}">`)
+            html = html.replace(/(<head>)/, `$1<link rel="stylesheet" href="${masterCSSPublicURL}">`)
             extract(filename, html)
             return html
         },
@@ -94,10 +84,10 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
         generateBundle() {
             const assetRefId = this.emitFile({
                 type: 'asset',
-                name: compiler.publicURL,
+                name: compiler.options.output.name,
                 source: compiler.css.text
             })
-            masterCSSAssetURL = '/' + this.getFileName(assetRefId)
+            masterCSSPublicURL = '/' + this.getFileName(assetRefId)
         },
     }
 }
