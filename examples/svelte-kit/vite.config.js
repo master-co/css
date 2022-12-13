@@ -4,14 +4,16 @@ import MasterCSSVitePlugin from '@master/css.vite'
 /** @type {import('vite').UserConfig} */
 const config = {
     plugins: [
-        sveltekit(),
         MasterCSSVitePlugin({
             output: {
                 dir: 'src/routes'
-            }
-        })
-    ],
-    logLevel: 'error'
+            },
+            additions: [
+                'src/app.html'
+            ]
+        }),
+        sveltekit()
+    ]
 }
 
 export default config

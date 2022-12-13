@@ -11,7 +11,7 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
         const { Template, RuntimeGlobals, RuntimeModule } = webpack
         const { RawSource } = webpack.sources
         const { Compilation } = webpack
-        const outputHref = this.outputHref
+        const publicURL = this.publicURL
 
         compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
             const enabledChunks = new WeakSet()
@@ -47,7 +47,7 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
 
                     return Template.asString([
                         Date.now().toString(),
-                        `const link = document.querySelector('[href*=\\'${outputHref}\\'][rel=stylesheet]')`,
+                        `const link = document.querySelector('[href*=\\'${publicURL}\\'][rel=stylesheet]')`,
                         'if (link) {',
                         Template.indent([
                             'link.href = link.href.replace(/ts=[0-9]+/, \'ts=\' + Date.now())'
@@ -104,9 +104,9 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
             compilation.fileDependencies.add(this.userConfigPath)
         })
 
-        compiler.hooks.watchRun.tap(NAME, (compiler) => {
+        compiler.hooks.watchRun.tap(NAME, async (compiler) => {
             if (compiler.modifiedFiles?.has(this.userConfigPath)) {
-                this.reload()
+                await this.reload()
             }
         })
     }

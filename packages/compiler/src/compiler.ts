@@ -8,6 +8,7 @@ import fs from 'fs'
 import fg from 'fast-glob'
 import normalizePath from 'normalize-path'
 import { createRequire } from 'module'
+import { pathToFileURL } from 'url'
 
 const require = createRequire(import.meta.url)
 
@@ -19,27 +20,28 @@ export default class MasterCSSCompiler {
         this.options = extend(defaultOptions, options)
         const { cwd, config, output } = this.options
         this.userConfigPath = path.join(cwd, config || 'master.css.js')
-        this.outputPath = path.join(output.dir, output.name)
-        this.outputHref = normalizePath(this.outputPath)
-        this.reload()
+        this.outputPath = path.resolve(cwd, output.dir, output.name)
+        this.publicURL = normalizePath(this.outputPath)
+        this.initializing = this.reload()
     }
 
     userConfigPath: string
     outputPath: string
-    outputHref: string
+    publicURL: string
     initializing: Promise<any>
     css: MasterCSS
     extractions = new Set<string>()
 
-    reload() {
+    async reload() {
         let userConfig: Config
         try {
             if (require.cache?.[this.userConfigPath]) {
                 delete require.cache[this.userConfigPath]
             }
+
             if (fs.existsSync(this.userConfigPath)) {
-                const userConfigPath = normalizePath(this.userConfigPath)
-                const userConfigModule = require(userConfigPath)
+                const userConfigPath = pathToFileURL(this.userConfigPath).href
+                const userConfigModule = await import(userConfigPath)
                 userConfig = userConfigModule.default || userConfigModule
                 log.info`${'master.css.js'} imported from ${userConfigPath}`
             } else {
@@ -75,7 +77,7 @@ export default class MasterCSSCompiler {
         }
         const eachExtractions: string[] = []
 
-        log.info`${'Master'} ${path.relative(process.cwd(), name)}`
+        log.info`${'Master'} extract ${`.${path.relative(this.options.cwd, name)}.`}`
 
         for (const eachNewExtraction of this.options.extract({ content, name }, this.css)) {
             if (this.extractions.has(eachNewExtraction)) {
@@ -104,12 +106,13 @@ export default class MasterCSSCompiler {
             this.css.insert(eachExtraction)
         }
         const spent = Math.round((performance.now() - p1) * 1000)
-        log.info`${'Master'} ${`*${extractions.length}*`} extractions in ${spent}µs ${this.css.rules.length} rules`
+        log.info`${'Master'} ${`*${extractions.length}*`} extractions in ${spent}µs`
+        log.info`${'Master'} total ${`*${this.css.rules.length}*`} rules`
         if (this.options.debug) {
             const validClasses = this.css.rules.map((rule) => rule.className)
             log.info`${'Master'} extractions: ${`.${extractions.join(' ')}.`}`
             log.info`${'Master'} ${`+${validClasses.length}+`} valid classes: ${`+${validClasses.join(' ')}+`}`
-            log.info`${'Master'} ${`.${this.outputHref}.`}`
         }
+        console.log()
     }
 }
