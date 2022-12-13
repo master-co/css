@@ -8,19 +8,19 @@ test('basic', () => {
         name: 'test',
         content: `
         bg:black
-        <div class="f:16"></div>
+        <div class="f:16 blur(2px)"></div>
         const test = {
             'f:24': true
         }
         `
-    }, css)).toStrictEqual(['bg:black', 'f:16', 'f:24'])
+    }, css)).toStrictEqual(['bg:black', 'f:16', 'blur(2px)', 'f:24'])
 })
 
 test('comment', () => {
     const css = new MasterCSS()
     expect(extract({
         name: 'test',
-        content: `
+        content: `<!-- comment -->
         /* bg:black */
         /*
             f:16
