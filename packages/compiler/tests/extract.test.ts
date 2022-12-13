@@ -67,6 +67,28 @@ test('=', () => {
     ])
 })
 
+test('media', () => {
+    const css = new MasterCSS()
+    expect(extract({
+        name: 'test',
+        content: `
+        bg:black@xl
+        font:24@media(min-width:1024px)
+        font:16@<789
+        font:16@<=789
+        font:16@>=789
+        font:16@>789
+        `
+    }, css)).toStrictEqual([
+        'bg:black@xl',
+        'font:24@media(min-width:1024px)',
+        'font:16@<789',
+        'font:16@<=789',
+        'font:16@>=789',
+        'font:16@>789'
+    ])
+})
+
 test('group', () => {
     const css = new MasterCSS()
     expect(extract({
