@@ -3,16 +3,15 @@ import type { CompilerSource } from './index'
 
 export default function extract({ content }: CompilerSource, masterCss: MasterCSS) {
     content = preExclude(content)
-    const blocks = content.match(/[^\s]+/g) ?? []
+    const blocks = content.match(/\S+/g) ?? []
     const strings = new Set<string>()
     for (const block of blocks) {
+        strings.add(trimString(block))
         const result = peelString(block)
         if (result.size) {
             for (const string of result) {
-                strings.add(trimString(string))
+                strings.add(string)
             }
-        } else {
-            strings.add(trimString(block))
         }
     }
     return [...strings].filter(x => x && !checkToExclude(x, masterCss))
@@ -49,12 +48,17 @@ const replaceCompleteString = (content, completeStrings) => {
 }
 
 const keepCompleteStringAndProcessContent = (content: string, process: (content: string) => string) => {
+    
     const completeStrings = findCompleteString(content)
+    
     content = replaceCompleteString(content, completeStrings)
+    
     content = process(content)
+    
     completeStrings?.forEach((completeString, index) => {
         content = content.replace(`COMPLETE-STRING--${index}`, completeString)
     })
+    
     return content
 }
 
