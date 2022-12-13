@@ -1,0 +1,21 @@
+name: Sync dev branches
+on:
+    push:
+        branches:
+            - '*'
+
+jobs:
+    check:
+        timeout-minutes: 15
+        runs-on: ubuntu-20.04
+        strategy:
+            matrix:
+                node-version: [18.12.1]
+        steps:
+            - uses: actions/checkout@v3
+            - name: Aron Actions
+              uses: 1aron/aronrepo@v1.0.0-beta.49
+              with:
+                  action: 'sync-dev-branches'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
