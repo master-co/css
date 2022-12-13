@@ -78,6 +78,7 @@ test('media', () => {
         font:16@<=789
         font:16@>=789
         font:16@>789
+        @animation_test@>789
         `
     }, css)).toStrictEqual([
         'bg:black@xl',
@@ -85,7 +86,32 @@ test('media', () => {
         'font:16@<789',
         'font:16@<=789',
         'font:16@>=789',
-        'font:16@>789'
+        'font:16@>789',
+        '@animation_test@>789'
+    ])
+})
+
+test('wxh', () => {
+    const css = new MasterCSS()
+    expect(extract({
+        name: 'test',
+        content: `
+        1920x1080
+        1024pxx786px
+        min:40x80
+        min:calc(100vw-60)xcalc(100vh-100px)
+        calc(100vw-60)x20rem
+        15pxxcalc(100vh-100px)
+        calc(100vw-60)xcalc(100vh-100px)
+        `
+    }, css)).toStrictEqual([
+        '1920x1080',
+        '1024pxx786px',
+        'min:40x80',
+        'min:calc(100vw-60)xcalc(100vh-100px)',
+        'calc(100vw-60)x20rem',
+        '15pxxcalc(100vh-100px)',
+        'calc(100vw-60)xcalc(100vh-100px)'
     ])
 })
 
