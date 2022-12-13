@@ -2,18 +2,40 @@ import MasterCSS from '@master/css'
 import extract from '../src/options/extract'
 
 
-test('basic', () => {
+test('basic js object', () => {
     const css = new MasterCSS()
     expect(extract({
         name: 'test',
         content: `
-        bg:black
-        <div class="f:16 blur(2px)"></div>
         const test = {
             'f:24': true
         }
         `
-    }, css)).toStrictEqual(['bg:black', 'f:16', 'blur(2px)', 'f:24'])
+    }, css)).toStrictEqual(['f:24'])
+})
+
+test('basic html', () => {
+    const css = new MasterCSS()
+    expect(extract({
+        name: 'test',
+        content: `<div class="f:16 blur(2px) @shake|1s|infinite>li"></div>`
+    }, css)).toStrictEqual(['f:16', 'blur(2px)', '@shake|1s|infinite>li'])
+})
+
+test('content', () => {
+    const css = new MasterCSS()
+    expect(extract({
+        name: 'test',
+        content: `<div class="content:'I\\'m_string' content:'I\\'m_string2'"></div>`
+    }, css)).toStrictEqual(['content:\'I\\\'m_string\'', 'content:\'I\\\'m_string2\''])
+})
+
+test('url', () => {
+    const css = new MasterCSS()
+    expect(extract({
+        name: 'test',
+        content: `<div class="bg:url('https://master.co/test_logo.png')"></div>`
+    }, css)).toStrictEqual(['bg:url(\'https://master.co/test_logo.png\')'])
 })
 
 test('comment', () => {
