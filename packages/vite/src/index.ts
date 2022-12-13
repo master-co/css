@@ -14,11 +14,8 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
     let rendered = false
     let masterCSSAssetRefId: string
     const extract = (name: string, content: string) => {
-        const eachExtractions = compiler.extract({ name, content })
-        if (eachExtractions.length) {
+        if (compiler.insert({ name, content })) {
             const originalCssText = compiler.css.text
-            /* 比對提取物並插入 CSS 規則 */
-            compiler.insert(eachExtractions)
             /* 根據 cssText 生成 `master.css` 並加入到 Webpack 的 assets 中 */
             const cssText = compiler.css.text
             if (server && cssText !== originalCssText) {
