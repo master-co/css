@@ -89,20 +89,31 @@ const preExclude = (content) => {
 
 const checkToExclude = (content, css: MasterCSS) => {
     const completeStrings = findCompleteString(content)
-    const checkContent = replaceCompleteString(content, completeStrings)
-    return !checkContent
+    const checkContent: string = replaceCompleteString(content, completeStrings)
+    
+    const groupRegx = /{(.*)}/
+    let m: RegExpExecArray
+    while ((m = groupRegx.exec(checkContent)) !== null) {
+        const groupClasses = m[1].split(';')
+        return groupClasses.find(x => needExclude(x, css)) !== undefined
+    }
+    return needExclude(checkContent, css)
+}
+
+const needExclude = (content, css:MasterCSS)  => {
+    return !content
         || (
-            !checkContent.match(/(?:\S*\{\S*\})|(?:^[\w-]+:\S+)|(?:^[\w-]+\(\S+\)$)|(?:^[@~]\S+$)/)
-            && !Object.keys(css.config.semantics ?? semantics).includes(checkContent)
-            && !Object.keys(css.classes).includes(checkContent)
+            !content.match(/(?:\S*\{\S*\})|(?:^[\w-]+:\S+)|(?:^[\w-]+\(\S+\)$)|(?:^[@~]\S+$)/)
+            && !Object.keys(css.config.semantics ?? semantics).includes(content)
+            && !Object.keys(css.classes).includes(content)
         )
-        || checkContent.match(/\*\*/)
-        || checkContent.match(/:\[/)
-        || checkContent.match(/\$\{/)
-        || checkContent.match(/\{\{/)
-        || checkContent.match(/\(\{[^}]*\}/)
-        || checkContent.match(/<\w+>|<\/\w+>/)
-        || checkContent.match(/;$/)
-        || checkContent.match(/^\w+:\/\//)
-        || checkContent.match(/^@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer)\b[^-]/)
+        || content.match(/\*\*/)
+        || content.match(/:\[/)
+        || content.match(/\$\{/)
+        || content.match(/\{\{/)
+        || content.match(/\(\{[^}]*\}/)
+        || content.match(/<\w+>|<\/\w+>/)
+        || content.match(/;$/)
+        || content.match(/^\w+:\/\//)
+        || content.match(/^@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer)\b[^-]/)
 }
