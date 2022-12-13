@@ -6,9 +6,7 @@ import { performance } from 'perf_hooks'
 import type { Config } from '@master/css'
 import fs from 'fs'
 import fg from 'fast-glob'
-import normalizePath from 'normalize-path'
 import { createRequire } from 'module'
-import { pathToFileURL } from 'url'
 
 const require = createRequire(import.meta.url)
 
@@ -21,7 +19,7 @@ export default class MasterCSSCompiler {
         const { cwd, config, output } = this.options
         this.userConfigPath = path.join(cwd, config || 'master.css.js')
         this.outputPath = path.resolve(cwd, output.dir, output.name)
-        this.publicURL = normalizePath(this.outputPath)
+        this.publicURL = path.join(output.dir, output.name)
         this.initializing = this.reload()
     }
 
@@ -38,12 +36,10 @@ export default class MasterCSSCompiler {
             if (require.cache?.[this.userConfigPath]) {
                 delete require.cache[this.userConfigPath]
             }
-
             if (fs.existsSync(this.userConfigPath)) {
-                const userConfigPath = pathToFileURL(this.userConfigPath).href
-                const userConfigModule = await import(userConfigPath)
+                const userConfigModule = await import(this.userConfigPath)
                 userConfig = userConfigModule.default || userConfigModule
-                log.info`${'master.css.js'} imported from ${userConfigPath}`
+                log.info`${'master.css.js'} imported from ${this.userConfigPath}`
             } else {
                 log.info`No master.css.js in the project root`
             }
