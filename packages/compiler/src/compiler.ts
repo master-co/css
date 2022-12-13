@@ -19,13 +19,11 @@ export default class MasterCSSCompiler {
         const { cwd, config, output } = this.options
         this.userConfigPath = path.join(cwd, config || 'master.css.js')
         this.outputPath = path.resolve(cwd, output.dir, output.name)
-        this.publicURL = path.join(output.dir, output.name)
         this.initializing = this.reload()
     }
 
     userConfigPath: string
     outputPath: string
-    publicURL: string
     initializing: Promise<any>
     css: MasterCSS
     extractions = new Set<string>()

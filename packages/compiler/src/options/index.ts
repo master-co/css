@@ -8,6 +8,7 @@ const options: CompilerOptions = {
         name: 'master.css',
         dir: ''
     },
+    publicURL: '/master.css',
     additions: [],
     cwd: process.cwd(),
     accept({ name }) {
@@ -31,6 +32,7 @@ export interface CompilerOptions {
         name?: string
         dir?: string
     },
+    publicURL?: string
     additions?: FastGlobPattern[]
     accept?: (source: CompilerSource) => boolean
     extract?: (source: CompilerSource, css: MasterCSS) => string[]
