@@ -48,13 +48,9 @@ const replaceCompleteString = (content, completeStrings) => {
 }
 
 const keepCompleteStringAndProcessContent = (content: string, process: (content: string) => string) => {
-    
     const completeStrings = findCompleteString(content)
-    
     content = replaceCompleteString(content, completeStrings)
-    
     content = process(content)
-    
     completeStrings?.forEach((completeString, index) => {
         content = content.replace(`COMPLETE-STRING--${index}`, completeString)
     })
@@ -70,13 +66,12 @@ const peelString = (content) => {
         if (m.index === stringRegx.lastIndex) {
             stringRegx.lastIndex++
         }
+        strings.add(trimString(m[2]))
         const result = peelString(m[2])
         if (result.size) {
             for (const string of result) {
                 strings.add(string)
             }
-        } else {
-            strings.add(trimString(m[2]))
         }
     }
     return strings
@@ -108,5 +103,6 @@ const checkToExclude = (content, css: MasterCSS) => {
         || checkContent.match(/\(\{[^}]*\}/)
         || checkContent.match(/<\w+>|<\/\w+>/)
         || checkContent.match(/;$/)
+        || checkContent.match(/^\w+:\/\//)
         || checkContent.match(/^@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer)\b[^-]/)
 }
