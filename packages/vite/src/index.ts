@@ -94,7 +94,7 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
         generateBundle() {
             const assetRefId = this.emitFile({
                 type: 'asset',
-                name: compiler.outputPath,
+                name: compiler.publicURL,
                 source: compiler.css.text
             })
             masterCSSAssetURL = '/' + this.getFileName(assetRefId)
