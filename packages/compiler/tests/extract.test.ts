@@ -51,6 +51,41 @@ test('comment', () => {
     }, css)).toStrictEqual([])
 })
 
+test('=', () => {
+    const css = new MasterCSS()
+    expect(extract({
+        name: 'test',
+        content: `
+        this={components[0]}
+        data={data_0}>
+        content:'='
+        content:"="
+        `
+    }, css)).toStrictEqual([
+        'content:\'=\'',
+        'content:"="'
+    ])
+})
+
+test('group', () => {
+    const css = new MasterCSS()
+    expect(extract({
+        name: 'test',
+        content: `
+        {form}
+        {:else}
+        {data_0}
+        {}
+        {/if}
+        {bg:black;f:16}_div@dark
+        .something{bg:white}
+        `
+    }, css)).toStrictEqual([
+        '{bg:black;f:16}_div@dark',
+        '.something{bg:white}'
+    ])
+})
+
 test('style tag', () => {
     const css = new MasterCSS()
     expect(extract({
