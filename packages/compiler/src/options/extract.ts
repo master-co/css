@@ -104,6 +104,7 @@ const needExclude = (content, css:MasterCSS)  => {
     return !content
         || (
             !content.match(/(?:\S*\{\S*\})|(?:^[\w-]+:\S+)|(?:^[\w-]+\(\S+\)$)|(?:^[@~]\S+$)/)
+            && !content.match(/^(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)x(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)$/)
             && !Object.keys(css.config.semantics ?? semantics).includes(content)
             && !Object.keys(css.classes).includes(content)
         )
