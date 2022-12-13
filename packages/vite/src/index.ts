@@ -12,33 +12,34 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
     let devOutputFilePath: string
     let masterCSSAssetURL: string
     let rendered = false
-    let masterCSSAssetRefId: string
     const extract = (name: string, content: string) => {
+        const originalCssText = compiler.css.text
         if (compiler.insert({ name, content })) {
-            const originalCssText = compiler.css.text
             /* 根據 cssText 生成 `master.css` 並加入到 Webpack 的 assets 中 */
             const cssText = compiler.css.text
-            if (server && cssText !== originalCssText) {
+            if (cssText !== originalCssText) {
                 writeFile(compiler.outputPath, cssText)
-                writeFile(devOutputFilePath, cssText)
-                const notify = () => {
-                    server.ws.send({
-                        type: 'update',
-                        updates: [{
-                            type: 'css-update',
-                            acceptedPath: devOutputFilePath,
-                            path: masterCSSAssetURL,
-                            timestamp: Date.now()
-                        }]
-                    })
-                }
-                if (rendered) {
-                    notify()
-                } else {
-                    setTimeout(() => {
+                if (server) {
+                    writeFile(devOutputFilePath, cssText)
+                    const notify = () => {
+                        server.ws.send({
+                            type: 'update',
+                            updates: [{
+                                type: 'css-update',
+                                acceptedPath: devOutputFilePath,
+                                path: masterCSSAssetURL,
+                                timestamp: Date.now()
+                            }]
+                        })
+                    }
+                    if (rendered) {
                         notify()
-                    }, 500)
-                    rendered = true
+                    } else {
+                        setTimeout(() => {
+                            notify()
+                        }, 500)
+                        rendered = true
+                    }
                 }
             }
         }
@@ -64,10 +65,14 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
             /** 防止首次執行時 import 找不到生成的 ./master.css */
             writeFile(compiler.outputPath, '')
             if (server) {
-                devOutputFilePath = path.resolve(server?.config.cacheDir ?? process.cwd(), compiler.outputPath)
+                devOutputFilePath = path.resolve(server?.config.cacheDir ?? compiler.options.cwd, compiler.outputPath)
                 /** 防止首次執行時 import 找不到生成的 ./master.css */
                 writeFile(devOutputFilePath, '')
-                masterCSSAssetURL = (server.config.cacheDir.slice(process.cwd().length) + '/' + compiler.outputPath).replace(/\\/g, '/')
+                masterCSSAssetURL = (
+                    server.config.cacheDir
+                        .slice(compiler.options.cwd.length) + '/' + compiler.publicURL
+                )
+                    .replace(/\\/g, '/')
             }
         },
         resolveId(source) {
@@ -87,16 +92,12 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
             extract(file, await read())
         },
         generateBundle() {
-            if (masterCSSAssetRefId) {
-                this.setAssetSource(masterCSSAssetRefId, compiler.css.text)
-            } else {
-                masterCSSAssetRefId = this.emitFile({
-                    type: 'asset',
-                    name: compiler.outputPath,
-                    source: compiler.css.text
-                })
-            }
-            masterCSSAssetURL = '/' + this.getFileName(masterCSSAssetRefId)
+            const assetRefId = this.emitFile({
+                type: 'asset',
+                name: compiler.outputPath,
+                source: compiler.css.text
+            })
+            masterCSSAssetURL = '/' + this.getFileName(assetRefId)
         },
     }
 }
