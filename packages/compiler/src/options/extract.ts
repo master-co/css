@@ -9,7 +9,7 @@ export default function extract({ content }: CompilerSource, masterCss: MasterCS
         const result = peelString(block)
         if (result.size) {
             for (const string of result) {
-                strings.add(string)
+                strings.add(trimString(string))
             }
         } else {
             strings.add(trimString(block))
@@ -24,7 +24,7 @@ const trimString = (content: string) => {
     content = keepCompleteStringAndProcessContent(
         content,
         c => c
-            .replace(/^.*(?:["'`]|(?<!@>?)=)/, '')
+            .replace(/^[^:@~()]*(?:["'`]|(?<!@>?)=)/, '')
             .replace(/(?:[([{\\:#=.]+|["'`].*)$/, '')
     )
 
@@ -93,7 +93,7 @@ const checkToExclude = (content, css: MasterCSS) => {
     const checkContent = replaceCompleteString(content, completeStrings)
     return !checkContent
         || (
-            !checkContent.match(/(?:\S*\{\S*\})|(?:^[\w-]+:[\w$#]+)|(?:^[@~][\w-]+$)/)
+            !checkContent.match(/(?:\S*\{\S*\})|(?:^[\w-]+:\S+)|(?:^[\w-]+\(\S+\)$)|(?:^[@~]\S+$)/)
             && !Object.keys(css.config.semantics ?? semantics).includes(checkContent)
             && !Object.keys(css.classes).includes(checkContent)
         )
@@ -104,5 +104,5 @@ const checkToExclude = (content, css: MasterCSS) => {
         || checkContent.match(/\(\{[^}]*\}/)
         || checkContent.match(/<\w+>|<\/\w+>/)
         || checkContent.match(/;$/)
-        || checkContent.match(/@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer)\b[^-]/)
+        || checkContent.match(/^@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer)\b[^-]/)
 }
