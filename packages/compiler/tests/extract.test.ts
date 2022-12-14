@@ -1,9 +1,8 @@
 import MasterCSS from '@master/css'
 import extract from '../src/options/extract'
-
+const css = new MasterCSS()
 
 test('basic js object', () => {
-    const css = new MasterCSS()
     expect(extract({
         name: 'test',
         content: `
@@ -15,7 +14,6 @@ test('basic js object', () => {
 })
 
 test('basic html', () => {
-    const css = new MasterCSS()
     expect(extract({
         name: 'test',
         content: `<div class="f:16 blur(2px) @shake|1s|infinite>li"></div>`
@@ -23,7 +21,6 @@ test('basic html', () => {
 })
 
 test('content', () => {
-    const css = new MasterCSS()
     expect(extract({
         name: 'test',
         content: `<div class="content:'I\\'m_string' content:'I\\'m_string2'"></div>`
@@ -31,7 +28,6 @@ test('content', () => {
 })
 
 test('url', () => {
-    const css = new MasterCSS()
     expect(extract({
         name: 'test',
         content: `<div class="bg:url('https://master.co/test_logo.png')"></div>`
@@ -39,7 +35,6 @@ test('url', () => {
 })
 
 test('comment', () => {
-    const css = new MasterCSS()
     expect(extract({
         name: 'test',
         content: `<!-- comment -->
@@ -52,7 +47,6 @@ test('comment', () => {
 })
 
 test('=', () => {
-    const css = new MasterCSS()
     expect(extract({
         name: 'test',
         content: `
@@ -68,7 +62,6 @@ test('=', () => {
 })
 
 test('media', () => {
-    const css = new MasterCSS()
     expect(extract({
         name: 'test',
         content: `
@@ -92,7 +85,6 @@ test('media', () => {
 })
 
 test('wxh', () => {
-    const css = new MasterCSS()
     expect(extract({
         name: 'test',
         content: `
@@ -116,7 +108,6 @@ test('wxh', () => {
 })
 
 test('group', () => {
-    const css = new MasterCSS()
     expect(extract({
         name: 'test',
         content: `
@@ -148,7 +139,6 @@ test('import', () => {
 })
 
 test('style tag', () => {
-    const css = new MasterCSS()
     expect(extract({
         name: 'test',
         content: `<style data-sveltekit>.app.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;min-height:100vh}main.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{flex:1;display:flex;flex-direction:column;padding:1rem;width:100%;max-width:64rem;margin:0 auto;box-sizing:border-box}footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px}footer.s-7IPF32Wcq3s8 a.s-7IPF32Wcq3s8{font-weight:bold}@media(min-width: 480px){footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{padding:12px 0}}.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{}
@@ -223,4 +213,11 @@ test('style tag', () => {
 }
 </style>`
     }, css)).toStrictEqual([])
+})
+
+test('exclude import, require statements', () => {
+    expect(extract({
+        name: 'test',
+        content: `import { confetti } from '@neoconfetti/svelte'`
+    }, css)).not.toContain('@neoconfetti/svelte')
 })
