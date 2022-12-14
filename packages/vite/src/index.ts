@@ -1,93 +1,86 @@
 import MasterCSSCompiler from '@master/css.compiler'
-import path from 'path'
-import writeFile from './utils/write-file'
-
 import type { CompilerOptions } from '@master/css.compiler'
 import type { Plugin, ViteDevServer } from 'vite'
+import path from 'path'
+import log from 'aronlog'
+
+const HMR_EVENT = 'hmr:master.css'
+const VIRTUAL_CSS_MODULE_ID = 'virtual:master.css'
+const RESOLVED_VIRTUAL_CSS_MODULE_ID = '\0' + VIRTUAL_CSS_MODULE_ID
 
 export default async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Plugin> {
-    const compiler = new MasterCSSCompiler(options)
-    await compiler.initializing
+    const compiler = await new MasterCSSCompiler(options).init()
     let server: ViteDevServer
-    let masterCSSPublicURL: string
-    let rendered = false
-    const extract = (name: string, content: string) => {
-        const originalCssText = compiler.css.text
-        if (compiler.insert({ name, content })) {
-            /* 根據 cssText 生成 `master.css` 並加入到 Webpack 的 assets 中 */
-            const cssText = compiler.css.text
-            if (cssText !== originalCssText) {
-                writeFile(compiler.outputPath, cssText)
-                if (server) {
-                    // writeFile(devOutputFilePath, cssText)
-                    const notify = () => {
-                        server.ws.send({
-                            type: 'update',
-                            updates: [{
-                                type: 'css-update',
-                                acceptedPath: compiler.options.publicURL,
-                                path: masterCSSPublicURL,
-                                timestamp: Date.now()
-                            }]
-                        })
-                    }
-                    if (rendered) {
-                        notify()
-                    } else {
-                        setTimeout(() => {
-                            notify()
-                        }, 500)
-                        rendered = true
-                    }
-                }
-            }
-        }
-    }
-
     return {
         name: 'vite-plugin-master-css',
-        enforce: 'pre',
-        configureServer(_server) {
+        enforce: 'post',
+        async resolveId(id) {
+            if (id === VIRTUAL_CSS_MODULE_ID) {
+                return RESOLVED_VIRTUAL_CSS_MODULE_ID
+            }
+        },
+        load(id) {
+            if (id === RESOLVED_VIRTUAL_CSS_MODULE_ID) {
+                compiler.readSourcePaths().forEach((eachSourcePath) => this.addWatchFile(eachSourcePath))
+                return compiler.css.text
+            }
+        },
+        async handleHotUpdate({ server, file, read }) {
+            if (path.resolve(file) === compiler.customConfigPath) {
+                /* 當自訂的 master.css.js 變更時，根據其重新初始化 MasterCSS 並強制重載瀏覽器 */
+                await compiler.init()
+                log.info`${'change'} config file ${`.${path.relative(compiler.options.cwd, compiler.customConfigPath)}.`}`
+                server.ws.send({ type: 'full-reload' })
+            } else {
+                /* 掃描 HMR 期異動的檔案 */
+                compiler.insert(file, await read())
+                const virtualCSSModule = server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_CSS_MODULE_ID)
+                if (virtualCSSModule) {
+                    server.moduleGraph.invalidateModule(virtualCSSModule)
+                    server.ws.send({
+                        type: 'update',
+                        updates: [{
+                            type: 'js-update',
+                            path: virtualCSSModule.url,
+                            acceptedPath: virtualCSSModule.url,
+                            timestamp: Date.now()
+                        }]
+                    })
+                }
+                server.ws.send({
+                    type: 'custom',
+                    event: HMR_EVENT,
+                    data: compiler.css.text
+                })
+            }
+        },
+        async configureServer(_server) {
             server = _server
-            /**
-             * Dev Server 啟動時首次執行
-             * 解決 HMR 在特定框架 (如 Svelte Kit) 於啟動時沒有提供 HTML entry 上下文供掃描的問題
-             */
-            server.ws.on('connection', async () => {
-                const localDevUrl = server.resolvedUrls.local[0]
-                const response = await fetch(localDevUrl)
-                const entryHTML = await response.text()
-                extract(localDevUrl, entryHTML)
-            })
-            masterCSSPublicURL = compiler.options.publicURL
-        },
-        buildStart() {
-            /** 防止首次執行時 import 找不到生成的 ./master.css */
-            writeFile(compiler.outputPath, '')
-        },
-        resolveId(source) {
-            if (source.endsWith('master.css?direct'))
-                return '\0' + source
+            if (compiler.hasCustomConfig) {
+                server.watcher.add(compiler.customConfigPath)
+            }
+            // TODO 目前會重複 watch 相同的檔案
+            // const supportsGlobs = server.config.server.watch?.disableGlobbing === false
+            // server.watcher.add(supportsGlobs ? compiler.options.include : compiler.readSourcePaths())
         },
         transform(code, id) {
-            extract(id, code)
+            if (server && code.includes(VIRTUAL_CSS_MODULE_ID)) {
+                return `${code}
+if (import.meta.hot) {
+    try {
+        import.meta.hot.on('hmr:master.css', (text) => {
+            const virtualCSSStyle = document.querySelector(\`[data-vite-dev-id*="virtual:master.css"]\`)
+            if (virtualCSSStyle) {
+                virtualCSSStyle.textContent = text
+            }
+        })
+    } catch (err) {
+        console.warn('[Master CSS HMR]', err)
+    }
+}
+                `
+            }
         },
-        /* 不一定會被其他整合的工具如 Svelte Kit Hook */
-        transformIndexHtml(html, { filename }) {
-            html = html.replace(/(<head>)/, `$1<link rel="stylesheet" href="${masterCSSPublicURL}">`)
-            extract(filename, html)
-            return html
-        },
-        async handleHotUpdate({ file, read }) {
-            extract(file, await read())
-        },
-        generateBundle() {
-            const assetRefId = this.emitFile({
-                type: 'asset',
-                name: compiler.options.output.name,
-                source: compiler.css.text
-            })
-            masterCSSPublicURL = '/' + this.getFileName(assetRefId)
-        },
+
     }
 }
