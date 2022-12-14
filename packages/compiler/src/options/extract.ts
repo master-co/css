@@ -54,7 +54,7 @@ const keepCompleteStringAndProcessContent = (content: string, process: (content:
     completeStrings?.forEach((completeString, index) => {
         content = content.replace(`COMPLETE-STRING--${index}`, completeString)
     })
-    
+
     return content
 }
 
@@ -93,7 +93,7 @@ const preExclude = (content) => {
 const checkToExclude = (content, css: MasterCSS) => {
     const completeStrings = findCompleteString(content)
     const checkContent: string = replaceCompleteString(content, completeStrings)
-    
+
     const groupRegx = /{(.*)}/
     let m: RegExpExecArray
     while ((m = groupRegx.exec(checkContent)) !== null) {
