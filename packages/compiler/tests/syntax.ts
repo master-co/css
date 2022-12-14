@@ -1,12 +1,11 @@
 import MasterCSSCompiler from '../src'
 
-test('additions', async () => {
+test('syntax', async () => {
     const compiler = await new MasterCSSCompiler({
-        include: ['./test.html'],
+        include: ['syntax.html'],
         cwd: __dirname
     }).init()
-
-    const classes = [
+    const testClasses = [
         '{fg:blue-40/.5;font:32;p:16;w:full;text:center}>li:hover@md',
         'w:calc(+100%-1.25rem)',
         'p:10|20|30|40',
@@ -66,7 +65,8 @@ test('additions', async () => {
         '.sidebar:hover_{opacity:.75}',
         '.navitem:hover_{bg:black/.75}'
     ]
-
-    expect(classes.filter((x) => !compiler.css.rules.map((eachRule) => eachRule.className).includes(x)))
-        .toEqual([])
+    for (const eachGeneratedClass of Object.keys(compiler.css.ruleOfClass)) {
+        expect(testClasses)
+            .toContain(eachGeneratedClass)
+    }
 })

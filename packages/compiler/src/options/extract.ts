@@ -93,7 +93,6 @@ const preExclude = (content) => {
 const checkToExclude = (content, css: MasterCSS) => {
     const completeStrings = findCompleteString(content)
     const checkContent: string = replaceCompleteString(content, completeStrings)
-
     const groupRegx = /{(.*)}/
     let m: RegExpExecArray
     while ((m = groupRegx.exec(checkContent)) !== null) {
