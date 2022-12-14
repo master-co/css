@@ -1,8 +1,10 @@
+import type { Config } from '../config'
 import MasterCSS from '../css'
 import '../polyfills/css-escape'
 
-export default function renderFromHTML(html: string, css: MasterCSS = new MasterCSS({ observe: false })): string {
+export default function renderFromHTML(html: string, config?: Config): string {
     if (!html) return
+    const css = new MasterCSS({ observe: false, config })
     const regexp = /\sclass="([^"]*)"/gm
     let results: string[]
     while ((results = regexp.exec(html))) {
@@ -14,5 +16,5 @@ export default function renderFromHTML(html: string, css: MasterCSS = new Master
             }
         }
     }
-    return css.rules.map(eachRule => eachRule.natives.reduce((a, b) => a + b.text, '')).join('')
+    return css.text
 }
