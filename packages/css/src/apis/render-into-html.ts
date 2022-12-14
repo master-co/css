@@ -1,9 +1,9 @@
-import MasterCSS from '../css'
+import type { Config } from '../config'
 import '../polyfills/css-escape'
 import renderFromHTML from './render-from-html'
 
-export default function renderIntoHTML(html: string, css: MasterCSS = new MasterCSS({ observe: false })): string {
+export default function renderIntoHTML(html: string, config?: Config): string {
     if (!html) return
     return html
-        .replace(/(<head>)/, `$1<style title="master">${renderFromHTML(html, css)}</style>`)
+        .replace(/(<head>)/, `$1<style title="master">${renderFromHTML(html, config)}</style>`)
 }

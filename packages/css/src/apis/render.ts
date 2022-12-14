@@ -1,8 +1,10 @@
+import type { Config } from '../config'
 import MasterCSS from '../css'
 import '../polyfills/css-escape'
 
-export default function render(classes: string[], css: MasterCSS = new MasterCSS({ observe: false })): string {
+export default function render(classes: string[], config?: Config): string {
     if (!classes?.length) return
+    const css = new MasterCSS({ observe: false, config })
     for (const eachClassName of classes) {
         if (!(eachClassName in css.countOfClass)) {
             if (css.insert(eachClassName))
