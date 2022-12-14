@@ -50,6 +50,7 @@
         "@master/css": "",
         "aronlog": "^1.0.0-beta.32",
         "fast-glob": "^3.2.12",
+        "minimatch": "^5.1.1",
         "normalize-path": "^3.0.0"
     }
 }

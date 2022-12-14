@@ -1,12 +1,13 @@
 import path from 'path'
 import log from 'aronlog'
-import { default as defaultOptions, CompilerOptions, CompilerSource } from './options'
+import { default as defaultOptions, CompilerOptions } from './options'
 import MasterCSS, { extend } from '@master/css'
 import { performance } from 'perf_hooks'
 import type { Config } from '@master/css'
 import fs from 'fs'
 import fg from 'fast-glob'
 import { createRequire } from 'module'
+import minimatch from 'minimatch'
 
 const require = createRequire(import.meta.url)
 
@@ -16,63 +17,35 @@ export default class MasterCSSCompiler {
         public options?: CompilerOptions
     ) {
         this.options = extend(defaultOptions, options)
-        const { cwd, config, output } = this.options
-        this.userConfigPath = path.join(cwd, config || 'master.css.js')
-        this.outputPath = path.resolve(cwd, output.dir, output.name)
-        this.initializing = this.reload()
     }
 
-    userConfigPath: string
-    outputPath: string
-    initializing: Promise<any>
     css: MasterCSS
     extractions = new Set<string>()
 
-    async reload() {
-        let userConfig: Config
-        try {
-            if (require.cache?.[this.userConfigPath]) {
-                delete require.cache[this.userConfigPath]
-            }
-            if (fs.existsSync(this.userConfigPath)) {
-                const userConfigModule = await import(this.userConfigPath)
-                userConfig = userConfigModule.default || userConfigModule
-                log.info`${'master.css.js'} imported from ${this.userConfigPath}`
-            } else {
-                log.info`No master.css.js in the project root`
-            }
-            // eslint-disable-next-line no-empty
-        } catch (err) {
-            log.error(err)
-        }
-        this.css = new MasterCSS({ config: userConfig })
+    async init() {
         this.extractions.clear()
-        if (this.options.additions?.length) {
-            fg.sync(this.options.additions, { cwd: this.options.cwd })
-                .forEach((eachFilePath) => {
-                    const eachFileContent = fs.readFileSync(
-                        path.resolve(this.options.cwd, eachFilePath),
-                        { encoding: 'utf-8' }
-                    ).toString()
-                    this.insert({
-                        name: eachFilePath,
-                        content: eachFileContent
-                    })
-                })
-        }
+        this.css = new MasterCSS({ config: await this.readConfig() })
+        this.compile()
+        return this
     }
 
-    extract({ name, content }: CompilerSource) {
-        if (
-            !name || !content
-            || !this.options.accept?.({ content, name })
-        ) {
+    compile() {
+        this.readSourcePaths()
+            .forEach((eachSourcePath) => {
+                const eachFileContent = fs.readFileSync(
+                    path.resolve(this.options.cwd, eachSourcePath),
+                    { encoding: 'utf-8' }
+                ).toString()
+                this.insert(eachSourcePath, eachFileContent)
+            })
+        return this
+    }
+
+    extract(name: string, content: string) {
+        if (!name || !content || !this.accept(name)) {
             return []
         }
         const eachExtractions: string[] = []
-
-        log.info`${'Master'} extract ${`.${path.relative(this.options.cwd, name)}.`}`
-
         for (const eachNewExtraction of this.options.extract({ content, name }, this.css)) {
             if (this.extractions.has(eachNewExtraction)) {
                 continue
@@ -81,11 +54,12 @@ export default class MasterCSSCompiler {
                 eachExtractions.push(eachNewExtraction)
             }
         }
+        log.info`${'extract'} ${eachExtractions.length.toString()} potential ${`.from ${path.relative(this.options.cwd, name)}.`}`
         return eachExtractions
     }
 
-    insert({ name, content }: CompilerSource): boolean {
-        const extractions = this.extract({ name, content })
+    insert(name: string, content: string): boolean {
+        const extractions = this.extract(name, content)
         if (!extractions.length) {
             return false
         }
@@ -96,17 +70,61 @@ export default class MasterCSSCompiler {
     insertExtractions(extractions: string[]) {
         const p1 = performance.now()
         /* 根據類名尋找並插入規則 ( MasterCSS 本身帶有快取機制，重複的類名不會再編譯及產生 ) */
+        let validCount = 0
         for (const eachExtraction of extractions) {
-            this.css.insert(eachExtraction)
+            if (this.css.insert(eachExtraction)) {
+                validCount++
+            }
         }
-        const spent = Math.round((performance.now() - p1) * 1000)
-        log.info`${'Master'} ${`*${extractions.length}*`} extractions in ${spent}µs`
-        log.info`${'Master'} total ${`*${this.css.rules.length}*`} rules`
-        if (this.options.debug) {
-            const validClasses = this.css.rules.map((rule) => rule.className)
-            log.info`${'Master'} extractions: ${`.${extractions.join(' ')}.`}`
-            log.info`${'Master'} ${`+${validClasses.length}+`} valid classes: ${`+${validClasses.join(' ')}+`}`
+        const spent = Math.round((performance.now() - p1) * 100) / 100
+        log.info`${'compile'} ${`*${validCount}*`} valid ${`.in.`} ${`*${spent}ms*`} ${`.(${this.css.rules.length} rules).`}`
+    }
+
+    readSourcePaths(): string[] {
+        const { include, exclude } = this.options
+        return fg.sync(include, {
+            cwd: this.options.cwd,
+            ignore: exclude
+        })
+    }
+
+    async readConfig(): Promise<Config> {
+        let customConfig: Config
+        try {
+            if (require.cache?.[this.customConfigPath]) {
+                delete require.cache[this.customConfigPath]
+            }
+            if (this.hasCustomConfig) {
+                const userConfigModule = await import(this.customConfigPath)
+                customConfig = userConfigModule.default || userConfigModule
+                console.log()
+                log.info`${'import'} custom config ${`.from ${path.relative(this.options.cwd, this.customConfigPath)}.`}`
+            } else {
+                log.info`No master.css.js in the project root`
+            }
+            // eslint-disable-next-line no-empty
+        } catch (err) {
+            log.error(err)
         }
-        console.log()
+        return customConfig
+    }
+
+    accept(name: string) {
+        for (const eachIncludePattern of this.options.include) {
+            if (!minimatch(name, eachIncludePattern)) return false
+        }
+        for (const eachExcludePattern of this.options.exclude) {
+            if (minimatch(name, eachExcludePattern)) return false
+        }
+        return true
+    }
+
+    get hasCustomConfig() {
+        return fs.existsSync(this.customConfigPath)
+    }
+
+    get customConfigPath() {
+        const { cwd, config } = this.options
+        return path.join(cwd, config || 'master.css.js')
     }
 }

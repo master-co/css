@@ -4,21 +4,18 @@ import type { Pattern as FastGlobPattern } from 'fast-glob'
 
 const options: CompilerOptions = {
     config: './master.css.js',
-    output: {
-        name: 'master.css',
-        dir: ''
-    },
-    publicURL: '/master.css',
-    additions: [],
     cwd: process.cwd(),
-    accept({ name }) {
-        if (name.match(/[\\/]node_modules[\\/]/)) {
-            return false
-        }
-        if (name.match(/\.(html|js|jsx|ts|tsx|svelte|astro|vue)$/i)) {
-            return true
-        }
-    },
+    include: ['**/*.{html,js,jsx,ts,tsx,svelte,astro,vue,md,mdx,pug,php}'],
+    exclude: [
+        '**/node_modules/**',
+        '**/*.d.ts',
+        '**/*.test.*',
+        'node_modules',
+        'master.css.{js,ts,mjs,cjs}',
+        'dist',
+        'out',
+        'README.md'
+    ],
     extract
 }
 
@@ -28,14 +25,9 @@ export declare type CompilerSource = {
 }
 
 export interface CompilerOptions {
-    output?: {
-        name?: string
-        dir?: string
-    },
-    publicURL?: string
-    additions?: FastGlobPattern[]
-    accept?: (source: CompilerSource) => boolean
     extract?: (source: CompilerSource, css: MasterCSS) => string[]
+    include?: FastGlobPattern[]
+    exclude?: FastGlobPattern[]
     config?: string
     debug?: boolean
     cwd?: string
