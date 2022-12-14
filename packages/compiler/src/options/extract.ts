@@ -103,7 +103,7 @@ const checkToExclude = (content, css: MasterCSS) => {
     return needExclude(checkContent, css)
 }
 
-const needExclude = (content, css:MasterCSS)  => {
+const needExclude = (content, css: MasterCSS) => {
     return !content
         || (
             !content.match(/(?:\S*\{\S*\})|(?:^[\w-]+:\S+)|(?:^[\w-]+\(\S+\)$)|(?:^[@~]\S+$)/)
