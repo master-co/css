@@ -1,11 +1,10 @@
 import MasterCSSCompiler from '../src'
 
 test('additions', async () => {
-    const compiler = new MasterCSSCompiler({
-        additions: ['./test.html'],
+    const compiler = await new MasterCSSCompiler({
+        include: ['./test.html'],
         cwd: __dirname
-    })
-    await compiler.initializing
+    }).init()
 
     const classes = [
         '{fg:blue-40/.5;font:32;p:16;w:full;text:center}>li:hover@md',
