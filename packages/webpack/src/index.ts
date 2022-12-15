@@ -37,49 +37,49 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
         })
 
         compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
-            const enabledChunks = new WeakSet()
-            const handler = (chunk, set) => {
-                if (enabledChunks.has(chunk))
-                    return
-                enabledChunks.add(chunk)
-                set.add(RuntimeGlobals.publicPath)
-                // compilation.addRuntimeModule(chunk, new CssLoadingRuntimeModule(set))
-            }
-            compilation.hooks.runtimeRequirementInTree
-                .for(RuntimeGlobals.ensureChunkHandlers)
-                .tap(NAME, handler)
+            // const enabledChunks = new WeakSet()
+            // const handler = (chunk, set) => {
+            //     if (enabledChunks.has(chunk))
+            //         return
+            //     enabledChunks.add(chunk)
+            //     set.add(RuntimeGlobals.publicPath)
+            //     // compilation.addRuntimeModule(chunk, new CssLoadingRuntimeModule(set))
+            // }
+            // compilation.hooks.runtimeRequirementInTree
+            //     .for(RuntimeGlobals.ensureChunkHandlers)
+            //     .tap(NAME, handler)
 
-            compilation.hooks.runtimeRequirementInTree
-                .for(RuntimeGlobals.hmrDownloadUpdateHandlers)
-                .tap(NAME, handler)
+            // compilation.hooks.runtimeRequirementInTree
+            //     .for(RuntimeGlobals.hmrDownloadUpdateHandlers)
+            //     .tap(NAME, handler)
 
-            class CssLoadingRuntimeModule extends RuntimeModule {
+            // class CssLoadingRuntimeModule extends RuntimeModule {
 
-                runtimeRequirements: Set<string>
+            //     runtimeRequirements: Set<string>
 
-                constructor(runtimeRequirements: Set<string>) {
-                    super('master-css-loading', 10)
+            //     constructor(runtimeRequirements: Set<string>) {
+            //         super('master-css-loading', 10)
 
-                    this.runtimeRequirements = runtimeRequirements
-                }
+            //         this.runtimeRequirements = runtimeRequirements
+            //     }
 
-                generate() {
-                    const { runtimeRequirements } = this
-                    const withHmr = runtimeRequirements.has(RuntimeGlobals.hmrDownloadUpdateHandlers)
-                    if (!withHmr)
-                        return ''
+            //     generate() {
+            //         const { runtimeRequirements } = this
+            //         const withHmr = runtimeRequirements.has(RuntimeGlobals.hmrDownloadUpdateHandlers)
+            //         if (!withHmr)
+            //             return ''
 
-                    return Template.asString([
-                        Date.now().toString(),
-                        `const link = document.querySelector('[href*=\\'${publicURL}\\'][rel=stylesheet]')`,
-                        'if (link) {',
-                        Template.indent([
-                            'link.href = link.href.replace(/ts=[0-9]+/, \'ts=\' + Date.now())'
-                        ]),
-                        '}'
-                    ])
-                }
-            }
+            //         return Template.asString([
+            //             Date.now().toString(),
+            //             `const link = document.querySelector('[href*=\\'${publicURL}\\'][rel=stylesheet]')`,
+            //             'if (link) {',
+            //             Template.indent([
+            //                 'link.href = link.href.replace(/ts=[0-9]+/, \'ts=\' + Date.now())'
+            //             ]),
+            //             '}'
+            //         ])
+            //     }
+            // }
 
             compilation.hooks.succeedModule.tap(NAME, (eachModule) => {
                 const { modifiedFiles, watching } = compiler
