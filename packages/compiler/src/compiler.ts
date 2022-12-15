@@ -6,10 +6,7 @@ import { performance } from 'perf_hooks'
 import type { Config } from '@master/css'
 import fs from 'fs'
 import fg from 'fast-glob'
-import { createRequire } from 'module'
 import minimatch from 'minimatch'
-
-const require = createRequire(import.meta.url)
 
 export default class MasterCSSCompiler {
 
@@ -21,6 +18,8 @@ export default class MasterCSSCompiler {
 
     css: MasterCSS
     extractions = new Set<string>()
+    readonly moduleId = 'master.css'
+    readonly resolvedModuleId = '\0' + this.moduleId
 
     async init() {
         this.extractions.clear()

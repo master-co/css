@@ -8,9 +8,7 @@ module.exports = {
         new MasterCSSWebpackPlugin()
     ],
     devServer: {
-        static: './src',
-        host: 'localhost',
-        hot: true
+        static: './src'
     },
     module: {
         rules: [
@@ -18,12 +16,14 @@ module.exports = {
                 test: /\.ts$/,
                 loader: 'ts-loader',
                 exclude: /node_modules/
+            },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
             }
-        ]
+        ],
     },
     resolve: {
-        extensions: ['.ts', '.js'],
-    },
-    stats: 'none',
-    mode: 'development'
+        extensions: ['.ts', '.js']
+    }
 }

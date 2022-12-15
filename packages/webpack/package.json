@@ -48,6 +48,7 @@
     ],
     "dependencies": {
         "@master/css": "",
-        "@master/css.compiler": ""
+        "@master/css.compiler": "",
+        "webpack-virtual-modules": "^0.5.0"
     }
 }
