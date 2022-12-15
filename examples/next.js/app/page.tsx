@@ -8,7 +8,7 @@ export default function Home() {
                 <h1 className="bg:blue">
                     Welcome to <a href="https://nextjs.org">Next.js 13!</a>
                 </h1>
-
+                <button className='btn bg:green'>Button</button>
                 <p className={styles.description}>
                     Get started by editing{' '}
                     <code className={styles.code}>app/page.tsx</code>

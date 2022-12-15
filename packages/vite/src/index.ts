@@ -4,8 +4,6 @@ import type { Plugin, ViteDevServer } from 'vite'
 import path from 'path'
 import log from 'aronlog'
 
-const HMR_EVENT = 'hmr:master.css'
-
 export default async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Plugin> {
     const compiler = await new MasterCSSCompiler(options).init()
     let server: ViteDevServer
@@ -47,7 +45,7 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
                 }
                 server.ws.send({
                     type: 'custom',
-                    event: HMR_EVENT,
+                    event: compiler.moduleHMREvent,
                     data: compiler.css.text
                 })
             }
@@ -66,7 +64,7 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
                 return `${code}
 if (import.meta.hot) {
     try {
-        import.meta.hot.on('hmr:master.css', (text) => {
+        import.meta.hot.on('${compiler.moduleHMREvent}', (text) => {
             const virtualCSSStyle = document.querySelector(\`[data-vite-dev-id*="master.css"]\`)
             if (virtualCSSStyle) {
                 virtualCSSStyle.textContent = text
