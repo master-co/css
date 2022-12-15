@@ -20,7 +20,7 @@ export default function extract({ content }: CompilerSource, masterCss: MasterCS
 
 const trimString = (content: string, reservedWord: string[]) => {
     const originContent = content
-    
+
     const wxh = content.match(/(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)x(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)/g)
 
     if ((wxh?.length ? reservedWord.concat(wxh) : reservedWord).find(x => originContent.startsWith(x))) {
@@ -34,8 +34,8 @@ const trimString = (content: string, reservedWord: string[]) => {
         content = keepCompleteStringAndProcessContent(
             content,
             c => c
-            .replace(/^[^:@~(]*(?:["'`]|(?<!@>?)=)/, '')
-            .replace(/(?:[([{\\:#=.]+|["'`].*)$/, '')
+                .replace(/^[^:@~(]*(?:["'`]|(?<!@>?)=)/, '')
+                .replace(/(?:[([{\\:#=.]+|["'`].*)$/, '')
         )
     }
 
@@ -117,8 +117,8 @@ const checkToExclude = (content: string, reservedWord: string[]) => {
 const needExclude = (content: string, reservedWord: string[]) => {
     return !content
         || (
-            !content.match(/(?:\S*\{\S*\})|(?:^[\w-]+:\S+)|(?:^[\w-]+\(\S+\)$)|(?:^[@~]\S+$)/)
-        && !content.match(/^(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)x(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)$/)
+            !content.match(/(?:\S*\{\S*\})|(?:^[\w\-()]+:\S+)|(?:^[\w-]+\(\S+\)$)|(?:^[@~]\S+$)/)
+            && !content.match(/^(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)x(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)$/)
             && !reservedWord.includes(content)
         )
         || content.match(/\*\*/)
