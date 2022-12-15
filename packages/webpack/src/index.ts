@@ -10,6 +10,7 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
     apply(compiler: Compiler) {
         const { webpack } = compiler
         const { Template, RuntimeGlobals, RuntimeModule } = webpack
+        const cssCompiler = this
 
         if (!compiler.options.resolve)
             compiler.options.resolve = {}
@@ -22,7 +23,10 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
             ['node_modules/master.css']: ''
         })
         virtualModules.apply(compiler)
-        const updateCSS = () => virtualModules.writeModule('node_modules/master.css', this.css.text)
+        const updateCSS = () => virtualModules.writeModule(
+            'node_modules/master.css',
+            (compiler.watchMode ? `/*${this.moduleHMREvent}*/` : '') + this.css.text
+        )
 
         // npm run build
         compiler.hooks.beforeRun.tapPromise(NAME, async () => {
@@ -37,49 +41,45 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
         })
 
         compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
-            // const enabledChunks = new WeakSet()
-            // const handler = (chunk, set) => {
-            //     if (enabledChunks.has(chunk))
-            //         return
-            //     enabledChunks.add(chunk)
-            //     set.add(RuntimeGlobals.publicPath)
-            //     // compilation.addRuntimeModule(chunk, new CssLoadingRuntimeModule(set))
-            // }
-            // compilation.hooks.runtimeRequirementInTree
-            //     .for(RuntimeGlobals.ensureChunkHandlers)
-            //     .tap(NAME, handler)
+            const enabledChunks = new WeakSet()
 
-            // compilation.hooks.runtimeRequirementInTree
-            //     .for(RuntimeGlobals.hmrDownloadUpdateHandlers)
-            //     .tap(NAME, handler)
+            const handleRuntime = (chunk, set) => {
+                if (enabledChunks.has(chunk))
+                    return
+                enabledChunks.add(chunk)
+                set.add(RuntimeGlobals.publicPath)
+                compilation.addRuntimeModule(chunk, new class MasterCSSRuntimeModule extends RuntimeModule {
+                    runtimeRequirements: Set<string>
+                    constructor(runtimeRequirements: Set<string>) {
+                        super('master-css-runtime', 10)
+                        this.runtimeRequirements = runtimeRequirements
+                    }
+                    generate() {
+                        const { runtimeRequirements } = this
+                        const withHmr = runtimeRequirements.has(RuntimeGlobals.hmrDownloadUpdateHandlers)
+                        if (!withHmr)
+                            return ''
 
-            // class CssLoadingRuntimeModule extends RuntimeModule {
+                        return Template.asString([
+                            `
+                                if (typeof document !== 'undefined') {
+                                    const style = Array.from(document.querySelectorAll('style')).find((eachStyle) => eachStyle.textContent.startsWith('/*${cssCompiler.moduleHMREvent}*/'))
+                                    console.log(style)
+                                    if (style) style.textContent = '${cssCompiler.css.text}'
+                                }
+                            `,
+                        ])
+                    }
+                }(set))
+            }
 
-            //     runtimeRequirements: Set<string>
+            compilation.hooks.runtimeRequirementInTree
+                .for(RuntimeGlobals.ensureChunkHandlers)
+                .tap(NAME, handleRuntime)
 
-            //     constructor(runtimeRequirements: Set<string>) {
-            //         super('master-css-loading', 10)
-
-            //         this.runtimeRequirements = runtimeRequirements
-            //     }
-
-            //     generate() {
-            //         const { runtimeRequirements } = this
-            //         const withHmr = runtimeRequirements.has(RuntimeGlobals.hmrDownloadUpdateHandlers)
-            //         if (!withHmr)
-            //             return ''
-
-            //         return Template.asString([
-            //             Date.now().toString(),
-            //             `const link = document.querySelector('[href*=\\'${publicURL}\\'][rel=stylesheet]')`,
-            //             'if (link) {',
-            //             Template.indent([
-            //                 'link.href = link.href.replace(/ts=[0-9]+/, \'ts=\' + Date.now())'
-            //             ]),
-            //             '}'
-            //         ])
-            //     }
-            // }
+            compilation.hooks.runtimeRequirementInTree
+                .for(RuntimeGlobals.hmrDownloadUpdateHandlers)
+                .tap(NAME, handleRuntime)
 
             compilation.hooks.succeedModule.tap(NAME, (eachModule) => {
                 const { modifiedFiles, watching } = compiler
@@ -90,8 +90,9 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
                 }
                 // 從記憶體或快取取得當前 module 的原始碼
                 const content = eachModule['_source']?.source()
+                console.log(content)
                 if (content) {
-                    this.extract(name, content)
+                    this.insert(name, content)
                     updateCSS()
                 }
             })

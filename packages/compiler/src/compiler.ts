@@ -20,6 +20,7 @@ export default class MasterCSSCompiler {
     extractions = new Set<string>()
     readonly moduleId = 'master.css'
     readonly resolvedModuleId = '\0' + this.moduleId
+    readonly moduleHMREvent = `HMR:${this.moduleId}`
 
     async init() {
         this.extractions.clear()
@@ -30,7 +31,7 @@ export default class MasterCSSCompiler {
 
     compile() {
         /* 插入指定的固定 class */
-        if (this.options.fixedClasses)
+        if (this.options.fixedClasses?.length)
             for (const eachFixedClass of this.options.fixedClasses) {
                 this.css.insert(eachFixedClass)
             }
@@ -74,7 +75,7 @@ export default class MasterCSSCompiler {
         /* 根據類名尋找並插入規則 ( MasterCSS 本身帶有快取機制，重複的類名不會再編譯及產生 ) */
         let validCount = 0
         /* 排除指定的 class */
-        if (this.options.ignoredClasses)
+        if (this.options.ignoredClasses?.length)
             extractions = extractions.filter((eachExtraction) => {
                 for (const eachIgnoreClass of this.options.ignoredClasses) {
                     if (typeof eachIgnoreClass === 'string') {
