@@ -34,7 +34,7 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
             updateCSS()
         })
 
-        compiler.hooks.beforeCompile.tapPromise(NAME, async () => {
+        compiler.hooks.watchRun.tapPromise(NAME, async () => {
             compiler.modifiedFiles?.forEach((modifiedFilePath) => {
                 this.insert(modifiedFilePath, fs.readFileSync(modifiedFilePath).toString())
                 updateCSS()
@@ -60,7 +60,8 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
                         const withHmr = runtimeRequirements.has(RuntimeGlobals.hmrDownloadUpdateHandlers)
                         if (!withHmr)
                             return ''
-
+                        /** 解決 npm run dev 後首次 HMR 未正確更新並重載的問題 */
+                        updateCSS()
                         return Template.asString([
                             `
                                 if (typeof document !== 'undefined') {
