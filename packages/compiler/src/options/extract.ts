@@ -36,7 +36,7 @@ const trimString = (content: string) => {
 
 
 const findCompleteString = (content) => {
-    const completeStrings = content.match(/((?<!\\)["'`])(?:\\\1|(?:(?!\1))[\S\s])*(?<!\\)\1/)
+    const completeStrings = content.match(/((?<!\\)["'`])(?:\\\1|(?:(?!\1))[\S\s])*(?<!\\)\1/g)
     return completeStrings
 }
 
@@ -48,12 +48,17 @@ const replaceCompleteString = (content, completeStrings) => {
 }
 
 const keepCompleteStringAndProcessContent = (content: string, process: (content: string) => string) => {
+    console.log(content)
     const completeStrings = findCompleteString(content)
+    console.log(completeStrings)
     content = replaceCompleteString(content, completeStrings)
+    console.log(content)
     content = process(content)
+    console.log(content)
     completeStrings?.forEach((completeString, index) => {
         content = content.replace(`COMPLETE-STRING--${index}`, completeString)
     })
+    console.log(content)
     
     return content
 }
