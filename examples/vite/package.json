@@ -4,20 +4,13 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "rm -rf **/*master.css && vite",
-        "build": "vite build",
-        "preview": "vite preview",
-        "link": "npm link ../../",
-        "unlink": "npm rm ../../"
-    },
-    "dependencies": {
-        "vue": "^3.2.37",
-        "@master/css.vite": ""
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview"
     },
     "devDependencies": {
-        "@vitejs/plugin-vue": "^3.1.0",
-        "typescript": "^4.6.4",
-        "vite": "^3.1.0",
-        "vue-tsc": "^0.40.4"
+        "typescript": "^4.9.3",
+        "vite": "^4.0.0",
+        "@master/css.vite": ""
     }
 }
