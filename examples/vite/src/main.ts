@@ -9,7 +9,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         <img src="/vite.svg" class="logo" alt="Vite logo" />
         </a>
         <a href="https://css.master.co" target="_blank">
-        <img src="/master.svg" class="logo w:172 h:172" alt="Master logo" />
+        <img src="/master.svg" class="logo 172x172" alt="Master logo" />
         </a>
     </div>
     <h1>Vite v4 + Master CSS v2</h1>
