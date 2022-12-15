@@ -28,6 +28,8 @@ export interface CompilerOptions {
     extract?: (source: CompilerSource, css: MasterCSS) => string[]
     include?: FastGlobPattern[]
     exclude?: FastGlobPattern[]
+    fixedClasses?: string[]
+    ignoredClasses?: string[] | RegExp[]
     config?: string
     debug?: boolean
     cwd?: string

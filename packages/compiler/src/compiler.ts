@@ -30,6 +30,11 @@ export default class MasterCSSCompiler {
     }
 
     compile() {
+        /* 插入指定的固定 class */
+        if (this.options.fixedClasses)
+            for (const eachFixedClass of this.options.fixedClasses) {
+                this.css.insert(eachFixedClass)
+            }
         this.readSourcePaths()
             .forEach((eachSourcePath) => {
                 const eachFileContent = fs.readFileSync(
@@ -59,18 +64,25 @@ export default class MasterCSSCompiler {
     }
 
     insert(name: string, content: string): boolean {
-        const extractions = this.extract(name, content)
+        let extractions = this.extract(name, content)
         if (!extractions.length) {
             return false
         }
-        this.insertExtractions(extractions)
-        return true
-    }
-
-    insertExtractions(extractions: string[]) {
         const p1 = performance.now()
         /* 根據類名尋找並插入規則 ( MasterCSS 本身帶有快取機制，重複的類名不會再編譯及產生 ) */
         let validCount = 0
+        /* 排除指定的 class */
+        if (this.options.ignoredClasses)
+            extractions = extractions.filter((eachExtraction) => {
+                for (const eachIgnoreClass of this.options.ignoredClasses) {
+                    if (typeof eachIgnoreClass === 'string') {
+                        if (eachIgnoreClass === eachExtraction) return false
+                    } else if (eachIgnoreClass.test(eachExtraction)) {
+                        return false
+                    }
+                }
+                return true
+            })
         for (const eachExtraction of extractions) {
             if (this.css.insert(eachExtraction)) {
                 validCount++
@@ -78,6 +90,7 @@ export default class MasterCSSCompiler {
         }
         const spent = Math.round((performance.now() - p1) * 100) / 100
         log.info`${'compile'} ${`*${validCount}*`} valid ${`.in.`} ${`*${spent}ms*`} ${`.(${this.css.rules.length} rules).`}`
+        return true
     }
 
     readSourcePaths(): string[] {
