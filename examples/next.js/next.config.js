@@ -7,7 +7,7 @@ const nextConfig = {
     },
     webpack: (config) => {
         config.plugins.push(
-            new MasterCSSWebpackPlugin()
+            new MasterCSSWebpackPlugin({ debug: true }),
         )
         return config
     }

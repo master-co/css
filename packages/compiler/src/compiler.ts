@@ -59,6 +59,9 @@ export default class MasterCSSCompiler {
             }
         }
         log.info`${'extract'} ${eachExtractions.length.toString()} potential ${`.from ${path.relative(this.options.cwd, name)}.`}`
+        if (this.options.debug) {
+            if (eachExtractions.length) log.info`${'extract'} ${`.${eachExtractions.join(' ')}.`}`
+        }
         return eachExtractions
     }
 
@@ -88,7 +91,10 @@ export default class MasterCSSCompiler {
             }
         }
         const spent = Math.round((performance.now() - p1) * 100) / 100
-        log.info`${'compile'} ${`*${validCount}*`} valid ${`.in.`} ${`*${spent}ms*`} ${`.(${this.css.rules.length} rules).`}`
+        log.info`${'compile'} ${`+${validCount}+`} valid ${`.in.`} ${`*${spent}ms*`} ${`.(${this.css.rules.length} rules).`}`
+        if (this.options.debug) {
+            if (this.css.rules.length) log.info`${'compile'} ${`+${Object.keys(this.css.ruleOfClass).join(' ')}+`}`
+        }
         return true
     }
 
