@@ -7,8 +7,7 @@
         "build": "next build",
         "start": "next start -p 3200",
         "lint": "next lint",
-        "link": "npm link ../../",
-        "unlink": "npm rm ../../"
+        "test": "jest"
     },
     "dependencies": {
         "next": "12.3.1",

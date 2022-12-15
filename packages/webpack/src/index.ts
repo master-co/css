@@ -89,8 +89,7 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
                     return
                 }
                 // 從記憶體或快取取得當前 module 的原始碼
-                const content = eachModule['_source']?.source()
-                console.log(content)
+                const content = eachModule['_source']?.source() as string
                 if (content) {
                     this.insert(name, content)
                     updateCSS()
