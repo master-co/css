@@ -6,6 +6,6 @@ import MasterCSSVitePlugin from '@master/css.vite'
 export default defineConfig({
     plugins: [
         svelte(),
-        MasterCSSVitePlugin()
+        MasterCSSVitePlugin({ debug: true }),
     ]
 })
