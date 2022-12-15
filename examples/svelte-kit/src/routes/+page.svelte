@@ -19,7 +19,7 @@
         </span>
         <span class="ls:-.25 font:semibold fg:slate-20">
             Svelte Kit v1 + Master CSS v2
-            <img src="/master.svg" alt="Master Logo" class="w:90 h:90 mt:-35 mb:-25 v:middle" />
+            <img src="/master.svg" alt="Master Logo" class="90x90 mt:-35 mb:-25 v:middle" />
         </span>
     </h1>
 
