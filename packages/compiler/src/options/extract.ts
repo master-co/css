@@ -118,5 +118,5 @@ const needExclude = (content, css: MasterCSS) => {
         || content.match(/<\w+>|<\/\w+>/)
         || content.match(/;$/)
         || content.match(/^\w+:\/\//)
-        || content.match(/^@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer)\b[^-]/)
+        || content.match(/^@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer)$/)
 }
