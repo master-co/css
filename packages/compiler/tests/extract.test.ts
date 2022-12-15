@@ -134,6 +134,19 @@ test('group', () => {
     ])
 })
 
+test('import', () => {
+    const css = new MasterCSS()
+    expect(extract({
+        name: 'test',
+        content: `
+        import * as fs from 'fs'
+        import css from '@master/css'
+        require('fs')
+        await import('file:///')
+        `
+    }, css)).toStrictEqual([])
+})
+
 test('style tag', () => {
     const css = new MasterCSS()
     expect(extract({
