@@ -2,6 +2,7 @@ import MasterCSSCompiler from '@master/css.compiler'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import path from 'path'
+import fs from 'fs'
 
 const NAME = 'MasterCSSWebpackPlugin'
 
@@ -28,16 +29,16 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
             (compiler.watchMode ? `/*${this.moduleHMREvent}*/` : '') + this.css.text
         )
 
-        // npm run build
-        compiler.hooks.beforeRun.tapPromise(NAME, async () => {
+        compiler.hooks.initialize.tap(NAME, async () => {
             await this.init()
             updateCSS()
         })
 
-        // npm run serve
-        compiler.hooks.watchRun.tapPromise(NAME, async () => {
-            await this.init()
-            updateCSS()
+        compiler.hooks.beforeCompile.tapPromise(NAME, async () => {
+            compiler.modifiedFiles?.forEach((modifiedFilePath) => {
+                this.insert(modifiedFilePath, fs.readFileSync(modifiedFilePath).toString())
+                updateCSS()
+            })
         })
 
         compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
@@ -80,21 +81,6 @@ export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
             compilation.hooks.runtimeRequirementInTree
                 .for(RuntimeGlobals.hmrDownloadUpdateHandlers)
                 .tap(NAME, handleRuntime)
-
-            compilation.hooks.succeedModule.tap(NAME, (eachModule) => {
-                const { modifiedFiles, watching } = compiler
-                const name = eachModule['resource']
-                // 在 watch 模式下僅處理當下變更的檔案
-                if (watching && modifiedFiles?.size && (!modifiedFiles.has(this.customConfigPath) && !modifiedFiles.has(name))) {
-                    return
-                }
-                // 從記憶體或快取取得當前 module 的原始碼
-                const content = eachModule['_source']?.source() as string
-                if (content) {
-                    this.insert(name, content)
-                    updateCSS()
-                }
-            })
         })
 
         compiler.hooks.afterCompile.tap(NAME, async (compilation) => {
