@@ -95,6 +95,7 @@ test('wxh', () => {
         calc(100vw-60)x20rem
         15pxxcalc(100vh-100px)
         calc(100vw-60)xcalc(100vh-100px)
+        class="logo 172x172"
         `
     }, css)).toStrictEqual([
         '1920x1080',
@@ -103,7 +104,8 @@ test('wxh', () => {
         'min:calc(100vw-60)xcalc(100vh-100px)',
         'calc(100vw-60)x20rem',
         '15pxxcalc(100vh-100px)',
-        'calc(100vw-60)xcalc(100vh-100px)'
+        'calc(100vw-60)xcalc(100vh-100px)',
+        '172x172'
     ])
 })
 
