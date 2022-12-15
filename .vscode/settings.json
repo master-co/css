@@ -7,5 +7,5 @@
     "[yaml]": {
         "editor.insertSpaces": true,
         "editor.tabSize": 4
-    },
+    }
 }

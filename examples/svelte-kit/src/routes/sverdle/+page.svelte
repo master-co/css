@@ -2,6 +2,7 @@
 	import { confetti } from '@neoconfetti/svelte';
 	import { enhance } from '$app/forms';
 	import type { PageData, ActionData } from './$types';
+	import { reduced_motion } from './reduced-motion';
 
 	export let data: PageData;
 
@@ -22,8 +23,15 @@
 	 */
 	let classnames: Record<string, 'exact' | 'close' | 'missing'>;
 
+	/**
+	 * A map of descriptions for all letters that have been guessed,
+	 * used for adding text for assistive technology (e.g. screen readers)
+	 */
+	let description: Record<string, string>;
+
 	$: {
 		classnames = {};
+		description = {};
 
 		data.answers.forEach((answer, i) => {
 			const guess = data.guesses[i];
@@ -33,8 +41,10 @@
 
 				if (answer[i] === 'x') {
 					classnames[letter] = 'exact';
+					description[letter] = 'correct';
 				} else if (!classnames[letter]) {
 					classnames[letter] = answer[i] === 'c' ? 'close' : 'missing';
+					description[letter] = answer[i] === 'c' ? 'present' : 'absent';
 				}
 			}
 		});
@@ -78,6 +88,8 @@
 	<meta name="description" content="A Wordle clone written in SvelteKit" />
 </svelte:head>
 
+<h1 class="visually-hidden">Sverdle</h1>
+
 <form
 	method="POST"
 	action="?/enter"
@@ -93,20 +105,30 @@
 	<div class="grid" class:playing={!won} class:bad-guess={form?.badGuess}>
 		{#each Array(6) as _, row}
 			{@const current = row === i}
-
+			<h2 class="visually-hidden">Row {row + 1}</h2>
 			<div class="row" class:current>
 				{#each Array(5) as _, column}
 					{@const answer = data.answers[row]?.[column]}
-
-					<input
-						name="guess"
-						disabled={!current}
-						readonly
-						class:exact={answer === 'x'}
-						class:close={answer === 'c'}
-						aria-selected={current && column === data.guesses[row].length}
-						value={data.guesses[row]?.[column] ?? ''}
-					/>
+					{@const value = data.guesses[row]?.[column] ?? ''}
+					{@const selected = current && column === data.guesses[row].length}
+					{@const exact = answer === 'x'}
+					{@const close = answer === 'c'}
+					{@const missing = answer === '_'}
+					<div class="letter" class:exact class:close class:missing class:selected>
+						{value}
+						<span class="visually-hidden">
+							{#if exact}
+								(correct)
+							{:else if close}
+								(present)
+							{:else if missing}
+								(absent)
+							{:else}
+								empty
+							{/if}
+						</span>
+						<input name="guess" disabled={!current} type="hidden" {value} />
+					</div>
 				{/each}
 			</div>
 		{/each}
@@ -117,12 +139,12 @@
 			{#if !won && data.answer}
 				<p>the answer was "{data.answer}"</p>
 			{/if}
-			<button data-key="enter" aria-selected="true" class="restart" formaction="?/restart">
+			<button data-key="enter" class="restart selected" formaction="?/restart">
 				{won ? 'you won :)' : `game over :(`} play again?
 			</button>
 		{:else}
 			<div class="keyboard">
-				<button data-key="enter" aria-selected={submittable} disabled={!submittable}>enter</button>
+				<button data-key="enter" class:selected={submittable} disabled={!submittable}>enter</button>
 
 				<button
 					on:click|preventDefault={update}
@@ -145,6 +167,7 @@
 								formaction="?/update"
 								name="key"
 								value={letter}
+								aria-label="{letter} {description[letter] || ''}"
 							>
 								{letter}
 							</button>
@@ -160,6 +183,7 @@
 	<div
 		style="position: absolute; left: 50%; top: 30%"
 		use:confetti={{
+			particleCount: $reduced_motion ? 0 : undefined,
 			force: 0.7,
 			stageWidth: window.innerWidth,
 			stageHeight: window.innerHeight,
@@ -220,15 +244,17 @@
 		margin: 0 0 0.2rem 0;
 	}
 
-	.grid.bad-guess .row.current {
-		animation: wiggle 0.5s;
+	@media (prefers-reduced-motion: no-preference) {
+		.grid.bad-guess .row.current {
+			animation: wiggle 0.5s;
+		}
 	}
 
 	.grid.playing .row.current {
 		filter: drop-shadow(3px 3px 10px var(--color-bg-0));
 	}
 
-	input {
+	.letter {
 		aspect-ratio: 1;
 		width: 100%;
 		display: flex;
@@ -245,31 +271,22 @@
 		color: rgba(0, 0, 0, 0.7);
 	}
 
-	input:disabled:not(.exact):not(.close) {
+	.letter.missing {
 		background: rgba(255, 255, 255, 0.5);
 		color: rgba(0, 0, 0, 0.5);
 	}
 
-	input.exact {
+	.letter.exact {
 		background: var(--color-theme-2);
 		color: white;
 	}
 
-	input.close {
+	.letter.close {
 		border: 2px solid var(--color-theme-2);
 	}
 
-	input:focus {
-		outline: none;
-	}
-
-	[aria-selected='true'] {
+	.selected {
 		outline: 2px solid var(--color-theme-1);
-	}
-
-	input:not(:disabled)::selection {
-		background: transparent;
-		color: var(--color-theme-1);
 	}
 
 	.controls {
