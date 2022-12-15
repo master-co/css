@@ -6,7 +6,7 @@ import fs from 'fs'
 
 const NAME = 'MasterCSSWebpackPlugin'
 
-export default class MasterCSSWebpackPlugin extends MasterCSSCompiler {
+export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
 
     apply(compiler: Compiler) {
         const { webpack } = compiler

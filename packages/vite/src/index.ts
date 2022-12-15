@@ -4,7 +4,7 @@ import type { Plugin, ViteDevServer } from 'vite'
 import path from 'path'
 import log from 'aronlog'
 
-export default async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Plugin> {
+export async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Plugin> {
     const compiler = await new MasterCSSCompiler(options).init()
     let server: ViteDevServer
     return {
