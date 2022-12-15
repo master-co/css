@@ -3,46 +3,57 @@ import type { CompilerSource } from './index'
 
 export default function extract({ content }: CompilerSource, masterCss: MasterCSS) {
     content = preExclude(content)
+    const reservedWord = [...new Set(Object.keys(masterCss.config.semantics ?? semantics).concat(Object.keys(masterCss.classes)))]
     const blocks = content.match(/\S+/g) ?? []
     const strings = new Set<string>()
     for (const block of blocks) {
-        strings.add(trimString(block))
+        strings.add(trimString(block, reservedWord))
         const result = peelString(block)
         if (result.size) {
             for (const string of result) {
-                strings.add(string)
+                strings.add(trimString(string, reservedWord))
             }
         }
     }
-    return [...strings].filter(x => x && !checkToExclude(x, masterCss))
+    return [...strings].filter(x => x && !checkToExclude(x, reservedWord))
 }
 
-const trimString = (content: string) => {
+const trimString = (content: string, reservedWord: string[]) => {
     const originContent = content
 
-    content = keepCompleteStringAndProcessContent(
-        content,
-        c => c
-            .replace(/^[^:@~()]*(?:["'`]|(?<!@>?)=)/, '')
-            .replace(/(?:[([{\\:#=.]+|["'`].*)$/, '')
-    )
 
-    if (originContent === content) {
+    if (reservedWord.find(x => originContent.startsWith(x))) {
+        content = keepCompleteStringAndProcessContent(
+            content,
+            c => c
+                .replace(/^[^:@~(]*(?<!@>?)=/, '')
+                .replace(/(?:[([{\\:#=.]+|["'`].*)$/, '')
+        )
+    } else {
+        content = keepCompleteStringAndProcessContent(
+            content,
+            c => c
+            .replace(/^[^:@~(]*(?:["'`]|(?<!@>?)=)/, '')
+            .replace(/(?:[([{\\:#=.]+|["'`].*)$/, '')
+        )
+    }
+
+    if (originContent === content || !content) {
         return content
     } else {
-        return trimString(content)
+        return trimString(content, reservedWord)
     }
 }
 
 
-const findCompleteString = (content) => {
+const findCompleteString = (content: string) => {
     const completeStrings = content.match(/((?<!\\)["'`])(?:\\\1|(?:(?!\1))[\S\s])*(?<!\\)\1/g)
     return completeStrings
 }
 
-const replaceCompleteString = (content, completeStrings) => {
+const replaceCompleteString = (content: string, completeStrings: string[]) => {
     completeStrings?.forEach((completeString, index) => {
-        content = content.replace(completeString, `COMPLETE-STRING--${index}`)
+        content = content.replace(completeString, `COMPLETE-STRING--${index}--`)
     })
     return content
 }
@@ -52,13 +63,13 @@ const keepCompleteStringAndProcessContent = (content: string, process: (content:
     content = replaceCompleteString(content, completeStrings)
     content = process(content)
     completeStrings?.forEach((completeString, index) => {
-        content = content.replace(`COMPLETE-STRING--${index}`, completeString)
+        content = content.replace(`COMPLETE-STRING--${index}--`, completeString)
     })
 
     return content
 }
 
-const peelString = (content) => {
+const peelString = (content: string) => {
     const strings = new Set<string>()
     const stringRegx = /((?<!\\)["'`])((?:\\\1|(?:(?!\1))[\S\s])*)((?<!\\)\1)/g
     let m: RegExpExecArray
@@ -66,7 +77,7 @@ const peelString = (content) => {
         if (m.index === stringRegx.lastIndex) {
             stringRegx.lastIndex++
         }
-        strings.add(trimString(m[2]))
+        strings.add(m[2])
         const result = peelString(m[2])
         if (result.size) {
             for (const string of result) {
@@ -77,38 +88,37 @@ const peelString = (content) => {
     return strings
 }
 
-const preExclude = (content) => {
+const preExclude = (content: string) => {
     return keepCompleteStringAndProcessContent(
         content,
         c => c
             .replace(/\/\*(?:(?!\*\/)[\S\s])*\*\//g, '')
             .replace(/<!--(?:(?!-->)[\S\s])*-->/g, '')
             .replace(/<style[^>]*>(?:(?!<\/style>)[\S\s])*<\/style>/g, '')
-            .replace(/import.*from\s*COMPLETE-STRING--\d+/g, '')
-            .replace(/import\s*(?:COMPLETE-STRING--\d+|\([^;\s]*\))/g, '')
+            .replace(/import.*from\s*COMPLETE-STRING--\d+--/g, '')
+            .replace(/import\s*(?:COMPLETE-STRING--\d+--|\([^;\s]*\))/g, '')
             .replace(/require\([^;\s]*\)/g, '')
     )
 }
 
-const checkToExclude = (content, css: MasterCSS) => {
+const checkToExclude = (content: string, reservedWord: string[]) => {
     const completeStrings = findCompleteString(content)
     const checkContent: string = replaceCompleteString(content, completeStrings)
     const groupRegx = /{(.*)}/
     let m: RegExpExecArray
     while ((m = groupRegx.exec(checkContent)) !== null) {
         const groupClasses = m[1].split(';')
-        return groupClasses.find(x => needExclude(x, css)) !== undefined
+        return groupClasses.find(x => needExclude(x, reservedWord)) !== undefined
     }
-    return needExclude(checkContent, css)
+    return needExclude(checkContent, reservedWord)
 }
 
-const needExclude = (content, css: MasterCSS) => {
+const needExclude = (content: string, reservedWord: string[]) => {
     return !content
         || (
             !content.match(/(?:\S*\{\S*\})|(?:^[\w-]+:\S+)|(?:^[\w-]+\(\S+\)$)|(?:^[@~]\S+$)/)
             && !content.match(/^(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)x(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)$/)
-            && !Object.keys(css.config.semantics ?? semantics).includes(content)
-            && !Object.keys(css.classes).includes(content)
+            && !reservedWord.includes(content)
         )
         || content.match(/\*\*/)
         || content.match(/:\[/)
