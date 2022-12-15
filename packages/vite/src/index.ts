@@ -5,8 +5,6 @@ import path from 'path'
 import log from 'aronlog'
 
 const HMR_EVENT = 'hmr:master.css'
-const VIRTUAL_CSS_MODULE_ID = 'virtual:master.css'
-const RESOLVED_VIRTUAL_CSS_MODULE_ID = '\0' + VIRTUAL_CSS_MODULE_ID
 
 export default async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Plugin> {
     const compiler = await new MasterCSSCompiler(options).init()
@@ -15,12 +13,12 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
         name: 'vite-plugin-master-css',
         enforce: 'post',
         async resolveId(id) {
-            if (id === VIRTUAL_CSS_MODULE_ID) {
-                return RESOLVED_VIRTUAL_CSS_MODULE_ID
+            if (id === compiler.moduleId) {
+                return compiler.resolvedModuleId
             }
         },
         load(id) {
-            if (id === RESOLVED_VIRTUAL_CSS_MODULE_ID) {
+            if (id === compiler.resolvedModuleId) {
                 compiler.readSourcePaths().forEach((eachSourcePath) => this.addWatchFile(eachSourcePath))
                 return compiler.css.text
             }
@@ -34,7 +32,7 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
             } else {
                 /* 掃描 HMR 期異動的檔案 */
                 compiler.insert(file, await read())
-                const virtualCSSModule = server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_CSS_MODULE_ID)
+                const virtualCSSModule = server.moduleGraph.getModuleById(compiler.resolvedModuleId)
                 if (virtualCSSModule) {
                     server.moduleGraph.invalidateModule(virtualCSSModule)
                     server.ws.send({
@@ -64,12 +62,12 @@ export default async function MasterCSSVitePlugin(options?: CompilerOptions): Pr
             // server.watcher.add(supportsGlobs ? compiler.options.include : compiler.readSourcePaths())
         },
         transform(code, id) {
-            if (server && code.includes(VIRTUAL_CSS_MODULE_ID)) {
+            if (server && code.includes(compiler.moduleId)) {
                 return `${code}
 if (import.meta.hot) {
     try {
         import.meta.hot.on('hmr:master.css', (text) => {
-            const virtualCSSStyle = document.querySelector(\`[data-vite-dev-id*="virtual:master.css"]\`)
+            const virtualCSSStyle = document.querySelector(\`[data-vite-dev-id*="master.css"]\`)
             if (virtualCSSStyle) {
                 virtualCSSStyle.textContent = text
             }
