@@ -8,5 +8,5 @@ test('extract `btn` from `.tsx`', async () => {
     expect(extract({
         name: 'test',
         content: readFileSync(path.join(__dirname, '../pages/index.tsx')).toString()
-    }, compiler.css)).toContain(['btn'])
+    }, compiler.css)).toContain('btn')
 })
