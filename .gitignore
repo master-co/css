@@ -10,7 +10,6 @@
 **/*node_modules
 **/*.turbo
 **/*out
-lerna-debug.log
 
 # Only exists if Bazel was run
 /bazel-out
