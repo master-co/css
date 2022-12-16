@@ -1,4 +1,4 @@
-export default {
+module.exports = {
     colors: {
         primary: {
             '': 'blue-50',
