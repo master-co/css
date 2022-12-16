@@ -1,70 +1,61 @@
-import MasterCSS from '@master/css'
-import extract from '../src/options/extract'
-const css = new MasterCSS()
+import MasterCSSCompiler from '../src/compiler'
 
-test('basic js object', () => {
-    expect(extract({
-        name: 'test',
-        content: `
+test('basic js object', async () => {
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname }).init()
+    expect(compiler.extract('test.ts', `
         const test = {
             'f:24': true
         }
         `
-    }, css)).toStrictEqual(['f:24'])
+    )).toStrictEqual(['f:24'])
 })
 
-test('basic html', () => {
-    expect(extract({
-        name: 'test',
-        content: `<div class="f:16 blur(2px) @shake|1s|infinite>li"></div>`
-    }, css)).toStrictEqual(['f:16', 'blur(2px)', '@shake|1s|infinite>li'])
+test('basic html', async () => {
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname }).init()
+    expect(compiler.extract('test.html', `<div class="f:16 blur(2px) @shake|1s|infinite>li"></div>`
+    )).toStrictEqual(['f:16', 'blur(2px)', '@shake|1s|infinite>li'])
 })
 
-test('content', () => {
-    expect(extract({
-        name: 'test',
-        content: `<div class="content:'I\\'m_string' content:'I\\'m_string2'"></div>`
-    }, css)).toStrictEqual(['content:\'I\\\'m_string\'', 'content:\'I\\\'m_string2\''])
+test('content', async () => {
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname }).init()
+    expect(compiler.extract('test.ts', `<div class="content:'I\\'m_string' content:'I\\'m_string2'"></div>`
+    )).toStrictEqual(['content:\'I\\\'m_string\'', 'content:\'I\\\'m_string2\''])
 })
 
-test('url', () => {
-    expect(extract({
-        name: 'test',
-        content: `<div class="bg:url('https://master.co/test_logo.png')"></div>`
-    }, css)).toStrictEqual(['bg:url(\'https://master.co/test_logo.png\')'])
+test('url', async () => {
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname }).init()
+    expect(compiler.extract('test.ts', `<div class="bg:url('https://master.co/test_logo.png')"></div>`
+    )).toStrictEqual(['bg:url(\'https://master.co/test_logo.png\')'])
 })
 
-test('comment', () => {
-    expect(extract({
-        name: 'test',
-        content: `<!-- comment -->
+test('comment', async () => {
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname }).init()
+    expect(compiler.extract('test.ts', `<!-- comment -->
         /* bg:black */
         /*
             f:16
         */
         `
-    }, css)).toStrictEqual([])
+    )).toStrictEqual([])
 })
 
-test('=', () => {
-    expect(extract({
-        name: 'test',
-        content: `
+test('=', async () => {
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname }).init()
+    expect(compiler.extract('test.ts', `
         this={components[0]}
         data={data_0}>
         content:'='
         content:"="
         `
-    }, css)).toStrictEqual([
+    )).toStrictEqual([
         'content:\'=\'',
         'content:"="'
     ])
 })
 
-test('media', () => {
-    expect(extract({
-        name: 'test',
-        content: `
+test('media', async () => {
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname }).init()
+    expect(compiler.extract('test.ts', `
         bg:black@xl
         font:24@media(min-width:1024px)
         font:16@<789
@@ -73,7 +64,7 @@ test('media', () => {
         font:16@>789
         @animation_test@>789
         `
-    }, css)).toStrictEqual([
+    )).toStrictEqual([
         'bg:black@xl',
         'font:24@media(min-width:1024px)',
         'font:16@<789',
@@ -84,10 +75,9 @@ test('media', () => {
     ])
 })
 
-test('wxh', () => {
-    expect(extract({
-        name: 'test',
-        content: `
+test('wxh', async () => {
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname }).init()
+    expect(compiler.extract('test.ts', `
         1920x1080
         1024pxx786px
         min:40x80
@@ -97,7 +87,7 @@ test('wxh', () => {
         calc(100vw-60)xcalc(100vh-100px)
         class="logo 172x172"
         `
-    }, css)).toStrictEqual([
+    )).toStrictEqual([
         '1920x1080',
         '1024pxx786px',
         'min:40x80',
@@ -109,10 +99,9 @@ test('wxh', () => {
     ])
 })
 
-test('group', () => {
-    expect(extract({
-        name: 'test',
-        content: `
+test('group', async () => {
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname }).init()
+    expect(compiler.extract('test.ts', `
         {form}
         {:else}
         {data_0}
@@ -121,29 +110,26 @@ test('group', () => {
         {bg:black;f:16}_div@dark
         .something{bg:white}
         `
-    }, css)).toStrictEqual([
+    )).toStrictEqual([
         '{bg:black;f:16}_div@dark',
         '.something{bg:white}'
     ])
 })
 
-test('import', () => {
-    const css = new MasterCSS()
-    expect(extract({
-        name: 'test',
-        content: `
+test('import', async () => {
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname }).init()
+    expect(compiler.extract('test.ts', `
         import * as fs from 'fs'
         import css from '@master/css'
         require('fs')
         await import('file:///')
         `
-    }, css)).toStrictEqual([])
+    )).toStrictEqual([])
 })
 
-test('style tag', () => {
-    expect(extract({
-        name: 'test',
-        content: `<style data-sveltekit>.app.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;min-height:100vh}main.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{flex:1;display:flex;flex-direction:column;padding:1rem;width:100%;max-width:64rem;margin:0 auto;box-sizing:border-box}footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px}footer.s-7IPF32Wcq3s8 a.s-7IPF32Wcq3s8{font-weight:bold}@media(min-width: 480px){footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{padding:12px 0}}.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{}
+test('style tag', async () => {
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname }).init()
+    expect(compiler.extract('test.ts', `<style data-sveltekit>.app.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;min-height:100vh}main.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{flex:1;display:flex;flex-direction:column;padding:1rem;width:100%;max-width:64rem;margin:0 auto;box-sizing:border-box}footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px}footer.s-7IPF32Wcq3s8 a.s-7IPF32Wcq3s8{font-weight:bold}@media(min-width: 480px){footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{padding:12px 0}}.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{}
 /* fira-mono-cyrillic-ext-400-normal*/
 @font-face {
   font-family: 'Fira Mono';
@@ -214,14 +200,13 @@ test('style tag', () => {
 	color: var(--color-text);
 }
 </style>`
-    }, css)).toStrictEqual([])
+    )).toStrictEqual([])
 })
 
 
-test('@', () => {
-    expect(extract({
-        name: 'test',
-        content: `
+test('@', async () => {
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname }).init()
+    expect(compiler.extract('test.ts', `
         // @ts-ignore
         @font-face
         {
@@ -233,6 +218,6 @@ test('@', () => {
             unicode-range: U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;
         }
         `
-        
-    }, css)).toStrictEqual([])
+
+    )).toStrictEqual([])
 })
