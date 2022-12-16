@@ -1,5 +1,5 @@
 {
-    "name": "next.js",
+    "name": "master-css-aot-in-next.js",
     "private": true,
     "scripts": {
         "dev": "next dev",
