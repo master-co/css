@@ -2,13 +2,7 @@
 <div align="center">
 
 <p align="center">
-    <a href="https://css.master.co">
-        <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/33840671/201701649-3bb7d698-abec-4d5f-ac30-ccc4d7bafcd4.svg">
-            <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg">
-            <img alt="Master CSS" src="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg" width="100%">
-        </picture>
-    </a>
+    <img width="1434" alt="Screenshot 2022-12-16 at 6 31 42 PM" src="https://user-images.githubusercontent.com/33840671/208152267-8d17df56-b937-4b94-bdaa-3e8b4b61d024.png">
 </p>
 <p align="center">A webpack plugin for integrating Master CSS ahead-of-time compilation with Next.js</p>
 
