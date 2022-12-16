@@ -1,5 +1,6 @@
 module.exports = {
     colors: {
+        primary: 'cyan-30',
         foo: '#ff5555',
         base: {
             70: '#000'
