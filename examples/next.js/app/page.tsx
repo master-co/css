@@ -51,7 +51,7 @@ export default function Home() {
                     height={48}
                     priority
                 />
-                <div className={styles.thirteen + ' w:40 h:31 font:40 font:sans font:bold bg:red'}>
+                <div className={styles.thirteen + ' w:40 h:31 font:40 font:sans font:bold'}>
                     2
                 </div>
             </div>
