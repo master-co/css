@@ -16,6 +16,7 @@ export async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Pl
             }
         },
         load(id) {
+            console.log(id)
             if (id === compiler.resolvedModuleId) {
                 compiler.readSourcePaths().forEach((eachSourcePath) => this.addWatchFile(eachSourcePath))
                 return compiler.css.text
@@ -26,7 +27,6 @@ export async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Pl
                 /* 當自訂的 master.css.js 變更時，根據其重新初始化 MasterCSS 並強制重載瀏覽器 */
                 await compiler.init()
                 log.info`${'change'} config file ${`.${path.relative(compiler.options.cwd, compiler.customConfigPath)}.`}`
-                server.ws.send({ type: 'full-reload' })
             } else {
                 /* 掃描 HMR 期異動的檔案 */
                 compiler.insert(file, await read())
@@ -43,12 +43,12 @@ export async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Pl
                         }]
                     })
                 }
-                server.ws.send({
-                    type: 'custom',
-                    event: compiler.moduleHMREvent,
-                    data: compiler.css.text
-                })
             }
+            server.ws.send({
+                type: 'custom',
+                event: compiler.moduleHMREvent,
+                data: compiler.css.text
+            })
         },
         async configureServer(_server) {
             server = _server
