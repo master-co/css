@@ -140,7 +140,7 @@ function InCurlyBrackets(text: string): boolean {
 }
 
 export function doHover(instance: string, range: Range, masterCss: MasterCSS = new MasterCSS()): Hover | null {
-    const renderText = render(instance.split(' '), masterCss)
+    const renderText = render(instance.split(' '), masterCss.config)
     if (!renderText || renderText == ' ') {
         return null
     }
