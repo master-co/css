@@ -61,6 +61,11 @@
 
 ## Getting Started
 
+If you don't have one, you can interactively create a new Svelte Kit project by running:
+```bash
+npm create svelte@latest my-app
+```
+
 `vite.config.js`
 ```js
 import { sveltekit } from '@sveltejs/kit/vite'
@@ -85,5 +90,14 @@ Import the virtual CSS module into `src/routes/+layout.svelte`:
 </script>
 ```
 
+Now start the Svelte Kit development server:
+```bash
+npm run dev -- --open
+```
+
 ## Compiler Options
+Master presets common configurations for various frameworks and build tools, and it works almost out of the box.
+
 https://github.com/master-co/css/tree/beta/packages/compiler
+
+For starters, you can enable `{ debug: true }` to see how it scans, extracts, and compiles.

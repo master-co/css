@@ -16,17 +16,16 @@ export async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Pl
             }
         },
         load(id) {
-            console.log(id)
             if (id === compiler.resolvedModuleId) {
                 compiler.readSourcePaths().forEach((eachSourcePath) => this.addWatchFile(eachSourcePath))
                 return compiler.css.text
             }
         },
         async handleHotUpdate({ server, file, read }) {
-            if (path.resolve(file) === compiler.customConfigPath) {
+            if (path.resolve(file) === compiler.configPath) {
                 /* 當自訂的 master.css.js 變更時，根據其重新初始化 MasterCSS 並強制重載瀏覽器 */
                 await compiler.init()
-                log.info`${'change'} config file ${`.${path.relative(compiler.options.cwd, compiler.customConfigPath)}.`}`
+                log.info`${'change'} config file ${`.${path.relative(compiler.options.cwd, compiler.configPath)}.`}`
             } else {
                 /* 掃描 HMR 期異動的檔案 */
                 compiler.insert(file, await read())
@@ -52,8 +51,8 @@ export async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Pl
         },
         async configureServer(_server) {
             server = _server
-            if (compiler.hasCustomConfig) {
-                server.watcher.add(compiler.customConfigPath)
+            if (compiler.hasConfig) {
+                server.watcher.add(compiler.configPath)
             }
             // TODO 目前會重複 watch 相同的檔案
             // const supportsGlobs = server.config.server.watch?.disableGlobbing === false
