@@ -2,7 +2,7 @@
 <div align="center">
 
 <p align="center">
-    <img width="1434" alt="Screenshot 2022-12-16 at 6 31 42 PM" src="https://user-images.githubusercontent.com/33840671/208152267-8d17df56-b937-4b94-bdaa-3e8b4b61d024.png">
+    <img width="1331" alt="Screenshot 2022-12-17 at 1 23 13 AM" src="https://user-images.githubusercontent.com/33840671/208154129-712998ff-7079-4494-89c4-7ea0cc2107f0.png">
 </p>
 <p align="center">A webpack plugin for integrating Master CSS ahead-of-time compilation with Next.js</p>
 
