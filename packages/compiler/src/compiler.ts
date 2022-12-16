@@ -116,10 +116,11 @@ export default class MasterCSSCompiler {
                 delete require.cache[this.customConfigPath]
             }
             if (this.hasCustomConfig) {
-                const userConfigModule = await import(this.customConfigPath)
+                const userConfigModule = await import(this.customConfigPath + '?t=' + Date.now())
                 customConfig = userConfigModule.default || userConfigModule
                 console.log('')
                 log.info`${'import'} custom config ${`.from ${path.relative(this.options.cwd, this.customConfigPath)}.`}`
+                console.log(customConfig.colors.primary)
             } else {
                 log.info`No master.css.js in the project root`
             }
