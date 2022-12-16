@@ -121,7 +121,7 @@ export default class MasterCSSCompiler {
                 console.log('')
                 log.info`${'import'} custom config ${`.from ${path.relative(this.options.cwd, this.customConfigPath)}.`}`
             } else {
-                log.info`No config file found ${`.${this.customConfigPath}.`}`
+                log.info`${'read'} No config file found ${`.${this.customConfigPath}.`}`
             }
             // eslint-disable-next-line no-empty
         } catch (err) {
@@ -146,6 +146,7 @@ export default class MasterCSSCompiler {
 
     get customConfigPath() {
         const { cwd, config } = this.options
-        return path.resolve(cwd, fg.sync(config, { cwd })[0])
+        const fileName = fg.sync(config, { cwd })[0]
+        return fileName ? path.resolve(cwd, fileName) : ''
     }
 }
