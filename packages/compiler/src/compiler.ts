@@ -61,7 +61,7 @@ export default class MasterCSSCompiler {
             }
         }
         if (eachExtractions.length)
-            log.info`${'extract'} ${eachExtractions.length.toString()} potential ${`.from ${path.relative(this.options.cwd, name)}.`}`
+            log.info`${'extract'} ${eachExtractions.length.toString()} potential ${`.${path.relative(this.options.cwd, name)}.`}`
 
         if (this.options.debug) {
             if (eachExtractions.length) log.info`${'extract'} ${`.${eachExtractions.join(' ')}.`}`
@@ -97,8 +97,9 @@ export default class MasterCSSCompiler {
         const spent = Math.round((performance.now() - p1) * 100) / 100
         log.info`${'compile'} ${`+${validCount}+`} valid ${`.in.`} ${`*${spent}ms*`} ${`.(${this.css.rules.length} rules).`}`
         if (this.options.debug) {
-            if (this.css.rules.length) log.info`${'compile'} ${`+${Object.keys(this.css.ruleOfClass).join(' ')}+`}`
+            if (this.css.rules.length) log.info`${'compile'} ${`${Object.keys(this.css.ruleOfClass).join(' ')}`}`
         }
+        console.log('')
         return true
     }
 
@@ -117,14 +118,14 @@ export default class MasterCSSCompiler {
                 delete require.cache[this.configPath]
             }
             if (this.hasConfig) {
-                const userConfigModule = await import(this.configPath + '?' + Date.now())
+                const userConfigModule = await import(pathToFileURL(this.configPath) + '?' + Date.now())
                 customConfig = userConfigModule.default || userConfigModule
                 console.log('')
-                log.info`${'import'} custom config ${`.from ${path.relative(this.options.cwd, this.configPath)}.`}`
+                log.ok`import ${`*${path.relative(this.options.cwd, this.configPath)}*`} configuration`
             } else {
                 log.info`${'read'} No config file found ${`.${this.configPath}.`}`
             }
-            // eslint-disable-next-line no-empty
+            console.log('')
         } catch (err) {
             log.error(err)
         }
