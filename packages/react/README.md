@@ -27,7 +27,7 @@
             <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
         </picture>
     </a>
-    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css">
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css.react">
         <picture>
             <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.react?color=212022&label=%20&logo=npm&style=for-the-badge">
             <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.react?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
@@ -74,7 +74,7 @@ npm install @master/css.react
 Required `@master/css^2`
 
 ## Preparation
-Let's say `./src/master.js` is the file where you manage the Master CSS.
+Let's say `./src/main.js` is the file where you manage the Master CSS.
 ```ts
 import MasterCSS from '@master/css'
 import config from './master.css'
@@ -88,7 +88,7 @@ Hook `css.scheme` and `css.theme` changes.
 ```tsx
 import { useScheme, useRendered } from '@master/css.react'
 import { useCallback } from 'react'
-import { css } from './master'
+import { css } from './main'
 
 export default function ThemeButton() {
     const { scheme, setScheme, theme } = useScheme(css)
@@ -127,7 +127,7 @@ Often used to prevent server-side use of the browser API result in a hydration e
 ### `useBreakpoints` 🚧
 ```tsx
 import { useBreakpoints } from '@master/css.react'
-import { css } from './master'
+import { css } from './main'
 
 export default function Home() {
     const at = useBreakpoints(css)

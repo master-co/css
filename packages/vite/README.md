@@ -27,7 +27,7 @@
             <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
         </picture>
     </a>
-    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css">
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css.vite">
         <picture>
             <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.vite?color=212022&label=%20&logo=npm&style=for-the-badge">
             <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.vite?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
