@@ -29,16 +29,16 @@
     </a>
     <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css?color=212022&label=%20&logo=npm&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/normal.css?color=212022&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/normal.css?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/normal.css?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
         </picture>
     </a>
     <a aria-label="JSDelivr" href="https://www.jsdelivr.com/package/npm/@master/css">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=212022&label=%20&logo=jsdelivr&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
-            <img alt="JSDelivr hits (npm scoped)" src="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/jsdelivr/npm/hm/@master/normal.css?color=212022&label=%20&logo=jsdelivr&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/jsdelivr/npm/hm/@master/normal.css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
+            <img alt="JSDelivr hits (npm scoped)" src="https://img.shields.io/jsdelivr/npm/hm/@master/normal.css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
         </picture>
     </a>
     <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -55,11 +55,11 @@
             <img alt="Follow @mastercorg" src="https://img.shields.io/static/v1?label=%20&message=twitter&color=f6f7f8&logo=twitter&style=for-the-badge">
         </picture>
     </a>
-    <a aria-label="Github Actions" href="https://github.com/1aron/repo/actions/workflows/release.yml">
+     <a aria-label="Github Actions" href="https://github.com/1aron/repo/actions/workflows/release.yml">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/workflow/status/master-co/css/Release?label=%20&message=twitter&color=212022&logo=githubactions&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/workflow/status/master-co/css/Release?label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
-            <img alt="Github release actions" src="https://img.shields.io/github/workflow/status/master-co/css/Release?label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=beta&label=%20&message=twitter&color=212022&logo=githubactions&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=beta&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+            <img alt="Github release actions" src="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=beta&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
         </picture>
     </a>
 </p>

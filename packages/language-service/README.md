@@ -2,15 +2,6 @@
 <div align="center">
 
 <p align="center">
-    <a href="https://css.master.co">
-        <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/master-co/css-language-service/alpha/images/cover.jpg">
-            <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/master-co/css-language-service/alpha/images/cover.jpg">
-            <img alt="Master CSS" src="https://raw.githubusercontent.com/master-co/css-language-service/alpha/images/cover.jpg" width="100%">
-        </picture>
-    </a>
-</p>
-<p align="center">
     Master CSS Language Service for Visual Studio Code
 </p>
 
