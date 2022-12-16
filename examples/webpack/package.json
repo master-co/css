@@ -1,5 +1,5 @@
 {
-    "name": "master-css-compiler-with-webpack",
+    "name": "master-css-aot-in-webpack",
     "private": true,
     "scripts": {
         "build": "webpack --mode=production --node-env=production",
