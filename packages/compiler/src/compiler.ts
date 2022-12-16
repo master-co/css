@@ -113,12 +113,12 @@ export default class MasterCSSCompiler {
 
     async readConfig(): Promise<Config> {
         let customConfig: Config
-        try {
+        const read = async (importPath: string) => {
             if (require.cache?.[this.configPath]) {
                 delete require.cache[this.configPath]
             }
             if (this.hasConfig) {
-                const userConfigModule = await import(pathToFileURL(this.configPath) + '?' + Date.now())
+                const userConfigModule = await import(importPath)
                 customConfig = userConfigModule.default || userConfigModule
                 console.log('')
                 log.ok`import ${`*${path.relative(this.options.cwd, this.configPath)}*`} configuration`
@@ -126,8 +126,16 @@ export default class MasterCSSCompiler {
                 log.info`${'read'} No config file found ${`.${this.configPath}.`}`
             }
             console.log('')
+        }
+        try {
+            await read(pathToFileURL(this.configPath).href + '?' + Date.now())
         } catch (err) {
-            log.error(err)
+            // 解決於 Jest 於 file:/// 的問題
+            if (err.toString().includes('Cannot find module')) {
+                await read(this.configPath)
+            } else {
+                log.error(err)
+            }
         }
         return customConfig
     }
