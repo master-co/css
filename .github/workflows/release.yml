@@ -19,7 +19,7 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   registry-url: 'https://registry.npmjs.org'
                   cache: 'npm'
-            - run: npm i
+            - run: npm ci
             - run: npx --no -- semantic-release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
