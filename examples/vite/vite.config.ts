@@ -1,8 +1,10 @@
-import { defineConfig } from 'vite'
 import { MasterCSSVitePlugin } from '@master/css.vite'
 
-export default defineConfig({
+/** @type {import('vite').UserConfig} */
+const config = {
     plugins: [
         MasterCSSVitePlugin({ debug: true })
     ]
-})
+}
+
+export default config

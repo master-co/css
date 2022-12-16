@@ -1,7 +1,7 @@
 export default {
     colors: {
         primary: {
-            '': 'blue-50',
+            '': 'green-50',
             code: '#777777',
             stage: {
                 '1': '#999999'
