@@ -1,4 +1,5 @@
 import './globals.css'
+import 'master.css'
 
 export default function RootLayout({
     children,

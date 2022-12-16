@@ -2,10 +2,10 @@
 module.exports = {
     colors: {
         primary: {
-            '': 'blue-50',
+            '': 'cyan-50',
             code: '#777777',
             stage: {
-                '1': '#999999'
+                '1': '#111'
             }
         },
         input: {

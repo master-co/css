@@ -59,7 +59,9 @@ export default class MasterCSSCompiler {
                 eachExtractions.push(eachNewExtraction)
             }
         }
-        log.info`${'extract'} ${eachExtractions.length.toString()} potential ${`.from ${path.relative(this.options.cwd, name)}.`}`
+        if (eachExtractions.length)
+            log.info`${'extract'} ${eachExtractions.length.toString()} potential ${`.from ${path.relative(this.options.cwd, name)}.`}`
+
         if (this.options.debug) {
             if (eachExtractions.length) log.info`${'extract'} ${`.${eachExtractions.join(' ')}.`}`
         }
