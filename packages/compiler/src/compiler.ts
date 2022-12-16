@@ -120,9 +120,8 @@ export default class MasterCSSCompiler {
                 customConfig = userConfigModule.default || userConfigModule
                 console.log('')
                 log.info`${'import'} custom config ${`.from ${path.relative(this.options.cwd, this.customConfigPath)}.`}`
-                console.log(customConfig.colors.primary)
             } else {
-                log.info`No master.css.js in the project root`
+                log.info`No config file found ${`.${this.customConfigPath}.`}`
             }
             // eslint-disable-next-line no-empty
         } catch (err) {
@@ -147,6 +146,6 @@ export default class MasterCSSCompiler {
 
     get customConfigPath() {
         const { cwd, config } = this.options
-        return path.join(cwd, config || 'master.css.js')
+        return path.resolve(cwd, fg.sync(config, { cwd })[0])
     }
 }

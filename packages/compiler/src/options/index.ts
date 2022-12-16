@@ -3,8 +3,8 @@ import extract from './extract'
 import type { Pattern as FastGlobPattern } from 'fast-glob'
 
 const options: CompilerOptions = {
-    config: './master.css.js',
     cwd: process.cwd(),
+    config: 'master.css.{js,mjs,cjs}',
     include: ['**/*.{html,js,jsx,ts,tsx,svelte,astro,vue,md,mdx,pug,php}'],
     exclude: [
         '**/node_modules/**',
