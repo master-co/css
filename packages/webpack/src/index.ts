@@ -37,12 +37,10 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
         compiler.hooks.watchRun.tapPromise(NAME, async () => {
             const { modifiedFiles } = compiler
             if (modifiedFiles) {
-                if (modifiedFiles.has(this.customConfigPath)) {
+                if (modifiedFiles.has(this.configPath)) {
                     await this.init()
-                    console.log('update configuration')
                 } else {
                     modifiedFiles?.forEach((modifiedFilePath) => {
-                        console.log(modifiedFilePath)
                         this.insert(modifiedFilePath, fs.readFileSync(modifiedFilePath).toString())
                     })
                 }
@@ -51,8 +49,8 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
         })
 
         compiler.hooks.afterCompile.tap(NAME, async (compilation) => {
-            if (this.hasCustomConfig)
-                compilation.fileDependencies.add(this.customConfigPath)
+            if (this.hasConfig)
+                compilation.fileDependencies.add(this.configPath)
         })
 
     }

@@ -59,6 +59,83 @@
 
 </div>
 
-This is used for the common core compiler written for the Master CSS build tools, the following should be what you are looking for:
-- [Vite Plugin](https://github.com/master-co/css/tree/beta/packages/vite) - A vite plugin for integrating Master CSS AOT compilation
-- [Webpack Plugin](https://github.com/master-co/css/tree/beta/packages/webpack) - A webpack plugin for integrating Master CSS AOT compilation
+## Usage
+```ts
+const compiler = await new MasterCSSCompiler().init()
+```
+
+## Options
+```ts
+{
+    cwd: process.cwd(),
+    config: 'master.css.{js,mjs,cjs}',
+    include: ['**/*.{html,js,jsx,ts,tsx,svelte,astro,vue,md,mdx,pug,php}'],
+    exclude: [
+        '**/node_modules/**',
+        '**/*.d.ts',
+        '**/*.test.*',
+        'node_modules',
+        'master.css.{js,ts,mjs,cjs}',
+        'dist',
+        'out',
+        'README.md'
+    ]
+}
+```
+
+## Methods
+
+```ts
+// Initialize the compiler and MasterCSS
+async init(): Promise<this>
+```
+
+```ts
+// Scan sources, extract class names, and generate CSS rules
+compile()
+```
+
+```ts
+// Extract potential class names from the given file content
+extract(name: string, content: string): string[]
+```
+
+```ts
+// `extract(name, content)`, insert extractions, and generate CSS rules
+insert(name: string, content: string): boolean
+```
+
+```ts
+// Read file source paths by `options.include` and `options.exclude`
+readSourcePaths(): string[]
+```
+
+```ts
+// Check source file path by `options.include` and `options.exclude`
+checkSourcePath(name: string): boolean
+```
+
+```ts
+// Read user config file by `options.config`
+async readConfig(): Promise<Config>
+```
+
+```ts
+// Check if the custom config exists
+get hasConfig(): boolean
+```
+
+```ts
+// Get custom config path
+get configPath(): string
+```
+
+## Properties
+
+```ts
+export default class MasterCSSCompiler {
+    css: MasterCSS
+    extractions = new Set<string>()
+    ...
+}
+```

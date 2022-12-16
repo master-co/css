@@ -7,6 +7,7 @@ import type { Config } from '@master/css'
 import fs from 'fs'
 import fg from 'fast-glob'
 import minimatch from 'minimatch'
+import { pathToFileURL } from 'url'
 
 export default class MasterCSSCompiler {
 
@@ -46,8 +47,8 @@ export default class MasterCSSCompiler {
         return this
     }
 
-    extract(name: string, content: string) {
-        if (!name || !content || !this.accept(name)) {
+    extract(name: string, content: string): string[] {
+        if (!name || !content || !this.checkSourcePath(name)) {
             return []
         }
         const eachExtractions: string[] = []
@@ -112,16 +113,16 @@ export default class MasterCSSCompiler {
     async readConfig(): Promise<Config> {
         let customConfig: Config
         try {
-            if (require.cache?.[this.customConfigPath]) {
-                delete require.cache[this.customConfigPath]
+            if (require.cache?.[this.configPath]) {
+                delete require.cache[this.configPath]
             }
-            if (this.hasCustomConfig) {
-                const userConfigModule = await import(this.customConfigPath + '?t=' + Date.now())
+            if (this.hasConfig) {
+                const userConfigModule = await import(this.configPath + '?' + Date.now())
                 customConfig = userConfigModule.default || userConfigModule
                 console.log('')
-                log.info`${'import'} custom config ${`.from ${path.relative(this.options.cwd, this.customConfigPath)}.`}`
+                log.info`${'import'} custom config ${`.from ${path.relative(this.options.cwd, this.configPath)}.`}`
             } else {
-                log.info`${'read'} No config file found ${`.${this.customConfigPath}.`}`
+                log.info`${'read'} No config file found ${`.${this.configPath}.`}`
             }
             // eslint-disable-next-line no-empty
         } catch (err) {
@@ -130,7 +131,7 @@ export default class MasterCSSCompiler {
         return customConfig
     }
 
-    accept(name: string) {
+    checkSourcePath(name: string): boolean {
         for (const eachIncludePattern of this.options.include) {
             if (!minimatch(name, eachIncludePattern)) return false
         }
@@ -140,11 +141,11 @@ export default class MasterCSSCompiler {
         return true
     }
 
-    get hasCustomConfig() {
-        return fs.existsSync(this.customConfigPath)
+    get hasConfig(): boolean {
+        return fs.existsSync(this.configPath)
     }
 
-    get customConfigPath() {
+    get configPath(): string {
         const { cwd, config } = this.options
         const fileName = fg.sync(config, { cwd })[0]
         return fileName ? path.resolve(cwd, fileName) : ''

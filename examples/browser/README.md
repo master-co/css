@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">A webpack plugin for integrating Master CSS ahead-of-time compilation with Next.js</p>
+<p align="center">Use the Master CSS just-in-time CDN out of the box in the browser</p>
 
 <p align="center">
     <a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
@@ -29,9 +29,16 @@
     </a>
     <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.webpack?color=212022&label=%20&logo=npm&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css.webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css?color=212022&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+        </picture>
+    </a>
+    <a aria-label="JSDelivr" href="https://www.jsdelivr.com/package/npm/@master/css">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=212022&label=%20&logo=jsdelivr&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
+            <img alt="JSDelivr hits (npm scoped)" src="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
         </picture>
     </a>
     <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -61,43 +68,26 @@
 
 ## Getting Started
 
-If you don't have one, you can interactively create a new Next.js project by running:
-```bash
-npx create-next-app@latest --experimental-app
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+        window.masterCSSConfig = {
+            colors: {
+                primary: '#ff0000'
+            }
+        }
+    </script>
+    <script src="https://cdn.master.co/css"></script>
+</head>
+
+<body>
+    <h1 class="font:40 font:heavy italic m:50 text:center fg:primary">Hello World</h1>
+</body>
+
+</html>
 ```
-
-`next.config.js`
-```js
-const { MasterCSSWebpackPlugin } = require('@master/css.webpack')
-
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-    experimental: {
-        appDir: true,
-    },
-    webpack: (config) => {
-        config.plugins.push(
-            new MasterCSSWebpackPlugin(),
-        )
-        return config
-    }
-}
-
-module.exports = nextConfig
-```
-Import the virtual CSS module into the entry file `app/globals.css`:
-```css
-@import 'master.css';
-```
-
-Now start the Next.js development server:
-```bash
-npm run dev
-```
-
-## Compiler Options
-Master presets common configurations for various frameworks and build tools, and it works almost out of the box.
-
-https://github.com/master-co/css/tree/beta/packages/compiler
-
-For starters, you can enable `{ debug: true }` to see how it scans, extracts, and compiles.
