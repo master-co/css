@@ -11,7 +11,7 @@
         "commit-check": "commitlint --from=HEAD~1 --verbose",
         "dev": "turbo run dev --filter=./packages/**/*",
         "clean:dist": "rm -rf ./packages/**/*dist",
-        "clean:node": "rm -rf ./packages/**/*node_modules"
+        "clean:node": "rm -rf ./{examples,packages}/**/*node_modules"
     },
     "repository": {
         "type": "git",
