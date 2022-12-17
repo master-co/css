@@ -1,0 +1,16 @@
+{
+    "name": "master-css-aot-in-nuxt",
+    "private": true,
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare"
+    },
+    "devDependencies": {
+        "@master/css.vite": "",
+        "nuxt": "3.0.0",
+        "vite": "^4.0.1"
+    }
+}
