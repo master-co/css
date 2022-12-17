@@ -62,8 +62,7 @@ npx nuxi init <project-name>
 ```bash
 cd <project-name>
 ```
-Install `@master/css.vite` for the ahead-of-time compilation:
-```
+```bash
 npm i @master/css.vite@beta -D
 ```
 
