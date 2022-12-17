@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">Use the Master CSS just-in-time CDN out of the box in the browser</p>
+<p align="center">Master CSS JIT CDN out of the box in the browser</p>
 
 <p align="center">
     <a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
@@ -68,6 +68,7 @@
 
 ## Getting Started
 
+`index.html`
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -82,7 +83,7 @@
             }
         }
     </script>
-    <script src="https://cdn.master.co/css"></script>
+    <script src="https://cdn.master.co/css@beta"></script>
 </head>
 
 <body>
