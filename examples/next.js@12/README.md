@@ -63,7 +63,16 @@
 
 If you don't have one, you can interactively create a new Next.js project by running:
 ```bash
-npx create-next-app
+npx create-next-app <project-name>
+```
+
+```bash
+cd <project-name>
+```
+
+Install `@master/css.webpack` for the ahead-of-time compilation:
+```
+npm i @master/css.webpack@beta -D
 ```
 
 `next.config.js`
@@ -85,7 +94,7 @@ const nextConfig = {
 
 module.exports = nextConfig
 ```
-Import the virtual CSS module into the entry file `styles/globals.css`:
+Import the virtual CSS module `master.css` into the entry file `styles/globals.css`:
 ```css
 @import 'master.css';
 ```
@@ -94,6 +103,8 @@ Now start the Next.js development server:
 ```bash
 npm run dev
 ```
+
+<img width="800" alt="Master CSS AOT and Next.js" src="https://user-images.githubusercontent.com/33840671/208246476-121c386e-e3a2-4d3f-8df9-adcb19908dd7.png">
 
 ## Compiler Options
 Master presets common configurations for various frameworks and build tools, and it works almost out of the box.
