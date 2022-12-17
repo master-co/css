@@ -7,7 +7,7 @@
     "homepage": "https://css.master.co",
     "license": "MIT",
     "publisher": "masterco",
-    "version": "2.1.6",
+    "version": "2.1.10",
     "icon": "icon.png",
     "repository": {
         "type": "git",
@@ -20,14 +20,14 @@
     "activationEvents": [
         "onStartupFinished"
     ],
-    "main": "./client/dist/extension.cjs",
+    "main": "./client/dist/extension.js",
     "jsnext:main": "./client/dist/extension.mjs",
     "esnext": "./client/dist/extension.mjs",
     "module": "./client/dist/extension.mjs",
     "types": "./client/dist/extension.d.ts",
     "exports": {
         ".": {
-            "require": "./client/dist/extension.cjs",
+            "require": "./client/dist/extension.js",
             "import": "./client/dist/extension.mjs",
             "types": "./client/dist/extension.d.ts"
         }
@@ -175,6 +175,6 @@
         "deploy": "mv ../../package.json ../../_package.json && npm i vsce -D && vsce publish && mv ../../_package.json ../../package.json"
     },
     "devDependencies": {
-        "vsce": "^2.14.0"
+        "vsce": "^2.15.0"
     }
 }

@@ -21,14 +21,14 @@
     "peerDependencies": {
         "vscode": ""
     },
-    "main": "./dist/extension.cjs",
+    "main": "./dist/extension.js",
     "jsnext:main": "./dist/extension.mjs",
     "esnext": "./dist/extension.mjs",
     "module": "./dist/extension.mjs",
     "types": "./dist/extension.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/extension.cjs",
+            "require": "./dist/extension.js",
             "import": "./dist/extension.mjs",
             "types": "./dist/extension.d.ts"
         }
