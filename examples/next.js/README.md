@@ -64,9 +64,8 @@ npx create-next-app@latest <project-name> --experimental-app
 cd <project-name>
 ```
 
-Install `@master/css.webpack` for the ahead-of-time compilation:
 ```
-npm i @master/css.webpack@beta -D
+npm install @master/css.webpack@beta -D
 ```
 
 Add `MasterCSSWebpackPlugin` in `next.config.js`:
