@@ -55,6 +55,10 @@
 
 ## Getting Started
 
+```bash
+npm install @master/css.vite@beta -D
+```
+
 `vite.config.js`
 ```js
 import { MasterCSSVitePlugin } from '@master/css.vite'
