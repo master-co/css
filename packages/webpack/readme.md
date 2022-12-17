@@ -62,7 +62,7 @@
 ## Getting Started
 
 ```bash
-npm install @master/css.webpack@beta -D`
+npm install @master/css.webpack@beta -D
 ```
 
 `webpack.config.js`
