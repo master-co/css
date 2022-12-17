@@ -70,9 +70,8 @@ npx create-next-app <project-name>
 cd <project-name>
 ```
 
-Install `@master/css.webpack` for the ahead-of-time compilation:
-```
-npm i @master/css.webpack@beta -D
+```bash
+npm install @master/css.webpack@beta -D
 ```
 
 `next.config.js`
