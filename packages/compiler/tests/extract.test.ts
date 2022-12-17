@@ -235,3 +235,22 @@ test('@', () => {
         `
     }, css)).toStrictEqual([])
 })
+
+test('home path', () => {
+    expect(extract({
+        name: 'test',
+        content: `
+        ~/assets/master.svg
+        ~/master.svg
+        ~padding|300ms|ease-in
+        ~delay:0ms
+        ~duration:.5ms
+        ~easing:steps(6,end)
+        `
+    }, css)).toStrictEqual([
+        '~padding|300ms|ease-in',
+        '~delay:0ms',
+        '~duration:.5ms',
+        '~easing:steps(6,end)'
+    ])
+})
