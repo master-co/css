@@ -61,6 +61,10 @@
 
 ## Getting Started
 
+```bash
+npm install @master/css.webpack@beta -D
+```
+
 `webpack.config.js`
 ```js
 const { MasterCSSWebpackPlugin } = require('@master/css.webpack')
