@@ -1,5 +1,5 @@
 {
-    "name": "master-css-aot-in-nuxt",
+    "name": "master-css-aot-in-nuxt.js",
     "private": true,
     "scripts": {
         "build": "nuxt build",
