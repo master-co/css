@@ -59,8 +59,15 @@ If you don't have one, you can interactively create a new Nuxt.js project by run
 ```bash
 npx nuxi init <project-name>
 ```
+```bash
+cd <project-name>
+```
+Install `@master/css.vite` for the ahead-of-time compilation:
+```
+npm i @master/css.vite@beta -D
+```
 
-`nuxt.config.js`
+Add `MasterCSSVitePlugin` in `nuxt.config.js`:
 ```js
 import { MasterCSSVitePlugin } from '@master/css.vite'
 
@@ -72,7 +79,7 @@ export default defineNuxtConfig({
     }
 })
 ```
-Import the virtual CSS module into `app.vue`:
+Import the virtual CSS module `master.css` into the entry file `app.vue`:
 ```html
 <script>
     import 'master.css'
@@ -83,6 +90,9 @@ Now start the Nuxt.js development server:
 ```bash
 npm run dev -- -o
 ```
+
+<img width="950" alt="nuxt-js-aot-dev" src="https://user-images.githubusercontent.com/33840671/208247969-7e655805-d314-42d4-ad82-6fd95a8d6e69.png">
+
 
 ## Compiler Options
 Master presets common configurations for various frameworks and build tools, and it works almost out of the box.
