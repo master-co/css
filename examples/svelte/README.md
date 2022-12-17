@@ -61,6 +61,12 @@ If you don't have one, you can interactively create a new Svelte Kit project by 
 ```bash
 npm create svelte@latest my-app
 ```
+```bash
+cd my-app
+```
+```bash
+npm install @master/css.vite@beta -D
+```
 
 `vite.config.js`
 ```js
