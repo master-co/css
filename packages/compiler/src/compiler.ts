@@ -99,7 +99,6 @@ export default class MasterCSSCompiler {
         if (this.options.debug) {
             if (this.css.rules.length) log.info`${'compile'} ${`${Object.keys(this.css.ruleOfClass).join(' ')}`}`
         }
-        console.log('')
         return true
     }
 
@@ -120,12 +119,10 @@ export default class MasterCSSCompiler {
             if (this.hasConfig) {
                 const userConfigModule = await import(importPath)
                 customConfig = userConfigModule.default || userConfigModule
-                console.log('')
                 log.ok`import ${`*${path.relative(this.options.cwd, this.configPath)}*`} configuration`
             } else {
                 log.info`${'read'} No config file found ${`.${this.configPath}.`}`
             }
-            console.log('')
         }
         try {
             await read(pathToFileURL(this.configPath).href + '?' + Date.now())

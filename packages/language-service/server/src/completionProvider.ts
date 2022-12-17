@@ -97,7 +97,7 @@ export function GetCompletionItem(instance: string, triggerKey: string, startWit
             }
             return x
         })
-    console.log(masterCustomSelectors)
+
     const masterCustomElements = Object.keys(masterCss.config.selectors ?? {})
         .map(x => x.endsWith('(') ? `${x})` : x)
         .filter(x => x.match(/::[^:]+/) && !masterCssElements.find(existedElement => (typeof existedElement === 'string' ? existedElement : existedElement.label) === `::${x}`))
