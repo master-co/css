@@ -55,6 +55,11 @@
 
 ## Getting Started
 
+If you don't have one, you can interactively create a new Nuxt.js project by running:
+```bash
+npx nuxi init <project-name>
+```
+
 `nuxt.config.js`
 ```js
 import { MasterCSSVitePlugin } from '@master/css.vite'
@@ -72,6 +77,11 @@ Import the virtual CSS module into `app.vue`:
 <script>
     import 'master.css'
 </script>
+```
+
+Now start the Nuxt.js development server:
+```bash
+npm run dev -- -o
 ```
 
 ## Compiler Options
