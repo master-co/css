@@ -1,3 +1,4 @@
+import MasterCSSCompiler from '@master/css.compiler'
 import {
     createConnection,
     TextDocuments,
@@ -117,11 +118,12 @@ async function getDocumentSettings(resource: string): Promise<MasterCSSSettings>
     }
     if (root?.uri) {
         try {
-            let userConfig = null
             try {
-                userConfig = await import(uri2path(root.uri.replace('%3A', ':') + '/master.css.js'))
-            } catch (_) { /* empty */ }
-            MasterCSSObject = new MasterCSS(userConfig)
+                const compiler = await new MasterCSSCompiler({ cwd: uri2path(root.uri.replace('%3A', ':')) }).init()
+                MasterCSSObject = new MasterCSS(compiler.css.config as any)
+            } catch (_) {
+                MasterCSSObject = new MasterCSS()
+             }
         } catch (_) { /* empty */ }
     }
     return result

@@ -31,7 +31,7 @@
     "types": "./dist/server.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/server.cjs",
+            "require": "./dist/server.js",
             "import": "./dist/server.mjs",
             "types": "./dist/server.d.ts"
         }
