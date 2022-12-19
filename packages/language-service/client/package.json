@@ -2,7 +2,9 @@
     "name": "@master/css-language-client",
     "scripts": {
         "build": "aron pack --platform=node",
-        "dev": "npm run build -- --watch"
+        "dev": "npm run build -- --watch",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint src"
     },
     "description": "VSCode part of a language server",
     "author": "Aoyue Design LLC.",
