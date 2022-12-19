@@ -2,9 +2,9 @@
 <div align="center">
 
 <p align="center">
-    <img width="1331" alt="Screenshot 2022-12-17 at 1 28 08 AM" src="https://user-images.githubusercontent.com/33840671/208154785-3b5f2e04-8a3c-4d12-bc46-f7625639f6fe.png">
+    <img width="1258" alt="Screenshot 2022-12-19 at 9 14 02 PM" src="https://user-images.githubusercontent.com/33840671/208437942-9d88b573-85cc-434e-bd55-0f6d36579224.png">
 </p>
-<p align="center">A vite plugin for integrating Master CSS ahead-of-time compilation</p>
+<p align="center">Vue + Master CSS</p>
 
 <p align="center">
     <a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
@@ -55,6 +55,10 @@
 
 ## Getting Started
 
+Choose the compilation mode you want to install:
+
+### Ahead-of-time Compilation
+
 ```bash
 npm install @master/css.vite@beta -D
 ```
@@ -74,8 +78,32 @@ export default config
 ```
 Import the virtual CSS module into `src/main.ts`:
 ```ts
+import { createApp } from 'vue'
 import './style.css'
 import 'master.css'
+import App from './App.vue'
+```
+Now start the Vite development server:
+```bash
+npm run dev -- --open
+```
+
+### Just-in-time Compilation
+
+```bash
+npm install @master/css
+```
+
+`src/main.ts`
+```ts
+import { createApp } from 'vue'
+import './style.css'
+import App from './App.vue'
+import MasterCSS from '@master/css'
+
+new MasterCSS()
+
+createApp(App).mount('#app')
 ```
 
 Now start the Vite development server:
@@ -83,10 +111,8 @@ Now start the Vite development server:
 npm run dev -- --open
 ```
 
-Example https://github.com/master-co/css/tree/beta/examples/vite
-
 ## Compiler Options
-Master presets common configurations for various frameworks and build tools, and it works almost out of the box.
+For AOT, Master presets common configurations for various frameworks and build tools, and it works almost out of the box.
 
 https://github.com/master-co/css/tree/beta/packages/compiler
 
