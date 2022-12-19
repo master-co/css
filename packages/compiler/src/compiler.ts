@@ -7,7 +7,7 @@ import type { Config } from '@master/css'
 import fs from 'fs'
 import fg from 'fast-glob'
 import minimatch from 'minimatch'
-import { pathToFileURL } from 'url'
+import crossImport from 'cross-import'
 
 export default class MasterCSSCompiler {
 
@@ -15,6 +15,7 @@ export default class MasterCSSCompiler {
         public options?: CompilerOptions
     ) {
         this.options = extend(defaultOptions, options)
+        this.init()
     }
 
     css: MasterCSS
@@ -23,9 +24,9 @@ export default class MasterCSSCompiler {
     readonly resolvedModuleId = '\0' + this.moduleId
     readonly moduleHMREvent = `HMR:${this.moduleId}`
 
-    async init() {
+    init() {
         this.extractions.clear()
-        this.css = new MasterCSS({ config: await this.readConfig() })
+        this.css = new MasterCSS({ config: this.readConfig() })
         this.compile()
         return this
     }
@@ -110,31 +111,24 @@ export default class MasterCSSCompiler {
         })
     }
 
-    async readConfig(): Promise<Config> {
-        let customConfig: Config
-        const read = async (importPath: string) => {
-            if (require.cache?.[this.configPath]) {
-                delete require.cache[this.configPath]
-            }
+    readConfig(): Config {
+        const { config, cwd } = this.options
+        if (typeof config === 'object') {
+            return config as Config
+        }
+        let userConfig: Config
+        try {
             if (this.hasConfig) {
-                const userConfigModule = await import(importPath)
-                customConfig = userConfigModule.default || userConfigModule
-                log.ok`import ${`*${path.relative(this.options.cwd, this.configPath)}*`} configuration`
+                const userConfigModule = crossImport(this.configPath, { cwd })
+                userConfig = userConfigModule.default || userConfigModule
+                log.ok`import ${`*${path.relative(cwd, this.configPath)}*`} configuration`
             } else {
                 log.info`${'read'} No config file found ${`.${this.configPath}.`}`
             }
-        }
-        try {
-            await read(pathToFileURL(this.configPath).href + '?' + Date.now())
         } catch (err) {
-            // 解決於 Jest 於 file:/// 的問題
-            if (err.toString().includes('Cannot find module')) {
-                await read(this.configPath)
-            } else {
-                log.error(err)
-            }
+            log.error(err)
         }
-        return customConfig
+        return userConfig
     }
 
     checkSourcePath(name: string): boolean {
@@ -153,7 +147,14 @@ export default class MasterCSSCompiler {
 
     get configPath(): string {
         const { cwd, config } = this.options
+        if (typeof config !== 'string') {
+            return
+        }
         const fileName = fg.sync(config, { cwd })[0]
         return fileName ? path.resolve(cwd, fileName) : ''
+    }
+
+    get config(): Config {
+        return this.css.config
     }
 }

@@ -1,10 +1,10 @@
-import MasterCSS from '@master/css'
+import MasterCSS, { Config } from '@master/css'
 import extract from './extract'
 import type { Pattern as FastGlobPattern } from 'fast-glob'
 
 const options: CompilerOptions = {
     cwd: process.cwd(),
-    config: 'master.css.{js,mjs,cjs}',
+    config: 'master.css.{ts,js,mjs,cjs}',
     include: ['**/*.{html,js,jsx,ts,tsx,svelte,astro,vue,md,mdx,pug,php}'],
     exclude: [
         '**/node_modules/**',
@@ -30,7 +30,7 @@ export interface CompilerOptions {
     exclude?: FastGlobPattern[]
     fixedClasses?: string[]
     ignoredClasses?: string[] | RegExp[]
-    config?: string
+    config?: string | Config
     debug?: boolean
     cwd?: string
 }
