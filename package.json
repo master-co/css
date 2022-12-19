@@ -4,7 +4,7 @@
         "install": "husky install && npm ls --link=true",
         "build": "turbo run build --filter=./packages/**/*",
         "build:clean": "rm -rf ./packages/**/*dist && turbo run build --force --no-cache --filter=./packages/**/*",
-        "check": "npm run commit-check && npm run build && turbo run test lint --parallel --filter=./packages/**/*",
+        "check": "npm run commit-check && npm run build && turbo run test lint type-check --parallel --filter=./packages/**/*",
         "test": "turbo run test --parallel",
         "lint": "turbo run lint --parallel --filter=./packages/**/*",
         "type-check": "turbo run type-check --parallel --filter=./packages/**/*",
