@@ -64,6 +64,6 @@
         "@master/normal.css": ""
     },
     "devDependencies": {
-        "to-extend": "^1.4.5"
+        "to-extend": "^1.4.6"
     }
 }
