@@ -117,17 +117,17 @@ checkSourcePath(name: string): boolean
 
 ```ts
 // Read user config file by `options.config`
-async readConfig(): Promise<Config>
-```
-
-```ts
-// Check if the custom config exists
-get hasConfig(): boolean
+readConfig(): Config
 ```
 
 ```ts
 // Get custom config path
 get configPath(): string
+```
+
+```ts
+// Get custom config path
+get resolvedConfigPath(): string
 ```
 
 ## Properties

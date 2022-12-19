@@ -51,8 +51,9 @@ export async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Pl
         },
         configureServer(_server) {
             server = _server
-            if (compiler.hasConfig) {
-                server.watcher.add(compiler.configPath)
+            const resolvedConfigPath = compiler.resolvedConfigPath
+            if (resolvedConfigPath) {
+                server.watcher.add(resolvedConfigPath)
             }
             // TODO 目前會重複 watch 相同的檔案
             // const supportsGlobs = server.config.server.watch?.disableGlobbing === false

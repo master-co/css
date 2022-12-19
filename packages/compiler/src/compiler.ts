@@ -118,12 +118,13 @@ export default class MasterCSSCompiler {
         }
         let userConfig: Config
         try {
-            if (this.hasConfig) {
-                const userConfigModule = crossImport(this.configPath, { cwd })
+            const configPath = this.configPath
+            if (configPath) {
+                const userConfigModule = crossImport(configPath, { cwd })
                 userConfig = userConfigModule.default || userConfigModule
-                log.ok`import ${`*${path.relative(cwd, this.configPath)}*`} configuration`
+                log.ok`import ${`*${configPath}*`} configuration`
             } else {
-                log.info`${'read'} No config file found ${`.${this.configPath}.`}`
+                log.info`${'read'} No config file found ${`.${this.options.config}.`}`
             }
         } catch (err) {
             log.error(err)
@@ -141,17 +142,17 @@ export default class MasterCSSCompiler {
         return true
     }
 
-    get hasConfig(): boolean {
-        return fs.existsSync(this.configPath)
-    }
-
     get configPath(): string {
         const { cwd, config } = this.options
-        if (typeof config !== 'string') {
+        if (!config || typeof config !== 'string') {
             return
         }
-        const fileName = fg.sync(config, { cwd })[0]
-        return fileName ? path.resolve(cwd, fileName) : ''
+        return fg.sync(config, { cwd })[0]
+    }
+
+    get resolvedConfigPath() {
+        const configPath = this.configPath
+        return configPath ? path.resolve(this.options.cwd, configPath) : ''
     }
 
     get config(): Config {
