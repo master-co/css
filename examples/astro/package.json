@@ -11,7 +11,8 @@
         "astro": "astro"
     },
     "dependencies": {
-        "astro": "^1.7.1",
-        "@master/css": ""
+        "@master/css": "",
+        "@master/css.vite": "*",
+        "astro": "^1.7.1"
     }
 }
