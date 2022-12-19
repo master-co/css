@@ -17,7 +17,7 @@ export async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Pl
         },
         load(id) {
             if (id === compiler.resolvedModuleId) {
-                compiler.sources().forEach((eachSourcePath) => this.addWatchFile(eachSourcePath))
+                compiler.sources.forEach((eachSourcePath) => this.addWatchFile(eachSourcePath))
                 return compiler.css.text
             }
         },
@@ -57,7 +57,7 @@ export async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Pl
             }
             // TODO 目前會重複 watch 相同的檔案
             // const supportsGlobs = server.config.server.watch?.disableGlobbing === false
-            // server.watcher.add(supportsGlobs ? compiler.options.include : compiler.sources())
+            // server.watcher.add(supportsGlobs ? compiler.options.include : compiler.sources)
         },
         transform(code, id) {
             if (server && code.includes(compiler.moduleId)) {

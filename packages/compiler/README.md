@@ -113,7 +113,7 @@ insert(name: string, content: string): boolean
 
 ```ts
 // Read file source paths by `options.include` and `options.exclude`
-sources(): string[]
+get sources(): string[]
 ```
 
 ```ts
