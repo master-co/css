@@ -60,6 +60,10 @@
 </div>
 
 ## Usage
+```bash
+npm install @master/css.compiler`
+```
+
 ```ts
 const compiler = new MasterCSSCompiler()
 ```
@@ -69,6 +73,8 @@ const compiler = new MasterCSSCompiler()
 {
     cwd: process.cwd(),
     config: 'master.css.{js,mjs,cjs}',
+    // specify sources, not excluded by `options.exclude`
+    sources: [],
     include: ['**/*.{html,js,jsx,ts,tsx,svelte,astro,vue,md,mdx,pug,php}'],
     exclude: [
         '**/node_modules/**',
@@ -87,7 +93,7 @@ const compiler = new MasterCSSCompiler()
 
 ```ts
 // Initialize the compiler and MasterCSS
-async init(): Promise<this>
+init(): this
 ```
 
 ```ts
@@ -107,7 +113,7 @@ insert(name: string, content: string): boolean
 
 ```ts
 // Read file source paths by `options.include` and `options.exclude`
-readSourcePaths(): string[]
+sources(): string[]
 ```
 
 ```ts

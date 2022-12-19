@@ -1,4 +1,4 @@
-import path from 'path'
+import upath from 'upath'
 import log from 'aronlog'
 import { default as defaultOptions, CompilerOptions } from './options'
 import MasterCSS, { extend } from '@master/css'
@@ -37,10 +37,10 @@ export default class MasterCSSCompiler {
             for (const eachFixedClass of this.options.fixedClasses) {
                 this.css.insert(eachFixedClass)
             }
-        this.readSourcePaths()
+        this.sources
             .forEach((eachSourcePath) => {
                 const eachFileContent = fs.readFileSync(
-                    path.resolve(this.options.cwd, eachSourcePath),
+                    upath.resolve(this.options.cwd, eachSourcePath),
                     { encoding: 'utf-8' }
                 ).toString()
                 this.insert(eachSourcePath, eachFileContent)
@@ -62,7 +62,7 @@ export default class MasterCSSCompiler {
             }
         }
         if (eachExtractions.length)
-            log.info`${'extract'} ${eachExtractions.length.toString()} potential ${`.${path.relative(this.options.cwd, name)}.`}`
+            log.info`${'extract'} ${eachExtractions.length.toString()} potential ${`.${upath.relative(this.options.cwd, name)}.`}`
 
         if (this.options.debug) {
             if (eachExtractions.length) log.info`${'extract'} ${`.${eachExtractions.join(' ')}.`}`
@@ -103,12 +103,18 @@ export default class MasterCSSCompiler {
         return true
     }
 
-    readSourcePaths(): string[] {
-        const { include, exclude } = this.options
-        return fg.sync(include, {
+    get sources(): string[] {
+        const { include, exclude, sources } = this.options
+        const sourcePaths = fg.sync(include, {
             cwd: this.options.cwd,
             ignore: exclude
         })
+        if (sources?.length) {
+            sourcePaths.push(
+                ...fg.sync(sources, { cwd: this.options.cwd })
+            )
+        }
+        return sourcePaths
     }
 
     readConfig(): Config {
@@ -133,10 +139,14 @@ export default class MasterCSSCompiler {
     }
 
     checkSourcePath(name: string): boolean {
-        for (const eachIncludePattern of this.options.include) {
+        const { include, exclude, sources } = this.options
+        for (const eachSource of sources) {
+            if (minimatch(name, eachSource)) return true
+        }
+        for (const eachIncludePattern of include) {
             if (!minimatch(name, eachIncludePattern)) return false
         }
-        for (const eachExcludePattern of this.options.exclude) {
+        for (const eachExcludePattern of exclude) {
             if (minimatch(name, eachExcludePattern)) return false
         }
         return true
@@ -152,7 +162,7 @@ export default class MasterCSSCompiler {
 
     get resolvedConfigPath() {
         const configPath = this.configPath
-        return configPath ? path.resolve(this.options.cwd, configPath) : ''
+        return configPath ? upath.resolve(this.options.cwd, configPath) : ''
     }
 
     get config(): Config {

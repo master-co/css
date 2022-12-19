@@ -52,6 +52,6 @@
         "cross-import": "^1.4.4",
         "fast-glob": "^3.2.12",
         "minimatch": "^5.1.1",
-        "normalize-path": "^3.0.0"
+        "upath": "^2.0.1"
     }
 }

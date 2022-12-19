@@ -5,6 +5,7 @@ import type { Pattern as FastGlobPattern } from 'fast-glob'
 const options: CompilerOptions = {
     cwd: process.cwd(),
     config: 'master.css.{ts,js,mjs,cjs}',
+    sources: [],
     include: ['**/*.{html,js,jsx,ts,tsx,svelte,astro,vue,md,mdx,pug,php}'],
     exclude: [
         '**/node_modules/**',
@@ -26,6 +27,7 @@ export declare type CompilerSource = {
 
 export interface CompilerOptions {
     extract?: (source: CompilerSource, css: MasterCSS) => string[]
+    sources?: FastGlobPattern[]
     include?: FastGlobPattern[]
     exclude?: FastGlobPattern[]
     fixedClasses?: string[]
