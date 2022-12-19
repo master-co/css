@@ -3,7 +3,7 @@ export { default } from './css'
 export { default as Rule } from './rule'
 
 // api
-export { default as extend } from './apis/extend'
+export { default as extend } from 'to-extend'
 export { default as render } from './apis/render'
 export { default as renderFromHTML } from './apis/render-from-html'
 export { default as renderIntoHTML } from './apis/render-into-html'

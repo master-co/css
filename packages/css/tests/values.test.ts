@@ -1,5 +1,4 @@
 import { testCSS } from '../src/utils/test-css'
-import MasterCSS from '../src'
 import config from '../../../master.css'
 
 test('values', () => {
@@ -90,10 +89,10 @@ test('values', () => {
                 }
             }
         }
-    ),
-        testCSS(
-            'b:inputborder',
-            '.b\\:inputborder{border:0.125rem solid #d11a1e}',
-            config
-        )
+    )
+    testCSS(
+        'b:inputborder',
+        '.b\\:inputborder{border:0.125rem solid #d11a1e}',
+        config
+    )
 })

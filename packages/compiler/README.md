@@ -61,7 +61,7 @@
 
 ## Usage
 ```ts
-const compiler = await new MasterCSSCompiler().init()
+const compiler = new MasterCSSCompiler()
 ```
 
 ## Options

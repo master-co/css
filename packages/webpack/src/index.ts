@@ -29,16 +29,13 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
                 )
         }
 
-        compiler.hooks.initialize.tap(NAME, async () => {
-            await this.init()
-            updateCSS()
-        })
+        updateCSS()
 
-        compiler.hooks.watchRun.tapPromise(NAME, async () => {
+        compiler.hooks.watchRun.tap(NAME, () => {
             const { modifiedFiles } = compiler
             if (modifiedFiles) {
                 if (modifiedFiles.has(this.configPath)) {
-                    await this.init()
+                    this.init()
                 } else {
                     modifiedFiles?.forEach((modifiedFilePath) => {
                         this.insert(modifiedFilePath, fs.readFileSync(modifiedFilePath).toString())

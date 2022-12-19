@@ -1,5 +1,5 @@
 import config from './config'
-import extend from './apis/extend'
+import extend from 'to-extend'
 import type { Config } from './config'
 import Rule, { RuleMatching } from './rule'
 
@@ -227,7 +227,6 @@ export default class MasterCSS extends MutationObserver {
 
             // console.timeEnd('css engine');
         })
-
         this.options = extend({ observe: true }, options)
 
         if (this.options.config && !this.options.override) {

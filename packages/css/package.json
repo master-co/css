@@ -62,5 +62,8 @@
     "dependencies": {
         "@master/keyframes.css": "",
         "@master/normal.css": ""
+    },
+    "devDependencies": {
+        "to-extend": "^1.4.3"
     }
 }

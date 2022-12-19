@@ -122,6 +122,5 @@ module.exports = {
             watch: '(max-device-width:42mm) and (min-device-width:38mm)'
         }
     },
-    rootSize: 16,
-    Rules: []
+    rootSize: 16
 }
