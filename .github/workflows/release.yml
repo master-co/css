@@ -19,17 +19,18 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   registry-url: 'https://registry.npmjs.org'
                   cache: 'npm'
-            - name: Wait for required workflow to succeed
-              uses: lewagon/wait-on-check-action@v1.2.0
+            - run: npm ci
+            - run: npm run build
+
+            - uses: lewagon/wait-on-check-action@v1.2.0
               with:
                   ref: ${{ github.ref }}
                   check-regexp: test.*|check.*|commit-check.*|lint.*
                   repo-token: ${{ secrets.GITHUB_TOKEN }}
                   wait-interval: 10
-            - run: npm ci
+
             - run: npx --no -- semantic-release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
                   VSCE_PAT: ${{ secrets.VSCE_PAT }}
-
