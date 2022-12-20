@@ -70,6 +70,45 @@ npm create astro@latest <project-name>
 cd <project-name>
 ```
 
+Choose a compilation mode you want to install:
+
+### Ahead-of-time Compilation
+
+```bash
+npm install @master/css.vite@beta -D
+```
+
+`astro.config.mjs`
+```js
+import { defineConfig } from 'astro/config'
+import { MasterCSSVitePlugin } from '@master/css.vite'
+
+// https://astro.build/config
+export default defineConfig({
+    vite: {
+        plugins: [
+            MasterCSSVitePlugin()
+        ]
+    }
+})
+```
+Import the virtual CSS module into `src/layouts/Layout.astro`:
+```jsx
+---
+import "master.css"
+
+export interface Props {
+    title: string
+}
+
+const { title } = Astro.props
+---
+```
+Now start the Astro development server:
+```bash
+npm run dev -- --open
+```
+
 ### Just-in-time
 
 ```
@@ -97,9 +136,5 @@ npm install @master/css@beta
 
 Now start the Astro development server:
 ```bash
-npm run dev
+npm run dev -- --open
 ```
-
-### Ahead-of-time
-
-🚧 coming soon ...

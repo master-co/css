@@ -1,4 +1,6 @@
 ---
+import "master.css"
+
 export interface Props {
     title: string;
 }
@@ -14,11 +16,12 @@ const { title } = Astro.props;
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
         <title>{title}</title>
-        <script>
+        <!-- JIT -->
+        <!-- <script>
             import MasterCSS from "@master/css";
             import config from "../../master.css";
             export const css = new MasterCSS({ config });
-        </script>
+        </script> -->
     </head>
     <body>
         <slot />

@@ -55,7 +55,7 @@
 
 ## Getting Started
 
-Choose the compilation mode you want to install:
+Choose a compilation mode you want to install:
 
 ### Ahead-of-time Compilation
 

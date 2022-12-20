@@ -1,5 +1,5 @@
 {
-    "name": "master-css-aot-in-astro",
+    "name": "master-css-in-astro",
     "type": "module",
     "version": "0.0.1",
     "private": true,
@@ -12,7 +12,7 @@
     },
     "dependencies": {
         "@master/css": "",
-        "@master/css.vite": "*",
+        "@master/css.vite": "",
         "astro": "^1.7.1"
     }
 }
