@@ -22,7 +22,7 @@ export async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Pl
             }
         },
         async handleHotUpdate({ server, file, read }) {
-            if (path.resolve(file) === compiler.configPath) {
+            if (path.resolve(file) === compiler.resolvedConfigPath) {
                 /* 當自訂的 master.css.js 變更時，根據其重新初始化 MasterCSS 並強制重載瀏覽器 */
                 compiler.init()
                 log.info`${'change'} config file ${`.${path.relative(compiler.options.cwd, compiler.configPath)}.`}`
@@ -51,9 +51,9 @@ export async function MasterCSSVitePlugin(options?: CompilerOptions): Promise<Pl
         },
         configureServer(_server) {
             server = _server
-            const resolvedConfigPath = compiler.resolvedConfigPath
-            if (resolvedConfigPath) {
-                server.watcher.add(resolvedConfigPath)
+            const configPath = compiler.configPath
+            if (configPath) {
+                server.watcher.add(configPath)
             }
             // TODO 目前會重複 watch 相同的檔案
             // const supportsGlobs = server.config.server.watch?.disableGlobbing === false
