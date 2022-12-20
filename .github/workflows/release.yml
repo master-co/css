@@ -13,6 +13,13 @@ jobs:
             matrix:
                 node-version: [18.12.1]
         steps:
+            - name: Wait for required workflow to succeed
+              uses: lewagon/wait-on-check-action@v1.2.0
+              with:
+                  ref: ${{ github.ref }}
+                  check-regexp: test.*|check.*|commit-check.*|lint.*
+                  repo-token: ${{ secrets.GITHUB_TOKEN }}
+                  wait-interval: 10
             - uses: actions/checkout@v3
             - uses: actions/setup-node@v3
               with:
