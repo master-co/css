@@ -73,9 +73,11 @@ const compiler = new MasterCSSCompiler()
 {
     cwd: process.cwd(),
     config: 'master.css.{js,mjs,cjs}',
-    // specify sources, not excluded by `options.exclude`
+    // forcibly specify sources for scanning, not excluded by `options.exclude`
     sources: [],
+    // specify sources for scanning
     include: ['**/*.{html,js,jsx,ts,tsx,svelte,astro,vue,md,mdx,pug,php}'],
+    // specify sources to exclude
     exclude: [
         '**/node_modules/**',
         '**/*.d.ts',
@@ -85,7 +87,11 @@ const compiler = new MasterCSSCompiler()
         'dist',
         'out',
         'README.md'
-    ]
+    ],
+    // whitelist of class names for unpredictable dynamics
+    fixedClasses: []
+    // blacklist of class names to exclude accidentally captured
+    ignoredClasses: [] // or RegExp[]
 }
 ```
 
