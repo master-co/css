@@ -89,7 +89,7 @@ const compiler = new MasterCSSCompiler()
         'README.md'
     ],
     // whitelist of class names for unpredictable dynamics
-    fixedClasses: []
+    fixedClasses: [],
     // blacklist of class names to exclude accidentally captured
     ignoredClasses: [] // or RegExp[]
 }
