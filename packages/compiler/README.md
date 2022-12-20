@@ -61,7 +61,7 @@
 
 ## Usage
 ```bash
-npm install @master/css.compiler`
+npm install @master/css.compiler
 ```
 
 ```ts
