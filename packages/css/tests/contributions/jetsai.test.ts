@@ -2,10 +2,6 @@ import { Config } from '../../src/config'
 import { extend } from '../../src'
 import { testCSS } from '../../src/utils/test-css'
 
-const chars = {
-	SPACE: ' '
-}
-
 const buttonTokens = Object.freeze({
 	primary: 'button-primary',
 	primaryHover: 'button-primary-hover',
@@ -43,7 +39,7 @@ export const buttonConfig: Config = {
 			`bg:${buttonTokens.primary}`,
 			`bg:${buttonTokens.primaryHover}:hover`,
 			`bg:${buttonTokens.primaryDisabled}:disabled`
-		].join(chars.SPACE),
+		].join(' '),
 	}
 }
 
@@ -68,7 +64,7 @@ export const textConfig: Config = {
 
 const config =  extend(colorConfig, textConfig, buttonConfig)
 
-test('button-config', () => {
+test('jetsai button config', () => {
     testCSS(
         'bg:button-primary',
         '.bg\\:button-primary,.btn-primary{background-color:#2242A3}',
@@ -101,7 +97,7 @@ test('button-config', () => {
     )
 })
 
-test('color-config', () => {
+test('jetsai color config', () => {
     testCSS(
         'bg:blue200',
         '.bg\\:blue200{background-color:#CDE0F7}',
@@ -129,7 +125,7 @@ test('color-config', () => {
     )
 })
 
-test('text-config', () => {
+test('jetsai text config', () => {
     testCSS(
         'bg:text-disabled',
         '.bg\\:text-disabled{background-color:#9297A1}',
