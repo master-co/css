@@ -13,9 +13,51 @@ cd packages/target
 npm run test -- --watch
 ```
 
-## Building
+## Testing
+```bash
+npm run test
 ```
-npm run build
+
+### Contributing your test cases
+Taking the CSS project as an example, you can freely create a file like **aron.test.ts** in [packages/css/tests/contributions](https://github.com/master-co/css/tree/dev/beta/packages/css/tests/contributions) for unit testing:
+
+```ts
+import { testProp, testCSS } from '../src/utils/test-css'
+
+it('should generated with `background-color:` instead of `background:`', () => {
+    testProp('bg:red', 'background-color:#d11a1e')
+})
+
+it('should contain the `:hover` selector', () => {
+    testProp('fg:white:hover', '.f\\:white\\:hover:hover{color:#ffffff}')
+})
+```
+
+Commit your tests ( and create a Pull Request ):
+```bash
+Add @1aron tests
+```
+
+## Linting
+Follow the [Aron's ESLint Preset](https://github.com/1aron/aronrepo/tree/beta/packages/eslint-config)
+```bash
+npm run lint
+```
+
+To automatically fix any violations in your code:
+```
+npm run lint -- --fix
+```
+
+## Type Checking
+```bash
+npm run type-check
+```
+
+## Commit Checking
+Follow the [Aron's Conventional Commits](https://github.com/1aron/aronrepo/tree/beta/packages/conventional-commits)
+```bash
+npm run commit-check
 ```
 
 ## Checking
@@ -25,28 +67,7 @@ npm run check
 ```
 The command includes all of the following checks:
 
-### Test
-```bash
-npm run test
+## Building
 ```
-
-### Lint
-Follow the [Aron's ESLint Preset](https://github.com/1aron/aronrepo/tree/beta/packages/eslint-config)
-```bash
-npm run lint
-```
-To automatically fix any violations in your code:
-```
-npm run lint -- --fix
-```
-
-### Type Check
-```bash
-npm run type-check
-```
-
-### Commit Check
-Follow the [Aron's Conventional Commits](https://github.com/1aron/aronrepo/tree/beta/packages/conventional-commits)
-```bash
-npm run commit-check
+npm run build
 ```
