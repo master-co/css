@@ -253,30 +253,15 @@ function getColorsItem(masterCss: MasterCSS = new MasterCSS()): CompletionItem[]
 
     const masterStyleCompletionItem: CompletionItem[] = []
 
-    Object.keys(masterCss.colorsThemesMap)
+    Object.keys(masterCss.colorThemesMap)
         .forEach((colorName: string) => {
-            const colors = masterCss.colorsThemesMap[colorName]
-            Object.keys(colors)
-                .forEach((level: string) => {
-                    const colorValue: any = masterCss.colorsThemesMap[colorName][level]
-                    try {
-                        if (level === '') {
-                            masterStyleCompletionItem.push({
-                                label: colorName,
-                                documentation: Object.values<string>(colorValue)[0],
-                                kind: CompletionItemKind.Color,
-                                sortText: `${colorName}`
-                            })
-                        } else if (!isNaN(+level)) {
-                            masterStyleCompletionItem.push({
-                                label: colorName + '-' + level,
-                                documentation: Object.values<string>(colorValue)[0],
-                                kind: CompletionItemKind.Color,
-                                sortText: `${colorName}-${(level).toString().padStart(2, '0')}`
-                            })
-                        }
-                    } catch (_) { /* empty */ }
-                })
+            const colorValue: any = masterCss.colorThemesMap[colorName]
+            masterStyleCompletionItem.push({
+                label: colorName,
+                documentation: Object.values<string>(colorValue)[0],
+                kind: CompletionItemKind.Color,
+                sortText: `${colorName}`
+            })
         })
 
     return masterStyleCompletionItem

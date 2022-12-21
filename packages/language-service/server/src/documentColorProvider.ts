@@ -58,7 +58,7 @@ export async function GetDocumentColors(DocumentColor: DocumentColorParams, docu
         return []
     }
 
-    const allMasterCssColorKeys = Object.keys(masterCss.colorsThemesMap)
+    const allMasterCssColorKeys = Object.keys(masterCss.colorThemesMap)
 
     let instanceMatch: RegExpExecArray | null
     while ((instanceMatch = instancePattern.exec(text)) !== null) {
@@ -124,7 +124,7 @@ export async function GetDocumentColors(DocumentColor: DocumentColorParams, docu
                             start: document?.positionAt(instanceStartIndex + colorMatch.index) ?? Position.create(0, 0),
                             end: document?.positionAt(instanceStartIndex + colorMatch.index + colorMatch[0].length) ?? Position.create(0, 0)
                         },
-                        color: getColorsRGBA(colorName, '', colorAlpha, theme, masterCss)
+                        color: getColorsRGBA(colorName, colorAlpha, theme, masterCss)
                     }
                     colors.push(colorInformation)
                 }
@@ -132,17 +132,16 @@ export async function GetDocumentColors(DocumentColor: DocumentColorParams, docu
             }
             else if (colorMatch[0].split('-').length == 2) { //:red-60 red-60/.5
 
-                colorName = colorMatch[0].split('-')[0]
-                colorNumber = Number(colorMatch[0].split('-')[1].split('/')[0])
+                colorName = colorMatch[0]
 
 
-                if (allMasterCssColorKeys.find(x => x == colorName) && colorNumber > 0 && colorNumber < 100) {
+                if (allMasterCssColorKeys.find(x => x == colorName)) {
                     const colorInformation: ColorInformation = {
                         range: {
                             start: document?.positionAt(instanceStartIndex + colorMatch.index) ?? Position.create(0, 0),
                             end: document?.positionAt(instanceStartIndex + colorMatch.index + colorMatch[0].length) ?? Position.create(0, 0)
                         },
-                        color: getColorsRGBA(colorName, colorNumber, colorAlpha, theme, masterCss)
+                        color: getColorsRGBA(colorName, colorAlpha, theme, masterCss)
                     }
                     colors.push(colorInformation)
                 }
@@ -168,10 +167,10 @@ export async function GetDocumentColors(DocumentColor: DocumentColorParams, docu
     return colors
 }
 
-function getColorsRGBA(colorName: string, colorNumber: number | string, colorAlpha = 1, theme = '', masterCss: MasterCSS = new MasterCSS()): Color {
+function getColorsRGBA(colorName: string, colorAlpha = 1, theme = '', masterCss: MasterCSS = new MasterCSS()): Color {
     try {
-        const colorNumberMap = masterCss.colorsThemesMap[colorName]
-        const levelRgb = hexToRgb(colorNumberMap[colorNumber][theme] ?? colorNumberMap[colorNumber][''] ?? Object.values(colorNumberMap[colorNumber])[0])
+        const colorNumberMap = masterCss.colorThemesMap[colorName]
+        const levelRgb = hexToRgb(colorNumberMap[theme] ?? colorNumberMap[''] ?? Object.values(colorNumberMap)[0])
     
         return { red: levelRgb.red/255, green: levelRgb.green/255, blue: levelRgb.blue/255, alpha: colorAlpha }
     } catch(ex) {
