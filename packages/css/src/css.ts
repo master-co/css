@@ -51,7 +51,7 @@ export default class MasterCSS extends MutationObserver {
 
     semantics: [RegExp, [string, string | Record<string, string>]][]
     classes: Record<string, string[]>
-    colorsThemesMap: Record<string, Record<string, Record<string, string>>>
+    colorThemesMap: Record<string, Record<string, string>>
     colorNames: string[]
     themeNames: string[]
     relationThemesMap: Record<string, Record<string, string[]>>
@@ -313,7 +313,7 @@ export default class MasterCSS extends MutationObserver {
     private cache() {
         this.semantics = []
         this.classes = {}
-        this.colorsThemesMap = {}
+        this.colorThemesMap = {}
         this.relationThemesMap = {}
         this.relations = {}
         this.colorNames = []
@@ -331,53 +331,20 @@ export default class MasterCSS extends MutationObserver {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
         }
 
-        function getNestedData(key: string, value: any) {
-            const newData = {}
-
-            const dashIndex = key.indexOf('-')
-            if (dashIndex === -1) {
-                newData[key] = value
-            } else {
-                const [nextKey, nextValue] = getNestedData(key.slice(dashIndex + 1), value)
-                newData[key.slice(0, dashIndex)] = { [nextKey]: nextValue }
-            }
-
-            return Object.entries(newData)[0]
-        }
-
         function getFlatData(obj: Record<string, any>, hasObjectValue: boolean, parentKey = '', newData: Record<string, any> = {}) {
+            const getCurrenyKey = (key) => key ? (parentKey ? parentKey + '-' : '') + key : parentKey
             const entries = Object.entries(obj)
-            const objectEntries: [string, Record<string, any>][] = []
-            const nonObjectEntries: [string, string | number][] = []
-
-            const isObject = (value) => typeof value === 'object' && !Array.isArray(value)
-            for (const entry of entries) {
-                const [key, value] = entry
-                if (isObject(value)) {
-                    if (key.includes('-')) {
-                        const valueEntries = Object.entries(value)
-                        const [newKey, newValue] = getNestedData(key, (valueEntries.length === 1 && !valueEntries[0][0]) ? valueEntries[0][1] : value)
-                        const entry = entries.find(entry => entry[0] === newKey)
-                        if (entry) {
-                            const mergedValue = entry[1]
-                            entry[1] = extend(isObject(mergedValue) ? mergedValue : { '': mergedValue }, newValue)
-                        } else {
-                            const newEntry = [newKey, newValue] as any
-                            entries.push(newEntry)
-                            objectEntries.push(newEntry)
-                        }
-                    } else {
-                        objectEntries.push(entry)
-                    }
-                } else {
-                    nonObjectEntries.push(entry)
-                }
+            const objectEntries = []
+            const nonObjectEntries = []
+            for (const eachEntry of entries) {
+                const value = eachEntry[1];
+                ((typeof value === 'object' && !Array.isArray(value)) ? objectEntries : nonObjectEntries).push(eachEntry)
             }
 
-            const getCurrentKey = (key: string) => key ? (parentKey ? parentKey + '-' : '') + key : parentKey
             for (const [key, value] of objectEntries) {
-                getFlatData(value, hasObjectValue, getCurrentKey(key), newData)
+                getFlatData(value, hasObjectValue, getCurrenyKey(key), newData)
             }
+
             if (hasObjectValue && parentKey) {
                 if (nonObjectEntries.length) {
                     newData[parentKey] = nonObjectEntries.reduce((newValue, [key, value]) => {
@@ -387,7 +354,7 @@ export default class MasterCSS extends MutationObserver {
                 }
             } else {
                 for (const [key, value] of nonObjectEntries) {
-                    newData[getCurrentKey(key)] = value
+                    newData[getCurrenyKey(key)] = value
                 }
             }
 
@@ -512,39 +479,26 @@ export default class MasterCSS extends MutationObserver {
             }
         }
 
-        const mergeColors = (theme: string, originalColors: any) => {
+        const mergeColors = (theme: string, originalColors: Record<string, any>) => {
             if (!originalColors)
                 return
 
-            for (const colorName in originalColors) {
-                const levels = originalColors[colorName]
-                if (typeof levels === 'string') {
-                    originalColors[colorName] = { '': levels }
+            const colors = getFlatData(originalColors, true)
+            for (const [mainColorName, value] of Object.entries(colors)) {
+                const levelMap: Record<string, string> = typeof value === 'string' ? { '': value } : value
+                for (const [level, color] of Object.entries(levelMap)) {
+                    const colorName = mainColorName + (level ? '-' + level : '')
+                    if (colorName in this.colorThemesMap) {
+                        this.colorThemesMap[colorName][theme] = color
+                    } else {
+                        this.colorThemesMap[colorName] = { [theme]: color }
+                    }
                 }
             }
 
-            const colors = getFlatData(originalColors, true)
-            for (const colorName in colors) {
-                const levels = colors[colorName]
-                if (colorName in this.colorsThemesMap) {
-                    const levelsThemes = this.colorsThemesMap[colorName]
-                    for (const level in levels) {
-                        const color = levels[level]
-
-                        if (level in levelsThemes) {
-                            levelsThemes[level][theme] = color
-                        } else {
-                            levelsThemes[level] = { [theme]: color }
-                        }
-                    }
-                } else {
+            for (const colorName in originalColors) {
+                if (!this.colorNames.includes(colorName)) {
                     this.colorNames.push(colorName)
-                    this.colorsThemesMap[colorName] = Object
-                        .entries(levels)
-                        .reduce((obj, [level, color]) => {
-                            obj[level] = { [theme]: color }
-                            return obj
-                        }, {})
                 }
             }
         }
@@ -561,38 +515,20 @@ export default class MasterCSS extends MutationObserver {
             }
         }
 
-        for (const [colorName, levelsThemes] of Object.entries(this.colorsThemesMap)) {
-            for (const [level, themesColor] of Object.entries(levelsThemes)) {
-                for (const [theme, color] of Object.entries(themesColor)) {
-                    if (!color.startsWith('#')) {
-                        const [_colorName, _level] = color.split('-')
-                        const assignedThemesColor = this.colorsThemesMap[_colorName]?.[_level ?? '']
-                        let newColor = ''
-
-                        if (assignedThemesColor) {
-                            newColor = (theme
-                                ? assignedThemesColor[theme]
-                                : undefined)
-                                ?? assignedThemesColor['']
-                            if (newColor) {
-                                themesColor[theme] = newColor
-                            }
-                        }
-
-                        if (!newColor) {
-                            console.warn(`\`${color}\` doesn't exist in the extended config \`.colors\``)
-
-                            if (Object.keys(themesColor).length > 1) {
-                                delete themesColor[theme]
-                            } else if (Object.keys(levelsThemes).length > 1) {
-                                delete levelsThemes[level]
-                            } else {
-                                delete this.colorsThemesMap[colorName]
-                                this.colorNames.splice(this.colorNames.indexOf(colorName), 1)
-                            }
-                        }
+        for (const [colorName, themeColorMap] of Object.entries(this.colorThemesMap)) {
+            for (const [theme, color] of Object.entries(themeColorMap)) {
+                if (!color.startsWith('#')) {
+                    const replaceThemeColorMap = this.colorThemesMap[color]
+                    if (replaceThemeColorMap) {
+                        themeColorMap[theme] = (theme ? replaceThemeColorMap[theme] : undefined) ?? replaceThemeColorMap['']
+                    } else {
+                        console.warn(`\`${color}\` doesn't exist in the extended config \`.colors\``)
+                        delete themeColorMap[theme]
                     }
                 }
+            }
+            if (!Object.keys(themeColorMap).length) {
+                delete this.colorThemesMap[colorName]
             }
         }
 
@@ -763,7 +699,7 @@ export default class MasterCSS extends MutationObserver {
      */
     match(className: string): RuleMatching {
         for (const EachRule of this.config.Rules) {
-            const matching = EachRule.match(className, this.matches[EachRule.id], this.colorsThemesMap, this.colorNames)
+            const matching = EachRule.match(className, this.matches[EachRule.id], this.colorThemesMap, this.colorNames)
             if (matching)
                 return {
                     ...matching,

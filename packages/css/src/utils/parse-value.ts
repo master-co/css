@@ -4,7 +4,8 @@ import { normalizeCssCalcText } from './normalize-css-calc-text'
 export function parseValue(
     token: string | number,
     defaultUnit?: string,
-    colorsThemesMap?: Record<string, Record<string, Record<string, string>>>,
+    colorNames?: string[],
+    colorThemesMap?: Record<string, Record<string, string>>,
     rootSize?: number,
     themes?: string[]
 ): {
@@ -20,28 +21,27 @@ export function parseValue(
         value = token
         unit = defaultUnit || ''
     } else {
-        if (colorsThemesMap) {
-            const colorNames = Object.keys(colorsThemesMap)
+        if (colorThemesMap) {
             let anyMatched = false
             let hasColorName = false
             
             token = token.replace(
-                new RegExp(`(^|,| |\\()(${colorNames.join('|')})(?:-([0-9A-Za-z]+))?(?:\\/(\\.?[0-9]+%?))?(?=(\\)|\\}|,| |$))`, 'gm'),
-                (origin, prefix, colorName, level, opacityStr) => {
+                new RegExp(`(^|,| |\\()((?:${colorNames.join('|')})(?:-(?:[0-9A-Za-z-]+))?)(?:\\/(\\.?[0-9]+%?))?(?=(\\)|\\}|,| |$))`, 'gm'),
+                (origin, prefix, colorName, opacityStr) => {
                     hasColorName = true
 
-                    const themeHexColorMap =  colorsThemesMap[colorName]?.[level || '']
-                    if (themeHexColorMap) {
-                        let hexColor: string
+                    const themeColorMap =  colorThemesMap[colorName]
+                    if (themeColorMap) {
+                        let color: string
                         for (const eachTheme of themes) {
-                            if ((hexColor = themeHexColorMap[eachTheme]))
+                            if ((color = themeColorMap[eachTheme]))
                                 break
                         }
 
-                        if (hexColor) {
+                        if (color) {
                             anyMatched = true
 
-                            let newValue = hexColor
+                            let newValue = color
                             if (opacityStr) {
                                 let opacity = opacityStr.endsWith('%')
                                     ? parseFloat(opacityStr) / 100.0

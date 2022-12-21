@@ -54,7 +54,7 @@ export default class Rule {
     static match(
         name: string,
         matches: RegExp,
-        colorsThemesMap: Record<string, Record<string, Record<string, string>>>,
+        colorThemesMap: Record<string, Record<string, string>>,
         colorNames: string[]
     ): RuleMatching {
         const { colorStarts, symbol, prop } = this
@@ -73,8 +73,8 @@ export default class Rule {
                 return { origin: MATCHES }
 
             if (colorNames.length && name.indexOf('|') === -1) {
-                const result = name.match('^' + colorStarts + '(' + colorNames.join('|') + ')([0-9a-zA-Z-]*)')
-                if (result && (!result[2] || (result[2].slice(1) in colorsThemesMap[result[1]])))
+                const result = name.match('^' + colorStarts + '((?:' + colorNames.join('|') + ')[0-9a-zA-Z-]*)')
+                if (result && result[1] in colorThemesMap)
                     return { origin: MATCHES }
             }
         }
@@ -100,7 +100,7 @@ export default class Rule {
         const TargetRule = this.constructor as typeof Rule
         const { id, unit, colorful, prop } = TargetRule
         const { rootSize } = css.config
-        const { themeNames, colorsThemesMap, selectors, globalValues, breakpoints, mediaQueries } = css
+        const { themeNames, colorNames, colorThemesMap, selectors, globalValues, breakpoints, mediaQueries } = css
         const values = css.values[id]
         const relationThemesMap = css.relationThemesMap[className]
 
@@ -455,7 +455,8 @@ export default class Rule {
                         uv = parseValue(
                             eachValueToken.value,
                             unit,
-                            colorful && colorsThemesMap,
+                            colorful && colorNames,
+                            colorful && colorThemesMap,
                             rootSize,
                             this.theme ? [this.theme, ''] : [theme]
                         )
