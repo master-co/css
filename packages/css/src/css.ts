@@ -331,32 +331,63 @@ export default class MasterCSS extends MutationObserver {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
         }
 
+        function getNestedData(key: string, value: any) {
+            const newData = {}
+
+            const dashIndex = key.indexOf('-')
+            if (dashIndex === -1) {
+                newData[key] = value
+            } else {
+                const [nextKey, nextValue] = getNestedData(key.slice(dashIndex + 1), value)
+                newData[key.slice(0, dashIndex)] = { [nextKey]: nextValue }
+            }
+
+            return Object.entries(newData)[0]
+        }
+
         function getFlatData(obj: Record<string, any>, hasObjectValue: boolean, parentKey = '', newData: Record<string, any> = {}) {
             const entries = Object.entries(obj)
+            const objectEntries: [string, Record<string, any>][] = []
+            const nonObjectEntries: [string, string | number][] = []
 
-            if (hasObjectValue && parentKey) {
-                const newValue = {}
-
-                for (const [key, value] of entries) {
-                    if (typeof value === 'object' && !Array.isArray(value)) {
-                        getFlatData(value, hasObjectValue, key ? parentKey + '-' + key : parentKey, newData)
+            const isObject = (value) => typeof value === 'object' && !Array.isArray(value)
+            for (const entry of entries) {
+                const [key, value] = entry
+                if (isObject(value)) {
+                    if (key.includes('-')) {
+                        const valueEntries = Object.entries(value)
+                        const [newKey, newValue] = getNestedData(key, (valueEntries.length === 1 && !valueEntries[0][0]) ? valueEntries[0][1] : value)
+                        const entry = entries.find(entry => entry[0] === newKey)
+                        if (entry) {
+                            const mergedValue = entry[1]
+                            entry[1] = extend(isObject(mergedValue) ? mergedValue : { '': mergedValue }, newValue)
+                        } else {
+                            const newEntry = [newKey, newValue] as any
+                            entries.push(newEntry)
+                            objectEntries.push(newEntry)
+                        }
                     } else {
-                        newValue[key] = value
+                        objectEntries.push(entry)
                     }
+                } else {
+                    nonObjectEntries.push(entry)
                 }
+            }
 
-                if (Object.keys(newValue).length) {
-                    newData[parentKey] = newValue
+            const getCurrentKey = (key: string) => key ? (parentKey ? parentKey + '-' : '') + key : parentKey
+            for (const [key, value] of objectEntries) {
+                getFlatData(value, hasObjectValue, getCurrentKey(key), newData)
+            }
+            if (hasObjectValue && parentKey) {
+                if (nonObjectEntries.length) {
+                    newData[parentKey] = nonObjectEntries.reduce((newValue, [key, value]) => {
+                        newValue[key] = value
+                        return newValue
+                    }, {})
                 }
             } else {
-                for (const [key, value] of entries) {
-                    const currentKey = key ? (parentKey ? parentKey + '-' : '') + key : parentKey
-
-                    if (typeof value === 'object' && !Array.isArray(value)) {
-                        getFlatData(value, hasObjectValue, currentKey, newData)
-                    } else {
-                        newData[currentKey] = value
-                    }
+                for (const [key, value] of nonObjectEntries) {
+                    newData[getCurrentKey(key)] = value
                 }
             }
 
@@ -481,16 +512,20 @@ export default class MasterCSS extends MutationObserver {
             }
         }
 
-        const mergeColors = (theme: string, colors: Record<string, string | Record<string, string>>) => {
-            if (!colors)
+        const mergeColors = (theme: string, originalColors: any) => {
+            if (!originalColors)
                 return
 
-            for (const colorName in colors) {
-                let levels = colors[colorName]
+            for (const colorName in originalColors) {
+                const levels = originalColors[colorName]
                 if (typeof levels === 'string') {
-                    levels = { '': levels }
+                    originalColors[colorName] = { '': levels }
                 }
+            }
 
+            const colors = getFlatData(originalColors, true)
+            for (const colorName in colors) {
+                const levels = colors[colorName]
                 if (colorName in this.colorsThemesMap) {
                     const levelsThemes = this.colorsThemesMap[colorName]
                     for (const level in levels) {
@@ -513,14 +548,14 @@ export default class MasterCSS extends MutationObserver {
                 }
             }
         }
-        mergeColors('', getFlatData(colors, true))
+        mergeColors('', colors)
         if (themes) {
             if (Array.isArray(themes)) {
                 this.themeNames.push(...themes)
             } else {
                 for (const eachTheme in themes) {
                     const themeValue = themes[eachTheme]
-                    mergeColors(eachTheme, getFlatData(themeValue.colors, true))
+                    mergeColors(eachTheme, themeValue.colors)
                     this.themeNames.push(eachTheme)
                 }
             }

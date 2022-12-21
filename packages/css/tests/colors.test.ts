@@ -1,5 +1,4 @@
 import { testCSS } from '../src/utils/test-css'
-import MasterCSS from '../src'
 import config from '../../../master.css.js'
 
 test('colors', () => {
@@ -22,5 +21,14 @@ test('colors', () => {
         'b:input',
         '.b\\:input{border-color:#123456}',
         config
+    ),
+    testCSS(
+        'bg:blue-100',
+        '.bg\\:blue-100{background-color:#777}',
+        {
+            colors: {
+                'blue-100': '#777'
+            }
+        }
     )
 })
