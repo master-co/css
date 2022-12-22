@@ -109,7 +109,7 @@ Now start the Astro development server:
 npm run dev -- --open
 ```
 
-### Just-in-time
+### Just-in-time Compilation
 
 ```
 npm install @master/css@beta
