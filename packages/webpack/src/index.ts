@@ -29,7 +29,10 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
                 )
         }
 
-        updateCSS()
+        /* update the Virtual CSS module after initialization */
+        compiler.hooks.initialize.tap(NAME, () => {
+            updateCSS()
+        })
 
         compiler.hooks.watchRun.tap(NAME, () => {
             const { modifiedFiles } = compiler
