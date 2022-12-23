@@ -111,7 +111,7 @@ const checkToExclude = (content: string, reservedWord: string[]) => {
         const groupClasses = m[1].split(';')
         return groupClasses.find(x => needExclude(x, reservedWord)) !== undefined
     }
-    return needExclude(checkContent, reservedWord)
+    return needExclude(checkContent, reservedWord) || hasUnclosedBrackets(content)
 }
 
 const needExclude = (content: string, reservedWord: string[]) => {
@@ -131,4 +131,36 @@ const needExclude = (content: string, reservedWord: string[]) => {
         || content.match(/^\w+:\/\//)
         || content.match(/^@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer)$/)
         || content.match(/^~\/.+.\w+$/)
+        || content.match(/function\(|\(.*\)=>/)
+}
+
+const hasUnclosedBrackets = (content: string) => {
+    const brackets = []
+    let left = undefined
+    for (let i = 0; i < content.length; i++) {
+        switch (content[i]) {
+            case '(':
+            case '[':
+            case '{':
+                brackets.push(content[i])
+                break
+            case ')':
+            case ']':
+            case '}':
+                left = brackets.pop()
+                if (
+                    content[i] === ')' && left !== '(' ||
+                    content[i] === ']' && left !== '[' ||
+                    content[i] === '}' && left !== '{'
+                ) {
+                    return true
+                }
+                break
+        }
+    }
+
+    if (brackets.length > 0) {
+        return true
+    }
+    return false
 }

@@ -62,10 +62,10 @@ export default class MasterCSSCompiler {
             }
         }
         if (eachExtractions.length)
-            log.info`${'extract'} ${eachExtractions.length.toString()} potential ${`.${upath.relative(this.options.cwd, name)}.`}`
+            log.info`[extract] ${eachExtractions.length.toString()} potential ..${upath.relative(this.options.cwd, name)}..`
 
         if (this.options.debug) {
-            if (eachExtractions.length) log.info`${'extract'} ${`.${eachExtractions.join(' ')}.`}`
+            if (eachExtractions.length) log.info`[extract] ${eachExtractions}`
         }
         return eachExtractions
     }
@@ -96,9 +96,9 @@ export default class MasterCSSCompiler {
             }
         }
         const spent = Math.round((performance.now() - p1) * 100) / 100
-        log.info`${'compile'} ${`+${validCount}+`} valid ${`.in.`} ${`*${spent}ms*`} ${`.(${this.css.rules.length} rules).`}`
+        log.info`[compile] +${validCount}+ valid ..in.. ${spent}ms ..(${this.css.rules.length}.. ..rules)..`
         if (this.options.debug) {
-            if (this.css.rules.length) log.info`${'compile'} ${`${Object.keys(this.css.ruleOfClass).join(' ')}`}`
+            if (this.css.rules.length) log.info`[compile] ${Object.keys(this.css.ruleOfClass)}`
         }
         return true
     }
@@ -128,9 +128,9 @@ export default class MasterCSSCompiler {
             if (configPath) {
                 const userConfigModule = crossImport(configPath, { cwd })
                 userConfig = userConfigModule.default || userConfigModule
-                log.ok`import ${`*${configPath}*`} configuration`
+                log.ok`import **${configPath}** configuration`
             } else {
-                log.info`${'read'} No config file found ${`.${this.options.config}.`}`
+                log.info`[read] No config file found ..${this.options.config}..`
             }
         } catch (err) {
             log.error(err)
