@@ -5,7 +5,7 @@ import { MasterCSSVitePlugin } from '@master/css.vite'
 const config = {
     plugins: [
         sveltekit(),
-        MasterCSSVitePlugin({ debug: true })
+        MasterCSSVitePlugin()
     ]
 }
 

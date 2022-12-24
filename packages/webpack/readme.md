@@ -86,4 +86,4 @@ Master presets common configurations for various frameworks and build tools, and
 
 https://github.com/master-co/css/tree/beta/packages/compiler
 
-For starters, you can enable `{ debug: true }` to see how it scans, extracts, and compiles.
+For starters, you can enable `` to see how it scans, extracts, and compiles.

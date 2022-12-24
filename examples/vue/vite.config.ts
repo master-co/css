@@ -6,6 +6,6 @@ import { MasterCSSVitePlugin } from '@master/css.vite'
 export default defineConfig({
     plugins: [
         vue(),
-        MasterCSSVitePlugin({ debug: true })
+        MasterCSSVitePlugin()
     ],
 })

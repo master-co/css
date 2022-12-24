@@ -5,7 +5,7 @@ module.exports = {
     entry: './src/index.ts',
     plugins: [
         new HtmlWebpackPlugin({ template: './src/index.html' }),
-        new MasterCSSWebpackPlugin({ debug: true })
+        new MasterCSSWebpackPlugin()
     ],
     devServer: {
         static: './src'

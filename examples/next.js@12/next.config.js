@@ -6,7 +6,7 @@ const nextConfig = {
     swcMinify: true,
     webpack: (config) => {
         config.plugins.push(
-            new MasterCSSWebpackPlugin({ debug: true }),
+            new MasterCSSWebpackPlugin(),
         )
         return config
     }
