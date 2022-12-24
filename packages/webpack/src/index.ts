@@ -1,4 +1,4 @@
-import MasterCSSCompiler from '@master/css.compiler'
+import MasterCSSCompiler from '@master/css-compiler'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import path from 'path'

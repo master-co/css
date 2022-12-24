@@ -51,6 +51,6 @@
     },
     "dependencies": {
         "@master/css": "",
-        "@master/css.compiler": ""
+        "@master/css-compiler": ""
     }
 }
