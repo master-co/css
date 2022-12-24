@@ -1,8 +1,5 @@
 import Image from 'next/image'
-import { Inter } from '@next/font/google'
 import styles from './page.module.css'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
     return (
@@ -63,10 +60,10 @@ export default function Home() {
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    <h2 className={inter.className}>
+                    <h2 className="font:sans">
                         Docs <span>-&gt;</span>
                     </h2>
-                    <p className={inter.className}>
+                    <p className="font:sans">
                         Find in-depth information about Next.js features and API.
                     </p>
                 </a>
@@ -77,10 +74,10 @@ export default function Home() {
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    <h2 className={inter.className}>
+                    <h2 className="font:sans">
                         Templates <span>-&gt;</span>
                     </h2>
-                    <p className={inter.className}>Explore the Next.js 13 playground.</p>
+                    <p className="font:sans">Explore the Next.js 13 playground.</p>
                 </a>
 
                 <a
@@ -89,10 +86,10 @@ export default function Home() {
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    <h2 className={inter.className}>
+                    <h2 className="font:sans">
                         Deploy <span>-&gt;</span>
                     </h2>
-                    <p className={inter.className}>
+                    <p className="font:sans">
                         Instantly deploy your Next.js site to a shareable URL with Vercel.
                     </p>
                 </a>

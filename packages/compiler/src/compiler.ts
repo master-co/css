@@ -8,7 +8,7 @@ import fs from 'fs'
 import fg from 'fast-glob'
 import minimatch from 'minimatch'
 import Techor from 'techor'
-import log from '@techor/log'
+import log, { chalk } from '@techor/log'
 
 export default class MasterCSSCompiler extends Techor<Options, Config> {
 
@@ -103,8 +103,8 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
             if (excludedClasses.length) {
                 log`[exclude] ${excludedClasses.length} unknow ${excludedClasses}`
             }
-            log`[compile] +${validExtractions.length}+ valid inserted ..in.. ${spent}ms ${validExtractions}`
-            log`[virtual] ${this.css.rules.length} total in ${this.moduleId}`
+            log`[compile] +${validExtractions.length}+ valid inserted ${chalk.gray('in')} ${spent}ms ${validExtractions}`
+            log`[virtual] ${this.css.rules.length} total ${chalk.gray('in')} ${this.moduleId}`
         }
         return true
     }
