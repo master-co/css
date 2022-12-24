@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs'
 import path from 'path'
-import extract from '../../../packages/compiler/src/options/extract'
+import extract from '../../../packages/compiler/src/extract'
 import MasterCSSCompiler from '../../../packages/compiler/src/compiler'
 
 test('extract `btn` from `.tsx`', () => {

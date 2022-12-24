@@ -1,8 +1,11 @@
-import MasterCSS, { Config } from '@master/css'
+import { Config } from '@master/css'
 import type { Pattern as FastGlobPattern } from 'fast-glob'
 import type { Options as TechorOptions } from 'techor'
 
 const options: Options = {
+    // specify virtual CSS module id (e.g. virtual:master.css)
+    module: 'master.css',
+    // specify config file path or set `Config`
     config: 'master.css.{ts,js,mjs,cjs}',
     // forcibly specify sources for scanning, not excluded by `options.exclude`
     sources: [],
@@ -31,7 +34,7 @@ export declare type Source = {
 }
 
 export interface Options extends TechorOptions<Config> {
-    extract?: (source: Source, css: MasterCSS) => string[]
+    module?: string,
     sources?: FastGlobPattern[]
     include?: FastGlobPattern[]
     exclude?: FastGlobPattern[]

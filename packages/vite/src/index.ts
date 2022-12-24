@@ -11,7 +11,7 @@ export async function MasterCSSVitePlugin(options?: Options): Promise<Plugin> {
         name: 'vite-plugin-master-css',
         enforce: 'post',
         async resolveId(id) {
-            if (id === compiler.moduleId) {
+            if (id === compiler.options.module) {
                 return compiler.resolvedModuleId
             }
         },
@@ -60,7 +60,7 @@ export async function MasterCSSVitePlugin(options?: Options): Promise<Plugin> {
             // server.watcher.add(supportsGlobs ? compiler.options.include : compiler.sources)
         },
         transform(code, id) {
-            if (server && code.includes(compiler.moduleId)) {
+            if (server && code.includes(compiler.options.module)) {
                 return `${code}
 if (import.meta.hot) {
     try {

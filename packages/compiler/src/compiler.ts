@@ -21,9 +21,14 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
 
     css: MasterCSS
     extractions = new Set<string>()
-    readonly moduleId = 'master.css'
-    readonly resolvedModuleId = '\0' + this.moduleId
-    readonly moduleHMREvent = `HMR:${this.moduleId}`
+
+    get resolvedModuleId() {
+        return '\0' + this.options.module
+    }
+
+    get moduleHMREvent() {
+        return `HMR:${this.options.module}`
+    }
 
     init() {
         this.extractions.clear()
@@ -104,7 +109,7 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
                 log`[exclude] ${excludedClasses.length} unknow ${excludedClasses}`
             }
             log`[compile] +${validExtractions.length}+ valid inserted ${chalk.gray('in')} ${spent}ms ${validExtractions}`
-            log`[virtual] ${this.css.rules.length} total ${chalk.gray('in')} ${this.moduleId}`
+            log`[virtual] ${this.css.rules.length} total ${chalk.gray('in')} ${this.options.module}`
         }
         return true
     }

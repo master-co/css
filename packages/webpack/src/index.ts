@@ -14,7 +14,7 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
 
         compiler.options.resolve.alias = {
             ...compiler.options.resolve.alias,
-            [this.moduleId]: path.resolve(compiler.context, 'node_modules', this.moduleId)
+            [this.options.module]: path.resolve(compiler.context, 'node_modules', this.options.module)
         }
         const virtualModules = new VirtualModulesPlugin({
             ['node_modules/master.css']: ''

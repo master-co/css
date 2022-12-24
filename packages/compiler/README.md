@@ -71,8 +71,10 @@ const compiler = new MasterCSSCompiler()
 ## Options
 ```ts
 {
-    cwd: process.cwd(),
-    config: 'master.css.{js,mjs,cjs}',
+    // specify virtual CSS module id (e.g. virtual:master.css)
+    module: 'master.css',
+    // specify config file path or set `Config`
+    config: 'master.css.{ts,js,mjs,cjs}',
     // forcibly specify sources for scanning, not excluded by `options.exclude`
     sources: [],
     // specify sources for scanning
@@ -91,7 +93,8 @@ const compiler = new MasterCSSCompiler()
     // whitelist of class names for unpredictable dynamics
     fixedClasses: [],
     // blacklist of class names to exclude accidentally captured
-    ignoredClasses: [] // or RegExp[]
+    ignoredClasses: [], // or RegExp[]
+    cwd: process.cwd()
 }
 ```
 
