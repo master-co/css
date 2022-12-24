@@ -133,12 +133,12 @@ readConfig(): Config
 ```
 
 ```ts
-// Get custom config path
+// Get user config path
 get configPath(): string
 ```
 
 ```ts
-// Get custom config path
+// Get resolved user config path
 get resolvedConfigPath(): string
 ```
 
