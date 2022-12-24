@@ -34,5 +34,8 @@
     "style": "./dist/index.css",
     "files": [
         "dist"
-    ]
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
 }

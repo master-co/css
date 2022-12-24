@@ -59,6 +59,9 @@
     "files": [
         "dist"
     ],
+    "publishConfig": {
+        "access": "public"
+    },
     "dependencies": {
         "@master/keyframes.css": "",
         "@master/normal.css": ""

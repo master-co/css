@@ -43,6 +43,9 @@
     "files": [
         "dist"
     ],
+    "publishConfig": {
+        "access": "public"
+    },
     "peerDependencies": {
         "react": ">= 16.8.0"
     },
