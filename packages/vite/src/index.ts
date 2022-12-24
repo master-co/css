@@ -1,5 +1,5 @@
-import MasterCSSCompiler from '@master/css.compiler'
-import type { Options } from '@master/css.compiler'
+import MasterCSSCompiler from '@master/css-compiler'
+import type { Options } from '@master/css-compiler'
 import type { Plugin, ViteDevServer } from 'vite'
 import path from 'path'
 import log from '@techor/log'

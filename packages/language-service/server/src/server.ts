@@ -1,4 +1,4 @@
-import MasterCSSCompiler from '@master/css.compiler'
+import MasterCSSCompiler from '@master/css-compiler'
 import {
     createConnection,
     TextDocuments,
