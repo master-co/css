@@ -9,7 +9,6 @@ import scheme from './scheme'
 import values from './values'
 import Rules from './rules'
 import Rule from '../rule'
-import MasterCSS from '../css'
 
 const config: Config = {
     colors: colors,

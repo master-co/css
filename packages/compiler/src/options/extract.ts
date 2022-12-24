@@ -1,7 +1,7 @@
 import MasterCSS, { semantics } from '@master/css'
-import type { CompilerSource } from './index'
+import type { Source } from './index'
 
-export default function extract({ content }: CompilerSource, masterCss: MasterCSS) {
+export default function extract({ content }: Source, masterCss: MasterCSS) {
     content = preExclude(content)
     const reservedWord = [...new Set(Object.keys(masterCss.config.semantics ?? semantics).concat(Object.keys(masterCss.classes)))]
     const blocks = content.match(/\S+/g) ?? []

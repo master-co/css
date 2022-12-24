@@ -1,9 +1,9 @@
 import MasterCSS, { Config } from '@master/css'
 import extract from './extract'
 import type { Pattern as FastGlobPattern } from 'fast-glob'
+import type { Options as TechorOptions } from 'techor'
 
-const options: CompilerOptions = {
-    cwd: process.cwd(),
+const options: Options = {
     config: 'master.css.{ts,js,mjs,cjs}',
     sources: [],
     include: ['**/*.{html,js,jsx,ts,tsx,svelte,astro,vue,md,mdx,pug,php}'],
@@ -20,21 +20,18 @@ const options: CompilerOptions = {
     extract
 }
 
-export declare type CompilerSource = {
+export declare type Source = {
     name: string
     content: string
 }
 
-export interface CompilerOptions {
-    extract?: (source: CompilerSource, css: MasterCSS) => string[]
+export interface Options extends TechorOptions<Config> {
+    extract?: (source: Source, css: MasterCSS) => string[]
     sources?: FastGlobPattern[]
     include?: FastGlobPattern[]
     exclude?: FastGlobPattern[]
     fixedClasses?: string[]
     ignoredClasses?: string[] | RegExp[]
-    config?: string | Config
-    debug?: boolean
-    cwd?: string
 }
 
 export default options

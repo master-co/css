@@ -1,20 +1,20 @@
 import upath from 'upath'
 import log from 'aronlog'
-import { default as defaultOptions, CompilerOptions } from './options'
-import MasterCSS, { extend } from '@master/css'
+import { default as defaultOptions, Options } from './options'
+import MasterCSS from '@master/css'
 import { performance } from 'perf_hooks'
 import type { Config } from '@master/css'
 import fs from 'fs'
 import fg from 'fast-glob'
 import minimatch from 'minimatch'
-import crossImport from 'cross-import'
+import Techor from 'techor'
 
-export default class MasterCSSCompiler {
+export default class MasterCSSCompiler extends Techor<Options, Config> {
 
     constructor(
-        public options?: CompilerOptions
+        options?: Options
     ) {
-        this.options = extend(defaultOptions, options)
+        super(defaultOptions, options)
         this.init()
     }
 
@@ -63,10 +63,8 @@ export default class MasterCSSCompiler {
         }
         if (eachExtractions.length)
             log.info`[extract] ${eachExtractions.length.toString()} potential ..${upath.relative(this.options.cwd, name)}..`
+        log.info`[extract] ${eachExtractions}`
 
-        if (this.options.debug) {
-            if (eachExtractions.length) log.info`[extract] ${eachExtractions}`
-        }
         return eachExtractions
     }
 
@@ -97,9 +95,7 @@ export default class MasterCSSCompiler {
         }
         const spent = Math.round((performance.now() - p1) * 100) / 100
         log.info`[compile] +${validCount}+ valid ..in.. ${spent}ms ..(${this.css.rules.length}.. ..rules)..`
-        if (this.options.debug) {
-            if (this.css.rules.length) log.info`[compile] ${Object.keys(this.css.ruleOfClass)}`
-        }
+        if (this.css.rules.length) log.info`[compile] ${Object.keys(this.css.ruleOfClass)}`
         return true
     }
 
@@ -117,27 +113,6 @@ export default class MasterCSSCompiler {
         return sourcePaths
     }
 
-    readConfig(): Config {
-        const { config, cwd } = this.options
-        if (typeof config === 'object') {
-            return config as Config
-        }
-        let userConfig: Config
-        try {
-            const configPath = this.configPath
-            if (configPath) {
-                const userConfigModule = crossImport(configPath, { cwd })
-                userConfig = userConfigModule.default || userConfigModule
-                log.ok`import **${configPath}** configuration`
-            } else {
-                log.info`[read] No config file found ..${this.options.config}..`
-            }
-        } catch (err) {
-            log.error(err)
-        }
-        return userConfig
-    }
-
     checkSourcePath(name: string): boolean {
         const { include, exclude, sources } = this.options
         for (const eachSource of sources) {
@@ -150,19 +125,6 @@ export default class MasterCSSCompiler {
             if (minimatch(name, eachExcludePattern)) return false
         }
         return true
-    }
-
-    get configPath(): string {
-        const { cwd, config } = this.options
-        if (!config || typeof config !== 'string') {
-            return
-        }
-        return fg.sync(config, { cwd })[0]
-    }
-
-    get resolvedConfigPath() {
-        const configPath = this.configPath
-        return configPath ? upath.resolve(this.options.cwd, configPath) : ''
     }
 
     get config(): Config {

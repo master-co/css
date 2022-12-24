@@ -48,10 +48,9 @@
     ],
     "dependencies": {
         "@master/css": "",
-        "aronlog": "^1.0.0-beta.32",
-        "cross-import": "^1.4.4",
         "fast-glob": "^3.2.12",
         "minimatch": "^5.1.1",
+        "techor": "^1.0.3",
         "upath": "^2.0.1"
     }
 }
