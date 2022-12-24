@@ -1,5 +1,5 @@
 import MasterCSS from '@master/css'
-import extract from '../src/options/extract'
+import extract from '../src/extract'
 const css = new MasterCSS()
 
 test('basic js object', () => {

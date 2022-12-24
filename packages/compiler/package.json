@@ -50,7 +50,7 @@
         "@master/css": "",
         "fast-glob": "^3.2.12",
         "minimatch": "^5.1.1",
-        "techor": "^1.0.3",
+        "techor": "^1.0.5",
         "upath": "^2.0.1"
     }
 }

@@ -1,12 +1,14 @@
 import MasterCSS, { Config } from '@master/css'
-import extract from './extract'
 import type { Pattern as FastGlobPattern } from 'fast-glob'
 import type { Options as TechorOptions } from 'techor'
 
 const options: Options = {
     config: 'master.css.{ts,js,mjs,cjs}',
+    // forcibly specify sources for scanning, not excluded by `options.exclude`
     sources: [],
+    // specify sources for scanning
     include: ['**/*.{html,js,jsx,ts,tsx,svelte,astro,vue,md,mdx,pug,php}'],
+    // specify sources to exclude
     exclude: [
         '**/node_modules/**',
         '**/*.d.ts',
@@ -17,7 +19,10 @@ const options: Options = {
         'out',
         'README.md'
     ],
-    extract
+    // whitelist of class names for unpredictable dynamics
+    fixedClasses: [],
+    // blacklist of class names to exclude accidentally captured
+    ignoredClasses: [], // or RegExp[]
 }
 
 export declare type Source = {

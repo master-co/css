@@ -1,13 +1,14 @@
 import upath from 'upath'
-import log from 'aronlog'
 import { default as defaultOptions, Options } from './options'
 import MasterCSS from '@master/css'
 import { performance } from 'perf_hooks'
 import type { Config } from '@master/css'
+import extract from './extract'
 import fs from 'fs'
 import fg from 'fast-glob'
 import minimatch from 'minimatch'
 import Techor from 'techor'
+import log from '@techor/log'
 
 export default class MasterCSSCompiler extends Techor<Options, Config> {
 
@@ -26,6 +27,7 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
 
     init() {
         this.extractions.clear()
+        console.log('')
         this.css = new MasterCSS({ config: this.readConfig() })
         this.compile()
         return this
@@ -53,7 +55,7 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
             return []
         }
         const eachExtractions: string[] = []
-        for (const eachNewExtraction of this.options.extract({ content, name }, this.css)) {
+        for (const eachNewExtraction of extract({ content, name }, this.css)) {
             if (this.extractions.has(eachNewExtraction)) {
                 continue
             } else {
@@ -61,9 +63,11 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
                 eachExtractions.push(eachNewExtraction)
             }
         }
-        if (eachExtractions.length)
-            log.info`[extract] ${eachExtractions.length.toString()} potential ..${upath.relative(this.options.cwd, name)}..`
-        log.info`[extract] ${eachExtractions}`
+        if (eachExtractions.length) {
+            console.log('')
+            log`**${upath.relative(this.options.cwd, name)}** ..${upath.resolve(this.options.cwd, name)}..`
+            log`[extract] ${eachExtractions.length} potential`
+        }
 
         return eachExtractions
     }
@@ -75,7 +79,7 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         }
         const p1 = performance.now()
         /* 根據類名尋找並插入規則 ( MasterCSS 本身帶有快取機制，重複的類名不會再編譯及產生 ) */
-        let validCount = 0
+        const validExtractions = []
         /* 排除指定的 class */
         if (this.options.ignoredClasses?.length)
             extractions = extractions.filter((eachExtraction) => {
@@ -90,12 +94,18 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
             })
         for (const eachExtraction of extractions) {
             if (this.css.insert(eachExtraction)) {
-                validCount++
+                validExtractions.push(eachExtraction)
             }
         }
-        const spent = Math.round((performance.now() - p1) * 100) / 100
-        log.info`[compile] +${validCount}+ valid ..in.. ${spent}ms ..(${this.css.rules.length}.. ..rules)..`
-        if (this.css.rules.length) log.info`[compile] ${Object.keys(this.css.ruleOfClass)}`
+        if (this.css.rules.length) {
+            const spent = Math.round((performance.now() - p1) * 100) / 100
+            const excludedClasses = validExtractions.filter((eachValidExtraction) => !extractions.includes(eachValidExtraction))
+            if (excludedClasses.length) {
+                log`[exclude] ${excludedClasses.length} unknow ${excludedClasses}`
+            }
+            log`[compile] +${validExtractions.length}+ valid inserted ..in.. ${spent}ms ${validExtractions}`
+            log`[virtual] ${this.css.rules.length} total in ${this.moduleId}`
+        }
         return true
     }
 

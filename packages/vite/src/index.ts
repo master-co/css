@@ -2,7 +2,7 @@ import MasterCSSCompiler from '@master/css.compiler'
 import type { Options } from '@master/css.compiler'
 import type { Plugin, ViteDevServer } from 'vite'
 import path from 'path'
-import log from 'aronlog'
+import log from '@techor/log'
 
 export async function MasterCSSVitePlugin(options?: Options): Promise<Plugin> {
     const compiler = new MasterCSSCompiler(options)
@@ -25,7 +25,7 @@ export async function MasterCSSVitePlugin(options?: Options): Promise<Plugin> {
             if (path.resolve(file) === compiler.resolvedConfigPath) {
                 /* 當自訂的 master.css.js 變更時，根據其重新初始化 MasterCSS 並強制重載瀏覽器 */
                 compiler.init()
-                log.info`${'change'} config file ${`.${path.relative(compiler.options.cwd, compiler.configPath)}.`}`
+                log.info`[change] config file ${`.${path.relative(compiler.options.cwd, compiler.configPath)}.`}`
             } else {
                 /* 掃描 HMR 期異動的檔案 */
                 compiler.insert(file, await read())
