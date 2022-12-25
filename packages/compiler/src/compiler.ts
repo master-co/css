@@ -82,13 +82,16 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         /* 根據類名尋找並插入規則 ( MasterCSS 本身帶有快取機制，重複的類名不會再編譯及產生 ) */
         const validExtractions = []
 
-        for (const eachExtraction of extractions) {
-            const validRules = await this.createRules(eachExtraction)
-            if (validRules.length) {
-                this.css.insertRules(validRules)
-                validExtractions.push(eachExtraction)
-            }
-        }
+        await Promise.all(
+            extractions
+                .map(async (eachExtraction) => {
+                    const validRules = await this.createRules(eachExtraction)
+                    if (validRules.length) {
+                        this.css.insertRules(validRules)
+                        validExtractions.push(eachExtraction)
+                    }
+                })
+        )
 
         if (extractions.length) {
             console.log('')
@@ -131,6 +134,7 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
                 .map(async (eachRule: Rule) =>
                     (await stylelint.lint({
                         code: eachRule.text,
+                        cache: false,
                         config: {
                             rules: {
                                 'color-no-invalid-hex': true,
