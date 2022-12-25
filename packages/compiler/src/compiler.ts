@@ -70,12 +70,6 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
                 eachExtractions.push(eachNewExtraction)
             }
         }
-        if (eachExtractions.length) {
-            console.log('')
-            log`**${upath.relative(this.options.cwd, name)}** ..${upath.resolve(this.options.cwd, name)}..`
-            log`[extract] ${eachExtractions.length} potential`
-        }
-
         return eachExtractions
     }
 
@@ -94,6 +88,12 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
                 this.css.insertRules(validRules)
                 validExtractions.push(eachExtraction)
             }
+        }
+
+        if (extractions.length) {
+            console.log('')
+            log`**${upath.relative(this.options.cwd, name)}** ..${upath.resolve(this.options.cwd, name)}..`
+            log`[extract] ${extractions.length} potential`
         }
 
         if (this.css.rules.length) {
