@@ -93,6 +93,8 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
                 })
         )
 
+        const spent = Math.round((performance.now() - p1) * 100) / 100
+
         if (extractions.length) {
             console.log('')
             log`**${upath.relative(this.options.cwd, name)}** ..${upath.resolve(this.options.cwd, name)}..`
@@ -100,7 +102,6 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         }
 
         if (this.css.rules.length) {
-            const spent = Math.round((performance.now() - p1) * 100) / 100
             const excludedClasses = validExtractions.filter((eachValidExtraction) => !extractions.includes(eachValidExtraction))
             if (excludedClasses.length) {
                 log`[exclude] ${excludedClasses.length} unknow ${excludedClasses}`
