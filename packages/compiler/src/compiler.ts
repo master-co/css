@@ -87,6 +87,25 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         const p1 = performance.now()
         /* 根據類名尋找並插入規則 ( MasterCSS 本身帶有快取機制，重複的類名不會再編譯及產生 ) */
         const validExtractions = []
+
+        for (const eachExtraction of extractions) {
+            const validRules = await this.createRules(eachExtraction)
+            if (validRules.length) {
+                this.css.insertRules(validRules)
+                validExtractions.push(eachExtraction)
+            }
+        }
+
+        if (this.css.rules.length) {
+            const spent = Math.round((performance.now() - p1) * 100) / 100
+            const excludedClasses = validExtractions.filter((eachValidExtraction) => !extractions.includes(eachValidExtraction))
+            if (excludedClasses.length) {
+                log`[exclude] ${excludedClasses.length} unknow ${excludedClasses}`
+            }
+            log`[compile] +${validExtractions.length}+ valid inserted ${chalk.gray('in')} ${spent}ms ${validExtractions}`
+            log`[virtual] ${this.css.rules.length} total ${chalk.gray('in')} ${this.options.module}`
+        }
+
         /* 排除指定的 class */
         if (this.options.ignoredClasses?.length)
             extractions = extractions.filter((eachExtraction) => {
@@ -100,51 +119,38 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
                 return true
             })
 
-        for (const eachExtraction of extractions) {
-            /**
-             * 藉由 stylelint 驗證 CSS 規則是否合法，因 AOT 的提取物較不可靠
-             */
-            const validRules = (await Promise.all(
-                this.css.create(eachExtraction)
-                    .map(async (eachRule: Rule) =>
-                        (await stylelint.lint({
-                            code: eachRule.text,
-                            config: {
-                                rules: {
-                                    'color-no-invalid-hex': true,
-                                    'named-grid-areas-no-invalid': true,
-                                    'at-rule-no-unknown': true,
-                                    'function-no-unknown': true,
-                                    'media-feature-name-no-unknown': true,
-                                    'property-no-unknown': true,
-                                    'selector-pseudo-class-no-unknown': true,
-                                    'selector-pseudo-element-no-unknown': true,
-                                    'selector-type-no-unknown': true,
-                                    'unit-no-unknown': true
-                                }
-                            }
-                        })).errored
-                            ? null
-                            : eachRule
-                    )
-            ))
-                .filter((eachRule) => eachRule)
-
-            if (validRules.length) {
-                this.css.insertRules(validRules)
-                validExtractions.push(eachExtraction)
-            }
-        }
-        if (this.css.rules.length) {
-            const spent = Math.round((performance.now() - p1) * 100) / 100
-            const excludedClasses = validExtractions.filter((eachValidExtraction) => !extractions.includes(eachValidExtraction))
-            if (excludedClasses.length) {
-                log`[exclude] ${excludedClasses.length} unknow ${excludedClasses}`
-            }
-            log`[compile] +${validExtractions.length}+ valid inserted ${chalk.gray('in')} ${spent}ms ${validExtractions}`
-            log`[virtual] ${this.css.rules.length} total ${chalk.gray('in')} ${this.options.module}`
-        }
         return true
+    }
+
+    async createRules(extraction: string): Promise<Rule[]> {
+        /**
+         * 藉由 stylelint 驗證 CSS 規則是否合法，因 AOT 的提取物較不可靠
+         */
+        return (await Promise.all(
+            this.css.create(extraction)
+                .map(async (eachRule: Rule) =>
+                    (await stylelint.lint({
+                        code: eachRule.text,
+                        config: {
+                            rules: {
+                                'color-no-invalid-hex': true,
+                                'named-grid-areas-no-invalid': true,
+                                'at-rule-no-unknown': true,
+                                'function-no-unknown': true,
+                                'media-feature-name-no-unknown': true,
+                                'property-no-unknown': true,
+                                'selector-pseudo-class-no-unknown': true,
+                                'selector-pseudo-element-no-unknown': true,
+                                'selector-type-no-unknown': true,
+                                'unit-no-unknown': true
+                            }
+                        }
+                    })).errored
+                        ? null
+                        : eachRule
+                )
+        ))
+            .filter((eachRule) => eachRule)
     }
 
     get sources(): string[] {
