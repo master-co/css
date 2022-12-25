@@ -119,7 +119,7 @@ async function getDocumentSettings(resource: string): Promise<MasterCSSSettings>
     if (root?.uri) {
         try {
             try {
-                const compiler = new MasterCSSCompiler({ cwd: uri2path(root.uri.replace('%3A', ':')) })
+                const compiler = await new MasterCSSCompiler({ cwd: uri2path(root.uri.replace('%3A', ':')) }).init()
                 MasterCSSObject = new MasterCSS(compiler.css.config as any)
             } catch (_) {
                 MasterCSSObject = new MasterCSS()

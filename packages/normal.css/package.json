@@ -37,5 +37,5 @@
     ],
     "publishConfig": {
         "access": "public"
-    },
+    }
 }

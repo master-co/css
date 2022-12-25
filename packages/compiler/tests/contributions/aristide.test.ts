@@ -1,8 +1,8 @@
 import MasterCSSCompiler from '../../src'
 
 test('AristideBH', async () => {
-    const compiler = new MasterCSSCompiler({ cwd: __dirname, include: ['**/test.svelte'] })
-    compiler.insert('test.svelte',
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname, include: ['**/test.svelte'] }).init()
+    await compiler.insert('test.svelte',
         `
 <script lang="ts">
 	import type { PageData } from "./$houdini";

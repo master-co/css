@@ -5,7 +5,7 @@ import path from 'path'
 import log from '@techor/log'
 
 export async function MasterCSSVitePlugin(options?: Options): Promise<Plugin> {
-    const compiler = new MasterCSSCompiler(options)
+    const compiler = await new MasterCSSCompiler(options).init()
     let server: ViteDevServer
     return {
         name: 'vite-plugin-master-css',
@@ -28,7 +28,7 @@ export async function MasterCSSVitePlugin(options?: Options): Promise<Plugin> {
                 log.info`[change] config file ${`.${path.relative(compiler.options.cwd, compiler.configPath)}.`}`
             } else {
                 /* 掃描 HMR 期異動的檔案 */
-                compiler.insert(file, await read())
+                await compiler.insert(file, await read())
                 const virtualCSSModule = server.moduleGraph.getModuleById(compiler.resolvedModuleId)
                 if (virtualCSSModule) {
                     server.moduleGraph.invalidateModule(virtualCSSModule)

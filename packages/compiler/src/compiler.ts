@@ -1,6 +1,6 @@
 import upath from 'upath'
 import { default as defaultOptions, Options } from './options'
-import MasterCSS from '@master/css'
+import MasterCSS, { Rule } from '@master/css'
 import { performance } from 'perf_hooks'
 import type { Config } from '@master/css'
 import extract from './extract'
@@ -9,6 +9,7 @@ import fg from 'fast-glob'
 import minimatch from 'minimatch'
 import Techor from 'techor'
 import log, { chalk } from '@techor/log'
+import stylelint from 'stylelint'
 
 export default class MasterCSSCompiler extends Techor<Options, Config> {
 
@@ -16,7 +17,6 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         options?: Options
     ) {
         super(defaultOptions, options)
-        this.init()
     }
 
     css: MasterCSS
@@ -30,28 +30,30 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         return `HMR:${this.options.module}`
     }
 
-    init() {
+    async init() {
         this.extractions.clear()
         console.log('')
         this.css = new MasterCSS({ config: this.readConfig() })
-        this.compile()
+        await this.compile()
         return this
     }
 
-    compile() {
+    async compile() {
         /* 插入指定的固定 class */
         if (this.options.fixedClasses?.length)
             for (const eachFixedClass of this.options.fixedClasses) {
                 this.css.insert(eachFixedClass)
             }
-        this.sources
-            .forEach((eachSourcePath) => {
-                const eachFileContent = fs.readFileSync(
-                    upath.resolve(this.options.cwd, eachSourcePath),
-                    { encoding: 'utf-8' }
-                ).toString()
-                this.insert(eachSourcePath, eachFileContent)
-            })
+        await Promise.all(
+            this.sources
+                .map(async (eachSourcePath) => {
+                    const eachFileContent = fs.readFileSync(
+                        upath.resolve(this.options.cwd, eachSourcePath),
+                        { encoding: 'utf-8' }
+                    ).toString()
+                    await this.insert(eachSourcePath, eachFileContent)
+                })
+        )
         return this
     }
 
@@ -77,7 +79,7 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         return eachExtractions
     }
 
-    insert(name: string, content: string): boolean {
+    async insert(name: string, content: string): Promise<boolean> {
         let extractions = this.extract(name, content)
         if (!extractions.length) {
             return false
@@ -97,8 +99,39 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
                 }
                 return true
             })
+
         for (const eachExtraction of extractions) {
-            if (this.css.insert(eachExtraction)) {
+            /**
+             * 藉由 stylelint 驗證 CSS 規則是否合法，因 AOT 的提取物較不可靠
+             */
+            const validRules = (await Promise.all(
+                this.css.create(eachExtraction)
+                    .map(async (eachRule: Rule) =>
+                        (await stylelint.lint({
+                            code: eachRule.text,
+                            config: {
+                                rules: {
+                                    'color-no-invalid-hex': true,
+                                    'named-grid-areas-no-invalid': true,
+                                    'at-rule-no-unknown': true,
+                                    'function-no-unknown': true,
+                                    'media-feature-name-no-unknown': true,
+                                    'property-no-unknown': true,
+                                    'selector-pseudo-class-no-unknown': true,
+                                    'selector-pseudo-element-no-unknown': true,
+                                    'selector-type-no-unknown': true,
+                                    'unit-no-unknown': true
+                                }
+                            }
+                        })).errored
+                            ? null
+                            : eachRule
+                    )
+            ))
+                .filter((eachRule) => eachRule)
+
+            if (validRules.length) {
+                this.css.insertRules(validRules)
                 validExtractions.push(eachExtraction)
             }
         }
