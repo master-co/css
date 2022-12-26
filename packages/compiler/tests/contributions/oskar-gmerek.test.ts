@@ -1,7 +1,7 @@
 import MasterCSSCompiler from '../../src'
 
 test('Oskar', async () => {
-    const compiler = new MasterCSSCompiler({ cwd: __dirname })
+    const compiler = await new MasterCSSCompiler({ cwd: __dirname }).init()
     expect(
         compiler.extract('test.tsx',
             `
