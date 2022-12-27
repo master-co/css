@@ -54,6 +54,7 @@
     },
     "dependencies": {
         "@master/css": "",
-        "@master/css-compiler": ""
+        "@master/css-compiler": "",
+        "upath": "^2.0.1"
     }
 }

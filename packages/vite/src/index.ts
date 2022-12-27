@@ -1,7 +1,7 @@
 import MasterCSSCompiler from '@master/css-compiler'
 import type { Options } from '@master/css-compiler'
 import type { Plugin, ViteDevServer } from 'vite'
-import path from 'path'
+import upath from 'upath'
 import log from '@techor/log'
 
 export async function MasterCSSVitePlugin(options?: Options): Promise<Plugin> {
@@ -22,27 +22,29 @@ export async function MasterCSSVitePlugin(options?: Options): Promise<Plugin> {
             }
         },
         async handleHotUpdate({ server, file, read }) {
-            if (path.resolve(file) === compiler.resolvedConfigPath) {
+            if (upath.resolve(file) === compiler.resolvedConfigPath) {
                 /* 當自訂的 master.css.js 變更時，根據其重新初始化 MasterCSS 並強制重載瀏覽器 */
-                compiler.init()
-                log.info`[change] config file ${`.${path.relative(compiler.options.cwd, compiler.configPath)}.`}`
+                await compiler.init()
+                log.info`[change] config file ${`.${upath.relative(compiler.options.cwd, compiler.configPath)}.`}`
             } else {
                 /* 掃描 HMR 期異動的檔案 */
                 await compiler.insert(file, await read())
-                const virtualCSSModule = server.moduleGraph.getModuleById(compiler.resolvedModuleId)
-                if (virtualCSSModule) {
-                    server.moduleGraph.invalidateModule(virtualCSSModule)
-                    server.ws.send({
-                        type: 'update',
-                        updates: [{
-                            type: 'js-update',
-                            path: virtualCSSModule.url,
-                            acceptedPath: virtualCSSModule.url,
-                            timestamp: Date.now()
-                        }]
-                    })
-                }
             }
+
+            const virtualCSSModule = server.moduleGraph.getModuleById(compiler.resolvedModuleId)
+            if (virtualCSSModule) {
+                server.moduleGraph.invalidateModule(virtualCSSModule)
+                server.ws.send({
+                    type: 'update',
+                    updates: [{
+                        type: 'js-update',
+                        path: virtualCSSModule.url,
+                        acceptedPath: virtualCSSModule.url,
+                        timestamp: Date.now()
+                    }]
+                })
+            }
+
             server.ws.send({
                 type: 'custom',
                 event: compiler.moduleHMREvent,
