@@ -12,6 +12,7 @@ export default {
         }
     },
     classes: {
+        acm61ljoo: '190x190',
         btn: 'font:14 h:40 text:center',
         blue: {
             btn: {

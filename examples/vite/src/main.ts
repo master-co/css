@@ -2,6 +2,7 @@ import './style.css'
 import 'master.css'
 import { setupCounter } from './counter'
 
-const classes = 'fg:red text:center'
+const counterElement = document.querySelector<HTMLButtonElement>('#counter')
+counterElement?.classList.add('~transform|.3s', 'translateY(-5):hover')
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+setupCounter(counterElement!)

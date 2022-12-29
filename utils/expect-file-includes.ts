@@ -1,11 +1,12 @@
 import fs from 'fs'
-import path from 'path'
+import upath from 'upath'
 import fg from 'fast-glob'
-const parentModuleDir = path.dirname(require.main.filename)
+
+const parentModuleDir = upath.dirname(require.main.filename)
 
 export function expectFileIncludes(filePath: string, includes: string[]) {
     const content = fs.readFileSync(
-        fg.sync(path.join(parentModuleDir, filePath))[0]
+        fg.sync(upath.join(parentModuleDir, filePath))[0]
     ).toString()
     includes.map((include) => {
         expect(content).toContain(include)

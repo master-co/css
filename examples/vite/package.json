@@ -6,11 +6,13 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "test": "jest"
     },
     "devDependencies": {
+        "@master/css.vite": "",
+        "puppeteer": "^19.4.1",
         "typescript": "^4.9.3",
-        "vite": "^4.0.1",
-        "@master/css.vite": ""
+        "vite": "^4.0.1"
     }
 }
