@@ -26,7 +26,8 @@
         "aronrepo": "^1.0.0",
         "dedent": "^0.7.0",
         "eslint-plugin-react-hooks": "^4.6.0",
-        "fast-glob": "^3.2.12"
+        "fast-glob": "^3.2.12",
+        "upath": "^2.0.1"
     },
     "engines": {
         "node": "^18"
