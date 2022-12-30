@@ -25,7 +25,7 @@ beforeAll(async () => {
             }
         })
     })
-})
+}, 10000)
 
 it('check if the browser contains [data-vite-dev-id="master.css"]', async () => {
     expect(await page.$('[data-vite-dev-id$="master.css"]')).toBeTruthy()

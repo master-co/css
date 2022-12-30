@@ -9,7 +9,8 @@ it('check if dist contains virtual:master.css result ( usually bundled with styl
     await compiler.init()
 
     expectFileIncludes(
-        '../dist/assets/index-*.css', 
-        Object.keys(compiler.css.ruleOfClass).map(CSS.escape)
+        'dist/assets/index-*.css', 
+        Object.keys(compiler.css.ruleOfClass).map(CSS.escape),
+        process.cwd()
     )
 })
