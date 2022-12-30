@@ -1,20 +1,20 @@
-import { spawn, ChildProcessWithoutNullStreams, execSync } from 'child_process'
+import { ChildProcess, exec, execSync } from 'child_process'
 import puppeteer, { Browser, Page } from 'puppeteer'
 import fs from 'fs'
 import path from 'path'
 
 const configRegexp = /(classes:.*?)[a-z0-9]+/s
 
-let process: ChildProcessWithoutNullStreams
+let process: ChildProcess
 let browser: Browser
 let page: Page
 let newClassName: string
 
 beforeAll(async () => {
-    process = spawn('npm.cmd', ['run', 'dev'])
+    process = exec('npm run dev')
 
     await new Promise<void>((resolve) => {
-        process.stdout.on('data', async data => {
+        process.stdout?.on('data', async data => {
             const message = data.toString()
             const result = /(http:\/\/localhost:).*?\[1m([0-9]+)/.exec(message)
             if (result) {
