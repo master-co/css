@@ -798,32 +798,32 @@ export const masterCssKeyValues: MasterCssKey[] = [
     {
         key: ['width', 'w'],
         colorful: false,
-        values: ['100%', 'fit-content', 'max-content', 'min-content']
+        values: ['100%', 'fit-content', 'max-content', 'min-content', 'screen']
     },
     {
         key: ['min-width', 'min-w'],
         colorful: false,
-        values: ['100%', 'fit-content', 'max-content', 'min-content']
+        values: ['100%', 'fit-content', 'max-content', 'min-content', 'screen']
     },
     {
         key: ['max-width', 'max-w'],
         colorful: false,
-        values: ['100%', 'fit-content', 'max-content', 'min-content']
+        values: ['100%', 'fit-content', 'max-content', 'min-content', 'screen']
     },
     {
         key: ['height', 'h'],
         colorful: false,
-        values: ['100%', 'fit-content', 'max-content', 'min-content']
+        values: ['100%', 'fit-content', 'max-content', 'min-content', 'screen']
     },
     {
         key: ['min-height', 'min-h'],
         colorful: false,
-        values: ['100%', 'fit-content', 'max-content', 'min-content']
+        values: ['100%', 'fit-content', 'max-content', 'min-content', 'screen']
     },
     {
         key: ['max-height', 'max-h'],
         colorful: false,
-        values: ['100%', 'fit-content', 'max-content', 'min-content']
+        values: ['100%', 'fit-content', 'max-content', 'min-content', 'screen']
     },
     //TYPOGRAPHY
     {
