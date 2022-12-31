@@ -11,6 +11,14 @@ const contentExtrema = {
     max: 'max-content'
 }
 
+const heightScreen = {
+    screen: '100vh'
+}
+
+const widthScreen = {
+    screen: '100vw'
+}
+
 const sizingValues = {
     full: '100%',
     fit: 'fit-content',
@@ -77,12 +85,12 @@ const values = {
         stroke: 'stroke-box',
         view: 'view-box'
     },
-    Width: sizingValues,
-    MinWidth: sizingValues,
-    MinHeight: sizingValues,
-    MaxWidth: sizingValues,
-    MaxHeight: sizingValues,
-    Height: sizingValues,
+    Width: {...sizingValues, ...widthScreen},
+    MinWidth: {...sizingValues, ...widthScreen},
+    MinHeight: {...sizingValues, ...heightScreen},
+    MaxWidth: {...sizingValues, ...widthScreen},
+    MaxHeight: {...sizingValues, ...heightScreen},
+    Height: {...sizingValues, ...heightScreen},
     FlexBasis: sizingValues
 }
 
