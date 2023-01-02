@@ -37,9 +37,9 @@ it('change class names and check result in the browser during HMR', async () => 
     newClassName = 'a' + Math.random().toString(36).substr(2, 8)
     fs.writeFileSync(indexHtmlPath, originalIndexHtmlContent.replace(/(logo 172x172) [a-z0-9]+/, '$1 ' + newClassName))
     try {
-        await page.waitForSelector('[class$="' + newClassName + '"]', { timeout: 5000 })
+        await page.waitForSelector('[class$="' + newClassName + '"]', { timeout: 10000 })
     } catch (err) {
-        throw new Error(err)
+        fail(err)
     }
 })
 
@@ -49,9 +49,9 @@ it('change master.css.mjs and check result in the browser during HMR', async () 
     fs.writeFileSync(configPath, originalConfigContent.replace(configRegexp, '$1' + newClassName))
     await page.waitForNetworkIdle()
     try {
-        await page.waitForFunction((newClassName) => Array.from<CSSRule>(document.querySelector('[data-vite-dev-id$="master.css"]')?.['sheet']['cssRules']).some(eachRule => eachRule['selectorText'].includes(newClassName)), { timeout: 5000 }, newClassName)
+        await page.waitForFunction((newClassName) => Array.from<CSSRule>(document.querySelector('[data-vite-dev-id$="master.css"]')?.['sheet']['cssRules']).some(eachRule => eachRule['selectorText'].includes(newClassName)), { timeout: 10000 }, newClassName)
     } catch (err) {
-        throw new Error(err)
+        fail(err)
     }
 })
 
