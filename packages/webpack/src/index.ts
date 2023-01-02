@@ -9,6 +9,7 @@ const NAME = 'MasterCSSWebpackPlugin'
 export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
 
     apply(compiler: Compiler) {
+
         if (!compiler.options.resolve)
             compiler.options.resolve = {}
 
@@ -30,7 +31,8 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
         }
 
         /* update the Virtual CSS module after initialization */
-        compiler.hooks.initialize.tap(NAME, () => {
+        compiler.hooks.initialize.tap(NAME, async () => {
+            await this.init()
             updateCSS()
         })
 
