@@ -1,29 +1,27 @@
-import { ChildProcess, exec, execSync, spawn } from 'child_process'
+import { ChildProcess, exec, execSync } from 'child_process'
 import puppeteer, { Browser, Page } from 'puppeteer'
 import fs from 'fs'
 import path from 'path'
 
 const configRegexp = /(classes:.*?)[a-z0-9]+/s
 
-let process: ChildProcess
+let childProcess: ChildProcess
 let browser: Browser
 let page: Page
 let newClassName: string
 
-beforeAll(async () => {
-    process = exec('npm run dev')
+beforeAll((done) => {
+    childProcess = exec('npm run dev')
 
-    await new Promise<void>((resolve) => {
-        process.stdout?.on('data', async data => {
-            const message = data.toString()
-            const result = /(http:\/\/localhost:).*?\[1m([0-9]+)/.exec(message)
-            if (result) {
-                browser = await puppeteer.launch()
-                page = await browser.newPage()
-                await page.goto(result[1] + result[2])
-                resolve()
-            }
-        })
+    childProcess.stdout?.on('data', async data => {
+        const message = data.toString()
+        const result = /(http:\/\/localhost:).*?\[1m([0-9]+)/.exec(message)
+        if (result) {
+            browser = await puppeteer.launch()
+            page = await browser.newPage()
+            await page.goto(result[1] + result[2])
+            done()
+        }
     })
 }, 10000)
 
@@ -58,9 +56,8 @@ it('change master.css.mjs and check result in the browser during HMR', async () 
 afterAll(async () => {
     await browser.close()
 
-    if (process?.pid) {
-        spawn('taskkill', ['/pid', process.pid.toString(), '/f', '/t'])
-    }
+    childProcess.stdout?.destroy()
+    childProcess.kill()
 
     execSync('git restore index.html')
     execSync('git restore master.css.mjs')
