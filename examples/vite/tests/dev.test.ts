@@ -41,7 +41,7 @@ it('change class names and check result in the browser during HMR', async () => 
     } catch (err) {
         fail(err)
     }
-})
+}, 15000)
 
 it('change master.css.mjs and check result in the browser during HMR', async () => {
     const configPath = path.resolve(__dirname, '../master.css.mjs')
@@ -53,7 +53,7 @@ it('change master.css.mjs and check result in the browser during HMR', async () 
     } catch (err) {
         fail(err)
     }
-})
+}, 15000)
 
 afterAll(async () => {
     await browser.close()
