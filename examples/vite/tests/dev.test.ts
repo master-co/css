@@ -23,7 +23,7 @@ beforeAll((done) => {
             done()
         }
     })
-}, 10000)
+}, 20000)
 
 it('check if the browser contains [data-vite-dev-id="master.css"]', async () => {
     expect(await page.$('[data-vite-dev-id$="master.css"]')).toBeTruthy()
@@ -54,7 +54,7 @@ it('change master.css.mjs and check result in the browser during HMR', async () 
 }, 15000)
 
 afterAll(async () => {
-    await browser.close()
+    await browser?.close()
 
     childProcess.stdout?.destroy()
     childProcess.kill()
