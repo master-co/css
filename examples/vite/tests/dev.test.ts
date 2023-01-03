@@ -1,4 +1,4 @@
-import { ChildProcess, exec, execSync } from 'child_process'
+import { ChildProcess, exec, execSync, spawn } from 'child_process'
 import puppeteer, { Browser, Page } from 'puppeteer'
 import fs from 'fs'
 import path from 'path'
@@ -57,7 +57,10 @@ it('change master.css.mjs and check result in the browser during HMR', async () 
 
 afterAll(async () => {
     await browser.close()
-    process.kill()
+
+    if (process?.pid) {
+        spawn('taskkill', ['/pid', process.pid.toString(), '/f', '/t'])
+    }
 
     execSync('git restore index.html')
     execSync('git restore master.css.mjs')
