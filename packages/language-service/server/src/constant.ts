@@ -798,32 +798,32 @@ export const masterCssKeyValues: MasterCssKey[] = [
     {
         key: ['width', 'w'],
         colorful: false,
-        values: ['100%', 'fit-content', 'max-content', 'min-content', 'screen']
+        values: ['100%', 'fit-content', 'max-content', 'min-content', 'vp', 'vport', 'viewport']
     },
     {
         key: ['min-width', 'min-w'],
         colorful: false,
-        values: ['100%', 'fit-content', 'max-content', 'min-content', 'screen']
+        values: ['100%', 'fit-content', 'max-content', 'min-content', 'vp', 'vport', 'viewport']
     },
     {
         key: ['max-width', 'max-w'],
         colorful: false,
-        values: ['100%', 'fit-content', 'max-content', 'min-content', 'screen']
+        values: ['100%', 'fit-content', 'max-content', 'min-content', 'vp', 'vport', 'viewport']
     },
     {
         key: ['height', 'h'],
         colorful: false,
-        values: ['100%', 'fit-content', 'max-content', 'min-content', 'screen']
+        values: ['100%', 'fit-content', 'max-content', 'min-content', 'vp', 'vport', 'viewport']
     },
     {
         key: ['min-height', 'min-h'],
         colorful: false,
-        values: ['100%', 'fit-content', 'max-content', 'min-content', 'screen']
+        values: ['100%', 'fit-content', 'max-content', 'min-content', 'vp', 'vport', 'viewport']
     },
     {
         key: ['max-height', 'max-h'],
         colorful: false,
-        values: ['100%', 'fit-content', 'max-content', 'min-content', 'screen']
+        values: ['100%', 'fit-content', 'max-content', 'min-content', 'vp', 'vport', 'viewport']
     },
     //TYPOGRAPHY
     {
