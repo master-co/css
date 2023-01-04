@@ -12,11 +12,15 @@ const contentExtrema = {
 }
 
 const heightScreen = {
-    screen: '100vh'
+    vp: '100vh',
+    vport: '100vh',
+    viewport: '100vh'
 }
 
 const widthScreen = {
-    screen: '100vw'
+    vp: '100vw',
+    vport: '100vw',
+    viewport: '100vw
 }
 
 const sizingValues = {
