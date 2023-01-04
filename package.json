@@ -27,6 +27,7 @@
         "dedent": "^0.7.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
+        "jest-puppeteer": "^6.2.0",
         "upath": "^2.0.1"
     },
     "engines": {

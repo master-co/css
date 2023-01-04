@@ -13,12 +13,10 @@
     "engines": {
         "vscode": "^1.63.0"
     },
-    "dependencies": {
-        "vscode-languageclient": "^7.0.0"
-    },
     "devDependencies": {
         "@types/vscode": "^1.63.0",
-        "@vscode/test-electron": "^2.1.2"
+        "@vscode/test-electron": "^2.1.2",
+        "vscode-languageclient": "^7.0.0"
     },
     "peerDependencies": {
         "vscode": ""
