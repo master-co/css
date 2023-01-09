@@ -99,7 +99,7 @@ export default class Rule {
     ) {
         const TargetRule = this.constructor as typeof Rule
         const { id, unit, colorful, prop } = TargetRule
-        const { rootSize } = css.config
+        const { rootSize, scopePrefix } = css.config
         const { themeNames, colorNames, colorThemesMap, selectors, globalValues, breakpoints, mediaQueries } = css
         const values = css.values[id]
         const relationThemesMap = css.relationThemesMap[className]
@@ -409,8 +409,9 @@ export default class Rule {
                 const getCssText = (theme: string, name: string) => {
                     const prefixThemeText = (theme ? '.' + theme + ' ' : '')
                     const esacpedName = '.' + CSS.escape(name)
+                    const scopePrefixText = scopePrefix ? scopePrefix + ' ' : ''
                     return prefixTexts
-                        .map(eachPrefixText => prefixThemeText + eachPrefixText)
+                        .map(eachPrefixText => prefixThemeText + scopePrefixText + eachPrefixText)
                         .reduce((arr, eachPrefixText) => {
                             arr.push(
                                 suffixSelectors
