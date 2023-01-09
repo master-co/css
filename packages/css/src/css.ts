@@ -2,9 +2,11 @@ import config from './config'
 import extend from 'to-extend'
 import type { Config } from './config'
 import Rule, { RuleMatching } from './rule'
+import { rgbToHex } from './utils/rgb-to-hex'
 
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@']
 const vendorPrefixSelectorRegExp = /^::-[a-z]+-/m
+const rgbaRegExp = /^rgba?\( *([0-9]{1,3}) *(?: |,) *([0-9]{1,3}) *(?: |,) *([0-9]{1,3}) *(?:(?:\/|,) *0?(\.[0-9]))?\)$/
 
 let STYLE: HTMLStyleElement
 const isBrowser = typeof window !== 'undefined'
@@ -515,22 +517,42 @@ export default class MasterCSS extends MutationObserver {
             }
         }
 
-        for (const [colorName, themeColorMap] of Object.entries(this.colorThemesMap)) {
-            for (const [theme, color] of Object.entries(themeColorMap)) {
-                if (!color.startsWith('#')) {
-                    const replaceThemeColorMap = this.colorThemesMap[color]
-                    if (replaceThemeColorMap) {
-                        themeColorMap[theme] = (theme ? replaceThemeColorMap[theme] : undefined) ?? replaceThemeColorMap['']
-                    } else {
-                        console.warn(`\`${color}\` doesn't exist in the extended config \`.colors\``)
-                        delete themeColorMap[theme]
+        const colorThemesMapLoop = (func: (colorName: string, themeColorMap: Record<string, string>, theme: string, color: string) => void) => {
+            for (const [colorName, themeColorMap] of Object.entries(this.colorThemesMap)) {
+                for (const [theme, color] of Object.entries(themeColorMap)) {
+                    if (!color.startsWith('#')) {
+                        func(colorName, themeColorMap, theme, color)
                     }
                 }
             }
-            if (!Object.keys(themeColorMap).length) {
-                delete this.colorThemesMap[colorName]
-            }
         }
+        colorThemesMapLoop((colorName, themeColorMap, theme, color) => {
+            const result = rgbaRegExp.exec(color)
+            if (result) {
+                let hexColor = '#' + rgbToHex(+result[1], +result[2], +result[3])
+                if (result[4]) {
+                    hexColor += Math.round(255 * +result[4]).toString(16)
+                }
+                themeColorMap[theme] = hexColor
+            }
+        })
+        colorThemesMapLoop((colorName, themeColorMap, theme, color) => {
+            const [replaceColorName, alpha] = color.split('/')
+            const replaceThemeColorMap = this.colorThemesMap[replaceColorName]
+            if (replaceThemeColorMap) {
+                const hexColor = (theme ? replaceThemeColorMap[theme] : undefined) ?? replaceThemeColorMap['']
+                themeColorMap[theme] = (alpha
+                    ? hexColor.slice(0, 7) + Math.round(255 * +alpha).toString(16)
+                    : hexColor)
+            } else {
+                console.warn(`\`${color}\` doesn't exist in the extended config \`.colors\``)
+                delete themeColorMap[theme]
+
+                if (!Object.keys(themeColorMap).length) {
+                    delete this.colorThemesMap[colorName]
+                }
+            }
+        })
 
         if (Rules) {
             for (const EachRule of Rules) {

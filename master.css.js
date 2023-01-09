@@ -5,7 +5,13 @@ module.exports = {
             code: '#777777',
             stage: {
                 '1': '#999999'
-            }
+            },
+            alpha: 'blue-50/.1',
+            rgb1: 'rgb(0, 0, 0)',
+            rgb2: 'rgb(0 0 0)',
+            rgb3: 'rgb(0 0 0/.5)',
+            rgb4: 'rgba(0,0,0,.5)',
+            '2': 'primary-rgb4/.7'
         },
         input: {
             '': '#123456'

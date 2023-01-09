@@ -30,5 +30,35 @@ test('colors', () => {
                 'blue-100': '#777'
             }
         }
+    ),
+    testCSS(
+        'bg:primary-alpha',
+        '.bg\\:primary-alpha{background-color:#175fe91a}',
+        config
+    ),
+    testCSS(
+        'bg:primary-rgb1',
+        '.bg\\:primary-rgb1{background-color:#000000}',
+        config
+    ),
+    testCSS(
+        'bg:primary-rgb2',
+        '.bg\\:primary-rgb2{background-color:#000000}',
+        config
+    ),
+    testCSS(
+        'bg:primary-rgb3',
+        '.bg\\:primary-rgb3{background-color:#00000080}',
+        config
+    ),
+    testCSS(
+        'bg:primary-rgb4',
+        '.bg\\:primary-rgb4{background-color:#00000080}',
+        config
+    ),
+    testCSS(
+        'bg:primary-2',
+        '.bg\\:primary-2{background-color:#000000b3}',
+        config
     )
 })
