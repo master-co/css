@@ -97,8 +97,12 @@ module.exports = {
         }
     },
     semantics: {
-        show: 'display:block',
-        'hide-text': 'font-size:0px',
+        show: {
+            display: 'block'
+        },
+        'hide-text': {
+            'font-size': '0px'
+        },
         zero: {
             h: {
                 'height': 0
