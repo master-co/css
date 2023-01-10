@@ -2,6 +2,7 @@
 import breakpoints from './breakpoints'
 import colors from './colors'
 import rootSize from './root-size'
+import scopePrefix from './scope'
 import selectors from './selectors'
 import semantics from './semantics'
 import themes from './themes'
@@ -19,7 +20,8 @@ const config: Config = {
     themes: themes,
     scheme: scheme,
     Rules: Rules,
-    rootSize: rootSize
+    rootSize: rootSize,
+    scopePrefix: scopePrefix,
 }
 
 export default config
@@ -45,6 +47,7 @@ export interface Config {
     Rules?: typeof Rule[],
     themes?: Record<string, { classes?: Classes, colors?: Colors }> | string[],
     rootSize?: number
+    scopePrefix?: string
     scheme?: {
         preference?: string,
         storage?: {
