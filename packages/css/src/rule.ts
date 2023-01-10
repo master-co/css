@@ -99,7 +99,7 @@ export default class Rule {
     ) {
         const TargetRule = this.constructor as typeof Rule
         const { id, unit, colorful, prop } = TargetRule
-        const { rootSize, scopePrefix } = css.config
+        const { rootSize, scope } = css.config
         const { themeNames, colorNames, colorThemesMap, selectors, globalValues, breakpoints, mediaQueries } = css
         const values = css.values[id]
         const relationThemesMap = css.relationThemesMap[className]
@@ -406,17 +406,14 @@ export default class Rule {
                 }
 
                 const prefixTexts = this.prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText)
-                const getCssText = (theme: string, name: string) => {
-                    const prefixThemeText = (theme ? '.' + theme + ' ' : '')
-                    const esacpedName = '.' + CSS.escape(name)
-                    const scopePrefixText = scopePrefix ? scopePrefix + ' ' : ''
-                    return prefixTexts
-                        .map(eachPrefixText => prefixThemeText + scopePrefixText + eachPrefixText)
+                const getCssText = (theme: string, name: string) =>
+                    prefixTexts
+                        .map(eachPrefixText => (theme ? '.' + theme + ' ' : '') + (scope ? scope + ' ' : '') + eachPrefixText)
                         .reduce((arr, eachPrefixText) => {
                             arr.push(
                                 suffixSelectors
                                     .reduce((_arr, eachSuffixSelector) => {
-                                        _arr.push(eachPrefixText + esacpedName + eachSuffixSelector)
+                                        _arr.push(eachPrefixText + '.' + CSS.escape(name) + eachSuffixSelector)
                                         return _arr
                                     }, [])
                                     .join(',')
@@ -424,7 +421,6 @@ export default class Rule {
                             return arr
                         }, [])
                         .join(',')
-                }
 
                 let cssText = getCssText(theme, className)
                     + (relationThemesMap

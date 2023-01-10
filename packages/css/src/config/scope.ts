@@ -1,2 +1,2 @@
-const scopePrefix = ''
-export default scopePrefix
+const scope = ''
+export default scope
