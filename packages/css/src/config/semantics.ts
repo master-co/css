@@ -40,6 +40,12 @@ const semantics = {
     capitalize: 'text-transform:capitalize',
     visible: 'visibility:visible',
     invisible: 'visibility:hidden',
+    vw: 'width:100vw',
+    vh: 'height:100vh',
+    'max-vw': 'max-width:100vw',
+    'max-vh': 'max-height:100vh',
+    'min-vw': 'min-width:100vw',
+    'min-vh': 'min-height:100vh',
     'center-content': {
         'justify-content': 'center',
         'align-items': 'center',
