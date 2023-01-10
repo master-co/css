@@ -99,7 +99,7 @@ export default class Rule {
     ) {
         const TargetRule = this.constructor as typeof Rule
         const { id, unit, colorful, prop } = TargetRule
-        const { rootSize, scope } = css.config
+        const { rootSize, scope, important } = css.config
         const { themeNames, colorNames, colorThemesMap, selectors, globalValues, breakpoints, mediaQueries } = css
         const values = css.values[id]
         const relationThemesMap = css.relationThemesMap[className]
@@ -506,7 +506,7 @@ export default class Rule {
                                         Object
                                             .entries(themeProps[theme])
                                             .map(([propertyName, propertyValue]) => getCssPropertyText(propertyName, {
-                                                important: this.important,
+                                                important: (this.important || important) && !propertyValue.endsWith('!important'),
                                                 unit: '',
                                                 value: propertyValue
                                             }))
@@ -539,10 +539,10 @@ export default class Rule {
                                     ...(typeof propertyValue === 'object'
                                         ? propertyValue
                                         : { unit: '', value: propertyValue }),
-                                    important: this.important
+                                    important: this.important || important
                                 }))
                                 .join(';')
-                            : getCssPropertyText(prop, { unit: newUnit, value: newValue, important: this.important }),
+                            : getCssPropertyText(prop, { unit: newUnit, value: newValue, important: this.important || important }),
                         theme,
                         suffixSelectors
                     ),

@@ -47,6 +47,7 @@ export interface Config {
     themes?: Record<string, { classes?: Classes, colors?: Colors }> | string[],
     rootSize?: number
     scope?: string
+    important?: boolean
     scheme?: {
         preference?: string,
         storage?: {
