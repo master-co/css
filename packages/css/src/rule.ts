@@ -428,7 +428,7 @@ export default class Rule {
                             .entries(relationThemesMap)
                             .filter(([relationTheme]) => this.theme || !colorful || !theme || !relationTheme || relationTheme === theme)
                             .map(([relationTheme, classNames]) =>
-                                classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? (colorful ? theme || relationTheme : relationTheme), className), '')
+                                classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? ((colorful || this.getThemeProps) ? theme || relationTheme : relationTheme), className), '')
                             )
                             .join('')
                         : '')
