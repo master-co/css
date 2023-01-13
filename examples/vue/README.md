@@ -116,4 +116,3 @@ For AOT, Master presets common configurations for various frameworks and build t
 
 https://github.com/master-co/css/tree/beta/packages/compiler
 
-For starters, you can enable `` to see how it scans, extracts, and compiles.
