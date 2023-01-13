@@ -1,0 +1,20 @@
+{
+    "name": "master-css-in-lit",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "test": "jest"
+    },
+    "dependencies": {
+        "@master/css": "",
+        "lit": "^2.6.1"
+    },
+    "devDependencies": {
+        "typescript": "^4.9.3",
+        "vite": "^4.0.1"
+    }
+}
