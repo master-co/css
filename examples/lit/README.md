@@ -1,10 +1,7 @@
 <br>
 <div align="center">
 
-<p align="center">
-    <img width="1331" alt="Screenshot 2022-12-17 at 1 28 08 AM" src="https://user-images.githubusercontent.com/33840671/208154785-3b5f2e04-8a3c-4d12-bc46-f7625639f6fe.png">
-</p>
-<p align="center">A vite plugin for integrating Master CSS ahead-of-time compilation</p>
+<p align="center">Lit & Master CSS JIT</p>
 
 <p align="center">
     <a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
@@ -56,38 +53,58 @@
 ## Getting Started
 
 ```bash
-npm install @master/css.vite@beta -D
+npm install lit @master/css
 ```
 
-`vite.config.js`
+./main.ts
 ```js
-import { MasterCSSVitePlugin } from '@master/css.vite'
+import MasterCSS from '@master/css'
+import config from '../master.css'
+import { LitElement, html } from 'lit'
+import { customElement, property } from 'lit/decorators.js'
 
-/** @type {import('vite').UserConfig} */
-const config = {
-    plugins: [
-        MasterCSSVitePlugin()
-    ]
+@customElement('hello-world')
+export class HelloWorld extends LitElement {
+
+    css?: MasterCSS
+
+    connectedCallback() {
+        super.connectedCallback()
+        this.css = new MasterCSS({ config, observe: false })
+            .observe(this.shadowRoot)
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback()
+        this.css?.destroy()
+    }
+
+    @property()
+    name?: string = 'World'
+
+    render() {
+        return html`
+            <h1 class="font:40 font:heavy italic m:50 text:center fg:primary">
+                Hello ${this.name}
+            </h1>
+        `
+    }
 }
-
-export default config
 ```
-Import the virtual CSS module into `src/main.ts`:
-```ts
-import './style.css'
-import 'master.css'
+./index.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="module" src="/main.ts"></script>
+</head>
+
+<body>
+    <hello-world />
+</body>
+
+</html>
 ```
-
-Now start the Vite development server:
-```bash
-npm run dev -- --open
-```
-
-Example https://github.com/master-co/css/tree/beta/examples/vite
-
-## Compiler Options
-Master presets common configurations for various frameworks and build tools, and it works almost out of the box.
-
-https://github.com/master-co/css/tree/beta/packages/compiler
-
-For starters, you can enable `` to see how it scans, extracts, and compiles.
