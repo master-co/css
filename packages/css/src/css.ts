@@ -572,7 +572,7 @@ export default class MasterCSS extends MutationObserver {
         }
     }
 
-    observe(root: Document | ShadowRoot, options: MutationObserverInit = { subtree: true, childList: true }) {
+    observe(root: Document | ShadowRoot | null, options: MutationObserverInit = { subtree: true, childList: true }) {
         if (isBrowser && root) {
             // @ts-ignore
             this.root = root
