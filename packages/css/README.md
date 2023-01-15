@@ -60,10 +60,18 @@
 </div>
 
 ## Documentation
-Visit [🚧 beta.css.master.co](https://css.master.co) to view the full documentation
+Visit [🚧 beta.css.master.co](https://beta.css.master.co) to view the full documentation
 
 ## Getting Started
-Check out the [🚧 official guides](https://css.master.co/docs) to get started with Master CSS or walk through the [examples](https://github.com/master-co/css/tree/beta/examples) for a quick overview of integrating with your framework.
+Check out the [🚧 official guides](https://beta.css.master.co/docs) to get started with Master CSS or walk through the [examples](https://github.com/master-co/css/tree/beta/examples) for a quick overview of integrating with your framework.
+
+## Compilation Modes
+Master CSS provides the various [compilation modes](https://beta.css.master.co/docs/compilation), allowing you to choose according to the characteristics and needs of different projects.
+
+- [Just-in-time](https://beta.css.master.co/docs/compilation/just-in-time) - Observes the class names of the entire DOM tree and syncs to the stylesheet at runtime ~15KB
+- [Ahead-of-time](https://beta.css.master.co/docs/compilation/ahead-of-time) - Scans source files for class names during build time and extracts them to generate static CSS files
+- [Server-side Rendering](https://beta.css.master.co/docs/compilation/ahead-of-time) - Scans the rendered HTML on the server side and extracts the class names, and responses
+- [Progressive Rendering](https://beta.css.master.co/docs/compilation/progressive-rendering) - Pre-generate CSS with SSR/SSG/AOT and rehydrate it through JIT on the browser side
 
 ## Ecosystem
 We've built various integrations and tools around Master CSS:
