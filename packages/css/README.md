@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax ~15KB<!----></p>
+<p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax<!----></p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">
@@ -60,10 +60,10 @@
 </div>
 
 ## Documentation
-Visit [css.master.co](https://css.master.co) to view the full documentation
+Visit [🚧 beta.css.master.co](https://css.master.co) to view the full documentation
 
 ## Getting Started
-Check out the [guides](https://css.master.co/docs/guides) to get started with Master CSS
+Check out the [🚧 official guides](https://css.master.co/docs) to get started with Master CSS or walk through the [examples](https://github.com/master-co/css/tree/beta/examples) for a quick overview of integrating with your framework.
 
 ## Ecosystem
 We've built various integrations and tools around Master CSS:
