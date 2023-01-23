@@ -34,6 +34,7 @@ export declare type Source = {
 }
 
 export interface Options extends TechorOptions<Config> {
+    output?: string,
     module?: string,
     sources?: FastGlobPattern[]
     include?: FastGlobPattern[]
