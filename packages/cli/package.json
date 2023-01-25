@@ -28,7 +28,8 @@
         "dist"
     ],
     "bin": {
-        "mcss": "./dist/index"
+        "mcss": "./dist/index",
+        "mastercss": "./dist/index"
     },
     "publishConfig": {
         "access": "public"
