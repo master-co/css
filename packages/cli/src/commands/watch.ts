@@ -1,10 +1,10 @@
-import MasterCssCompiler from '@master/css-compiler'
+import MasterCSSCompiler from '@master/css-compiler'
 import chokidar from 'chokidar'
 import fs from 'fs'
 
 export async function watch() {
     try {
-        const compiler = new MasterCssCompiler() 
+        const compiler = new MasterCSSCompiler()
         await compiler.init()
 
         const output = compiler.options.output ?? 'master.css'

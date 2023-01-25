@@ -1,12 +1,11 @@
 {
     "name": "@master/css",
     "scripts": {
-        "build": "aron pack --platform=node & esbuild src/cli/bin/index.ts --bundle --outfile=dist/cli/bin/index --format=cjs --minify --sourcemap --platform=node --external:@master/css-compiler",
+        "build": "aron pack",
         "dev": "npm run build -- --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",
-        "lint": "eslint src",
-        "postinstall": "node scripts/postinstall.js"
+        "lint": "eslint src"
     },
     "license": "MIT",
     "description": "A Virtual CSS language with enhanced syntax ~13KB",
@@ -60,26 +59,17 @@
         }
     },
     "files": [
-        "dist",
-        "scripts"
+        "dist"
     ],
-    "bin": {
-        "mcss": "./dist/cli/bin/index"
-    },
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
         "@master/keyframes.css": "",
         "@master/normal.css": "",
-        "chokidar": "^3.5.3",
-        "commander": "^10.0.0",
-        "fs-extra": "^11.1.0"
+        "@master/css-cli": ""
     },
     "devDependencies": {
         "to-extend": "^1.4.6"
-    },
-    "peerDependencies": {
-        "@master/css-compiler": ""
     }
 }

@@ -1,0 +1,41 @@
+{
+    "name": "@master/css-cli",
+    "scripts": {
+        "build": "esbuild src/index.ts --bundle --outfile=dist/index --format=cjs --minify --sourcemap --platform=node --external:chokidar --external:commander --external:fs-extra --external:@master/css-compiler",
+        "dev": "npm run build -- --watch",
+        "lint": "eslint ./src",
+        "test": "jest"
+    },
+    "license": "MIT",
+    "description": "The CLI of Master CSS",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://docs.master.co/css/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/cli"
+    },
+    "keywords": [
+        "css",
+        "cli",
+        "mastercss"
+    ],
+    "files": [
+        "dist"
+    ],
+    "bin": {
+        "mcss": "./dist/index"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "chokidar": "^3.5.3",
+        "commander": "^10.0.0",
+        "fs-extra": "^11.1.0"
+    }
+}

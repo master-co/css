@@ -1,7 +1,7 @@
 {
     "name": "@master/css.react",
     "scripts": {
-        "build": "aron pack --platform=node",
+        "build": "aron pack",
         "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
