@@ -10,6 +10,11 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
 
     apply(compiler: Compiler) {
 
+        let configPath = this.resolvedConfigPath
+        if (configPath && path.sep === '\\') {
+            configPath = configPath.replace(/\//g, '\\')
+        }
+
         if (!compiler.options.resolve)
             compiler.options.resolve = {}
 
@@ -39,8 +44,8 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
         compiler.hooks.watchRun.tapPromise(NAME, async () => {
             const { modifiedFiles } = compiler
             if (modifiedFiles) {
-                if (modifiedFiles.has(this.resolvedConfigPath)) {
-                    this.init()
+                if (modifiedFiles.has(configPath)) {
+                    await this.init()
                 } else {
                     modifiedFiles?.forEach(async (modifiedFilePath) => {
                         await this.insert(modifiedFilePath, fs.readFileSync(modifiedFilePath).toString())
@@ -51,9 +56,9 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
         })
 
         compiler.hooks.afterCompile.tap(NAME, async (compilation) => {
-            const resolvedConfigPath = this.resolvedConfigPath
-            if (resolvedConfigPath)
-                compilation.fileDependencies.add(resolvedConfigPath)
+            if (configPath) {
+                compilation.fileDependencies.add(configPath)
+            }
         })
 
     }
