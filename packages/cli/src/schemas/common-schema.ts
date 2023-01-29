@@ -1,16 +1,16 @@
 export function masterCSSCommonSchema(
-    { 
+    {
         aot,
         jit,
-        moduleExports, 
+        moduleExports,
         typeSyntax,
-        require 
+        require
     }: {
         aot?: boolean,
         jit?: boolean,
-        moduleExports?: boolean, 
-        typeSyntax?: boolean, 
-        require?: boolean 
+        moduleExports?: boolean,
+        typeSyntax?: boolean,
+        require?: boolean
     }
 ) {
     const imports: Record<string, string[]> = {}
@@ -58,8 +58,12 @@ export function masterCSSCommonSchema(
     if (aot) {
         let options = `${ moduleExports ? '' : 'export ' }const options = {
     sources: [],
-    fixedClasses: [],
-    ignoredClasses: [],
+    classes: {
+        // whitelist of class names for unpredictable dynamics
+        fixed: [],
+        // blacklist of class names to exclude accidentally captured
+        ignored: []  // or RegExp[]
+    }
 }`
         if (typeSyntax) {
             options = `/** @type {import('@master/css-compiler').Options} */\n` + options
@@ -70,13 +74,13 @@ export function masterCSSCommonSchema(
         content.push(options)
         exports['options'] = ''
     }
-   
+
     const importsEntries = Object.entries(imports)
     const exportEntries = Object.entries(exports)
     return (importsEntries.length
         ? importsEntries.map(([name, sources]) => (require ? `const ${sources.join(', ')} = require('${name}')` : `import ${sources.join(', ')} from '${name}'`)).join('\n') + '\n\n'
         : '')
-        + content.join('\n\n') 
+        + content.join('\n\n')
         + '\n\n'
         + (moduleExports
             ? `module.exports = {\n    ${exportEntries.map(([name, value]) => value ? name + ': ' + value : name).join(',\n    ')}\n}`

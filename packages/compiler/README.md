@@ -90,10 +90,12 @@ const compiler = await new MasterCSSCompiler().init()
         'out',
         'README.md'
     ],
-    // whitelist of class names for unpredictable dynamics
-    fixedClasses: [],
-    // blacklist of class names to exclude accidentally captured
-    ignoredClasses: [], // or RegExp[]
+    classes: {
+        // whitelist of class names for unpredictable dynamics
+        fixed: [],
+        // blacklist of class names to exclude accidentally captured
+        ignored: []  // or RegExp[]
+    },
     cwd: process.cwd()
 }
 ```

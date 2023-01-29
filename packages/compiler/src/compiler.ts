@@ -40,8 +40,8 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
 
     async compile() {
         /* 插入指定的固定 class */
-        if (this.options.fixedClasses?.length)
-            for (const eachFixedClass of this.options.fixedClasses) {
+        if (this.options.classes?.fixed?.length)
+            for (const eachFixedClass of this.options.classes.fixed) {
                 this.css.insert(eachFixedClass)
             }
         await Promise.all(
@@ -111,9 +111,9 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         }
 
         /* 排除指定的 class */
-        if (this.options.ignoredClasses?.length)
+        if (this.options.classes?.ignored?.length)
             extractions = extractions.filter((eachExtraction) => {
-                for (const eachIgnoreClass of this.options.ignoredClasses) {
+                for (const eachIgnoreClass of this.options.classes.ignored) {
                     if (typeof eachIgnoreClass === 'string') {
                         if (eachIgnoreClass === eachExtraction) return false
                     } else if (eachIgnoreClass.test(eachExtraction)) {
