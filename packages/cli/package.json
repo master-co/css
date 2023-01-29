@@ -1,7 +1,7 @@
 {
     "name": "@master/css-cli",
     "scripts": {
-        "build": "esbuild src/index.ts --bundle --outfile=dist/index --format=cjs --minify --sourcemap --platform=node --external:chokidar --external:commander --external:fs-extra --external:@master/css-compiler",
+        "build": "esbuild src/index.ts src/schemas/*.ts --bundle --outdir=dist --format=cjs --minify --sourcemap --platform=node --external:chokidar --external:commander --external:fs-extra --external:@master/css-compiler",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
         "test": "jest"
