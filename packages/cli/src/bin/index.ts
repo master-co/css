@@ -10,7 +10,7 @@ const { version, name, description } =  readPackage(path.join(__dirname, '../../
 program
     .name(name)
     .description(description)
-    .version(version)
+    .version(version || '')
     .option('-w, --watch', 'watch file changed and generate master.')
     .action(watch)
     .parse()
