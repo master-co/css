@@ -4,8 +4,7 @@ import { generateTSFileSchema } from '../src'
 
 it('create master.css.ts config', async () => {
     const test = (aot: boolean, jit: boolean) => {
-        execSync('npm link @master/css-cli')
-        execSync(`mcss init${aot ? ' --aot' : ''}${jit ? ' --jit' : ''}`)
+        execSync(`node ./dist/bin/index.js init${aot ? ' --aot' : ''}${jit ? ' --jit' : ''}`)
 
         const path = 'master.css.ts'
         if (fs.existsSync(path)) {
