@@ -125,7 +125,7 @@ npm install @master/css@beta
         <script>
             import MasterCSS from "@master/css";
             import config from "../../master.css";
-            export const css = new MasterCSS({ config });
+            export const css = new MasterCSS(config);
         </script>
     </head>
     <body>

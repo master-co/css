@@ -70,7 +70,7 @@ export class HelloWorld extends LitElement {
 
     connectedCallback() {
         super.connectedCallback()
-        this.css = new MasterCSS({ config, observe: false })
+        this.css = new MasterCSS({ ...config, observe: false })
             .observe(this.shadowRoot)
     }
 

@@ -4,7 +4,7 @@ import '../polyfills/css-escape'
 
 export default function renderFromHTML(html: string, config?: Config): string {
     if (!html) return
-    const css = new MasterCSS({ observe: false, config })
+    const css = new MasterCSS({ ...config, observe: false })
     const regexp = /\sclass="([^"]*)"/gm
     let results: string[]
     while ((results = regexp.exec(html))) {

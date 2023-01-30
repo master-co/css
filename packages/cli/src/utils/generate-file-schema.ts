@@ -51,7 +51,7 @@ export function generateFileSchema(
     // JIT
     if (jit) {
         addImport('@master/css', 'MasterCSS')
-        exports['css'] = 'new MasterCSS({ config })'
+        exports['css'] = 'new MasterCSS(config)'
     }
 
     // AOT
