@@ -1,9 +1,7 @@
 import { program } from 'commander'
 import { readPackage } from '../utils/read-package'
 import fs from 'fs'
-import { masterCSSFileSchema } from '../schemas/file-schema'
-import { masterCSSESMFileSchema } from '../schemas/esm-file-schema'
-import { masterCSSTSFileSchema } from '../schemas/ts-file-schema'
+import { generateCJSFileSchema, generateTSFileSchema, generateESMFileSchema } from '../'
 
 program.command('init')
     .allowUnknownOption()
@@ -17,15 +15,15 @@ program.command('init')
         let ext: string
         if (ts || fs.existsSync('./tsconfig.json')) {
             ext = 'ts'
-            createSchemaFunc = masterCSSTSFileSchema
+            createSchemaFunc = generateTSFileSchema
         } else {
             const { type } = readPackage()
             if (type === 'module') {
                 ext = 'mjs'
-                createSchemaFunc = masterCSSESMFileSchema
+                createSchemaFunc = generateESMFileSchema
             } else {
                 ext = 'cjs'
-                createSchemaFunc = masterCSSFileSchema
+                createSchemaFunc = generateCJSFileSchema
             }
 
             ext = type === 'module'

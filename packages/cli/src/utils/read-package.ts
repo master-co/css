@@ -1,5 +1,4 @@
 import fs from 'fs-extra'
-import path from 'path'
 import type { PackageJson } from 'pkg-types'
 
 export function readPackage(pkgPath = './package.json'): PackageJson {

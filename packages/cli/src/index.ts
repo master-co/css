@@ -1,17 +1,13 @@
-#!/usr/bin/env node
+import { generateFileSchema } from './utils/generate-file-schema'
 
-import { program } from 'commander'
-import path from 'path'
-import { readPackage } from './utils/read-package'
-import { watch } from './commands/watch'
-import './commands'
+export function generateTSFileSchema({ aot, jit }: { aot?: boolean, jit?: boolean }) {
+    return generateFileSchema({ aot, jit })
+}
 
-const { version, name, description } =  readPackage(path.join(__dirname, '../package.json'))
-program
-    .name(name)
-    .description(description)
-    .version(version)
-    .option('-w, --watch', 'watch file changed and generate master.')
-    .action(watch)
-    .parse()
+export function generateESMFileSchema({ aot, jit }: { aot?: boolean, jit?: boolean }) {
+    return generateFileSchema({ aot, jit, typeSyntax: true })
+}
 
+export function generateCJSFileSchema({ aot, jit }: { aot?: boolean, jit?: boolean }) {
+    return generateFileSchema({ aot, jit, moduleExports: true, typeSyntax: true, require: true })
+}

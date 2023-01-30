@@ -1,7 +1,7 @@
 {
     "name": "@master/css-cli",
     "scripts": {
-        "build": "esbuild src/index.ts src/schemas/*.ts --bundle --outdir=dist --format=cjs --minify --sourcemap --platform=node --external:chokidar --external:commander --external:fs-extra --external:@master/css-compiler",
+        "build": "esbuild src/index.ts src/bin/index.ts --bundle --outdir=dist --format=cjs --minify --sourcemap --platform=node --external:chokidar --external:commander --external:fs-extra --external:@master/css-compiler",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
         "test": "jest"
@@ -24,12 +24,24 @@
         "cli",
         "mastercss"
     ],
+    "main": "./dist/index.cjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./dist/index.cjs",
+            "import": "./dist/index.mjs",
+            "types": "./dist/index.d.ts"
+        }
+    },
     "files": [
         "dist"
     ],
     "bin": {
-        "mcss": "./dist/index",
-        "mastercss": "./dist/index"
+        "mcss": "./dist/bin/index.js",
+        "mastercss": "./dist/bin/index.js"
     },
     "publishConfig": {
         "access": "public"

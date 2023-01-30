@@ -1,4 +1,4 @@
-export function masterCSSCommonSchema(
+export function generateFileSchema(
     {
         aot,
         jit,
@@ -29,7 +29,7 @@ export function masterCSSCommonSchema(
     }
 
     // Config
-    let config = `${ moduleExports ? '' : 'export ' }const config = {
+    let config = `${moduleExports ? '' : 'export '}const config = {
     themes: {},
     colors: {},
     classes: {},
@@ -56,7 +56,7 @@ export function masterCSSCommonSchema(
 
     // AOT
     if (aot) {
-        let options = `${ moduleExports ? '' : 'export ' }const options = {
+        let options = `${moduleExports ? '' : 'export '}const options = {
     sources: [],
     classes: {
         // whitelist of class names for unpredictable dynamics
