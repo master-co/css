@@ -14,7 +14,7 @@ export function analyzeValueToken(
 
     let currentValueToken = ''
     let i = 0;
-    (function analyze(valueToken, end?, depth?, func = '') {
+    (function analyze(valueToken, end?, depth?, func = '', usedValues: string[] = [], usedGlobalValues: string[] = []) {
         let varIndex: number
         let isString = false
         if (end) {
@@ -31,15 +31,15 @@ export function analyzeValueToken(
             const value = currentValueToken
             currentValueToken = ''
 
-            if (values && value in values) {
+            if (values && value in values && !usedValues.includes(value)) {
                 const originalIndex = i
                 i = 0
-                analyze(values[value].toString())
+                analyze(values[value].toString(), undefined, undefined, undefined, [...usedValues, value], usedGlobalValues)
                 i = originalIndex
-            } else if (globalValues && value in globalValues) {
+            } else if (globalValues && value in globalValues && !usedGlobalValues.includes(value)) {
                 const originalIndex = i
                 i = 0
-                analyze(globalValues[value].toString())
+                analyze(globalValues[value].toString(), undefined, undefined, undefined, usedValues, [...usedGlobalValues, value])
                 i = originalIndex
             } else {
                 valueTokens.push({ value })
@@ -80,7 +80,7 @@ export function analyzeValueToken(
 
                 break
             } else if (!isString && val in START_SYMBOL) {
-                analyze(valueToken, START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func)
+                analyze(valueToken, START_SYMBOL[val], depth === undefined ? 0 : depth + 1, func, usedValues, usedGlobalValues)
             } else if ((val === '|' || val === ' ') && end !== '}' && (!isString || func === 'path')) {
                 if (!end) {
                     transformAndPushValueToken()
