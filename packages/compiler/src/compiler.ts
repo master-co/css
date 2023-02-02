@@ -33,7 +33,7 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
     async init() {
         this.extractions.clear()
         console.log('')
-        this.css = new MasterCSS({ config: this.readConfig() })
+        this.css = new MasterCSS({ ...this.readConfig() })
         await this.compile()
         return this
     }
