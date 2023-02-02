@@ -1,4 +1,6 @@
-export default {
+import MasterCSS from '@master/css'
+
+export const config = {
     colors: {
         primary: {
             '': 'blue-50',
@@ -91,8 +93,12 @@ export default {
         }
     },
     semantics: {
-        show: 'display:block',
-        'hide-text': 'font-size:0px',
+        show: {
+            display: 'block'
+        },
+        'hide-text': {
+            'font-size': '0px'
+        },
         zero: {
             h: {
                 'height': 0
@@ -124,3 +130,5 @@ export default {
     },
     rootSize: 16
 }
+
+export const css = new MasterCSS(config)
