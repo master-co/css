@@ -20,7 +20,8 @@ const options: Options = {
         'master.css.{js,ts,mjs,cjs}',
         'dist',
         'out',
-        'README.md'
+        'README.md',
+        'public'
     ],
     classes: {
         // whitelist of class names for unpredictable dynamics
