@@ -1,13 +1,13 @@
 {
-    "name": "@master/css.react",
+    "name": "@master/css-cli",
     "scripts": {
-        "build": "aron pack",
+        "build": "esbuild src/index.ts src/bin/index.ts --bundle --outdir=dist --format=cjs --minify --sourcemap --platform=node --external:chokidar --external:commander --external:fs-extra --external:@master/css-compiler",
         "dev": "npm run build -- --watch",
-        "type-check": "tsc --noEmit",
-        "lint": "eslint src"
+        "lint": "eslint ./src",
+        "test": "jest"
     },
     "license": "MIT",
-    "description": "React hooks and components for Master CSS",
+    "description": "The CLI of Master CSS",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",
@@ -17,19 +17,15 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/react"
+        "directory": "packages/cli"
     },
     "keywords": [
-        "react",
-        "hooks",
-        "use",
         "css",
+        "cli",
         "mastercss"
     ],
-    "sideEffects": false,
     "main": "./dist/index.cjs",
     "jsnext:main": "./dist/index.mjs",
-    "browser": "./dist/index.js",
     "esnext": "./dist/index.mjs",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
@@ -43,13 +39,17 @@
     "files": [
         "dist"
     ],
+    "bin": {
+        "mcss": "./dist/bin/index.js",
+        "mastercss": "./dist/bin/index.js"
+    },
     "publishConfig": {
         "access": "public"
     },
-    "peerDependencies": {
-        "react": ">= 16.8.0"
-    },
     "dependencies": {
-        "@master/css": ""
+        "chokidar": "^3.5.3",
+        "commander": "^10.0.0",
+        "fast-glob": "^3.2.12",
+        "fs-extra": "^11.1.0"
     }
 }

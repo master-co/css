@@ -1,4 +1,4 @@
-import config from './config'
+import defaultConfig from './config'
 import extend from 'to-extend'
 import type { Config } from './config'
 import Rule, { RuleMatching } from './rule'
@@ -22,12 +22,6 @@ const MutationObserver = isBrowser
     ? window.MutationObserver
     : Object
 
-export declare type Options = {
-    config?: Config
-    override?: boolean
-    observe?: boolean
-}
-
 export default class MasterCSS extends MutationObserver {
 
     static instances: MasterCSS[] = []
@@ -49,7 +43,6 @@ export default class MasterCSS extends MutationObserver {
     readonly host: Element
     readonly root: Document | ShadowRoot
     readonly ready: boolean = false
-    readonly config: Config
 
     semantics: [RegExp, [string, string | Record<string, string>]][]
     classes: Record<string, string[]>
@@ -68,7 +61,7 @@ export default class MasterCSS extends MutationObserver {
     private schemeMQL: MediaQueryList
 
     constructor(
-        public options?: Options
+        public config?: Config
     ) {
         super((mutationRecords) => {
             // console.time('css engine');
@@ -229,17 +222,16 @@ export default class MasterCSS extends MutationObserver {
 
             // console.timeEnd('css engine');
         })
-        this.options = extend({ observe: true }, options)
 
-        if (this.options.config && !this.options.override) {
-            this.config = extend(config, this.options.config)
+        if (!this.config?.override) {
+            this.config = extend(defaultConfig, this.config)
         } else {
-            this.config = config
+            this.config = defaultConfig
         }
 
         this.cache()
 
-        if (isBrowser && this.options.observe) {
+        if (isBrowser && this.config.observe) {
             this.observe(document)
         }
 

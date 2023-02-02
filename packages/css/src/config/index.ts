@@ -9,6 +9,8 @@ import scheme from './scheme'
 import values from './values'
 import Rules from './rules'
 import Rule from '../rule'
+import override from './override'
+import observe from './observe'
 
 const config: Config = {
     colors,
@@ -21,6 +23,8 @@ const config: Config = {
     Rules,
     rootSize,
     scope,
+    override,
+    observe
 }
 
 export default config
@@ -55,5 +59,7 @@ export interface Config {
             sync?: boolean
             key?: string
         }
-    }
+    },
+    override?: boolean
+    observe?: boolean
 }

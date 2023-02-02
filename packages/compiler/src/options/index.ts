@@ -22,10 +22,12 @@ const options: Options = {
         'out',
         'README.md'
     ],
-    // whitelist of class names for unpredictable dynamics
-    fixedClasses: [],
-    // blacklist of class names to exclude accidentally captured
-    ignoredClasses: [], // or RegExp[]
+    classes: {
+        // whitelist of class names for unpredictable dynamics
+        fixed: [],
+        // blacklist of class names to exclude accidentally captured
+        ignored: []  // or RegExp[]
+    }
 }
 
 export declare type Source = {
@@ -34,12 +36,15 @@ export declare type Source = {
 }
 
 export interface Options extends TechorOptions<Config> {
+    output?: string,
     module?: string,
     sources?: FastGlobPattern[]
     include?: FastGlobPattern[]
     exclude?: FastGlobPattern[]
-    fixedClasses?: string[]
-    ignoredClasses?: string[] | RegExp[]
+    classes?: {
+        fixed?: string[]
+        ignored?: string[] | RegExp[]
+    }
 }
 
 export default options
