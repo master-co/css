@@ -22,15 +22,16 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
             ...compiler.options.resolve.alias,
             [this.options.module]: path.resolve(compiler.context, 'node_modules', this.options.module)
         }
+
         const virtualModules = new VirtualModulesPlugin({
-            ['node_modules/master.css']: ''
+            ['node_modules/' + this.options.module]: ''
         })
         virtualModules.apply(compiler)
 
         const updateCSS = () => {
             if (this.css)
                 virtualModules.writeModule(
-                    'node_modules/master.css',
+                    'node_modules/' + this.options.module,
                     (compiler.watchMode ? `/*${this.moduleHMREvent}*/` : '') + this.css.text
                 )
         }
