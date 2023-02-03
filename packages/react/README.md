@@ -77,7 +77,7 @@ Required `@master/css^2`
 Let's say `./src/main.js` is the file where you manage the Master CSS.
 ```ts
 import MasterCSS from '@master/css'
-import config from './master.css'
+import { config } from './master.css'
 export const css = new MasterCSS(config)
 ```
 
