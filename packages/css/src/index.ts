@@ -1,5 +1,6 @@
 // core
 export { default } from './css'
+export { default as MasterCSS } from './css'
 export { default as Rule } from './rule'
 
 // api

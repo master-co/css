@@ -1,5 +1,5 @@
 import { testCSS } from '../../src/utils/test-css'
-import config from '../../../../master.css.js'
+import { config } from '../../../../master.css.js'
 
 describe('@tve', () => {
     it('scope', () => {
