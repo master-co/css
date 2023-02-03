@@ -54,7 +54,8 @@
         "fast-glob": "^3.2.12",
         "minimatch": "^5.1.1",
         "stylelint": "^14.16.0",
-        "techor": "^1.0.5",
+        "techor": "^1.0.9",
+        "to-extend": "^1.5.0",
         "upath": "^2.0.1"
     }
 }

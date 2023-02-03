@@ -10,13 +10,16 @@ import minimatch from 'minimatch'
 import Techor from 'techor'
 import log, { chalk } from '@techor/log'
 import stylelint from 'stylelint'
+import extend from 'to-extend'
 
 export default class MasterCSSCompiler extends Techor<Options, Config> {
 
     constructor(
         options?: Options
     ) {
-        super(defaultOptions, options)
+        super(defaultOptions)
+
+        this.options = extend(this.options, this.readConfig(null)?.options, options)
     }
 
     css: MasterCSS
