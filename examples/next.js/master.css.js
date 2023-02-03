@@ -1,11 +1,19 @@
-module.exports = {
+const { MasterCSS } = require('@master/css')
+
+const config = {
     colors: {
         primary: {
             '': 'blue-50',
             code: '#777777',
             stage: {
                 '1': '#999999'
-            }
+            },
+            alpha: 'blue-50/.1',
+            rgb1: 'rgb(0, 0, 0)',
+            rgb2: 'rgb(0 0 0)',
+            rgb3: 'rgb(0 0 0/.5)',
+            rgb4: 'rgba(0,0,0,.5)',
+            '2': 'primary-rgb4/.7'
         },
         input: {
             '': '#123456'
@@ -91,8 +99,12 @@ module.exports = {
         }
     },
     semantics: {
-        show: 'display:block',
-        'hide-text': 'font-size:0px',
+        show: {
+            display: 'block'
+        },
+        'hide-text': {
+            'font-size': '0px'
+        },
         zero: {
             h: {
                 'height': 0
@@ -123,4 +135,9 @@ module.exports = {
         }
     },
     rootSize: 16
+}
+
+module.exports = {
+    config,
+    css: new MasterCSS(config)
 }
