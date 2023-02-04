@@ -1,7 +1,7 @@
 {
     "name": "@master/css",
     "scripts": {
-        "build": "aron pack",
+        "build": "aron pack --platform=node",
         "dev": "npm run build -- --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",
