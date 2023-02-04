@@ -1,4 +1,3 @@
-import MasterCSSCompiler from '@master/css-compiler'
 import chokidar from 'chokidar'
 import fs from 'fs'
 import fg from 'fast-glob'
@@ -6,8 +5,7 @@ import fg from 'fast-glob'
 export async function watch() {
     try {
         const { watch } = this.opts()
-
-        const compiler = new MasterCSSCompiler()
+        const compiler = new (await import('@master/css-compiler')).default()
         await compiler.init()
 
         const insert = (path: string) => compiler.insert(path, fs.readFileSync(path, { encoding: 'utf-8' }))
