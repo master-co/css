@@ -7,6 +7,8 @@ import {
     Scripts,
     ScrollRestoration,
 } from '@remix-run/react'
+import { MasterCSS } from '@master/css'
+import { useLayoutEffect } from 'react'
 
 export const meta: MetaFunction = () => ({
     charset: 'utf-8',
@@ -15,6 +17,9 @@ export const meta: MetaFunction = () => ({
 })
 
 export default function App() {
+    useLayoutEffect(() => {
+        new MasterCSS()
+    })
     return (
         <html lang="en">
             <head>
