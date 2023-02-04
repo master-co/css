@@ -14,14 +14,6 @@ import extend from 'to-extend'
 
 export default class MasterCSSCompiler extends Techor<Options, Config> {
 
-    constructor(
-        options?: Options
-    ) {
-        super(defaultOptions)
-
-        this.options = extend(this.options, this.readConfig(null)?.options, options)
-    }
-
     css: MasterCSS
     extractions = new Set<string>()
 
@@ -33,10 +25,20 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         return `HMR:${this.options.module}`
     }
 
-    async init() {
+    constructor(
+        options?: Options
+    ) {
+        super(defaultOptions, options)
+        const definition = this.readConfig(null)
+        this.options = extend(this.options, definition?.compilerOptions, options)
+        console.log('')
+        this.css = new MasterCSS(definition.config)
+    }
+
+    async refresh() {
         this.extractions.clear()
         console.log('')
-        this.css = new MasterCSS({ ...this.readConfig() })
+        this.css = new MasterCSS(this.readConfig())
         await this.compile()
         return this
     }
