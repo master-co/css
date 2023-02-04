@@ -53,6 +53,7 @@
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
+            "browser": "./dist/index.browser.js",
             "require": "./dist/index.cjs",
             "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
