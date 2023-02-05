@@ -56,7 +56,7 @@ export function generateFileSchema(
 
     // AOT
     if (aot) {
-        let options = `${moduleExports ? '' : 'export '}const options = {
+        let options = `${moduleExports ? '' : 'export '}const compilerOptions = {
     sources: [],
     classes: {
         // whitelist of class names for unpredictable dynamics
@@ -72,7 +72,7 @@ export function generateFileSchema(
             options = options.replace(/ =/, ': Options$&')
         }
         content.push(options)
-        exports['options'] = ''
+        exports['compilerOptions'] = ''
     }
 
     const importsEntries = Object.entries(imports)
