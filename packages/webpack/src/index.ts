@@ -38,7 +38,7 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
 
         /* update the Virtual CSS module after initialization */
         compiler.hooks.initialize.tap(NAME, async () => {
-            await this.init()
+            await this.compile()
             updateCSS()
         })
 
@@ -46,7 +46,7 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
             const { modifiedFiles } = compiler
             if (modifiedFiles) {
                 if (modifiedFiles.has(configPath)) {
-                    await this.init()
+                    await this.refresh()
                 } else {
                     modifiedFiles?.forEach(async (modifiedFilePath) => {
                         await this.insert(modifiedFilePath, fs.readFileSync(modifiedFilePath).toString())

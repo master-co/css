@@ -5,7 +5,7 @@ import upath from 'upath'
 import log from '@techor/log'
 
 export async function MasterCSSVitePlugin(options?: Options): Promise<Plugin> {
-    const compiler = await new MasterCSSCompiler(options).init()
+    const compiler = await new MasterCSSCompiler(options).compile()
     let server: ViteDevServer
     return {
         name: 'vite-plugin-master-css',
@@ -24,7 +24,7 @@ export async function MasterCSSVitePlugin(options?: Options): Promise<Plugin> {
         async handleHotUpdate({ server, file, read }) {
             if (upath.resolve(file) === compiler.resolvedConfigPath) {
                 /* 當自訂的 master.css.js 變更時，根據其重新初始化 MasterCSS 並強制重載瀏覽器 */
-                await compiler.init()
+                await compiler.refresh()
                 log.info`[change] config file ${`.${upath.relative(compiler.options.cwd, compiler.configPath)}.`}`
             } else {
                 /* 掃描 HMR 期異動的檔案 */

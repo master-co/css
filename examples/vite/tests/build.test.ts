@@ -6,8 +6,7 @@ import upath from 'upath'
 it('check if dist contains virtual:master.css result ( usually bundled with styles.css )', async () => {
     execSync('npm run build')
    
-    const compiler = new MasterCSSCompiler()
-    await compiler.init()
+    const compiler = await new MasterCSSCompiler().compile()
 
     expectFileIncludes(
         upath.join('..', 'dist', 'assets', 'index-*.css'),

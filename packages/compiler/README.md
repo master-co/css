@@ -65,7 +65,7 @@ npm install @master/css-compiler
 ```
 
 ```ts
-const compiler = await new MasterCSSCompiler().init()
+const compiler = await new MasterCSSCompiler()
 ```
 
 ## Options
@@ -103,8 +103,8 @@ const compiler = await new MasterCSSCompiler().init()
 ## Methods
 
 ```ts
-// Initialize the compiler and MasterCSS
-init(): this
+// Reload the compiler and MasterCSS
+refresh(): this
 ```
 
 ```ts

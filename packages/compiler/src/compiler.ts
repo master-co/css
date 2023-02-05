@@ -32,7 +32,7 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         const definition = this.readConfig(null)
         this.options = extend(this.options, definition?.compilerOptions, options)
         console.log('')
-        this.css = new MasterCSS(definition.config)
+        this.css = definition?.css ?? new MasterCSS(definition?.config)
     }
 
     async refresh() {
