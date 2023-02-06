@@ -1,8 +1,7 @@
 import MasterCSSCompiler from '@master/css-compiler'
 
 it('extract class names from entry HTML file ( like index.html, app.html )', async () => {
-    const compiler = new MasterCSSCompiler({ include: ['index.html'] })
-    await compiler.init()
+    const compiler = await new MasterCSSCompiler({ include: ['index.html'] }).compile()
 
     const result = Object.keys(compiler.css.ruleOfClass).join(' ')
     for (const className of [
@@ -18,8 +17,7 @@ it('extract class names from entry HTML file ( like index.html, app.html )', asy
 })
 
 it('extract class names from framework component file', async () => {
-    const compiler = new MasterCSSCompiler({ include: ['./src/main.ts'] })
-    await compiler.init()
+    const compiler = await new MasterCSSCompiler({ include: ['./src/main.ts'] }).compile()
 
     const result = Object.keys(compiler.css.ruleOfClass).join(' ')
     for (const className of [

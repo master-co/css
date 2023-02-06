@@ -5,8 +5,7 @@ import fg from 'fast-glob'
 export async function watch() {
     try {
         const { watch } = this.opts()
-        const compiler = new (await import('@master/css-compiler')).default()
-        await compiler.init()
+        const compiler = await new (await import('@master/css-compiler')).default().compile()
 
         const insert = (path: string) => compiler.insert(path, fs.readFileSync(path, { encoding: 'utf-8' }))
         const write = () => fs.writeFileSync(output, compiler.css.text)

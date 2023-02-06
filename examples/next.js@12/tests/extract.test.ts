@@ -4,7 +4,7 @@ import extract from '../../../packages/compiler/src/extract'
 import MasterCSSCompiler from '../../../packages/compiler/src/compiler'
 
 test('extract `btn` from `.tsx`', async () => {
-    const compiler = await new MasterCSSCompiler({ cwd: path.resolve(__dirname, '../') }).init()
+    const compiler = await new MasterCSSCompiler({ cwd: path.resolve(__dirname, '../') }).compile()
     expect(extract({
         name: 'test',
         content: readFileSync(path.join(__dirname, '../pages/index.tsx')).toString()
