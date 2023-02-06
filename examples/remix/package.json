@@ -1,4 +1,5 @@
 {
+  "name": "master-css-in-remix",
   "private": true,
   "sideEffects": false,
   "scripts": {
