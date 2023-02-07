@@ -11,6 +11,7 @@ import Rules from './rules'
 import Rule from '../rule'
 import override from './override'
 import observe from './observe'
+import important from './important'
 
 const config: Config = {
     colors,
@@ -24,7 +25,8 @@ const config: Config = {
     rootSize,
     scope,
     override,
-    observe
+    observe,
+    important
 }
 
 export default config
