@@ -14,7 +14,7 @@ export default class extends Rule {
                 ...declaration,
                 value: unit === 'rem'
                     ? value + diff + unit
-                    : `calc(${value}${unit} + ${diff}rem)`,
+                    : `calc(${value}${unit} + ${diff}em)`,
                 unit: ''
             }
         }
