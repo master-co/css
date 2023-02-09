@@ -1,6 +1,6 @@
 import Rule from '../rule'
 
-const diff = .5
+const diff = .75
 
 export default class extends Rule {
     static override id = 'TextSize' as const
