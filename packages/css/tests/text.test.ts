@@ -1,7 +1,8 @@
 import { testProp } from '../src/utils/test-css'
 
 test('text', () => {
-    testProp('text:20', 'font-size:1.25rem;line-height:2rem')
+    testProp('text:20', 'font-size:1.25rem;line-height:calc(1.25rem + 0.625em)')
+    testProp('text:50%', 'font-size:50%;line-height:calc(50% + 0.625em)')
 
     testProp('text:#fff', '-webkit-text-fill-color:#fff')
     testProp('text:current', '-webkit-text-fill-color:currentColor')

@@ -1,6 +1,6 @@
 import Rule from '../rule'
 
-const diff = .75
+const diff = .625
 
 export default class extends Rule {
     static override id = 'TextSize' as const
@@ -12,7 +12,7 @@ export default class extends Rule {
             'font-size': declaration,
             'line-height': {
                 ...declaration,
-                value: unit === 'rem'
+                value: unit === 'em'
                     ? value + diff + unit
                     : `calc(${value}${unit} + ${diff}em)`,
                 unit: ''
