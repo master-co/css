@@ -766,8 +766,8 @@ export default class MasterCSS extends MutationObserver {
             return
         }
 
-        const element = STYLE.cloneNode() as HTMLStyleElement
-        this.style.replaceWith(element)
+        const style = STYLE.cloneNode() as HTMLStyleElement
+        this.style.replaceWith(style)
         // @ts-ignore
         this.style = style
         this.rules.length = 0
