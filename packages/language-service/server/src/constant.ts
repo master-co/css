@@ -6,7 +6,7 @@ interface MasterCssKey {
     values: Array<string | CompletionItem>;
 }
 
-export const masterCssSelectors = [
+export const masterCSSSelectors = [
     { label: 'lang()', kind: CompletionItemKind.Function }, { label: 'has()', kind: CompletionItemKind.Function }, 'any-link', 'link', 'visited', 'target', 'scope', 'hover', 'active', 'focus', 'focus-visible', 'focus-within',
     'autofill', 'enabled', 'disabled', 'read-only', 'read-write', 'placeholder-shown', 'default', 'checked', 'indeterminate', 'valid', 'invalid', 'in-range',
     'out-of-range', 'required', 'optional', 'root', 'empty',
@@ -23,23 +23,23 @@ export const masterCssSelectors = [
     { label: 'where()', kind: CompletionItemKind.Function }
 ]
 
-export const masterCssElements = ['after', 'before', 'backdrop', 'cue', 'first-letter', 'first-line', 'file-selector-button', 'marker',
+export const masterCSSElements = ['after', 'before', 'backdrop', 'cue', 'first-letter', 'first-line', 'file-selector-button', 'marker',
     { label: 'part()', kind: CompletionItemKind.Function }, 'placeholder'
     , 'selection',
     { label: 'slotted()', kind: CompletionItemKind.Function }, 'resizer',
     'search-cancel-button', 'search-results-button'
 ]
 
-export const masterCssMedia = [
+export const masterCSSMedia = [
     'all', 'print', 'screen', 'portrait', 'landscape', 'motion', 'reduced-motion',
     { label: 'media()', kind: CompletionItemKind.Function }
 ]
 
-export const masterCssOtherKeys = [
+export const masterCSSOtherKeys = [
     'ext', 'gap', 'ont', 'ovf', 'quotes', 'bottom', 'center', 'left', 'middle', 'top', 'right', 'px', 'py', 'pt', 'pb', 'pl', 'pr', 'mx', 'my', 'mt', 'mb', 'ml', 'mr'
 ]
 
-export const masterCssCommonValues = [
+export const masterCSSCommonValues = [
     { label: 'var()', kind: CompletionItemKind.Function },
     { label: 'calc()', kind: CompletionItemKind.Function },
     'inherit',
@@ -47,7 +47,7 @@ export const masterCssCommonValues = [
     'unset'
 ]
 
-export const masterCssKeyValues: MasterCssKey[] = [
+export const masterCSSKeyValues: MasterCssKey[] = [
     {
         key: ['color', 'fg', 'foreground'],
         colorful: true,
@@ -1160,7 +1160,7 @@ export const masterCssKeyValues: MasterCssKey[] = [
     }
 ]
 
-export const masterCssType = [
+export const masterCSSType = [
     {
         type: 'color',
         values: ['#',
