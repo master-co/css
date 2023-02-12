@@ -224,9 +224,7 @@ export default class MasterCSS extends MutationObserver {
         })
 
         if (!this.config?.override) {
-            this.config = extend(defaultConfig, this.config)
-        } else {
-            this.config = defaultConfig
+            this.config = extend(defaultConfig, config)
         }
 
         this.cache()
@@ -758,7 +756,12 @@ export default class MasterCSS extends MutationObserver {
      * 根據蒐集到的所有 DOM class 重新 create
      */
     refresh(config: Config) {
-        // @ts-ignore
+        if (!this.config?.override) {
+            this.config = extend(defaultConfig, this.config)
+        } else {
+            this.config = defaultConfig
+        }
+
         this.config = config
         this.cache()
 
