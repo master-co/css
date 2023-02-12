@@ -756,13 +756,11 @@ export default class MasterCSS extends MutationObserver {
      * 根據蒐集到的所有 DOM class 重新 create
      */
     refresh(config: Config) {
-        if (!this.config?.override) {
-            this.config = extend(defaultConfig, this.config)
+        if (!config?.override) {
+            this.config = extend(defaultConfig, config)
         } else {
-            this.config = defaultConfig
+            this.config = config
         }
-
-        this.config = config
         this.cache()
 
         if (!this.style) {

@@ -27,3 +27,8 @@ test('css count class complicated example', async () => {
     await delay()
     expect(css.countOfClass).toEqual({})
 })
+
+test('refresh', async () => {
+    const css = new MasterCSS()
+    css.refresh({})
+})
