@@ -62,7 +62,7 @@ export default class extends Rule {
         let currentName = ''
         const addName = () => {
             if (currentName) {
-                names.push(currentName)
+                names.push(currentName.replace(/ /g, ''))
                 currentName = ''
             }
         }
