@@ -61,13 +61,22 @@
     "files": [
         "dist"
     ],
+    "bin": {
+        "mcss": "./dist/bin/index.js",
+        "mastercss": "./dist/bin/index.js"
+    },
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
         "@master/keyframes.css": "",
         "@master/normal.css": "",
-        "@master/css-cli": ""
+        "@master/css-cli": "",
+        "chokidar": "^3.5.3",
+        "commander": "^10.0.0",
+        "fast-glob": "^3.2.12",
+        "fs-extra": "^11.1.0",
+        "ts-dedent": "^2.2.0"
     },
     "devDependencies": {
         "to-extend": "^1.4.6"

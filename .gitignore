@@ -12,6 +12,8 @@
 **/*node_modules
 **/*.turbo
 **/*out
+**/*master.css
+packages/css/**/*master.css.*
 
 # Only exists if Bazel was run
 /bazel-out

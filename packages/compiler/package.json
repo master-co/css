@@ -1,7 +1,7 @@
 {
     "name": "@master/css-compiler",
     "scripts": {
-        "build": "aron pack --platform=node",
+        "build": "aron pack src/index.ts src/index.default.ts --platform=node",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
         "test": "jest"
@@ -38,8 +38,14 @@
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/index.cjs",
-            "import": "./dist/index.mjs",
+            "require": {
+                "node": "./dist/index.cjs",
+                "default": "./dist/index.default.cjs"
+            },
+            "import": {
+                "node": "./dist/index.mjs",
+                "default": "./dist/index.default.mjs"
+            },
             "types": "./dist/index.d.ts"
         }
     },
