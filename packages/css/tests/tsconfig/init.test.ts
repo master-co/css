@@ -2,7 +2,7 @@ import { execSync } from 'child_process'
 import dedent from 'dedent'
 
 it('init (with tsconfig.json)', () => {
-    const defintion = execSync('node ../../dist/bin/index.cjs init', { cwd: __dirname }).toString()
+    const defintion = execSync('node ../../dist/bin/index init', { cwd: __dirname }).toString()
     expect(defintion).toEqual(dedent`
         import { Config } from '@master/css'
 
@@ -20,7 +20,7 @@ it('init (with tsconfig.json)', () => {
 })
 
 it('init --jit (with tsconfig.json)', () => {
-    const defintion = execSync('node ../../dist/bin/index.cjs init --jit', { cwd: __dirname }).toString()
+    const defintion = execSync('node ../../dist/bin/index init --jit', { cwd: __dirname }).toString()
     expect(defintion).toEqual(dedent`
         import MasterCSS, { Config } from '@master/css'
 
@@ -40,7 +40,7 @@ it('init --jit (with tsconfig.json)', () => {
 })
 
 it('init --compiler (with tsconfig.json)', () => {
-    const defintion = execSync('node ../../dist/bin/index.cjs init --compiler', { cwd: __dirname }).toString()
+    const defintion = execSync('node ../../dist/bin/index init --compiler', { cwd: __dirname }).toString()
     expect(defintion).toEqual(dedent`
         import { Config } from '@master/css'
         import { Options } from '@master/css-compiler'
@@ -67,7 +67,7 @@ it('init --compiler (with tsconfig.json)', () => {
 })
 
 it('init --jit --compiler (with tsconfig.json)', () => {
-    const defintion = execSync('node ../../dist/bin/index.cjs init --jit --compiler', { cwd: __dirname }).toString()
+    const defintion = execSync('node ../../dist/bin/index init --jit --compiler', { cwd: __dirname }).toString()
     expect(defintion).toEqual(dedent`
         import MasterCSS, { Config } from '@master/css'
         import { Options } from '@master/css-compiler'

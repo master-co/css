@@ -1,7 +1,7 @@
 {
     "name": "@master/css-compiler",
     "scripts": {
-        "build": "aron pack src/index.ts src/index.default.ts --platform=node",
+        "build": "aron pack",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
         "test": "jest"
@@ -40,7 +40,7 @@
         ".": {
             "require": {
                 "node": "./dist/index.cjs",
-                "default": "./dist/index.default.cjs"
+                "default": "./dist/index.default.js"
             },
             "import": {
                 "node": "./dist/index.mjs",

@@ -1,7 +1,7 @@
 {
     "name": "@master/css",
     "scripts": {
-        "build": "aron pack --platform=node",
+        "build": "aron pack --extra-external @master/css-compiler",
         "dev": "npm run build -- --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",
@@ -41,9 +41,7 @@
         "mastercss"
     ],
     "sideEffects": [
-        "./src/polyfills/css-escape.ts",
-        "./src/cli/commands/index.ts",
-        "./src/cli/commands/init.ts"
+        "./src/polyfills/css-escape.ts"
     ],
     "main": "./dist/index.cjs",
     "jsnext:main": "./dist/index.mjs",
@@ -71,7 +69,6 @@
     "dependencies": {
         "@master/keyframes.css": "",
         "@master/normal.css": "",
-        "@master/css-cli": "",
         "chokidar": "^3.5.3",
         "commander": "^10.0.0",
         "fast-glob": "^3.2.12",

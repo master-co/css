@@ -1,5 +1,5 @@
 import { Config } from '../config'
-import render from '../apis/render'
+import render from '../methods/render'
 
 export const testCSS = (cls: string, expected: string, config?: Config): void => {
     expect(render(cls.split(' '), config)).toBe(expected)

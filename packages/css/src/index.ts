@@ -3,12 +3,13 @@ export { default } from './css'
 export { default as MasterCSS } from './css'
 export { default as Rule } from './rule'
 
-// api
+// methods
 export { default as extend } from 'to-extend'
-export { default as render } from './apis/render'
-export { default as renderFromHTML } from './apis/render-from-html'
-export { default as renderIntoHTML } from './apis/render-into-html'
-export { default as fillColorScale } from './apis/fill-color-scale'
+export { default as render } from './methods/render'
+export { default as renderFromHTML } from './methods/render-from-html'
+export { default as renderIntoHTML } from './methods/render-into-html'
+export { default as fillColorScale } from './methods/fill-color-scale'
+export { default as defineContent } from './methods/define-content'
 
 // config
 export { default as config } from './config'
@@ -21,9 +22,6 @@ export { default as themes } from './config/themes'
 export { default as scheme } from './config/scheme'
 export { default as values } from './config/values'
 export { default as Rules } from './config/rules'
-
-// other
-export const root: Document = typeof document !== 'undefined' && document
 
 // type
 export type { Config } from './config'
