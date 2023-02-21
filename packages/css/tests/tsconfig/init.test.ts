@@ -1,96 +1,105 @@
 import { execSync } from 'child_process'
 import dedent from 'dedent'
+import { expectFileIncludes } from '../../../../utils/expect-file-includes'
 
 it('init (with tsconfig.json)', () => {
-    const defintion = execSync('node ../../dist/bin/index init', { cwd: __dirname }).toString()
-    expect(defintion).toEqual(dedent`
-        import { Config } from '@master/css'
+    execSync('node ../../dist/bin/index init -o', { cwd: __dirname }).toString()
+    expectFileIncludes('master.css.ts', [
+        dedent`
+            import { Config } from '@master/css'
 
-        export const config: Config = {
-            themes: {},
-            colors: {},
-            classes: {},
-            values: {},
-            semantics: {},
-            breakpoints: {},
-            selectors: {},
-            mediaQueries: {}
-        }\n
-    `)
+            export const config: Config = {
+                themes: {},
+                colors: {},
+                classes: {},
+                values: {},
+                semantics: {},
+                breakpoints: {},
+                selectors: {},
+                mediaQueries: {}
+            }\n
+        `
+    ])
 })
 
 it('init --jit (with tsconfig.json)', () => {
-    const defintion = execSync('node ../../dist/bin/index init --jit', { cwd: __dirname }).toString()
-    expect(defintion).toEqual(dedent`
-        import MasterCSS, { Config } from '@master/css'
+    execSync('node ../../dist/bin/index init --jit -o', { cwd: __dirname }).toString()
+    expectFileIncludes('master.css.ts', [
+        dedent`
+            import MasterCSS, { Config } from '@master/css'
 
-        export const config: Config = {
-            themes: {},
-            colors: {},
-            classes: {},
-            values: {},
-            semantics: {},
-            breakpoints: {},
-            selectors: {},
-            mediaQueries: {}
-        }
+            export const config: Config = {
+                themes: {},
+                colors: {},
+                classes: {},
+                values: {},
+                semantics: {},
+                breakpoints: {},
+                selectors: {},
+                mediaQueries: {}
+            }
 
-        export const css = new MasterCSS(config)\n
-    `)
+            export const css = new MasterCSS(config)\n
+        `
+    ])
 })
 
 it('init --compiler (with tsconfig.json)', () => {
-    const defintion = execSync('node ../../dist/bin/index init --compiler', { cwd: __dirname }).toString()
-    expect(defintion).toEqual(dedent`
-        import { Config } from '@master/css'
-        import { Options } from '@master/css-compiler'
+    execSync('node ../../dist/bin/index init --compiler -o', { cwd: __dirname }).toString()
+    expectFileIncludes('master.css.ts', [
+        dedent`
+            import { Config } from '@master/css'
+            import { Options } from '@master/css-compiler'
 
-        export const config: Config = {
-            themes: {},
-            colors: {},
-            classes: {},
-            values: {},
-            semantics: {},
-            breakpoints: {},
-            selectors: {},
-            mediaQueries: {}
-        }
-
-        export const compilerOptions: Options = {
-            sources: [],
-            classes: {
-                fixed: [],
-                ignored: []
+            export const config: Config = {
+                themes: {},
+                colors: {},
+                classes: {},
+                values: {},
+                semantics: {},
+                breakpoints: {},
+                selectors: {},
+                mediaQueries: {}
             }
-        }\n
-    `)
+
+            export const compilerOptions: Options = {
+                sources: [],
+                classes: {
+                    fixed: [],
+                    ignored: []
+                }
+            }\n
+        `
+    ])
 })
 
 it('init --jit --compiler (with tsconfig.json)', () => {
-    const defintion = execSync('node ../../dist/bin/index init --jit --compiler', { cwd: __dirname }).toString()
-    expect(defintion).toEqual(dedent`
-        import MasterCSS, { Config } from '@master/css'
-        import { Options } from '@master/css-compiler'
+    execSync('node ../../dist/bin/index init --jit --compiler -o', { cwd: __dirname }).toString()
+    expectFileIncludes('master.css.ts', [
+        dedent`
+            import MasterCSS, { Config } from '@master/css'
+            import { Options } from '@master/css-compiler'
 
-        export const config: Config = {
-            themes: {},
-            colors: {},
-            classes: {},
-            values: {},
-            semantics: {},
-            breakpoints: {},
-            selectors: {},
-            mediaQueries: {}
-        }
-
-        export const compilerOptions: Options = {
-            sources: [],
-            classes: {
-                fixed: [],
-                ignored: []
+            export const config: Config = {
+                themes: {},
+                colors: {},
+                classes: {},
+                values: {},
+                semantics: {},
+                breakpoints: {},
+                selectors: {},
+                mediaQueries: {}
             }
-        }
 
-        export const css = new MasterCSS(config)\n
-    `)
+            export const compilerOptions: Options = {
+                sources: [],
+                classes: {
+                    fixed: [],
+                    ignored: []
+                }
+            }
+
+            export const css = new MasterCSS(config)\n
+        `
+    ])
 })

@@ -8,12 +8,14 @@ import chokidar from 'chokidar'
 import fs from 'fs'
 import fg from 'fast-glob'
 import defineContent from '../methods/define-content'
+import log from '@techor/log'
 
 program.command('init')
     .description('Create a Master CSS definition file with configuration')
     .allowUnknownOption()
     .option('--jit', 'With initialization of the just-in-time program')
     .option('-c, --compiler', 'With compiler options')
+    .option('-o, --override', 'Override the existing definition file')
     .option('--ext <extension>', 'Definition extension `ts`, `js`, `mjs`')
     .action(function (options) {
         let { ext } = options
@@ -30,14 +32,23 @@ program.command('init')
             }
         }
         const definition = defineContent({ ...options, ext })
-        fs.writeFileSync(`master.css.${ext}`, definition)
-        process.stdout.write(definition)
+        const fileName = `master.css.${ext}`
+        const definitionExists = fs.existsSync(path.join(process.cwd(), fileName))
+        if (!definitionExists) {
+            fs.writeFileSync(fileName, definition)
+            log.ok`**${fileName}** definition file is created`
+        } else if (definitionExists && options.override) {
+            fs.writeFileSync(fileName, definition)
+            log.ok`**${fileName}** definition file is overridden`
+        } else {
+            log.x`**${fileName}** definition file already exists`
+        }
     })
 
 program.command('build', { isDefault: true })
     .allowUnknownOption()
     .option('-w, --watch', 'Watch file changed and generate CSS rules.')
-    .option('-o, --output <path>', 'Specific your master CSS file output path', 'master.css')
+    .option('-o, --output <path>', 'Specify your master CSS file output path', 'master.css')
     .action(async function ({ watch, output }) {
         console.log(watch, output)
         // @ts-ignore

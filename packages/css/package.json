@@ -69,6 +69,7 @@
     "dependencies": {
         "@master/keyframes.css": "",
         "@master/normal.css": "",
+        "@techor/log": "^1.0.10",
         "chokidar": "^3.5.3",
         "commander": "^10.0.0",
         "fast-glob": "^3.2.12",
