@@ -30,6 +30,7 @@
             "outputs": []
         },
         "type-check": {
+            "cache": false,
             "outputs": [
                 "dist/**"
             ]
