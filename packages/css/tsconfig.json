@@ -2,13 +2,12 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "baseUrl": ".",
-        "outDir": "dist",
+        "composite": true
     },
     "include": [
         "src/**/*"
     ],
     "exclude": [
-        "src/**/*.test.ts",
-        "dist"
+        "src/**/*.test.*"
     ]
 }

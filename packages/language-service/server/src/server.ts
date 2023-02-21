@@ -23,7 +23,7 @@ import minimatch from 'minimatch'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { GetLastInstance, GetCompletionItem } from './completionProvider'
 import { doHover } from './hoverProvider'
-import { PositionCheck } from './masterCSS'
+import { PositionCheck } from './positionCheck'
 import { GetDocumentColors, GetColorPresentation, GetColorRender } from './documentColorProvider'
 
 
