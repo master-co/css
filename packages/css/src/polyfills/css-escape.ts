@@ -1,6 +1,6 @@
-const root = typeof global != 'undefined' ? global : window
+const rootTarget = typeof global != 'undefined' ? global : window
 
-if (!root.CSS && !root.CSS?.escape) {
+if (!rootTarget.CSS && !rootTarget.CSS?.escape) {
 
     // https://drafts.csswg.org/cssom/#serialize-an-identifier
     const cssEscape = function (value) {
@@ -79,10 +79,10 @@ if (!root.CSS && !root.CSS?.escape) {
         return result
     }
 
-    if (!root.CSS) {
-        (root as any).CSS = {}
+    if (!rootTarget.CSS) {
+        (rootTarget as any).CSS = {}
     }
 
-    root.CSS.escape = cssEscape
+    rootTarget.CSS.escape = cssEscape
 
 }
