@@ -6,7 +6,6 @@ import { readPackage } from '../utils/read-package'
 
 import chokidar from 'chokidar'
 import fs from 'fs'
-import fg from 'fast-glob'
 import defineContent from '../methods/define-content'
 import log from '@techor/log'
 
@@ -58,22 +57,60 @@ program.command('build', { isDefault: true })
         console.log('')
         log`[sources] ${sources}`
         if (watch) {
-            const handle = (path: string) => {
+            const watchers: chokidar.FSWatcher[] = []
+            const reload = async () => {
+                const { include, exclude, sources } = compiler.options
+                if (include?.length) {
+                    waching(chokidar.watch(include, {
+                        ignored: exclude,
+                        ignoreInitial: true
+                    }))
+                }
+                if (sources?.length) {
+                    waching(chokidar.watch(sources, {
+                        ignoreInitial: true
+                    }))
+                }
+
+                write()
+
+                log.tree(compiler.options)
+            }
+            const handle = async (path: string) => {
                 insert(path)
                 write()
             }
             const waching = (watcher: chokidar.FSWatcher) => {
-                watcher
-                    .on('add', handle)
-                    .on('change', handle)
+                watchers.push(
+                    watcher
+                        .on('add', handle)
+                        .on('change', handle)
+                )
             }
-            waching(chokidar.watch(sources))
+
+            await reload()
+
             console.log('')
             log.t`Start watching source changes`
             log.tree(compiler.options)
+
+            const reloadConfig = async () => {
+                await Promise.all(watchers.map(eachWatcher => eachWatcher.close()))
+
+                watchers.length = 0
+
+                await compiler.refresh()
+
+                await reload()
+            }
+            chokidar
+                .watch([compiler.resolvedConfigPath], {
+                    ignoreInitial: true
+                })
+                .on('add', reloadConfig)
+                .on('change', reloadConfig)
+                .on('unlink', reloadConfig)
         } else {
-            const filePaths = fg.sync(compiler.sources)
-            filePaths.forEach(insert)
             write()
         }
     })
