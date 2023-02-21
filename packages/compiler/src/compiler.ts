@@ -28,11 +28,11 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
     }
 
     constructor(
-        options?: Options
+        protected customOptions?: Options
     ) {
-        super(defaultOptions, options)
+        super(defaultOptions, customOptions)
         const definition = this.readConfig(null)
-        this.options = extend(this.options, definition?.compilerOptions, options)
+        this.options = extend(this.options, definition?.compilerOptions, customOptions)
         this.css = definition?.css ?? new MasterCSS(definition?.config)
     }
 
@@ -41,7 +41,9 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         this.validExtractions.clear()
         this.invalidExtractions.clear()
         console.log('')
-        this.css = new MasterCSS(this.readConfig())
+        const definition = this.readConfig(null)
+        this.css = new MasterCSS(definition?.config)
+        this.options = extend({ cwd: this.options.cwd }, defaultOptions, definition?.compilerOptions, this.customOptions)
         await this.compile()
         return this
     }
