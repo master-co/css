@@ -50,11 +50,13 @@ program.command('build', { isDefault: true })
     .option('-w, --watch', 'Watch file changed and generate CSS rules.')
     .option('-o, --output <path>', 'Specify your master CSS file output path', 'master.css')
     .action(async function ({ watch, output }) {
-        console.log(watch, output)
         // @ts-ignore
         const compiler = await new (await import('@master/css-compiler')).default().compile()
         const insert = (path: string) => compiler.insert(path, fs.readFileSync(path, { encoding: 'utf-8' }))
         const write = () => fs.writeFileSync(output, compiler.css.text)
+        const sources = compiler.sources
+        console.log('')
+        log`[sources] ${sources}`
         if (watch) {
             const handle = (path: string) => {
                 insert(path)
@@ -65,9 +67,10 @@ program.command('build', { isDefault: true })
                     .on('add', handle)
                     .on('change', handle)
             }
-            waching(
-                chokidar.watch(compiler.sources)
-            )
+            waching(chokidar.watch(sources))
+            console.log('')
+            log.t`Start watching source changes`
+            log.tree(compiler.options)
         } else {
             const filePaths = fg.sync(compiler.sources)
             filePaths.forEach(insert)
