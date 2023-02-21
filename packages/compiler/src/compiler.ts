@@ -16,6 +16,8 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
 
     css: MasterCSS
     extractions = new Set<string>()
+    validExtractions = new Set<string>()
+    invalidExtractions = new Set<string>()
 
     get resolvedModuleId() {
         return '\0' + this.options.module
@@ -36,6 +38,8 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
 
     async refresh() {
         this.extractions.clear()
+        this.validExtractions.clear()
+        this.invalidExtractions.clear()
         console.log('')
         this.css = new MasterCSS(this.readConfig())
         await this.compile()
@@ -79,9 +83,39 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
 
     async insert(name: string, content: string): Promise<boolean> {
         let extractions = this.extract(name, content)
+
         if (!extractions.length) {
             return false
         }
+
+        /**
+         * 排除已驗證為 invalid 的 extraction
+         */
+        if (this.invalidExtractions.size) {
+            extractions = extractions.filter((eachExtraction) => !this.invalidExtractions.has(eachExtraction))
+        }
+
+        /**
+         * 排除已驗證為 valid 的 extraction
+         * TODO: 未來如果有加入清除機制，需注意意外排除掉之前已驗證過為 valid 的 extraction
+         */
+        if (this.validExtractions.size) {
+            extractions = extractions.filter((eachExtraction) => !this.validExtractions.has(eachExtraction))
+        }
+
+        /* 排除指定的 class */
+        if (this.options.classes?.ignored?.length)
+            extractions = extractions.filter((eachExtraction) => {
+                for (const eachIgnoreClass of this.options.classes.ignored) {
+                    if (typeof eachIgnoreClass === 'string') {
+                        if (eachIgnoreClass === eachExtraction) return false
+                    } else if (eachIgnoreClass.test(eachExtraction)) {
+                        return false
+                    }
+                }
+                return true
+            })
+
         const p1 = performance.now()
         /* 根據類名尋找並插入規則 ( MasterCSS 本身帶有快取機制，重複的類名不會再編譯及產生 ) */
         const validExtractions = []
@@ -93,6 +127,9 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
                     if (validRules.length) {
                         this.css.insertRules(validRules)
                         validExtractions.push(eachExtraction)
+                        this.validExtractions.add(eachExtraction)
+                    } else {
+                        this.invalidExtractions.add(eachExtraction)
                     }
                 })
         )
@@ -114,19 +151,6 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
             log`[virtual] ${this.css.rules.length} total ${chalk.gray('in')} ${this.options.module}`
         }
 
-        /* 排除指定的 class */
-        if (this.options.classes?.ignored?.length)
-            extractions = extractions.filter((eachExtraction) => {
-                for (const eachIgnoreClass of this.options.classes.ignored) {
-                    if (typeof eachIgnoreClass === 'string') {
-                        if (eachIgnoreClass === eachExtraction) return false
-                    } else if (eachIgnoreClass.test(eachExtraction)) {
-                        return false
-                    }
-                }
-                return true
-            })
-
         return true
     }
 
@@ -134,10 +158,10 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         /**
          * 藉由 stylelint 驗證 CSS 規則是否合法，因 AOT 的提取物較不可靠
          */
-        return (await Promise.all(
+        const validRules = (await Promise.all(
             this.css.create(extraction)
-                .map(async (eachRule: Rule) =>
-                    (await stylelint.lint({
+                .map(async (eachRule: Rule) => {
+                    const isValid = (await stylelint.lint({
                         code: eachRule.text,
                         cache: false,
                         config: {
@@ -155,11 +179,12 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
                             }
                         }
                     })).errored
-                        ? null
-                        : eachRule
-                )
+                    return isValid ? null : eachRule
+                })
         ))
             .filter((eachRule) => eachRule)
+
+        return validRules
     }
 
     get sources(): string[] {
