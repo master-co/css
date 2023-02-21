@@ -16,12 +16,14 @@ const options: Options = {
         '**/node_modules/**',
         '**/*.d.ts',
         '**/*.test.*',
+        '**/*.config.*',
         'node_modules',
-        'master.css.{js,ts,mjs,cjs}',
+        'master.css.*',
         'dist',
         'out',
-        'README.md',
-        'public'
+        'styles',
+        'public',
+        'README.md'
     ],
     classes: {
         // whitelist of class names for unpredictable dynamics

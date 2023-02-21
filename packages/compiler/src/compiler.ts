@@ -31,7 +31,6 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         super(defaultOptions, options)
         const definition = this.readConfig(null)
         this.options = extend(this.options, definition?.compilerOptions, options)
-        console.log('')
         this.css = definition?.css ?? new MasterCSS(definition?.config)
     }
 
@@ -102,7 +101,7 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
 
         if (extractions.length) {
             console.log('')
-            log`**${upath.relative(this.options.cwd, name)}** ..${upath.resolve(this.options.cwd, name)}..`
+            log`**${upath.relative(this.options.cwd, name)}**`
             log`[extract] ${extractions.length} potential`
         }
 
