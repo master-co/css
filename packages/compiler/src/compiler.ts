@@ -145,7 +145,7 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
         if (this.css.rules.length) {
             const excludedClasses = validExtractions.filter((eachValidExtraction) => !extractions.includes(eachValidExtraction))
             if (excludedClasses.length) {
-                log`[exclude] ${excludedClasses.length} unknow ${excludedClasses}`
+                log`[exclude] ${excludedClasses.length} unknown ${excludedClasses}`
             }
             log`[compile] +${validExtractions.length}+ valid inserted ${chalk.gray('in')} ${spent}ms ${validExtractions}`
             log`[virtual] ${this.css.rules.length} total ${chalk.gray('in')} ${this.options.module}`
