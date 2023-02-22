@@ -21,7 +21,7 @@ it('extract class names from framework component file', async () => {
 
     const result = Object.keys(compiler.css.ruleOfClass).join(' ')
     for (const className of [
-        '~transform|.3s', 
+        '~transform|.3s',
         'translateY(-5):hover'
     ]) {
         expect(result).toContain(className)

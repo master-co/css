@@ -6,7 +6,7 @@
         "build": "next build",
         "start": "next start -p 3200",
         "lint": "next lint",
-        "test": "jest"
+        "test": "jest --env node"
     },
     "dependencies": {
         "next": "12.3.1",

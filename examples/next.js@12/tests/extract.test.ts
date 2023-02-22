@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 import path from 'path'
 import extract from '../../../packages/compiler/src/extract'
-import MasterCSSCompiler from '../../../packages/compiler/src/compiler'
+import MasterCSSCompiler from '@master/css-compiler'
 
 test('extract `btn` from `.tsx`', async () => {
     const compiler = await new MasterCSSCompiler({ cwd: path.resolve(__dirname, '../') }).compile()

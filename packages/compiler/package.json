@@ -38,13 +38,13 @@
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "require": {
-                "node": "./dist/index.cjs",
-                "default": "./dist/index.default.js"
+            "node": {
+                "require": "./dist/index.cjs",
+                "import": "./dist/index.mjs"
             },
-            "import": {
-                "node": "./dist/index.mjs",
-                "default": "./dist/index.default.mjs"
+            "default": {
+                "require": "./dist/index.default.js",
+                "import": "./dist/index.default.mjs"
             },
             "types": "./dist/index.d.ts"
         }
