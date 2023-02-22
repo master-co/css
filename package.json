@@ -9,7 +9,7 @@
         "lint": "turbo run lint --parallel --filter=./packages/**/*",
         "type-check": "turbo run type-check --parallel --filter=./packages/**/*",
         "commit-check": "commitlint --from=HEAD~1 --verbose",
-        "dev": "turbo run dev --filter=./packages/**/*",
+        "dev": "turbo run dev --filter=./packages/**/* --force",
         "clean:dist": "rm -rf ./packages/**/*dist",
         "clean:node": "rm -rf ./{examples,packages}/**/*node_modules"
     },
@@ -23,11 +23,12 @@
     ],
     "devDependencies": {
         "aron-web-jest": "^1.1.1",
-        "aronrepo": "^1.1.1",
+        "aronrepo": "^1.2.1",
         "dedent": "^0.7.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
         "jest-puppeteer": "^6.2.0",
+        "strip-ansi": "^7.0.1",
         "upath": "^2.0.1"
     },
     "engines": {

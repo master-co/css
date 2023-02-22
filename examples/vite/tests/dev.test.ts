@@ -2,6 +2,7 @@ import { ChildProcess, exec, execSync } from 'child_process'
 import puppeteer, { Browser, Page } from 'puppeteer'
 import fs from 'fs'
 import path from 'path'
+import stripAnsi from 'strip-ansi'
 
 const configRegexp = /(classes:.*?)[a-z0-9]+/s
 
@@ -14,9 +15,8 @@ beforeAll((done) => {
     childProcess = exec('npm run dev')
 
     childProcess.stdout?.on('data', async data => {
-        const message = data.toString()
-        const result = /(http:\/\/localhost:).*?(?:\[1m)?([0-9]+)/.exec(message)
-        console.log('🔴', message, result)
+        const message = stripAnsi(data.toString())
+        const result = /(http:\/\/localhost:).*?([0-9]+)/.exec(message)
         if (result) {
             browser = await puppeteer.launch()
             page = await browser.newPage()
