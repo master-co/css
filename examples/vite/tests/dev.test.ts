@@ -15,12 +15,15 @@ beforeAll((done) => {
 
     childProcess.stdout?.on('data', async data => {
         const message = data.toString()
-        const result = /(http:\/\/localhost:).*?\[1m([0-9]+)/.exec(message)
+        const result = /(http:\/\/localhost:).*?(?:\[1m)?([0-9]+)/.exec(message)
+        console.log('🔴', message, result)
         if (result) {
             browser = await puppeteer.launch()
             page = await browser.newPage()
             await page.goto(result[1] + result[2])
-            done()
+            setTimeout(() => {
+                done()
+            })
         }
     })
 }, 20000)
