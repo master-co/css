@@ -1,3 +1,5 @@
 {
-    "type": "module"
+    "name": "css-test-module",
+    "type": "module",
+    "private": true
 }
