@@ -74,7 +74,7 @@ const compiler = await new MasterCSSCompiler()
     // specify virtual CSS module id (e.g. virtual:master.css)
     module: 'master.css',
     // specify config file path or set `Config`
-    config: 'master.css.{ts,js,mjs,cjs}',
+    config: 'master.css.*',
     // forcibly specify sources for scanning, not excluded by `options.exclude`
     sources: [],
     // specify sources for scanning
