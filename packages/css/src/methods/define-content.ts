@@ -4,7 +4,7 @@ export default function defineContent({ compiler, jit, ext }: {
     compiler?: boolean
     jit?: boolean
     ext?: string
-}) {
+} = {}) {
     const typed = ext === 'ts'
     const cjs = ext === 'js'
     const typeSyntax = ext !== 'ts'
