@@ -695,15 +695,16 @@ export default class MasterCSS extends MutationObserver {
         this.ruleOfClass = {}
         // @ts-ignore
         this.countOfClass = {}
-
         this.rules.length = 0
-
         const sheet = this.style.sheet
         if (sheet) {
             for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
                 sheet.deleteRule(i)
             }
         }
+        this.style.remove()
+        // @ts-ignore
+        this.style = null
     }
 
     /**
@@ -788,7 +789,6 @@ export default class MasterCSS extends MutationObserver {
         const instances = MasterCSS.instances
         this.disconnect()
         instances.splice(instances.indexOf(this), 1)
-        this.style.remove()
         this.removeSchemeListener()
     }
 
