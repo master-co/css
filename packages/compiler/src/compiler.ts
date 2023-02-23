@@ -18,6 +18,8 @@ export default class MasterCSSCompiler extends Techor<Options, Config> {
     extractions = new Set<string>()
     validExtractions = new Set<string>()
     invalidExtractions = new Set<string>()
+    logConfigFound = (configPath: string) => log.ok`**${configPath}** definition file found`
+    logConfigNotFound = (configPath: string) => log.i`No **${configPath}** definition file found`
 
     get resolvedModuleId() {
         return '\0' + this.options.module
