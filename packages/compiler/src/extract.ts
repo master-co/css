@@ -129,7 +129,7 @@ const needExclude = (content: string, reservedWord: string[]) => {
         || content.match(/<\w+>|<\/\w+>/)
         || content.match(/;$/)
         || content.match(/^\w+:\/\//)
-        || content.match(/^@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer)$/)
+        || content.match(/^@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer|[^/]+\/.*)$/)
         || content.match(/^~\/.+.\w+$/)
         || content.match(/function\(|\(.*\)=>/)
 }
