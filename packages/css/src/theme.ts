@@ -5,11 +5,12 @@ export const defaultThemeConfig: ThemeConfig = {
 }
 
 export declare type ThemeValue = 'dark' | 'light' | 'system' | string
+const isBrowser = typeof window !== 'undefined'
 
 export default class Theme {
 
     // 按照系統的主題切換，目前只支援 light dark
-    private darkMQL: MediaQueryList = window.matchMedia('(prefers-color-scheme:dark)')
+    private darkMQL: MediaQueryList = isBrowser ? window.matchMedia?.('(prefers-color-scheme:dark)') : undefined
 
     constructor(
         public host = typeof document !== 'undefined' ? document.documentElement : null,
@@ -37,8 +38,8 @@ export default class Theme {
         if (value !== this.value) {
             let current: string
             if (value === 'system') {
-                this.darkMQL.addEventListener('change', this.onThemeChange)
-                current = this.darkMQL.matches ? 'dark' : 'light'
+                this.darkMQL?.addEventListener?.('change', this.onThemeChange)
+                current = this.darkMQL?.matches ? 'dark' : 'light'
             } else {
                 this.removeDarkMQLListener()
                 current = value
@@ -63,9 +64,9 @@ export default class Theme {
     }
 
     syncWithStorage() {
-        if (this.options.store) {
+        if (isBrowser && this.options.store) {
             let storage = this.storage
-            if (storage === 'system' && (storage = window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light') || storage) {
+            if (storage === 'system' && (storage = this.darkMQL?.matches ? 'dark' : 'light') || storage) {
                 this.host.classList.add(storage)
                 this.host.style.colorScheme = storage
                 this.set(storage, { emit: false, store: false })
@@ -74,7 +75,7 @@ export default class Theme {
     }
 
     private removeDarkMQLListener() {
-        this.darkMQL.removeEventListener('change', this.onThemeChange)
+        this.darkMQL?.removeEventListener('change', this.onThemeChange)
     }
 
     private onThemeChange = (mediaQueryList: MediaQueryListEvent) => {
@@ -82,7 +83,7 @@ export default class Theme {
     }
 
     destroy() {
-        this.darkMQL.removeEventListener('change', this.onThemeChange)
+        this.darkMQL?.removeEventListener('change', this.onThemeChange)
     }
 }
 

@@ -1,3 +1,4 @@
+import '../../../../utils/matchMedia.mock'
 import { Config } from '../config'
 import render from '../methods/render'
 
