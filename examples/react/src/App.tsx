@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
+import ThemeSelect from './components/ThemeSelect'
+import { useTheme } from '@master/css.react'
 
 function App() {
     const [count, setCount] = useState(0)
+    const theme = useTheme()
 
     return (
         <div className="App">
@@ -17,11 +20,15 @@ function App() {
             </div>
             <h1 className="italic font:extrabold">
                 Vite + React
-                + <span className='fg:gold-75 fg:yellow-80@media(prefers-color-scheme:dark)'>Master CSS</span>
+                + <span className='fg:primary fg:yellow-80@dark'>Master CSS</span>
             </h1>
             <div className="card">
-                <button onClick={() => setCount((count) => count + 1)}>
+                <button className="h:40 bg:gray-20@dark bg:slate-90@light" onClick={() => setCount((count) => count + 1)}>
                     count is {count}
+                </button>
+                <button className="h:40 bg:gray-20@dark bg:slate-90@light ml:10 rel">
+                    {theme.current === 'dark' ? '🌜' : '☀️'} {theme.current}
+                    <ThemeSelect className="abs full inset:0 r:inherit opacity:0 font:inherit" />
                 </button>
                 <p>
                     Edit <code>src/App.jsx</code> and save to test HMR
