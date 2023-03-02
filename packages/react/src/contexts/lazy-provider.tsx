@@ -18,7 +18,7 @@ export const CSSLazyProvider = ({
                 const { MasterCSS } = await import('@master/css')
                 const existingCSS = MasterCSS.instances.find((eachCSS) => eachCSS.root === root)
                 const configModule = await config
-                const resolvedConfig = configModule.default || configModule.config || configModule
+                const resolvedConfig = configModule.config || configModule.default || configModule
                 setCSS(existingCSS || new MasterCSS({ ...resolvedConfig }))
             })()
         }
