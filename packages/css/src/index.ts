@@ -2,6 +2,7 @@
 export { default } from './css'
 export { default as MasterCSS } from './css'
 export { default as Rule } from './rule'
+export { default as Theme } from './theme'
 
 // methods
 export { default as extend } from 'to-extend'
@@ -19,10 +20,12 @@ export { default as rootSize } from './config/root-size'
 export { default as selectors } from './config/selectors'
 export { default as semantics } from './config/semantics'
 export { default as themes } from './config/themes'
-export { default as scheme } from './config/scheme'
+export { default as theme } from './config/theme'
 export { default as values } from './config/values'
 export { default as Rules } from './config/rules'
+export { defaultThemeConfig as themeConfig } from './theme'
 
 // type
 export type { Config } from './config'
 export type { Declaration, MediaQuery, MediaFeatureRule, RuleMatching } from './rule'
+export type { ThemeConfig, ThemeValue } from './theme'

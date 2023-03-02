@@ -3,6 +3,7 @@ import extend from 'to-extend'
 import type { Config } from './config'
 import Rule, { RuleMatching } from './rule'
 import { rgbToHex } from './utils/rgb-to-hex'
+import Theme from './theme'
 
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@']
 const vendorPrefixSelectorRegExp = /^::-[a-z]+-/m
@@ -57,8 +58,7 @@ export default class MasterCSS extends MutationObserver {
     breakpoints: Record<string, number>
     mediaQueries: Record<string, string>
     matches: Record<string, RegExp>
-
-    private schemeMQL: MediaQueryList
+    theme: Theme | undefined
 
     constructor(
         public config?: Config
@@ -235,71 +235,6 @@ export default class MasterCSS extends MutationObserver {
 
         MasterCSS.instances.push(this)
         this.ready = true
-    }
-
-    get storageScheme() {
-        const { storage } = this.config.scheme
-        return localStorage.getItem(storage.key)
-    }
-
-    #scheme: string
-    #theme: string
-
-    set scheme(scheme: string) {
-        if (scheme !== this.#scheme) {
-            this.#scheme = scheme
-            const { storage } = this.config.scheme
-            if (scheme === 'system') {
-                // 按照系統的主題切換，目前只支援 light dark
-                this.schemeMQL = window.matchMedia('(prefers-color-scheme:dark)')
-                this.schemeMQL.addEventListener('change', this.onThemeChange)
-                this.theme = this.schemeMQL.matches ? 'dark' : 'light'
-            } else {
-                this.removeSchemeListener()
-                this.theme = scheme
-            }
-            if (this.storageScheme !== scheme && storage.sync) {
-                localStorage.setItem(storage.key, scheme)
-            }
-            if (this.ready) {
-                this.host.dispatchEvent(new CustomEvent('scheme', { detail: this }))
-            }
-        }
-    }
-
-    get scheme() {
-        return this.#scheme
-    }
-
-    set theme(theme: string) {
-        if (theme !== this.#theme) {
-            if (this.#theme) {
-                this.host.classList.remove(this.#theme)
-            }
-            this.#theme = theme
-            if (this.host === document.documentElement) {
-                (this.host as HTMLElement).style.colorScheme = theme
-            }
-            this.host.classList.add(theme)
-            if (this.ready) {
-                this.host.dispatchEvent(new CustomEvent('theme', { detail: this }))
-            }
-        }
-    }
-
-    get theme() {
-        return this.#theme
-    }
-
-    private removeSchemeListener() {
-        if (this.schemeMQL) {
-            this.schemeMQL.removeEventListener('change', this.onThemeChange)
-            this.schemeMQL = null
-        }
-    }
-
-    private onThemeChange = (mediaQueryList) => {
-        this.theme = mediaQueryList.matches ? 'dark' : 'light'
     }
 
     private cache() {
@@ -575,7 +510,7 @@ export default class MasterCSS extends MutationObserver {
             this.host = isDocumentRoot ? document.documentElement : (root as ShadowRoot).host
 
             // sync theme
-            this.scheme = this.storageScheme || this.config.scheme.preference
+            this.theme = new Theme(this.host as HTMLElement, this.config.theme)
 
             const container = isDocumentRoot ? document.head : root
             const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : root.styleSheets
@@ -705,6 +640,8 @@ export default class MasterCSS extends MutationObserver {
         this.style.remove()
         // @ts-ignore
         this.style = null
+        this.theme?.destroy()
+        this.theme = null
     }
 
     /**
@@ -789,7 +726,6 @@ export default class MasterCSS extends MutationObserver {
         const instances = MasterCSS.instances
         this.disconnect()
         instances.splice(instances.indexOf(this), 1)
-        this.removeSchemeListener()
     }
 
     /**

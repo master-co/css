@@ -5,13 +5,14 @@ import scope from './scope'
 import selectors from './selectors'
 import semantics from './semantics'
 import themes from './themes'
-import scheme from './scheme'
+import theme from './theme'
 import values from './values'
 import Rules from './rules'
 import Rule from '../rule'
 import override from './override'
 import observe from './observe'
 import important from './important'
+import { ThemeConfig } from '../theme'
 
 const config: Config = {
     colors,
@@ -20,7 +21,7 @@ const config: Config = {
     values,
     selectors,
     themes,
-    scheme,
+    theme,
     Rules,
     rootSize,
     scope,
@@ -55,13 +56,7 @@ export interface Config {
     rootSize?: number
     scope?: string
     important?: boolean
-    scheme?: {
-        preference?: string,
-        storage?: {
-            sync?: boolean
-            key?: string
-        }
-    },
+    theme?: ThemeConfig,
     override?: boolean
     observe?: boolean
 }
