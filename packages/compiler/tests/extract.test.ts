@@ -254,3 +254,12 @@ test('home path', () => {
         '~easing:steps(6,end)'
     ])
 })
+
+test('$', () => {
+    expect(extract({
+        name: 'test',
+        content: `
+        $(size):calc(100%-20px)
+        `
+    }, css)).toStrictEqual([])
+})

@@ -98,7 +98,8 @@ const preExclude = (content: string) => {
             .replace(/<style[^>]*>(?:(?!<\/style>)[\S\s])*<\/style>/g, '')
             .replace(/import.*from\s*COMPLETE-STRING--\d+--/g, '')
             .replace(/import\s*(?:COMPLETE-STRING--\d+--|\([^;\s]*\))/g, '')
-            .replace(/require\([^;\s]*\)/g, '')
+            .replace(/(?:require|import)\([^;\s]*\)/g, '')
+            .replace(/(?:@.*\n)+(?:export|function|class)/g, '')
     )
 }
 
@@ -129,9 +130,10 @@ const needExclude = (content: string, reservedWord: string[]) => {
         || content.match(/<\w+>|<\/\w+>/)
         || content.match(/;$/)
         || content.match(/^\w+:\/\//)
-        || content.match(/^@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer)$/)
+        || content.match(/^@(?:ts-[^\s]+|charset|import|namespace|media|supports|document|page|font-face|keyframes|counter-style|font-feature-values|property|layer|[^/]+\/.*)$/)
         || content.match(/^~\/.+.\w+$/)
         || content.match(/function\(|\(.*\)=>/)
+        || content.match(/^\$\(.*/)
 }
 
 const hasUnclosedBrackets = (content: string) => {
