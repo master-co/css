@@ -14,13 +14,12 @@ export const CSSLazyProvider = ({
     const [css, setCSS] = useState<MasterCSS>()
     useEffect(() => {
         if (!css) {
-            (async () => {
-                const { MasterCSS } = await import('@master/css')
-                const existingCSS = MasterCSS.instances.find((eachCSS) => eachCSS.root === root)
-                const configModule = await config
-                const resolvedConfig = configModule.config || configModule.default || configModule
-                setCSS(existingCSS || new MasterCSS({ ...resolvedConfig }))
-            })()
+            Promise.all([import('@master/css'), config])
+                .then(([{ MasterCSS }, configModule]) => {
+                    const existingCSS = MasterCSS.instances.find((eachCSS) => eachCSS.root === root)
+                    const resolvedConfig = configModule.config || configModule.default || configModule
+                    setCSS(existingCSS || new MasterCSS({ ...resolvedConfig }))
+                })
         }
     }, [config, css, root])
     return <CSSContext.Provider value={css}>{children}</CSSContext.Provider>
