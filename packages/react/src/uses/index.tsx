@@ -1,2 +1,2 @@
-export { useScheme } from './scheme'
-export { useEffected } from './effected'
+export * from './effected'
+export * from './isomorphic-effect'
