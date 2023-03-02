@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
+import masterLogo from './assets/master.svg'
 import './App.css'
 import ThemeSelect from './components/ThemeSelect'
 import { useTheme } from '@master/css.react'
@@ -17,8 +18,11 @@ function App() {
                 <a href="https://reactjs.org" target="_blank">
                     <img src={reactLogo} className="logo react" alt="React logo" />
                 </a>
+                <a href="https://css.master.co" target="_blank">
+                    <img src={masterLogo} className="logo master scale(1.5)" alt="Master logo" />
+                </a>
             </div>
-            <h1 className="italic font:extrabold">
+            <h1 className="font:heavy ls:-.25">
                 Vite + React
                 + <span className='fg:primary fg:yellow-80@dark'>Master CSS</span>
             </h1>

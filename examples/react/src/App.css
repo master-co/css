@@ -20,6 +20,10 @@
     filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+.logo.master:hover {
+    filter: drop-shadow(0 0 2em #ecbb40);
+}
+
 @keyframes logo-spin {
     from {
         transform: rotate(0deg);
