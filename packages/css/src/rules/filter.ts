@@ -1,5 +1,4 @@
-import type { Config } from '../config'
-import { Rule } from '../rule'
+import { Rule, Config } from '../'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
 export default class extends Rule {

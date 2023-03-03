@@ -1,4 +1,4 @@
-import { Rule } from '../rule'
+import { Rule } from '../'
 
 const diff = .75
 

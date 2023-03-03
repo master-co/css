@@ -1,4 +1,4 @@
-import breakpoints from './breakpoints'
+import { breakpoints } from '../'
 
 const boxUnderneath = {
     content: 'content-box',
@@ -21,7 +21,7 @@ for (const key in breakpoints) {
     sizingValues[key] = (breakpoints[key] / 16) + 'rem'
 }
 
-const values = {
+export const values = {
     BackgroundClip: boxUnderneath,
     BackgroundOrigin: boxUnderneath,
     BoxSizing: {
@@ -85,5 +85,3 @@ const values = {
     Height: sizingValues,
     FlexBasis: sizingValues
 }
-
-export default values

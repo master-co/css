@@ -1,2 +1,1 @@
-const observe = true
-export default observe
+export const observe = true

@@ -1,4 +1,4 @@
-import type { Config } from '../config'
+import type { Config } from '../'
 import '../polyfills/css-escape'
 import { renderFromHTML } from './render-from-html'
 

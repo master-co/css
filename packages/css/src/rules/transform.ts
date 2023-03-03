@@ -1,31 +1,30 @@
-import type { Config } from '../config'
-import { Rule } from '../rule'
+import { Rule, Config } from '../'
 
 export default class extends Rule {
     static override id = 'Transform' as const
     static override matches = '^(?:translate|scale|skew|rotate|perspective|matrix)(?:3d|[XYZ])?\\('
     static override unit = ''
-    override parseValue(value: string, {rootSize}: Config): string {
+    override parseValue(value: string, { rootSize }: Config): string {
         return value.replace(
             /(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\((.*?)\)/g,
             (origin, method, type, valueStr: string) => {
                 let unit: string
                 let last: boolean
                 switch (method) {
-                case 'translate':
-                    unit = 'rem'
-                    break
-                case 'skew':
-                    unit = 'deg'
-                    break
-                case 'rotate':
-                    if (type === '3d') {
-                        last = true
-                    }
-                    unit = 'deg'
-                    break
-                default:
-                    return origin
+                    case 'translate':
+                        unit = 'rem'
+                        break
+                    case 'skew':
+                        unit = 'deg'
+                        break
+                    case 'rotate':
+                        if (type === '3d') {
+                            last = true
+                        }
+                        unit = 'deg'
+                        break
+                    default:
+                        return origin
                 }
 
                 const values = valueStr.split(',')

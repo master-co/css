@@ -1,5 +1,4 @@
-import type { Config } from '../config'
-import { MasterCSS } from '../css'
+import { MasterCSS, Config } from '../'
 import '../polyfills/css-escape'
 
 export function render(classes: string[], config?: Config): string {

@@ -1,4 +1,4 @@
-const semantics = {
+export const semantics = {
     square: {
         'aspect-ratio': '1/1'
     },
@@ -179,5 +179,3 @@ const semantics = {
         overflow: 'hidden'
     }
 }
-
-export default semantics

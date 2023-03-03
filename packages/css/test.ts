@@ -1,3 +1,3 @@
-import { selectors } from './dist/index.mjs'
+import { fillColorScale } from './dist/index.mjs'
 
-console.log(selectors)
+console.log(fillColorScale)

@@ -1,2 +1,1 @@
-const important = false
-export default important
+export const important = false

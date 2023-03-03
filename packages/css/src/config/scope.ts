@@ -1,2 +1,1 @@
-const scope = ''
-export default scope
+export const scope = ''

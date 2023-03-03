@@ -1,2 +1,1 @@
-const rootSize = 16
-export default rootSize
+export const rootSize = 16

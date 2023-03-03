@@ -1,4 +1,4 @@
-const selectors = {
+export const selectors = {
     '::scrollbar': '::-webkit-scrollbar',
     '::scrollbar-button': '::-webkit-scrollbar-button',
     '::scrollbar-thumb': '::-webkit-scrollbar-thumb',
@@ -16,5 +16,3 @@ const selectors = {
     ':odd': ':nth-child(odd)',
     ':nth(': ':nth-child('
 }
-
-export default selectors

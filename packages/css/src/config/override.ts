@@ -1,2 +1,1 @@
-const override = false
-export default override
+export const override = false

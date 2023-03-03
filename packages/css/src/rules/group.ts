@@ -1,7 +1,7 @@
-import { Rule } from '../rule'
+import { Rule } from '../'
 import { MasterCSS } from '../css'
 import { START_SYMBOL } from '../constants/start-symbol'
-import type { Declaration } from '../rule'
+import type { Declaration } from '../'
 import { analyzeValueToken } from '../utils/analyze-value-token'
 
 const bracketRegexp = /\{(.*)\}/

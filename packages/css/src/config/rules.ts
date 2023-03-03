@@ -196,7 +196,7 @@ import WH from '../rules/wh'
 import MinWH from '../rules/min-wh'
 import MaxWH from '../rules/max-wh'
 
-const Rules = [
+export const Rules = [
     Group,
     Variable,
     FontSize,
@@ -395,5 +395,3 @@ const Rules = [
     Quotes,
     MaskImage
 ]
-
-export default Rules

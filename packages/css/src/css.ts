@@ -1,9 +1,6 @@
-import { config as defaultConfig } from './config'
 import extend from 'to-extend'
-import type { Config } from './config'
-import { Rule, RuleMatching } from './rule'
+import { Rule, RuleMatching, Theme, Config, config as defaultConfig } from './'
 import { rgbToHex } from './utils/rgb-to-hex'
-import { Theme } from './theme'
 
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@']
 const vendorPrefixSelectorRegExp = /^::-[a-z]+-/m

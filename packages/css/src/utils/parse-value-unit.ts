@@ -1,4 +1,4 @@
-import type { Config } from '../config'
+import type { Config } from '../'
 
 export function parseValueUnit(value: string, getUnit: (method: string) => string, { rootSize }: Config): string {
     let result = ''

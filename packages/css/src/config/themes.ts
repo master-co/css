@@ -1,2 +1,1 @@
-const themes = ['dark', 'light']
-export default themes
+export const themes = ['dark', 'light']

@@ -1,7 +1,6 @@
 import { getCssPropertyText } from './utils/get-css-property-text'
 import { parseValue } from './utils/parse-value'
-import { MasterCSS } from './css'
-import type { Config } from './config'
+import { MasterCSS, Config } from './'
 import { analyzeValueToken } from './utils/analyze-value-token'
 
 const PRIORITY_SELECTORS = [':disabled', ':active', ':focus', ':hover']
