@@ -588,8 +588,13 @@ export default class MasterCSS extends MutationObserver {
             } else {
                 // @ts-ignore
                 this.style = STYLE.cloneNode() as HTMLStyleElement
-                /** 使用 prepend 而非 append 去降低 rules 類的優先層級，無法強制排在所有 <style> 之後 */
-                container.prepend(this.style)
+                /** 為提高優先層級，插入於任何 <link rel="styleSheet"> 或 <style> 之前 */
+                const firstStyleElement = container.querySelector('link[rel="styleSheet"], style')
+                if (firstStyleElement) {
+                    firstStyleElement.before(this.style)
+                } else {
+                    container.append(this.style)
+                }
             }
 
             const handleClassList = (classList: DOMTokenList) => {
