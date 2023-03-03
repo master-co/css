@@ -1,13 +1,15 @@
-const { MasterCSSWebpackPlugin } = require('@master/css.webpack')
+/* ahead-of-time */
+// const { MasterCSSWebpackPlugin } = require('@master/css.webpack')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
     webpack: (config) => {
-        config.plugins.push(
-            new MasterCSSWebpackPlugin(),
-        )
+        /* ahead-of-time */
+        // config.plugins.push(
+        //     new MasterCSSWebpackPlugin(),
+        // )
         return config
     }
 

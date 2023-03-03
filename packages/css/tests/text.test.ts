@@ -1,4 +1,4 @@
-import { testProp } from '../src/utils/test-css'
+import { testProp } from './test-css'
 
 test('text', () => {
     testProp('text:20', 'font-size:1.25rem;line-height:calc(1.25rem + 0.75em)')

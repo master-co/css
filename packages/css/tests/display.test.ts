@@ -1,4 +1,4 @@
-import { testCSS } from '../src/utils/test-css'
+import { testCSS } from './test-css'
 
 test('display', () => {
     testCSS('flex', '.flex{display:flex}')

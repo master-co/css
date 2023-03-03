@@ -13,11 +13,11 @@ const Home: NextPage = () => {
             </Head>
 
             <main className={styles.main}>
-                <h1 className={'fg:primary bg:purple ' + styles.title}>
+                <h1 className={'fg:primary ' + styles.title}>
                     Welcome to <a href="https://nextjs.org">Next.js!</a>
                 </h1>
 
-                <button className="btn test">Button</button>
+                <button className="btn test" onClick={() => import('@master/css')}>Button</button>
 
                 <p className={styles.description}>
                     Get started by editing{' '}

@@ -1,5 +1,3 @@
-const { MasterCSS } = require('@master/css')
-
 const config = {
     colors: {
         primary: {
@@ -137,7 +135,4 @@ const config = {
     rootSize: 16
 }
 
-module.exports = {
-    config,
-    css: new MasterCSS(config)
-}
+module.exports = { config }

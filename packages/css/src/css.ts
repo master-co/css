@@ -23,7 +23,7 @@ const MutationObserver = isBrowser
     ? window.MutationObserver
     : Object
 
-export default class MasterCSS extends MutationObserver {
+export default class MasterCSS extends MutationObserver /* @__PURE__ */ {
 
     static instances: MasterCSS[] = []
     static root: MasterCSS

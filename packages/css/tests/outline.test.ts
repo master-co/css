@@ -1,4 +1,4 @@
-import { testProp } from '../src/utils/test-css'
+import { testProp } from './test-css'
 
 test('outline', () => {
     testProp('outline:current', 'outline-color:currentColor')

@@ -1,6 +1,6 @@
-import '../../../../utils/matchMedia.mock'
-import { Config } from '../config'
-import render from '../methods/render'
+import '../../../utils/matchMedia.mock'
+import { Config } from '../src/config'
+import render from '../src/methods/render'
 
 export const testCSS = (cls: string, expected: string, config?: Config): void => {
     expect(render(cls.split(' '), config)).toBe(expected)

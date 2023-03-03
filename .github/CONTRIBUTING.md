@@ -22,7 +22,7 @@ npm run test
 Taking the CSS project as an example, you can freely create a file like **aron.test.ts** in [packages/css/tests/contributions](https://github.com/master-co/css/tree/dev/beta/packages/css/tests/contributions) for unit testing:
 
 ```ts
-import { testProp, testCSS } from '../src/utils/test-css'
+import { testProp, testCSS } from './test-css'
 
 it('should generated with `background-color:` instead of `background:`', () => {
     testProp('bg:red', 'background-color:#d11a1e')

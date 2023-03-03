@@ -1,6 +1,6 @@
 import { Config } from '../../src/config'
 import { extend } from '../../src'
-import { testCSS } from '../../src/utils/test-css'
+import { testCSS } from '../test-css'
 
 const buttonTokens = Object.freeze({
     primary: 'button-primary',

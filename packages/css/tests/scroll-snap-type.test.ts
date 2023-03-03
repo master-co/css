@@ -1,4 +1,4 @@
-import { testProp } from '../src/utils/test-css'
+import { testProp } from './test-css'
 
 test('scroll-snap-type', () => {
     testProp('scroll-snap:x|mandatory', 'scroll-snap-type:x mandatory')

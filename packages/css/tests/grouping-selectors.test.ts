@@ -1,4 +1,4 @@
-import { testCSS } from '../src/utils/test-css'
+import { testCSS } from './test-css'
 
 test('grouping selectors', () => {
     testCSS('{fg:yellow;bg:red}_h1,_button', '.\\{fg\\:yellow\\;bg\\:red\\}_h1\\,_button h1,.\\{fg\\:yellow\\;bg\\:red\\}_h1\\,_button button{color:#806700;background-color:#d11a1e}')

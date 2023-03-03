@@ -1,4 +1,4 @@
-import { testCSS } from '../utils/test-css'
+import { testCSS } from './test-css'
 
 test('min-wh', () => {
     testCSS('min:16x10', '.min\\:16x10{min-width:1rem;min-height:0.625rem}')
