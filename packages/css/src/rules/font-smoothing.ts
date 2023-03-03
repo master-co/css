@@ -1,4 +1,4 @@
-import Rule from '../rule'
+import { Rule } from '../rule'
 
 const SUBPIXEL_ANTIALIASED = 'subpixel-antialiased'
 const WEBKIT_FONT_SMOOTHING = '-webkit-font-smoothing'

@@ -1,5 +1,5 @@
-import Rule from '../rule'
-import MasterCSS from '../css'
+import { Rule } from '../rule'
+import { MasterCSS } from '../css'
 import { START_SYMBOL } from '../constants/start-symbol'
 import type { Declaration } from '../rule'
 import { analyzeValueToken } from '../utils/analyze-value-token'
@@ -87,7 +87,7 @@ export default class extends Rule {
                 if (end === char) {
                     if (end === '\'' || end === '"') {
                         let count = 0
-                        for (let j = currentName.length - 2;; j--)  {
+                        for (let j = currentName.length - 2; ; j--) {
                             if (currentName[j] !== '\\') {
                                 break
                             }

@@ -1,8 +1,8 @@
 import type { Config } from '../config'
-import MasterCSS from '../css'
+import { MasterCSS } from '../css'
 import '../polyfills/css-escape'
 
-export default function renderFromHTML(html: string, config?: Config): string {
+export function renderFromHTML(html: string, config?: Config): string {
     if (!html) return
     const css = new MasterCSS({ ...config, observe: false })
     const regexp = /\sclass="([^"]*)"/gm

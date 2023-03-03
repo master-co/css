@@ -6,7 +6,7 @@ import { readPackage } from '../utils/read-package'
 
 import chokidar from 'chokidar'
 import fs from 'fs'
-import defineContent from '../methods/define-content'
+import { defineContent } from '../methods/define-content'
 import log from '@techor/log'
 
 program.command('init')

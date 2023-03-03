@@ -1,9 +1,9 @@
-import defaultConfig from './config'
+import { config as defaultConfig } from './config'
 import extend from 'to-extend'
 import type { Config } from './config'
-import Rule, { RuleMatching } from './rule'
+import { Rule, RuleMatching } from './rule'
 import { rgbToHex } from './utils/rgb-to-hex'
-import Theme from './theme'
+import { Theme } from './theme'
 
 const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@']
 const vendorPrefixSelectorRegExp = /^::-[a-z]+-/m
@@ -23,7 +23,7 @@ const MutationObserver = isBrowser
     ? window.MutationObserver
     : Object
 
-export default class MasterCSS extends MutationObserver /* @__PURE__ */ {
+export class MasterCSS extends MutationObserver {
 
     static instances: MasterCSS[] = []
     static root: MasterCSS
@@ -1184,10 +1184,6 @@ export default class MasterCSS extends MutationObserver /* @__PURE__ */ {
     get text() {
         return this.rules.map((eachRule) => eachRule.text).join('')
     }
-}
-
-if (isBrowser) {
-    window.MasterCSS = MasterCSS
 }
 
 declare global {

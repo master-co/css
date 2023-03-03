@@ -1,2 +1,2 @@
-import MasterCSS from './css'
+import { MasterCSS } from './css'
 new MasterCSS(window['masterCSSConfig'])

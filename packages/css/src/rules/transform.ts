@@ -1,5 +1,5 @@
 import type { Config } from '../config'
-import Rule from '../rule'
+import { Rule } from '../rule'
 
 export default class extends Rule {
     static override id = 'Transform' as const

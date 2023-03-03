@@ -1,6 +1,6 @@
 import { getCssPropertyText } from './utils/get-css-property-text'
 import { parseValue } from './utils/parse-value'
-import MasterCSS from './css'
+import { MasterCSS } from './css'
 import type { Config } from './config'
 import { analyzeValueToken } from './utils/analyze-value-token'
 
@@ -23,7 +23,7 @@ const transformSelectorUnderline = (selector: string) => selector.split(selector
     .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/_/g, ' '))
     .join('')
 
-export default class Rule {
+export class Rule {
 
     readonly prefix: string
     readonly symbol: string
@@ -569,7 +569,7 @@ export default class Rule {
     }
 }
 
-export default interface Rule {
+export interface Rule {
     readonly order?: number;
     analyzeToken(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | { value: string }>, string];
     parseValue(value: string, config: Config): string;

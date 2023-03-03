@@ -1,7 +1,7 @@
 import { hexToRgb } from '../utils/hex-to-rgb'
 import { rgbToHex } from '../utils/rgb-to-hex'
 
-export default function fillColorScale(data) {
+export function fillColorScale(data) {
     if (typeof data === 'string') {
         data = { '': data }
     }

@@ -1,4 +1,4 @@
-import fillColorScale from '../methods/fill-color-scale'
+import { fillColorScale } from '../methods/fill-color-scale'
 
 const colors = {
     slate: fillColorScale({

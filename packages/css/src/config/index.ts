@@ -8,7 +8,7 @@ import themes from './themes'
 import theme from './theme'
 import values from './values'
 import Rules from './rules'
-import Rule from '../rule'
+import { Rule } from '../rule'
 import override from './override'
 import observe from './observe'
 import important from './important'
@@ -30,7 +30,23 @@ const config: Config = {
     important
 }
 
-export default config
+export {
+    config,
+    colors,
+    breakpoints,
+    semantics,
+    values,
+    selectors,
+    themes,
+    theme,
+    Rules,
+    rootSize,
+    scope,
+    override,
+    observe,
+    important
+}
+
 
 type Classes = { [key: string]: string | Classes }
 type Colors = { [key: string]: string | Colors }

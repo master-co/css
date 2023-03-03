@@ -1,8 +1,8 @@
-import Rule from '../rule'
+import { Rule } from '../rule'
 
 export default class extends Rule {
     static override id = 'Animation' as const
-    static override symbol = '@' 
+    static override symbol = '@'
     static override unit = ''
     override order = -1
 }

@@ -7,7 +7,7 @@ export const defaultThemeConfig: ThemeConfig = {
 export declare type ThemeValue = 'dark' | 'light' | 'system' | string
 const isBrowser = typeof window !== 'undefined'
 
-export default class Theme {
+export class Theme {
 
     // 按照系統的主題切換，目前只支援 light dark
     private darkMQL: MediaQueryList = isBrowser ? window.matchMedia?.('(prefers-color-scheme:dark)') : undefined

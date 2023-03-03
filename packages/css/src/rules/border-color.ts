@@ -1,4 +1,4 @@
-import Rule from '../rule'
+import { Rule } from '../rule'
 import { getBorderProps } from '../utils/get-border-props'
 
 export default class extends Rule {

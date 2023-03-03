@@ -1,6 +1,6 @@
 import dedent from 'ts-dedent'
 
-export default function defineContent({ compiler, jit, ext }: {
+export function defineContent({ compiler, jit, ext }: {
     compiler?: boolean
     jit?: boolean
     ext?: string
