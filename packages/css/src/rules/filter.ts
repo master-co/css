@@ -1,7 +1,7 @@
 import { Rule, Config } from '../'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
-export default class extends Rule {
+export class Filter extends Rule {
     static override id = 'Filter' as const
     static override matches = '^(?:blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)\\('
     static override colorful = true

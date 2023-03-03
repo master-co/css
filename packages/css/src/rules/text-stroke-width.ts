@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class TextStrokeWidth extends Rule {
     static override id = 'TextStrokeWidth' as const
     static override matches = '^text-stroke(:(thin|medium|thick|\\.?[0-9]+|$values)(?!\\|)|-width:.)'
     static override get prop() { return '' }

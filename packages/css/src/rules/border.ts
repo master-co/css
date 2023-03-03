@@ -1,7 +1,7 @@
 import { Rule } from '../'
 import { getBorderProps } from '../utils/get-border-props'
 
-export default class extends Rule {
+export class Border extends Rule {
     static override id = 'Border' as const
     static override matches = '^b(?:[xytblr]?|order(?:-(?:left|right|top|bottom))?):.'
     static override colorful = true

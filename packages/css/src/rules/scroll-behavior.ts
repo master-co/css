@@ -1,5 +1,5 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class ScrollBehavior extends Rule {
     static override id = 'ScrollBehavior' as const
 }

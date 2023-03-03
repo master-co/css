@@ -1,7 +1,7 @@
 import { analyzeValueToken } from '../utils/analyze-value-token'
 import { Rule } from '../'
 
-export default class extends Rule {
+export class MaxWH extends Rule {
     static override id = 'MaxWH' as const
     static override matches = '^max:(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)x(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)'
     static override get prop() { return '' }

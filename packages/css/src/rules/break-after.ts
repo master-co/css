@@ -1,5 +1,5 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class BreakAfter extends Rule {
     static override id = 'BreakAfter' as const
 }

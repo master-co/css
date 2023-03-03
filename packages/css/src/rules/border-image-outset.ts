@@ -1,5 +1,5 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class BorderImageOutset extends Rule {
     static override id = 'BorderImageOutset' as const
 }

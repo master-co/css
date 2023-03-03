@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class BoxDecorationBreak extends Rule {
     static override id = 'BoxDecorationBreak' as const
     static override matches = '^box:(?:slice|clone|$values)(?!\\|)'
     override get(declaration): { [key: string]: any } {

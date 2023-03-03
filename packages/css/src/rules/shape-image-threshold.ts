@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class ShapeImageThreshold extends Rule {
     static override id = 'ShapeImageThreshold' as const
     static override unit = ''
 }

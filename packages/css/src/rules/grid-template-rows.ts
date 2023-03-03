@@ -1,5 +1,5 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class GridTemplateRows extends Rule {
     static override id = 'GridTemplateRows' as const
 }

@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class AnimationDirection extends Rule {
     static override id = 'AnimationDirection' as const
     static override matches = '^@direction:.'
 }

@@ -1,5 +1,5 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class StrokeDasharray extends Rule {
     static override id = 'StrokeDasharray' as const
 }

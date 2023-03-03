@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class BackgroundColor extends Rule {
     static override id = 'BackgroundColor' as const
     static override colorStarts = '(?:bg|background):'
     static override unit = ''

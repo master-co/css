@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class GridColumns extends Rule {
     static override id = 'GridColumns' as const
     static override matches = '^grid-cols:.'
     static override unit = ''

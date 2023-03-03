@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class ScrollMargin extends Rule {
     static override id = 'ScrollMargin' as const
     static override matches = '^scroll-m(?:[xytblr]|argin(?:-(?:top|bottom|left|right))?)?:.'
     static override get prop() { return '' }

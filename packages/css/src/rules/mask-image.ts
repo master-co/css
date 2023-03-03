@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class MaskImage extends Rule {
     static override id = 'MaskImage' as const
     override get(declaration): { [key: string]: any } {
         return {

@@ -1,5 +1,5 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class BackgroundBlendMode extends Rule {
     static override id = 'BackgroundBlendMode' as const
 }

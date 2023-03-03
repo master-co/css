@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class ScrollPadding extends Rule {
     static override id = 'ScrollPadding' as const
     static override matches = '^scroll-p(?:[xytblr]|adding(?:-(?:top|bottom|left|right))?)?:.'
     static override get prop() { return '' }

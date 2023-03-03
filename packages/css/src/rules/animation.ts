@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class Animation extends Rule {
     static override id = 'Animation' as const
     static override symbol = '@'
     static override unit = ''

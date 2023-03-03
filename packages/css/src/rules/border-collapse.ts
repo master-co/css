@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class BorderCollapse extends Rule {
     static override id = 'BorderCollapse' as const
     static override matches = '^b(?:order)?:(?:collapse|separate|$values)(?!\\|)'
 }

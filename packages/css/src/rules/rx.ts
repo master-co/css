@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class Rx extends Rule {
     static override id = 'Rx' as const
     static override unit = ''
 }

@@ -1,5 +1,5 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class OutlineOffset extends Rule {
     static override id = 'OutlineOffset' as const
 }

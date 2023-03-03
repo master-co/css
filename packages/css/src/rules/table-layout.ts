@@ -1,5 +1,5 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class TableLayout extends Rule {
     static override id = 'TableLayout' as const
 }

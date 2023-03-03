@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class LineClamp extends Rule {
     static override id = 'LineClamp' as const
     static override unit = ''
     override get(declaration): { [key: string]: any } {

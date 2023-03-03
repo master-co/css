@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class MixBlendMode extends Rule {
     static override id = 'MixBlendMode' as const
     static override matches = '^blend:.'
 }

@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class UserDrag extends Rule {
     static override id = 'UserDrag' as const
     override get(declaration): { [key: string]: any } {
         return {

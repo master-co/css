@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class TextFillColor extends Rule {
     static override id = 'TextFillColor' as const
     static override matches = '^text-fill-color:.'
     static override colorStarts = '(?:text-fill|text|t):'

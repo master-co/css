@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class WordBreak extends Rule {
     static override id = 'WordBreak' as const
     static override unit = ''
 }

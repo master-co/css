@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class WordSpacing extends Rule {
     static override id = 'WordSpacing' as const
     static override unit = 'em'
 }

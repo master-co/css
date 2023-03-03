@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class Padding extends Rule {
     static override id = 'Padding' as const
     static override matches = '^padding(?:-(?:left|right|top|bottom))?:.'
     static override get prop() { return '' }

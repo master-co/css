@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class JustifyItems extends Rule {
     static override id = 'JustifyItems' as const
     static override matches =  '^ji:.'
 

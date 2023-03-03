@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class Outline extends Rule {
     static override id = 'Outline' as const
     override order = -1
     static override colorful = true

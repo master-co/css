@@ -2,7 +2,7 @@ import { Rule } from '../'
 
 const diff = .75
 
-export default class extends Rule {
+export class TextSize extends Rule {
     static override id = 'TextSize' as const
     static override matches = '^t(?:ext)?:(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$'
     static override get prop() { return '' }

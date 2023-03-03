@@ -6,7 +6,7 @@ import { analyzeValueToken } from '../utils/analyze-value-token'
 
 const bracketRegexp = /\{(.*)\}/
 
-export default class extends Rule {
+export class Group extends Rule {
     static override id = 'Group' as const
     static override matches = '^(?:.+?[*_>~+])?\\{.+?\\}'
     static override unit = ''

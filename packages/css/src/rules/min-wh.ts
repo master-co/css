@@ -1,7 +1,7 @@
 import { analyzeValueToken } from '../utils/analyze-value-token'
 import { Rule } from '../'
 
-export default class extends Rule {
+export class MinWH extends Rule {
     static override id = 'MinWH' as const
     static override matches = '^min:(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)x(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)'
     static override get prop() { return '' }

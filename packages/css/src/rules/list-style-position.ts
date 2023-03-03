@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class ListStylePosition extends Rule {
     static override id = 'ListStylePosition' as const
     static override matches = '^list-style:(?:inside|outside|$values)(?!\\|)'
 }

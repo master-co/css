@@ -1,6 +1,6 @@
 import { Rule, Config } from '../'
 
-export default class extends Rule {
+export class Transform extends Rule {
     static override id = 'Transform' as const
     static override matches = '^(?:translate|scale|skew|rotate|perspective|matrix)(?:3d|[XYZ])?\\('
     static override unit = ''

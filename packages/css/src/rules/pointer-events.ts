@@ -1,5 +1,5 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class PointerEvents extends Rule {
     static override id = 'PointerEvents' as const
 }

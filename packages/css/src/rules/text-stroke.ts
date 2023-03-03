@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class TextStroke extends Rule {
     static override id = 'TextStroke' as const
     static override matches = '^text-stroke:.'
     static override get prop() { return '' }

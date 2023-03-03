@@ -1,5 +1,5 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class BorderSpacing extends Rule {
     static override id = 'BorderSpacing' as const
 }

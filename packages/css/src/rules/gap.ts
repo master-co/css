@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class Gap extends Rule {
     static override id = 'Gap' as const
     static override matches = '^gap(?:-x|-y)?:.'
     static override get prop() { return '' }

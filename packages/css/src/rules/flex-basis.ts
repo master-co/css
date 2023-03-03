@@ -1,5 +1,5 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class FlexBasis extends Rule {
     static override id = 'FlexBasis' as const
 }

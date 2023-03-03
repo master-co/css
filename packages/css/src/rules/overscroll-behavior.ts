@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class OverscrollBehavior extends Rule {
     static override id = 'OverscrollBehavior' as const
     static override matches = '^overscroll-behavior(?:-[xy])?:'
     static override get prop() { return '' }

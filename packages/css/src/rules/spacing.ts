@@ -1,6 +1,6 @@
 import { Rule } from '../'
 
-export default class extends Rule {
+export class Spacing extends Rule {
     static override id = 'Spacing' as const
     static override matches = '^[pm][xytblr]?:.'
     static override get prop() { return '' }
