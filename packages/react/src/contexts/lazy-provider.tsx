@@ -1,4 +1,4 @@
-import { Config, MasterCSS, registeredCSS } from '@master/css'
+import { Config, MasterCSS, refreshCSS, registeredCSS } from '@master/css'
 import { ReactElement, useEffect, useState } from 'react'
 import { CSSContext } from './css'
 

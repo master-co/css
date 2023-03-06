@@ -1,6 +1,5 @@
 import { MasterCSS } from '../css'
 import type { Config } from '../'
-import '../polyfills/css-escape'
 
 export function render(classes: string[], config?: Config): string {
     if (!classes?.length) return

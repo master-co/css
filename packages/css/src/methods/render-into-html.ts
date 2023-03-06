@@ -1,5 +1,4 @@
 import type { Config } from '../'
-import '../polyfills/css-escape'
 import { renderFromHTML } from './render-from-html'
 
 export function renderIntoHTML(html: string, config?: Config): string {

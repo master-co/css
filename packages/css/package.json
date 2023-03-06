@@ -52,6 +52,11 @@
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
+            "node": {
+                "require": "./dist/index.node.cjs",
+                "import": "./dist/index.node.mjs",
+                "types": "./dist/index.node.d.ts"
+            },
             "require": "./dist/index.cjs",
             "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
