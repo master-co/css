@@ -1,6 +1,4 @@
-import { RuleConfig } from '..'
-
-export const START_SYMBOL: RuleConfig = {
+export const START_SYMBOL = {
     '(': ')',
     '\'': '\'',
     '"': '"',

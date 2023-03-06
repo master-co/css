@@ -24,7 +24,7 @@ export const load = (({ cookies }) => {
 	}
 }) satisfies PageServerLoad
 
-import { RuleConfig } from '..'
+import { RuleConfig } from '../rule'
 
 export const actions: RuleConfig = {
 	/**

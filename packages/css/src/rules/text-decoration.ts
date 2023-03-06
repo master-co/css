@@ -1,4 +1,4 @@
-import { RuleConfig } from '..'
+import { RuleConfig } from '../rule'
 
 export const textDecoration: RuleConfig = {
     matches: '^t(?:ext)?:(?:underline|line-through|overline|$values)',

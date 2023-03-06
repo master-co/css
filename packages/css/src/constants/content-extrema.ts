@@ -1,6 +1,4 @@
-import { RuleConfig } from '..'
-
-export const CONTENT_EXTREMA: RuleConfig = {
+export const CONTENT_EXTREMA = {
     min: 'min-content',
     max: 'max-content'
 }

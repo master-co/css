@@ -1,4 +1,4 @@
-import { RuleConfig } from '..'
+import { RuleConfig } from '../rule'
 
 export const gap: RuleConfig = {
     matches: '^gap(?:-x|-y)?:.',

@@ -1,7 +1,7 @@
 import { Rule } from '../rule'
 import { getBorderProps } from '../utils/get-border-props'
 
-import { RuleConfig } from '..'
+import { RuleConfig } from '../rule'
 
 export const borderColor: RuleConfig = {
     matches: '^border(?:-(?:left|right|top|bottom))?-color:.',

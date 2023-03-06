@@ -1,9 +1,18 @@
 import { MasterCSS } from './css'
 
-const isBrowser = typeof window !== 'undefined'
+const isBrowser = typeof window !== 'undefined';
 
-if (isBrowser) {
-    Object.assign(window, {
-        MasterCSS,
-    })
+/* @__PURE__ */
+(() => {
+    if (isBrowser) {
+        Object.assign(window, {
+            MasterCSS,
+        })
+    }
+})()
+
+declare global {
+    interface Window {
+        MasterCSS: typeof MasterCSS;
+    }
 }

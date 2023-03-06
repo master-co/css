@@ -1,5 +1,5 @@
-import { RuleConfig } from '..'
+import type { ThemeConfig } from '../theme'
 
-export const theme: RuleConfig = {
+export const theme: ThemeConfig = {
     store: 'theme'
 }

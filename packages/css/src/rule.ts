@@ -26,6 +26,7 @@ export class Rule {
         const {
             id,
             unit = 'rem',
+            order = 0,
             colorful,
             prop,
             analyzeToken,
@@ -38,7 +39,7 @@ export class Rule {
         const values = css.values[id]
         const relationThemesMap = css.relationThemesMap[className]
         const token = className
-
+        this.order = order
         // 1. value / selectorToken
         let value: string | Record<string, string | number>, prefixToken: string, suffixToken: string, valueTokens: (string | { value: string })[]
         if (meta.origin === 'semantics') {
@@ -320,12 +321,6 @@ export class Rule {
             }
         }
 
-        // 6. order
-        if (this.order === undefined) {
-            // @ts-ignore
-            this.order = 0
-        }
-
         // 7. value
         const insertNewNative = (theme: string, bypassWhenUnmatchColor: boolean) => {
             let newValue: any
@@ -564,6 +559,7 @@ export interface RuleConfig {
     colorful?: boolean
     unit?: any
     prop?: string | false
+    order?: number
     analyzeToken?(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | {
         value: string
     }>, string]

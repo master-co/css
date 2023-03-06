@@ -1,5 +1,6 @@
+import '../src/polyfills/css-escape'
 import dedent from 'dedent'
-import {render, renderFromHTML, renderIntoHTML} from '../src/methods'
+import { render, renderFromHTML, renderIntoHTML } from '../src/methods'
 
 const html = dedent`
     <html>

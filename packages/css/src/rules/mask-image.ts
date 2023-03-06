@@ -1,4 +1,4 @@
-import { RuleConfig } from '..'
+import { RuleConfig } from '../rule'
 
 export const maskImage: RuleConfig = {
     get(declaration): { [key: string]: any } {

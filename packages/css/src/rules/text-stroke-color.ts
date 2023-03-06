@@ -1,4 +1,4 @@
-import { RuleConfig } from '..'
+import { RuleConfig } from '../rule'
 
 export const textStrokeColor: RuleConfig = {
     matches: '^text-stroke-color:.',

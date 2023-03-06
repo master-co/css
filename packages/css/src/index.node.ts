@@ -1,4 +1,4 @@
 import './polyfills/css-escape'
 
-export { MasterCSS as default } from '.'
+export { MasterCSS as default } from './css'
 export * from '.'

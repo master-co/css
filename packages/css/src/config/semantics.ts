@@ -1,6 +1,4 @@
-import { RuleConfig } from '..'
-
-export const semantics: RuleConfig = {
+export const semantics = {
     square: {
         'aspect-ratio': '1/1'
     },

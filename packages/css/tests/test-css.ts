@@ -1,4 +1,5 @@
 import '../../../utils/matchMedia.mock'
+import '../src/polyfills/css-escape'
 import { Config } from '../src'
 import { render } from '../src/methods'
 

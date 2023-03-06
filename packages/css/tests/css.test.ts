@@ -1,3 +1,4 @@
+import '../src/polyfills/css-escape'
 import MasterCSS from '../src'
 import delay from '../src/utils/delay'
 import { complexHTML } from './complex-html'

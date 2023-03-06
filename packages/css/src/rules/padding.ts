@@ -1,4 +1,4 @@
-import { RuleConfig } from '..'
+import { RuleConfig } from '../rule'
 
 export const padding: RuleConfig = {
     matches: '^padding(?:-(?:left|right|top|bottom))?:.',

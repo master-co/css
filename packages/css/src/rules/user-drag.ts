@@ -1,4 +1,4 @@
-import { RuleConfig } from '..'
+import { RuleConfig } from '../rule'
 
 export const userDrag: RuleConfig = {
     get(declaration): { [key: string]: any } {

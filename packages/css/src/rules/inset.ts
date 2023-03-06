@@ -1,4 +1,4 @@
-import { RuleConfig } from '..'
+import { RuleConfig } from '../rule'
 
 export const inset: RuleConfig = {
     matches: '^(?:top|bottom|left|right):.',

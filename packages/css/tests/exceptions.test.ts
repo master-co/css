@@ -1,3 +1,4 @@
+import '../src/polyfills/css-escape'
 import MasterCSS from '../src'
 
 test('exception handling', async () => {

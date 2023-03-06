@@ -1,6 +1,4 @@
-import { RuleConfig } from '..'
-
-export const breakpoints: RuleConfig = {
+export const breakpoints = {
     '3xs': 360,
     '2xs': 480,
     xs: 600,

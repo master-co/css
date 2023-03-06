@@ -1,4 +1,4 @@
-import { RuleConfig } from '..'
+import { RuleConfig } from '../rule'
 
 export const margin: RuleConfig = {
     matches: '^margin(?:-(?:left|right|top|bottom))?:.',

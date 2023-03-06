@@ -1,5 +1,5 @@
 import { analyzeValueToken } from '../utils/analyze-value-token'
-import { RuleConfig } from '..'
+import { RuleConfig } from '../rule'
 
 export const minWH: RuleConfig = {
     matches: '^min:(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)x(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)',

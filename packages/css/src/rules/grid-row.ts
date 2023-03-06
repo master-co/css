@@ -1,4 +1,4 @@
-import { RuleConfig } from '..'
+import { RuleConfig } from '../rule'
 
 export const gridRow: RuleConfig = {
     matches: '^grid-row-span:.',

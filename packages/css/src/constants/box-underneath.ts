@@ -1,6 +1,4 @@
-import { RuleConfig } from '..'
-
-export const BOX_UNDERNEATH: RuleConfig = {
+export const BOX_UNDERNEATH = {
     content: 'content-box',
     border: 'border-box',
     padding: 'padding-box'
