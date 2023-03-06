@@ -1,4 +1,4 @@
-import { Rule } from '../'
+import { Rule } from '../rule'
 
 export class FontVariantNumeric extends Rule {
     static override id = 'FontVariantNumeric' as const

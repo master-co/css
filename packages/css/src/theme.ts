@@ -1,10 +1,8 @@
 import extend from 'to-extend'
-
-export const defaultThemeConfig: ThemeConfig = {
-    store: 'theme'
-}
+import { theme as defaultThemeConfig } from './config/theme'
 
 export declare type ThemeValue = 'dark' | 'light' | 'system' | string
+
 const isBrowser = typeof window !== 'undefined'
 
 export class Theme {

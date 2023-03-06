@@ -72,6 +72,7 @@
         "@techor/log": "^1.1.0",
         "chokidar": "^3.5.3",
         "commander": "^10.0.0",
+        "esbuild": "^0.16.17",
         "fast-glob": "^3.2.12",
         "fs-extra": "^11.1.0"
     },

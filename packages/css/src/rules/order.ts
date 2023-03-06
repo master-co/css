@@ -1,4 +1,4 @@
-import { Rule } from '../'
+import { Rule } from '../rule'
 
 export class Order extends Rule {
     static override id = 'Order' as const

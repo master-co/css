@@ -1,3 +1,4 @@
+/* @__PURE__ */
 (() => {
     const root = typeof global != 'undefined' ? global : window
     if (!root.CSS && !root.CSS?.escape) {

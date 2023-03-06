@@ -1,4 +1,4 @@
-import { Rule } from '../'
+import { Rule } from '../rule'
 
 export class BackgroundAttachment extends Rule {
     static override id = 'BackgroundAttachment' as const

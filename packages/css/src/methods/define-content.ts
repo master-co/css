@@ -5,6 +5,9 @@ export function defineContent({ compiler, jit, ext }: {
     jit?: boolean
     ext?: string
 } = {}) {
+    const existJoin = (arr: any[], separator = ', ') => {
+        return arr.filter((x) => x).join(separator)
+    }
     const typed = ext === 'ts'
     const cjs = ext === 'js'
     const typeSyntax = ext !== 'ts'
@@ -42,8 +45,4 @@ export function defineContent({ compiler, jit, ext }: {
         .filter((x) => typeof x === 'string')
         .join('\n')
         + '\n'
-}
-
-export function existJoin(arr: any[], separator = ', ') {
-    return arr.filter((x) => x).join(separator)
 }

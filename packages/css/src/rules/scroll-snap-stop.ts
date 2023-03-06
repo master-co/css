@@ -1,4 +1,4 @@
-import { Rule } from '../'
+import { Rule } from '../rule'
 
 export class ScrollSnapStop extends Rule {
     static override id = 'ScrollSnapStop' as const

@@ -1,4 +1,4 @@
-import { Rule } from '../'
+import { Rule } from '../rule'
 
 export class AspectRatio extends Rule {
     static override id = 'AspectRatio' as const

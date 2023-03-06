@@ -1,0 +1,1 @@
+export const SORTED_SELECTORS = [':disabled', ':active', ':focus', ':hover']

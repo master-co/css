@@ -1,4 +1,4 @@
-import { Rule } from '../'
+import { Rule } from '../rule'
 import { MasterCSS } from '../css'
 import { START_SYMBOL } from '../constants/start-symbol'
 import type { Declaration } from '../'

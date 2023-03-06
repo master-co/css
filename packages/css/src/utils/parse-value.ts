@@ -24,7 +24,7 @@ export function parseValue(
         if (colorThemesMap) {
             let anyMatched = false
             let hasColorName = false
-            
+
             token = token.replace(
                 new RegExp(`(^|,| |\\()((?:${colorNames.join('|')})(?:-(?:[0-9A-Za-z-]+))?)(?:\\/(\\.?[0-9]+%?))?(?=(\\)|\\}|,| |$))`, 'gm'),
                 (origin, prefix, colorName, opacityStr) => {
@@ -50,10 +50,10 @@ export function parseValue(
                                 opacity = isNaN(opacity)
                                     ? 1
                                     : Math.min(Math.max(opacity, 0), 1)
-    
+
                                 newValue += Math.round(opacity * 255).toString(16).toUpperCase().padStart(2, '0')
                             }
-    
+
                             return prefix + newValue
                         }
                     }

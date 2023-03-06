@@ -1,26 +1,10 @@
+import type { Config } from './config'
+import type { MasterCSS } from './css'
+
 import { getCssPropertyText } from './utils/get-css-property-text'
-import { parseValue } from './utils/parse-value'
-import { MasterCSS, Config } from './'
 import { analyzeValueToken } from './utils/analyze-value-token'
-
-const PRIORITY_SELECTORS = [':disabled', ':active', ':focus', ':hover']
-const MATCHES = 'matches'
-const SEMANTICS = 'semantics'
-const SYMBOL = 'symbol'
-const WIDTH = 'width'
-const MAX_WIDTH = 'max-' + WIDTH
-const MIN_WIDTH = 'min-' + WIDTH
-const MOTION = 'motion'
-const REDUCE = 'reduce'
-const REDUCED_MOTION = REDUCE + 'd-' + MOTION
-
-const PX = 'px'
-const REM = 'rem'
-
-const selectorSplitRegexp = /(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/
-const transformSelectorUnderline = (selector: string) => selector.split(selectorSplitRegexp)
-    .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/_/g, ' '))
-    .join('')
+import { parseValue } from './utils/parse-value'
+import { SORTED_SELECTORS } from './constants/sorted-selectors'
 
 export class Rule {
 
@@ -39,58 +23,6 @@ export class Rule {
     readonly priority: number = -1
     readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, theme: string, cssRule?: CSSRule }[] = []
 
-    static id: string
-    static matches: string
-    static colorStarts: string
-    static symbol: string
-    static unit = REM
-    static colorful: boolean
-    static get prop(): string {
-        return this.id?.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
-    }
-
-
-    static match(
-        name: string,
-        matches: RegExp,
-        colorThemesMap: Record<string, Record<string, string>>,
-        colorNames: string[]
-    ): RuleMatching {
-        const { colorStarts, symbol, prop } = this
-        /**
-         * STEP 1. matches
-         */
-        if (matches && matches.test(name)) {
-            return { origin: MATCHES }
-        }
-        /**
-         * STEP 2. color starts
-         */
-        // TODO: 動態 new Regex 效能問題待優化
-        if (colorStarts) {
-            if (name.match('^' + colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current|inherit))'))
-                return { origin: MATCHES }
-
-            if (colorNames.length && name.indexOf('|') === -1) {
-                const result = name.match('^' + colorStarts + '((?:' + colorNames.join('|') + ')[0-9a-zA-Z-]*)')
-                if (result && result[1] in colorThemesMap)
-                    return { origin: MATCHES }
-            }
-        }
-        /**
-         * STEP 3. symbol
-         */
-        if (symbol && name.startsWith(symbol)) {
-            return { origin: SYMBOL }
-        }
-        /**
-         * STEP 4. key full name
-         */
-        if (prop && name.startsWith(prop + ':')) {
-            return { origin: MATCHES }
-        }
-    }
-
     constructor(
         public readonly className: string,
         public readonly matching: RuleMatching,
@@ -107,7 +39,7 @@ export class Rule {
 
         // 1. value / selectorToken
         let value: string | Record<string, string | number>, prefixToken: string, suffixToken: string, valueTokens: (string | { value: string })[]
-        if (matching.origin === SEMANTICS) {
+        if (matching.origin === 'semantics') {
             const [semanticName, semanticValue] = matching.value
             suffixToken = token.slice(semanticName.length)
             value = semanticValue
@@ -116,7 +48,7 @@ export class Rule {
                 [prefixToken, valueTokens, suffixToken] = this.analyzeToken(token, values, globalValues)
             } else {
                 let valueToken: string
-                if (matching.origin === MATCHES) {
+                if (matching.origin === 'matches') {
                     const indexOfColon = token.indexOf(':')
                     this.prefix = token.slice(0, indexOfColon + 1)
                     if (this.prefix.includes('(')) {
@@ -125,7 +57,7 @@ export class Rule {
                     } else {
                         valueToken = token.slice(indexOfColon + 1)
                     }
-                } else if (matching.origin === SYMBOL) {
+                } else if (matching.origin === 'symbol') {
                     this.symbol = token[0]
                     valueToken = token.slice(1)
                 }
@@ -142,7 +74,10 @@ export class Rule {
 
         // 3. prefix selector
         const analyzeSelectorToken = (selectorText: string) => {
-            const transformedSelectorText = transformSelectorUnderline(selectorText)
+            const transformedSelectorText =
+                selectorText.split(/(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/)
+                    .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/_/g, ' '))
+                    .join('')
             const selectors = []
 
             let currentSelector = ''
@@ -249,8 +184,8 @@ export class Rule {
                         this.hasWhere = eachSuffixSelector.includes(':where(')
                     }
 
-                    for (let i = 0; i < PRIORITY_SELECTORS.length; i++) {
-                        if (eachSuffixSelector.includes(PRIORITY_SELECTORS[i])) {
+                    for (let i = 0; i < SORTED_SELECTORS.length; i++) {
+                        if (eachSuffixSelector.includes(SORTED_SELECTORS[i])) {
                             if (this.priority === -1 || this.priority > i) {
                                 this.priority = i
                             }
@@ -312,9 +247,9 @@ export class Rule {
                             } else {
                                 if (typeOrFeatureToken === 'landscape' || typeOrFeatureToken === 'portrait') {
                                     queryTexts.push('(orientation:' + typeOrFeatureToken + ')')
-                                } else if (typeOrFeatureToken === MOTION || typeOrFeatureToken === REDUCED_MOTION) {
-                                    queryTexts.push('(prefers-' + REDUCED_MOTION + ':'
-                                        + (typeOrFeatureToken === MOTION ? 'no-preference' : REDUCE)
+                                } else if (typeOrFeatureToken === 'motion' || typeOrFeatureToken === 'reduced-motion') {
+                                    queryTexts.push('(prefers-reduced-motion:'
+                                        + (typeOrFeatureToken === 'motion' ? 'no-preference' : 'reduce')
                                         + ')')
                                 } else if (mediaQueries && typeOrFeatureToken in mediaQueries) {
                                     queryTexts.push(mediaQueries[typeOrFeatureToken])
@@ -327,17 +262,17 @@ export class Rule {
                                     let correction = 0
                                     if (typeOrFeatureToken.startsWith('<=')) {
                                         extremumOperator = '<='
-                                        featureName = MAX_WIDTH
+                                        featureName = 'max-width'
                                     } else if (typeOrFeatureToken.startsWith('>=') || breakpoints[typeOrFeatureToken]) {
                                         extremumOperator = '>='
-                                        featureName = MIN_WIDTH
+                                        featureName = 'min-width'
                                     } else if (typeOrFeatureToken.startsWith('>')) {
                                         extremumOperator = '>'
-                                        featureName = MIN_WIDTH
+                                        featureName = 'min-width'
                                         correction = .02
                                     } else if (typeOrFeatureToken.startsWith('<')) {
                                         extremumOperator = '<'
-                                        featureName = MAX_WIDTH
+                                        featureName = 'max-width'
                                         correction = -.02
                                     }
                                     const conditionUnitValueToken
@@ -346,14 +281,14 @@ export class Rule {
                                             : typeOrFeatureToken
                                     const breakpoint = breakpoints[conditionUnitValueToken]
                                     switch (featureName) {
-                                        case MAX_WIDTH:
-                                        case MIN_WIDTH:
+                                        case 'max-width':
+                                        case 'min-width':
                                             if (breakpoint) {
-                                                Object.assign(feature, parseValue(breakpoint, PX))
+                                                Object.assign(feature, parseValue(breakpoint, 'px'))
                                             } else {
-                                                Object.assign(feature, parseValue(conditionUnitValueToken, PX))
+                                                Object.assign(feature, parseValue(conditionUnitValueToken, 'px'))
                                             }
-                                            if (feature.unit === PX) {
+                                            if (feature.unit === 'px') {
                                                 feature.value += correction
                                             }
                                             this.media.features[featureName] = feature
@@ -568,12 +503,70 @@ export class Rule {
     }
 }
 
+/*@__PURE__*/
+(() => {
+    Object.assign(Rule, {
+        unit: 'rem',
+        get prop(): string {
+            return this.id?.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
+        },
+        match(
+            name: string,
+            matches: RegExp,
+            colorThemesMap: Record<string, Record<string, string>>,
+            colorNames: string[]
+        ): RuleMatching {
+            const { colorStarts, symbol, prop } = this
+            /**
+             * STEP 1. matches
+             */
+            if (matches && matches.test(name)) {
+                return { origin: 'matches' }
+            }
+            /**
+             * STEP 2. color starts
+             */
+            // TODO: 動態 new Regex 效能問題待優化
+            if (colorStarts) {
+                if (name.match('^' + colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current|inherit))'))
+                    return { origin: 'matches' }
+
+                if (colorNames.length && name.indexOf('|') === -1) {
+                    const result = name.match('^' + colorStarts + '((?:' + colorNames.join('|') + ')[0-9a-zA-Z-]*)')
+                    if (result && result[1] in colorThemesMap)
+                        return { origin: 'matches' }
+                }
+            }
+            /**
+             * STEP 3. symbol
+             */
+            if (symbol && name.startsWith(symbol)) {
+                return { origin: 'symbol' }
+            }
+            /**
+             * STEP 4. key full name
+             */
+            if (prop && name.startsWith(prop + ':')) {
+                return { origin: 'matches' }
+            }
+        }
+    })
+})()
+
 export interface Rule {
     readonly order?: number;
     analyzeToken(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | { value: string }>, string];
     parseValue(value: string, config: Config): string;
     get(declaration: Declaration): Record<string, any>;
     getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>>;
+    prototype: {
+        id: string
+        matches: string
+        colorStarts: string
+        symbol: string
+        colorful: boolean
+        unit
+    }
 }
 
 export interface MediaFeatureRule {

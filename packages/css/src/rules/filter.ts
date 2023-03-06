@@ -1,4 +1,5 @@
-import { Rule, Config } from '../'
+import { Rule } from '../rule'
+import { Config } from '..'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
 export class Filter extends Rule {

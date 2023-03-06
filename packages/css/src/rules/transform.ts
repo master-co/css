@@ -1,4 +1,5 @@
-import { Rule, Config } from '../'
+import { Rule } from '../rule'
+import { Config } from '..'
 
 export class Transform extends Rule {
     static override id = 'Transform' as const

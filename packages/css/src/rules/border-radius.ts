@@ -1,4 +1,4 @@
-import { Rule } from '../'
+import { Rule } from '../rule'
 
 const BORDER_TOP_LEFT_RADIUS = 'border-top-left-radius',
     BORDER_TOP_RIGHT_RADIUS = 'border-top-right-radius',

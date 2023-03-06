@@ -1,4 +1,4 @@
-import { Rule } from '../'
+import { Rule } from '../rule'
 
 export class AnimationIterationCount extends Rule {
     static override id = 'AnimationIterationCount' as const

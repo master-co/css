@@ -1,5 +1,5 @@
 import { analyzeValueToken } from '../utils/analyze-value-token'
-import { Rule } from '../'
+import { Rule } from '../rule'
 
 export class MinWH extends Rule {
     static override id = 'MinWH' as const

@@ -1,4 +1,4 @@
-import { Rule } from '../'
+import { Rule } from '../rule'
 
 export class MinWidth extends Rule {
     static override id = 'MinWidth' as const

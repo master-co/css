@@ -1,7 +1,7 @@
 {
     "name": "@master/css-compiler",
     "scripts": {
-        "build": "aron pack",
+        "build": "aron pack --platform node",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
         "test": "jest"

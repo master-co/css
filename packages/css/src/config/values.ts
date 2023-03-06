@@ -1,35 +1,14 @@
-import { breakpoints } from './breakpoints'
+import { BOX_UNDERNEATH } from '../constants/box-underneath'
+import { CONTENT_EXTREMA } from '../constants/content-extrema'
 
-const boxUnderneath = {
-    content: 'content-box',
-    border: 'border-box',
-    padding: 'padding-box'
-}
-
-const contentExtrema = {
-    min: 'min-content',
-    max: 'max-content'
-}
-
-const sizingValues = {
-    full: '100%',
-    fit: 'fit-content',
-    max: 'max-content',
-    min: 'min-content',
-}
-for (const key in breakpoints) {
-    sizingValues[key] = (breakpoints[key] / 16) + 'rem'
-}
-
-export const values = {
-    BackgroundClip: boxUnderneath,
-    BackgroundOrigin: boxUnderneath,
+const values = {
+    BackgroundClip: BOX_UNDERNEATH,
+    BackgroundOrigin: BOX_UNDERNEATH,
     BoxSizing: {
         content: 'content-box',
         border: 'border-box',
     },
     ClipPath: {
-        ...boxUnderneath,
         margin: 'margin-box',
         fill: 'fill-box',
         stroke: 'stroke-box',
@@ -55,10 +34,10 @@ export const values = {
         extrabold: 800,
         heavy: 900
     },
-    GridAutoColumns: contentExtrema,
-    GridAutoRows: contentExtrema,
-    GridTemplateColumns: contentExtrema,
-    GridTemplateRows: contentExtrema,
+    GridAutoColumns: CONTENT_EXTREMA,
+    GridAutoRows: CONTENT_EXTREMA,
+    GridTemplateColumns: CONTENT_EXTREMA,
+    GridTemplateRows: CONTENT_EXTREMA,
     Order: {
         first: -999999,
         last: 999999
@@ -68,20 +47,27 @@ export const values = {
         rel: 'relative'
     },
     ShapeOutside: {
-        ...boxUnderneath,
         margin: 'margin-box'
     },
     TransformBox: {
-        ...boxUnderneath,
         fill: 'fill-box',
         stroke: 'stroke-box',
         view: 'view-box'
     },
-    Width: sizingValues,
-    MinWidth: sizingValues,
-    MinHeight: sizingValues,
-    MaxWidth: sizingValues,
-    MaxHeight: sizingValues,
-    Height: sizingValues,
-    FlexBasis: sizingValues
-}
+    Width: BOX_UNDERNEATH,
+    MinWidth: BOX_UNDERNEATH,
+    MinHeight: BOX_UNDERNEATH,
+    MaxWidth: BOX_UNDERNEATH,
+    MaxHeight: BOX_UNDERNEATH,
+    Height: BOX_UNDERNEATH,
+    FlexBasis: BOX_UNDERNEATH
+};
+
+/* @__PURE__ */
+(() => {
+    Object.assign(values.ClipPath, BOX_UNDERNEATH)
+    Object.assign(values.ShapeOutside, BOX_UNDERNEATH)
+    Object.assign(values.TransformBox, BOX_UNDERNEATH)
+})()
+
+export { values }

@@ -1,10 +1,8 @@
-const UNIT_VALUE_PATTERN = /^([+-.]?\d+(\.?\d+)?)(.*)?/
-
 export function analyzeUnitValue(token: string, rootSize: number, defaultUnit: string): { value: string, unit: string } {
     if (defaultUnit) {
         let unit = ''
 
-        const matches = token.match(UNIT_VALUE_PATTERN)
+        const matches = token.match(/^([+-.]?\d+(\.?\d+)?)(.*)?/)
         // ['0.5deg', '0.5', 'deg', index: 0, input: '0.5deg', groups: undefined]
         if (matches) {
             if (token.includes('/')) {

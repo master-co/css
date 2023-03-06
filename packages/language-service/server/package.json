@@ -1,7 +1,7 @@
 {
     "name": "@master/css-language-server",
     "scripts": {
-        "build": "aron pack",
+        "build": "aron pack --platform node",
         "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"

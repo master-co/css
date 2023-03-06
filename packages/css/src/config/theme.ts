@@ -1,1 +1,3 @@
-export { defaultThemeConfig as theme } from '../'
+export const theme = {
+    store: 'theme'
+}

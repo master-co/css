@@ -9,6 +9,7 @@
 
 # monorepo
 **/*dist
+**/*dist-test
 **/*node_modules
 **/*.turbo
 **/*out

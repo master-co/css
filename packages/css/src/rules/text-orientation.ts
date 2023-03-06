@@ -1,4 +1,4 @@
-import { Rule } from '../'
+import { Rule } from '../rule'
 
 export class TextOrientation extends Rule {
     static override id = 'TextOrientation' as const

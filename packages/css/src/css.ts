@@ -1,26 +1,14 @@
 import extend from 'to-extend'
-import { Rule, RuleMatching, Theme, Config, config as defaultConfig } from './'
+import { Rule, RuleMatching } from './rule'
+import type { Config } from './'
+import { config as defaultConfig } from './config'
+import { Theme } from './theme'
 import { rgbToHex } from './utils/rgb-to-hex'
+import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 
-const selectorSymbols = [',', '.', '#', '[', '!', '*', '>', '+', '~', ':', '@']
-const vendorPrefixSelectorRegExp = /^::-[a-z]+-/m
-const rgbaRegExp = /^rgba?\( *([0-9]{1,3}) *(?: |,) *([0-9]{1,3}) *(?: |,) *([0-9]{1,3}) *(?:(?:\/|,) *0?(\.[0-9]))?\)$/
-
-let STYLE: HTMLStyleElement
 const isBrowser = typeof window !== 'undefined'
-if (isBrowser) {
-    STYLE = document.createElement('style')
-    STYLE.title = 'master'
-}
-const MAX_WIDTH = 'max-width'
-const MIN_WIDTH = 'min-width'
-const ATTRIBUTES = 'attributes'
 
-const MutationObserver = isBrowser
-    ? window.MutationObserver
-    : Object
-
-export class MasterCSS extends MutationObserver {
+export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
 
     static instances: MasterCSS[] = []
     static root: MasterCSS
@@ -121,7 +109,7 @@ export class MasterCSS extends MutationObserver {
             for (let i = 0; i < mutationRecords.length; i++) {
                 const mutationRecord = mutationRecords[i]
                 const { addedNodes, removedNodes, type, target, oldValue } = mutationRecord
-                if (type === ATTRIBUTES) {
+                if (type === 'attributes') {
                     /**
                      * 防止同樣的 MutationRecord 重複執行
                      * According to this history,
@@ -294,7 +282,7 @@ export class MasterCSS extends MutationObserver {
             for (const [replacedSelectorText, newSelectorText] of Object.entries(getFlatData(selectors, false))) {
                 const regexp = new RegExp(escapeString(replacedSelectorText) + '(?![a-z-])')
                 for (const eachNewSelectorText of Array.isArray(newSelectorText) ? newSelectorText : [newSelectorText]) {
-                    const vendor = eachNewSelectorText.match(vendorPrefixSelectorRegExp)?.[0] ?? ''
+                    const vendor = eachNewSelectorText.match(/^::-[a-z]+-/m)?.[0] ?? ''
 
                     let selectorValues = this.selectors[vendor]
                     if (!selectorValues) {
@@ -449,7 +437,7 @@ export class MasterCSS extends MutationObserver {
             }
         }
         colorThemesMapLoop((colorName, themeColorMap, theme, color) => {
-            const result = rgbaRegExp.exec(color)
+            const result = /^rgba?\( *([0-9]{1,3}) *(?: |,) *([0-9]{1,3}) *(?: |,) *([0-9]{1,3}) *(?:(?:\/|,) *0?(\.[0-9]))?\)$/.exec(color)
             if (result) {
                 let hexColor = '#' + rgbToHex(+result[1], +result[2], +result[3])
                 if (result[4]) {
@@ -548,7 +536,7 @@ export class MasterCSS extends MutationObserver {
 
                                                 continue
                                             }
-                                        } else if (selectorSymbols.includes(char)) {
+                                        } else if (SELECTOR_SYMBOLS.includes(char)) {
                                             break
                                         }
 
@@ -584,7 +572,8 @@ export class MasterCSS extends MutationObserver {
                 }
             } else {
                 // @ts-ignore
-                this.style = STYLE.cloneNode() as HTMLStyleElement
+                this.style = document.createElement('style')
+                this.style.title = 'master'
                 /** 為提高優先層級，插入於任何 <link rel="styleSheet"> 或 <style> 之前 */
                 const firstStyleElement = container.querySelector('link[rel="styleSheet"], style')
                 if (firstStyleElement) {
@@ -707,7 +696,8 @@ export class MasterCSS extends MutationObserver {
             return
         }
 
-        const style = STYLE.cloneNode() as HTMLStyleElement
+        const style = document.createElement('style')
+        style.title = 'master'
         this.style.replaceWith(style)
         // @ts-ignore
         this.style = style
@@ -867,8 +857,8 @@ export class MasterCSS extends MutationObserver {
             if (media) {
                 const mediaStartIndex = this.rules.findIndex(eachRule => eachRule.media)
                 if (mediaStartIndex !== -1) {
-                    const maxWidthFeature = media.features[MAX_WIDTH]
-                    const minWidthFeature = media.features[MIN_WIDTH]
+                    const maxWidthFeature = media.features['max-width']
+                    const minWidthFeature = media.features['min-width']
                     if (maxWidthFeature && minWidthFeature) {
                         /**
                          * 範圍越小 ( 越限定 越侷限 ) 越優先，
@@ -882,8 +872,8 @@ export class MasterCSS extends MutationObserver {
 
                             const eachRule = this.rules[i]
                             const eachMedia = eachRule.media
-                            const eachMaxWidthFeature = eachMedia.features[MAX_WIDTH]
-                            const eachMinWidthFeature = eachMedia.features[MIN_WIDTH]
+                            const eachMaxWidthFeature = eachMedia.features['max-width']
+                            const eachMinWidthFeature = eachMedia.features['min-width']
                             if (!eachMaxWidthFeature || !eachMinWidthFeature) {
                                 index++
                                 break
@@ -902,8 +892,8 @@ export class MasterCSS extends MutationObserver {
                                             break
 
                                         const currentMedia = currentMediaRule.media
-                                        const currentMaxWidthFeature = currentMedia.features[MAX_WIDTH]
-                                        const currentMinWidthFeature = currentMedia.features[MIN_WIDTH]
+                                        const currentMaxWidthFeature = currentMedia.features['max-width']
+                                        const currentMinWidthFeature = currentMedia.features['min-width']
                                         if (
                                             !currentMaxWidthFeature
                                             || !currentMinWidthFeature
@@ -916,7 +906,7 @@ export class MasterCSS extends MutationObserver {
 
                                     index = findPrioritySelectorInsertIndex(
                                         this.rules,
-                                        eachRule => eachRule.media && eachRule.priority !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH])
+                                        eachRule => eachRule.media && eachRule.priority !== -1 && eachRule.media.features['min-width'] && eachRule.media.features['max-width'])
                                 }
 
                                 break
@@ -934,8 +924,8 @@ export class MasterCSS extends MutationObserver {
 
                             const eachRule = this.rules[i]
                             const eachMedia = eachRule.media
-                            const eachMaxWidthFeature = eachMedia.features[MAX_WIDTH]
-                            const eachMinWidthFeature = eachMedia.features[MIN_WIDTH]
+                            const eachMaxWidthFeature = eachMedia.features['max-width']
+                            const eachMinWidthFeature = eachMedia.features['min-width']
                             if (eachMaxWidthFeature) {
                                 /**
                                  * 永遠插入在 range feature 前
@@ -958,14 +948,14 @@ export class MasterCSS extends MutationObserver {
                                     index = findPrioritySelectorInsertIndex(
                                         this.rules,
                                         eachRule => eachRule.media,
-                                        eachRule => eachRule.media && eachRule.priority !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH],
-                                        eachRule => !eachRule.media.features[MIN_WIDTH] && !eachRule.media.features[MAX_WIDTH])
+                                        eachRule => eachRule.media && eachRule.priority !== -1 && eachRule.media.features['min-width'] && eachRule.media.features['max-width'],
+                                        eachRule => !eachRule.media.features['min-width'] && !eachRule.media.features['max-width'])
                                 } else {
                                     for (let j = i; j <= endIndex; j++) {
                                         const currentMediaRule = this.rules[j]
                                         const currentMedia = currentMediaRule.media
-                                        const currentMinWidthFeature = currentMedia.features[MIN_WIDTH]
-                                        const currentMaxWidthFeature = currentMedia.features[MAX_WIDTH]
+                                        const currentMinWidthFeature = currentMedia.features['min-width']
+                                        const currentMaxWidthFeature = currentMedia.features['max-width']
 
                                         if (currentMaxWidthFeature)
                                             continue
@@ -998,8 +988,8 @@ export class MasterCSS extends MutationObserver {
 
                             const eachRule = this.rules[i]
                             const eachMedia = eachRule.media
-                            const eachMaxWidthFeature = eachMedia.features[MAX_WIDTH]
-                            const eachMinWidthFeature = eachMedia.features[MIN_WIDTH]
+                            const eachMaxWidthFeature = eachMedia.features['max-width']
+                            const eachMinWidthFeature = eachMedia.features['min-width']
                             if (eachMinWidthFeature) {
                                 /**
                                  * 永遠插入在 range feature 前
@@ -1019,15 +1009,15 @@ export class MasterCSS extends MutationObserver {
                                     index = findPrioritySelectorInsertIndex(
                                         this.rules,
                                         eachRule => eachRule.media,
-                                        eachRule => eachRule.media && eachRule.priority !== -1 && eachRule.media.features[MIN_WIDTH] && eachRule.media.features[MAX_WIDTH],
-                                        eachRule => !eachRule.media.features[MIN_WIDTH] && !eachRule.media.features[MAX_WIDTH])
+                                        eachRule => eachRule.media && eachRule.priority !== -1 && eachRule.media.features['min-width'] && eachRule.media.features['max-width'],
+                                        eachRule => !eachRule.media.features['min-width'] && !eachRule.media.features['max-width'])
                                 } else {
                                     const sameRangeRules = [this.rules[i]]
                                     for (let j = i - 1; j >= mediaStartIndex; j--) {
                                         const currentMediaRule = this.rules[j]
                                         const currentMedia = currentMediaRule.media
-                                        const currentMinWidthFeature = currentMedia.features[MIN_WIDTH]
-                                        const currentMaxWidthFeature = currentMedia.features[MAX_WIDTH]
+                                        const currentMinWidthFeature = currentMedia.features['min-width']
+                                        const currentMaxWidthFeature = currentMedia.features['max-width']
 
                                         if (
                                             !currentMinWidthFeature
@@ -1043,7 +1033,7 @@ export class MasterCSS extends MutationObserver {
                                     for (let j = 0; j < sameRangeRules.length; j++) {
                                         const currentMediaRule = sameRangeRules[j]
 
-                                        if (currentMediaRule.media.features[MIN_WIDTH])
+                                        if (currentMediaRule.media.features['min-width'])
                                             continue
 
                                         if (currentMediaRule.order >= order)
@@ -1071,7 +1061,7 @@ export class MasterCSS extends MutationObserver {
                             findPrioritySelectorInsertIndex(
                                 this.rules.slice(mediaStartIndex),
                                 undefined,
-                                eachRule => eachRule.media.features[MAX_WIDTH] || eachRule.media.features[MIN_WIDTH])
+                                eachRule => eachRule.media.features['max-width'] || eachRule.media.features['min-width'])
                     } else if (hasWhere) {
                         // 不含優先 selector，且含有 where，優先級最低
                         let i = mediaStartIndex
@@ -1093,7 +1083,7 @@ export class MasterCSS extends MutationObserver {
 
                             const eachRule = this.rules[i]
                             const eachMedia = eachRule.media
-                            if (eachRule.priority !== -1 || eachMedia.features[MAX_WIDTH] || eachMedia.features[MIN_WIDTH])
+                            if (eachRule.priority !== -1 || eachMedia.features['max-width'] || eachMedia.features['min-width'])
                                 break
 
                             if (eachRule.hasWhere) {
@@ -1182,6 +1172,13 @@ export class MasterCSS extends MutationObserver {
         return this.rules.map((eachRule) => eachRule.text).join('')
     }
 }
+
+/* @__PURE__ */
+(() => {
+    if (isBrowser) {
+        window.MasterCSS = MasterCSS
+    }
+})()
 
 declare global {
     interface Window {
