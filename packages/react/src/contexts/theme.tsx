@@ -1,4 +1,4 @@
-import { Theme, ThemeConfig, ThemeValue, themeConfig } from '@master/css'
+import { Theme, ThemeConfig, ThemeValue, theme } from '@master/css'
 import { createContext, ReactElement, useCallback, useContext, useState } from 'react'
 import { useIsomorphicEffect } from '../uses'
 import { useCSS } from './css'
@@ -7,7 +7,7 @@ const ThemeContext = createContext<Theme>(null)
 
 export const ThemeProvider = ({
     host,
-    config = themeConfig,
+    config = theme,
     children
 }: {
     host?: HTMLElement,

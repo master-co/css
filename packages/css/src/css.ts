@@ -104,7 +104,7 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
 
             for (let i = 0; i < mutationRecords.length; i++) {
                 const mutationRecord = mutationRecords[i]
-                const { addedNodes, removedNodes, type, target, oldValue } = mutationRecord
+                const { addedNodes, removedNodes, type, target } = mutationRecord
                 if (type === 'attributes') {
                     /**
                      * 防止同樣的 MutationRecord 重複執行
@@ -214,7 +214,7 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
             this.observe(document)
         }
 
-        this.constructor.instances.push(this)
+        registeredCSS.push(this)
         this.ready = true
     }
 
@@ -463,9 +463,9 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
         if (rules) {
             for (const id in rules) {
                 const eachRuleConfig = rules[id]
+                const { matches, prop } = eachRuleConfig
                 eachRuleConfig.id = id
-                eachRuleConfig.prop = id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
-                const { matches } = eachRuleConfig
+                eachRuleConfig.prop = prop === false ? '' : id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
                 if (matches) {
                     const valueKeys = Object.keys(this.values[id] ?? {})
                     const index = matches.indexOf('$values')
@@ -640,8 +640,8 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
     match(className: string): RuleMeta {
         for (const id in this.config.rules) {
             const eachRuleConfig = this.config.rules[id]
-            const { colorStarts, symbol, prop } = eachRuleConfig
             const matches = this.matches[id]
+            const { colorStarts, symbol, prop } = eachRuleConfig
             const { colorNames, colorThemesMap } = this
             /**
              * STEP 1. matches
@@ -678,11 +678,12 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
         }
 
         for (const eachSemanticEntry of this.semantics) {
-            if (className.match(eachSemanticEntry[0]))
+            if (className.match(eachSemanticEntry[0])) {
                 return {
                     origin: 'semantics',
                     value: eachSemanticEntry[1]
                 }
+            }
         }
     }
 
@@ -743,9 +744,8 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
     }
 
     destroy() {
-        const instances = this.constructor.instances
         this.disconnect()
-        instances.splice(instances.indexOf(this), 1)
+        registeredCSS.splice(registeredCSS.indexOf(this), 1)
     }
 
     /**
@@ -1201,23 +1201,13 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
     }
 }
 
-/* @__PURE__ */
-(() => {
-    Object.assign(MasterCSS, {
-        instances: [],
-        /**
-         * 全部 sheet 根據目前蒐集到的所有 DOM class 重新 create
-         */
-        refresh(config: Config) {
-            for (const eachInstance of this.instances) {
-                eachInstance.refresh(config)
-            }
-        }
-    })
-    if (isBrowser) {
-        window.MasterCSS = MasterCSS
+export const registeredCSS: MasterCSS[] = []
+
+export function refreshCSS(config: Config) {
+    for (const eachRegisteredCSS of registeredCSS) {
+        eachRegisteredCSS.refresh(config)
     }
-})()
+}
 
 declare global {
     interface Window {

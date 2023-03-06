@@ -57,7 +57,7 @@ test('values', () => {
         '.content\\:delimiter{content:"123"}',
         {
             values: {
-                Content: {
+                content: {
                     delimiter: '"123"'
                 }
             }
@@ -68,7 +68,7 @@ test('values', () => {
         '.content\\:delimiter{content:"|"}',
         {
             values: {
-                Content: {
+                content: {
                     delimiter: '"|"'
                 }
             }
@@ -84,7 +84,7 @@ test('values', () => {
                 }
             },
             values: {
-                Border: {
+                border: {
                     input: '1|solid|base-70'
                 }
             }

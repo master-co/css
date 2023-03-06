@@ -1,5 +1,4 @@
 export const gridColumns = {
-    id: 'GridColumns' as const,
     matches: '^grid-cols:.',
     unit: '',
     get(declaration): { [key: string]: any } {

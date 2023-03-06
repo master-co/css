@@ -41,7 +41,8 @@
         "mastercss"
     ],
     "sideEffects": [
-        "./src/polyfills/css-escape.ts"
+        "./src/polyfills/css-escape.ts",
+        "./src/init.ts"
     ],
     "main": "./dist/index.cjs",
     "jsnext:main": "./dist/index.mjs",

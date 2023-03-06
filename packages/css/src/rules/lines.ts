@@ -1,8 +1,7 @@
 export const lines = {
-    id: 'Lines' as const,
     matches: '^lines:.',
     unit: '',
-    get prop() { return '' },
+    prop: false,
     get(declaration): { [key: string]: any } {
         return {
             overflow: { ...declaration, value: 'hidden' },

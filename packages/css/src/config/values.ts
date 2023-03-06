@@ -1,29 +1,30 @@
 import { BOX_UNDERNEATH } from '../constants/box-underneath'
 import { CONTENT_EXTREMA } from '../constants/content-extrema'
+import { SIZING_VALUES } from '../constants/sizing-values'
 
 const values = {
-    BackgroundClip: BOX_UNDERNEATH,
-    BackgroundOrigin: BOX_UNDERNEATH,
-    BoxSizing: {
+    backgroundClip: BOX_UNDERNEATH,
+    backgroundOrigin: BOX_UNDERNEATH,
+    boxSizing: {
         content: 'content-box',
         border: 'border-box',
     },
-    ClipPath: {
+    clipPath: {
         margin: 'margin-box',
         fill: 'fill-box',
         stroke: 'stroke-box',
         view: 'view-box'
     },
-    FlexDirection: {
+    flexDirection: {
         col: 'column',
         'col-reverse': 'column-reverse'
     },
-    FontFamily: {
+    fontFamily: {
         mono: 'ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace',
         sans: 'ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
         serif: 'ui-serif,Georgia,Cambria,Times New Roman,Times,serif'
     },
-    FontWeight: {
+    fontWeight: {
         thin: 100,
         extralight: 200,
         light: 300,
@@ -34,40 +35,40 @@ const values = {
         extrabold: 800,
         heavy: 900
     },
-    GridAutoColumns: CONTENT_EXTREMA,
-    GridAutoRows: CONTENT_EXTREMA,
-    GridTemplateColumns: CONTENT_EXTREMA,
-    GridTemplateRows: CONTENT_EXTREMA,
-    Order: {
+    gridAutoColumns: CONTENT_EXTREMA,
+    gridAutoRows: CONTENT_EXTREMA,
+    gridTemplateColumns: CONTENT_EXTREMA,
+    gridTemplateRows: CONTENT_EXTREMA,
+    order: {
         first: -999999,
         last: 999999
     },
-    Position: {
+    position: {
         abs: 'absolute',
         rel: 'relative'
     },
-    ShapeOutside: {
+    shapeOutside: {
         margin: 'margin-box'
     },
-    TransformBox: {
+    transformBox: {
         fill: 'fill-box',
         stroke: 'stroke-box',
         view: 'view-box'
     },
-    Width: BOX_UNDERNEATH,
-    MinWidth: BOX_UNDERNEATH,
-    MinHeight: BOX_UNDERNEATH,
-    MaxWidth: BOX_UNDERNEATH,
-    MaxHeight: BOX_UNDERNEATH,
-    Height: BOX_UNDERNEATH,
-    FlexBasis: BOX_UNDERNEATH
+    width: SIZING_VALUES,
+    minWidth: SIZING_VALUES,
+    minHeight: SIZING_VALUES,
+    maxWidth: SIZING_VALUES,
+    maxHeight: SIZING_VALUES,
+    height: SIZING_VALUES,
+    flexBasis: SIZING_VALUES
 };
 
 /* @__PURE__ */
 (() => {
-    Object.assign(values.ClipPath, BOX_UNDERNEATH)
-    Object.assign(values.ShapeOutside, BOX_UNDERNEATH)
-    Object.assign(values.TransformBox, BOX_UNDERNEATH)
+    Object.assign(values.clipPath, BOX_UNDERNEATH)
+    Object.assign(values.shapeOutside, BOX_UNDERNEATH)
+    Object.assign(values.transformBox, BOX_UNDERNEATH)
 })()
 
 export { values }

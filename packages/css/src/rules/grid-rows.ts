@@ -1,5 +1,4 @@
 export const gridRows = {
-    id: 'GridRows' as const,
     unit: '',
     get(declaration): { [key: string]: any } {
         return {

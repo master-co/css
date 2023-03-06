@@ -1,7 +1,6 @@
 export const textStroke = {
-    id: 'TextStroke' as const,
     matches: '^text-stroke:.',
-    get prop() { return '' },
+    prop: false,
     get(declaration): { [key: string]: any } {
         return {
             '-webkit-text-stroke': declaration

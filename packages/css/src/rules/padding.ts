@@ -1,7 +1,6 @@
 export const padding = {
-    id: 'Padding' as const,
     matches: '^padding(?:-(?:left|right|top|bottom))?:.',
-    get prop() { return '' },
+    prop: false,
     get(declaration): { [key: string]: any } {
         return {
             [this.prefix.slice(0, -1)]: declaration

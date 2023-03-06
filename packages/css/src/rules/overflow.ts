@@ -1,7 +1,6 @@
 export const overflow = {
-    id: 'Overflow' as const,
     matches: '^overflow(?:-x|-y)?:(?:visible|overlay|hidden|scroll|auto|clip|inherit|initial|revert|revert-layer|unset|\\$|var|$values)',
-    get prop() { return '' },
+    prop: false,
     get(declaration): { [key: string]: any } {
         if (this.prefix) {
             switch (this.prefix.slice(-2, -1)) {

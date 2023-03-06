@@ -1,4 +1,4 @@
-import type { Config, MasterCSS } from '@master/css'
+import { Config, MasterCSS, registeredCSS } from '@master/css'
 import { ReactElement, useEffect, useState } from 'react'
 import { CSSContext } from './css'
 
@@ -16,7 +16,7 @@ export const CSSLazyProvider = ({
         if (!css) {
             Promise.all([import('@master/css'), config])
                 .then(([{ MasterCSS }, configModule]) => {
-                    const existingCSS = MasterCSS.instances.find((eachCSS) => eachCSS.root === root)
+                    const existingCSS = registeredCSS.find((eachCSS) => eachCSS.root === root)
                     const resolvedConfig = configModule.config || configModule.default || configModule
                     setCSS(existingCSS || new MasterCSS({ ...resolvedConfig }))
                 })

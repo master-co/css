@@ -2,7 +2,6 @@ import { Rule } from '../rule'
 import { Config } from '..'
 
 export const transform = {
-    id: 'Transform' as const,
     matches: '^(?:translate|scale|skew|rotate|perspective|matrix)(?:3d|[XYZ])?\\(',
     unit: '',
     parseValue(value: string, { rootSize }: Config): string {

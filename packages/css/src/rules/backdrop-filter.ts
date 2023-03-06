@@ -3,7 +3,6 @@ import { Config } from '..'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
 export const backdropFilter = {
-    id: 'BackdropFilter' as const,
     matches: '^bd:.',
     colorful: true,
     get(declaration): { [key: string]: any } {

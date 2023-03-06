@@ -1,5 +1,4 @@
 export const gridRow = {
-    id: 'GridRow' as const,
     matches: '^grid-row-span:.',
     unit: '',
     order: -1,

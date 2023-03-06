@@ -1,8 +1,7 @@
 import { analyzeValueToken } from '../utils/analyze-value-token'
 export const wH = {
-    id: 'WH' as const,
     matches: '^(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)x(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)',
-    get prop() { return '' },
+    prop: false,
     analyzeToken(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | { value: string }>, string] {
         return ['', ...analyzeValueToken(token, values, globalValues, ['x'])]
     },

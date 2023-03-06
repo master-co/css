@@ -47,7 +47,7 @@ export class Rule {
             value = semanticValue
         } else {
             if (analyzeToken) {
-                [prefixToken, valueTokens, suffixToken] = analyzeToken(token, values, globalValues)
+                [prefixToken, valueTokens, suffixToken] = analyzeToken.call(this, token, values, globalValues)
             } else {
                 let valueToken: string
                 if (meta.origin === 'matches') {
@@ -418,7 +418,7 @@ export class Rule {
                 if (typeof newValue !== 'object') {
                     // 8. parseValue
                     if (parseValue) {
-                        newValue = parseValue(newValue, this.css.config)
+                        newValue = parseValue.call(this, newValue, this.css.config)
                     }
 
                     // 9. transform value
@@ -432,7 +432,7 @@ export class Rule {
                         important: this.important
                     }
                     if (getThemeProps) {
-                        const themeProps = getThemeProps(declaration, css)
+                        const themeProps: Record<string, Record<string, string>> = getThemeProps.call(this, declaration, css)
                         for (const theme in themeProps) {
                             for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
                                 this.natives.push({
@@ -456,7 +456,7 @@ export class Rule {
                         }
                         return
                     } else if (get) {
-                        newValue = get(declaration)
+                        newValue = get.call(this, declaration)
                     }
                 }
             } else {
@@ -563,7 +563,7 @@ export interface RuleConfig {
     symbol?: string
     colorful?: boolean
     unit?: any
-    prop?: string
+    prop?: string | false
     analyzeToken?(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | {
         value: string
     }>, string]

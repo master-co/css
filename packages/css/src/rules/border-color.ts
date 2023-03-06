@@ -2,11 +2,10 @@ import { Rule } from '../rule'
 import { getBorderProps } from '../utils/get-border-props'
 
 export const borderColor = {
-    id: 'BorderColor' as const,
     matches: '^border(?:-(?:left|right|top|bottom))?-color:.',
     colorStarts: 'b(?:[xytblr]|(?:order(?:-(?:left|right|top|bottom))?))?:',
     colorful: true,
-    get prop() { return '' },
+    prop: false,
     get(declaration): { [key: string]: any } {
         return getBorderProps(this.prefix, declaration, 'color')
     },

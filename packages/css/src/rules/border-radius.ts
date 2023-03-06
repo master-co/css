@@ -6,9 +6,8 @@ const BORDER_TOP_LEFT_RADIUS = 'border-top-left-radius',
     BORDER_RADIUS_S = [BORDER_TOP_LEFT_RADIUS, BORDER_TOP_RIGHT_RADIUS, BORDER_BOTTOM_LEFT_RADIUS, BORDER_BOTTOM_RIGHT_RADIUS]
 
 export const borderRadius = {
-    id: 'BorderRadius' as const,
     matches: '^(?:r[tblr]?[tblr]?|border(?:-(?:top|bottom)-(?:left|right))?-radius):.',
-    get prop() { return '' },
+    prop: false,
     get(declaration): { [key: string]: any } {
         if (this.prefix) {
             let suffix = ''

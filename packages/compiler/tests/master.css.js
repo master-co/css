@@ -64,7 +64,7 @@ const config = {
     values: {
         '2x': '32',
         '3x': '3rem',
-        Width: {
+        width: {
             x: {
                 '1': {
                     '1': '25rem',
@@ -74,20 +74,20 @@ const config = {
                 '2': '100rem'
             }
         },
-        FontSize: {
+        fontSize: {
             sm: 16,
             md: 20
         },
-        LetterSpacing: {
+        letterSpacing: {
             wide: .4
         },
-        Border: {
+        border: {
             'inputborder': '2|solid|red'
         },
-        BoxShadow: {
+        boxShadow: {
             '2x': '0 25px 50px -12px rgb(0 0 0 / 25%)'
         },
-        Inset: {
+        inset: {
             sm: 10,
             md: 20
         }

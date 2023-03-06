@@ -1,7 +1,6 @@
 export const overscrollBehavior = {
-    id: 'OverscrollBehavior' as const,
     matches: '^overscroll-behavior(?:-[xy])?:',
-    get prop() { return '' },
+    prop: false,
     get(declaration): { [key: string]: any } {
         switch (this.prefix.slice(-2, -1)) {
         case 'x':

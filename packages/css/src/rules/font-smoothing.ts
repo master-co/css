@@ -3,10 +3,9 @@ const WEBKIT_FONT_SMOOTHING = '-webkit-font-smoothing'
 const MOZ_OSXFONT_SMOOTHING = '-moz-osx-font-smoothing'
 
 export const fontSmoothing = {
-    id: 'FontSmoothing' as const,
     matches: '^f(?:ont)?:(?:antialiased|subpixel-antialiased|$values)(?!\\|)',
     unit: '',
-    get prop() { return '' },
+    prop: false,
     get(declaration): { [key: string]: any } {
         const props = {}
         switch (declaration.value) {

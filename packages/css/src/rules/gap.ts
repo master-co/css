@@ -1,8 +1,7 @@
 export const gap = {
-    id: 'Gap' as const,
     matches: '^gap(?:-x|-y)?:.',
     order: -1,
-    get prop() { return '' },
+    prop: false,
     get(declaration): { [key: string]: any } {
         switch (this.prefix[4]) {
         case 'x':

@@ -1,3 +1,5 @@
+import './init'
+
 // core
 export { MasterCSS as default } from './css'
 export * from './css'

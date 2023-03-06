@@ -1,7 +1,6 @@
 export const scrollMargin = {
-    id: 'ScrollMargin' as const,
     matches: '^scroll-m(?:[xytblr]|argin(?:-(?:top|bottom|left|right))?)?:.',
-    get prop() { return '' },
+    prop: false,
     get(declaration): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'm') {
             switch (this.prefix.slice(-2, -1)) {

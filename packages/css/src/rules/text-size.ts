@@ -1,9 +1,8 @@
 const diff = .75
 
 export const textSize = {
-    id: 'TextSize' as const,
     matches: '^t(?:ext)?:(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
-    get prop() { return '' },
+    prop: false,
     get(declaration): { [key: string]: any } {
         const { unit, value } = declaration
         return {

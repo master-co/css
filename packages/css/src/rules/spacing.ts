@@ -1,7 +1,6 @@
 export const spacing = {
-    id: 'Spacing' as const,
     matches: '^[pm][xytblr]?:.',
-    get prop() { return '' },
+    prop: false,
     get(declaration): { [key: string]: any } {
         const charAt1 = this.prefix[0]
         const SPACING = charAt1 === 'm' ? 'margin' : 'padding'

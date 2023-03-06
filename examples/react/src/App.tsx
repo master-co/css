@@ -8,7 +8,6 @@ import { useTheme } from '@master/css.react'
 function App() {
     const [count, setCount] = useState(0)
     const theme = useTheme()
-    console.log(theme)
 
     return (
         <div className="App">
@@ -23,7 +22,7 @@ function App() {
                     <img src={masterLogo} className="logo master scale(1.5)" alt="Master logo" />
                 </a>
             </div>
-            <h1 className="font:heavy ls:-.25">
+            <h1 className="font:heavy ls:-.25 overflow:hover flex:focus">
                 Vite + React
                 + <span className='fg:primary fg:yellow-80@dark'>Master CSS</span>
             </h1>

@@ -7,10 +7,9 @@ import { analyzeValueToken } from '../utils/analyze-value-token'
 const bracketRegexp = /\{(.*)\}/
 
 export const group = {
-    id: 'Group' as const,
     matches: '^(?:.+?[*_>~+])?\\{.+?\\}',
     unit: '',
-    get prop() { return '' },
+    prop: false,
     analyzeToken(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | { value: string }>, string] {
         let i = 0
         for (; i < token.length; i++) {

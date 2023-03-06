@@ -1,5 +1,4 @@
 export const gridColumn = {
-    id: 'GridColumn' as const,
     matches: '^grid-col(?:umn)?(?:-span)?:.',
     unit: '',
     order: -1,

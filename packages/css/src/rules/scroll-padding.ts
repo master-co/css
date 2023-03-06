@@ -1,7 +1,6 @@
 export const scrollPadding = {
-    id: 'ScrollPadding' as const,
     matches: '^scroll-p(?:[xytblr]|adding(?:-(?:top|bottom|left|right))?)?:.',
-    get prop() { return '' },
+    prop: false,
     get(declaration): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'p') {
 
