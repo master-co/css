@@ -1,8 +1,6 @@
-import { Rule } from '../rule'
-
-export class UserDrag extends Rule {
-    static id = 'UserDrag' as const
-    override get(declaration): { [key: string]: any } {
+export const userDrag = {
+    id: 'UserDrag' as const,
+    get(declaration): { [key: string]: any } {
         return {
             'user-drag': declaration,
             '-webkit-user-drag': declaration

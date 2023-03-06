@@ -1,8 +1,6 @@
-import { Rule } from '../rule'
-
-export class Columns extends Rule {
-    static id = 'Columns' as const
-    static matches = '^(?:columns|cols):.'
-    static unit = ''
-    override order = -1
+export const columns = {
+    id: 'Columns' as const,
+    matches: '^(?:columns|cols):.',
+    unit: '',
+    order: -1
 }

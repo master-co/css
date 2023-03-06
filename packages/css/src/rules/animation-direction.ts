@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class AnimationDirection extends Rule {
-    static id = 'AnimationDirection' as const
-    static matches = '^@direction:.'
+export const animationDirection = {
+    id: 'AnimationDirection' as const,
+    matches: '^@direction:.'
 }

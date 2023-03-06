@@ -1,5 +1,3 @@
-import { Rule } from '../rule'
-
-export class StrokeDashoffset extends Rule {
-    static id = 'StrokeDashoffset' as const
+export const strokeDashoffset = {
+    id: 'StrokeDashoffset' as const,
 }

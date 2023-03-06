@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class PlaceItems extends Rule {
-    static id = 'PlaceItems' as const
-    override order = -1
+export const placeItems = {
+    id: 'PlaceItems' as const,
+    order: -1
 }

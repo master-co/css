@@ -1,7 +1,5 @@
-import { Rule } from '../rule'
-
-export class TransitionDelay extends Rule {
-    static id = 'TransitionDelay' as const
-    static matches = '^~delay:.'
-    static unit = 'ms'
+export const transitionDelay = {
+    id: 'TransitionDelay' as const,
+    matches: '^~delay:.',
+    unit: 'ms'
 }

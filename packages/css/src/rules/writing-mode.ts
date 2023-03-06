@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class WritingMode extends Rule {
-    static id = 'WritingMode' as const
-    static matches = '^writing:.'
+export const writingMode = {
+    id: 'WritingMode' as const,
+    matches: '^writing:.'
 }

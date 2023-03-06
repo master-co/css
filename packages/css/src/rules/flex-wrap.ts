@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class FlexWrap extends Rule {
-    static id = 'FlexWrap' as const
-    static matches = '^flex:(?:wrap(?:-reverse)?|nowrap|$values)(?!\\|)'
+export const flexWrap = {
+    id: 'FlexWrap' as const,
+    matches: '^flex:(?:wrap(?:-reverse)?|nowrap|$values)(?!\\|)'
 }

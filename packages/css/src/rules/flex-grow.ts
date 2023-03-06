@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class FlexGrow extends Rule {
-    static id = 'FlexGrow' as const
-    static unit = ''
+export const flexGrow = {
+    id: 'FlexGrow' as const,
+    unit: ''
 }

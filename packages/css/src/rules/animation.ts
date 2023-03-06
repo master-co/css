@@ -1,8 +1,6 @@
-import { Rule } from '../rule'
-
-export class Animation extends Rule {
-    static id = 'Animation' as const
-    static symbol = '@'
-    static unit = ''
-    override order = -1
+export const animation = {
+    id: 'Animation' as const,
+    symbol: '@',
+    unit: '',
+    order: -1
 }

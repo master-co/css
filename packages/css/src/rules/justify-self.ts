@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class JustifySelf extends Rule {
-    static id = 'JustifySelf' as const
-    static matches =  '^js:.'
+export const justifySelf = {
+    id: 'JustifySelf' as const,
+    matches:  '^js:.'
 }

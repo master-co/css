@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class TransitionProperty extends Rule {
-    static id = 'TransitionProperty' as const
-    static matches = '^~property:.'
+export const transitionProperty = {
+    id: 'TransitionProperty' as const,
+    matches: '^~property:.'
 }

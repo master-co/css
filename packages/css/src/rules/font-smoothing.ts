@@ -1,15 +1,13 @@
-import { Rule } from '../rule'
-
 const SUBPIXEL_ANTIALIASED = 'subpixel-antialiased'
 const WEBKIT_FONT_SMOOTHING = '-webkit-font-smoothing'
 const MOZ_OSXFONT_SMOOTHING = '-moz-osx-font-smoothing'
 
-export class FontSmoothing extends Rule {
-    static id = 'FontSmoothing' as const
-    static matches = '^f(?:ont)?:(?:antialiased|subpixel-antialiased|$values)(?!\\|)'
-    static unit = ''
-    static get prop() { return '' }
-    override get(declaration): { [key: string]: any } {
+export const fontSmoothing = {
+    id: 'FontSmoothing' as const,
+    matches: '^f(?:ont)?:(?:antialiased|subpixel-antialiased|$values)(?!\\|)',
+    unit: '',
+    get prop() { return '' },
+    get(declaration): { [key: string]: any } {
         const props = {}
         switch (declaration.value) {
         case SUBPIXEL_ANTIALIASED:

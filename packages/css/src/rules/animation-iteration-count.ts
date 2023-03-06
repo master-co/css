@@ -1,7 +1,5 @@
-import { Rule } from '../rule'
-
-export class AnimationIterationCount extends Rule {
-    static id = 'AnimationIterationCount' as const
-    static matches = '^@iteration-count:.'
-    static unit = ''
+export const animationIterationCount = {
+    id: 'AnimationIterationCount' as const,
+    matches: '^@iteration-count:.',
+    unit: ''
 }

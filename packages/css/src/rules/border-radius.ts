@@ -1,5 +1,3 @@
-import { Rule } from '../rule'
-
 const BORDER_TOP_LEFT_RADIUS = 'border-top-left-radius',
     BORDER_TOP_RIGHT_RADIUS = 'border-top-right-radius',
     BORDER_BOTTOM_LEFT_RADIUS = 'border-bottom-left-radius',
@@ -7,11 +5,11 @@ const BORDER_TOP_LEFT_RADIUS = 'border-top-left-radius',
     BORDER_RADIUS = 'border-radius',
     BORDER_RADIUS_S = [BORDER_TOP_LEFT_RADIUS, BORDER_TOP_RIGHT_RADIUS, BORDER_BOTTOM_LEFT_RADIUS, BORDER_BOTTOM_RIGHT_RADIUS]
 
-export class BorderRadius extends Rule {
-    static id = 'BorderRadius' as const
-    static matches = '^(?:r[tblr]?[tblr]?|border(?:-(?:top|bottom)-(?:left|right))?-radius):.'
-    static get prop() { return '' }
-    override get(declaration): { [key: string]: any } {
+export const borderRadius = {
+    id: 'BorderRadius' as const,
+    matches: '^(?:r[tblr]?[tblr]?|border(?:-(?:top|bottom)-(?:left|right))?-radius):.',
+    get prop() { return '' },
+    get(declaration): { [key: string]: any } {
         if (this.prefix) {
             let suffix = ''
             const splits = this.prefix.split('-')
@@ -74,8 +72,8 @@ export class BorderRadius extends Rule {
         return {
             [BORDER_RADIUS_S.includes(prefix) ? prefix : BORDER_RADIUS]: declaration
         }
-    }
-    override get order(): number {
+    },
+    get order(): number {
         return (this.prefix === 'border-radius' + ':' || this.prefix === 'r:') ? -1 : 0
     }
 }

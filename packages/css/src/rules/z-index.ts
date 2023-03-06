@@ -1,7 +1,5 @@
-import { Rule } from '../rule'
-
-export class ZIndex extends Rule {
-    static id = 'ZIndex' as const
-    static matches = '^z:.'
-    static unit = ''
+export const zIndex = {
+    id: 'ZIndex' as const,
+    matches: '^z:.',
+    unit: ''
 }

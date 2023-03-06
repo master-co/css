@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class Grid extends Rule {
-    static id = 'Grid' as const
-    override order = -1
+export const grid = {
+    id: 'Grid' as const,
+    order: -1
 }

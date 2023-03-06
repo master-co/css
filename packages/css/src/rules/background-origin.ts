@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class BackgroundOrigin extends Rule {
-    static id = 'BackgroundOrigin' as const
-    static matches = '^(?:bg|background):(?:$values)(?!\\|)'
+export const backgroundOrigin = {
+    id: 'BackgroundOrigin' as const,
+    matches: '^(?:bg|background):(?:$values)(?!\\|)'
 }

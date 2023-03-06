@@ -1,11 +1,9 @@
-import { Rule } from '../rule'
-
-export class Lines extends Rule {
-    static id = 'Lines' as const
-    static matches = '^lines:.'
-    static unit = ''
-    static get prop() { return '' }
-    override get(declaration): { [key: string]: any } {
+export const lines = {
+    id: 'Lines' as const,
+    matches: '^lines:.',
+    unit: '',
+    get prop() { return '' },
+    get(declaration): { [key: string]: any } {
         return {
             overflow: { ...declaration, value: 'hidden' },
             display: { ...declaration, value: '-webkit-box' },

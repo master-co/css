@@ -1,397 +1,397 @@
-import { FontWeight } from '../rules/font-weight'
-import { FontFamily } from '../rules/font-family'
-import { FontSize } from '../rules/font-size'
-import { Spacing } from '../rules/spacing'
-import { Width } from '../rules/width'
-import { Height } from '../rules/height'
-import { MinWidth } from '../rules/min-width'
-import { MinHeight } from '../rules/min-height'
-import { LetterSpacing } from '../rules/letter-spacing'
-import { FontSmoothing } from '../rules/font-smoothing'
-import { FontStyle } from '../rules/font-style'
-import { FontVariantNumeric } from '../rules/font-variant-numeric'
-import { FontFeatureSettings } from '../rules/font-feature-settings'
-import { LineHeight } from '../rules/line-height'
-import { ObjectFit } from '../rules/object-fit'
-import { ObjectPosition } from '../rules/object-position'
-import { TextAlign } from '../rules/text-align'
-import { TextDecoration } from '../rules/text-decoration'
-import { TextTransform } from '../rules/text-transform'
-import { VerticalAlign } from '../rules/vertical-align'
-import { Lines } from '../rules/lines'
-import { TransformOrigin } from '../rules/transform-origin'
-import { TransformStyle } from '../rules/transform-style'
-import { TransformBox } from '../rules/transform-box'
-import { Transform } from '../rules/transform'
-import { Transition } from '../rules/transition'
-import { TransitionDelay } from '../rules/transition-delay'
-import { TransitionDuration } from '../rules/transition-duration'
-import { TransitionProperty } from '../rules/transition-property'
-import { TransitionTimingFunction } from '../rules/transition-timing-function'
-import { MaxHeight } from '../rules/max-height'
-import { MaxWidth } from '../rules/max-width'
-import { Display } from '../rules/display'
-import { BoxSizing } from '../rules/box-sizing'
-import { Opacity } from '../rules/opacity'
-import { Visibility } from '../rules/visibility'
-import { Clear } from '../rules/clear'
-import { Float } from '../rules/float'
-import { Isolation } from '../rules/isolation'
-import { Overflow } from '../rules/overflow'
-import { OverscrollBehavior } from '../rules/overscroll-behavior'
-import { ZIndex } from '../rules/z-index'
-import { AnimationDelay } from '../rules/animation-delay'
-import { AnimationDirection } from '../rules/animation-direction'
-import { AnimationFillMode } from '../rules/animation-fill-mode'
-import { AnimationIterationCount } from '../rules/animation-iteration-count'
-import { AnimationName } from '../rules/animation-name'
-import { AnimationPlayState } from '../rules/animation-play-state'
-import { AnimationTimingFunction } from '../rules/animation-timing-function'
-import { Animation } from '../rules/animation'
-import { BorderColor } from '../rules/border-color'
-import { BorderRadius } from '../rules/border-radius'
-import { BorderStyle } from '../rules/border-style'
-import { BorderWidth } from '../rules/border-width'
-import { Border } from '../rules/border'
-import { BackgroundAttachment } from '../rules/background-attachment'
-import { BackgroundBlendMode } from '../rules/background-blend-mode'
-import { BackgroundClip } from '../rules/background-clip'
-import { BackgroundColor } from '../rules/background-color'
-import { BackgroundOrigin } from '../rules/background-origin'
-import { BackgroundPosition } from '../rules/background-position'
-import { BackgroundRepeat } from '../rules/background-repeat'
-import { BackgroundSize } from '../rules/background-size'
-import { BackgroundImage } from '../rules/background-image'
-import { Background } from '../rules/background'
-import { MixBlendMode } from '../rules/mix-blend-mode'
-import { Position } from '../rules/position'
-import { BackdropFilter } from '../rules/backdrop-filter'
-import { Fill } from '../rules/fill'
-import { Stroke } from '../rules/stroke'
-import { StrokeWidth } from '../rules/stroke-width'
-import { Filter } from '../rules/filter'
-import { Cursor } from '../rules/cursor'
-import { PointerEvents } from '../rules/pointer-events'
-import { Resize } from '../rules/resize'
-import { TouchAction } from '../rules/touch-action'
-import { UserDrag } from '../rules/user-drag'
-import { UserSelect } from '../rules/user-select'
-import { BoxShadow } from '../rules/box-shadow'
-import { TextShadow } from '../rules/text-shadow'
-import { TextSize } from '../rules/text-size'
-import { WordBreak } from '../rules/word-break'
-import { GridColumns } from '../rules/grid-columns'
-import { GridRows } from '../rules/grid-rows'
-import { Gap } from '../rules/gap'
-import { WordSpacing } from '../rules/word-spacing'
-import { Variable } from '../rules/variable'
-import { AspectRatio } from '../rules/aspect-ratio'
-import { BoxDecorationBreak } from '../rules/box-decoration-break'
-import { BreakAfter } from '../rules/break-after'
-import { BreakBefore } from '../rules/break-before'
-import { BreakInside } from '../rules/break-inside'
-import { FlexShrink } from '../rules/flex-shrink'
-import { FlexDirection } from '../rules/flex-direction'
-import { FlexGrow } from '../rules/flex-grow'
-import { FlexWrap } from '../rules/flex-wrap'
-import { FlexBasis } from '../rules/flex-basis'
-import { Flex } from '../rules/flex'
-import { Order } from '../rules/order'
-import { GridColumn } from '../rules/grid-column'
-import { ColumnSpan } from '../rules/column-span'
-import { GridRow } from '../rules/grid-row'
-import { Color } from '../rules/color'
-import { AlignContent } from '../rules/align-content'
-import { AlignItems } from '../rules/align-items'
-import { AlignSelf } from '../rules/align-self'
-import { GridAutoColumns } from '../rules/grid-auto-columns'
-import { GridAutoFlow } from '../rules/grid-auto-flow'
-import { GridAutoRows } from '../rules/grid-auto-rows'
-import { JustifyContent } from '../rules/justify-content'
-import { JustifyItems } from '../rules/justify-items'
-import { JustifySelf } from '../rules/justify-self'
-import { PlaceContent } from '../rules/place-content'
-import { PlaceItems } from '../rules/place-items'
-import { PlaceSelf } from '../rules/place-self'
-import { Padding } from '../rules/padding'
-import { Margin } from '../rules/margin'
-import { TextOverflow } from '../rules/text-overflow'
-import { ListStylePosition } from '../rules/list-style-position'
-import { ListStyleType } from '../rules/list-style-type'
-import { ListStyle } from '../rules/list-style'
-import { TextDecorationColor } from '../rules/text-decoration-color'
-import { TextDecorationStyle } from '../rules/text-decoration-style'
-import { TextDecorationThickness } from '../rules/text-decoration-thickness'
-import { TextIndent } from '../rules/text-indent'
-import { Content } from '../rules/content'
-import { OutlineColor } from '../rules/outline-color'
-import { OutlineOffset } from '../rules/outline-offset'
-import { OutlineStyle } from '../rules/outline-style'
-import { OutlineWidth } from '../rules/outline-width'
-import { Outline } from '../rules/outline'
-import { BorderCollapse } from '../rules/border-collapse'
-import { BorderSpacing } from '../rules/border-spacing'
-import { TableLayout } from '../rules/table-layout'
-import { AccentColor } from '../rules/accent-color'
-import { Appearance } from '../rules/appearance'
-import { CaretColor } from '../rules/caret-color'
-import { ScrollBehavior } from '../rules/scroll-behavior'
-import { ScrollMargin } from '../rules/scroll-margin'
-import { ScrollPadding } from '../rules/scroll-padding'
-import { ScrollSnapAlign } from '../rules/scroll-snap-align'
-import { ScrollSnapStop } from '../rules/scroll-snap-stop'
-import { ScrollSnapType } from '../rules/scroll-snap-type'
-import { WillChange } from '../rules/will-change'
-import { TextUnderlineOffset } from '../rules/text-underline-offset'
-import { Inset } from '../rules/inset'
-import { Columns } from '../rules/columns'
-import { WhiteSpace } from '../rules/white-space'
-import { TextOrientation } from '../rules/text-orientation'
-import { WritingMode } from '../rules/writing-mode'
-import { Contain } from '../rules/contain'
-import { AnimationDuration } from '../rules/animation-duration'
-import { TextRendering } from '../rules/text-rendering'
-import { Direction } from '../rules/direction'
-import { TextDecorationLine } from '../rules/text-decoration-line'
-import { GridColumnStart } from '../rules/grid-column-start'
-import { ListStyleImage } from '../rules/list-style-image'
-import { ShapeOutside } from '../rules/shape-outside'
-import { ShapeMargin } from '../rules/shape-margin'
-import { ShapeImageThreshold } from '../rules/shape-image-threshold'
-import { ClipPath } from '../rules/clip-path'
-import { Grid } from '../rules/grid'
-import { Font } from '../rules/font'
-import { Quotes } from '../rules/quotes'
-import { GridTemplate } from '../rules/grid-template'
-import { GridRowStart } from '../rules/grid-row-start'
-import { GridTemplateAreas } from '../rules/grid-template-areas'
-import { GridTemplateColumns } from '../rules/grid-template-columns'
-import { GridTemplateRows } from '../rules/grid-template-rows'
-import { GridArea } from '../rules/grid-area'
-import { GridColumnEnd } from '../rules/grid-column-end'
-import { GridRowEnd } from '../rules/grid-row-end'
-import { MaskImage } from '../rules/mask-image'
-import { TextFillColor } from '../rules/text-fill-color'
-import { TextStroke } from '../rules/text-stroke'
-import { TextStrokeWidth } from '../rules/text-stroke-width'
-import { TextStrokeColor } from '../rules/text-stroke-color'
-import { StrokeDasharray } from '../rules/stroke-dasharray'
-import { StrokeDashoffset } from '../rules/stroke-dashoffset'
-import { X } from '../rules/x'
-import { Y } from '../rules/y'
-import { Cx } from '../rules/cx'
-import { Cy } from '../rules/cy'
-import { Rx } from '../rules/rx'
-import { Ry } from '../rules/ry'
-import { BorderImageOutset } from '../rules/border-image-outset'
-import { BorderImageRepeat } from '../rules/border-image-repeat'
-import { BorderImageSlice } from '../rules/border-image-slice'
-import { BorderImageSource } from '../rules/border-image-source'
-import { BorderImageWidth } from '../rules/border-image-width'
-import { BorderImage } from '../rules/border-image'
-import { Group } from '../rules/group'
-import { CounterIncrement } from '../rules/counter-increment'
-import { CounterReset } from '../rules/counter-reset'
-import { WH } from '../rules/wh'
-import { MinWH } from '../rules/min-wh'
-import { MaxWH } from '../rules/max-wh'
+import { fontWeight } from '../rules/font-weight'
+import { fontFamily } from '../rules/font-family'
+import { fontSize } from '../rules/font-size'
+import { spacing } from '../rules/spacing'
+import { width } from '../rules/width'
+import { height } from '../rules/height'
+import { minWidth } from '../rules/min-width'
+import { minHeight } from '../rules/min-height'
+import { letterSpacing } from '../rules/letter-spacing'
+import { fontSmoothing } from '../rules/font-smoothing'
+import { fontStyle } from '../rules/font-style'
+import { fontVariantNumeric } from '../rules/font-variant-numeric'
+import { fontFeatureSettings } from '../rules/font-feature-settings'
+import { lineHeight } from '../rules/line-height'
+import { objectFit } from '../rules/object-fit'
+import { objectPosition } from '../rules/object-position'
+import { textAlign } from '../rules/text-align'
+import { textDecoration } from '../rules/text-decoration'
+import { textTransform } from '../rules/text-transform'
+import { verticalAlign } from '../rules/vertical-align'
+import { lines } from '../rules/lines'
+import { transformOrigin } from '../rules/transform-origin'
+import { transformStyle } from '../rules/transform-style'
+import { transformBox } from '../rules/transform-box'
+import { transform } from '../rules/transform'
+import { transition } from '../rules/transition'
+import { transitionDelay } from '../rules/transition-delay'
+import { transitionDuration } from '../rules/transition-duration'
+import { transitionProperty } from '../rules/transition-property'
+import { transitionTimingFunction } from '../rules/transition-timing-function'
+import { maxHeight } from '../rules/max-height'
+import { maxWidth } from '../rules/max-width'
+import { display } from '../rules/display'
+import { boxSizing } from '../rules/box-sizing'
+import { opacity } from '../rules/opacity'
+import { visibility } from '../rules/visibility'
+import { clear } from '../rules/clear'
+import { float } from '../rules/float'
+import { isolation } from '../rules/isolation'
+import { overflow } from '../rules/overflow'
+import { overscrollBehavior } from '../rules/overscroll-behavior'
+import { zIndex } from '../rules/z-index'
+import { animationDelay } from '../rules/animation-delay'
+import { animationDirection } from '../rules/animation-direction'
+import { animationFillMode } from '../rules/animation-fill-mode'
+import { animationIterationCount } from '../rules/animation-iteration-count'
+import { animationName } from '../rules/animation-name'
+import { animationPlayState } from '../rules/animation-play-state'
+import { animationTimingFunction } from '../rules/animation-timing-function'
+import { animation } from '../rules/animation'
+import { borderColor } from '../rules/border-color'
+import { borderRadius } from '../rules/border-radius'
+import { borderStyle } from '../rules/border-style'
+import { borderWidth } from '../rules/border-width'
+import { border } from '../rules/border'
+import { backgroundAttachment } from '../rules/background-attachment'
+import { backgroundBlendMode } from '../rules/background-blend-mode'
+import { backgroundClip } from '../rules/background-clip'
+import { backgroundColor } from '../rules/background-color'
+import { backgroundOrigin } from '../rules/background-origin'
+import { backgroundPosition } from '../rules/background-position'
+import { backgroundRepeat } from '../rules/background-repeat'
+import { backgroundSize } from '../rules/background-size'
+import { backgroundImage } from '../rules/background-image'
+import { background } from '../rules/background'
+import { mixBlendMode } from '../rules/mix-blend-mode'
+import { position } from '../rules/position'
+import { backdropFilter } from '../rules/backdrop-filter'
+import { fill } from '../rules/fill'
+import { stroke } from '../rules/stroke'
+import { strokeWidth } from '../rules/stroke-width'
+import { filter } from '../rules/filter'
+import { cursor } from '../rules/cursor'
+import { pointerEvents } from '../rules/pointer-events'
+import { resize } from '../rules/resize'
+import { touchAction } from '../rules/touch-action'
+import { userDrag } from '../rules/user-drag'
+import { userSelect } from '../rules/user-select'
+import { boxShadow } from '../rules/box-shadow'
+import { textShadow } from '../rules/text-shadow'
+import { textSize } from '../rules/text-size'
+import { wordBreak } from '../rules/word-break'
+import { gridColumns } from '../rules/grid-columns'
+import { gridRows } from '../rules/grid-rows'
+import { gap } from '../rules/gap'
+import { wordSpacing } from '../rules/word-spacing'
+import { variable } from '../rules/variable'
+import { aspectRatio } from '../rules/aspect-ratio'
+import { boxDecorationBreak } from '../rules/box-decoration-break'
+import { breakAfter } from '../rules/break-after'
+import { breakBefore } from '../rules/break-before'
+import { breakInside } from '../rules/break-inside'
+import { flexShrink } from '../rules/flex-shrink'
+import { flexDirection } from '../rules/flex-direction'
+import { flexGrow } from '../rules/flex-grow'
+import { flexWrap } from '../rules/flex-wrap'
+import { flexBasis } from '../rules/flex-basis'
+import { flex } from '../rules/flex'
+import { order } from '../rules/order'
+import { gridColumn } from '../rules/grid-column'
+import { columnSpan } from '../rules/column-span'
+import { gridRow } from '../rules/grid-row'
+import { color } from '../rules/color'
+import { alignContent } from '../rules/align-content'
+import { alignItems } from '../rules/align-items'
+import { alignSelf } from '../rules/align-self'
+import { gridAutoColumns } from '../rules/grid-auto-columns'
+import { gridAutoFlow } from '../rules/grid-auto-flow'
+import { gridAutoRows } from '../rules/grid-auto-rows'
+import { justifyContent } from '../rules/justify-content'
+import { justifyItems } from '../rules/justify-items'
+import { justifySelf } from '../rules/justify-self'
+import { placeContent } from '../rules/place-content'
+import { placeItems } from '../rules/place-items'
+import { placeSelf } from '../rules/place-self'
+import { padding } from '../rules/padding'
+import { margin } from '../rules/margin'
+import { textOverflow } from '../rules/text-overflow'
+import { listStylePosition } from '../rules/list-style-position'
+import { listStyleType } from '../rules/list-style-type'
+import { listStyle } from '../rules/list-style'
+import { textDecorationColor } from '../rules/text-decoration-color'
+import { textDecorationStyle } from '../rules/text-decoration-style'
+import { textDecorationThickness } from '../rules/text-decoration-thickness'
+import { textIndent } from '../rules/text-indent'
+import { content } from '../rules/content'
+import { outlineColor } from '../rules/outline-color'
+import { outlineOffset } from '../rules/outline-offset'
+import { outlineStyle } from '../rules/outline-style'
+import { outlineWidth } from '../rules/outline-width'
+import { outline } from '../rules/outline'
+import { borderCollapse } from '../rules/border-collapse'
+import { borderSpacing } from '../rules/border-spacing'
+import { tableLayout } from '../rules/table-layout'
+import { accentColor } from '../rules/accent-color'
+import { appearance } from '../rules/appearance'
+import { caretColor } from '../rules/caret-color'
+import { scrollBehavior } from '../rules/scroll-behavior'
+import { scrollMargin } from '../rules/scroll-margin'
+import { scrollPadding } from '../rules/scroll-padding'
+import { scrollSnapAlign } from '../rules/scroll-snap-align'
+import { scrollSnapStop } from '../rules/scroll-snap-stop'
+import { scrollSnapType } from '../rules/scroll-snap-type'
+import { willChange } from '../rules/will-change'
+import { textUnderlineOffset } from '../rules/text-underline-offset'
+import { inset } from '../rules/inset'
+import { columns } from '../rules/columns'
+import { whiteSpace } from '../rules/white-space'
+import { textOrientation } from '../rules/text-orientation'
+import { writingMode } from '../rules/writing-mode'
+import { contain } from '../rules/contain'
+import { animationDuration } from '../rules/animation-duration'
+import { textRendering } from '../rules/text-rendering'
+import { direction } from '../rules/direction'
+import { textDecorationLine } from '../rules/text-decoration-line'
+import { gridColumnStart } from '../rules/grid-column-start'
+import { listStyleImage } from '../rules/list-style-image'
+import { shapeOutside } from '../rules/shape-outside'
+import { shapeMargin } from '../rules/shape-margin'
+import { shapeImageThreshold } from '../rules/shape-image-threshold'
+import { clipPath } from '../rules/clip-path'
+import { grid } from '../rules/grid'
+import { font } from '../rules/font'
+import { quotes } from '../rules/quotes'
+import { gridTemplate } from '../rules/grid-template'
+import { gridRowStart } from '../rules/grid-row-start'
+import { gridTemplateAreas } from '../rules/grid-template-areas'
+import { gridTemplateColumns } from '../rules/grid-template-columns'
+import { gridTemplateRows } from '../rules/grid-template-rows'
+import { gridArea } from '../rules/grid-area'
+import { gridColumnEnd } from '../rules/grid-column-end'
+import { gridRowEnd } from '../rules/grid-row-end'
+import { maskImage } from '../rules/mask-image'
+import { textFillColor } from '../rules/text-fill-color'
+import { textStroke } from '../rules/text-stroke'
+import { textStrokeWidth } from '../rules/text-stroke-width'
+import { textStrokeColor } from '../rules/text-stroke-color'
+import { strokeDasharray } from '../rules/stroke-dasharray'
+import { strokeDashoffset } from '../rules/stroke-dashoffset'
+import { x } from '../rules/x'
+import { y } from '../rules/y'
+import { cx } from '../rules/cx'
+import { cy } from '../rules/cy'
+import { rx } from '../rules/rx'
+import { ry } from '../rules/ry'
+import { borderImageOutset } from '../rules/border-image-outset'
+import { borderImageRepeat } from '../rules/border-image-repeat'
+import { borderImageSlice } from '../rules/border-image-slice'
+import { borderImageSource } from '../rules/border-image-source'
+import { borderImageWidth } from '../rules/border-image-width'
+import { borderImage } from '../rules/border-image'
+import { group } from '../rules/group'
+import { counterIncrement } from '../rules/counter-increment'
+import { counterReset } from '../rules/counter-reset'
+import { wH } from '../rules/wh'
+import { minWH } from '../rules/min-wh'
+import { maxWH } from '../rules/max-wh'
 
 export const Rules = [
-    Group,
-    Variable,
-    FontSize,
-    FontWeight,
-    FontFamily,
-    FontSmoothing,
-    FontStyle,
-    FontVariantNumeric,
-    FontFeatureSettings,
-    Font,
-    Color,
-    Spacing,
-    Margin,
-    Padding,
-    FlexBasis,
-    FlexWrap,
-    FlexGrow,
-    FlexShrink,
-    FlexDirection,
-    Flex,
-    Display,
-    Width,
-    Height,
-    MinWidth,
-    MinHeight,
-    WH,
-    MinWH,
-    MaxWH,
-    Contain,
-    Content,
-    CounterIncrement,
-    CounterReset,
-    LetterSpacing,
-    LineHeight,
-    ObjectFit,
-    ObjectPosition,
-    TextAlign,
-    TextDecorationColor,
-    TextDecorationStyle,
-    TextDecorationThickness,
-    TextDecorationLine,
-    TextDecoration,
-    TextUnderlineOffset,
-    TextOverflow,
-    TextOrientation,
-    TextTransform,
-    TextRendering,
-    TextIndent,
-    VerticalAlign,
-    Columns,
-    WhiteSpace,
-    Inset,
-    Lines,
-    MaxHeight,
-    MaxWidth,
-    BoxSizing,
-    Opacity,
-    Visibility,
-    Clear,
-    Float,
-    Isolation,
-    Overflow,
-    OverscrollBehavior,
-    ZIndex,
-    Position,
-    Cursor,
-    PointerEvents,
-    Resize,
-    TouchAction,
-    WordBreak,
-    WordSpacing,
-    UserDrag,
-    UserSelect,
-    TextShadow,
-    TextSize,
-    TextFillColor,
-    TextStrokeWidth,
-    TextStrokeColor,
-    TextStroke,
-    BoxShadow,
-    TableLayout,
-    TransformBox,
-    TransformStyle,
-    TransformOrigin,
-    Transform,
-    TransitionProperty,
-    TransitionTimingFunction,
-    TransitionDuration,
-    TransitionDelay,
-    Transition,
-    AnimationDelay,
-    AnimationDirection,
-    AnimationDuration,
-    AnimationFillMode,
-    AnimationIterationCount,
-    AnimationName,
-    AnimationPlayState,
-    AnimationTimingFunction,
-    Animation,
-    BorderColor,
-    BorderRadius,
-    BorderStyle,
-    BorderWidth,
-    BorderCollapse,
-    BorderSpacing,
-    BorderImageOutset,
-    BorderImageRepeat,
-    BorderImageSlice,
-    BorderImageSource,
-    BorderImageWidth,
-    BorderImage,
-    Border,
-    BackgroundAttachment,
-    BackgroundBlendMode,
-    BackgroundColor,
-    BackgroundClip,
-    BackgroundOrigin,
-    BackgroundPosition,
-    BackgroundRepeat,
-    BackgroundSize,
-    BackgroundImage,
-    Background,
-    MixBlendMode,
-    BackdropFilter,
-    Filter,
-    Fill,
-    StrokeDasharray,
-    StrokeDashoffset,
-    StrokeWidth,
-    Stroke,
-    X,
-    Y,
-    Cx,
-    Cy,
-    Rx,
-    Ry,
-    GridColumnStart,
-    GridColumnEnd,
-    GridColumn,
-    GridColumns,
-    GridRowStart,
-    GridRowEnd,
-    GridRow,
-    GridRows,
-    GridAutoColumns,
-    GridAutoFlow,
-    GridAutoRows,
-    GridTemplateAreas,
-    GridTemplateColumns,
-    GridTemplateRows,
-    GridTemplate,
-    GridArea,
-    Grid,
-    Gap,
-    Order,
-    BreakInside,
-    BreakBefore,
-    BreakAfter,
-    BoxDecorationBreak,
-    AspectRatio,
-    ColumnSpan,
-    AlignContent,
-    AlignItems,
-    AlignSelf,
-    JustifyContent,
-    JustifyItems,
-    JustifySelf,
-    PlaceContent,
-    PlaceItems,
-    PlaceSelf,
-    ListStylePosition,
-    ListStyleType,
-    ListStyleImage,
-    ListStyle,
-    OutlineColor,
-    OutlineOffset,
-    OutlineStyle,
-    OutlineWidth,
-    Outline,
-    AccentColor,
-    Appearance,
-    CaretColor,
-    ScrollBehavior,
-    ScrollMargin,
-    ScrollPadding,
-    ScrollSnapAlign,
-    ScrollSnapStop,
-    ScrollSnapType,
-    WillChange,
-    WritingMode,
-    Direction,
-    ShapeOutside,
-    ShapeMargin,
-    ShapeImageThreshold,
-    ClipPath,
-    Quotes,
-    MaskImage
+    group,
+    variable,
+    fontSize,
+    fontWeight,
+    fontFamily,
+    fontSmoothing,
+    fontStyle,
+    fontVariantNumeric,
+    fontFeatureSettings,
+    font,
+    color,
+    spacing,
+    margin,
+    padding,
+    flexBasis,
+    flexWrap,
+    flexGrow,
+    flexShrink,
+    flexDirection,
+    flex,
+    display,
+    width,
+    height,
+    minWidth,
+    minHeight,
+    wH,
+    minWH,
+    maxWH,
+    contain,
+    content,
+    counterIncrement,
+    counterReset,
+    letterSpacing,
+    lineHeight,
+    objectFit,
+    objectPosition,
+    textAlign,
+    textDecorationColor,
+    textDecorationStyle,
+    textDecorationThickness,
+    textDecorationLine,
+    textDecoration,
+    textUnderlineOffset,
+    textOverflow,
+    textOrientation,
+    textTransform,
+    textRendering,
+    textIndent,
+    verticalAlign,
+    columns,
+    whiteSpace,
+    inset,
+    lines,
+    maxHeight,
+    maxWidth,
+    boxSizing,
+    opacity,
+    visibility,
+    clear,
+    float,
+    isolation,
+    overflow,
+    overscrollBehavior,
+    zIndex,
+    position,
+    cursor,
+    pointerEvents,
+    resize,
+    touchAction,
+    wordBreak,
+    wordSpacing,
+    userDrag,
+    userSelect,
+    textShadow,
+    textSize,
+    textFillColor,
+    textStrokeWidth,
+    textStrokeColor,
+    textStroke,
+    boxShadow,
+    tableLayout,
+    transformBox,
+    transformStyle,
+    transformOrigin,
+    transform,
+    transitionProperty,
+    transitionTimingFunction,
+    transitionDuration,
+    transitionDelay,
+    transition,
+    animationDelay,
+    animationDirection,
+    animationDuration,
+    animationFillMode,
+    animationIterationCount,
+    animationName,
+    animationPlayState,
+    animationTimingFunction,
+    animation,
+    borderColor,
+    borderRadius,
+    borderStyle,
+    borderWidth,
+    borderCollapse,
+    borderSpacing,
+    borderImageOutset,
+    borderImageRepeat,
+    borderImageSlice,
+    borderImageSource,
+    borderImageWidth,
+    borderImage,
+    border,
+    backgroundAttachment,
+    backgroundBlendMode,
+    backgroundColor,
+    backgroundClip,
+    backgroundOrigin,
+    backgroundPosition,
+    backgroundRepeat,
+    backgroundSize,
+    backgroundImage,
+    background,
+    mixBlendMode,
+    backdropFilter,
+    filter,
+    fill,
+    strokeDasharray,
+    strokeDashoffset,
+    strokeWidth,
+    stroke,
+    x,
+    y,
+    cx,
+    cy,
+    rx,
+    ry,
+    gridColumnStart,
+    gridColumnEnd,
+    gridColumn,
+    gridColumns,
+    gridRowStart,
+    gridRowEnd,
+    gridRow,
+    gridRows,
+    gridAutoColumns,
+    gridAutoFlow,
+    gridAutoRows,
+    gridTemplateAreas,
+    gridTemplateColumns,
+    gridTemplateRows,
+    gridTemplate,
+    gridArea,
+    grid,
+    gap,
+    order,
+    breakInside,
+    breakBefore,
+    breakAfter,
+    boxDecorationBreak,
+    aspectRatio,
+    columnSpan,
+    alignContent,
+    alignItems,
+    alignSelf,
+    justifyContent,
+    justifyItems,
+    justifySelf,
+    placeContent,
+    placeItems,
+    placeSelf,
+    listStylePosition,
+    listStyleType,
+    listStyleImage,
+    listStyle,
+    outlineColor,
+    outlineOffset,
+    outlineStyle,
+    outlineWidth,
+    outline,
+    accentColor,
+    appearance,
+    caretColor,
+    scrollBehavior,
+    scrollMargin,
+    scrollPadding,
+    scrollSnapAlign,
+    scrollSnapStop,
+    scrollSnapType,
+    willChange,
+    writingMode,
+    direction,
+    shapeOutside,
+    shapeMargin,
+    shapeImageThreshold,
+    clipPath,
+    quotes,
+    maskImage
 ]

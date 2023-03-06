@@ -1,7 +1,5 @@
-import { Rule } from '../rule'
-
-export class BackgroundPosition extends Rule {
-    static id = 'BackgroundPosition' as const
-    static matches = '^(?:bg|background):(?:top|bottom|right|left|center|$values)(?!\\|)'
-    static unit = 'px'
+export const backgroundPosition = {
+    id: 'BackgroundPosition' as const,
+    matches: '^(?:bg|background):(?:top|bottom|right|left|center|$values)(?!\\|)',
+    unit: 'px'
 }

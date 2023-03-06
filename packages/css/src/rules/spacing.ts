@@ -1,10 +1,8 @@
-import { Rule } from '../rule'
-
-export class Spacing extends Rule {
-    static id = 'Spacing' as const
-    static matches = '^[pm][xytblr]?:.'
-    static get prop() { return '' }
-    override get(declaration): { [key: string]: any } {
+export const spacing = {
+    id: 'Spacing' as const,
+    matches: '^[pm][xytblr]?:.',
+    get prop() { return '' },
+    get(declaration): { [key: string]: any } {
         const charAt1 = this.prefix[0]
         const SPACING = charAt1 === 'm' ? 'margin' : 'padding'
         const SPACING_LEFT = SPACING + '-left'
@@ -43,8 +41,8 @@ export class Spacing extends Rule {
                 [SPACING]: declaration
             }
         }
-    }
-    override get order(): number {
+    },
+    get order(): number {
         return (this.prefix === 'p:' || this.prefix === 'm:') ? -1 : 0
     }
 }

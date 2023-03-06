@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class MixBlendMode extends Rule {
-    static id = 'MixBlendMode' as const
-    static matches = '^blend:.'
+export const mixBlendMode = {
+    id: 'MixBlendMode' as const,
+    matches: '^blend:.'
 }

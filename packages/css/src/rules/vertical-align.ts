@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class VerticalAlign extends Rule {
-    static id = 'VerticalAlign' as const
-    static matches = '^(?:v|vertical):.'
+export const verticalAlign = {
+    id: 'VerticalAlign' as const,
+    matches: '^(?:v|vertical):.'
 }

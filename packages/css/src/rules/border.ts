@@ -1,15 +1,15 @@
 import { Rule } from '../rule'
 import { getBorderProps } from '../utils/get-border-props'
 
-export class Border extends Rule {
-    static id = 'Border' as const
-    static matches = '^b(?:[xytblr]?|order(?:-(?:left|right|top|bottom))?):.'
-    static colorful = true
-    static get prop() { return '' }
-    override get(declaration): { [key: string]: any } {
+export const border = {
+    id: 'Border' as const,
+    matches: '^b(?:[xytblr]?|order(?:-(?:left|right|top|bottom))?):.',
+    colorful: true,
+    get prop() { return '' },
+    get(declaration): { [key: string]: any } {
         return getBorderProps(this.prefix, declaration)
-    }
-    override get order(): number {
+    },
+    get order(): number {
         return (this.prefix === 'border' + ':' || this.prefix === 'b:') ? -2 : -1
     }
 }

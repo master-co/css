@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class ListStyleType extends Rule {
-    static id = 'ListStyleType' as const
-    static matches = '^list-style:(?:disc|decimal|$values)(?!\\|)'
+export const listStyleType = {
+    id: 'ListStyleType' as const,
+    matches: '^list-style:(?:disc|decimal|$values)(?!\\|)'
 }

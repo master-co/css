@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class BoxSizing extends Rule {
-    static id = 'BoxSizing' as const
-    static matches = '^box:(?:$values)(?!\\|)'
+export const boxSizing = {
+    id: 'BoxSizing' as const,
+    matches: '^box:(?:$values)(?!\\|)'
 }

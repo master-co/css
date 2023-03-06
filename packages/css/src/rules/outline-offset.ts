@@ -1,5 +1,3 @@
-import { Rule } from '../rule'
-
-export class OutlineOffset extends Rule {
-    static id = 'OutlineOffset' as const
+export const outlineOffset = {
+    id: 'OutlineOffset' as const,
 }

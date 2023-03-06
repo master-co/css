@@ -1,9 +1,7 @@
-import { Rule } from '../rule'
-
-export class GridRows extends Rule {
-    static id = 'GridRows' as const
-    static unit = ''
-    override get(declaration): { [key: string]: any } {
+export const gridRows = {
+    id: 'GridRows' as const,
+    unit: '',
+    get(declaration): { [key: string]: any } {
         return {
             display: { ...declaration, value: 'grid' },
             'grid-auto-flow': { ...declaration, value: 'column' },

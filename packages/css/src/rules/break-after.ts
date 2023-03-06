@@ -1,5 +1,3 @@
-import { Rule } from '../rule'
-
-export class BreakAfter extends Rule {
-    static id = 'BreakAfter' as const
+export const breakAfter = {
+    id: 'BreakAfter' as const,
 }

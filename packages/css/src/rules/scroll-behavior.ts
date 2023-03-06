@@ -1,5 +1,3 @@
-import { Rule } from '../rule'
-
-export class ScrollBehavior extends Rule {
-    static id = 'ScrollBehavior' as const
+export const scrollBehavior = {
+    id: 'ScrollBehavior' as const,
 }

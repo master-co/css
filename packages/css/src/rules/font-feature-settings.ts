@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class FontFeatureSettings extends Rule {
-    static id = 'FontFeatureSettings' as const
-    static matches = '^font-feature:.'
+export const fontFeatureSettings = {
+    id: 'FontFeatureSettings' as const,
+    matches: '^font-feature:.'
 }

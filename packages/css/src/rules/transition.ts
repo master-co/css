@@ -1,7 +1,5 @@
-import { Rule } from '../rule'
-
-export class Transition extends Rule {
-    static id = 'Transition' as const
-    static symbol = '~'
-    override order = -1
+export const transition = {
+    id: 'Transition' as const,
+    symbol: '~',
+    order: -1
 }

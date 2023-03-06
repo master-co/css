@@ -1,5 +1,3 @@
-import { Rule } from '../rule'
-
-export class GridTemplateAreas extends Rule {
-    static id = 'GridTemplateAreas' as const
+export const gridTemplateAreas = {
+    id: 'GridTemplateAreas' as const,
 }

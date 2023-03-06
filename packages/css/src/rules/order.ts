@@ -1,7 +1,5 @@
-import { Rule } from '../rule'
-
-export class Order extends Rule {
-    static id = 'Order' as const
-    static matches = '^o:.'
-    static unit = ''
+export const order = {
+    id: 'Order' as const,
+    matches: '^o:.',
+    unit: ''
 }

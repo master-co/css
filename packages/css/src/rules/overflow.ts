@@ -1,10 +1,8 @@
-import { Rule } from '../rule'
-
-export class Overflow extends Rule {
-    static id = 'Overflow' as const
-    static matches = '^overflow(?:-x|-y)?:(?:visible|overlay|hidden|scroll|auto|clip|inherit|initial|revert|revert-layer|unset|\\$|var|$values)'
-    static get prop() { return '' }
-    override get(declaration): { [key: string]: any } {
+export const overflow = {
+    id: 'Overflow' as const,
+    matches: '^overflow(?:-x|-y)?:(?:visible|overlay|hidden|scroll|auto|clip|inherit|initial|revert|revert-layer|unset|\\$|var|$values)',
+    get prop() { return '' },
+    get(declaration): { [key: string]: any } {
         if (this.prefix) {
             switch (this.prefix.slice(-2, -1)) {
             case 'x':
@@ -14,8 +12,8 @@ export class Overflow extends Rule {
             }
         }
         return { 'overflow': declaration }
-    }
-    override get order(): number {
+    },
+    get order(): number {
         if (this.prefix) {
             switch (this.prefix.slice(-2, -1)) {
             case 'x':

@@ -1,5 +1,3 @@
-import { Rule } from '../rule'
-
-export class Position extends Rule {
-    static id = 'Position' as const
+export const position = {
+    id: 'Position' as const,
 }

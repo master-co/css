@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class MaxWidth extends Rule {
-    static id = 'MaxWidth' as const
-    static matches = '^max-w:.'
+export const maxWidth = {
+    id: 'MaxWidth' as const,
+    matches: '^max-w:.'
 }

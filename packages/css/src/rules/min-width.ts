@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class MinWidth extends Rule {
-    static id = 'MinWidth' as const
-    static matches = '^min-w:.'
+export const minWidth = {
+    id: 'MinWidth' as const,
+    matches: '^min-w:.'
 }

@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class GridTemplateColumns extends Rule {
-    static id = 'GridTemplateColumns' as const
-    static matches = '^grid-template-cols:.'
+export const gridTemplateColumns = {
+    id: 'GridTemplateColumns' as const,
+    matches: '^grid-template-cols:.'
 }

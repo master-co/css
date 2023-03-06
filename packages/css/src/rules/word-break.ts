@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class WordBreak extends Rule {
-    static id = 'WordBreak' as const
-    static unit = ''
+export const wordBreak = {
+    id: 'WordBreak' as const,
+    unit: ''
 }

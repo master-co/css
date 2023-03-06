@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class ColumnSpan extends Rule {
-    static id = 'ColumnSpan' as const
-    static matches = '^col-span:.'
+export const columnSpan = {
+    id: 'ColumnSpan' as const,
+    matches: '^col-span:.'
 }

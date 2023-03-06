@@ -1,8 +1,6 @@
-import { Rule } from '../rule'
-
-export class Background extends Rule {
-    static id = 'Background' as const
-    static matches = '^bg:.'
-    static colorful = true
-    override order = -1
+export const background = {
+    id: 'Background' as const,
+    matches: '^bg:.',
+    colorful: true,
+    order: -1
 }

@@ -6,12 +6,12 @@ import { analyzeValueToken } from '../utils/analyze-value-token'
 
 const bracketRegexp = /\{(.*)\}/
 
-export class Group extends Rule {
-    static id = 'Group' as const
-    static matches = '^(?:.+?[*_>~+])?\\{.+?\\}'
-    static unit = ''
-    static get prop() { return '' }
-    override analyzeToken(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | { value: string }>, string] {
+export const group = {
+    id: 'Group' as const,
+    matches: '^(?:.+?[*_>~+])?\\{.+?\\}',
+    unit: '',
+    get prop() { return '' },
+    analyzeToken(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | { value: string }>, string] {
         let i = 0
         for (; i < token.length; i++) {
             if (token[i] === '{' && token[i - 1] !== '\\') {
@@ -20,8 +20,8 @@ export class Group extends Rule {
         }
 
         return [token.slice(0, i), ...analyzeValueToken(token.slice(i), values, globalValues)]
-    }
-    override getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>> {
+    },
+    getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>> {
         const themePropsMap: Record<string, Record<string, string>> = {}
 
         const addProp = (theme: string, propertyName: string) => {

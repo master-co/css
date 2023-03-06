@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class TransitionTimingFunction extends Rule {
-    static id = 'TransitionTimingFunction' as const
-    static matches = '^~easing:.'
+export const transitionTimingFunction = {
+    id: 'TransitionTimingFunction' as const,
+    matches: '^~easing:.'
 }

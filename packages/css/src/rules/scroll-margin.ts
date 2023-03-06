@@ -1,10 +1,8 @@
-import { Rule } from '../rule'
-
-export class ScrollMargin extends Rule {
-    static id = 'ScrollMargin' as const
-    static matches = '^scroll-m(?:[xytblr]|argin(?:-(?:top|bottom|left|right))?)?:.'
-    static get prop() { return '' }
-    override get(declaration): { [key: string]: any } {
+export const scrollMargin = {
+    id: 'ScrollMargin' as const,
+    matches: '^scroll-m(?:[xytblr]|argin(?:-(?:top|bottom|left|right))?)?:.',
+    get prop() { return '' },
+    get(declaration): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'm') {
             switch (this.prefix.slice(-2, -1)) {
             case 'x':
@@ -39,8 +37,8 @@ export class ScrollMargin extends Rule {
                 [this.prefix.replace(/-m(?!argin)/, '-' + 'margin').slice(0, -1)]: declaration
             }
         }
-    }
-    override get order(): number {
+    },
+    get order(): number {
         return (this.prefix === 'scroll-margin:' || this.prefix === 'scroll-m:') ? -1 : 0
     }
 }

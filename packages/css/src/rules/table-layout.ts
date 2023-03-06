@@ -1,5 +1,3 @@
-import { Rule } from '../rule'
-
-export class TableLayout extends Rule {
-    static id = 'TableLayout' as const
+export const tableLayout = {
+    id: 'TableLayout' as const,
 }

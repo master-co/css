@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class Opacity extends Rule {
-    static id = 'Opacity' as const
-    static unit = ''
+export const opacity = {
+    id: 'Opacity' as const,
+    unit: ''
 }

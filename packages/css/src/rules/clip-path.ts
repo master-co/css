@@ -1,6 +1,4 @@
-import { Rule } from '../rule'
-
-export class ClipPath extends Rule {
-    static id = 'ClipPath' as const
-    static matches = '^clip:.'
+export const clipPath = {
+    id: 'ClipPath' as const,
+    matches: '^clip:.'
 }

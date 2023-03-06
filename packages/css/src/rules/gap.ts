@@ -1,10 +1,9 @@
-import { Rule } from '../rule'
-
-export class Gap extends Rule {
-    static id = 'Gap' as const
-    static matches = '^gap(?:-x|-y)?:.'
-    static get prop() { return '' }
-    override get(declaration): { [key: string]: any } {
+export const gap = {
+    id: 'Gap' as const,
+    matches: '^gap(?:-x|-y)?:.',
+    order: -1,
+    get prop() { return '' },
+    get(declaration): { [key: string]: any } {
         switch (this.prefix[4]) {
         case 'x':
             return { 'column-gap': declaration }
@@ -14,5 +13,4 @@ export class Gap extends Rule {
             return { gap: declaration }
         }
     }
-    override order = -1
 }
