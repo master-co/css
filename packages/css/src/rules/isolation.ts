@@ -1,2 +1,4 @@
-export const isolation = {
+import { RuleConfig } from '..'
+
+export const isolation: RuleConfig = {
 }

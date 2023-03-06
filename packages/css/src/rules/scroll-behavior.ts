@@ -1,2 +1,4 @@
-export const scrollBehavior = {
+import { RuleConfig } from '..'
+
+export const scrollBehavior: RuleConfig = {
 }

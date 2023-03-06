@@ -2,7 +2,9 @@ import { Rule } from '../rule'
 import { Config } from '..'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
-export const filter = {
+import { RuleConfig } from '..'
+
+export const filter: RuleConfig = {
     matches: '^(?:blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)\\(',
     colorful: true,
     parseValue(value: string, config: Config): string {

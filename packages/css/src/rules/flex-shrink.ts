@@ -1,3 +1,5 @@
-export const flexShrink = {
+import { RuleConfig } from '..'
+
+export const flexShrink: RuleConfig = {
     unit: ''
 }

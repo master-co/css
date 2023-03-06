@@ -1,2 +1,4 @@
-export const willChange = {
+import { RuleConfig } from '..'
+
+export const willChange: RuleConfig = {
 }

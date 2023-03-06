@@ -1,4 +1,6 @@
-export const gridColumn = {
+import { RuleConfig } from '..'
+
+export const gridColumn: RuleConfig = {
     matches: '^grid-col(?:umn)?(?:-span)?:.',
     unit: '',
     order: -1,

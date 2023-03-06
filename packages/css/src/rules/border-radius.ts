@@ -5,7 +5,9 @@ const BORDER_TOP_LEFT_RADIUS = 'border-top-left-radius',
     BORDER_RADIUS = 'border-radius',
     BORDER_RADIUS_S = [BORDER_TOP_LEFT_RADIUS, BORDER_TOP_RIGHT_RADIUS, BORDER_BOTTOM_LEFT_RADIUS, BORDER_BOTTOM_RIGHT_RADIUS]
 
-export const borderRadius = {
+import { RuleConfig } from '..'
+
+export const borderRadius: RuleConfig = {
     matches: '^(?:r[tblr]?[tblr]?|border(?:-(?:top|bottom)-(?:left|right))?-radius):.',
     prop: false,
     get(declaration): { [key: string]: any } {

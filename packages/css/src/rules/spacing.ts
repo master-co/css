@@ -1,4 +1,6 @@
-export const spacing = {
+import { RuleConfig } from '..'
+
+export const spacing: RuleConfig = {
     matches: '^[pm][xytblr]?:.',
     prop: false,
     get(declaration): { [key: string]: any } {

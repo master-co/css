@@ -2,7 +2,9 @@ import { Rule } from '../rule'
 import { Config } from '..'
 import { parseValueUnit } from '../utils/parse-value-unit'
 
-export const backdropFilter = {
+import { RuleConfig } from '..'
+
+export const backdropFilter: RuleConfig = {
     matches: '^bd:.',
     colorful: true,
     get(declaration): { [key: string]: any } {

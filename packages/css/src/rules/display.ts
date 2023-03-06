@@ -1,3 +1,5 @@
-export const display = {
+import { RuleConfig } from '..'
+
+export const display: RuleConfig = {
     matches: '^d:.'
 }

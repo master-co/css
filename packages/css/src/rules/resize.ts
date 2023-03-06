@@ -1,2 +1,4 @@
-export const resize = {
+import { RuleConfig } from '..'
+
+export const resize: RuleConfig = {
 }

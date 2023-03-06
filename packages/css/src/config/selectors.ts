@@ -1,4 +1,6 @@
-export const selectors = {
+import { RuleConfig } from '..'
+
+export const selectors: RuleConfig = {
     '::scrollbar': '::-webkit-scrollbar',
     '::scrollbar-button': '::-webkit-scrollbar-button',
     '::scrollbar-thumb': '::-webkit-scrollbar-thumb',

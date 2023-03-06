@@ -1,2 +1,4 @@
-export const position = {
+import { RuleConfig } from '..'
+
+export const position: RuleConfig = {
 }

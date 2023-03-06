@@ -2,7 +2,9 @@ const SUBPIXEL_ANTIALIASED = 'subpixel-antialiased'
 const WEBKIT_FONT_SMOOTHING = '-webkit-font-smoothing'
 const MOZ_OSXFONT_SMOOTHING = '-moz-osx-font-smoothing'
 
-export const fontSmoothing = {
+import { RuleConfig } from '..'
+
+export const fontSmoothing: RuleConfig = {
     matches: '^f(?:ont)?:(?:antialiased|subpixel-antialiased|$values)(?!\\|)',
     unit: '',
     prop: false,

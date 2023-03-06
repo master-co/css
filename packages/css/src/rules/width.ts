@@ -1,3 +1,5 @@
-export const width = {
+import { RuleConfig } from '..'
+
+export const width: RuleConfig = {
     matches: '^w:.'
 }

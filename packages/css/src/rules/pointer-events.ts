@@ -1,2 +1,4 @@
-export const pointerEvents = {
+import { RuleConfig } from '..'
+
+export const pointerEvents: RuleConfig = {
 }

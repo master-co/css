@@ -1,3 +1,5 @@
-export const borderImageSlice = {
+import { RuleConfig } from '..'
+
+export const borderImageSlice: RuleConfig = {
     unit: ''
 }

@@ -1,7 +1,9 @@
 import { Rule } from '../rule'
 import { getBorderProps } from '../utils/get-border-props'
 
-export const borderStyle = {
+import { RuleConfig } from '..'
+
+export const borderStyle: RuleConfig = {
     matches: '^(?:border(?:-(?:left|right|top|bottom))?-style:.|b(?:[xytblr]|order(?:-(?:left|right|top|bottom))?)?:(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|))',
     prop: false,
     get(declaration): { [key: string]: any } {

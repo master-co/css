@@ -1,3 +1,5 @@
-export const mixBlendMode = {
+import { RuleConfig } from '..'
+
+export const mixBlendMode: RuleConfig = {
     matches: '^blend:.'
 }

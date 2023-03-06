@@ -1,4 +1,6 @@
-export const variable = {
+import { RuleConfig } from '..'
+
+export const variable: RuleConfig = {
     matches: '^\\$[^ (){}A-Z]+:[^ ]',
     unit: '', // don't use 'rem' as default, because css variable is common API
     prop: false,

@@ -1,4 +1,6 @@
-export const scrollMargin = {
+import { RuleConfig } from '..'
+
+export const scrollMargin: RuleConfig = {
     matches: '^scroll-m(?:[xytblr]|argin(?:-(?:top|bottom|left|right))?)?:.',
     prop: false,
     get(declaration): { [key: string]: any } {

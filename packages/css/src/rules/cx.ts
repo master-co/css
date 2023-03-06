@@ -1,3 +1,5 @@
-export const cx = {
+import { RuleConfig } from '..'
+
+export const cx: RuleConfig = {
     unit: ''
 }

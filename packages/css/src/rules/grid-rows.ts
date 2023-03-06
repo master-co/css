@@ -1,4 +1,6 @@
-export const gridRows = {
+import { RuleConfig } from '..'
+
+export const gridRows: RuleConfig = {
     unit: '',
     get(declaration): { [key: string]: any } {
         return {

@@ -1,4 +1,6 @@
-export const margin = {
+import { RuleConfig } from '..'
+
+export const margin: RuleConfig = {
     matches: '^margin(?:-(?:left|right|top|bottom))?:.',
     prop: false,
     get(declaration): { [key: string]: any } {

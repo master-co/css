@@ -1,2 +1,4 @@
-export const tableLayout = {
+import { RuleConfig } from '..'
+
+export const tableLayout: RuleConfig = {
 }

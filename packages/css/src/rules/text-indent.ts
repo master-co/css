@@ -1,2 +1,4 @@
-export const textIndent = {
+import { RuleConfig } from '..'
+
+export const textIndent: RuleConfig = {
 }

@@ -1,2 +1,4 @@
-export const strokeDasharray = {
+import { RuleConfig } from '..'
+
+export const strokeDasharray: RuleConfig = {
 }

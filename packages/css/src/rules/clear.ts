@@ -1,2 +1,4 @@
-export const clear = {
+import { RuleConfig } from '..'
+
+export const clear: RuleConfig = {
 }

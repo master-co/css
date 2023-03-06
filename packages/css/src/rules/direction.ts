@@ -1,2 +1,4 @@
-export const direction = {
+import { RuleConfig } from '..'
+
+export const direction: RuleConfig = {
 }

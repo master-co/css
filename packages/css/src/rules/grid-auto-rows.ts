@@ -1,2 +1,4 @@
-export const gridAutoRows = {
+import { RuleConfig } from '..'
+
+export const gridAutoRows: RuleConfig = {
 }

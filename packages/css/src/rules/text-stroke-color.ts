@@ -1,4 +1,6 @@
-export const textStrokeColor = {
+import { RuleConfig } from '..'
+
+export const textStrokeColor: RuleConfig = {
     matches: '^text-stroke-color:.',
     colorStarts: 'text-stroke:',
     colorful: true,

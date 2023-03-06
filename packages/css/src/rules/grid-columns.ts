@@ -1,4 +1,6 @@
-export const gridColumns = {
+import { RuleConfig } from '..'
+
+export const gridColumns: RuleConfig = {
     matches: '^grid-cols:.',
     unit: '',
     get(declaration): { [key: string]: any } {

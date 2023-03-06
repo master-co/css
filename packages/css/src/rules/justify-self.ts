@@ -1,3 +1,5 @@
-export const justifySelf = {
+import { RuleConfig } from '..'
+
+export const justifySelf: RuleConfig = {
     matches:  '^js:.'
 }

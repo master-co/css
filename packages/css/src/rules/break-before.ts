@@ -1,2 +1,4 @@
-export const breakBefore = {
+import { RuleConfig } from '..'
+
+export const breakBefore: RuleConfig = {
 }

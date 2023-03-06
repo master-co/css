@@ -1,4 +1,6 @@
-export const lineClamp = {
+import { RuleConfig } from '..'
+
+export const lineClamp: RuleConfig = {
     unit: '',
     get(declaration): { [key: string]: any } {
         return {

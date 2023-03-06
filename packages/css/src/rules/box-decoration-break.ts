@@ -1,4 +1,6 @@
-export const boxDecorationBreak = {
+import { RuleConfig } from '..'
+
+export const boxDecorationBreak: RuleConfig = {
     matches: '^box:(?:slice|clone|$values)(?!\\|)',
     get(declaration): { [key: string]: any } {
         return {

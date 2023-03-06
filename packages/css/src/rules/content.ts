@@ -1,2 +1,4 @@
-export const content = {
+import { RuleConfig } from '..'
+
+export const content: RuleConfig = {
 }

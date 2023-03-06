@@ -1,2 +1,4 @@
-export const touchAction = {
+import { RuleConfig } from '..'
+
+export const touchAction: RuleConfig = {
 }

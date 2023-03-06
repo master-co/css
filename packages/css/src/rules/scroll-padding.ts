@@ -1,4 +1,6 @@
-export const scrollPadding = {
+import { RuleConfig } from '..'
+
+export const scrollPadding: RuleConfig = {
     matches: '^scroll-p(?:[xytblr]|adding(?:-(?:top|bottom|left|right))?)?:.',
     prop: false,
     get(declaration): { [key: string]: any } {

@@ -1,3 +1,5 @@
-export const writingMode = {
+import { RuleConfig } from '..'
+
+export const writingMode: RuleConfig = {
     matches: '^writing:.'
 }

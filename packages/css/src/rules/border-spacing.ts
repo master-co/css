@@ -1,2 +1,4 @@
-export const borderSpacing = {
+import { RuleConfig } from '..'
+
+export const borderSpacing: RuleConfig = {
 }

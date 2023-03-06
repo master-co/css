@@ -1,2 +1,4 @@
-export const quotes = {
+import { RuleConfig } from '..'
+
+export const quotes: RuleConfig = {
 }

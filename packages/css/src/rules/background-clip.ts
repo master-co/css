@@ -1,4 +1,6 @@
-export const backgroundClip = {
+import { RuleConfig } from '..'
+
+export const backgroundClip: RuleConfig = {
     matches: '^(?:bg|background):(?:text|$values)(?!\\|)',
     get(declaration): { [key: string]: any } {
         return {

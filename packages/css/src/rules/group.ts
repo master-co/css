@@ -6,7 +6,9 @@ import { analyzeValueToken } from '../utils/analyze-value-token'
 
 const bracketRegexp = /\{(.*)\}/
 
-export const group = {
+import { RuleConfig } from '..'
+
+export const group: RuleConfig = {
     matches: '^(?:.+?[*_>~+])?\\{.+?\\}',
     unit: '',
     prop: false,

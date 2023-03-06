@@ -1,3 +1,5 @@
-export const backgroundSize = {
+import { RuleConfig } from '..'
+
+export const backgroundSize: RuleConfig = {
     matches: '^(?:bg|background):(?:\\.?\\[0-9]+|auto|cover|contain|$values)(?!\\|)'
 }

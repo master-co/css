@@ -1,2 +1,4 @@
-export const breakInside = {
+import { RuleConfig } from '..'
+
+export const breakInside: RuleConfig = {
 }

@@ -1,4 +1,6 @@
-export const gridRow = {
+import { RuleConfig } from '..'
+
+export const gridRow: RuleConfig = {
     matches: '^grid-row-span:.',
     unit: '',
     order: -1,

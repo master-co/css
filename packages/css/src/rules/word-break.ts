@@ -1,3 +1,5 @@
-export const wordBreak = {
+import { RuleConfig } from '..'
+
+export const wordBreak: RuleConfig = {
     unit: ''
 }

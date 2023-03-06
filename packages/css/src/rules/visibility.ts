@@ -1,2 +1,4 @@
-export const visibility = {
+import { RuleConfig } from '..'
+
+export const visibility: RuleConfig = {
 }

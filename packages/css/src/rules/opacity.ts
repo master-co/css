@@ -1,3 +1,5 @@
-export const opacity = {
+import { RuleConfig } from '..'
+
+export const opacity: RuleConfig = {
     unit: ''
 }

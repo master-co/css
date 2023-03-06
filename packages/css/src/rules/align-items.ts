@@ -1,3 +1,5 @@
-export const alignItems = {
+import { RuleConfig } from '..'
+
+export const alignItems: RuleConfig = {
     matches: '^ai:.'
 }

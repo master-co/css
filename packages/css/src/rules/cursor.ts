@@ -1,2 +1,4 @@
-export const cursor = {
+import { RuleConfig } from '..'
+
+export const cursor: RuleConfig = {
 }

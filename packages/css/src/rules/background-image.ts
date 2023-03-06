@@ -1,4 +1,6 @@
-export const backgroundImage = {
+import { RuleConfig } from '..'
+
+export const backgroundImage: RuleConfig = {
     matches: '^(?:bg|background):(?:(?:url|linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient)\\(.*\\)|$values)(?!\\|)',
     colorful: true
 }

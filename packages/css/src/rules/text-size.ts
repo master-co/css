@@ -1,6 +1,8 @@
 const diff = .75
 
-export const textSize = {
+import { RuleConfig } from '..'
+
+export const textSize: RuleConfig = {
     matches: '^t(?:ext)?:(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
     prop: false,
     get(declaration): { [key: string]: any } {

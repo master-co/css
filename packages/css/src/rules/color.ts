@@ -1,4 +1,6 @@
-export const color = {
+import { RuleConfig } from '..'
+
+export const color: RuleConfig = {
     matches: '^(?:color|fg|foreground):.',
     colorful: true,
     unit: ''

@@ -1,4 +1,6 @@
-export const lines = {
+import { RuleConfig } from '..'
+
+export const lines: RuleConfig = {
     matches: '^lines:.',
     unit: '',
     prop: false,

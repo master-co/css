@@ -196,7 +196,9 @@ import { wH } from '../rules/wh'
 import { minWH } from '../rules/min-wh'
 import { maxWH } from '../rules/max-wh'
 
-export const rules = {
+import { RuleConfig } from '..'
+
+export const rules: RuleConfig = {
     group,
     variable,
     fontSize,

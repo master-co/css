@@ -1,3 +1,5 @@
-export const animationDirection = {
+import { RuleConfig } from '..'
+
+export const animationDirection: RuleConfig = {
     matches: '^@direction:.'
 }

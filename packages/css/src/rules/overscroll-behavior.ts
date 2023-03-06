@@ -1,4 +1,6 @@
-export const overscrollBehavior = {
+import { RuleConfig } from '..'
+
+export const overscrollBehavior: RuleConfig = {
     matches: '^overscroll-behavior(?:-[xy])?:',
     prop: false,
     get(declaration): { [key: string]: any } {

@@ -1,3 +1,5 @@
-export const counterIncrement = {
+import { RuleConfig } from '..'
+
+export const counterIncrement: RuleConfig = {
     unit: ''
 }

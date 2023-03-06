@@ -1,4 +1,6 @@
-export const overflow = {
+import { RuleConfig } from '..'
+
+export const overflow: RuleConfig = {
     matches: '^overflow(?:-x|-y)?:(?:visible|overlay|hidden|scroll|auto|clip|inherit|initial|revert|revert-layer|unset|\\$|var|$values)',
     prop: false,
     get(declaration): { [key: string]: any } {

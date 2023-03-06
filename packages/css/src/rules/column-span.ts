@@ -1,3 +1,5 @@
-export const columnSpan = {
+import { RuleConfig } from '..'
+
+export const columnSpan: RuleConfig = {
     matches: '^col-span:.'
 }
