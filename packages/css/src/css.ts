@@ -8,28 +8,11 @@ import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 
 const isBrowser = typeof window !== 'undefined'
 
-export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
-
-    static instances: MasterCSS[] = []
-    static root: MasterCSS
-
-    /**
-     * 全部 sheet 根據目前蒐集到的所有 DOM class 重新 create
-     */
-    static refresh(config: Config) {
-        for (const eachInstance of this.instances) {
-            eachInstance.refresh(config)
-        }
-    }
+export interface MasterCSS {
 
     readonly style: HTMLStyleElement
-    readonly rules: Rule[] = []
-    readonly ruleOfClass: Record<string, Rule> = {}
-    readonly countOfClass = {}
     readonly host: Element
     readonly root: Document | ShadowRoot
-    readonly ready: boolean = false
-
     semantics: [RegExp, [string, string | Record<string, string>]][]
     classes: Record<string, string[]>
     colorThemesMap: Record<string, Record<string, string>>
@@ -44,6 +27,19 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
     mediaQueries: Record<string, string>
     matches: Record<string, RegExp>
     theme: Theme | undefined
+
+    constructor: {
+        root: MasterCSS
+        instances: MasterCSS[]
+    }
+}
+
+export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
+
+    readonly rules: Rule[] = []
+    readonly ruleOfClass: Record<string, Rule> = {}
+    readonly countOfClass = {}
+    readonly ready: boolean = false
 
     constructor(
         public config?: Config
@@ -218,7 +214,7 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
             this.observe(document)
         }
 
-        MasterCSS.instances.push(this)
+        this.constructor.instances.push(this)
         this.ready = true
     }
 
@@ -488,7 +484,7 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
             this.root = root
             const isDocumentRoot = root === document
             if (isDocumentRoot) {
-                MasterCSS.root = this
+                MasterCSS.prototype.constructor.root = this
             }
 
             // @ts-ignore
@@ -716,7 +712,7 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
     }
 
     destroy() {
-        const instances = MasterCSS.instances
+        const instances = this.constructor.instances
         this.disconnect()
         instances.splice(instances.indexOf(this), 1)
     }
@@ -1176,6 +1172,17 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
 
 /* @__PURE__ */
 (() => {
+    Object.assign(MasterCSS, {
+        instances: [],
+        /**
+         * 全部 sheet 根據目前蒐集到的所有 DOM class 重新 create
+         */
+        refresh(config: Config) {
+            for (const eachInstance of this.instances) {
+                eachInstance.refresh(config)
+            }
+        }
+    })
     if (isBrowser) {
         window.MasterCSS = MasterCSS
     }

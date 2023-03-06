@@ -535,7 +535,6 @@ export interface Rule {
 }
 
 /*@__PURE__*/
-// eslint-disable-next-line no-unexpected-multiline
 (() => {
     Object.assign(Rule, {
         unit: 'rem',
