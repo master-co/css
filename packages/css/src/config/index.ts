@@ -7,7 +7,7 @@ import { semantics } from './semantics'
 import { themes } from './themes'
 import { theme } from './theme'
 import { values } from './values'
-import { Rules } from './rules'
+import { rules } from './rules'
 import { override } from './override'
 import { observe } from './observe'
 import { important } from './important'
@@ -22,7 +22,7 @@ const config = {
     themes,
     theme,
     values,
-    Rules,
+    rules,
     override,
     observe,
     important
@@ -39,13 +39,13 @@ export {
     themes,
     theme,
     values,
-    Rules,
+    rules,
     override,
     observe,
     important
 }
 
-import type { Rule } from '../rule'
+import type { RuleConfig } from '../rule'
 import type { ThemeConfig } from '../theme'
 
 type Classes = { [key: string]: string | Classes }
@@ -64,10 +64,8 @@ export interface Config {
     mediaQueries?: MediaQueries
     selectors?: Selectors
     semantics?: Semantics
-    values?: {
-        [id in typeof Rules[number]['id']]?: Values
-    } & Values
-    Rules?: typeof Rule[],
+    values?: Values
+    rules?: Record<string, RuleConfig>,
     themes?: Record<string, { classes?: Classes, colors?: Colors }> | string[],
     rootSize?: number
     scope?: string

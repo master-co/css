@@ -196,7 +196,7 @@ import { wH } from '../rules/wh'
 import { minWH } from '../rules/min-wh'
 import { maxWH } from '../rules/max-wh'
 
-export const Rules = [
+export const rules = {
     group,
     variable,
     fontSize,
@@ -394,4 +394,4 @@ export const Rules = [
     clipPath,
     quotes,
     maskImage
-]
+}

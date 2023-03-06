@@ -3,7 +3,7 @@ import type { MasterCSS } from './css'
 
 import { getCssPropertyText } from './utils/get-css-property-text'
 import { analyzeValueToken } from './utils/analyze-value-token'
-import { parseValue } from './utils/parse-value'
+import { parseRuleValue } from './utils/parse-rule-value'
 import { SORTED_SELECTORS } from './constants/sorted-selectors'
 
 export class Rule {
@@ -20,30 +20,37 @@ export class Rule {
 
     constructor(
         public readonly className: string,
-        public readonly matching: RuleMatching,
+        public readonly meta: RuleMeta,
         public css: MasterCSS
     ) {
-        const TargetRule = this.constructor
-        const { id, unit, colorful, prop } = TargetRule
+        const {
+            id,
+            unit = 'rem',
+            colorful,
+            prop,
+            analyzeToken,
+            getThemeProps,
+            parseValue,
+            get
+        } = meta.config || {}
         const { rootSize, scope, important } = css.config
         const { themeNames, colorNames, colorThemesMap, selectors, globalValues, breakpoints, mediaQueries } = css
         const values = css.values[id]
         const relationThemesMap = css.relationThemesMap[className]
-
         const token = className
 
         // 1. value / selectorToken
         let value: string | Record<string, string | number>, prefixToken: string, suffixToken: string, valueTokens: (string | { value: string })[]
-        if (matching.origin === 'semantics') {
-            const [semanticName, semanticValue] = matching.value
+        if (meta.origin === 'semantics') {
+            const [semanticName, semanticValue] = meta.value
             suffixToken = token.slice(semanticName.length)
             value = semanticValue
         } else {
-            if (this.analyzeToken) {
-                [prefixToken, valueTokens, suffixToken] = this.analyzeToken(token, values, globalValues)
+            if (analyzeToken) {
+                [prefixToken, valueTokens, suffixToken] = analyzeToken(token, values, globalValues)
             } else {
                 let valueToken: string
-                if (matching.origin === 'matches') {
+                if (meta.origin === 'matches') {
                     const indexOfColon = token.indexOf(':')
                     this.prefix = token.slice(0, indexOfColon + 1)
                     if (this.prefix.includes('(')) {
@@ -52,7 +59,7 @@ export class Rule {
                     } else {
                         valueToken = token.slice(indexOfColon + 1)
                     }
-                } else if (matching.origin === 'symbol') {
+                } else if (meta.origin === 'symbol') {
                     this.symbol = token[0]
                     valueToken = token.slice(1)
                 }
@@ -279,9 +286,9 @@ export class Rule {
                                         case 'max-width':
                                         case 'min-width':
                                             if (breakpoint) {
-                                                Object.assign(feature, parseValue(breakpoint, 'px'))
+                                                Object.assign(feature, parseRuleValue(breakpoint, 'px'))
                                             } else {
-                                                Object.assign(feature, parseValue(conditionUnitValueToken, 'px'))
+                                                Object.assign(feature, parseRuleValue(conditionUnitValueToken, 'px'))
                                             }
                                             if (feature.unit === 'px') {
                                                 feature.value += correction
@@ -357,7 +364,7 @@ export class Rule {
                             .entries(relationThemesMap)
                             .filter(([relationTheme]) => this.theme || !colorful || !theme || !relationTheme || relationTheme === theme)
                             .map(([relationTheme, classNames]) =>
-                                classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? ((colorful || this.getThemeProps) ? theme || relationTheme : relationTheme), className), '')
+                                classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? ((colorful || getThemeProps) ? theme || relationTheme : relationTheme), className), '')
                             )
                             .join('')
                         : '')
@@ -378,7 +385,7 @@ export class Rule {
                     if (typeof eachValueToken === 'string') {
                         newValueTokens.push(eachValueToken)
                     } else {
-                        uv = parseValue(
+                        uv = parseRuleValue(
                             eachValueToken.value,
                             unit,
                             colorful && colorNames,
@@ -410,8 +417,8 @@ export class Rule {
 
                 if (typeof newValue !== 'object') {
                     // 8. parseValue
-                    if (this.parseValue) {
-                        newValue = this.parseValue(newValue, this.css.config)
+                    if (parseValue) {
+                        newValue = parseValue(newValue, this.css.config)
                     }
 
                     // 9. transform value
@@ -424,8 +431,8 @@ export class Rule {
                         value: newValue,
                         important: this.important
                     }
-                    if (this.getThemeProps) {
-                        const themeProps = this.getThemeProps(declaration, css)
+                    if (getThemeProps) {
+                        const themeProps = getThemeProps(declaration, css)
                         for (const theme in themeProps) {
                             for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
                                 this.natives.push({
@@ -448,8 +455,8 @@ export class Rule {
                             }
                         }
                         return
-                    } else if (this.get) {
-                        newValue = this.get(declaration)
+                    } else if (get) {
+                        newValue = get(declaration)
                     }
                 }
             } else {
@@ -480,7 +487,7 @@ export class Rule {
             }
         }
 
-        if (this.getThemeProps) {
+        if (getThemeProps) {
             insertNewNative(undefined, false)
         } else if (this.theme) {
             insertNewNative(this.theme, false)
@@ -511,78 +518,15 @@ export interface Rule {
     unitToken?: string
     hasWhere?: boolean
     order?: number
-    analyzeToken?(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | {
-        value: string
-    }>, string]
-    parseValue?(value: string, config: Config): string
-    get?(declaration: Declaration): Record<string, any>
-    getThemeProps?(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>>
     constructor: {
-        id?: string
-        matches?: string
-        colorStarts?: string
-        symbol?: string
-        colorful?: boolean
-        unit?: any
-        get prop(): string
         match?(
             name: string,
             matches: RegExp,
             colorThemesMap: Record<string, Record<string, string>>,
             colorNames: string[]
-        ): RuleMatching
+        ): RuleMeta
     }
 }
-
-/*@__PURE__*/
-(() => {
-    Object.assign(Rule, {
-        unit: 'rem',
-        get prop(): string {
-            return this.id?.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
-        },
-        match(
-            name: string,
-            matches: RegExp,
-            colorThemesMap: Record<string, Record<string, string>>,
-            colorNames: string[]
-        ): RuleMatching {
-            const { colorStarts, symbol, prop } = this
-            /**
-             * STEP 1. matches
-             */
-            if (matches && matches.test(name)) {
-                return { origin: 'matches' }
-            }
-            /**
-             * STEP 2. color starts
-             */
-            // TODO: 動態 new Regex 效能問題待優化
-            if (colorStarts) {
-                if (name.match('^' + colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current|inherit))'))
-                    return { origin: 'matches' }
-
-                if (colorNames.length && name.indexOf('|') === -1) {
-                    const result = name.match('^' + colorStarts + '((?:' + colorNames.join('|') + ')[0-9a-zA-Z-]*)')
-                    if (result && result[1] in colorThemesMap)
-                        return { origin: 'matches' }
-                }
-            }
-            /**
-             * STEP 3. symbol
-             */
-            if (symbol && name.startsWith(symbol)) {
-                return { origin: 'symbol' }
-            }
-            /**
-             * STEP 4. key full name
-             */
-            if (prop && name.startsWith(prop + ':')) {
-                return { origin: 'matches' }
-            }
-        }
-    })
-})()
 
 export interface MediaFeatureRule {
     token: string;
@@ -606,8 +550,24 @@ export interface Declaration {
     important: boolean
 }
 
-export interface RuleMatching {
-    origin: 'matches' | 'semantics' | 'symbol'
+export interface RuleMeta {
+    origin?: 'matches' | 'semantics' | 'symbol'
     value?: [string, string | Record<string, string>]
-    Rule?: typeof Rule
+    config?: RuleConfig
+}
+
+export interface RuleConfig {
+    id?: string
+    matches?: string
+    colorStarts?: string
+    symbol?: string
+    colorful?: boolean
+    unit?: any
+    prop?: string
+    analyzeToken?(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | {
+        value: string
+    }>, string]
+    parseValue?(value: string, config: Config): string
+    get?(declaration: Declaration): Record<string, any>
+    getThemeProps?(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>>
 }

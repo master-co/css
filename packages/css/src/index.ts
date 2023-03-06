@@ -12,6 +12,5 @@ export * from './methods'
 export * from './config'
 
 // type
-
-export type { Declaration, MediaQuery, MediaFeatureRule, RuleMatching } from './rule'
+export type { Declaration, MediaQuery, MediaFeatureRule, RuleMeta } from './rule'
 export type { ThemeConfig, ThemeValue } from './theme'

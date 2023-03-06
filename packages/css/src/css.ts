@@ -1,6 +1,6 @@
 import extend from 'to-extend'
-import { Rule, RuleMatching } from './rule'
-import type { Config } from './'
+import { Rule, RuleMeta } from './rule'
+import { Config } from './'
 import { config as defaultConfig } from './config'
 import { Theme } from './theme'
 import { rgbToHex } from './utils/rgb-to-hex'
@@ -233,7 +233,7 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
         this.mediaQueries = {}
         this.matches = {}
 
-        const { semantics, classes, selectors, themes, colors, values, breakpoints, mediaQueries, Rules } = this.config
+        const { semantics, classes, selectors, themes, colors, values, breakpoints, mediaQueries, rules } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -460,9 +460,12 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
             }
         })
 
-        if (Rules) {
-            for (const EachRule of Rules) {
-                const { matches, id } = EachRule.prototype.constructor
+        if (rules) {
+            for (const id in rules) {
+                const eachRuleConfig = rules[id]
+                eachRuleConfig.id = id
+                eachRuleConfig.prop = id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
+                const { matches } = eachRuleConfig
                 if (matches) {
                     const valueKeys = Object.keys(this.values[id] ?? {})
                     const index = matches.indexOf('$values')
@@ -634,23 +637,51 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
     /**
      * 比對是否為 Master CSS 的類名語法
      */
-    match(className: string): RuleMatching {
-        for (const EachRule of this.config.Rules) {
-            const { match, id } = EachRule.prototype.constructor
-            const matching = match(className, this.matches[id], this.colorThemesMap, this.colorNames)
-            if (matching)
-                return {
-                    ...matching,
-                    Rule: EachRule
+    match(className: string): RuleMeta {
+        for (const id in this.config.rules) {
+            const eachRuleConfig = this.config.rules[id]
+            const { colorStarts, symbol, prop } = eachRuleConfig
+            const matches = this.matches[id]
+            const { colorNames, colorThemesMap } = this
+            /**
+             * STEP 1. matches
+             */
+            if (matches && matches.test(className)) {
+                return { origin: 'matches', config: eachRuleConfig }
+            }
+            /**
+             * STEP 2. color starts
+             */
+            // TODO: 動態 new Regex 效能問題待優化
+            if (colorStarts) {
+                if (className.match('^' + colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current|inherit))'))
+                    return { origin: 'matches', config: eachRuleConfig }
+
+                if (colorNames.length && className.indexOf('|') === -1) {
+                    const result = className.match('^' + colorStarts + '((?:' + colorNames.join('|') + ')[0-9a-zA-Z-]*)')
+                    if (result && result[1] in colorThemesMap)
+                        return { origin: 'matches', config: eachRuleConfig }
                 }
+            }
+            /**
+             * STEP 3. symbol
+             */
+            if (symbol && className.startsWith(symbol)) {
+                return { origin: 'symbol', config: eachRuleConfig }
+            }
+            /**
+             * STEP 4. key full className
+             */
+            if (prop && className.startsWith(prop + ':')) {
+                return { origin: 'matches', config: eachRuleConfig }
+            }
         }
 
         for (const eachSemanticEntry of this.semantics) {
             if (className.match(eachSemanticEntry[0]))
                 return {
                     origin: 'semantics',
-                    value: eachSemanticEntry[1],
-                    Rule
+                    value: eachSemanticEntry[1]
                 }
         }
     }
@@ -661,11 +692,11 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
     create(className: string): Rule[] {
         const create = (eachClassName: string) => {
             if (eachClassName in this.ruleOfClass) return this.ruleOfClass[eachClassName]
-            const matching = this.match(eachClassName)
-            if (matching) {
-                return new matching.Rule(
+            const meta = this.match(eachClassName)
+            if (meta) {
+                return new Rule(
                     eachClassName,
-                    matching,
+                    meta,
                     this
                 )
             }
@@ -703,7 +734,7 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
         this.ruleOfClass = {}
 
         /**
-         * 拿當前所有的 classNames 按照最新的 colors, breakpoints, config.Rules 匹配並生成新的 style
+         * 拿當前所有的 classNames 按照最新的 colors, breakpoints, config.rules 匹配並生成新的 style
          * 所以 refresh 過後 rules 可能會變多也可能會變少
          */
         for (const name in this.countOfClass) {
@@ -718,7 +749,7 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
     }
 
     /**
-     * 透過類名來刪除對應的 Rules
+     * 透過類名來刪除對應的 rules
      */
     delete(className: string) {
         /**

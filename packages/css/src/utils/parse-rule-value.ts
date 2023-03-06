@@ -1,7 +1,7 @@
 import { analyzeUnitValue } from './analyze-unit-value'
 import { normalizeCssCalcText } from './normalize-css-calc-text'
 
-export function parseValue(
+export function parseRuleValue(
     token: string | number,
     defaultUnit?: string,
     colorNames?: string[],
