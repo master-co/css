@@ -1,8 +1,8 @@
 import { Rule } from '../rule'
 
 export class GridRows extends Rule {
-    static override id = 'GridRows' as const
-    static override unit = ''
+    static id = 'GridRows' as const
+    static unit = ''
     override get(declaration): { [key: string]: any } {
         return {
             display: { ...declaration, value: 'grid' },

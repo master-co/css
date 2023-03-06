@@ -1,8 +1,8 @@
 import { Rule } from '../rule'
 
 export class LineClamp extends Rule {
-    static override id = 'LineClamp' as const
-    static override unit = ''
+    static id = 'LineClamp' as const
+    static unit = ''
     override get(declaration): { [key: string]: any } {
         return {
             '-webkit-line-clamp': declaration

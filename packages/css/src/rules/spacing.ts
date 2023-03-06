@@ -1,9 +1,9 @@
 import { Rule } from '../rule'
 
 export class Spacing extends Rule {
-    static override id = 'Spacing' as const
-    static override matches = '^[pm][xytblr]?:.'
-    static override get prop() { return '' }
+    static id = 'Spacing' as const
+    static matches = '^[pm][xytblr]?:.'
+    static get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         const charAt1 = this.prefix[0]
         const SPACING = charAt1 === 'm' ? 'margin' : 'padding'

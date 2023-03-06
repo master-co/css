@@ -2,9 +2,9 @@ import { analyzeValueToken } from '../utils/analyze-value-token'
 import { Rule } from '../rule'
 
 export class MaxWH extends Rule {
-    static override id = 'MaxWH' as const
-    static override matches = '^max:(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)x(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)'
-    static override get prop() { return '' }
+    static id = 'MaxWH' as const
+    static matches = '^max:(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)x(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)'
+    static get prop() { return '' }
     override analyzeToken(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | { value: string }>, string] {
         return ['', ...analyzeValueToken(token.slice(4), values, globalValues, ['x'])]
     }

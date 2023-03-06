@@ -2,11 +2,11 @@ import { Rule } from '../rule'
 import { getBorderProps } from '../utils/get-border-props'
 
 export class BorderColor extends Rule {
-    static override id = 'BorderColor' as const
-    static override matches = '^border(?:-(?:left|right|top|bottom))?-color:.'
-    static override colorStarts = 'b(?:[xytblr]|(?:order(?:-(?:left|right|top|bottom))?))?:'
-    static override colorful = true
-    static override get prop() { return '' }
+    static id = 'BorderColor' as const
+    static matches = '^border(?:-(?:left|right|top|bottom))?-color:.'
+    static colorStarts = 'b(?:[xytblr]|(?:order(?:-(?:left|right|top|bottom))?))?:'
+    static colorful = true
+    static get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         return getBorderProps(this.prefix, declaration, 'color')
     }

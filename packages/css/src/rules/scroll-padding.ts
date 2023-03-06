@@ -1,9 +1,9 @@
 import { Rule } from '../rule'
 
 export class ScrollPadding extends Rule {
-    static override id = 'ScrollPadding' as const
-    static override matches = '^scroll-p(?:[xytblr]|adding(?:-(?:top|bottom|left|right))?)?:.'
-    static override get prop() { return '' }
+    static id = 'ScrollPadding' as const
+    static matches = '^scroll-p(?:[xytblr]|adding(?:-(?:top|bottom|left|right))?)?:.'
+    static get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'p') {
 

@@ -1,9 +1,9 @@
 import { Rule } from '../rule'
 
 export class ScrollMargin extends Rule {
-    static override id = 'ScrollMargin' as const
-    static override matches = '^scroll-m(?:[xytblr]|argin(?:-(?:top|bottom|left|right))?)?:.'
-    static override get prop() { return '' }
+    static id = 'ScrollMargin' as const
+    static matches = '^scroll-m(?:[xytblr]|argin(?:-(?:top|bottom|left|right))?)?:.'
+    static get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         if (this.prefix.slice(-3, -2) === 'm') {
             switch (this.prefix.slice(-2, -1)) {

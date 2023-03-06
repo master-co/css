@@ -1,6 +1,6 @@
 import { Rule } from '../rule'
 
 export class WordBreak extends Rule {
-    static override id = 'WordBreak' as const
-    static override unit = ''
+    static id = 'WordBreak' as const
+    static unit = ''
 }

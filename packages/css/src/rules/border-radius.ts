@@ -8,9 +8,9 @@ const BORDER_TOP_LEFT_RADIUS = 'border-top-left-radius',
     BORDER_RADIUS_S = [BORDER_TOP_LEFT_RADIUS, BORDER_TOP_RIGHT_RADIUS, BORDER_BOTTOM_LEFT_RADIUS, BORDER_BOTTOM_RIGHT_RADIUS]
 
 export class BorderRadius extends Rule {
-    static override id = 'BorderRadius' as const
-    static override matches = '^(?:r[tblr]?[tblr]?|border(?:-(?:top|bottom)-(?:left|right))?-radius):.'
-    static override get prop() { return '' }
+    static id = 'BorderRadius' as const
+    static matches = '^(?:r[tblr]?[tblr]?|border(?:-(?:top|bottom)-(?:left|right))?-radius):.'
+    static get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         if (this.prefix) {
             let suffix = ''

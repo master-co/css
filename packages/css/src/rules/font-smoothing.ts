@@ -5,10 +5,10 @@ const WEBKIT_FONT_SMOOTHING = '-webkit-font-smoothing'
 const MOZ_OSXFONT_SMOOTHING = '-moz-osx-font-smoothing'
 
 export class FontSmoothing extends Rule {
-    static override id = 'FontSmoothing' as const
-    static override matches = '^f(?:ont)?:(?:antialiased|subpixel-antialiased|$values)(?!\\|)'
-    static override unit = ''
-    static override get prop() { return '' }
+    static id = 'FontSmoothing' as const
+    static matches = '^f(?:ont)?:(?:antialiased|subpixel-antialiased|$values)(?!\\|)'
+    static unit = ''
+    static get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         const props = {}
         switch (declaration.value) {

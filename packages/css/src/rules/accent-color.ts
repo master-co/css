@@ -1,7 +1,7 @@
 import { Rule } from '../rule'
 
 export class AccentColor extends Rule {
-    static override id = 'AccentColor' as const
-    static override colorStarts = 'accent:'
-    static override colorful = true
+    static id = 'AccentColor' as const
+    static colorStarts = 'accent:'
+    static colorful = true
 }

@@ -1,10 +1,10 @@
 import { Rule } from '../rule'
 
 export class Lines extends Rule {
-    static override id = 'Lines' as const
-    static override matches = '^lines:.'
-    static override unit = ''
-    static override get prop() { return '' }
+    static id = 'Lines' as const
+    static matches = '^lines:.'
+    static unit = ''
+    static get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         return {
             overflow: { ...declaration, value: 'hidden' },

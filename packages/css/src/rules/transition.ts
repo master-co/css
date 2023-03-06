@@ -1,7 +1,7 @@
 import { Rule } from '../rule'
 
 export class Transition extends Rule {
-    static override id = 'Transition' as const
-    static override symbol = '~'
+    static id = 'Transition' as const
+    static symbol = '~'
     override order = -1
 }

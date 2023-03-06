@@ -1,6 +1,6 @@
 import { Rule } from '../rule'
 
 export class MinWidth extends Rule {
-    static override id = 'MinWidth' as const
-    static override matches = '^min-w:.'
+    static id = 'MinWidth' as const
+    static matches = '^min-w:.'
 }

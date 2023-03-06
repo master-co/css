@@ -1,7 +1,7 @@
 import { Rule } from '../rule'
 
 export class GridArea extends Rule {
-    static override id = 'GridArea' as const
-    static override unit = ''
+    static id = 'GridArea' as const
+    static unit = ''
     override order = -1
 }

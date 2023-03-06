@@ -1,9 +1,9 @@
 import { Rule } from '../rule'
 
 export class Padding extends Rule {
-    static override id = 'Padding' as const
-    static override matches = '^padding(?:-(?:left|right|top|bottom))?:.'
-    static override get prop() { return '' }
+    static id = 'Padding' as const
+    static matches = '^padding(?:-(?:left|right|top|bottom))?:.'
+    static get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         return {
             [this.prefix.slice(0, -1)]: declaration

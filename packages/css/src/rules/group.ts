@@ -7,10 +7,10 @@ import { analyzeValueToken } from '../utils/analyze-value-token'
 const bracketRegexp = /\{(.*)\}/
 
 export class Group extends Rule {
-    static override id = 'Group' as const
-    static override matches = '^(?:.+?[*_>~+])?\\{.+?\\}'
-    static override unit = ''
-    static override get prop() { return '' }
+    static id = 'Group' as const
+    static matches = '^(?:.+?[*_>~+])?\\{.+?\\}'
+    static unit = ''
+    static get prop() { return '' }
     override analyzeToken(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | { value: string }>, string] {
         let i = 0
         for (; i < token.length; i++) {

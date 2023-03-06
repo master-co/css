@@ -1,7 +1,7 @@
 import { Rule } from '../rule'
 
 export class FontWeight extends Rule {
-    static override id = 'FontWeight' as const
-    static override matches = '^f(?:ont)?:(?:bolder|$values)(?!\\|)'
-    static override unit = ''
+    static id = 'FontWeight' as const
+    static matches = '^f(?:ont)?:(?:bolder|$values)(?!\\|)'
+    static unit = ''
 }

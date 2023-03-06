@@ -2,9 +2,9 @@ import { Rule } from '../rule'
 import { Config } from '..'
 
 export class Transform extends Rule {
-    static override id = 'Transform' as const
-    static override matches = '^(?:translate|scale|skew|rotate|perspective|matrix)(?:3d|[XYZ])?\\('
-    static override unit = ''
+    static id = 'Transform' as const
+    static matches = '^(?:translate|scale|skew|rotate|perspective|matrix)(?:3d|[XYZ])?\\('
+    static unit = ''
     override parseValue(value: string, { rootSize }: Config): string {
         return value.replace(
             /(translate|scale|skew|rotate|perspective|matrix)(3d|[XYZ])?\((.*?)\)/g,

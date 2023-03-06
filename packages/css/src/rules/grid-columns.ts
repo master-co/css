@@ -1,9 +1,9 @@
 import { Rule } from '../rule'
 
 export class GridColumns extends Rule {
-    static override id = 'GridColumns' as const
-    static override matches = '^grid-cols:.'
-    static override unit = ''
+    static id = 'GridColumns' as const
+    static matches = '^grid-cols:.'
+    static unit = ''
     override get(declaration): { [key: string]: any } {
         return {
             display: { ...declaration, value: 'grid' },

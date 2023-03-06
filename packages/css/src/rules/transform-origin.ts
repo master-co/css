@@ -1,7 +1,7 @@
 import { Rule } from '../rule'
 
 export class TransformOrigin extends Rule {
-    static override id = 'TransformOrigin' as const
-    static override matches = '^transform:(?:top|bottom|right|left|center|[0-9]|$values)'
-    static override unit = 'px'
+    static id = 'TransformOrigin' as const
+    static matches = '^transform:(?:top|bottom|right|left|center|[0-9]|$values)'
+    static unit = 'px'
 }

@@ -1,8 +1,8 @@
 import { Rule } from '../rule'
 
 export class Font extends Rule {
-    static override id = 'Font' as const
-    static override matches = '^f:.'
-    static override unit = ''
+    static id = 'Font' as const
+    static matches = '^f:.'
+    static unit = ''
     override order = -1
 }

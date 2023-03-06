@@ -466,11 +466,11 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
 
         if (Rules) {
             for (const EachRule of Rules) {
-                const matches = EachRule.matches
+                const { matches, id } = EachRule.prototype.constructor
                 if (matches) {
-                    const valueKeys = Object.keys(this.values[EachRule.id] ?? {})
+                    const valueKeys = Object.keys(this.values[id] ?? {})
                     const index = matches.indexOf('$values')
-                    this.matches[EachRule.id] = new RegExp(
+                    this.matches[id] = new RegExp(
                         index === -1
                             ? matches
                             : valueKeys.length
@@ -640,7 +640,8 @@ export class MasterCSS extends (isBrowser ? window.MutationObserver : Object) {
      */
     match(className: string): RuleMatching {
         for (const EachRule of this.config.Rules) {
-            const matching = EachRule.match(className, this.matches[EachRule.id], this.colorThemesMap, this.colorNames)
+            const { match, id } = EachRule.prototype.constructor
+            const matching = match(className, this.matches[id], this.colorThemesMap, this.colorNames)
             if (matching)
                 return {
                     ...matching,

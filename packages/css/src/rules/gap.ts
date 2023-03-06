@@ -1,9 +1,9 @@
 import { Rule } from '../rule'
 
 export class Gap extends Rule {
-    static override id = 'Gap' as const
-    static override matches = '^gap(?:-x|-y)?:.'
-    static override get prop() { return '' }
+    static id = 'Gap' as const
+    static matches = '^gap(?:-x|-y)?:.'
+    static get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         switch (this.prefix[4]) {
         case 'x':

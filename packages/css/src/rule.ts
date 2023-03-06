@@ -8,27 +8,22 @@ import { SORTED_SELECTORS } from './constants/sorted-selectors'
 
 export class Rule {
 
-    readonly prefix: string
-    readonly symbol: string
-    readonly token: string
-    readonly prefixSelectors: string[]
-    readonly vendorSuffixSelectors: Record<string, string[]>
-    readonly important: boolean
-    readonly media: MediaQuery
     readonly at: Record<string, string> = {}
-    readonly direction: string
-    readonly theme: string
-    readonly unitToken: string
-    readonly hasWhere: boolean
     readonly priority: number = -1
-    readonly natives: { unit: string, value: string | Record<string, string | number>, text: string, theme: string, cssRule?: CSSRule }[] = []
+    readonly natives: {
+        unit: string
+        value: string | Record<string, string | number>
+        text: string
+        theme: string
+        cssRule?: CSSRule
+    }[] = []
 
     constructor(
         public readonly className: string,
         public readonly matching: RuleMatching,
         public css: MasterCSS
     ) {
-        const TargetRule = this.constructor as typeof Rule
+        const TargetRule = this.constructor
         const { id, unit, colorful, prop } = TargetRule
         const { rootSize, scope, important } = css.config
         const { themeNames, colorNames, colorThemesMap, selectors, globalValues, breakpoints, mediaQueries } = css
@@ -498,12 +493,49 @@ export class Rule {
         }
     }
 
-    get text() {
+    get text(): string {
         return this.natives.map((eachNative) => eachNative.text).join('')
     }
 }
 
+export interface Rule {
+    prefix?: string
+    symbol?: string
+    token?: string
+    prefixSelectors?: string[]
+    vendorSuffixSelectors?: Record<string, string[]>
+    important?: boolean
+    media?: MediaQuery
+    direction?: string
+    theme?: string
+    unitToken?: string
+    hasWhere?: boolean
+    order?: number
+    analyzeToken?(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | {
+        value: string
+    }>, string]
+    parseValue?(value: string, config: Config): string
+    get?(declaration: Declaration): Record<string, any>
+    getThemeProps?(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>>
+    constructor: {
+        id?: string
+        matches?: string
+        colorStarts?: string
+        symbol?: string
+        colorful?: boolean
+        unit?: any
+        get prop(): string
+        match?(
+            name: string,
+            matches: RegExp,
+            colorThemesMap: Record<string, Record<string, string>>,
+            colorNames: string[]
+        ): RuleMatching
+    }
+}
+
 /*@__PURE__*/
+// eslint-disable-next-line no-unexpected-multiline
 (() => {
     Object.assign(Rule, {
         unit: 'rem',
@@ -552,22 +584,6 @@ export class Rule {
         }
     })
 })()
-
-export interface Rule {
-    readonly order?: number;
-    analyzeToken(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | { value: string }>, string];
-    parseValue(value: string, config: Config): string;
-    get(declaration: Declaration): Record<string, any>;
-    getThemeProps(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>>;
-    prototype: {
-        id: string
-        matches: string
-        colorStarts: string
-        symbol: string
-        colorful: boolean
-        unit
-    }
-}
 
 export interface MediaFeatureRule {
     token: string;

@@ -1,9 +1,9 @@
 import { Rule } from '../rule'
 
 export class Margin extends Rule {
-    static override id = 'Margin' as const
-    static override matches = '^margin(?:-(?:left|right|top|bottom))?:.'
-    static override get prop() { return '' }
+    static id = 'Margin' as const
+    static matches = '^margin(?:-(?:left|right|top|bottom))?:.'
+    static get prop() { return '' }
     override get(declaration): { [key: string]: any } {
         return {
             [this.prefix.slice(0, -1)]: declaration
