@@ -1,6 +1,6 @@
 import NextDocument, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
 import { renderFromHTML } from '@master/css'
-import { config } from '../master.css.js'
+import { config } from '../master.css'
 
 export default function Document() {
     return (
