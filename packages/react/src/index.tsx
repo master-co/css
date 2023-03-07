@@ -1,2 +1,2 @@
-export * from './uses'
+export * from './providers'
 export * from './contexts'

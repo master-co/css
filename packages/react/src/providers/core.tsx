@@ -1,7 +1,6 @@
 import { Config, MasterCSS } from '@master/css'
-import { ReactElement, useState } from 'react'
-import { useIsomorphicEffect } from '../uses/isomorphic-effect'
-import { CSSContext } from './css'
+import { ReactElement, useEffect, useLayoutEffect, useState, useMemo } from 'react'
+import { CSSContext } from '../contexts'
 
 export const CSSProvider = ({
     children,
@@ -12,9 +11,9 @@ export const CSSProvider = ({
     config?: Config,
     root?: Document | ShadowRoot | null
 }) => {
-    const [css] = useState<MasterCSS>(new MasterCSS({ ...config, observe: false }))
+    const [css] = useState<MasterCSS>(new MasterCSS({ ...config, observe: false }));
 
-    useIsomorphicEffect(() => {
+    (typeof window !== 'undefined' ? useLayoutEffect : useEffect)(() => {
         css.observe(root)
         return () => {
             css.destroy()

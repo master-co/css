@@ -38,6 +38,21 @@
             "require": "./dist/index.cjs",
             "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
+        },
+        "./lazy-provider": {
+            "require": "./dist/lazy-provider.cjs",
+            "import": "./dist/lazy-provider.mjs",
+            "types": "./dist/lazy-provider.d.ts"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "index": [
+                "./dist/index.d.tss"
+            ],
+            "lazy-provider": [
+                "./dist/lazy-provider.d.ts"
+            ]
         }
     },
     "files": [

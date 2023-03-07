@@ -1,7 +1,15 @@
 import type { MasterCSS } from '@master/css'
-import { createContext, useContext } from 'react'
+import { Context, createContext, useContext } from 'react'
 
-export const CSSContext = createContext<MasterCSS>(null)
+export const CSSContext: Context<MasterCSS> = createContext<MasterCSS>(null)
+
+// export function createCSSContext(css?: MasterCSS) {
+//     return CSSContext = createContext<MasterCSS>(css)
+// }
+
+// export function getCSSContext() {
+//     return CSSContext
+// }
 
 export function useCSS() {
     return useContext(CSSContext)
