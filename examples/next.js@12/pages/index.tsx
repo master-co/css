@@ -13,7 +13,7 @@ const Home: NextPage = () => {
             </Head>
 
             <main className={styles.main}>
-                <h1 className={'fg:primary ' + styles.title}>
+                <h1 className={'fg:primary opacity:1! ~opacity|.5s ' + styles.title} style={{ opacity: 0 }}>
                     Welcome to <a href="https://nextjs.org">Next.js!</a>
                 </h1>
 
