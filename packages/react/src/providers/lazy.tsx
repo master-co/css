@@ -24,7 +24,6 @@ export const CSSLazyProvider = ({
                         const resolvedConfig = configModule.config || configModule.default || configModule
                         setCSS(new MasterCSS({ ...resolvedConfig }))
                     }
-                    console.log(instances.length)
                 })
         }
     }, [config, css, root])
