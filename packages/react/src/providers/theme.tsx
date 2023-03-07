@@ -1,5 +1,5 @@
 import { Theme, ThemeConfig, ThemeValue, theme } from '@master/css'
-import { ReactElement, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { ThemeContext } from '../contexts'
 import { useCSS } from '../contexts/css'
 

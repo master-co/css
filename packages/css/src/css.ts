@@ -26,9 +26,15 @@ export interface MasterCSS extends MutationObserver {
     theme: Theme | undefined
 }
 
-export let rootCSS: MasterCSS
-
 export class MasterCSS {
+
+    static root: MasterCSS
+    static instances: MasterCSS[] = []
+    static refresh = (config: Config) => {
+        for (const eachInstance of this.instances) {
+            eachInstance.refresh(config)
+        }
+    }
 
     readonly rules: Rule[] = []
     readonly ruleOfClass: Record<string, Rule> = {}
@@ -209,7 +215,7 @@ export class MasterCSS {
             this.observe(document)
         }
 
-        allCSS.push(this)
+        MasterCSS.instances.push(this)
         this.ready = true
     }
 
@@ -484,7 +490,7 @@ export class MasterCSS {
 
             if (isDocumentRoot) {
                 // eslint-disable-next-line @typescript-eslint/no-this-alias
-                rootCSS = this
+                MasterCSS.root = this
             }
 
             // @ts-ignore
@@ -741,8 +747,9 @@ export class MasterCSS {
     }
 
     destroy() {
+        const instances = MasterCSS.instances
         this.disconnect()
-        allCSS.splice(allCSS.indexOf(this), 1)
+        instances.splice(instances.indexOf(this), 1)
     }
 
     /**
@@ -1195,13 +1202,5 @@ export class MasterCSS {
 
     get text() {
         return this.rules.map((eachRule) => eachRule.text).join('')
-    }
-}
-
-export const allCSS: MasterCSS[] = /* @__PURE__ */ []
-
-export const refresh = /* @__PURE__ */ (config: Config) => {
-    for (const eachInstance of allCSS) {
-        eachInstance.refresh(config)
     }
 }

@@ -2,7 +2,7 @@ import { BOX_UNDERNEATH } from '../constants/box-underneath'
 import { CONTENT_EXTREMA } from '../constants/content-extrema'
 import { SIZING_VALUES } from '../constants/sizing-values'
 
-const values = {
+export const values = {
     backgroundClip: BOX_UNDERNEATH,
     backgroundOrigin: BOX_UNDERNEATH,
     boxSizing: {
@@ -10,6 +10,7 @@ const values = {
         border: 'border-box',
     },
     clipPath: {
+        ...BOX_UNDERNEATH,
         margin: 'margin-box',
         fill: 'fill-box',
         stroke: 'stroke-box',
@@ -48,9 +49,11 @@ const values = {
         rel: 'relative'
     },
     shapeOutside: {
+        ...BOX_UNDERNEATH,
         margin: 'margin-box'
     },
     transformBox: {
+        ...BOX_UNDERNEATH,
         fill: 'fill-box',
         stroke: 'stroke-box',
         view: 'view-box'
@@ -62,13 +65,4 @@ const values = {
     maxHeight: SIZING_VALUES,
     height: SIZING_VALUES,
     flexBasis: SIZING_VALUES
-};
-
-/* @__PURE__ */
-(() => {
-    Object.assign(values.clipPath, BOX_UNDERNEATH)
-    Object.assign(values.shapeOutside, BOX_UNDERNEATH)
-    Object.assign(values.transformBox, BOX_UNDERNEATH)
-})()
-
-export { values }
+}

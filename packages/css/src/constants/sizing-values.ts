@@ -5,13 +5,10 @@ const SIZING_VALUES = {
     fit: 'fit-content',
     max: 'max-content',
     min: 'min-content',
-};
+}
 
-/* @__PURE__ */
-(()=> {
-    for (const key in breakpoints) {
-        SIZING_VALUES[key] = (breakpoints[key] / 16) + 'rem'
-    }
-})()
+for (const key in breakpoints) {
+    SIZING_VALUES[key] = (breakpoints[key] / 16) + 'rem'
+}
 
 export { SIZING_VALUES }

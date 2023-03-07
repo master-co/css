@@ -1,6 +1,6 @@
 import type { MasterCSS, Config } from '@master/css'
 import { ReactElement, useEffect, useState } from 'react'
-import { CSSContext } from './contexts'
+import { CSSContext } from '../contexts'
 
 export const CSSLazyProvider = ({
     children,
@@ -15,19 +15,18 @@ export const CSSLazyProvider = ({
     useEffect(() => {
         if (!css) {
             Promise.all([import('@master/css'), config])
-                .then(([{ allCSS, MasterCSS }, configModule]) => {
-                    const existingCSS = allCSS.find((eachCSS) => eachCSS.root === root)
+                .then(([{ MasterCSS }, configModule]) => {
+                    const { instances } = MasterCSS
+                    const existingCSS = instances.find((eachCSS) => eachCSS.root === root)
                     if (existingCSS) {
                         setCSS(existingCSS)
                     } else {
                         const resolvedConfig = configModule.config || configModule.default || configModule
                         setCSS(new MasterCSS({ ...resolvedConfig }))
                     }
-                    console.log(allCSS.length)
+                    console.log(instances.length)
                 })
         }
     }, [config, css, root])
     return <CSSContext.Provider value={css}>{children}</CSSContext.Provider>
 }
-
-export default CSSLazyProvider

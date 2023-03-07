@@ -1,4 +1,4 @@
-import type { Config } from '../'
+import type { Config } from '../config'
 import { renderFromHTML } from './render-from-html'
 
 export function renderIntoHTML(html: string, config?: Config): string {

@@ -1,9 +1,3 @@
-/**
- * @jest-environment node
- */
-
-// @ts-nocheck
-
 import { execSync } from 'child_process'
 import dedent from 'dedent'
 
@@ -16,10 +10,10 @@ it('tree-shaking', () => {
             .toString()
     )
         .toEqual(dedent`
-            // ../dist/index.mjs
-            var Oe = 16;
+            // ../src/config/root-size.ts
+            var rootSize = 16;
 
             // <stdin>
-            console.log(Oe);\n
+            console.log(rootSize);\n
         `)
 })

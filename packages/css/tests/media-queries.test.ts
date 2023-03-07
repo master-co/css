@@ -1,5 +1,4 @@
 import { testCSS } from './test-css'
-import MasterCSS from '../src'
 import { config } from '../../../master.css.js'
 
 test('mediaQueries', () => {

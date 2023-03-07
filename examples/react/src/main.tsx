@@ -25,13 +25,13 @@ import './index.css'
 // )
 
 /* lazy loading just-in-time */
-import { CSSLazyProvider, ThemeProvider } from '@master/css.react'
+import { CSSLazyProvider } from '@master/css.react'
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
         <CSSLazyProvider config={import('../master.css')}>
-            <ThemeProvider>
+            {/* <ThemeProvider> */}
                 <App />
-            </ThemeProvider>
+            {/* </ThemeProvider> */}
         </CSSLazyProvider>
     </React.StrictMode>,
 )

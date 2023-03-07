@@ -61,7 +61,7 @@
         "minimatch": "^5.1.1",
         "stylelint": "^15.2.0",
         "techor": "^1.1.4",
-        "to-extend": "^1.5.0",
+        "to-extend": "^1.5.2",
         "upath": "^2.0.1"
     }
 }

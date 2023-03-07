@@ -7,6 +7,7 @@
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
     },
+    "type": "module",
     "license": "MIT",
     "description": "A Virtual CSS language with enhanced syntax ~13KB",
     "author": "Aoyue Design LLC.",
@@ -41,8 +42,7 @@
         "mastercss"
     ],
     "sideEffects": [
-        "./src/polyfills/css-escape.ts",
-        "./src/init.ts"
+        "./src/polyfills/css-escape.ts"
     ],
     "main": "./dist/index.cjs",
     "jsnext:main": "./dist/index.mjs",
@@ -83,7 +83,7 @@
         "fs-extra": "^11.1.0"
     },
     "devDependencies": {
-        "to-extend": "^1.4.6",
+        "to-extend": "^1.5.2",
         "ts-dedent": "^2.2.0"
     }
 }

@@ -1,14 +1,12 @@
 import { START_SYMBOL } from '../constants/start-symbol'
 
-const selectorSymbols = ['!', '*', '>', '+', '~', ':', '[', '@', '_']
-
 export function analyzeValueToken(
-    valueToken: string, 
+    valueToken: string,
     values: Record<string, string | number>,
     globalValues: Record<string, string | number>,
     extraSplitSymbols: string[] = []
 ): [Array<string | { value: string }>, string] {
-    
+
     const splitSymbols = [',', ...extraSplitSymbols]
     const valueTokens = []
 
@@ -104,7 +102,7 @@ export function analyzeValueToken(
                     } else if (
                         val === '#'
                         && (currentValueToken || valueTokens.length && (valueToken[i - 1] !== '|' && valueTokens[i - 1] !== ' '))
-                        || selectorSymbols.includes(val)
+                        || ['!', '*', '>', '+', '~', ':', '[', '@', '_'].includes(val)
                     ) {
                         break
                     }

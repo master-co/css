@@ -12,7 +12,7 @@ import { override } from './override'
 import { observe } from './observe'
 import { important } from './important'
 
-const config = /* @__PURE__ */ {
+const config = {
     breakpoints,
     colors,
     rootSize,

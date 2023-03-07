@@ -1,5 +1,5 @@
 import { MasterCSS } from '../css'
-import type { Config } from '..'
+import type { Config } from '../config'
 
 export function renderFromHTML(html: string, config?: Config): string {
     if (!html) return

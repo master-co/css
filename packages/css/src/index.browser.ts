@@ -1,12 +1,9 @@
 import type { Config } from './config'
-import { MasterCSS, allCSS, refresh } from './css'
+import { MasterCSS } from './css'
 
-Object.assign(window, {
-    MasterCSS,
-    masterCSSInstances: allCSS,
-    refreshMasterCSS: refresh,
-    rootMasterCSS: new MasterCSS(window['masterCSSConfig'])
-})
+window.MasterCSS = MasterCSS
+
+new MasterCSS(window['masterCSSConfig'])
 
 declare global {
     interface Window {

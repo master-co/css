@@ -1,6 +1,5 @@
-const BORDER_DASH = 'border-'
-
 export function getBorderProps(name: string, declaration, suffix = '') {
+    const BORDER_DASH = 'border-'
     if (suffix) {
         suffix = '-' + suffix
     }

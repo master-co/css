@@ -1,5 +1,5 @@
 import { MasterCSS } from '../css'
-import type { Config } from '../'
+import type { Config } from '../config'
 
 export function render(classes: string[], config?: Config): string {
     if (!classes?.length) return
