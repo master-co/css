@@ -1,4 +1,6 @@
-import { Html, Head, Main, NextScript } from 'next/document'
+import NextDocument, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
+import { renderFromHTML } from '@master/css'
+import { config } from '../master.css.js'
 
 export default function Document() {
     return (
@@ -10,4 +12,17 @@ export default function Document() {
             </body>
         </Html>
     )
+}
+
+Document.getInitialProps = async (ctx: DocumentContext) => {
+    const initialProps = await NextDocument.getInitialProps(ctx)
+    return {
+        ...initialProps,
+        styles: (
+            <>
+                <style title="master">{renderFromHTML(initialProps.html, config)}</style>
+                {initialProps.styles}
+            </>
+        )
+    }
 }

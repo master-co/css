@@ -1,10 +1,12 @@
 import type { Config } from './config'
 import type { MasterCSS } from './css'
-
 import { getCssPropertyText } from './utils/get-css-property-text'
 import { analyzeValueToken } from './utils/analyze-value-token'
 import { parseRuleValue } from './utils/parse-rule-value'
 import { SORTED_SELECTORS } from './constants/sorted-selectors'
+
+// TODO 於 index.node.ts 引入且防止被樹搖，目前被視為無副作用並被清除
+import './polyfills/css-escape'
 
 export class Rule {
 

@@ -6,7 +6,9 @@ import { Theme } from './theme'
 import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 
-export interface MasterCSS extends MutationObserver {
+const hasWindow = typeof window !== 'undefined'
+
+export interface MasterCSS {
     readonly style: HTMLStyleElement
     readonly host: Element
     readonly root: Document | ShadowRoot
@@ -41,7 +43,7 @@ export class MasterCSS {
     readonly countOfClass = {}
     readonly ready: boolean = false
 
-    _observer = typeof window !== undefined ? new MutationObserver((mutationRecords) => {
+    _observer = hasWindow ? new MutationObserver((mutationRecords) => {
         // console.time('css engine');
         const correctionOfClassName = {}
         const attributeMutationRecords: MutationRecord[] = []
@@ -211,7 +213,7 @@ export class MasterCSS {
 
         this.cache()
 
-        if (typeof window !== 'undefined' && this.config.observe) {
+        if (hasWindow && this.config.observe) {
             this.observe(document)
         }
 
@@ -483,7 +485,7 @@ export class MasterCSS {
     }
 
     observe(targetRoot: Document | ShadowRoot | null, options: MutationObserverInit = { subtree: true, childList: true }) {
-        if (typeof window !== 'undefined' && targetRoot) {
+        if (hasWindow && targetRoot) {
             // @ts-ignore
             this.root = targetRoot
             const isDocumentRoot = targetRoot === document
@@ -1203,4 +1205,8 @@ export class MasterCSS {
     get text() {
         return this.rules.map((eachRule) => eachRule.text).join('')
     }
+}
+
+if (hasWindow) {
+    window.MasterCSS = MasterCSS
 }
