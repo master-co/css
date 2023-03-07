@@ -7,7 +7,6 @@ import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 
 export interface MasterCSS extends MutationObserver {
-
     readonly style: HTMLStyleElement
     readonly host: Element
     readonly root: Document | ShadowRoot
@@ -25,14 +24,10 @@ export interface MasterCSS extends MutationObserver {
     mediaQueries: Record<string, string>
     matches: Record<string, RegExp>
     theme: Theme | undefined
-
-    constructor: {
-        root: MasterCSS
-        instances: MasterCSS[]
-    }
 }
 
-// @ts-ignore
+export let rootCSS: MasterCSS
+
 export class MasterCSS {
 
     readonly rules: Rule[] = []
@@ -214,7 +209,7 @@ export class MasterCSS {
             this.observe(document)
         }
 
-        registeredCSS.push(this)
+        allCSS.push(this)
         this.ready = true
     }
 
@@ -481,13 +476,15 @@ export class MasterCSS {
         }
     }
 
-    observe(root: Document | ShadowRoot | null, options: MutationObserverInit = { subtree: true, childList: true }) {
-        if (typeof window !== 'undefined' && root) {
+    observe(targetRoot: Document | ShadowRoot | null, options: MutationObserverInit = { subtree: true, childList: true }) {
+        if (typeof window !== 'undefined' && targetRoot) {
             // @ts-ignore
-            this.root = root
-            const isDocumentRoot = root === document
+            this.root = targetRoot
+            const isDocumentRoot = targetRoot === document
+
             if (isDocumentRoot) {
-                MasterCSS.prototype.constructor.root = this
+                // eslint-disable-next-line @typescript-eslint/no-this-alias
+                rootCSS = this
             }
 
             // @ts-ignore
@@ -496,8 +493,8 @@ export class MasterCSS {
             // sync theme
             this.theme = new Theme(this.host as HTMLElement, this.config.theme)
 
-            const container = isDocumentRoot ? document.head : root
-            const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : root.styleSheets
+            const container = isDocumentRoot ? document.head : targetRoot
+            const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : targetRoot.styleSheets
             // @ts-ignore
             for (const sheet of styleSheets) {
                 const { title, href, ownerNode } = sheet
@@ -604,7 +601,7 @@ export class MasterCSS {
                     .forEach((element) => handleClassList(element.classList))
             }
 
-            this._observer.observe(root, {
+            this._observer.observe(targetRoot, {
                 ...options,
                 attributes: true,
                 attributeOldValue: true,
@@ -745,7 +742,7 @@ export class MasterCSS {
 
     destroy() {
         this.disconnect()
-        registeredCSS.splice(registeredCSS.indexOf(this), 1)
+        allCSS.splice(allCSS.indexOf(this), 1)
     }
 
     /**
@@ -1201,10 +1198,10 @@ export class MasterCSS {
     }
 }
 
-export const registeredCSS: MasterCSS[] = []
+export const allCSS: MasterCSS[] = /* @__PURE__ */ []
 
-export const refreshCSS = (config: Config) => {
-    for (const eachRegisteredCSS of registeredCSS) {
-        eachRegisteredCSS.refresh(config)
+export const refresh = /* @__PURE__ */ (config: Config) => {
+    for (const eachInstance of allCSS) {
+        eachInstance.refresh(config)
     }
 }

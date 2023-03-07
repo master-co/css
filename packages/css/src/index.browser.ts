@@ -1,4 +1,18 @@
-import { MasterCSS } from './css'
-import './init'
+import type { Config } from './config'
+import { MasterCSS, allCSS, refresh } from './css'
 
-new MasterCSS(window['masterCSSConfig'])
+Object.assign(window, {
+    MasterCSS,
+    masterCSSInstances: allCSS,
+    refreshMasterCSS: refresh,
+    rootMasterCSS: new MasterCSS(window['masterCSSConfig'])
+})
+
+declare global {
+    interface Window {
+        MasterCSS: typeof MasterCSS
+        masterCSSInstances: MasterCSS[]
+        refreshMasterCSS(config: Config): void
+        rootMasterCSS: MasterCSS
+    }
+}

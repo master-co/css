@@ -42,7 +42,6 @@
     ],
     "sideEffects": [
         "./src/polyfills/css-escape.ts",
-        "./src/polyfills/mutation-observer.ts.ts",
         "./src/init.ts"
     ],
     "main": "./dist/index.cjs",

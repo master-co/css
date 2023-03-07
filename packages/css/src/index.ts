@@ -14,5 +14,3 @@ export * from './config'
 // type
 export type { Declaration, MediaQuery, MediaFeatureRule, RuleMeta } from './rule'
 export type { ThemeConfig, ThemeValue } from './theme'
-
-import './init'
