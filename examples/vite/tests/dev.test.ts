@@ -37,8 +37,8 @@ it('change class names and check result in the browser during HMR', async () => 
     const newClassName = 'font:' + new Date().getTime()
     const newClassNameSelector = '.' + cssEscape(newClassName)
     fs.writeFileSync(indexHtmlPath, originalIndexHtmlContent.replace('hmr-test', newClassName))
-    // index.html 更新後大約等 1s 確認 newClassName 能否被查詢到
-    const newClassNameElementHandle = await page.waitForSelector(newClassNameSelector, { timeout: 1000 })
+    await page.waitForNetworkIdle()
+    const newClassNameElementHandle = await page.waitForSelector(newClassNameSelector)
     expect(newClassNameElementHandle).not.toBeNull()
     const styleHandle = await page.$('[data-vite-dev-id$="master.css"]')
     expect(styleHandle).not.toBeNull()
@@ -50,13 +50,12 @@ it('change master.css.mjs and check result in the browser during HMR', async () 
     const newBtnClassName = 'btn' + new Date().getTime()
     const newBtnClassNameSelector = '.' + cssEscape(newBtnClassName)
     fs.writeFileSync(indexHtmlPath, originalIndexHtmlContent.replace('hmr-test', newBtnClassName))
-    // index.html 更新後大約等 1s 確認 newBtnClassName 能否被查詢到
-    const newClassNameElementHandle = await page.waitForSelector(newBtnClassNameSelector, { timeout: 1000 })
+    await page.waitForNetworkIdle()
+    const newClassNameElementHandle = await page.waitForSelector(newBtnClassNameSelector)
     expect(newClassNameElementHandle).not.toBeNull()
     // -> classes: { btn43848384: 'xxx' }
     fs.writeFileSync(configPath, originalConfigContent.replace(/(btn):/, newBtnClassName + ':'))
-    // master.css.mjs 更新後大約等 1s 瀏覽器重整
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await page.waitForNetworkIdle()
     const styleHandle = await page.$('[data-vite-dev-id$="master.css"]')
     expect(styleHandle).not.toBeNull()
     const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
