@@ -7,7 +7,6 @@
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
     },
-    "type": "module",
     "license": "MIT",
     "description": "A Virtual CSS language with enhanced syntax ~13KB",
     "author": "Aoyue Design LLC.",
@@ -47,21 +46,21 @@
         "./polyfills/css-escape",
         "./polyfills/*"
     ],
-    "main": "./dist/index.cjs",
-    "jsnext:main": "./dist/index.mjs",
+    "main": "./dist/cjs/index.js",
+    "jsnext:main": "./dist/esm/index.js",
     "browser": "./dist/index.browser.js",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
+    "esnext": "./dist/esm/index.js",
+    "module": "./dist/esm/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
             "node": {
-                "require": "./dist/index.node.cjs",
-                "import": "./dist/index.node.mjs",
+                "require": "./dist/cjs/index.node.js",
+                "import": "./dist/esm/index.node.js",
                 "types": "./dist/index.node.d.ts"
             },
-            "require": "./dist/index.cjs",
-            "import": "./dist/index.mjs",
+            "require": "./dist/cjs/index.js",
+            "import": "./dist/esm/index.js",
             "types": "./dist/index.d.ts"
         }
     },
@@ -69,8 +68,8 @@
         "dist"
     ],
     "bin": {
-        "mcss": "./dist/bin/index.js",
-        "mastercss": "./dist/bin/index.js"
+        "mcss": "./dist/cjs/bin/index.js",
+        "mastercss": "./dist/cjs/bin/index.js"
     },
     "publishConfig": {
         "access": "public"

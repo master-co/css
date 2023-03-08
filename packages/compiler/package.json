@@ -31,22 +31,21 @@
         "vite-plugin"
     ],
     "sideEffects": false,
-    "main": "./dist/index.cjs",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
+    "main": "./dist/cjs/index.js",
+    "jsnext:main": "./dist/esm/index.js",
+    "esnext": "./dist/esm/index.js",
+    "module": "./dist/esm/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
             "node": {
-                "require": "./dist/index.cjs",
-                "import": "./dist/index.mjs"
+                "require": "./dist/cjs/index.js",
+                "import": "./dist/esm/index.js",
+                "types": "./dist/index.d.ts"
             },
-            "default": {
-                "require": "./dist/index.default.js",
-                "import": "./dist/index.default.mjs"
-            },
-            "types": "./dist/index.d.ts"
+            "require": "./dist/cjs/index.default.js",
+            "import": "./dist/esm/index.default.js",
+            "types": "./dist/index.default.d.ts"
         }
     },
     "files": [
@@ -63,5 +62,9 @@
         "techor": "^1.1.4",
         "to-extend": "^1.5.2",
         "upath": "^2.0.1"
+    },
+    "devDependencies": {
+        "@swc-node/jest": "^1.6.2",
+        "ts-jest": "^29.0.5"
     }
 }

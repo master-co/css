@@ -82,3 +82,6 @@ if (import.meta.hot) {
 
     }
 }
+
+// Fix `vite does not provide an export named 'default'`
+export default { MasterCSSVitePlugin }

@@ -1,5 +1,6 @@
 (() => {
-    if (typeof global !== 'undefined' && !global?.CSS?.escape) {
+    const root = typeof global !== 'undefined' ? global : window
+    if (!root.CSS && !root.CSS?.escape) {
 
         // https://drafts.csswg.org/cssom/#serialize-an-identifier
         const cssEscape = function (value) {
@@ -78,11 +79,11 @@
             return result
         }
 
-        if (!global.CSS) {
-            (global as any).CSS = {}
+        if (!root.CSS) {
+            (root as any).CSS = {}
         }
 
-        global.CSS.escape = cssEscape
-
+        root.CSS.escape = cssEscape
+        globalThis.CSS.escape = cssEscape
     }
 })()

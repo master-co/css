@@ -20,15 +20,15 @@
     "activationEvents": [
         "onStartupFinished"
     ],
-    "main": "./client/dist/extension.js",
-    "jsnext:main": "./client/dist/extension.mjs",
-    "esnext": "./client/dist/extension.mjs",
-    "module": "./client/dist/extension.mjs",
+    "main": "./client/dist/cjs/extension.js",
+    "jsnext:main": "./client/dist/esm/extension.js",
+    "esnext": "./client/dist/esm/extension.js",
+    "module": "./client/dist/esm/extension.js",
     "types": "./client/dist/extension.d.ts",
     "exports": {
         ".": {
-            "require": "./client/dist/extension.js",
-            "import": "./client/dist/extension.mjs",
+            "require": "./client/dist/cjs/extension.js",
+            "import": "./client/dist/esm/extension.js",
             "types": "./client/dist/extension.d.ts"
         }
     },

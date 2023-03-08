@@ -9,7 +9,7 @@ test('Oskar', async () => {
             <div class="display:hidden p:15 flex@sm  gap:5  ">
             <div class="scale(.5)@sm">
         `)
-    ).toStrictEqual([
+    ).toEqual([
         'hidden',
         'flex@sm',
         'display:hidden',

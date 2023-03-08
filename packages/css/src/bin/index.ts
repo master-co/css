@@ -116,9 +116,8 @@ program.command('build', { isDefault: true })
     })
 
 const { version, name, description } = readPackage(path.join(__dirname, '../../package.json'))
-program
-    .name(name)
-    .description(description)
-    .version(version)
 
+program.name(name)
+program.description(description)
+program.version(version)
 program.parse()

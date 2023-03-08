@@ -4,9 +4,10 @@ import { getCssPropertyText } from './utils/get-css-property-text'
 import { analyzeValueToken } from './utils/analyze-value-token'
 import { parseRuleValue } from './utils/parse-rule-value'
 import { SORTED_SELECTORS } from './constants/sorted-selectors'
+import { cssEscape } from './utils/css-escape'
 
 // TODO 於 index.node.ts 引入且防止被樹搖，目前被視為無副作用並被清除
-import './polyfills/css-escape'
+// import './polyfills/css-escape'
 
 export class Rule {
 
@@ -346,7 +347,7 @@ export class Rule {
                             arr.push(
                                 suffixSelectors
                                     .reduce((_arr, eachSuffixSelector) => {
-                                        _arr.push(eachPrefixText + '.' + CSS.escape(name) + eachSuffixSelector)
+                                        _arr.push(eachPrefixText + '.' + cssEscape(name) + eachSuffixSelector)
                                         return _arr
                                     }, [])
                                     .join(',')

@@ -1,4 +1,4 @@
-import MasterCSS from '@master/css'
+import MasterCSS from '../../css/src'
 import extract from '../src/extract'
 const css = new MasterCSS()
 
@@ -10,28 +10,28 @@ test('basic js object', () => {
             'f:24': true
         }
         `
-    }, css)).toStrictEqual(['f:24'])
+    }, css)).toEqual(['f:24'])
 })
 
 test('basic html', () => {
     expect(extract({
         name: 'test',
         content: `<div class="f:16 blur(2px) @shake|1s|infinite>li"></div>`
-    }, css)).toStrictEqual(['f:16', 'blur(2px)', '@shake|1s|infinite>li'])
+    }, css)).toEqual(['f:16', 'blur(2px)', '@shake|1s|infinite>li'])
 })
 
 test('content', () => {
     expect(extract({
         name: 'test',
         content: `<div class="content:'I\\'m_string' content:'I\\'m_string2'"></div>`
-    }, css)).toStrictEqual(['content:\'I\\\'m_string\'', 'content:\'I\\\'m_string2\''])
+    }, css)).toEqual(['content:\'I\\\'m_string\'', 'content:\'I\\\'m_string2\''])
 })
 
 test('url', () => {
     expect(extract({
         name: 'test',
         content: `<div class="bg:url('https://master.co/test_logo.png')"></div>`
-    }, css)).toStrictEqual(['bg:url(\'https://master.co/test_logo.png\')'])
+    }, css)).toEqual(['bg:url(\'https://master.co/test_logo.png\')'])
 })
 
 test('comment', () => {
@@ -43,7 +43,7 @@ test('comment', () => {
             f:16
         */
         `
-    }, css)).toStrictEqual([])
+    }, css)).toEqual([])
 })
 
 test('=', () => {
@@ -55,7 +55,7 @@ test('=', () => {
         content:'='
         content:"="
         `
-    }, css)).toStrictEqual([
+    }, css)).toEqual([
         'content:\'=\'',
         'content:"="'
     ])
@@ -73,7 +73,7 @@ test('media', () => {
         font:16@>789
         @animation_test@>789
         `
-    }, css)).toStrictEqual([
+    }, css)).toEqual([
         'bg:black@xl',
         'font:24@media(min-width:1024px)',
         'font:16@<789',
@@ -97,7 +97,7 @@ test('wxh', () => {
         calc(100vw-60)xcalc(100vh-100px)
         class="logo 172x172"
         `
-    }, css)).toStrictEqual([
+    }, css)).toEqual([
         '1920x1080',
         '1024pxx786px',
         'min:40x80',
@@ -121,7 +121,7 @@ test('group', () => {
         {bg:black;f:16}_div@dark
         .something{bg:white}
         `
-    }, css)).toStrictEqual([
+    }, css)).toEqual([
         '{bg:black;f:16}_div@dark',
         '.something{bg:white}'
     ])
@@ -137,7 +137,7 @@ test('import', () => {
         require('fs')
         await import('file:///')
         `
-    }, css)).toStrictEqual([])
+    }, css)).toEqual([])
 })
 
 test('style tag', () => {
@@ -214,7 +214,7 @@ test('style tag', () => {
 	color: var(--color-text);
 }
 </style>`
-    }, css)).toStrictEqual([])
+    }, css)).toEqual([])
 })
 
 
@@ -233,7 +233,7 @@ test('@', () => {
             unicode-range: U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;
         }
         `
-    }, css)).toStrictEqual([])
+    }, css)).toEqual([])
 })
 
 test('home path', () => {
@@ -247,7 +247,7 @@ test('home path', () => {
         ~duration:.5ms
         ~easing:steps(6,end)
         `
-    }, css)).toStrictEqual([
+    }, css)).toEqual([
         '~padding|300ms|ease-in',
         '~delay:0ms',
         '~duration:.5ms',
@@ -261,5 +261,5 @@ test('$', () => {
         content: `
         $(size):calc(100%-20px)
         `
-    }, css)).toStrictEqual([])
+    }, css)).toEqual([])
 })

@@ -1,4 +1,4 @@
-import MasterCSSCompiler from '../src/compiler'
+import MasterCSSCompiler from '@master/css-compiler'
 
 it('fairly irregular extracts can be ignored very well', async () => {
     const compiler = await new MasterCSSCompiler().compile()

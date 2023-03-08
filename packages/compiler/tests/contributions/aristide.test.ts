@@ -78,7 +78,7 @@ test('AristideBH', async () => {
         `)
     expect(
         Object.keys(compiler.css.ruleOfClass)
-    ).toStrictEqual([
+    ).toEqual([
         'grid-row:1/2',
         'flex',
         'flex:col',

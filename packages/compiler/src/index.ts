@@ -1,4 +1,3 @@
-export { default } from './compiler'
-export { default as MasterCSSCompiler } from './compiler'
-
-export * from './index.default'
+export { default as options } from './options'
+export type { Options, Source } from './options'
+export { MasterCSSCompiler as default, MasterCSSCompiler } from './compiler'

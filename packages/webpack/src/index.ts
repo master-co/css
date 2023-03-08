@@ -64,3 +64,6 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
 
     }
 }
+
+// Fix `vite does not provide an export named 'default'`
+export default { MasterCSSWebpackPlugin }

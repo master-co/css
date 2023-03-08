@@ -7,6 +7,7 @@ import type { MasterCSS } from '../css'
 
 // TODO 於 index.node.ts 引入且防止被樹搖，目前被視為無副作用並被清除
 import '../polyfills/css-escape'
+import { cssEscape } from '../utils/css-escape'
 
 export const rules: Record<string, RuleConfig> = {
     group: {
@@ -42,7 +43,7 @@ export const rules: Record<string, RuleConfig> = {
             }
             const handleRule = (rule: Rule) => {
                 const addProps = (theme: string, cssText: string) => {
-                    const cssProperties = cssText.slice(CSS.escape(rule.className).length).match(/\{(.*)\}/)[1].split(';')
+                    const cssProperties = cssText.slice(cssEscape(rule.className).length).match(/\{(.*)\}/)[1].split(';')
                     for (const eachCssProperty of cssProperties) {
                         addProp(theme, eachCssProperty)
                     }

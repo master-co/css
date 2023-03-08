@@ -3,7 +3,7 @@ import dedent from 'dedent'
 import { expectFileIncludes } from '../../../../utils/expect-file-includes'
 
 it('init (with type="module")', () => {
-    execSync('node ../../dist/bin/index init -o', { cwd: __dirname }).toString()
+    execSync('node ../../dist/cjs/bin/index init -o', { cwd: __dirname }).toString()
     expectFileIncludes('master.css.mjs', [
         dedent`
             /** @type {import('@master/css').Config} */
@@ -22,7 +22,7 @@ it('init (with type="module")', () => {
 })
 
 it('init --jit (with type="module")', () => {
-    execSync('node ../../dist/bin/index init --jit -o', { cwd: __dirname }).toString()
+    execSync('node ../../dist/cjs/bin/index init --jit -o', { cwd: __dirname }).toString()
     expectFileIncludes('master.css.mjs', [
         dedent`
             import MasterCSS from '@master/css'
@@ -45,7 +45,7 @@ it('init --jit (with type="module")', () => {
 })
 
 it('init --compiler (with type="module")', () => {
-    execSync('node ../../dist/bin/index init --compiler -o', { cwd: __dirname }).toString()
+    execSync('node ../../dist/cjs/bin/index init --compiler -o', { cwd: __dirname }).toString()
     expectFileIncludes('master.css.mjs', [
         dedent`
             /** @type {import('@master/css').Config} */

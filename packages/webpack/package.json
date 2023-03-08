@@ -31,18 +31,8 @@
         "vite-plugin"
     ],
     "sideEffects": false,
-    "main": "./dist/index.cjs",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
+    "main": "./dist/cjs/index.js",
     "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "require": "./dist/index.cjs",
-            "import": "./dist/index.mjs",
-            "types": "./dist/index.d.ts"
-        }
-    },
     "files": [
         "dist"
     ],

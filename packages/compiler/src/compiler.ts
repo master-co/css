@@ -12,7 +12,7 @@ import log, { chalk } from '@techor/log'
 import stylelint from 'stylelint'
 import extend from 'to-extend'
 
-export default class MasterCSSCompiler extends Techor<Options, Config> {
+export class MasterCSSCompiler extends Techor<Options, Config> {
 
     css: MasterCSS
     extractions = new Set<string>()
