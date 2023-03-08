@@ -27,7 +27,7 @@
         "dedent": "^0.7.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
-        "jest-puppeteer": "^6.2.0",
+        "jest-puppeteer": "^8.0.4",
         "strip-ansi": "^7.0.1",
         "upath": "^2.0.1"
     },

@@ -24,9 +24,7 @@ export const load = (({ cookies }) => {
 	}
 }) satisfies PageServerLoad
 
-import { RuleConfig } from '../rule'
-
-export const actions: RuleConfig = {
+export const actions = {
 	/**
 	 * Modify game state in reaction to a keypress. If client-side JavaScript
 	 * is available, this will happen in the browser instead of here
