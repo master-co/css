@@ -1,5 +1,5 @@
 {
-    "name": "next.js-with-aot",
+    "name": "next.js-with-just-in-time",
     "version": "0.1.0",
     "private": true,
     "scripts": {
@@ -10,7 +10,7 @@
         "preview": "npm run build && npm run start"
     },
     "dependencies": {
-        "@master/css.webpack": "",
+        "@master/css.react": "",
         "@types/node": "18.14.6",
         "@types/react": "18.0.28",
         "@types/react-dom": "18.0.11",

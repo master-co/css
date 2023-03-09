@@ -1,5 +1,4 @@
 import { Config } from '@master/css'
-import { Options } from '@master/css-compiler'
 
 export const config: Config = {
     themes: {},
@@ -10,12 +9,4 @@ export const config: Config = {
     breakpoints: {},
     selectors: {},
     mediaQueries: {}
-}
-
-export const compilerOptions: Options = {
-    sources: [],
-    classes: {
-        fixed: [],
-        ignored: []
-    }
 }

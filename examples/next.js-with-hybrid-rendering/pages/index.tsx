@@ -52,12 +52,22 @@ export default function Home() {
                         <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
                     </div>
                     <Image
-                        className={'ml:80 mr:5'}
+                        className={'rel ml:80 mr:5 block@media(prefers-color-scheme:dark)'}
                         src="/css-logotype@dark.svg"
                         alt="Master CSS Logo"
                         width={380}
                         height={48}
                         priority
+                        hidden
+                    />
+                    <Image
+                        className={'rel ml:80 mr:5 block@media(prefers-color-scheme:light)'}
+                        src="/css-logotype@light.svg"
+                        alt="Master CSS Logo"
+                        width={380}
+                        height={48}
+                        priority
+                        hidden
                     />
                     <div className={styles.thirteen + ' font:40 font:sans font:bold'}>
                         2
