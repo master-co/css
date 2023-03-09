@@ -1,4 +1,4 @@
-import type { Config } from './config'
+import type { Config, Values } from './config'
 import type { MasterCSS } from './css'
 import { getCssPropertyText } from './utils/get-css-property-text'
 import { analyzeValueToken } from './utils/analyze-value-token'
@@ -562,7 +562,8 @@ export interface RuleConfig {
     colorful?: boolean
     unit?: any
     prop?: string | false
-    order?: number
+    order?: number,
+    values?: Values,
     analyzeToken?(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | {
         value: string
     }>, string]

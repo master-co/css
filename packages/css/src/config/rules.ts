@@ -2,6 +2,9 @@ import { analyzeValueToken } from '../utils/analyze-value-token'
 import { getBorderProps } from '../utils/get-border-props'
 import { parseValueUnit } from '../utils/parse-value-unit'
 import { START_SYMBOL } from '../constants/start-symbol'
+import { BOX_UNDERNEATH } from '../constants/box-underneath'
+import { CONTENT_EXTREMA } from '../constants/content-extrema'
+import { SIZING_VALUES } from '../constants/sizing-values'
 import type { Declaration, Rule, RuleConfig } from '../rule'
 import type { MasterCSS } from '../css'
 
@@ -143,10 +146,26 @@ export const rules: Record<string, RuleConfig> = {
     },
     fontWeight: {
         matches: '^f(?:ont)?:(?:bolder|$values)(?!\\|)',
-        unit: ''
+        unit: '',
+        values: {
+            thin: 100,
+            extralight: 200,
+            light: 300,
+            regular: 400,
+            medium: 500,
+            semibold: 600,
+            bold: 700,
+            extrabold: 800,
+            heavy: 900
+        }
     },
     fontFamily: {
-        matches: '^f(?:ont)?:(?:$values)(?!\\|)'
+        matches: '^f(?:ont)?:(?:$values)(?!\\|)',
+        values: {
+            mono: 'ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace',
+            sans: 'ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
+            serif: 'ui-serif,Georgia,Cambria,Times New Roman,Times,serif'
+        }
     },
     fontSmoothing: {
         matches: '^f(?:ont)?:(?:antialiased|subpixel-antialiased|$values)(?!\\|)',
@@ -268,7 +287,9 @@ export const rules: Record<string, RuleConfig> = {
             return (this.prefix === 'padding' + ':') ? -1 : 0
         }
     },
-    flexBasis: {},
+    flexBasis: {
+        values: SIZING_VALUES
+    },
     flexWrap: {
         matches: '^flex:(?:wrap(?:-reverse)?|nowrap|$values)(?!\\|)'
     },
@@ -279,7 +300,11 @@ export const rules: Record<string, RuleConfig> = {
         unit: ''
     },
     flexDirection: {
-        matches: '^flex:(?:(?:row|column)(?:-reverse)?|$values)(?!\\|)'
+        matches: '^flex:(?:(?:row|column)(?:-reverse)?|$values)(?!\\|)',
+        values: {
+            col: 'column',
+            'col-reverse': 'column-reverse'
+        }
     },
     flex: {
         unit: '',
@@ -289,16 +314,20 @@ export const rules: Record<string, RuleConfig> = {
         matches: '^d:.'
     },
     width: {
-        matches: '^w:.'
+        matches: '^w:.',
+        values: SIZING_VALUES
     },
     height: {
-        matches: '^h:.'
+        matches: '^h:.',
+        values: SIZING_VALUES
     },
     minWidth: {
-        matches: '^min-w:.'
+        matches: '^min-w:.',
+        values: SIZING_VALUES
     },
     minHeight: {
-        matches: '^min-h:.'
+        matches: '^min-h:.',
+        values: SIZING_VALUES
     },
     wH: {
         matches: '^(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)x(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)',
@@ -435,13 +464,19 @@ export const rules: Record<string, RuleConfig> = {
         }
     },
     maxHeight: {
-        matches: '^max-h:.'
+        matches: '^max-h:.',
+        values: SIZING_VALUES
     },
     maxWidth: {
-        matches: '^max-w:.'
+        matches: '^max-w:.',
+        values: SIZING_VALUES
     },
     boxSizing: {
-        matches: '^box:(?:$values)(?!\\|)'
+        matches: '^box:(?:$values)(?!\\|)',
+        values: {
+            content: 'content-box',
+            border: 'border-box',
+        }
     },
     opacity: {
         unit: ''
@@ -465,13 +500,6 @@ export const rules: Record<string, RuleConfig> = {
             return { 'overflow': declaration }
         },
         get order(): number {
-            if (this.prefix) {
-                switch (this.prefix.slice(-2, -1)) {
-                    case 'x':
-                    case 'y':
-                        return 0
-                }
-            }
             return -1
         }
     },
@@ -493,7 +521,12 @@ export const rules: Record<string, RuleConfig> = {
         matches: '^z:.',
         unit: ''
     },
-    position: {},
+    position: {
+        values: {
+            abs: 'absolute',
+            rel: 'relative'
+        }
+    },
     cursor: {},
     pointerEvents: {},
     resize: {},
@@ -587,7 +620,13 @@ export const rules: Record<string, RuleConfig> = {
     },
     tableLayout: {},
     transformBox: {
-        matches: '^transform:(?:$values)(?!\\|)'
+        matches: '^transform:(?:$values)(?!\\|)',
+        values: {
+            ...BOX_UNDERNEATH,
+            fill: 'fill-box',
+            stroke: 'stroke-box',
+            view: 'view-box'
+        }
     },
     transformStyle: {
         matches: '^transform:(?:flat|preserve-3d|$values)(?!\\|)'
@@ -841,10 +880,12 @@ export const rules: Record<string, RuleConfig> = {
                 '-webkit-background-clip': declaration,
                 'background-clip': declaration
             }
-        }
+        },
+        values: BOX_UNDERNEATH
     },
     backgroundOrigin: {
-        matches: '^(?:bg|background):(?:$values)(?!\\|)'
+        matches: '^(?:bg|background):(?:$values)(?!\\|)',
+        values: BOX_UNDERNEATH
     },
     backgroundPosition: {
         matches: '^(?:bg|background):(?:top|bottom|right|left|center|$values)(?!\\|)',
@@ -1012,17 +1053,23 @@ export const rules: Record<string, RuleConfig> = {
         }
     },
     gridAutoColumns: {
-        matches: '^grid-auto-cols:.'
+        matches: '^grid-auto-cols:.',
+        values: CONTENT_EXTREMA
     },
     gridAutoFlow: {
         matches: '^grid-flow:.'
     },
-    gridAutoRows: {},
+    gridAutoRows: {
+        values: CONTENT_EXTREMA
+    },
     gridTemplateAreas: {},
     gridTemplateColumns: {
-        matches: '^grid-template-cols:.'
+        matches: '^grid-template-cols:.',
+        values: CONTENT_EXTREMA
     },
-    gridTemplateRows: {},
+    gridTemplateRows: {
+        values: CONTENT_EXTREMA
+    },
     gridTemplate: {
         order: -1
     },
@@ -1050,7 +1097,11 @@ export const rules: Record<string, RuleConfig> = {
     },
     order: {
         matches: '^o:.',
-        unit: ''
+        unit: '',
+        values: {
+            first: -999999,
+            last: 999999
+        }
     },
     breakInside: {},
     breakBefore: {},
@@ -1237,7 +1288,11 @@ export const rules: Record<string, RuleConfig> = {
     },
     direction: {},
     shapeOutside: {
-        matches: '^shape:(?:(?:inset|circle|ellipse|polygon|url|linear-gradient)\\(.*\\)|$values)(?!\\|)'
+        matches: '^shape:(?:(?:inset|circle|ellipse|polygon|url|linear-gradient)\\(.*\\)|$values)(?!\\|)',
+        values: {
+            ...BOX_UNDERNEATH,
+            margin: 'margin-box'
+        }
     },
     shapeMargin: {
         matches: '^shape:(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$'
@@ -1246,7 +1301,14 @@ export const rules: Record<string, RuleConfig> = {
         unit: ''
     },
     clipPath: {
-        matches: '^clip:.'
+        matches: '^clip:.',
+        values: {
+            ...BOX_UNDERNEATH,
+            margin: 'margin-box',
+            fill: 'fill-box',
+            stroke: 'stroke-box',
+            view: 'view-box'
+        }
     },
     quotes: {},
     maskImage: {

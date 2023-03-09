@@ -6,7 +6,6 @@ import { selectors } from './selectors'
 import { semantics } from './semantics'
 import { themes } from './themes'
 import { theme } from './theme'
-import { values } from './values'
 import { rules } from './rules'
 import { override } from './override'
 import { observe } from './observe'
@@ -21,7 +20,6 @@ const config = {
     semantics,
     themes,
     theme,
-    values,
     rules,
     override,
     observe,
@@ -38,7 +36,6 @@ export {
     semantics,
     themes,
     theme,
-    values,
     rules,
     override,
     observe,
@@ -55,7 +52,7 @@ type MediaQueries = { [key: string]: string | MediaQueries }
 type Selectors = { [key: string]: string | string[] | Selectors }
 type SemanticsBase = { [key: string]: string | number | SemanticsBase }
 type Semantics = { [key: string]: SemanticsBase }
-type Values = { [key: string]: string | number | Values }
+export type Values = { [key: string]: string | number | Values }
 
 export interface Config {
     classes?: Classes

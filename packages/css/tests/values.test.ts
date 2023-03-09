@@ -3,8 +3,8 @@ import { config } from '../../../master.css'
 
 test('values', () => {
     testCSS(
-        'w:2x',
-        '.w\\:2x{width:2rem}',
+        'w:2-x',
+        '.w\\:2-x{width:2rem}',
         config
     )
     testCSS(
@@ -56,9 +56,11 @@ test('values', () => {
         'content:delimiter',
         '.content\\:delimiter{content:"123"}',
         {
-            values: {
+            rules: {
                 content: {
-                    delimiter: '"123"'
+                    values: {
+                        delimiter: '"123"'
+                    }
                 }
             }
         }
@@ -67,9 +69,11 @@ test('values', () => {
         'content:delimiter',
         '.content\\:delimiter{content:"|"}',
         {
-            values: {
+            rules: {
                 content: {
-                    delimiter: '"|"'
+                    values: {
+                        delimiter: '"|"'
+                    }
                 }
             }
         }
@@ -83,9 +87,11 @@ test('values', () => {
                     70: '#000'
                 }
             },
-            values: {
+            rules: {
                 border: {
-                    input: '1|solid|base-70'
+                    values: {
+                        input: '1|solid|base-70'
+                    }
                 }
             }
         }

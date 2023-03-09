@@ -61,36 +61,50 @@ const config = {
             }
         }
     },
-    values: {
-        '2x': '32',
-        '3x': '3rem',
+    rules: {
         width: {
-            x: {
-                '1': {
-                    '1': '25rem',
-                    '2': '50rem',
-                    '3': '75rem'
-                },
-                '2': '100rem'
+            values: {
+                x: {
+                    '1': {
+                        '1': '25rem',
+                        '2': '50rem',
+                        '3': '75rem'
+                    },
+                    '2': '100rem'
+                }
             }
         },
         fontSize: {
-            sm: 16,
-            md: 20
+            values: {
+                sm: 16,
+                md: 20
+            }
         },
         letterSpacing: {
-            wide: .4
+            values: {
+                wide: .4
+            }
         },
         border: {
-            'inputborder': '2|solid|red'
+            values: {
+                'inputborder': '2|solid|red'
+            }
         },
         boxShadow: {
-            '2x': '0 25px 50px -12px rgb(0 0 0 / 25%)'
+            values: {
+                '2x': '0 25px 50px -12px rgb(0 0 0 / 25%)'
+            }
         },
         inset: {
-            sm: 10,
-            md: 20
+            values: {
+                sm: 10,
+                md: 20
+            }
         }
+    },
+    values: {
+        '2x': '32',
+        '3x': '3rem'
     },
     semantics: {
         show: 'display:block',

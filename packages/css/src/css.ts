@@ -299,13 +299,7 @@ export class MasterCSS {
             }
         }
         if (values) {
-            for (const [id, valueMap] of Object.entries(values)) {
-                if (typeof valueMap === 'object') {
-                    this.values[id] = getFlatData(valueMap, false)
-                } else {
-                    this.globalValues[id] = valueMap
-                }
-            }
+            this.globalValues = getFlatData(values, false)
         }
         if (breakpoints) {
             this.breakpoints = getFlatData(breakpoints, false)
@@ -466,9 +460,12 @@ export class MasterCSS {
         if (rules) {
             for (const id in rules) {
                 const eachRuleConfig = rules[id]
-                const { matches, prop } = eachRuleConfig
+                const { matches, prop, values } = eachRuleConfig
                 eachRuleConfig.id = id
                 eachRuleConfig.prop = prop === false ? '' : id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
+                if (values) {
+                    this.values[id] = getFlatData(values, false)
+                }
                 if (matches) {
                     const valueKeys = Object.keys(this.values[id] ?? {})
                     const index = matches.indexOf('$values')
