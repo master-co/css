@@ -1,6 +1,6 @@
 import '~/styles/globals.css'
 import type { AppProps } from 'next/app'
-import { CSSLazyProvider, ThemeProvider } from '@master/css.react'
+import { CSSLazyProvider } from '@master/css.react'
 
 export default function App({ Component, pageProps }: AppProps) {
     return (
