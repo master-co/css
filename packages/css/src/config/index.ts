@@ -5,7 +5,6 @@ import { scope } from './scope'
 import { selectors } from './selectors'
 import { semantics } from './semantics'
 import { themes } from './themes'
-import { theme } from './theme'
 import { rules } from './rules'
 import { override } from './override'
 import { observe } from './observe'
@@ -19,7 +18,6 @@ const config: Config = {
     selectors,
     semantics,
     themes,
-    theme,
     rules,
     override,
     observe,
@@ -35,7 +33,6 @@ export {
     selectors,
     semantics,
     themes,
-    theme,
     rules,
     override,
     observe,
@@ -43,7 +40,6 @@ export {
 }
 
 import type { RuleConfig } from '../rule'
-import type { ThemeConfig } from '../theme'
 
 type Classes = { [key: string]: string | Classes }
 type Colors = { [key: string]: string | Colors }
@@ -67,7 +63,6 @@ export interface Config {
     rootSize?: number
     scope?: string
     important?: boolean
-    theme?: ThemeConfig,
     override?: boolean
     observe?: boolean
 }
