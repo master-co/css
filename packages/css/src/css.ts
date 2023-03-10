@@ -2,7 +2,6 @@ import extend from 'to-extend'
 import { Rule, RuleMeta } from './rule'
 import type { Config } from './config'
 import { config as defaultConfig } from './config'
-import { Theme } from './theme'
 import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 
@@ -25,7 +24,6 @@ export interface MasterCSS {
     breakpoints: Record<string, number>
     mediaQueries: Record<string, string>
     matches: Record<string, RegExp>
-    theme: Theme | undefined
 }
 
 export class MasterCSS {
@@ -496,9 +494,6 @@ export class MasterCSS {
             // @ts-ignore
             this.host = isDocumentRoot ? document.documentElement : (root as ShadowRoot).host
 
-            // sync theme
-            this.theme = new Theme(this.host as HTMLElement, this.config.theme)
-
             const container = isDocumentRoot ? document.head : targetRoot
             const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : targetRoot.styleSheets
             // @ts-ignore
@@ -633,8 +628,6 @@ export class MasterCSS {
         this.style.remove()
         // @ts-ignore
         this.style = null
-        this.theme?.destroy()
-        this.theme = null
     }
 
     /**

@@ -1,93 +1,138 @@
 import extend from 'to-extend'
-import { theme as defaultThemeConfig } from './config/theme'
+
+export declare interface ThemeSettings {
+    default?: ThemeValue
+    store?: string | false
+    init?: boolean
+}
+
+export const themeSettings: ThemeSettings = {
+    store: 'theme',
+    init: true
+}
 
 export declare type ThemeValue = 'dark' | 'light' | 'system' | string
+
+const hasDocument = typeof document !== 'undefined'
+const hasLocalStorage = typeof localStorage !== 'undefined'
 
 export class Theme {
 
     // 按照系統的主題切換，目前只支援 light dark
-    private darkMQL: MediaQueryList = typeof window !== 'undefined' ? window.matchMedia?.('(prefers-color-scheme:dark)') : undefined
+    private _darkMQL: MediaQueryList = typeof matchMedia !== 'undefined' ? matchMedia?.('(prefers-color-scheme:dark)') : undefined
+    private _value: ThemeValue
+    private _current: string
 
     constructor(
-        public host = typeof document !== 'undefined' ? document.documentElement : null,
-        public options?: ThemeConfig
+        public settings?: ThemeSettings,
+        public host = hasDocument ? document.documentElement : null
     ) {
-        this.options = extend(defaultThemeConfig, options)
-        if (this.options.store && this.storage) {
-            this.syncWithStorage()
-        } else if (this.options.default) {
-            this.set(this.options.default, { emit: false, store: false })
+        this.settings = settings ? extend(themeSettings, settings) : themeSettings
+        if (this.settings.init) {
+            this.init()
         }
     }
 
+    init() {
+        let value = this.settings.default
+        const storage = this.storage
+        if (storage) {
+            value = storage
+        }
+        this.value = value
+    }
+
     get storage() {
-        const { store } = this.options
-        if (store) {
+        const { store } = this.settings
+        if (hasLocalStorage && store) {
             return localStorage.getItem(store)
         }
     }
 
-    current: string
-    value: ThemeValue
+    get systemValue(): string {
+        return this._darkMQL.matches ? 'dark' : 'light'
+    }
 
-    set(value: ThemeValue, options: { store?: boolean, emit?: boolean } = { store: true, emit: true }) {
-        if (value !== this.value) {
-            let current: string
-            if (value === 'system') {
-                this.darkMQL?.addEventListener?.('change', this.onThemeChange)
-                current = this.darkMQL?.matches ? 'dark' : 'light'
-            } else {
-                this.removeDarkMQLListener()
-                current = value
+    set value(value: ThemeValue) {
+        this._value = value
+        if (value === 'system') {
+            this._darkMQL?.addEventListener?.('change', this._onThemeChange)
+            this.current = this.systemValue
+        } else {
+            this._removeDarkMQLListener()
+            this.current = value
+        }
+    }
+
+    get value() {
+        return this._value
+    }
+
+    set current(current: string) {
+        const previous = this._current
+        this._current = current
+        if (this.host) {
+            if (previous)
+                this.host.classList.remove(previous)
+            if (!this.host.classList.contains(current)) {
+                this.host.classList.add(current)
+                if ((this.host as any).style) {
+                    (this.host as any).style.colorScheme = current
+                }
             }
+        }
+    }
+
+    get current() {
+        return this._current
+    }
+
+    switch(value: ThemeValue, settings: { store?: boolean, emit?: boolean } = { store: true, emit: true }) {
+        if (value && value !== this.value) {
             this.value = value
             // 儲存 theme 到 localStorage
-            if (options.store && this.storage !== value && this.options.store) {
-                localStorage.setItem(this.options.store, value)
+            if (hasLocalStorage && this.storage !== value && this.settings.store) {
+                localStorage.setItem(this.settings.store, value)
             }
-            this._setCurrent(current)
-        }
-    }
-
-    private _setCurrent(current: string, options: { store?: boolean, emit?: boolean } = { store: true, emit: true }) {
-        if (this.current) {
-            this.host.classList.remove(this.current)
-        }
-        this.host.classList.add(current)
-        if ((this.host as any).style) {
-            (this.host as any).style.colorScheme = current
-        }
-        this.current = current
-        if (options.emit) {
-            this.host.dispatchEvent(new CustomEvent('theme', { detail: this }))
-        }
-    }
-
-    syncWithStorage() {
-        if (typeof window !== 'undefined' && this.options.store) {
-            let storage = this.storage
-            if (storage === 'system' && (storage = this.darkMQL?.matches ? 'dark' : 'light') || storage) {
-                this.host.classList.add(storage)
-                this.host.style.colorScheme = storage
-                this.set(storage, { emit: false, store: false })
+            if (settings.emit) {
+                this.host.dispatchEvent(new CustomEvent('theme', { detail: this }))
             }
         }
     }
 
-    private removeDarkMQLListener() {
-        this.darkMQL?.removeEventListener('change', this.onThemeChange)
+    private _removeDarkMQLListener() {
+        this._darkMQL?.removeEventListener('change', this._onThemeChange)
     }
 
-    private onThemeChange = (mediaQueryList: MediaQueryListEvent) => {
-        this._setCurrent(mediaQueryList.matches ? 'dark' : 'light')
+    private _onThemeChange = (mediaQueryList: MediaQueryListEvent) => {
+        this.current = mediaQueryList.matches ? 'dark' : 'light'
     }
 
     destroy() {
-        this.darkMQL?.removeEventListener('change', this.onThemeChange)
+        this._removeDarkMQLListener()
     }
 }
 
-export interface ThemeConfig {
-    default?: ThemeValue
-    store?: string | false
+export function getDocThemeInitScript(settings: ThemeSettings = { store: 'theme' }) {
+    return `let e${settings.default ? `='${settings.default}'` : ''};const c=localStorage.getItem("${settings.store}");c&&(e=c);let t=e;e==="system"&&(t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");const s=document.documentElement;s.classList.add(t);s.style.colorScheme=t;`
 }
+
+// 原始碼參考
+// export function getDocThemeInitScript(settings: ThemeSettings = { store: 'theme' }) {
+//     return `
+//         let value = ${settings.default};
+//         ${settings.store ? `
+//             const storage = localStorage.getItem('${settings.store}');
+//             if (storage) {
+//                 value = storage;
+//             }
+//         ` : ''}
+//         let current = value;
+//         if (value === 'system') {
+//             current = matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+//         };
+//         const host = document.documentElement;
+//         host.classList.add(current);
+//         host.style.colorScheme = current;
+//     `
+// }
