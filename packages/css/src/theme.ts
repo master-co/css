@@ -40,22 +40,26 @@ export class Theme {
                 this.removeDarkMQLListener()
                 current = value
             }
-            if (current) {
-                this.host.classList.remove(this.current)
-                this.host.classList.add(current)
-                if ((this.host as any).style) {
-                    (this.host as any).style.colorScheme = current
-                }
-            }
-            this.current = current
             this.value = value
             // 儲存 theme 到 localStorage
-            if (options.store, this.storage !== value, this.options.store) {
+            if (options.store && this.storage !== value && this.options.store) {
                 localStorage.setItem(this.options.store, value)
             }
-            if (options.emit) {
-                this.host.dispatchEvent(new CustomEvent('theme', { detail: this }))
-            }
+            this._setCurrent(current)
+        }
+    }
+
+    private _setCurrent(current: string, options: { store?: boolean, emit?: boolean } = { store: true, emit: true }) {
+        if (this.current) {
+            this.host.classList.remove(this.current)
+        }
+        this.host.classList.add(current)
+        if ((this.host as any).style) {
+            (this.host as any).style.colorScheme = current
+        }
+        this.current = current
+        if (options.emit) {
+            this.host.dispatchEvent(new CustomEvent('theme', { detail: this }))
         }
     }
 
@@ -75,7 +79,7 @@ export class Theme {
     }
 
     private onThemeChange = (mediaQueryList: MediaQueryListEvent) => {
-        this.set(mediaQueryList.matches ? 'dark' : 'light')
+        this._setCurrent(mediaQueryList.matches ? 'dark' : 'light')
     }
 
     destroy() {
