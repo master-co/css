@@ -22,7 +22,7 @@ export const CSSLazyProvider = ({
                         setCSS(existingCSS)
                     } else {
                         const resolvedConfig = configModule.config || configModule.default || configModule
-                        setCSS(new MasterCSS({ ...resolvedConfig }))
+                        setCSS(new MasterCSS(resolvedConfig))
                     }
                 })
         }

@@ -1,29 +1,28 @@
-import { Theme, ThemeConfig, ThemeValue, theme as themeConfig } from '@master/css'
-import { ReactElement, useCallback, useEffect, useLayoutEffect, useState } from 'react'
+import { ThemeSettings, ThemeValue, Theme } from '@master/css'
+import { DependencyList, EffectCallback, ReactElement, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { ThemeContext } from '../contexts'
-import { useCSS } from '../contexts/css'
 
-const useIsomorphicEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
+const useIsomorphicEffect: (effect: EffectCallback, deps?: DependencyList) => void =
+    typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 export function ThemeProvider({
+    config,
     host,
-    config = themeConfig,
     children
 }: {
     host?: HTMLElement,
-    config?: ThemeConfig,
+    config?: ThemeSettings,
     children: ReactElement,
 }) {
-    const css = useCSS()
-    const [theme, setTheme] = useState<Theme>(css?.theme)
-    const [current, setCurrent] = useState<string>(theme?.current)
-    const [value, setValue] = useState<ThemeValue>(theme?.value)
-
-    const set = useCallback((value: ThemeValue, options?: {
+    const theme = useMemo(() => new Theme({ ...config, init: false }, host), [config, host])
+    // Make React hook theme members
+    const [current, setCurrent] = useState<string>(theme.current)
+    const [value, setValue] = useState<ThemeValue>(theme.value)
+    const switchValue = useCallback((value: ThemeValue, options?: {
         store?: boolean;
         emit?: boolean;
     }) => {
-        theme.set(value, options)
+        theme.switch(value, options)
         setCurrent(theme.current)
         setValue(theme.value)
     }, [theme])
@@ -34,17 +33,14 @@ export function ThemeProvider({
     }, [theme])
 
     useIsomorphicEffect(() => {
-        setTheme(css?.theme || theme || new Theme(host, config))
-    }, [config, css?.theme, host, onThemeChange])
-
-    useIsomorphicEffect(() => {
-        if (!theme) return
-        set(theme.value, { emit: false, store: false })
+        theme.init()
+        setCurrent(theme.current)
+        setValue(theme.value)
         theme.host.addEventListener('theme', onThemeChange)
         return () => {
             theme.host.removeEventListener('theme', onThemeChange)
         }
-    }, [theme])
+    }, [onThemeChange, theme])
 
-    return <ThemeContext.Provider value={{ ...theme, value, current, set } as Theme}>{children}</ThemeContext.Provider>
+    return <ThemeContext.Provider value={{ ...theme, value, current, switch: switchValue } as Theme}>{children}</ThemeContext.Provider>
 }
