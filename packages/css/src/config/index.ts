@@ -11,7 +11,7 @@ import { override } from './override'
 import { observe } from './observe'
 import { important } from './important'
 
-const config = {
+const config: Config = {
     breakpoints,
     colors,
     rootSize,

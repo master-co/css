@@ -46,18 +46,17 @@
         "./polyfills/css-escape",
         "./polyfills/*"
     ],
-    "main": "./dist/cjs/index.js",
-    "jsnext:main": "./dist/esm/index.js",
+    "main": "./dist/index.js",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
     "browser": "./dist/index.browser.js",
-    "esnext": "./dist/esm/index.js",
-    "module": "./dist/esm/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "node": {
-                "require": "./dist/cjs/index.node.js",
-                "import": "./dist/esm/index.node.js",
-                "types": "./dist/index.node.d.ts"
+            "browser": {
+                "import": "./dist/index.mjs",
+                "types": "./dist/index.browser.d.ts"
             },
             "require": "./dist/cjs/index.js",
             "import": "./dist/esm/index.js",
@@ -80,7 +79,6 @@
         "@techor/log": "^1.1.0",
         "chokidar": "^3.5.3",
         "commander": "^10.0.0",
-        "esbuild": "^0.16.17",
         "fast-glob": "^3.2.12",
         "fs-extra": "^11.1.0"
     },

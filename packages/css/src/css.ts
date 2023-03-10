@@ -31,6 +31,7 @@ export interface MasterCSS {
 export class MasterCSS {
 
     static root: MasterCSS
+    static config: Config = defaultConfig
     static instances: MasterCSS[] = []
     static refresh = (config: Config) => {
         for (const eachInstance of this.instances) {
