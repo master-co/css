@@ -12,19 +12,15 @@ function App() {
     return (
         <div className="App">
             <div>
-                <a href="https://vitejs.dev" target="_blank">
-                    <img src="/vite.svg" className="logo" alt="Vite logo" />
-                </a>
                 <a href="https://reactjs.org" target="_blank">
                     <img src={reactLogo} className="logo react" alt="React logo" />
                 </a>
                 <a href="https://css.master.co" target="_blank">
-                    <img src={masterLogo} className="logo master scale(1.5)" alt="Master logo" />
+                    <img src={masterLogo} className="logo master ml:20 scale(1.6)" alt="Master logo" />
                 </a>
             </div>
             <h1 className="font:heavy ls:-.25 overflow:hover flex:focus">
-                Vite + React
-                + <span className='fg:primary fg:yellow-80@dark'>Master CSS</span>
+                React + <span className='fg:primary fg:yellow-80@dark'>Master CSS</span>
             </h1>
             <div className="card">
                 <button className="h:40 bg:gray-20@dark bg:slate-90@light" onClick={() => setCount((count) => count + 1)}>
@@ -34,12 +30,12 @@ function App() {
                     {theme?.current === 'dark' ? '🌜' : '☀️'} {theme?.current}
                     <ThemeSelect className="abs full inset:0 r:inherit opacity:0 font:inherit" />
                 </button>
-                <p>
-                    Edit <code>src/App.jsx</code> and save to test HMR
+                <p className='mt:30'>
+                    Edit <code className='font:mono'>src/App.jsx</code> and save to test HMR
                 </p>
             </div>
             <p className="read-the-docs">
-                Click on the Vite and React logos to learn more
+                Click on the React and Master CSS logos to learn more
             </p>
         </div>
     )

@@ -4,6 +4,6 @@ export const config = {
         primary: 'gold-75'
     },
     theme: {
-        default: 'dark'
+        default: 'system'
     }
 }
