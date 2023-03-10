@@ -7,7 +7,7 @@
     "homepage": "https://css.master.co",
     "license": "MIT",
     "publisher": "masterco",
-    "version": "2.1.15",
+    "version": "2.1.33",
     "icon": "icon.png",
     "repository": {
         "type": "git",
@@ -20,15 +20,15 @@
     "activationEvents": [
         "onStartupFinished"
     ],
-    "main": "./client/dist/cjs/extension.js",
-    "jsnext:main": "./client/dist/esm/extension.js",
-    "esnext": "./client/dist/esm/extension.js",
-    "module": "./client/dist/esm/extension.js",
+    "main": "./client/dist/extension.js",
+    "jsnext:main": "./client/dist/extension.mjs",
+    "esnext": "./client/dist/extension.mjs",
+    "module": "./client/dist/extension.mjs",
     "types": "./client/dist/extension.d.ts",
     "exports": {
         ".": {
-            "require": "./client/dist/cjs/extension.js",
-            "import": "./client/dist/esm/extension.js",
+            "require": "./client/dist/extension.js",
+            "import": "./client/dist/extension.mjs",
             "types": "./client/dist/extension.d.ts"
         }
     },
@@ -148,7 +148,8 @@
                     "default": [
                         "(class(?:Name)?\\s?=\\s?)((?:\"[^\"]+\")|(?:'[^']+')|(?:`[^`]+`))",
                         "(class(?:Name)?={)([^}]*)}",
-                        "(?:(\\$|(?:(?:element|el)\\.[^\\s.`]+)`)([^`]+)`)",
+                        "(?:(\\$|(?:(?:element|el|style)\\.[^\\s.`]+)`)([^`]+)`)",
+                        "(style\\.(?:.*)\\()([^)]*)\\)",
                         "(classList.(?:add|remove|replace|replace|toggle)\\()([^)]*)\\)",
                         "(template\\s*\\:\\s*)((?:\"[^\"]+\")|(?:'[^']+')|(?:`[^`]+`))",
                         "(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^']*)('[^']*')",
@@ -167,6 +168,10 @@
                 "masterCSS.PreviewColor": {
                     "type": "boolean",
                     "default": true
+                },
+                "masterCSS.config": {
+                    "type": "string",
+                    "default": "master.css.{ts,js,mjs,cjs}"
                 }
             }
         }

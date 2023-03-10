@@ -2,7 +2,6 @@ import * as path from 'path'
 import { workspace, ExtensionContext, Disposable } from 'vscode'
 
 import {
-    DocumentSelector,
     LanguageClient,
     LanguageClientOptions,
     ServerOptions,

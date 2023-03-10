@@ -74,7 +74,7 @@
                     }
                 },
                 {
-                    "match": "(?<![^\\s;:{]+:[^\\s;]*)([^\\s;:\"'`{]+)(:)(?!:)(?!\\-webkit\\-|\\-moz\\-|\\-o\\-|\\-ms\\-)(?!out\\-of\\-range|first\\-of\\-type|last\\-of\\-type|only\\-of\\-type|first\\-selector\\-button|scrollbar\\-track\\-piece|search\\-cancel\\-button|search\\-results\\-button|any\\-link|focus\\-visible|focus\\-within|read\\-only|read\\-write|placeholder\\-showen|in\\-range|first\\-letter|first\\-child|last\\-child|only\\-child|first\\-letter|first\\-line|scrollbar\\-button|scrollbar\\-thumb|scrollbar\\-track|scrollbar\\-corner|link|visited|target|scope|hover|has|active|focus|autofill|enabled|disabled|default|checked|indeterminate|valid|invalid|required|optional|root|empty|defined|fullscreen|odd|even|first|last|after|before|backdrop|cue|marker|placeholder|selection|scrollbar|resizer|nth\\-last\\-of\\-type|nth\\-last\\-child|nth\\-of\\-type|nth\\-child|host\\-context|lang|host|is|not|nth|where|part|slotted)",
+                    "match": "(?<![^\\s;:{]+:[^\\s;]*)([^\\s;:\"'`{]+)(:)(?!:)(?!\\-webkit\\-|\\-moz\\-|\\-o\\-|\\-ms\\-)(?!(?:out\\-of\\-range|first\\-of\\-type|last\\-of\\-type|only\\-of\\-type|first\\-selector\\-button|scrollbar\\-track\\-piece|search\\-cancel\\-button|search\\-results\\-button|any\\-link|focus\\-visible|focus\\-within|read\\-only|read\\-write|placeholder\\-showen|in\\-range|first\\-letter|first\\-child|last\\-child|only\\-child|first\\-letter|first\\-line|scrollbar\\-button|scrollbar\\-thumb|scrollbar\\-track|scrollbar\\-corner|link|visited|target|scope|hover|has|active|focus|autofill|enabled|disabled|default|checked|indeterminate|valid|invalid|required|optional|root|empty|defined|fullscreen|odd|even|first|last|after|before|backdrop|cue|marker|placeholder|selection|scrollbar|resizer|nth\\-last\\-of\\-type|nth\\-last\\-child|nth\\-of\\-type|nth\\-child|host\\-context|lang|host|is|not|nth|where|part|slotted)(?![\\w-]))",
                     "captures": {
                         "1": {
                             "name": "support.type.property-name.css"
@@ -145,7 +145,7 @@
                     }
                 },
                 {
-                    "match": "(?<![\\-])\\b(sr\\-only|center\\-content|break\\-word|inline\\-block|inline\\-flex|inline\\-grid|inline\\-table|untouchable|capitalize|invisible|lowercase|uppercase|contents|oblique|visible|rounded|italic|static|sticky|hidden|inline|square|fixed|block|table|round|hide|full|grid|(?:flex(?!\\:(?:row|col|column|wrap|nowrap|\\d)(?:\\-reverse)?))|abs|rel)",
+                    "match": "(?<![\\-])\\b(sr\\-only|center\\-content|break\\-word|inline\\-block|inline\\-flex|inline\\-grid|inline\\-table|untouchable|capitalize|invisible|lowercase|uppercase|contents|oblique|visible|rounded|italic|max\\-vh|max\\-vw|min\\-vh|min\\-vw|static|sticky|hidden|inline|square|fixed|block|table|round|hide|full|grid|(?:flex(?!\\:(?:row|col|column|wrap|nowrap|\\d)(?:\\-reverse)?))|abs|rel|vw|vh)(?:\\b|_)",
                     "captures": {
                         "1": {
                             "name": "support.constant.property-value.css"
@@ -153,7 +153,33 @@
                     }
                 },
                 {
-                    "match": "(\\+|\\-|\\*|\\/)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?(x)?",
+                    "match": "(\\-)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?(x)(\\-)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.operator.css"
+                        },
+                        "2": {
+                            "name": "constant.numeric.css"
+                        },
+                        "3": {
+                            "name": "keyword.other.unit"
+                        },
+                        "4": {
+                            "name": "variable master-css.class.x"
+                        },
+                        "5": {
+                            "name": "keyword.operator.css"
+                        },
+                        "6": {
+                            "name": "constant.numeric.css"
+                        },
+                        "7": {
+                            "name": "keyword.other.unit"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\+|\\-|\\*|\\/)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?(x)?",
                     "captures": {
                         "1": {
                             "name": "keyword.operator.css"

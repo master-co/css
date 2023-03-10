@@ -16,17 +16,15 @@ import {
 
 import { WorkspaceFolder } from 'vscode-languageserver'
 import MasterCSS from '@master/css'
-import uri2path from 'file-uri-to-path'
 
 import minimatch from 'minimatch'
 
 import { TextDocument } from 'vscode-languageserver-textdocument'
-import { GetLastInstance, GetCompletionItem } from './completionProvider'
-import { doHover } from './hoverProvider'
-import { PositionCheck } from './positionCheck'
-import { GetDocumentColors, GetColorPresentation, GetColorRender } from './documentColorProvider'
-
-
+import { GetLastInstance, GetCompletionItem, GetConfigColorsCompletionItem, checkConfigColorsBlock } from './providers/completion'
+import { doHover } from './providers/hover'
+import { PositionCheck } from './position-check'
+import { GetDocumentColors, GetColorPresentation, GetConfigFileColorRender } from './providers/color'
+import * as path from 'path'
 
 const connection = createConnection(ProposedFeatures.all)
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument)
@@ -37,6 +35,7 @@ let hasDiagnosticRelatedInformationCapability = false
 let settings: MasterCSSSettings
 
 let MasterCSSObject: MasterCSS | undefined
+let configFileLocation = ''
 
 // The example settings
 interface MasterCSSSettings {
@@ -46,7 +45,8 @@ interface MasterCSSSettings {
     files: { exclude: string[] },
     suggestions: boolean,
     PreviewOnHovers: boolean,
-    PreviewColor: boolean
+    PreviewColor: boolean,
+    config: string
 }
 // The global settings, used when the `workspace/configuration` request is not supported by the client.
 // Please note that this is not the case when using this server with the client provided in this example
@@ -66,13 +66,19 @@ const defaultSettings: MasterCSSSettings = {
     classNameMatches: [
         '(class(?:Name)?\\s?=\\s?)((?:"[^"]+")|(?:\'[^\']+\')|(?:`[^`]+`))',
         '(class(?:Name)?={)([^}]*)}',
-        '(?:(\\$|(?:element\\.[^\\s.`]+)`)([^`]+)`)',
-        '(classList.(?:add|remove|replace|replace|toggle)\\()([^)]*)\\)'
+        '(?:(\\$|(?:(?:element|el|style)\\.[^\\s.`]+)`)([^`]+)`)',
+        '(style\\.(?:.*)\\()([^)]*)\\)',
+        '(classList.(?:add|remove|replace|replace|toggle)\\()([^)]*)\\)',
+        '(template\\s*\\:\\s*)((?:"[^"]+")|(?:\'[^\']+\')|(?:`[^`]+`))',
+        '(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^\']*)(\'[^\']*\')',
+        '(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^"]*)("[^"]*")',
+        '(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^`]*)(`[^`]*`)'
     ],
     files: { exclude: ['**/.git/**', '**/node_modules/**', '**/.hg/**'] },
     suggestions: true,
     PreviewOnHovers: true,
-    PreviewColor: true
+    PreviewColor: true,
+    config: 'master.css.{ts,js,mjs,cjs}'
 }
 let globalSettings: MasterCSSSettings = defaultSettings
 
@@ -85,7 +91,7 @@ connection.onDidChangeConfiguration(change => {
         documentSettings.clear()
     } else {
         globalSettings = <MasterCSSSettings>(
-            (change.settings.languageServerExample || defaultSettings)
+            (change.settings.masterCSS || defaultSettings)
         )
     }
 
@@ -106,28 +112,6 @@ async function getDocumentSettings(resource: string): Promise<MasterCSSSettings>
         })
         documentSettings.set(resource, result)
     }
-
-    connection.workspace.getWorkspaceFolders()
-
-    const workspaceFolders = await connection.workspace.getWorkspaceFolders()
-    let root: WorkspaceFolder | undefined
-    if (workspaceFolders?.length === 1) {
-        root = workspaceFolders[0]
-    } else {
-        root = workspaceFolders?.find(x => resource.includes(x.uri))
-    }
-    if (root?.uri) {
-        try {
-            try {
-                const compiler = await new MasterCSSCompiler({ cwd: uri2path(root.uri.replace('%3A', ':')) })
-                const config: any = compiler.readConfig()
-                console.log(config)
-                MasterCSSObject = new MasterCSS(config)
-            } catch (_) {
-                MasterCSSObject = new MasterCSS()
-            }
-        } catch (_) { /* empty */ }
-    }
     return result
 }
 
@@ -142,10 +126,39 @@ documents.onDidOpen(change => {
     validateTextDocument(change.document)
 })
 
+documents.onDidSave(async change => {
+    if (path.parse(change.document.uri).name === 'master.css') {
+        await loadMasterCssConfig(change.document.uri)
+    }
+})
+
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
     // In this simple example we get the settings for every validate run.
     settings = await getDocumentSettings(textDocument.uri)
+    await loadMasterCssConfig(textDocument.uri)
+}
 
+async function loadMasterCssConfig(resource: string) {
+    const workspaceFolders = await connection.workspace.getWorkspaceFolders()
+    let root: WorkspaceFolder | undefined
+    if (workspaceFolders?.length === 1) {
+        root = workspaceFolders[0]
+    } else {
+        root = workspaceFolders?.find(x => resource.includes(x.uri))
+    }
+    if (root?.uri) {
+        try {
+            try {
+                const uri2path = (await import('file-uri-to-path')) as any
+                configFileLocation = uri2path(root.uri.replace('%3A', ':'))
+                const compiler = await new MasterCSSCompiler({ cwd: configFileLocation, config: settings.config })
+                const config: any = compiler.readConfig()
+                MasterCSSObject = new MasterCSS(config)
+            } catch (_) {
+                MasterCSSObject = new MasterCSS()
+            }
+        } catch (_) { /* empty */ }
+    }
 }
 
 connection.onInitialize((params: InitializeParams) => {
@@ -174,7 +187,7 @@ connection.onInitialize((params: InitializeParams) => {
             completionProvider: {
                 resolveProvider: true,
                 workDoneProgress: false,
-                triggerCharacters: [':', '@', '~']
+                triggerCharacters: [':', '@', '~', '\'']
             },
             colorProvider: {},
             hoverProvider: true
@@ -198,14 +211,35 @@ connection.onInitialized(() => {
 })
 
 connection.onCompletion(
-    (_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-        if (settings.suggestions == true && CheckFilesExclude(_textDocumentPosition.textDocument.uri)) {
+    (textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
+        if (settings.suggestions == true && CheckFilesExclude(textDocumentPosition.textDocument.uri)) {
 
-            const inMasterCSS = PositionCheck(_textDocumentPosition.textDocument.uri, _textDocumentPosition.position, documents, settings.classNameMatches).IsMatch
+            const documentUri = textDocumentPosition.textDocument.uri
+            const document = documents.get(documentUri)
+            const language = documentUri.substring(documentUri.lastIndexOf('.') + 1)
+            const position = textDocumentPosition.position
+            if (document) {
+                const text = document.getText()
+                const positionIndex = document.offsetAt(position) ?? 0
+                const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
+                const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
+                const inMasterCSS = PositionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classNameMatches).IsMatch
 
-            const lastInstance = GetLastInstance(_textDocumentPosition, documents)
-            if (lastInstance.isInstance == true && inMasterCSS == true) {
-                return GetCompletionItem(lastInstance.lastKey, lastInstance.triggerKey, lastInstance.isStart, lastInstance.language, MasterCSSObject)
+
+                const lineText: string = document.getText({
+                    start: { line: position.line, character: 0 },
+                    end: { line: position.line, character: position.character },
+                }).trim()
+
+
+                const lastInstance = GetLastInstance(lineText, position, language)
+
+
+                if (lastInstance.isInstance == true && inMasterCSS == true) {
+                    return GetCompletionItem(lastInstance.lastKey, lastInstance.triggerKey, lastInstance.isStart, lastInstance.language, MasterCSSObject)
+                } else if (lastInstance.isInstance == true && checkConfigColorsBlock(document, textDocumentPosition.position) == true) {
+                    return GetConfigColorsCompletionItem(MasterCSSObject)
+                }
             }
         }
         return []
@@ -225,28 +259,73 @@ connection.onDocumentColor(
             return []
         }
         if (settings.PreviewColor == true && CheckFilesExclude(documentColor.textDocument.uri)) {
-            let colorInformation = await GetDocumentColors(documentColor, documents, settings.classNameMatches, MasterCSSObject)
-            colorInformation = colorInformation.concat(await GetColorRender(documentColor, documents))
-            return colorInformation
+            const documentUri = documentColor.textDocument.uri
+            const document = documents.get(documentUri)
+            if (document) {
+                const text = document.getText() ?? ''
+                if (typeof document == undefined) {
+                    return []
+                }
+
+                let colorIndexs = (await GetDocumentColors(text, MasterCSSObject))
+
+                colorIndexs = colorIndexs.concat(await GetConfigFileColorRender(text, MasterCSSObject))
+
+                const colorIndexSet = new Set()
+                const colorInformations = colorIndexs
+                    .filter(item => {
+                        if (colorIndexSet.has(item.index.start)) {
+                            return false
+                        } else {
+                            colorIndexSet.add(item.index.start)
+                            return true
+                        }
+                    })
+                    .map(x => ({
+                        range: {
+                            start: document.positionAt(x.index.start),
+                            end: document.positionAt(x.index.end)
+                        },
+                        color: x.color
+                    }))
+
+                return colorInformations
+            }
         }
         return []
     })
 
 connection.onColorPresentation((params: ColorPresentationParams) => {
     if (settings.PreviewColor == true && CheckFilesExclude(params.textDocument.uri)) {
-        const colorRender = ['(?<=colors:\\s*{\\s*.*)([^}]*)}']
-        const isColorRender = PositionCheck(params.textDocument.uri, params.range.start, documents, colorRender)
+        const document = documents.get(params.textDocument.uri)
+        if (document) {
+            const text = document.getText()
+            const colorRender = ['(?<=colors:\\s*{\\s*.*)([^}]*)}']
 
-        return GetColorPresentation(params, isColorRender.IsMatch)
+            const positionIndex = document.offsetAt(params.range.start) ?? 0
+            const startIndex = document.offsetAt({ line: params.range.start.line - 100, character: 0 }) ?? 0
+            const endIndex = document.offsetAt({ line: params.range.start.line + 100, character: 0 }) ?? undefined
+            const isColorRender = PositionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, colorRender)
+            return GetColorPresentation(params, isColorRender.IsMatch)
+        }
+
     }
     return []
 })
 
 connection.onHover(textDocumentPosition => {
     if (settings.PreviewOnHovers == true && CheckFilesExclude(textDocumentPosition.textDocument.uri)) {
-        const HoverInstance = PositionCheck(textDocumentPosition.textDocument.uri, textDocumentPosition.position, documents, settings.classNameMatches)
-        if (HoverInstance.IsMatch) {
-            return doHover(HoverInstance.instance.instanceString, HoverInstance.instance.range, MasterCSSObject)
+        const document = documents.get(textDocumentPosition.textDocument.uri)
+        const position = textDocumentPosition.position
+        if (document) {
+            const text = document.getText()
+            const positionIndex = document.offsetAt(position) ?? 0
+            const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
+            const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
+            const HoverInstance = PositionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classNameMatches)
+            if (HoverInstance.IsMatch) {
+                return doHover(HoverInstance.instance.instanceString, indexToRange(HoverInstance.instance.index, document), MasterCSSObject)
+            }
         }
     }
     return null
@@ -259,6 +338,13 @@ function CheckFilesExclude(path: string): boolean {
         }
     }
     return true
+}
+
+function indexToRange(index: { start: number, end: number }, document: TextDocument) {
+    return {
+        start: document.positionAt(index.start),
+        end: document.positionAt(index.end)
+    }
 }
 
 // Make the text document manager listen on the connection

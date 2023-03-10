@@ -40,6 +40,9 @@ Highlight class names to make them easier to read and identify.
 
 Master CSS has pioneered applying syntax highlighting to class names in markup, which solves the problem of unreadable classes that are too long.
 
+## Documentation
+Visit [beta.css.master.co/docs/language-service](https://beta.css.master.co/docs/language-service) to view the full documentation
+
 ### Generate preview
 Hover over Master class names to see their CSS generation.
 
@@ -105,3 +108,9 @@ Preview the generated CSS rules when hovering over a class name.
 
 ### `masterCSS.suggestions: true`
 Enable autocomplete suggestions.
+
+### `masterCSS.config`
+Configure the config file path.
+```json
+"masterCSS.config": "master.css.{ts,js,mjs,cjs}"
+```
