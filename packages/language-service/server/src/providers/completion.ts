@@ -11,8 +11,8 @@ import {
 import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver/node'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import MasterCSS from '@master/css'
-import { pascalCase } from 'pascal-case'
-import { getDefaultCSSDataProvider } from 'vscode-css-languageservice'
+import { cssData } from 'vscode-css-languageservice/lib/esm/data/webCustomData'
+import { CSSDataProvider } from 'vscode-css-languageservice/lib/esm/languageFacts/dataProvider'
 
 let cssKeys: Array<string | CompletionItem> = []
 cssKeys = cssKeys.concat(masterCssOtherKeys)
@@ -88,7 +88,7 @@ export function GetConfigColorsCompletionItem(masterCss: MasterCSS = new MasterC
 
 export function GetCompletionItem(instance: string, triggerKey: string, startWithSpace: boolean, language: string, masterCss: MasterCSS = new MasterCSS({ observe: false })) {
 
-    const cssDataProvider = getDefaultCSSDataProvider()
+    const cssDataProvider = new CSSDataProvider(cssData)
     const cssProperties = cssDataProvider.provideProperties()
 
     let masterStyleCompletionItem: CompletionItem[] = []
@@ -105,7 +105,7 @@ export function GetCompletionItem(instance: string, triggerKey: string, startWit
     const isMedia = !(mediaPattern.exec(instance) === null && triggerKey !== '@')
     const isElements = !(elementsPattern.exec(instance) === null && triggerKey !== '::')
 
-    let masterCssKeyCompletionItems: Array<CompletionItem> = []
+    const masterCssKeyCompletionItems: Array<CompletionItem> = []
     let masterCssValues: Array<string | CompletionItem> = []
 
     const masterCustomSelectors = Object.keys(masterCss.config?.selectors ?? {})
@@ -164,9 +164,8 @@ export function GetCompletionItem(instance: string, triggerKey: string, startWit
                         !masterCssValues.find(existedValue => (typeof existedValue === 'string' ? existedValue : existedValue.label) === (typeof cssValue === 'string' ? cssValue : cssValue.label))
                     )
             )
-
             
-            const pascalCaseFullKey = pascalCase(fullKey)
+            const pascalCaseFullKey = fullKey.split('-').map(x => x ? x[0].toUpperCase() + x.substring(1) : '').join('')
             if (masterCss.config?.values?.[pascalCaseFullKey]) {
                 const masterCustomValues = Object.keys(masterCss.config?.values[pascalCaseFullKey])
                 masterCssValues = masterCssValues.concat(
