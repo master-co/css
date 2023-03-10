@@ -1,5 +1,6 @@
 import { execSync } from 'child_process'
 import MasterCSSCompiler from '@master/css-compiler'
+import '../../../packages/css/src/polyfills/css-escape'
 import { expectFileIncludes } from '../../../utils/expect-file-includes'
 import upath from 'upath'
 
