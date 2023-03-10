@@ -52,7 +52,7 @@ export function checkConfigColorsBlock(document: TextDocument, position: Positio
     return false
 }
 
-export function GetLastInstance(lineText: string, position: Position, language: string) {
+export function getLastInstance(lineText: string, position: Position, language: string) {
     const classPattern = /(?:[^"{'\s])+(?=>\s|\b)/g
     let classMatch: RegExpExecArray | null
     let lastKey = ''
@@ -78,7 +78,7 @@ export function GetLastInstance(lineText: string, position: Position, language: 
     return { isInstance: true, lastKey: lastKey, triggerKey: triggerKey, isStart: isStart, language: language }
 }
 
-export function GetConfigColorsCompletionItem(masterCss: MasterCSS = new MasterCSS({ observe: false })) {
+export function getConfigColorsCompletionItem(masterCss: MasterCSS = new MasterCSS({ observe: false })) {
     let masterStyleCompletionItem: CompletionItem[] = []
 
     masterStyleCompletionItem = masterStyleCompletionItem.concat(getColorsItem(masterCss))
@@ -86,7 +86,7 @@ export function GetConfigColorsCompletionItem(masterCss: MasterCSS = new MasterC
     return masterStyleCompletionItem
 }
 
-export function GetCompletionItem(instance: string, triggerKey: string, startWithSpace: boolean, language: string, masterCss: MasterCSS = new MasterCSS({ observe: false })) {
+export function getCompletionItem(instance: string, triggerKey: string, startWithSpace: boolean, language: string, masterCss: MasterCSS = new MasterCSS({ observe: false })) {
 
     const cssDataProvider = new CSSDataProvider(cssData)
     const cssProperties = cssDataProvider.provideProperties()

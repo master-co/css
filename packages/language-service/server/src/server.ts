@@ -20,11 +20,12 @@ import MasterCSS from '@master/css'
 import minimatch from 'minimatch'
 
 import { TextDocument } from 'vscode-languageserver-textdocument'
-import { GetLastInstance, GetCompletionItem, GetConfigColorsCompletionItem, checkConfigColorsBlock } from './providers/completion'
+import { getLastInstance, getCompletionItem, getConfigColorsCompletionItem, checkConfigColorsBlock } from './providers/completion'
 import { doHover } from './providers/hover'
-import { PositionCheck } from './position-check'
-import { GetDocumentColors, GetColorPresentation, GetConfigFileColorRender } from './providers/color'
+import { positionCheck } from './position-check'
+import { getDocumentColors, getColorPresentation, getConfigFileColorRender } from './providers/color'
 import * as path from 'path'
+import { defaultClassNameMatches } from './constant'
 
 const connection = createConnection(ProposedFeatures.all)
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument)
@@ -63,17 +64,7 @@ const defaultSettings: MasterCSSSettings = {
         'svelte',
         'rust'
     ],
-    classNameMatches: [
-        '(class(?:Name)?\\s?=\\s?)((?:"[^"]+")|(?:\'[^\']+\')|(?:`[^`]+`))',
-        '(class(?:Name)?={)([^}]*)}',
-        '(?:(\\$|(?:(?:element|el|style)\\.[^\\s.`]+)`)([^`]+)`)',
-        '(style\\.(?:.*)\\()([^)]*)\\)',
-        '(classList.(?:add|remove|replace|replace|toggle)\\()([^)]*)\\)',
-        '(template\\s*\\:\\s*)((?:"[^"]+")|(?:\'[^\']+\')|(?:`[^`]+`))',
-        '(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^\']*)(\'[^\']*\')',
-        '(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^"]*)("[^"]*")',
-        '(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^`]*)(`[^`]*`)'
-    ],
+    classNameMatches: defaultClassNameMatches,
     files: { exclude: ['**/.git/**', '**/node_modules/**', '**/.hg/**'] },
     suggestions: true,
     PreviewOnHovers: true,
@@ -223,7 +214,7 @@ connection.onCompletion(
                 const positionIndex = document.offsetAt(position) ?? 0
                 const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
                 const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
-                const inMasterCSS = PositionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classNameMatches).IsMatch
+                const inMasterCSS = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classNameMatches).IsMatch
 
 
                 const lineText: string = document.getText({
@@ -232,13 +223,13 @@ connection.onCompletion(
                 }).trim()
 
 
-                const lastInstance = GetLastInstance(lineText, position, language)
+                const lastInstance = getLastInstance(lineText, position, language)
 
 
                 if (lastInstance.isInstance == true && inMasterCSS == true) {
-                    return GetCompletionItem(lastInstance.lastKey, lastInstance.triggerKey, lastInstance.isStart, lastInstance.language, MasterCSSObject)
+                    return getCompletionItem(lastInstance.lastKey, lastInstance.triggerKey, lastInstance.isStart, lastInstance.language, MasterCSSObject)
                 } else if (lastInstance.isInstance == true && checkConfigColorsBlock(document, textDocumentPosition.position) == true) {
-                    return GetConfigColorsCompletionItem(MasterCSSObject)
+                    return getConfigColorsCompletionItem(MasterCSSObject)
                 }
             }
         }
@@ -267,9 +258,9 @@ connection.onDocumentColor(
                     return []
                 }
 
-                let colorIndexs = (await GetDocumentColors(text, MasterCSSObject))
+                let colorIndexs = (await getDocumentColors(text, MasterCSSObject))
 
-                colorIndexs = colorIndexs.concat(await GetConfigFileColorRender(text, MasterCSSObject))
+                colorIndexs = colorIndexs.concat(await getConfigFileColorRender(text, MasterCSSObject))
 
                 const colorIndexSet = new Set()
                 const colorInformations = colorIndexs
@@ -305,8 +296,8 @@ connection.onColorPresentation((params: ColorPresentationParams) => {
             const positionIndex = document.offsetAt(params.range.start) ?? 0
             const startIndex = document.offsetAt({ line: params.range.start.line - 100, character: 0 }) ?? 0
             const endIndex = document.offsetAt({ line: params.range.start.line + 100, character: 0 }) ?? undefined
-            const isColorRender = PositionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, colorRender)
-            return GetColorPresentation(params, isColorRender.IsMatch)
+            const isColorRender = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, colorRender)
+            return getColorPresentation(params, isColorRender.IsMatch)
         }
 
     }
@@ -322,7 +313,7 @@ connection.onHover(textDocumentPosition => {
             const positionIndex = document.offsetAt(position) ?? 0
             const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
             const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
-            const HoverInstance = PositionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classNameMatches)
+            const HoverInstance = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classNameMatches)
             if (HoverInstance.IsMatch) {
                 return doHover(HoverInstance.instance.instanceString, indexToRange(HoverInstance.instance.index, document), MasterCSSObject)
             }

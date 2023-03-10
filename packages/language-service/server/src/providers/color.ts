@@ -12,7 +12,7 @@ import { hslToRgb } from '../utils/hsl-to-rgb'
 import { toTwoDigitHex } from '../utils/to-two-digit-hex'
 
 
-export async function GetConfigFileColorRender(text: string, masterCss: MasterCSS = new MasterCSS({ observe: false })): Promise<any[]> {
+export async function getConfigFileColorRender(text: string, masterCss: MasterCSS = new MasterCSS({ observe: false })): Promise<any[]> {
     
     const colors: any[] = []
 
@@ -39,9 +39,9 @@ export async function GetConfigFileColorRender(text: string, masterCss: MasterCS
     return colors
 }
 
-export async function GetDocumentColors(text: string, masterCss: MasterCSS = new MasterCSS({ observe: false })
+export async function getDocumentColors(text: string, masterCss: MasterCSS = new MasterCSS({ observe: false })
 ): Promise<any[]> {
-    let colors: any[] = []
+    const colors: any[] = []
 
     let instanceMatch: RegExpExecArray | null
     while ((instanceMatch = instancePattern.exec(text)) !== null) {
@@ -90,7 +90,7 @@ function parseColorString(colorString: string, theme: string, masterCss: MasterC
     //#endregion for rgb、hls
     
     //#region for mastercss color
-    let colorAlpha: number = 1
+    let colorAlpha = 1
     let colorName = colorString
     const allMasterCssColorKeys = Object.keys(masterCss.colorThemesMap)
     if (colorString.split('/').length == 2) {
@@ -124,7 +124,7 @@ export function getColorValue(color: Color): Color {
     return { red: color.red / 255.0, green: color.green / 255.0, blue: color.blue / 255.0, alpha: color.alpha }
 }
 
-export function GetColorPresentation(params: ColorPresentationParams, isColorRender = false) {
+export function getColorPresentation(params: ColorPresentationParams, isColorRender = false) {
     const result: ColorPresentation[] = []
     const color = params.color
     const range = params.range

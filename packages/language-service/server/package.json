@@ -23,16 +23,16 @@
         "vscode-languageserver": "^7.0.0",
         "vscode-languageserver-textdocument": "^1.0.4"
     },
-    "main": "./dist/server.js",
-    "jsnext:main": "./dist/server.mjs",
-    "esnext": "./dist/server.mjs",
-    "module": "./dist/server.mjs",
-    "types": "./dist/server.d.ts",
+    "main": "./dist/index.js",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/server.js",
-            "import": "./dist/server.mjs",
-            "types": "./dist/server.d.ts"
+            "require": "./dist/index.default.js",
+            "import": "./dist/index.default.mjs",
+            "types": "./dist/index.default.d.ts"
         }
     },
     "files": [

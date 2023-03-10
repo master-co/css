@@ -1,6 +1,6 @@
 import { instancePattern } from './utils/regex'
 
-export function PositionCheck(text: string, positionIndex: number, startIndex: number, RegExpList: string[]) {
+export function positionCheck(text: string, positionIndex: number, startIndex: number, RegExpList: string[]) {
     const result: {
         IsMatch: boolean,
         classStartIndex: number,

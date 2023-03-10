@@ -17,7 +17,7 @@ export function activate(context: ExtensionContext) {
 
     // The server is implemented in node
     const serverModule = context.asAbsolutePath(
-        path.join('server', 'dist', 'server.js')
+        path.join('server', 'dist', 'index.js')
     )
     // The debug options for the server
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
