@@ -9,7 +9,6 @@ import type { Declaration, Rule, RuleConfig } from '../rule'
 import type { MasterCSS } from '../css'
 
 // TODO 於 index.node.ts 引入且防止被樹搖，目前被視為無副作用並被清除
-import '../polyfills/css-escape'
 import { cssEscape } from '../utils/css-escape'
 
 export const rules: Record<string, RuleConfig> = {

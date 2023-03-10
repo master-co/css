@@ -1,7 +1,7 @@
 {
     "name": "@master/css-language-server",
     "scripts": {
-        "build": "aron pack --platform node",
+        "build": "aron pack --platform node --shakeable-format",
         "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
@@ -24,15 +24,15 @@
         "minimatch": "^5.1.0",
         "pascal-case": "^3.1.2"
     },
-    "main": "./dist/cjs/server.js",
-    "jsnext:main": "./dist/esm/server.js",
-    "esnext": "./dist/esm/server.js",
-    "module": "./dist/esm/server.js",
+    "main": "./dist/server.js",
+    "jsnext:main": "./dist/server.mjs",
+    "esnext": "./dist/server.mjs",
+    "module": "./dist/server.mjs",
     "types": "./dist/server.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/cjs/server.js",
-            "import": "./dist/esm/server.js",
+            "require": "./dist/server.js",
+            "import": "./dist/server.mjs",
             "types": "./dist/server.d.ts"
         }
     },
