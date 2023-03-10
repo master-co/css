@@ -1,11 +1,13 @@
-import { Theme, ThemeConfig, ThemeValue, theme } from '@master/css'
+import { Theme, ThemeConfig, ThemeValue, theme as themeConfig } from '@master/css'
 import { ReactElement, useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { ThemeContext } from '../contexts'
 import { useCSS } from '../contexts/css'
 
+const useIsomorphicEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
+
 export function ThemeProvider({
     host,
-    config = theme,
+    config = themeConfig,
     children
 }: {
     host?: HTMLElement,
@@ -29,18 +31,20 @@ export function ThemeProvider({
     const onThemeChange = useCallback(() => {
         setCurrent(theme.current)
         setValue(theme.value)
-    }, [theme]);
+    }, [theme])
 
-    (typeof window !== 'undefined' ? useLayoutEffect : useEffect)(() => {
-        const newTheme = theme || css?.theme || new Theme(host, config)
-        setTheme(newTheme)
-        setCurrent(newTheme.current)
-        setValue(newTheme.value)
-        newTheme.host.addEventListener('theme', onThemeChange)
-        return () => {
-            newTheme.host.removeEventListener('theme', onThemeChange)
-        }
+    useIsomorphicEffect(() => {
+        setTheme(css?.theme || theme || new Theme(host, config))
     }, [config, css?.theme, host, onThemeChange])
+
+    useIsomorphicEffect(() => {
+        if (!theme) return
+        set(theme.value, { emit: false, store: false })
+        theme.host.addEventListener('theme', onThemeChange)
+        return () => {
+            theme.host.removeEventListener('theme', onThemeChange)
+        }
+    }, [theme])
 
     return <ThemeContext.Provider value={{ ...theme, value, current, set } as Theme}>{children}</ThemeContext.Provider>
 }
