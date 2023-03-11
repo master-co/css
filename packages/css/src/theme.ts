@@ -113,7 +113,8 @@ export class Theme {
     }
 }
 
-export function getDocThemeInitScript(settings: ThemeSettings = { store: 'theme' }) {
+export function getDocThemeInitScript(settings?: ThemeSettings) {
+    settings = Object.assign({ store: 'theme' }, settings)
     return `let e${settings.default ? `='${settings.default}'` : ''};const c=localStorage.getItem("${settings.store}");c&&(e=c);let t=e;e==="system"&&(t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");const s=document.documentElement;s.classList.add(t);s.style.colorScheme=t;`
 }
 
