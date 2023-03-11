@@ -5,7 +5,7 @@ export function getCssEntryMarkdownDescription(entry: any): string {
         return ''
     }
 
-    let result: string = ''
+    let result = ''
     if (entry.status) {
         result += getEntryStatus(entry.status)
     }
@@ -56,7 +56,7 @@ function getEntryStatus(status: string) {
     }
 }
 function textToMarkedString(text: string) {
-    text = text.replace(/[\\`*_{}[\]()#+\-.!]/g, '\\$&'); // escape markdown syntax tokens: http://daringfireball.net/projects/markdown/syntax#backslash
+    text = text.replace(/[\\`*_{}[\]()#+\-.!]/g, '\\$&') // escape markdown syntax tokens: http://daringfireball.net/projects/markdown/syntax#backslash
     return text.replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
 function getBrowserLabel(browsers: string[] = []): string | null {
