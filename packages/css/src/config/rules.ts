@@ -11,6 +11,52 @@ import type { MasterCSS } from '../css'
 // TODO 於 index.node.ts 引入且防止被樹搖，目前被視為無副作用並被清除
 import { cssEscape } from '../utils/css-escape'
 
+function spacingGet(declaration) {
+    if (this.prefix.includes('-'))
+        return {
+            [this.prefix.slice(0, -1)]: declaration
+        }
+
+    const charAt1 = this.prefix[0]
+    const SPACING = charAt1 === 'm' ? 'margin' : 'padding'
+    const SPACING_LEFT = SPACING + '-left'
+    const SPACING_RIGHT = SPACING + '-right'
+    const SPACING_TOP = SPACING + '-top'
+    const SPACING_BOTTOM = SPACING + '-bottom'
+    switch (this.prefix[1]) {
+        case 'x':
+            return {
+                [SPACING_LEFT]: declaration,
+                [SPACING_RIGHT]: declaration
+            }
+        case 'y':
+            return {
+                [SPACING_TOP]: declaration,
+                [SPACING_BOTTOM]: declaration
+            }
+        case 'l':
+            return {
+                [SPACING_LEFT]: declaration
+            }
+        case 'r':
+            return {
+                [SPACING_RIGHT]: declaration
+            }
+        case 't':
+            return {
+                [SPACING_TOP]: declaration
+            }
+        case 'b':
+            return {
+                [SPACING_BOTTOM]: declaration
+            }
+        default:
+            return {
+                [SPACING]: declaration
+            }
+    }
+}
+
 export const rules: Record<string, RuleConfig> = {
     group: {
         matches: '^(?:.+?[*_>~+])?\\{.+?\\}',
@@ -215,75 +261,20 @@ export const rules: Record<string, RuleConfig> = {
         colorful: true,
         unit: ''
     },
-    spacing: {
-        matches: '^[pm][xytblr]?:.',
-        prop: false,
-        get(declaration): { [key: string]: any } {
-            const charAt1 = this.prefix[0]
-            const SPACING = charAt1 === 'm' ? 'margin' : 'padding'
-            const SPACING_LEFT = SPACING + '-left'
-            const SPACING_RIGHT = SPACING + '-right'
-            const SPACING_TOP = SPACING + '-top'
-            const SPACING_BOTTOM = SPACING + '-bottom'
-            switch (this.prefix[1]) {
-                case 'x':
-                    return {
-                        [SPACING_LEFT]: declaration,
-                        [SPACING_RIGHT]: declaration
-                    }
-                case 'y':
-                    return {
-                        [SPACING_TOP]: declaration,
-                        [SPACING_BOTTOM]: declaration
-                    }
-                case 'l':
-                    return {
-                        [SPACING_LEFT]: declaration
-                    }
-                case 'r':
-                    return {
-                        [SPACING_RIGHT]: declaration
-                    }
-                case 't':
-                    return {
-                        [SPACING_TOP]: declaration
-                    }
-                case 'b':
-                    return {
-                        [SPACING_BOTTOM]: declaration
-                    }
-                default:
-                    return {
-                        [SPACING]: declaration
-                    }
-            }
-        },
-        get order(): number {
-            return (this.prefix === 'p:' || this.prefix === 'm:') ? -1 : 0
-        }
-    },
     margin: {
-        matches: '^margin(?:-(?:left|right|top|bottom))?:.',
+        matches: '^m(?:argin(?:-(?:left|right|top|bottom))?|[xytblr]?):.',
         prop: false,
-        get(declaration): { [key: string]: any } {
-            return {
-                [this.prefix.slice(0, -1)]: declaration
-            }
-        },
+        get: spacingGet,
         get order(): number {
-            return (this.prefix === 'margin' + ':') ? -1 : 0
+            return (this.prefix === 'margin:' || this.prefix === 'm:') ? -1 : 0
         }
     },
     padding: {
-        matches: '^padding(?:-(?:left|right|top|bottom))?:.',
+        matches: '^p(?:adding(?:-(?:left|right|top|bottom))?|[xytblr]?):.',
         prop: false,
-        get(declaration): { [key: string]: any } {
-            return {
-                [this.prefix.slice(0, -1)]: declaration
-            }
-        },
+        get: spacingGet,
         get order(): number {
-            return (this.prefix === 'padding' + ':') ? -1 : 0
+            return (this.prefix === 'padding:' || this.prefix === 'p:') ? -1 : 0
         }
     },
     flexBasis: {
