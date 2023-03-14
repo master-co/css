@@ -1,4 +1,4 @@
-import { breakpoints } from '../config'
+import { breakpoints } from '../config/breakpoints'
 
 const SIZING_VALUES = {
     full: '100%',
