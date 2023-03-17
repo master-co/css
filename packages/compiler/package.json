@@ -1,7 +1,7 @@
 {
     "name": "@master/css-compiler",
     "scripts": {
-        "build": "aron pack --platform node",
+        "build": "aron pack --platform node --shakable",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
         "test": "jest"
@@ -32,19 +32,19 @@
     ],
     "sideEffects": false,
     "main": "./dist/cjs/index.js",
-    "jsnext:main": "./dist/esm/index.js",
-    "esnext": "./dist/esm/index.js",
-    "module": "./dist/esm/index.js",
+    "jsnext:main": "./dist/esm/index.mjs",
+    "esnext": "./dist/esm/index.mjs",
+    "module": "./dist/esm/index.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
             "node": {
                 "require": "./dist/cjs/index.js",
-                "import": "./dist/esm/index.js",
+                "import": "./dist/esm/index.mjs",
                 "types": "./dist/index.d.ts"
             },
             "require": "./dist/cjs/index.default.js",
-            "import": "./dist/esm/index.default.js",
+            "import": "./dist/esm/index.default.mjs",
             "types": "./dist/index.default.d.ts"
         }
     },

@@ -31,7 +31,7 @@
         "vite-plugin"
     ],
     "sideEffects": false,
-    "main": "./dist/cjs/index.js",
+    "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "files": [
         "dist"
