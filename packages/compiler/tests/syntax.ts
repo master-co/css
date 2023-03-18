@@ -62,7 +62,7 @@ test('syntax', async () => {
         '.sidebar:hover_{opacity:.75}',
         '.navitem:hover_{bg:black/.75}'
     ]
-    for (const eachGeneratedClass of Object.keys(compiler.css.ruleOfClass)) {
+    for (const eachGeneratedClass of Object.keys(compiler.css.ruleBy)) {
         expect(testClasses)
             .toContain(eachGeneratedClass)
     }

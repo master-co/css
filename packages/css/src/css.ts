@@ -16,8 +16,8 @@ export interface MasterCSS {
     colorThemesMap: Record<string, Record<string, string>>
     colorNames: string[]
     themeNames: string[]
-    relationThemesMap: Record<string, Record<string, string[]>>
-    relations: Record<string, string[]>
+    themeAffectedClassesBy: Record<string, Record<string, string[]>>
+    classesBy: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>
     values: Record<string, Record<string, string | number>>
     globalValues: Record<string, string | number>
@@ -38,9 +38,8 @@ export class MasterCSS {
     }
 
     readonly rules: Rule[] = []
-    readonly ruleOfClass: Record<string, Rule> = {}
-    readonly countOfClass = {}
-    readonly ready: boolean = false
+    readonly ruleBy: Record<string, Rule> = {}
+    readonly countBy = {}
 
     _observer = hasWindow ? new MutationObserver((mutationRecords) => {
         // console.time('css engine');
@@ -81,7 +80,7 @@ export class MasterCSS {
         const removeClassName = (className: string) => {
             if (className in correctionOfClassName) {
                 correctionOfClassName[className]--
-            } else if (className in this.countOfClass) {
+            } else if (className in this.countBy) {
                 correctionOfClassName[className] = -1
             }
         }
@@ -176,17 +175,17 @@ export class MasterCSS {
 
         for (const className in correctionOfClassName) {
             const correction = correctionOfClassName[className]
-            const count = (this.countOfClass[className] || 0) + correction
+            const count = (this.countBy[className] || 0) + correction
             if (count === 0) {
                 // remove
-                delete this.countOfClass[className]
+                delete this.countBy[className]
                 /**
                  * class name 從 DOM tree 中被移除，
                  * 匹配並刪除對應的 rule
                  */
                 this.delete(className)
             } else {
-                if (!(className in this.countOfClass)) {
+                if (!(className in this.countBy)) {
                     // add
                     /**
                      * 新 class name 被 connected 至 DOM tree，
@@ -195,7 +194,7 @@ export class MasterCSS {
                     this.insert(className)
                 }
 
-                this.countOfClass[className] = count
+                this.countBy[className] = count
             }
         }
 
@@ -217,15 +216,14 @@ export class MasterCSS {
         }
 
         MasterCSS.instances.push(this)
-        this.ready = true
     }
 
     cache() {
         this.semantics = []
         this.classes = {}
         this.colorThemesMap = {}
-        this.relationThemesMap = {}
-        this.relations = {}
+        this.themeAffectedClassesBy = {}
+        this.classesBy = {}
         this.colorNames = []
         this.themeNames = ['']
         this.selectors = {}
@@ -336,14 +334,14 @@ export class MasterCSS {
                         .split(' ')
                 for (const eachClassName of classNames) {
                     const handle = (className: string) => {
-                        if (className in this.relationThemesMap) {
-                            if (theme in this.relationThemesMap[className]) {
-                                this.relationThemesMap[className][theme].push(semanticName)
+                        if (className in this.themeAffectedClassesBy) {
+                            if (theme in this.themeAffectedClassesBy[className]) {
+                                this.themeAffectedClassesBy[className][theme].push(semanticName)
                             } else {
-                                this.relationThemesMap[className][theme] = [semanticName]
+                                this.themeAffectedClassesBy[className][theme] = [semanticName]
                             }
                         } else {
-                            this.relationThemesMap[className] = { [theme]: [semanticName] }
+                            this.themeAffectedClassesBy[className] = { [theme]: [semanticName] }
                         }
 
                         if (!currentClass.includes(className)) {
@@ -372,9 +370,9 @@ export class MasterCSS {
             handleSemanticName(eachSemanticName)
         }
 
-        for (const className in this.relationThemesMap) {
-            const currentRelation = this.relations[className] = []
-            for (const semanticNames of Object.values(this.relationThemesMap[className])) {
+        for (const className in this.themeAffectedClassesBy) {
+            const currentRelation = this.classesBy[className] = []
+            for (const semanticNames of Object.values(this.themeAffectedClassesBy[className])) {
                 for (const eachSemanticName of semanticNames) {
                     if (!currentRelation.includes(eachSemanticName)) {
                         currentRelation.push(eachSemanticName)
@@ -459,22 +457,26 @@ export class MasterCSS {
         if (rules) {
             for (const id in rules) {
                 const eachRuleConfig = rules[id]
-                const { matches, prop, values } = eachRuleConfig
+                const { native, values, colored } = eachRuleConfig
+                let match = eachRuleConfig.match
                 eachRuleConfig.id = id
-                eachRuleConfig.prop = prop === false ? '' : id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
+                eachRuleConfig.native = native === true ? id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase() : undefined
                 if (values) {
                     this.values[id] = getFlatData(values, false)
                 }
-                if (matches) {
-                    const valueKeys = Object.keys(this.values[id] ?? {})
-                    const index = matches.indexOf('$values')
-                    this.matches[id] = new RegExp(
-                        index === -1
-                            ? matches
-                            : valueKeys.length
-                                ? matches.slice(0, index) + valueKeys.join('|') + matches.slice(index + 7)
-                                : matches.slice(0, index - (matches[index - 1] === '|' ? 1 : 0)) + matches.slice(index + 7 + (matches[index + 7] === '|' ? 1 : 0))
-                    )
+                if (match) {
+                    const valueNames = Object.keys(this.values[id] ?? {})
+                    if (match.includes('$values')) {
+                        match = valueNames.length
+                            ? match.replace(/\$values/, valueNames.join('|'))
+                            : match.replace(/(?:\|)?\$values/, '')
+                    }
+                    if (colored && match.includes('$colors')) {
+                        match = this.colorNames.length
+                            ? match.replace(/\$colors/, '(?:' + this.colorNames.join('|') + ')' + '(?![0-9A-Za-z])')
+                            : match.replace(/(?:\|)?\$colors/, '')
+                    }
+                    this.matches[id] = new RegExp(match)
                 }
             }
         }
@@ -540,7 +542,7 @@ export class MasterCSS {
                                         className += char
                                     }
 
-                                    if (!(className in this.ruleOfClass) && !(className in this.classes)) {
+                                    if (!(className in this.ruleBy) && !(className in this.classes)) {
                                         const currentRule = this.create(className)[0]
                                         if (currentRule)
                                             return currentRule
@@ -558,7 +560,7 @@ export class MasterCSS {
                     const rule = getRule(this.style.sheet.cssRules[index])
                     if (rule) {
                         this.rules.push(rule)
-                        this.ruleOfClass[rule.className] = rule
+                        this.ruleBy[rule.className] = rule
 
                         for (let i = 0; i < rule.natives.length; i++) {
                             rule.natives[i].cssRule = this.style.sheet.cssRules[index + i]
@@ -582,10 +584,10 @@ export class MasterCSS {
 
             const handleClassList = (classList: DOMTokenList) => {
                 classList.forEach((className) => {
-                    if (className in this.countOfClass) {
-                        this.countOfClass[className]++
+                    if (className in this.countBy) {
+                        this.countBy[className]++
                     } else {
-                        this.countOfClass[className] = 1
+                        this.countBy[className] = 1
 
                         this.insert(className)
                     }
@@ -615,9 +617,9 @@ export class MasterCSS {
     disconnect(): void {
         this._observer.disconnect()
         // @ts-ignore
-        this.ruleOfClass = {}
+        this.ruleBy = {}
         // @ts-ignore
-        this.countOfClass = {}
+        this.countBy = {}
         this.rules.length = 0
         const sheet = this.style.sheet
         if (sheet) {
@@ -636,40 +638,25 @@ export class MasterCSS {
     match(className: string): RuleMeta {
         for (const id in this.config.rules) {
             const eachRuleConfig = this.config.rules[id]
-            const matches = this.matches[id]
-            const { colorStarts, symbol, prop } = eachRuleConfig
-            const { colorNames, colorThemesMap } = this
+            const match = this.matches[id]
+            const { symbol, native } = eachRuleConfig
             /**
              * STEP 1. matches
              */
-            if (matches && matches.test(className)) {
-                return { origin: 'matches', config: eachRuleConfig }
+            if (match && match.test(className)) {
+                return { origin: 'match', config: eachRuleConfig }
             }
             /**
-             * STEP 2. color starts
-             */
-            // TODO: 動態 new Regex 效能問題待優化
-            if (colorStarts) {
-                if (className.match('^' + colorStarts + '(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|current|inherit))'))
-                    return { origin: 'matches', config: eachRuleConfig }
-
-                if (colorNames.length && className.indexOf('|') === -1) {
-                    const result = className.match('^' + colorStarts + '((?:' + colorNames.join('|') + ')[0-9a-zA-Z-]*)')
-                    if (result && result[1] in colorThemesMap)
-                        return { origin: 'matches', config: eachRuleConfig }
-                }
-            }
-            /**
-             * STEP 3. symbol
+             * STEP 2. symbol
              */
             if (symbol && className.startsWith(symbol)) {
                 return { origin: 'symbol', config: eachRuleConfig }
             }
             /**
-             * STEP 4. key full className
+             * STEP 3. key full className
              */
-            if (prop && className.startsWith(prop + ':')) {
-                return { origin: 'matches', config: eachRuleConfig }
+            if (native && className.startsWith(native + ':')) {
+                return { origin: 'match', config: eachRuleConfig }
             }
         }
 
@@ -688,7 +675,7 @@ export class MasterCSS {
      */
     create(className: string): Rule[] {
         const create = (eachClassName: string) => {
-            if (eachClassName in this.ruleOfClass) return this.ruleOfClass[eachClassName]
+            if (eachClassName in this.ruleBy) return this.ruleBy[eachClassName]
             const meta = this.match(eachClassName)
             if (meta) {
                 return new Rule(
@@ -728,13 +715,13 @@ export class MasterCSS {
         this.style = style
         this.rules.length = 0
         // @ts-ignore
-        this.ruleOfClass = {}
+        this.ruleBy = {}
 
         /**
          * 拿當前所有的 classNames 按照最新的 colors, breakpoints, config.rules 匹配並生成新的 style
          * 所以 refresh 過後 rules 可能會變多也可能會變少
          */
-        for (const name in this.countOfClass) {
+        for (const name in this.countBy) {
             this.insert(name)
         }
     }
@@ -755,10 +742,10 @@ export class MasterCSS {
          */
         const sheet = this.style.sheet
         const deleteRule = (name: string) => {
-            const rule = this.ruleOfClass[name]
+            const rule = this.ruleBy[name]
             if (
                 !rule
-                || name in this.relations && this.relations[name].some(eachClassName => eachClassName in this.countOfClass)
+                || name in this.classesBy && this.classesBy[name].some(eachClassName => eachClassName in this.countBy)
             )
                 return
 
@@ -777,17 +764,19 @@ export class MasterCSS {
                 }
             }
 
-            delete this.ruleOfClass[name]
+            delete this.ruleBy[name]
+
+            if (rule.config.delete) { rule.config.delete.call(this, name) }
         }
 
         if (className in this.classes) {
             for (const eachClassName of this.classes[className]) {
-                if (!(eachClassName in this.countOfClass)) {
+                if (!(eachClassName in this.countBy)) {
                     deleteRule(eachClassName)
                 }
             }
 
-            delete this.ruleOfClass[className]
+            delete this.ruleBy[className]
         } else {
             deleteRule(className)
         }
@@ -821,7 +810,7 @@ export class MasterCSS {
      */
     insertRules(rules: Rule[]) {
         for (const rule of rules) {
-            if (this.ruleOfClass[rule.className])
+            if (this.ruleBy[rule.className])
                 continue
             let index
             /**
@@ -1154,7 +1143,7 @@ export class MasterCSS {
             }
 
             this.rules.splice(index, 0, rule)
-            this.ruleOfClass[className] = rule
+            this.ruleBy[className] = rule
 
             // 只在瀏覽器端運行
             if (this.style) {

@@ -1,75 +1,251 @@
-import type { Config, Values } from './config'
+import type { Values } from './config'
 import type { MasterCSS } from './css'
-import { getCssPropertyText } from './utils/get-css-property-text'
-import { analyzeValueToken } from './utils/analyze-value-token'
-import { parseRuleValue } from './utils/parse-rule-value'
 import { SORTED_SELECTORS } from './constants/sorted-selectors'
+import { START_SYMBOL } from './constants/start-symbol'
 import { cssEscape } from './utils/css-escape'
+import extend from 'to-extend'
+
 
 // TODO 於 index.node.ts 引入且防止被樹搖，目前被視為無副作用並被清除
 // import './polyfills/css-escape'
+
+const defaultConfig: RuleConfig = {
+    unit: '',
+    order: 0,
+    separators: [',']
+}
 
 export class Rule {
 
     readonly at: Record<string, string> = {}
     readonly priority: number = -1
     readonly natives: {
-        unit: string
-        value: string | Record<string, string | number>
         text: string
         theme: string
         cssRule?: CSSRule
     }[] = []
 
+    config: RuleConfig
+
     constructor(
         public readonly className: string,
-        public readonly meta: RuleMeta,
+        public readonly meta: RuleMeta = {},
         public css: MasterCSS
     ) {
-        const {
-            id,
-            unit = 'rem',
-            order = 0,
-            colorful,
-            prop,
-            analyzeToken,
-            getThemeProps,
-            parseValue,
-            get
-        } = meta.config || {}
-        const { rootSize, scope, important } = css.config
-        const { themeNames, colorNames, colorThemesMap, selectors, globalValues, breakpoints, mediaQueries } = css
-        const values = css.values[id]
-        const relationThemesMap = css.relationThemesMap[className]
-        const token = className
+        this.config = extend(defaultConfig, meta.config)
+        const { unit, order, colored, native, analyze, transform, declare, create } = this.config
+        const { scope, important, functions } = css.config
+        const { themeNames, colorNames, colorThemesMap, selectors, breakpoints, mediaQueries, themeAffectedClassesBy, globalValues } = css
+        const themeAffectedClasses = themeAffectedClassesBy[className]
         this.order = order
+
+        if (create) create.call(this, className)
+
         // 1. value / selectorToken
-        let value: string | Record<string, string | number>, prefixToken: string, suffixToken: string, valueTokens: (string | { value: string })[]
+        let declarations: Declarations
+        let hasMultipleThemes: boolean
+        let prefixToken: string
+        let suffixToken: string
+        let valueSplits: (string | { value: string, unit?: string })[]
         if (meta.origin === 'semantics') {
             const [semanticName, semanticValue] = meta.value
-            suffixToken = token.slice(semanticName.length)
-            value = semanticValue
+            suffixToken = className.slice(semanticName.length)
+            declarations = semanticValue as Declarations
         } else {
-            if (analyzeToken) {
-                [prefixToken, valueTokens, suffixToken] = analyzeToken.call(this, token, values, globalValues)
+            let valueToken: string
+            if (analyze) {
+                [valueToken, prefixToken] = analyze.call(this, className)
             } else {
-                let valueToken: string
-                if (meta.origin === 'matches') {
-                    const indexOfColon = token.indexOf(':')
-                    this.prefix = token.slice(0, indexOfColon + 1)
+                if (meta.origin === 'match') {
+                    const indexOfColon = className.indexOf(':')
+                    this.prefix = className.slice(0, indexOfColon + 1)
                     if (this.prefix.includes('(')) {
                         this.prefix = undefined
-                        valueToken = token
+                        valueToken = className
                     } else {
-                        valueToken = token.slice(indexOfColon + 1)
+                        valueToken = className.slice(indexOfColon + 1)
                     }
                 } else if (meta.origin === 'symbol') {
-                    this.symbol = token[0]
-                    valueToken = token.slice(1)
+                    this.symbol = className[0]
+                    valueToken = className.slice(1)
+                }
+            }
+            valueSplits = []
+
+            // eslint-disable-next-line @typescript-eslint/no-this-alias
+            const instance = this
+            const values = this.values
+            const separators = [',']
+            if (this.config.separators.length) {
+                separators.push(...this.config.separators)
+            }
+            let currentValueToken = ''
+            let i = 0;
+
+            (function analyze(
+                valueToken: string,
+                unit: string,
+                endSymbol?: string,
+                parentFunctionName = undefined,
+                usedValues: string[] = [],
+                usedGlobalValues: string[] = [],
+                bypassAnalyzeUnitValue?: boolean
+            ) {
+                const root = parentFunctionName === undefined
+                let lastPushIndex: number
+
+                const checkIsString = (value: string) => value === '\'' || value === '"'
+                const reloadLastPushIndex = () => lastPushIndex = currentValueToken.length
+                const transformAndPushValueToken = () => {
+                    if (currentValueToken) {
+                        const originalCurrentValueToken = currentValueToken
+                        const value = root
+                            ? originalCurrentValueToken
+                            : currentValueToken.slice(lastPushIndex)
+                        currentValueToken = ''
+                        functionName = ''
+
+                        if (values && value in values && !usedValues.includes(value)) {
+                            const originalIndex = i
+                            i = 0
+                            analyze(values[value].toString(), unit, undefined, parentFunctionName, [...usedValues, value], usedGlobalValues, bypassAnalyzeUnitValue)
+                            i = originalIndex
+
+                            if (!root) {
+                                currentValueToken = currentValueToken.slice(0, lastPushIndex) + currentValueToken
+                            }
+                        } else if (globalValues && value in globalValues && !usedGlobalValues.includes(value)) {
+                            const originalIndex = i
+                            i = 0
+                            analyze(globalValues[value].toString(), unit, undefined, parentFunctionName, usedValues, [...usedGlobalValues, value], bypassAnalyzeUnitValue)
+                            i = originalIndex
+
+                            if (!root) {
+                                currentValueToken = currentValueToken.slice(0, lastPushIndex) + currentValueToken
+                            }
+                        } else if (root) {
+                            const uv = !bypassAnalyzeUnitValue && instance.analyzeUnitValue(value, unit)
+                            valueSplits.push({ value: uv?.value ?? value, unit: uv?.unit })
+                        } else {
+                            const uv = !bypassAnalyzeUnitValue && instance.analyzeUnitValue(value, unit)
+                            currentValueToken = uv
+                                ? originalCurrentValueToken.slice(0, lastPushIndex) + uv.value + uv.unit
+                                : originalCurrentValueToken
+                        }
+
+                        reloadLastPushIndex()
+                    }
                 }
 
-                [valueTokens, suffixToken] = analyzeValueToken(valueToken, values, globalValues)
-            }
+                const isString = checkIsString(endSymbol)
+                reloadLastPushIndex()
+                let functionName = ''
+
+                for (; i < valueToken.length; i++) {
+                    const val = valueToken[i]
+                    if (val === endSymbol) {
+                        if (isString) {
+                            currentValueToken += val
+
+                            let count = 0
+                            for (let j = currentValueToken.length - 2; ; j--) {
+                                if (currentValueToken[j] !== '\\') {
+                                    break
+                                }
+                                count++
+                            }
+                            if (count % 2) {
+                                continue
+                            }
+                        } else {
+                            transformAndPushValueToken()
+
+                            currentValueToken += val
+                        }
+
+                        return
+                    } else if (!isString && val in START_SYMBOL) {
+                        const functionConfig = val === '(' && functionName && functions?.[functionName]
+                        if (functionConfig?.native) {
+                            currentValueToken = currentValueToken.slice(0, currentValueToken.length - functionName.length) + functionConfig.native
+                            functionName = functionConfig.native
+                        }
+
+                        currentValueToken += val
+                        i++
+
+                        const nextEndSymbol = START_SYMBOL[val]
+                        analyze(valueToken,
+                            functionConfig?.unit ?? unit,
+                            nextEndSymbol,
+                            functionName || parentFunctionName || '',
+                            usedValues,
+                            usedGlobalValues,
+                            bypassAnalyzeUnitValue || !!functionConfig?.transform)
+
+                        if (functionConfig?.transform) {
+                            currentValueToken = currentValueToken.slice(0, lastPushIndex + functionName.length + 1)
+                                + functionConfig.transform.call(instance, currentValueToken.slice(lastPushIndex + functionName.length + 1, -1))
+                                + currentValueToken.slice(-1)
+                        }
+
+                        if (root) {
+                            if (checkIsString(nextEndSymbol)) {
+                                valueSplits.push(currentValueToken)
+                                currentValueToken = ''
+                            } else {
+                                transformAndPushValueToken()
+                            }
+                        }
+
+                        functionName = ''
+                    } else if ((val === '|' || val === ' ') && endSymbol !== '}' && (!isString || parentFunctionName === 'path')) {
+                        transformAndPushValueToken()
+
+                        if (!root) {
+                            currentValueToken += ' '
+                            lastPushIndex++
+                        }
+                    } else {
+                        if (!isString) {
+                            if (val === '.') {
+                                if (isNaN(+valueToken[i + 1])) {
+                                    break
+                                } else if (valueToken[i - 1] === '-') {
+                                    currentValueToken += '0'
+                                }
+                            } else if (separators.includes(val)) {
+                                transformAndPushValueToken()
+
+                                if (root) {
+                                    valueSplits.push(val)
+                                } else {
+                                    currentValueToken += val
+                                    lastPushIndex++
+                                }
+                                continue
+                            } else if (
+                                root
+                                && (val === '#'
+                                    && (currentValueToken || valueSplits.length && (valueToken[i - 1] !== '|' && valueSplits[i - 1] !== ' '))
+                                    || ['!', '*', '>', '+', '~', ':', '[', '@', '_'].includes(val))
+                            ) {
+                                break
+                            }
+
+                            functionName += val
+                        }
+
+                        currentValueToken += val
+                    }
+                }
+
+                if (parentFunctionName === undefined) {
+                    transformAndPushValueToken()
+                }
+            })(valueToken, unit)
+
+            suffixToken = valueToken.slice(i)
         }
 
         // 2. !important
@@ -79,7 +255,7 @@ export class Rule {
         }
 
         // 3. prefix selector
-        const analyzeSelectorToken = (selectorText: string) => {
+        const transformSelectorToken = (selectorText: string) => {
             const transformedSelectorText =
                 selectorText.split(/(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/)
                     .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/_/g, ' '))
@@ -116,7 +292,7 @@ export class Rule {
         }
 
         this.prefixSelectors = prefixToken
-            ? analyzeSelectorToken(prefixToken)
+            ? transformSelectorToken(prefixToken)
             : ['']
 
         // 4. suffix selector
@@ -125,11 +301,11 @@ export class Rule {
         if (suffixSelector) {
             this.vendorSuffixSelectors = {}
 
-            const transform = (selectorText: string, selectorValues: [RegExp, string[]][], selectors: string[], matched: boolean) => {
+            const transformSuffixSelector = (selectorText: string, selectorValues: [RegExp, string[]][], selectors: string[], matched: boolean) => {
                 for (const [regexp, newSelectorTexts] of selectorValues) {
                     if (regexp.test(selectorText)) {
                         for (const eachNewSelectorText of newSelectorTexts) {
-                            transform(selectorText.replace(regexp, eachNewSelectorText), selectorValues, selectors, true)
+                            transformSuffixSelector(selectorText.replace(regexp, eachNewSelectorText), selectorValues, selectors, true)
                         }
                         return
                     }
@@ -142,7 +318,7 @@ export class Rule {
 
             const suffixSelectors: string[] = []
             if ('' in selectors) {
-                transform(suffixSelector, selectors[''], suffixSelectors, true)
+                transformSuffixSelector(suffixSelector, selectors[''], suffixSelectors, true)
             } else {
                 suffixSelectors.push(suffixSelector)
             }
@@ -154,7 +330,7 @@ export class Rule {
 
                 const newVendorSelectors = []
                 for (const eachSuffixSelector of suffixSelectors) {
-                    transform(eachSuffixSelector, selectorValues, newVendorSelectors, false)
+                    transformSuffixSelector(eachSuffixSelector, selectorValues, newVendorSelectors, false)
                 }
 
                 if (newVendorSelectors.length) {
@@ -164,7 +340,7 @@ export class Rule {
 
             const insertVendorSuffixSelectors = (vendor: string, selectorTexts: string[]) => {
                 const groupedSelectorTexts = selectorTexts.reduce((arr, eachSuffixSelector) => {
-                    arr.push(...analyzeSelectorToken(eachSuffixSelector))
+                    arr.push(...transformSelectorToken(eachSuffixSelector))
                     return arr
                 }, [])
 
@@ -290,9 +466,9 @@ export class Rule {
                                         case 'max-width':
                                         case 'min-width':
                                             if (breakpoint) {
-                                                Object.assign(feature, parseRuleValue(breakpoint, 'px'))
+                                                Object.assign(feature, this.analyzeUnitValue(breakpoint.toString(), 'px'))
                                             } else {
-                                                Object.assign(feature, parseRuleValue(conditionUnitValueToken, 'px'))
+                                                Object.assign(feature, this.analyzeUnitValue(conditionUnitValueToken, 'px'))
                                             }
                                             if (feature.unit === 'px') {
                                                 feature.value += correction
@@ -326,8 +502,7 @@ export class Rule {
 
         // 7. value
         const insertNewNative = (theme: string, bypassWhenUnmatchColor: boolean) => {
-            let newValue: any
-            let newUnit: string
+            let newValue: string
 
             const generateCssText = (
                 propertiesText: string,
@@ -357,12 +532,12 @@ export class Rule {
                         .join(',')
 
                 let cssText = getCssText(theme, className)
-                    + (relationThemesMap
+                    + (themeAffectedClasses
                         ? Object
-                            .entries(relationThemesMap)
-                            .filter(([relationTheme]) => this.theme || !colorful || !theme || !relationTheme || relationTheme === theme)
+                            .entries(themeAffectedClasses)
+                            .filter(([relationTheme]) => this.theme || !colored || !theme || !relationTheme || relationTheme === theme)
                             .map(([relationTheme, classNames]) =>
-                                classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? ((colorful || getThemeProps) ? theme || relationTheme : relationTheme), className), '')
+                                classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? ((colored || hasMultipleThemes) ? theme || relationTheme : relationTheme), className), '')
                             )
                             .join('')
                         : '')
@@ -376,120 +551,151 @@ export class Rule {
                 return cssText
             }
 
-            const newValueTokens: string[] = []
-            if (valueTokens) {
-                let uv, anyColorMatched: boolean = undefined
-                for (const eachValueToken of valueTokens) {
+            const newValueSplits: string[] = []
+
+            if (valueSplits) {
+                const themes = this.theme ? [this.theme, ''] : [theme]
+                let anyColorMatched: boolean = undefined
+                let colorMatched: boolean = undefined
+                for (const eachValueToken of valueSplits) {
                     if (typeof eachValueToken === 'string') {
-                        newValueTokens.push(eachValueToken)
+                        newValueSplits.push(eachValueToken)
                     } else {
-                        uv = parseRuleValue(
-                            eachValueToken.value,
-                            unit,
-                            colorful && colorNames,
-                            colorful && colorThemesMap,
-                            rootSize,
-                            this.theme ? [this.theme, ''] : [theme]
-                        )
-                        if (uv.colorMatched !== undefined && anyColorMatched !== true) {
-                            anyColorMatched = uv.colorMatched
+                        let token = eachValueToken.value
+                        if (eachValueToken.unit) {
+                            token += eachValueToken.unit
+                        } else if (colored && colorThemesMap && colorNames) {
+                            let anyMatched = false
+                            let hasColorName = false
+
+                            token = token.replace(
+                                new RegExp(`(^|,| |\\()((?:${colorNames.join('|')})(?:-(?:[0-9A-Za-z-]+))?)(?:\\/(\\.?[0-9]+%?))?(?=(\\)|\\}|,| |$))`, 'gm'),
+                                (origin, prefix, colorName, opacityStr) => {
+                                    hasColorName = true
+
+                                    const themeColorMap = colorThemesMap[colorName]
+                                    if (themeColorMap) {
+                                        let color: string
+                                        for (const eachTheme of themes) {
+                                            if ((color = themeColorMap[eachTheme]))
+                                                break
+                                        }
+
+                                        if (color) {
+                                            anyMatched = true
+
+                                            let newValue = color
+                                            if (opacityStr) {
+                                                let opacity = opacityStr.endsWith('%')
+                                                    ? parseFloat(opacityStr) / 100.0
+                                                    : +opacityStr
+
+                                                opacity = isNaN(opacity)
+                                                    ? 1
+                                                    : Math.min(Math.max(opacity, 0), 1)
+
+                                                newValue += Math.round(opacity * 255).toString(16).toUpperCase().padStart(2, '0')
+                                            }
+
+                                            return prefix + newValue
+                                        }
+                                    }
+
+                                    return origin
+                                })
+
+                            if (hasColorName) {
+                                colorMatched = anyMatched
+                            }
                         }
 
-                        newValueTokens.push(uv.value + uv.unit)
+                        if (colorMatched !== undefined && !anyColorMatched) {
+                            anyColorMatched = colorMatched
+                        }
+
+                        newValueSplits.push(token)
                     }
                 }
 
                 if (bypassWhenUnmatchColor && (anyColorMatched === undefined ? theme : !anyColorMatched))
                     return
 
-                if (newValueTokens.length === 1) {
-                    if (uv) {
-                        newValue = uv.value
-                        newUnit = uv.unit
-                    } else {
-                        newValue = newValueTokens[0]
-                    }
-                } else {
-                    newValue = newValueTokens.reduce((previousVal, currentVal, i) => previousVal + currentVal + ((currentVal === ',' || valueTokens[i + 1] === ',' || i === valueTokens.length - 1) ? '' : ' '), '')
+                newValue = newValueSplits.reduce((previousVal, currentVal, i) => previousVal + currentVal + ((currentVal === ',' || valueSplits[i + 1] === ',' || i === valueSplits.length - 1) ? '' : ' '), '')
+
+                // 8. transform and convert
+                if (transform) {
+                    newValue = transform.call(this, newValue, this.css.config)
                 }
 
-                if (typeof newValue !== 'object') {
-                    // 8. parseValue
-                    if (parseValue) {
-                        newValue = parseValue.call(this, newValue, this.css.config)
-                    }
+                // 9. force transform value
+                if (colored && newValue === 'current') {
+                    newValue = 'currentColor'
+                }
 
-                    // 9. transform value
-                    if (colorful && newValue === 'current') {
-                        newValue = 'currentColor'
-                    }
+                if (declare) {
+                    let value: string
+                    let unit: string
 
-                    const declaration: Declaration = {
-                        unit: newUnit,
-                        value: newValue,
-                        important: this.important
-                    }
-                    if (getThemeProps) {
-                        const themeProps: Record<string, Record<string, string>> = getThemeProps.call(this, declaration, css)
-                        for (const theme in themeProps) {
-                            for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
-                                this.natives.push({
-                                    unit: newUnit,
-                                    value: newValue,
-                                    text: generateCssText(
-                                        Object
-                                            .entries(themeProps[theme])
-                                            .map(([propertyName, propertyValue]) => getCssPropertyText(propertyName, {
-                                                important: (this.important || important) && !propertyValue.endsWith('!important'),
-                                                unit: '',
-                                                value: propertyValue
-                                            }))
-                                            .join(';'),
-                                        theme,
-                                        suffixSelectors
-                                    ),
-                                    theme
-                                })
-                            }
+                    if (valueSplits.length === 1) {
+                        const firstValueSplit = valueSplits[0]
+                        if (typeof firstValueSplit === 'object') {
+                            value = firstValueSplit.value
+                            unit = firstValueSplit.unit
                         }
-                        return
-                    } else if (get) {
-                        newValue = get.call(this, declaration)
+                    }
+
+                    declarations = declare.call(this, unit ? value : newValue, unit || '')
+                } else {
+                    declarations = {
+                        [native as string]: newValue
                     }
                 }
-            } else {
-                newValue = value
             }
 
+            const propertiesTextByTheme: Record<string, string[]> = {}
+            for (const native in declarations) {
+                const push = (theme: string, propertyText: string) => {
+                    const newPropertyText = propertyText
+                        + (((this.important || important) && !propertyText.endsWith('!important')) ? '!important' : '')
+
+                    if (theme in propertiesTextByTheme) {
+                        propertiesTextByTheme[theme].push(newPropertyText)
+                    } else {
+                        propertiesTextByTheme[theme] = [newPropertyText]
+                    }
+                }
+
+                const prefix = native + ':'
+                const declation = declarations[native]
+                if (typeof declation === 'object') {
+                    hasMultipleThemes = true
+
+                    for (const theme in declation) {
+                        push(theme, prefix + declation[theme])
+                    }
+                } else {
+                    push(theme, prefix + declation.toString())
+                }
+            }
+
+            // 創建 Natives
             for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
-                this.natives.push({
-                    unit: newUnit,
-                    value: newValue,
-                    text: generateCssText(
-                        typeof newValue === 'object'
-                            ? Object
-                                .entries(newValue)
-                                .map(([propertyName, propertyValue]) => getCssPropertyText(propertyName, {
-                                    ...(typeof propertyValue === 'object'
-                                        ? propertyValue
-                                        : { unit: '', value: propertyValue }),
-                                    important: this.important || important
-                                }))
-                                .join(';')
-                            : getCssPropertyText(prop, { unit: newUnit, value: newValue, important: this.important || important }),
-                        theme,
-                        suffixSelectors
-                    ),
-                    theme
-                })
+                for (const theme in propertiesTextByTheme) {
+                    this.natives.push({
+                        text: generateCssText(
+                            propertiesTextByTheme[theme].join(';'),
+                            theme,
+                            suffixSelectors
+                        ),
+                        theme
+                    })
+                }
             }
         }
 
-        if (getThemeProps) {
-            insertNewNative(undefined, false)
-        } else if (this.theme) {
+        if (this.theme) {
             insertNewNative(this.theme, false)
-        } else if (colorful) {
+        } else if (colored) {
             for (const eachThemeName of themeNames) {
                 insertNewNative(eachThemeName, true)
             }
@@ -498,8 +704,50 @@ export class Rule {
         }
     }
 
+    get values(): Record<string, string | number> {
+        return this.css.values[this.config.id]
+    }
+
     get text(): string {
         return this.natives.map((eachNative) => eachNative.text).join('')
+    }
+
+    resolveValue(value, unit) {
+        return Number.isNaN(+value)
+            ? value
+            : ((value as any) / (unit === 'rem' || unit === 'em' ? this.css.config.rootSize : 1))
+            + unit
+    }
+
+    analyzeUnitValue(token: string, unit?: string): { value: string, unit: string } {
+        const defaultUnit = unit ?? this.config.unit
+        if (defaultUnit) {
+            let newUnit = ''
+
+            const matches = token.match(/^([+-.]?\d+(\.?\d+)?)(.*)?/)
+            // ['0.5deg', '0.5', 'deg', index: 0, input: '0.5deg', groups: undefined]
+            if (matches) {
+                if (token.includes('/')) {
+                    // w:1/2 -> width: 50%
+                    const [dividend, divisor] = token.split('/')
+                    return { value: (+dividend / +divisor) * 100 + '%', unit: newUnit }
+                } else {
+                    let value: any = +matches[1]
+                    newUnit = matches[3] || ''
+                    /**
+                     * 當無單位值且 defaultUnit === 'rem'，
+                     * 將 pxValue / 16 轉為 remValue
+                     */
+                    if (!newUnit) {
+                        if (defaultUnit === 'rem' || defaultUnit === 'em') {
+                            value = value / this.css.config.rootSize
+                        }
+                        newUnit = defaultUnit || ''
+                    }
+                    return { value, unit: newUnit }
+                }
+            }
+        }
     }
 }
 
@@ -542,32 +790,28 @@ export interface MediaQuery {
     type?: string;
 }
 
-export interface Declaration {
-    value: any,
-    unit: string,
-    important: boolean
-}
+export declare type PropValue = string | number
+export declare type Declarations = Record<string, PropValue | Record<string, PropValue>>
 
 export interface RuleMeta {
-    origin?: 'matches' | 'semantics' | 'symbol'
+    origin?: 'match' | 'semantics' | 'symbol'
     value?: [string, string | Record<string, string>]
     config?: RuleConfig
 }
 
 export interface RuleConfig {
     id?: string
-    matches?: string
-    colorStarts?: string
+    match?: string
+    separators?: string[]
     symbol?: string
-    colorful?: boolean
+    colored?: boolean
     unit?: any
-    prop?: string | false
+    native?: string | true
     order?: number,
     values?: Values,
-    analyzeToken?(token: string, values: Record<string, string | number>, globalValues: Record<string, string | number>): [string, Array<string | {
-        value: string
-    }>, string]
-    parseValue?(value: string, config: Config): string
-    get?(declaration: Declaration): Record<string, any>
-    getThemeProps?(declaration: Declaration, css: MasterCSS): Record<string, Record<string, string>>
+    analyze?(this: Rule, className: string): [valueToken: string, prefixToken?: string]
+    transform?(this: Rule, value: string): string
+    declare?(this: Rule, value: string, unit: string): Record<string, any>
+    delete?(this: Rule, className: string): void
+    create?(this: Rule, className: string): void
 }

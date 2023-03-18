@@ -14,7 +14,7 @@ export const defaultClassNameMatches = [
 
 interface MasterCssKey {
     key: string[];
-    colorful: boolean,
+    colored: boolean,
     values: Array<string | CompletionItem>;
 }
 
@@ -81,33 +81,33 @@ export const commonUnit: any = [
 export const masterCssKeyValues: MasterCssKey[] = [
     {
         key: ['color', 'fg', 'foreground'],
-        colorful: true,
+        colored: true,
         values: []
     },
     //APPEARANCE
     {
         key: ['font-color', 'font', 'f'],
-        colorful: true,
+        colored: true,
         values: []
     },
     {
         key: ['accent-color', 'accent'],
-        colorful: true,
+        colored: true,
         values: []
     },
     {
         key: ['appearance'],
-        colorful: false,
+        colored: false,
         values: ['none', 'auto', 'menulist-button', 'textfield', 'button', 'searchfield', 'textarea', 'push-button', 'slider-horizontal', 'checkbox', 'radio', 'square-button', 'menulist', 'listbox', 'meter', 'progress-bar']
     },
     {
         key: ['caret-color', 'caret'],
-        colorful: true,
+        colored: true,
         values: ['transparent']
     },
     {
         key: ['cursor'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'alias', 'all-scroll', 'cell', 'col-resize', 'context-menu', 'copy', 'crosshair', 'default', 'e-resize', 'ew-resize', 'grab', 'grabbing', 'help', 'move', 'n-resize', 'ne-resize', 'nesw-resize', 'no-drop', 'none', 'not-allowed', 'ns-resize', 'nw-resize', 'nwse-resize', 'pointer', 'progress', 'row-resize', 's-resize', 'se-resize', 'sw-resize', 'text', 'vertical-text', 'w-resize', 'wait', 'zoom-in', 'zoom-out']
     },
 
@@ -115,156 +115,156 @@ export const masterCssKeyValues: MasterCssKey[] = [
     //LAYOUT
     {
         key: ['box-decoration-break', 'box'],
-        colorful: false,
+        colored: false,
         values: ['slice', 'clone']
     },
     {
         key: ['break-after', 'break-before'],
-        colorful: false,
+        colored: false,
         values: ['avoid-column', 'column', 'left', 'page', 'recto', 'right', 'recto', 'verso', 'auto', 'avoid', 'avoid-column', 'avoid-page', 'revert']
     },
     {
         key: ['break-inside'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'avoid', 'avoid-column', 'avoid-page', 'revert']
     },
     {
         key: ['clear'],
-        colorful: false,
+        colored: false,
         values: ['both', 'left', 'none', 'right']
     },
     {
         key: ['columns', 'cols'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['column-span', 'col-span'],
-        colorful: false,
+        colored: false,
         values: ['all', 'none']
     },
     {
         key: ['direction'],
-        colorful: false,
+        colored: false,
         values: ['ltr', 'rtl']
     },
     {
         key: ['display', 'd'],
-        colorful: false,
+        colored: false,
         values: ['hidden', 'hide', 'flex', 'grid', 'inline', 'none', 'block', 'table', 'contents', 'inline-block', 'inline-flex', 'inline-grid', 'inline-table', 'table-cell', 'table-caption', 'flow-root', 'list-item', 'table-row', 'table-column', 'table-row-group', 'table-column-group', 'table-header-group', 'table-footer-group']
     },
     {
         key: ['float'],
-        colorful: false,
+        colored: false,
         values: ['left', 'none', 'right']
     },
     {
         key: ['inset'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['isolation'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'isolate']
     },
     {
         key: ['overflow', 'overflow-x', 'overflow-y'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'hidden', 'overlay', 'scroll', 'visible', 'clip']
     },
     {
         key: ['position'],
-        colorful: false,
+        colored: false,
         values: ['absolute', 'relative', 'static', 'fixed', 'sticky']
     },
     {
         key: ['z-index', 'z'],
-        colorful: false,
+        colored: false,
         values: []
     },
     //FLEX
     {
         key: ['flex'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['flex-basis'],
-        colorful: false,
+        colored: false,
         values: ['100%', 'fit-content', 'max-content', 'min-content']
     },
     {
         key: ['flex-direction', 'flex'],
-        colorful: false,
+        colored: false,
         values: ['column', 'row', 'column-reverse', 'row-reverse']
     },
     {
         key: ['flex-grow', 'flex-shrink'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['flex-wrap', 'flex'],
-        colorful: false,
+        colored: false,
         values: ['wrap', 'wrap-reverse', 'nowrap']
     },
     //GRID
     {
         key: ['grid'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['grid-auto-columns', 'grid-auto-cols'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'min-content', 'max-content',
             { label: 'minmax(,)', kind: 3 }]
     },
     {
         key: ['grid-auto-flow'],
-        colorful: false,
+        colored: false,
         values: ['row', 'column', 'dense', 'row|dense', 'column|dense']
     },
     {
         key: ['grid-auto-rows'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'min-content', 'max-content',
             { label: 'minmax(,)', kind: 3 }]
     },
     {
         key: ['grid-column', 'grid-col', 'grid-column-span', 'grid-col-span', 'grid-column-start', 'grid-col-start', 'grid-column-end', 'grid-col-end'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['grid-columns', 'grid-cols'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['grid-row', 'grid-row-span', 'grid-row-start', 'grid-row-end'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['grid-rows'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['grid-template'],
-        colorful: false,
+        colored: false,
         values: ['none']
     },
     {
         key: ['grid-template-areas', 'grid-area'],
-        colorful: false,
+        colored: false,
         values: ['none']
     },
     {
         key: ['grid-template-columns', 'grid-template-cols'],
-        colorful: false,
+        colored: false,
         values: ['none', 'min-content', 'max-content',
             { label: 'repeat(,)', kind: 3 },
             { label: 'fit-content()', kind: 3 },
@@ -272,7 +272,7 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['grid-template-rows'],
-        colorful: false,
+        colored: false,
         values: ['none', 'min-content', 'max-content',
             { label: 'repeat(,)', kind: 3 },
             { label: 'fit-content()', kind: 3 },
@@ -281,95 +281,95 @@ export const masterCssKeyValues: MasterCssKey[] = [
     //GRID AND FLEXBOX
     {
         key: ['align-content', 'ac'],
-        colorful: false,
+        colored: false,
         values: ['space-around', 'space-between', 'space-evenly', 'normal', 'baseline', 'center', 'stretch', 'start', 'end', 'flex-start', 'flex-end']
     },
     {
         key: ['align-items', 'ai'],
-        colorful: false,
+        colored: false,
         values: ['self-start', 'self-end', 'normal', 'baseline', 'center', 'stretch', 'start', 'end', 'flex-start', 'flex-end']
     },
     {
         key: ['align-self', 'as'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'self-start', 'self-end', 'normal', 'baseline', 'center', 'stretch', 'start', 'end', 'flex-start', 'flex-end']
     },
     {
         key: ['justify-content', 'jc'],
-        colorful: false,
+        colored: false,
         values: ['space-around', 'space-between', 'space-evenly', 'normal', 'left', 'center', 'right', 'stretch', 'start', 'end', 'flex-start', 'flex-end']
     },
     {
         key: ['justify-items', 'ji'],
-        colorful: false,
+        colored: false,
         values: ['self-start', 'self-end', 'normal', 'left', 'center', 'right', 'stretch', 'start', 'end', 'flex-start', 'flex-end']
     },
     {
         key: ['justify-self', 'js'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'self-start', 'self-end', 'normal', 'left', 'center', 'right', 'stretch', 'start', 'end', 'flex-start', 'flex-end']
     },
     {
         key: ['order', 'o'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['place-content'],
-        colorful: false,
+        colored: false,
         values: ['space-around', 'space-between', 'space-evenly', 'normal', 'baseline', 'center', 'stretch', 'start', 'end', 'flex-start', 'flex-end']
     },
     {
         key: ['place-items'],
-        colorful: false,
+        colored: false,
         values: ['self-start', 'self-end', 'normal', 'baseline', 'center', 'stretch', 'start', 'end', 'flex-start', 'flex-end']
     },
     {
         key: ['place-self'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'self-start', 'self-end', 'normal', 'baseline', 'center', 'stretch', 'start', 'end', 'flex-start', 'flex-end']
     },
     //TABLES
     {
         key: ['border-collapse', 'border'],
-        colorful: false,
+        colored: false,
         values: ['collapse', 'separate']
     },
     {
         key: ['table-layout'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'fixed']
     },
     //MEDIA
     {
         key: ['object-fit'],
-        colorful: false,
+        colored: false,
         values: ['none']
     },
     {
         key: ['object-fit', 'object', 'obj'],
-        colorful: false,
+        colored: false,
         values: ['contain', 'cover', 'fill', 'scale-down']
     },
     {
         key: ['object-position', 'object', 'obj'],
-        colorful: false,
+        colored: false,
         values: ['top', 'bottom', 'left', 'right', 'center']
     },
     //FONT
     {
         key: ['font', 'f'],
-        colorful: false,
+        colored: false,
         values: ['caption', 'icon', 'menu', 'message-box', 'small-caption', 'status-bar']
     },
     {
         key: ['font-color', 'font', 'f'],
-        colorful: true,
+        colored: true,
         values: []
     },
     {
         key: ['font-family', 'font', 'f'],
-        colorful: false,
+        colored: false,
         values: [
             '\'CourierNew\',Courier,monospace',
             '\'FranklinGothicMedium\',\'ArialNarrow\',Arial,sans-serif',
@@ -393,7 +393,7 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['font-size', 'font', 'f'],
-        colorful: false,
+        colored: false,
         values: [
             { label: '8', kind: 11, sortText: '!0' },
             { label: '9', kind: 11, sortText: '!1' },
@@ -415,22 +415,22 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['font-style'],
-        colorful: false,
+        colored: false,
         values: ['oblique|deg']
     },
     {
         key: ['font-style', 'font', 'f'],
-        colorful: false,
+        colored: false,
         values: ['normal', 'italic', 'oblique']
     },
     {
         key: ['font-variant-numeric', 'font', 'f'],
-        colorful: false,
+        colored: false,
         values: ['normal', 'ordinal', 'slashed-zero', 'lining-nums', 'oldstyle-nums', 'proportional-nums', 'tabular-nums', 'diagonal-fractions', 'stacked-fractions']
     },
     {
         key: ['font-weight', 'font', 'f'],
-        colorful: false,
+        colored: false,
         values: [
             '100',
             '200',
@@ -445,119 +445,119 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['font', 'f'],
-        colorful: false,
+        colored: false,
         values: ['antialiased', 'subpixel-antialiased']
     },
     //TEXT
     {
         key: ['text-align', 'text', 't'],
-        colorful: false,
+        colored: false,
         values: ['start', 'end', 'left', 'right', 'center', 'justify']
     },
     {
         key: ['text-decoration', 'text', 't'],
-        colorful: false,
+        colored: false,
         values: ['underline', 'line-through', 'overline']
     },
     {
         key: ['text-decoration-color', 'text-decoration'],
-        colorful: true,
+        colored: true,
         values: []
     },
     {
         key: ['text-decoration-line', 'text', 't'],
-        colorful: false,
+        colored: false,
         values: ['none', 'underline', 'overline', 'line-through']
     },
     {
         key: ['text-decoration-style', 'text', 't'],
-        colorful: false,
+        colored: false,
         values: ['dashed', 'dotted', 'double', 'solid', 'wavy']
     },
     {
         key: ['text-decoration-thickness'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['text-fill-color', 'text-fill'],
-        colorful: true,
+        colored: true,
         values: []
     },
     {
         key: ['text-indent'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['text-orientation', 'text', 't'],
-        colorful: false,
+        colored: false,
         values: ['mixed', 'sideways', 'sideways-right', 'upright', 'use-glyph-orientation']
     },
     {
         key: ['text-overflow', 'text', 't'],
-        colorful: false,
+        colored: false,
         values: ['clip', 'ellipsis']
     },
     {
         key: ['text-shadow'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['text', 't'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['text-stroke'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['text-stroke-color', 'text-stroke'],
-        colorful: true,
+        colored: true,
         values: []
     },
     {
         key: ['text-stroke-width', 'text-stroke'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['text-transform'],
-        colorful: false,
+        colored: false,
         values: ['none']
     },
     {
         key: ['text-transform', 'text', 't'],
-        colorful: false,
+        colored: false,
         values: ['capitalize', 'lowercase', 'uppercase']
     },
     {
         key: ['text-underline-offset'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['text-rendering'],
-        colorful: false,
+        colored: false,
         values: ['auto']
     },
     {
         key: ['text-rendering', 't'],
-        colorful: false,
+        colored: false,
         values: ['optimizeSpeed', 'optimizeLegibility', 'geometricPrecision']
     },
     //LIST STYLE
     {
         key: ['list-style'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['list-style-image', 'list-style'],
-        colorful: false,
+        colored: false,
         values: [
             { label: 'url()', kind: 3 },
             { label: 'linear-gradient()', kind: 3 },
@@ -568,38 +568,38 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['list-style-position', 'list-style'],
-        colorful: false,
+        colored: false,
         values: ['inside', 'outside']
     },
     {
         key: ['list-style-type'],
-        colorful: false,
+        colored: false,
         values: ['circle', 'square', 'decimal-leading-zero', 'lower-roman', 'lower-greek', 'lower-alpha', 'lower-latin', 'upper-roman', 'upper-alpha', 'upper-latin', 'arabic-indic', 'armenian', 'bengali', 'cambodian/khmer', 'cjk-earthly-branch', 'cjk-heavenly-stem', 'devanagari', 'georgian', 'gurmukhi', 'kannada', 'lao', 'malayalam', 'myanmar', 'oriya', 'telugu', 'thai']
     },
     {
         key: ['list-style-type', 'list-style'],
-        colorful: false,
+        colored: false,
         values: ['none', 'disc', 'decimal']
     },
     //TYPOGRAPHY
     {
         key: ['letter-spacing', 'ls'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['lines'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['line-height', 'lh'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['content'],
-        colorful: false,
+        colored: false,
         values: ['normal', 'none', 'no-open-quote', 'no-close-quote',
             { label: 'url()', kind: 3 },
             { label: 'linear-gradient()', kind: 3 },
@@ -609,38 +609,38 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['vertical-align', 'v'],
-        colorful: false,
+        colored: false,
         values: ['baseline', 'bottom', 'middle', 'sub', 'super', 'text-bottom', 'text-top', 'top']
     },
     {
         key: ['white-space'],
-        colorful: false,
+        colored: false,
         values: ['break-spaces', 'normal', 'nowrap', 'pre', 'pre-line', 'pre-wrap']
     },
     {
         key: ['word-break'],
-        colorful: false,
+        colored: false,
         values: ['normal', 'break-all', 'keep-all']
     },
     {
         key: ['word-spacing'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['writing-mode'],
-        colorful: false,
+        colored: false,
         values: ['horizontal-tb', 'vertical-rl', 'vertical-lr', 'lr', 'lr-tb', 'rl', 'rl-tb', 'tb', 'tb-rl']
     },
     //BACKGROUND
     {
         key: ['background', 'bg'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['backdrop-filter', 'bd'],
-        colorful: false,
+        colored: false,
         values: ['none',
             { label: 'url()', kind: 3 },
             { label: 'blur()', kind: 3 },
@@ -656,27 +656,27 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['background-attachment', 'background', 'bg'],
-        colorful: false,
+        colored: false,
         values: ['fixed', 'local', 'scroll']
     },
     {
         key: ['background-blend-mode'],
-        colorful: false,
+        colored: false,
         values: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity']
     },
     {
         key: ['background-clip', 'bg'],
-        colorful: false,
+        colored: false,
         values: ['content-box', 'border-box', 'padding-box']
     },
     {
         key: ['background-color', 'background', 'bg'],
-        colorful: true,
+        colored: true,
         values: ['transparent']
     },
     {
         key: ['background-image', 'background', 'bg'],
-        colorful: false,
+        colored: false,
         values: [
             { label: 'url()', kind: 3 },
             { label: 'linear-gradient()', kind: 3 },
@@ -687,98 +687,98 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['background-origin', 'bg'],
-        colorful: false,
+        colored: false,
         values: ['content-box', 'border-box', 'padding-box']
     },
     {
         key: ['background-position', 'bg'],
-        colorful: false,
+        colored: false,
         values: ['top', 'bottom', 'left', 'right', 'center']
     },
     {
         key: ['background-repeat', 'bg'],
-        colorful: false,
+        colored: false,
         values: ['repeat', 'no-repeat', 'repeat-x', 'repeat-y']
     },
     {
         key: ['background-size', 'background', 'bg'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'cover', 'contain']
     },
     {
         key: ['mix-blend-mode', 'blend'],
-        colorful: false,
+        colored: false,
         values: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity']
     },
     //BORDER
     {
         key: ['border', 'border-top', 'border-bottom', 'border-left', 'border-right', 'b', 'bt', 'bb', 'bl', 'br', 'bx', 'by'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['border-spacing'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['border-color', 'border', 'border-top-color', 'border-bottom-color', 'border-left-color', 'border-right-color', 'b', 'bt', 'bb', 'bl', 'br', 'bx', 'by'],
-        colorful: true,
+        colored: true,
         values: []
     },
     {
         key: ['border-radius', 'r', 'rt', 'rb', 'rl', 'rr', 'border-top-left-radius', 'rlt', 'rtl', 'border-top-right-radius', 'rrt', 'rtr'
             , 'border-bottom-left-radius', 'rlb', 'rbl', 'border-bottom-right-radius', 'rbr', 'rrb'
         ],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['border-style', 'border', 'b', 'border-top-style', 'border-top', 'bt', 'border-bottom-style', 'border-bottom', 'bb', 'border-left-style', 'border-left', 'bl', 'border-right-style', 'border-right', 'br', 'bx', 'by'],
-        colorful: false,
+        colored: false,
         values: ['none', 'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
     },
     {
         key: ['border-width', 'border', 'b', 'border-top-width', 'border-top', 'bt', 'border-bottom-width', 'border-bottom', 'bb', 'border-left-width', 'border-left', 'bl', 'border-right-width', 'border-right', 'br', 'bx', 'by'],
-        colorful: false,
+        colored: false,
         values: []
     },
 
     //OUTLINE
     {
         key: ['outline'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['outline-color', 'outline'],
-        colorful: true,
+        colored: true,
         values: []
     },
     {
         key: ['outline-offset'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['outline-style', 'outline'],
-        colorful: false,
+        colored: false,
         values: ['none', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
     },
     {
         key: ['outline-width', 'outline'],
-        colorful: false,
+        colored: false,
         values: ['medium', 'thick', 'thin']
     },
     //SHAPE
     {
         key: ['shape-image-threshold'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['shape-margin', 'shape'],
-        colorful: false,
+        colored: false,
         values: [
             { label: 'max()', kind: 3 },
             { label: 'min()', kind: 3 },
@@ -787,7 +787,7 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['shape-outside', 'shape'],
-        colorful: false,
+        colored: false,
         values: ['none', 'content-box', 'border-box', 'padding-box', 'margin-box',
             { label: 'inset()', kind: 3 },
             { label: 'circle()', kind: 3 },
@@ -798,7 +798,7 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['clip-path', 'clip'],
-        colorful: false,
+        colored: false,
         values: [
             'none',
             'content-box',
@@ -818,89 +818,89 @@ export const masterCssKeyValues: MasterCssKey[] = [
     //SIZING
     {
         key: ['aspect-ratio', 'aspect'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['box-sizing', 'box'],
-        colorful: false,
+        colored: false,
         values: ['content-box', 'border-box']
     },
     {
         key: ['width', 'w'],
-        colorful: false,
+        colored: false,
         values: ['100%', 'fit-content', 'max-content', 'min-content']
     },
     {
         key: ['min-width', 'min-w'],
-        colorful: false,
+        colored: false,
         values: ['100%', 'fit-content', 'max-content', 'min-content']
     },
     {
         key: ['max-width', 'max-w'],
-        colorful: false,
+        colored: false,
         values: ['100%', 'fit-content', 'max-content', 'min-content']
     },
     {
         key: ['height', 'h'],
-        colorful: false,
+        colored: false,
         values: ['100%', 'fit-content', 'max-content', 'min-content']
     },
     {
         key: ['min-height', 'min-h'],
-        colorful: false,
+        colored: false,
         values: ['100%', 'fit-content', 'max-content', 'min-content']
     },
     {
         key: ['max-height', 'max-h'],
-        colorful: false,
+        colored: false,
         values: ['100%', 'fit-content', 'max-content', 'min-content']
     },
     //TYPOGRAPHY
     {
         key: ['letter-spacing', 'ls'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['margin-top', 'mt', 'margin-bottom', 'mb', 'margin-left', 'ml', 'margin-right', 'mr', 'margin', 'm', 'mx', 'my'],
-        colorful: false,
+        colored: false,
         values: [...commonUnit]
     },
     {
         key: ['padding-top', 'pt', 'padding-bottom', 'pb', 'padding-left', 'pl', 'padding-right', 'pr', 'padding', 'p', 'px', 'py'],
-        colorful: false,
+        colored: false,
         values: [...commonUnit]
     },
     {
         key: ['word-spacing'],
-        colorful: false,
+        colored: false,
         values: []
     },
     //TRANSITION
     {
         key: ['transition'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['transition-delay', '~delay'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['transition-duration', '~duration'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['transition-property', '~property'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['transition-timing-function', '~easing'],
-        colorful: false,
+        colored: false,
         values: ['ease', 'ease-in', 'ease-out', 'linear', 'step-start', 'step-end',
             { label: 'steps(,)', kind: 3 },
             { label: 'cubic-bezier(,,,)', kind: 3 },
@@ -909,7 +909,7 @@ export const masterCssKeyValues: MasterCssKey[] = [
     //TRANSFORM
     {
         key: ['transform'],
-        colorful: false,
+        colored: false,
         values: [
             { label: 'translate()', kind: 3 },
             { label: 'translate3d()', kind: 3 },
@@ -935,7 +935,7 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['transform-box', 'transform'],
-        colorful: false,
+        colored: false,
         values: [
             'content-box',
             'fill-box',
@@ -946,58 +946,58 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['transform-origin', 'transform'],
-        colorful: false,
+        colored: false,
         values: ['top', 'bottom', 'right', 'left', 'center']
     },
     {
         key: ['transform-style', 'transform'],
-        colorful: false,
+        colored: false,
         values: ['flat', 'preserve-3d']
     },
     //ANIMATION
     {
         key: ['animation'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['animation-delay', '@delay'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['animation-direction', '@direction'],
-        colorful: false,
+        colored: false,
         values: ['normal', 'reverse', 'alternate', 'alternate-reverse']
     },
     {
         key: ['animation-duration', '@duration'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['animation-fill-mode', '@fill-mode'],
-        colorful: false,
+        colored: false,
         values: ['none', 'forwards', 'backwards', 'both']
     },
     {
         key: ['animation-iteration-count', '@iteration-count'],
-        colorful: false,
+        colored: false,
         values: ['infinite']
     },
     {
         key: ['animation-name', '@name'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['animation-play-state', '@play-state'],
-        colorful: false,
+        colored: false,
         values: ['running', 'paused']
     },
     {
         key: ['animation-timing-function', '@easing'],
-        colorful: false,
+        colored: false,
         values: ['ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear', 'step-start', 'step-end',
             { label: 'steps(,)', kind: 3 },
             { label: 'cubic-bezier(,,,)', kind: 3 },
@@ -1006,35 +1006,35 @@ export const masterCssKeyValues: MasterCssKey[] = [
     //SVG
     {
         key: ['fill'],
-        colorful: true,
+        colored: true,
         values: []
     },
     {
         key: ['stroke'],
-        colorful: true,
+        colored: true,
         values: []
     },
     {
         key: ['stroke-width'],
-        colorful: false,
+        colored: false,
         values: []
     },
     //VISIBILITY
     {
         key: ['opacity'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['visibility'],
-        colorful: false,
+        colored: false,
         values: ['visible', 'invisible', 'collapse']
     },
     //EFFECT
 
     {
         key: ['backdrop-filter', 'bd'],
-        colorful: false,
+        colored: false,
         values: ['none',
             { label: 'url(svg)', kind: 3 },
             { label: 'blur()', kind: 3 },
@@ -1050,17 +1050,17 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['background-blend-mode'],
-        colorful: false,
+        colored: false,
         values: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity']
     },
     {
         key: ['box-shadow', 'shadow', 's'],
-        colorful: true,
+        colored: true,
         values: ['inset']
     },
     {
         key: ['filter'],
-        colorful: false,
+        colored: false,
         values: ['none',
             { label: 'url()', kind: 3 },
             { label: 'blur()', kind: 3 },
@@ -1076,117 +1076,111 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     {
         key: ['mask-image'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['mix-blend-mode', 'blend'],
-        colorful: false,
+        colored: false,
         values: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity']
     },
     {
         key: ['text-shadow'],
-        colorful: false,
+        colored: false,
         values: []
     },
     //SCROLL
     {
         key: ['overscroll-behavior', 'overscroll-behavior-x', 'overscroll-behavior-y'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'none', 'contain']
     },
     {
         key: ['scroll-behavior'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'smooth']
     },
     {
         key: ['scroll-margin', 'scroll-m', 'scroll-margin-top', 'scroll-mt', 'scroll-margin-bottom', 'scroll-mb', 'scroll-margin-left', 'scroll-ml', 'scroll-margin-right', 'scroll-mr', 'scroll-mx', 'scroll-my'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['scroll-padding', 'scroll-p', 'scroll-padding', 'scroll-padding-top', 'scroll-pt', 'scroll-padding-bottom', 'scroll-pb', 'scroll-padding-left', 'scroll-pl', 'scroll-padding-right', 'scroll-pr', 'scroll-px', 'scroll-py'],
-        colorful: false,
+        colored: false,
         values: []
     },
     {
         key: ['scroll-snap-align', 'scroll-snap'],
-        colorful: false,
+        colored: false,
         values: ['center', 'end', 'start', 'none']
     },
     {
         key: ['scroll-snap-stop', 'scroll-snap'],
-        colorful: false,
+        colored: false,
         values: ['always', 'normal']
     },
     {
         key: ['scroll-snap-type'],
-        colorful: false,
+        colored: false,
         values: ['none']
     },
     {
         key: ['scroll-snap-type', 'scroll-snap'],
-        colorful: false,
+        colored: false,
         values: ['x', 'y', 'both', 'block', 'inline', 'x|mandatory', 'y|proximity', 'both|mandatory']
     },
     //INTERACTIVITY
 
     {
         key: ['pointer-events'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'none', 'visiblePainted', 'visibleFill', 'visibleStroke', 'visible', 'painted', 'fill', 'stroke', 'all', 'bounding-box']
     },
     {
         key: ['resize'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'none', 'both', 'horizontal', 'vertical', 'block', 'inline']
     },
     {
         key: ['touch-action'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'none', 'pan-x', 'pan-left', 'pan-right', 'pan-y', 'pan-up', 'pan-down', 'pinch-zoom', 'manipulation']
     },
     {
         key: ['user-drag'],
-        colorful: false,
+        colored: false,
         values: ['auto', 'none', 'element']
     },
     {
         key: ['user-select'],
-        colorful: false,
+        colored: false,
         values: ['all', 'auto', 'none', 'text']
     },
     //OPTIMIZATION
     {
         key: ['contain'],
-        colorful: false,
+        colored: false,
         values: ['none', 'strict', 'content', 'size', 'layout', 'style', 'paint']
     },
     {
         key: ['font', 'f'],
-        colorful: false,
+        colored: false,
         values: ['antialiased', 'subpixel-antialiased']
     },
     {
         key: ['text-rendering'],
-        colorful: false,
+        colored: false,
         values: ['auto']
     },
     {
         key: ['text-rendering', 't'],
-        colorful: false,
+        colored: false,
         values: ['optimizeSpeed', 'optimizeLegibility', 'geometricPrecision']
     },
     {
         key: ['will-change'],
-        colorful: false,
-        values: []
-    },
-    //VARIABLE
-    {
-        key: ['$'],
-        colorful: false,
+        colored: false,
         values: []
     }
 ]

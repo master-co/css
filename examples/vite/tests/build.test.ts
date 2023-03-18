@@ -9,6 +9,6 @@ it('check if dist contains virtual:master.css result ( usually bundled with styl
     const compiler = await new MasterCSSCompiler().compile()
     expectFileIncludes(
         upath.join('..', 'dist', 'assets', 'index-*.css'),
-        Object.keys(compiler.css.ruleOfClass).map(CSS.escape)
+        Object.keys(compiler.css.ruleBy).map(CSS.escape)
     )
 })

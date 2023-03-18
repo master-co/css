@@ -1,6 +1,3 @@
-import { analyzeUnitValue } from './analyze-unit-value'
-import { normalizeCssCalcText } from './normalize-css-calc-text'
-
 export function parseRuleValue(
     token: string | number,
     defaultUnit?: string,
@@ -30,7 +27,7 @@ export function parseRuleValue(
                 (origin, prefix, colorName, opacityStr) => {
                     hasColorName = true
 
-                    const themeColorMap =  colorThemesMap[colorName]
+                    const themeColorMap = colorThemesMap[colorName]
                     if (themeColorMap) {
                         let color: string
                         for (const eachTheme of themes) {
@@ -66,14 +63,7 @@ export function parseRuleValue(
             }
         }
 
-        const result = analyzeUnitValue(token, rootSize, defaultUnit)
-        if (result)
-            return result
-
-        value = (token.indexOf('calc(') === -1
-            ? token
-            : normalizeCssCalcText(token, rootSize, defaultUnit))
-            .replace(/\$\(((\w|-)+)\)/g, 'var(--$1)')
+        value = token
     }
     return { value, unit, colorMatched }
 }

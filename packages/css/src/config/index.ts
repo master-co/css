@@ -9,6 +9,7 @@ import { rules } from './rules'
 import { override } from './override'
 import { observe } from './observe'
 import { important } from './important'
+import { functions, FunctionConfig } from './functions'
 
 const config: Config = {
     breakpoints,
@@ -21,7 +22,8 @@ const config: Config = {
     rules,
     override,
     observe,
-    important
+    important,
+    functions
 }
 
 export {
@@ -36,7 +38,8 @@ export {
     rules,
     override,
     observe,
-    important
+    important,
+    functions
 }
 
 import type { RuleConfig } from '../rule'
@@ -64,5 +67,6 @@ export interface Config {
     scope?: string
     important?: boolean
     override?: boolean
-    observe?: boolean
+    observe?: boolean,
+    functions?: Record<string, FunctionConfig>
 }

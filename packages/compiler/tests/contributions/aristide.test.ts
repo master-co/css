@@ -77,7 +77,7 @@ test('AristideBH', async () => {
 </style>
         `)
     expect(
-        Object.keys(compiler.css.ruleOfClass)
+        Object.keys(compiler.css.ruleBy)
     ).toEqual([
         'grid-row:1/2',
         'flex',

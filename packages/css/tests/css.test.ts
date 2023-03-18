@@ -14,7 +14,7 @@ test('css count class add', async () => {
     const css = new MasterCSS()
     p1.classList.add('italic')
     await delay()
-    expect(css.countOfClass).toEqual({
+    expect(css.countBy).toEqual({
         'block': 1,
         'font:bold': 1,
         'italic': 1
@@ -26,7 +26,7 @@ test('css count class complicated example', async () => {
     const css = new MasterCSS()
     document.body.innerHTML = ''
     await delay()
-    expect(css.countOfClass).toEqual({})
+    expect(css.countBy).toEqual({})
 })
 
 test('refresh', async () => {

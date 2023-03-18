@@ -178,7 +178,7 @@ connection.onInitialize((params: InitializeParams) => {
             completionProvider: {
                 resolveProvider: true,
                 workDoneProgress: false,
-                triggerCharacters: [':', '@', '~', '\'']
+                triggerCharacters: [':', '@', '\'']
             },
             colorProvider: {},
             hoverProvider: true
