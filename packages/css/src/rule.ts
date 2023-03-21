@@ -166,9 +166,9 @@ export class Rule {
                         return
                     } else if (!isString && val in START_SYMBOL) {
                         const functionConfig = val === '(' && functionName && functions?.[functionName]
-                        if (functionConfig?.native) {
-                            currentValueToken = currentValueToken.slice(0, currentValueToken.length - functionName.length) + functionConfig.native
-                            functionName = functionConfig.native
+                        if (functionConfig?.name) {
+                            currentValueToken = currentValueToken.slice(0, currentValueToken.length - functionName.length) + functionConfig.name
+                            functionName = functionConfig.name
                         }
 
                         currentValueToken += val
