@@ -133,8 +133,6 @@ export const rules: Record<string, RuleConfig> = {
                 }
             }
 
-            console.log(declarations)
-
             return declarations
         }
     },
