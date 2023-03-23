@@ -6,8 +6,17 @@ import upath from 'upath'
 const config = {
     plugins: [
         sveltekit(),
-        MasterCSSVitePlugin({ cwd: upath.resolve(process.cwd(), 'src') })
-    ]
+        MasterCSSVitePlugin({ config: './src/master.css.ts' })
+    ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    master: ['master.css']
+                }
+            }
+        }
+    }
 }
 
 export default config
