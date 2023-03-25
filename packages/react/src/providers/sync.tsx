@@ -1,6 +1,11 @@
 import { Config, MasterCSS } from '@master/css'
-import { ReactElement, useEffect, useLayoutEffect, useState, useMemo } from 'react'
-import { CSSContext } from '../contexts'
+import { ReactElement, useEffect, useLayoutEffect, useState, useMemo, Context, createContext, useContext } from 'react'
+
+export const CSSContext: Context<MasterCSS> = createContext<MasterCSS>(null)
+
+export function useCSS() {
+    return useContext(CSSContext)
+}
 
 export const CSSProvider = ({
     children,
