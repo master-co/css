@@ -23,7 +23,7 @@
     ],
     "devDependencies": {
         "aron-web-jest": "^1.1.1",
-        "aronrepo": "^1.4.7",
+        "aronrepo": "^1.5.1",
         "dedent": "^0.7.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",

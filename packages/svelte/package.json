@@ -1,0 +1,57 @@
+{
+    "name": "@master/css.svelte",
+    "type": "module",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc -w",
+        "type-check": "tsc --noEmit"
+    },
+    "license": "MIT",
+    "description": "Integration of Master CSS in Svelte",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://docs.master.co/css/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/svelte"
+    },
+    "keywords": [
+        "svelte",
+        "providers",
+        "css",
+        "mastercss"
+    ],
+    "sideEffects": false,
+    "main": "./src/index.js",
+    "jsnext:main": "./src/index.js",
+    "esnext": "./src/index.js",
+    "module": "./src/index.js",
+    "types": "./src/index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./src/index.js",
+            "import": "./src/index.js",
+            "types": "./src/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "peerDependencies": {
+        "svelte": ">= 3.0.0"
+    },
+    "dependencies": {
+        "@master/css": ""
+    },
+    "devDependencies": {
+        "@tsconfig/svelte": "^3.0.0",
+        "typescript": "^5.0.2"
+    }
+}
