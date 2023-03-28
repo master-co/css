@@ -584,7 +584,7 @@ export const rules: Record<string, RuleConfig> = {
         match: '^t(?:ext)?:(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
         unit: 'rem',
         declare(value, unit) {
-            const diff = .75
+            const diff = .875
             return {
                 'font-size': value + unit,
                 'line-height': unit === 'em'

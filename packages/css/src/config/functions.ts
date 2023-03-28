@@ -2,7 +2,7 @@ import { Rule } from '../rule'
 
 export const functions: Record<string, FunctionConfig> = {
     $: {
-        native: 'var',
+        name: 'var',
         transform(value) {
             return '--' + value
         }
@@ -99,6 +99,6 @@ export const functions: Record<string, FunctionConfig> = {
 
 export interface FunctionConfig {
     unit?: string
-    native?: string
+    name?: string
     transform?(this: Rule, value: string): string
 }

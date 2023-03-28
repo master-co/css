@@ -66,7 +66,7 @@ Visit [beta.css.master.co](https://beta.css.master.co) to view the full document
 Check out the [official guides](https://beta.css.master.co/docs) to get started with Master CSS, or walk through the [examples](https://github.com/master-co/css/tree/beta/examples) for a quick overview of integrating with your framework.
 
 ## Compilation Modes
-Master CSS provides various [compilation modes](https://beta.css.master.co/docs/compilation)](https://beta.css.master.co/docs/compilation), allowing you to choose according to the characteristics and needs of different projects.
+Master CSS provides various [compilation modes](https://beta.css.master.co/docs/compilation), allowing you to choose according to the characteristics and needs of different projects.
 
 - [Just-in-time](https://beta.css.master.co/docs/compilation/just-in-time) - Observe the DOM tree, manipulate CSS rules according to the changed class name, and synchronize to the running style sheet at runtime
 - [🚧 Ahead-of-time](https://beta.css.master.co/docs/compilation/ahead-of-time) - Scan source files for class names at build time, extract class names, and generate CSS files/virtual modules, then import them in the entry file
