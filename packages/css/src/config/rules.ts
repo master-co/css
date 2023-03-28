@@ -1092,10 +1092,12 @@ export const rules: Record<string, RuleConfig> = {
     gridTemplateColumns: {
         match: '^grid-template-cols:.',
         native: true,
+        unit: 'rem',
         values: CONTENT_EXTREMA
     },
     gridTemplateRows: {
         native: true,
+        unit: 'rem',
         values: CONTENT_EXTREMA
     },
     gridTemplate: {
