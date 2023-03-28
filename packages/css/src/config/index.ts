@@ -42,8 +42,7 @@ export {
     observe,
     important,
     functions,
-    keyframes,
-    insert
+    keyframes
 }
 
 import type { RuleConfig } from '../rule'
