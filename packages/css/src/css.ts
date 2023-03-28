@@ -643,8 +643,8 @@ export class MasterCSS {
                 attributes: true,
                 attributeOldValue: true,
                 attributeFilter: ['class'],
-            })
-
+            });
+            (this.host as HTMLElement).style.display = null
             // @ts-ignore
             this.observing = true
         }
