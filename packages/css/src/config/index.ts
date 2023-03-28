@@ -11,6 +11,7 @@ import { observe } from './observe'
 import { important } from './important'
 import { keyframes } from './keyframes'
 import { functions, FunctionConfig } from './functions'
+import { precedence } from './precedence'
 
 const config: Config = {
     breakpoints,
@@ -25,7 +26,8 @@ const config: Config = {
     observe,
     important,
     functions,
-    keyframes
+    keyframes,
+    precedence
 }
 
 export {
@@ -43,7 +45,7 @@ export {
     important,
     functions,
     keyframes,
-    insert
+    precedence
 }
 
 import type { RuleConfig } from '../rule'
@@ -74,4 +76,5 @@ export interface Config {
     observe?: boolean
     functions?: Record<string, FunctionConfig>
     keyframes?: Record<string, Record<string, Record<string, string | number>>>
+    precedence?: 'highest' | 'higher' | 'lowest'
 }

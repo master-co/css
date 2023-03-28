@@ -584,12 +584,24 @@ export class MasterCSS {
                 // @ts-ignore
                 this.style = document.createElement('style')
                 this.style.title = 'master'
-                /** 為提高優先層級，插入於任何 <link rel="styleSheet"> 或 <style> 之前 */
-                const firstStyleElement = container.querySelector('link[rel="styleSheet"], style')
-                if (firstStyleElement) {
-                    firstStyleElement.before(this.style)
-                } else {
-                    container.append(this.style)
+                
+                switch (this.config.precedence) {
+                    case 'highest':
+                        console.log(isDocumentRoot ? document.body : targetRoot);
+                        (isDocumentRoot ? document.body : targetRoot).append(this.style)
+                        break
+                    case 'higher':
+                        container.append(this.style)
+                        break
+                    default:
+                        // eslint-disable-next-line no-case-declarations
+                        const firstStyleElement = container.querySelector('link[rel="styleSheet"], style')
+                        if (firstStyleElement) {
+                            firstStyleElement.before(this.style)
+                        } else {
+                            container.append(this.style)
+                        }
+                        break 
                 }
             }
 
@@ -753,7 +765,7 @@ export class MasterCSS {
          * class name 從 DOM tree 中被移除，
          * 匹配並刪除對應的 rule
          */
-        const sheet = this.style.sheet
+        const sheet = this.style?.sheet
         const deleteRule = (name: string) => {
             const rule = this.ruleBy[name]
             if (
@@ -762,7 +774,7 @@ export class MasterCSS {
             )
                 return
 
-            if (rule.natives.length) {
+            if (sheet && rule.natives.length) {
                 const firstNative = rule.natives[0]
                 for (let index = 0; index < sheet.cssRules.length; index++) {
                     const eachCssRule = sheet.cssRules[index]
@@ -770,13 +782,12 @@ export class MasterCSS {
                         for (let i = 0; i < rule.natives.length; i++) {
                             sheet.deleteRule(index)
                         }
-
-                        this.rules.splice(this.rules.indexOf(rule), 1)
                         break
                     }
                 }
             }
 
+            this.rules.splice(this.rules.indexOf(rule), 1)
             delete this.ruleBy[name]
 
             if (rule.config.delete) { rule.config.delete.call(rule, name) }
