@@ -1,8 +1,8 @@
 <script lang="ts">
     import type { MasterCSS } from "@master/css";
-    import { onMount, setContext } from "svelte";
+    import { onDestroy, onMount, setContext } from "svelte";
     import { writable } from "svelte/store";
-    import { lazyCSSSymbol } from './lazy-css';
+    import { lazyCSSSymbol } from "./lazy-css";
     export let config: Promise<any>;
     export let root = typeof document !== "undefined" ? document : null;
     const css = writable<MasterCSS>();
@@ -23,6 +23,7 @@
                     configModule.config || configModule.default || configModule;
                 css.set(new MasterCSS(resolvedConfig));
             }
+            return () => $css.destroy();
         }
     });
     setContext(lazyCSSSymbol, css);
