@@ -9,6 +9,7 @@ import { rules } from './rules'
 import { override } from './override'
 import { observe } from './observe'
 import { important } from './important'
+import { keyframes } from './keyframes'
 import { functions, FunctionConfig } from './functions'
 
 const config: Config = {
@@ -23,7 +24,8 @@ const config: Config = {
     override,
     observe,
     important,
-    functions
+    functions,
+    keyframes
 }
 
 export {
@@ -39,7 +41,9 @@ export {
     override,
     observe,
     important,
-    functions
+    functions,
+    keyframes,
+    insert
 }
 
 import type { RuleConfig } from '../rule'
@@ -61,12 +65,13 @@ export interface Config {
     selectors?: Selectors
     semantics?: Semantics
     values?: Values
-    rules?: Record<string, RuleConfig>,
-    themes?: Record<string, { classes?: Classes, colors?: Colors }> | string[],
+    rules?: Record<string, RuleConfig>
+    themes?: Record<string, { classes?: Classes, colors?: Colors }> | string[]
     rootSize?: number
     scope?: string
     important?: boolean
     override?: boolean
-    observe?: boolean,
+    observe?: boolean
     functions?: Record<string, FunctionConfig>
+    keyframes?: Record<string, Record<string, Record<string, string | number>>>
 }

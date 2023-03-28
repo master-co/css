@@ -1,5 +1,5 @@
 import extend from 'to-extend'
-import { Rule, RuleMeta } from './rule'
+import { Rule, RuleMeta, RuleNative } from './rule'
 import type { Config } from './config'
 import { config as defaultConfig } from './config'
 import { rgbToHex } from './utils/rgb-to-hex'
@@ -24,6 +24,10 @@ export interface MasterCSS {
     breakpoints: Record<string, number>
     mediaQueries: Record<string, string>
     matches: Record<string, RegExp>
+    keyframes: Record<string, {
+        native: RuleNative
+        count: number
+    }>
 }
 
 export class MasterCSS {
@@ -232,6 +236,7 @@ export class MasterCSS {
         this.breakpoints = {}
         this.mediaQueries = {}
         this.matches = {}
+        this.keyframes = {}
 
         const { semantics, classes, selectors, themes, colors, values, breakpoints, mediaQueries, rules } = this.config
 
@@ -512,6 +517,10 @@ export class MasterCSS {
 
             if (this.style) {
                 for (let index = 0; index < this.style.sheet.cssRules.length; index++) {
+                    const cssRule = this.style.sheet.cssRules[index]
+                    if (cssRule.constructor.name === 'CSSKeyframesRule')
+                        continue
+
                     const getRule = (cssRule: any): Rule => {
                         if (cssRule.selectorText) {
                             const selectorTexts = cssRule.selectorText.split(', ')
@@ -557,7 +566,7 @@ export class MasterCSS {
                             }
                         }
                     }
-                    const rule = getRule(this.style.sheet.cssRules[index])
+                    const rule = getRule(cssRule)
                     if (rule) {
                         this.rules.push(rule)
                         this.ruleBy[rule.className] = rule
@@ -567,6 +576,8 @@ export class MasterCSS {
                         }
 
                         index += rule.natives.length - 1
+
+                        rule.config.insert?.call(rule)
                     }
                 }
             } else {
@@ -675,7 +686,9 @@ export class MasterCSS {
      */
     create(className: string): Rule[] {
         const create = (eachClassName: string) => {
-            if (eachClassName in this.ruleBy) return this.ruleBy[eachClassName]
+            if (eachClassName in this.ruleBy) 
+                return this.ruleBy[eachClassName]
+
             const meta = this.match(eachClassName)
             if (meta) {
                 return new Rule(
@@ -766,7 +779,7 @@ export class MasterCSS {
 
             delete this.ruleBy[name]
 
-            if (rule.config.delete) { rule.config.delete.call(this, name) }
+            if (rule.config.delete) { rule.config.delete.call(rule, name) }
         }
 
         if (className in this.classes) {
@@ -1136,6 +1149,10 @@ export class MasterCSS {
                             index = i
                         }
                     }
+
+                    if (!index && Object.keys(this.keyframes).length) {
+                        index++
+                    }
                 } else {
                     // 含有優先 selector
                     index = findPrioritySelectorInsertIndex(this.rules, undefined, eachRule => eachRule.media)
@@ -1179,6 +1196,8 @@ export class MasterCSS {
                     }
                 }
             }
+
+            rule.config.insert?.call(rule)
         }
     }
 

@@ -19,12 +19,9 @@ export class Rule {
 
     readonly at: Record<string, string> = {}
     readonly priority: number = -1
-    readonly natives: {
-        text: string
-        theme: string
-        cssRule?: CSSRule
-    }[] = []
+    readonly natives: RuleNative[] = []
 
+    keyframeNames: string[]
     config: RuleConfig
 
     constructor(
@@ -774,6 +771,12 @@ export interface Rule {
     }
 }
 
+export interface RuleNative {
+    text: string
+    theme: string
+    cssRule?: CSSRule
+}
+
 export interface MediaFeatureRule {
     token: string;
     tokenType?: string;
@@ -814,4 +817,5 @@ export interface RuleConfig {
     declare?(this: Rule, value: string, unit: string): Record<string, any>
     delete?(this: Rule, className: string): void
     create?(this: Rule, className: string): void
+    insert?(this: Rule): void
 }

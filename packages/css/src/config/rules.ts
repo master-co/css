@@ -2,7 +2,7 @@ import { START_SYMBOL } from '../constants/start-symbol'
 import { BOX_UNDERNEATH } from '../constants/box-underneath'
 import { CONTENT_EXTREMA } from '../constants/content-extrema'
 import { SIZING_VALUES } from '../constants/sizing-values'
-import type { Declarations, Rule, RuleConfig } from '../rule'
+import { Declarations, Rule, RuleConfig, RuleNative } from '../rule'
 
 // TODO 於 index.node.ts 引入且防止被樹搖，目前被視為無副作用並被清除
 import { cssEscape } from '../utils/css-escape'
@@ -132,8 +132,6 @@ export const rules: Record<string, RuleConfig> = {
                     }
                 }
             }
-
-            console.log(declarations)
 
             return declarations
         }
@@ -721,7 +719,16 @@ export const rules: Record<string, RuleConfig> = {
     },
     animationName: {
         match: '^@name:.',
-        native: true
+        native: true,
+        create(className) {
+            return animationCreate.call(this, className)
+        },
+        delete(className) {
+            return animationDelete.call(this, className)
+        },
+        insert() {
+            return animationInsert.call(this)
+        }
     },
     animationPlayState: {
         match: '^@play-state:.',
@@ -734,7 +741,16 @@ export const rules: Record<string, RuleConfig> = {
     animation: {
         symbol: '@',
         native: true,
-        order: -1
+        order: -1,
+        create(className) {
+            return animationCreate.call(this, className)
+        },
+        delete(className) {
+            return animationDelete.call(this, className)
+        },
+        insert() {
+            return animationInsert.call(this)
+        }
     },
     borderColor: {
         match: '^b(?:[xytblr]|(?:order(?:-(?:left|right|top|bottom))?))?(?:-color)?:(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))',
@@ -1411,6 +1427,107 @@ export const rules: Record<string, RuleConfig> = {
             return {
                 'mask-image': value + unit,
                 '-webkit-mask-image': value + unit
+            }
+        }
+    }
+}
+
+function animationCreate(className: string) {
+    if (!this.css.config.keyframes)
+        return
+
+    const keyframeNames = (
+        this.meta.origin === 'symbol'
+        ? className.slice(this.meta.config.symbol.length)
+        : className.slice(className.indexOf(':') + 1)
+    )
+        .split('|')
+        .filter(eachKeyframe => eachKeyframe in this.css.config.keyframes)
+    if (keyframeNames?.length) {
+        this.keyframeNames = keyframeNames
+    }
+}
+
+function animationDelete() {
+    if (this.keyframeNames?.length) {
+        const keyframeRule = this.css.rules[0]
+        for (const eachKeyframeName of this.keyframeNames) {
+            const keyframe = this.css.keyframes[eachKeyframeName]
+            if (!--keyframe.count) {
+                const nativeIndex = keyframeRule.natives.indexOf(keyframe.native)
+                this.css.style.sheet.deleteRule(nativeIndex)
+                keyframeRule.natives.splice(nativeIndex, 1)
+                delete this.css.keyframes[eachKeyframeName]
+            }
+        }
+
+        if (!keyframeRule.natives.length) {
+            this.css.rules.splice(0, 1)
+        }
+    }
+}
+
+function animationInsert() {
+    if (this.keyframeNames) {
+        const { config, keyframes, style, rules } = this.css
+        const sheet = style?.sheet
+
+        for (const eachKeyframeName of this.keyframeNames) {
+            if (eachKeyframeName in keyframes) {
+                keyframes[eachKeyframeName].count++
+            } else {
+                const native: RuleNative = {
+                    text: `@keyframes ${eachKeyframeName} {`
+                        + Object
+                            .entries(config.keyframes[eachKeyframeName])
+                            .map(([key, values]) => `${key} {${Object.entries(values).map(([name, value]) => name + ': ' + value).join(';')}}`)
+                            .join(',')
+                        + '}',
+                    theme: ''
+                }
+
+                let keyframeRule: Rule
+                if (Object.keys(keyframes).length) {
+                    (keyframeRule = rules[0]).natives.push(native)
+                } else {
+                    rules.splice(
+                        0, 
+                        0, 
+                        keyframeRule = { 
+                            natives: [native],
+                            get text() {
+                                return this.natives.map((eachNative) => eachNative.text).join('')
+                            }
+                        } as Rule
+                    )
+                }
+
+                if (sheet) {
+                    let nativeCssRule: CSSRule
+                    for (let i = 0; i < sheet.cssRules.length; i++) {
+                        const cssRule = sheet.cssRules[i]
+                        if (cssRule.constructor.name !== 'CSSKeyframesRule')
+                            break
+                            
+                        if ((cssRule as CSSKeyframesRule).name === eachKeyframeName) {
+                            nativeCssRule = cssRule
+                            break
+                        }
+                    }
+    
+                    if (nativeCssRule) {
+                        native.cssRule = nativeCssRule
+                    } else {
+                        const cssRuleIndex = keyframeRule.natives.length - 1
+                        sheet.insertRule(native.text, cssRuleIndex)
+                        native.cssRule = sheet.cssRules[cssRuleIndex]
+                    }
+                }
+                
+                keyframes[eachKeyframeName] = {
+                    native,
+                    count: 1
+                }
             }
         }
     }
