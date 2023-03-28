@@ -44,8 +44,9 @@ export class MasterCSS {
     readonly rules: Rule[] = []
     readonly ruleBy: Record<string, Rule> = {}
     readonly countBy = {}
+    readonly observing = false
 
-    _observer = hasWindow ? new MutationObserver((mutationRecords) => {
+    observer = hasWindow ? new MutationObserver((mutationRecords) => {
         // console.time('css engine');
         const correctionOfClassName = {}
         const attributeMutationRecords: MutationRecord[] = []
@@ -631,18 +632,23 @@ export class MasterCSS {
                     .forEach((element) => handleClassList(element.classList))
             }
 
-            this._observer.observe(targetRoot, {
+            this.observer.observe(targetRoot, {
                 ...options,
                 attributes: true,
                 attributeOldValue: true,
                 attributeFilter: ['class'],
             })
+
+            // @ts-ignore
+            this.observing = true
         }
         return this
     }
 
     disconnect(): void {
-        this._observer?.disconnect?.()
+        this.observer?.disconnect?.()
+        // @ts-ignore
+        this.observing = false
         // @ts-ignore
         this.ruleBy = {}
         // @ts-ignore
@@ -657,6 +663,8 @@ export class MasterCSS {
         this.style?.remove()
         // @ts-ignore
         this.style = null
+        // @ts-ignore
+        this.root = null
     }
 
     /**
@@ -702,7 +710,7 @@ export class MasterCSS {
      */
     create(className: string): Rule[] {
         const create = (eachClassName: string) => {
-            if (eachClassName in this.ruleBy) 
+            if (eachClassName in this.ruleBy)
                 return this.ruleBy[eachClassName]
 
             const meta = this.match(eachClassName)
