@@ -1,7 +1,7 @@
 {
     "name": "@master/css.webpack",
     "scripts": {
-        "build": "aron pack --platform node",
+        "build": "techor pack --platform node",
         "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"

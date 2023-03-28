@@ -1,6 +1,7 @@
 import { Config, MasterCSS } from '@master/css'
 import { ReactElement, useEffect, useLayoutEffect, useState, useMemo, Context, createContext, useContext } from 'react'
 
+const { instances } = MasterCSS
 export const CSSContext: Context<MasterCSS> = createContext<MasterCSS>(null)
 
 export function useCSS() {
@@ -16,10 +17,16 @@ export const CSSProvider = ({
     config?: Config,
     root?: Document | ShadowRoot | null
 }) => {
-    const [css] = useState<MasterCSS>(new MasterCSS({ ...config, observe: false }));
+    const [css, setCSS] = useState<MasterCSS>()
+    const existingCSS = instances.find((eachCSS) => eachCSS.root === root)
+    if (existingCSS) {
+        setCSS(existingCSS)
+    } else {
+        setCSS(new MasterCSS({ ...config, observe: false }))
+    }
 
     (typeof window !== 'undefined' ? useLayoutEffect : useEffect)(() => {
-        css.observe(root)
+        if (!css.style) css.observe(root)
         return () => {
             css.destroy()
         }

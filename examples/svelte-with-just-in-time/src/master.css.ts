@@ -1,4 +1,3 @@
-import MasterCSS from '@master/css'
 import type { Config } from '@master/css'
 
 export const config: Config = {
@@ -11,5 +10,3 @@ export const config: Config = {
     selectors: {},
     mediaQueries: {}
 }
-
-export const css = new MasterCSS(config)

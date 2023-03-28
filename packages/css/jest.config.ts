@@ -1,4 +1,4 @@
 /** @type {import('jest').Config} */
 export default {
-    preset: 'aron-web-jest'
+    preset: 'techor-web-jest'
 }

@@ -483,6 +483,10 @@ export class MasterCSS {
     }
 
     observe(targetRoot: Document | ShadowRoot | null, options: MutationObserverInit = { subtree: true, childList: true }) {
+        // prevent repeated observation of the same root element
+        if (this.root === targetRoot) {
+            return
+        }
         if (hasWindow && targetRoot) {
             // @ts-ignore
             this.root = targetRoot
@@ -615,19 +619,19 @@ export class MasterCSS {
     }
 
     disconnect(): void {
-        this._observer.disconnect()
+        this._observer?.disconnect?.()
         // @ts-ignore
         this.ruleBy = {}
         // @ts-ignore
         this.countBy = {}
         this.rules.length = 0
-        const sheet = this.style.sheet
-        if (sheet) {
+        const sheet = this.style?.sheet
+        if (sheet?.cssRules) {
             for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
                 sheet.deleteRule(i)
             }
         }
-        this.style.remove()
+        this.style?.remove()
         // @ts-ignore
         this.style = null
     }

@@ -1,22 +1,26 @@
 <script>
+    import { CSSProvider } from "@master/css.svelte";
+    import { config } from '../master.css';
     import Header from "./Header.svelte";
     import "./styles.css";
-    import "../master.css"
 </script>
 
-<div class="app">
-    <Header />
+<CSSProvider config={config}>
+    <div class="app">
+        <Header />
 
-    <main>
-        <slot />
-    </main>
+        <main>
+            <slot />
+        </main>
 
-    <footer>
-        <p>
-            visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit
-        </p>
-    </footer>
-</div>
+        <footer>
+            <p>
+                visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn
+                SvelteKit
+            </p>
+        </footer>
+    </div>
+</CSSProvider>
 
 <style>
     .app {

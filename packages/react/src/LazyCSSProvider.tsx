@@ -8,7 +8,7 @@ export function useLazyCSS() {
     return useContext(LazyCSSContext)
 }
 
-export const CSSLazyProvider = ({
+export const LazyCSSProvider = ({
     children,
     config,
     root = typeof document !== 'undefined' ? document : null
@@ -31,6 +31,10 @@ export const CSSLazyProvider = ({
                         setCSS(new MasterCSS(resolvedConfig))
                     }
                 })
+        } else {
+            return () => {
+                css.destroy()
+            }
         }
     }, [config, css, root])
     return <LazyCSSContext.Provider value={css}>{children}</LazyCSSContext.Provider>
