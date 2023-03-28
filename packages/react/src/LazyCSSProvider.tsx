@@ -31,9 +31,10 @@ export const LazyCSSProvider = ({
                         setCSS(new MasterCSS(resolvedConfig))
                     }
                 })
-        } else {
             return () => {
-                css.destroy()
+                if (css) {
+                    css.disconnect()
+                }
             }
         }
     }, [config, css, root])

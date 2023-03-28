@@ -24,9 +24,9 @@ export const CSSProvider = ({
     useIsomorphicEffect(() => {
         if (!css.observing) {
             css.observe(root)
-        } else {
             return () => {
-                css.destroy()
+                css.disconnect()
+                console.log('disconnect')
             }
         }
     }, [css, root])
