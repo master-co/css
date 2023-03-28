@@ -1,7 +1,7 @@
 {
     "name": "@master/normal.css",
     "scripts": {
-        "build": "aron pack",
+        "build": "techor pack",
         "dev": "npm run build -- --watch"
     },
     "license": "MIT",

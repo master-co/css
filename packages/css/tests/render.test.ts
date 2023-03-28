@@ -29,7 +29,7 @@ test('render', () => {
         </head>
         <body>
             <h1 class="text:center font:32">Hello World</h1>
-        <style title="master">.font\:32{font-size:2rem}.text\:center{text-align:center}</style></body>
+        <style id="master">.font\:32{font-size:2rem}.text\:center{text-align:center}</style></body>
     </html>`)
 
     expect(renderIntoHTML(html, { precedence: 'higher' }))
@@ -37,7 +37,7 @@ test('render', () => {
         <head>
             <link rel="styleSheet">
             <style></style>
-        <style title="master">.font\:32{font-size:2rem}.text\:center{text-align:center}</style></head>
+        <style id="master">.font\:32{font-size:2rem}.text\:center{text-align:center}</style></head>
         <body>
             <h1 class="text:center font:32">Hello World</h1>
         </body>
@@ -45,7 +45,7 @@ test('render', () => {
     expect(renderIntoHTML(html, { precedence: 'lowest' }))
         .toBe(dedent`<html>
         <head>
-            <style title="master">.font\:32{font-size:2rem}.text\:center{text-align:center}</style><link rel="styleSheet">
+            <style id="master">.font\:32{font-size:2rem}.text\:center{text-align:center}</style><link rel="styleSheet">
             <style></style>
         </head>
         <body>

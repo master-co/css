@@ -1,4 +1,4 @@
-const configure = require('semantic-release-config-aron/configure')
+const configure = require('semantic-release-config-techor/configure')
 
 module.exports = configure({
     assets: [

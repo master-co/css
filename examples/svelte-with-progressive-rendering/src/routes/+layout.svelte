@@ -1,22 +1,25 @@
 <script>
+    import { LazyCSSProvider } from "@master/css.svelte";
     import Header from "./Header.svelte";
     import "./styles.css";
-    import "../master.css"
 </script>
 
-<div class="app">
-    <Header />
+<LazyCSSProvider config={import("../master.css")}>
+    <div class="app">
+        <Header />
 
-    <main>
-        <slot />
-    </main>
+        <main>
+            <slot />
+        </main>
 
-    <footer>
-        <p>
-            visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit
-        </p>
-    </footer>
-</div>
+        <footer>
+            <p>
+                visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn
+                SvelteKit
+            </p>
+        </footer>
+    </div>
+</LazyCSSProvider>
 
 <style>
     .app {

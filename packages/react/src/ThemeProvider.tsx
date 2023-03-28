@@ -1,9 +1,14 @@
 import { ThemeSettings, ThemeValue, Theme } from '@master/css'
-import { DependencyList, EffectCallback, ReactElement, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
-import { ThemeContext } from '../contexts'
+import { Context, createContext, DependencyList, EffectCallback, ReactElement, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 
 const useIsomorphicEffect: (effect: EffectCallback, deps?: DependencyList) => void =
     typeof window !== 'undefined' ? useLayoutEffect : useEffect
+
+export const ThemeContext: Context<Theme> = createContext<Theme>(null)
+
+export function useTheme() {
+    return useContext(ThemeContext)
+}
 
 export function ThemeProvider({
     config,

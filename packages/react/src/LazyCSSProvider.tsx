@@ -1,8 +1,14 @@
 import type { MasterCSS, Config } from '@master/css'
 import { ReactElement, useEffect, useState } from 'react'
-import { CSSContext } from '../contexts'
+import { Context, createContext, useContext } from 'react'
 
-export const CSSLazyProvider = ({
+export const LazyCSSContext: Context<MasterCSS> = createContext<MasterCSS>(null)
+
+export function useLazyCSS() {
+    return useContext(LazyCSSContext)
+}
+
+export const LazyCSSProvider = ({
     children,
     config,
     root = typeof document !== 'undefined' ? document : null
@@ -25,7 +31,11 @@ export const CSSLazyProvider = ({
                         setCSS(new MasterCSS(resolvedConfig))
                     }
                 })
+        } else {
+            return () => {
+                css.destroy()
+            }
         }
     }, [config, css, root])
-    return <CSSContext.Provider value={css}>{children}</CSSContext.Provider>
+    return <LazyCSSContext.Provider value={css}>{children}</LazyCSSContext.Provider>
 }

@@ -25,13 +25,13 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 )
 
 /* lazy loading just-in-time */
-// import { CSSLazyProvider, ThemeProvider } from '@master/css.react'
+// import { LazyCSSProvider, ThemeProvider } from '@master/css.react'
 // ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 //     <React.StrictMode>
-//         <CSSLazyProvider config={import('../master.css')}>
+//         <LazyCSSProvider config={import('../master.css')}>
 //             <ThemeProvider>
 //                 <App />
 //             </ThemeProvider>
-//         </CSSLazyProvider>
+//         </LazyCSSProvider>
 //     </React.StrictMode>,
 // )

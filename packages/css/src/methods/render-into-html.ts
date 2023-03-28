@@ -4,7 +4,7 @@ import { renderFromHTML } from './render-from-html'
 export function renderIntoHTML(html: string, config?: Config): string {
     if (!html) return
 
-    const styleText = `<style title="master">${renderFromHTML(html, config)}</style>`
+    const styleText = `<style id="master">${renderFromHTML(html, config)}</style>`
     const precedence = config?.precedence ?? 'highest'
     switch (precedence) {
         case 'highest':

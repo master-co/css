@@ -1,7 +1,7 @@
 {
     "name": "@master/keyframes.css",
     "scripts": {
-        "build": "aron pack src/*.css",
+        "build": "techor pack src/*.css",
         "dev": "npm run build -- --watch"
     },
     "license": "MIT",
