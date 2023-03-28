@@ -1,7 +1,7 @@
 {
     "name": "@master/css",
     "scripts": {
-        "build": "aron pack --extra-external @master/css-compiler --shakable",
+        "build": "techor pack --extra-external @master/css-compiler --shakable",
         "dev": "npm run build -- --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",

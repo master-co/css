@@ -488,6 +488,10 @@ export class MasterCSS {
     }
 
     observe(targetRoot: Document | ShadowRoot | null, options: MutationObserverInit = { subtree: true, childList: true }) {
+        // prevent repeated observation of the same root element
+        if (this.root === targetRoot) {
+            return
+        }
         if (hasWindow && targetRoot) {
             // @ts-ignore
             this.root = targetRoot
@@ -505,9 +509,9 @@ export class MasterCSS {
             const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : targetRoot.styleSheets
             // @ts-ignore
             for (const sheet of styleSheets) {
-                const { title, href, ownerNode } = sheet
+                const { href, ownerNode } = sheet
                 if (
-                    title === 'master'
+                    (ownerNode as HTMLStyleElement).id === 'master'
                     || href && href.startsWith(window.location.origin) && /master(?:\..+)?\.css/.test(href)
                 ) {
                     // @ts-ignore
@@ -583,7 +587,7 @@ export class MasterCSS {
             } else {
                 // @ts-ignore
                 this.style = document.createElement('style')
-                this.style.title = 'master'
+                this.style.id = 'master'
                 /** 為提高優先層級，插入於任何 <link rel="styleSheet"> 或 <style> 之前 */
                 const firstStyleElement = container.querySelector('link[rel="styleSheet"], style')
                 if (firstStyleElement) {
@@ -626,19 +630,19 @@ export class MasterCSS {
     }
 
     disconnect(): void {
-        this._observer.disconnect()
+        this._observer?.disconnect?.()
         // @ts-ignore
         this.ruleBy = {}
         // @ts-ignore
         this.countBy = {}
         this.rules.length = 0
-        const sheet = this.style.sheet
-        if (sheet) {
+        const sheet = this.style?.sheet
+        if (sheet?.cssRules) {
             for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
                 sheet.deleteRule(i)
             }
         }
-        this.style.remove()
+        this.style?.remove()
         // @ts-ignore
         this.style = null
     }
@@ -722,7 +726,7 @@ export class MasterCSS {
         }
 
         const style = document.createElement('style')
-        style.title = 'master'
+        style.id = 'master'
         this.style.replaceWith(style)
         // @ts-ignore
         this.style = style

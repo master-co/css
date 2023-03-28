@@ -20,7 +20,7 @@ Document.getInitialProps = async (ctx: DocumentContext) => {
         ...initialProps,
         styles: (
             <>
-                <style title="master">{renderFromHTML(initialProps.html, config)}</style>
+                <style id="master">{renderFromHTML(initialProps.html, config)}</style>
                 {initialProps.styles}
             </>
         )

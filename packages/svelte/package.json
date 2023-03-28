@@ -1,0 +1,57 @@
+{
+    "name": "@master/css.svelte",
+    "type": "module",
+    "scripts": {
+        "build": "techor pack ./src/**/*.{ts,svelte} --format esm --esm-ext .js --no-bundle",
+        "dev": "npm run build -- -w",
+        "type-check": "tsc --noEmit"
+    },
+    "license": "MIT",
+    "description": "Integration of Master CSS in Svelte",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://docs.master.co/css/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/svelte"
+    },
+    "keywords": [
+        "svelte",
+        "providers",
+        "css",
+        "mastercss"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.js",
+    "jsnext:main": "./dist/index.js",
+    "esnext": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "peerDependencies": {
+        "svelte": ">= 3.0.0"
+    },
+    "dependencies": {
+        "@master/css": "",
+        "techor": "^1.2.5"
+    },
+    "devDependencies": {
+        "@tsconfig/svelte": "^3.0.0",
+        "esbuild-plugin-copy": "^2.1.1"
+    }
+}
