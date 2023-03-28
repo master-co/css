@@ -7,6 +7,13 @@ import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 
 const hasWindow = typeof window !== 'undefined'
 
+const createStyle = () => {
+    const style = document.createElement('style')
+    style.id = 'master'
+    style.setAttribute('blocking', 'render')
+    return style
+}
+
 export interface MasterCSS {
     readonly style: HTMLStyleElement
     readonly host: Element
@@ -587,9 +594,8 @@ export class MasterCSS {
                 }
             } else {
                 // @ts-ignore
-                this.style = document.createElement('style')
-                this.style.id = 'master'
-                
+                this.style = createStyle()
+
                 switch (this.config.precedence) {
                     case 'highest':
                         console.log(isDocumentRoot ? document.body : targetRoot);
@@ -606,7 +612,7 @@ export class MasterCSS {
                         } else {
                             container.append(this.style)
                         }
-                        break 
+                        break
                 }
             }
 
@@ -745,8 +751,7 @@ export class MasterCSS {
             return
         }
 
-        const style = document.createElement('style')
-        style.id = 'master'
+        const style = createStyle()
         this.style.replaceWith(style)
         // @ts-ignore
         this.style = style
