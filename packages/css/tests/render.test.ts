@@ -9,7 +9,7 @@ const html = dedent`
             <style></style>
         </head>
         <body>
-            <h1 class="text:center font:32">Hello World</h1>
+            <h1 class="text:center ml:0&gt;:is(a,button):first font:32">Hello World</h1>
         </body>
     </html>
 `
@@ -19,7 +19,7 @@ test('render', () => {
         .toBe('.font\\:32{font-size:2rem}.text\\:center{text-align:center}')
 
     expect(renderFromHTML(html))
-        .toBe('.font\\:32{font-size:2rem}.text\\:center{text-align:center}')
+        .toBe('.font\\:32{font-size:2rem}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0rem}.text\\:center{text-align:center}')
 
     expect(renderIntoHTML(html))
         .toBe(dedent`<html>
@@ -28,8 +28,8 @@ test('render', () => {
             <style></style>
         </head>
         <body>
-            <h1 class="text:center font:32">Hello World</h1>
-        <style id="master">.font\:32{font-size:2rem}.text\:center{text-align:center}</style></body>
+            <h1 class="text:center ml:0&gt;:is(a,button):first font:32">Hello World</h1>
+        <style id="master">.font\:32{font-size:2rem}.ml\:0\>\:is\(a\,button\)\:first>:is(a,button):first-child{margin-left:0rem}.text\:center{text-align:center}</style></body>
     </html>`)
 
     expect(renderIntoHTML(html, { precedence: 'higher' }))
@@ -37,19 +37,19 @@ test('render', () => {
         <head>
             <link rel="styleSheet">
             <style></style>
-        <style id="master">.font\:32{font-size:2rem}.text\:center{text-align:center}</style></head>
+        <style id="master">.font\:32{font-size:2rem}.ml\:0\>\:is\(a\,button\)\:first>:is(a,button):first-child{margin-left:0rem}.text\:center{text-align:center}</style></head>
         <body>
-            <h1 class="text:center font:32">Hello World</h1>
+            <h1 class="text:center ml:0&gt;:is(a,button):first font:32">Hello World</h1>
         </body>
     </html>`)
     expect(renderIntoHTML(html, { precedence: 'lowest' }))
         .toBe(dedent`<html>
         <head>
-            <style id="master">.font\:32{font-size:2rem}.text\:center{text-align:center}</style><link rel="styleSheet">
+            <style id="master">.font\:32{font-size:2rem}.ml\:0\>\:is\(a\,button\)\:first>:is(a,button):first-child{margin-left:0rem}.text\:center{text-align:center}</style><link rel="styleSheet">
             <style></style>
         </head>
         <body>
-            <h1 class="text:center font:32">Hello World</h1>
+            <h1 class="text:center ml:0&gt;:is(a,button):first font:32">Hello World</h1>
         </body>
     </html>`)
 })
