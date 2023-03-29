@@ -11,6 +11,7 @@
     },
     "devDependencies": {
         "@master/css.vite": "",
+        "@master/css.svelte": "",
 		"@fontsource/fira-mono": "^4.5.10",
 		"@neoconfetti/svelte": "^1.0.0",
 		"@sveltejs/adapter-auto": "^2.0.0",
