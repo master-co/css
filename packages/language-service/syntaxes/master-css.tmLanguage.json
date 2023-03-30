@@ -145,7 +145,7 @@
                     }
                 },
                 {
-                    "match": "(?<![\\-])\\b(sr\\-only|center\\-content|break\\-word|inline\\-block|inline\\-flex|inline\\-grid|inline\\-table|untouchable|capitalize|invisible|lowercase|uppercase|contents|oblique|visible|rounded|italic|max\\-vh|max\\-vw|min\\-vh|min\\-vw|static|sticky|hidden|inline|square|fixed|block|table|round|hide|full|grid|(?:flex(?!\\:(?:row|col|column|wrap|nowrap|\\d)(?:\\-reverse)?))|abs|rel|vw|vh)(?:\\b|_)",
+                    "match": "(?<![\\-])\\b(table\\-column\\-group|table\\-header\\-group|table\\-footer\\-group|table\\-row\\-group|center\\-content|table\\-caption|break\\-spaces|table\\-column|inline\\-block|inline\\-table|inline\\-flex|inline\\-grid|untouchable|capitalize|break\\-word|table\\-cell|flow\\-root|list\\-item|table\\-row|invisible|lowercase|uppercase|contents|overflow|sr\\-only|isolate|oblique|rounded|visible|max\\-vh|max\\-vw|min\\-vh|min\\-vw|center|hidden|italic|inline|middle|static|sticky|square|block|fixed|round|table|video|full|(?:flex(?!\\:(?:row|col|column|wrap|nowrap|\\d)(?:\\-reverse)?))|grid|hide|abs|rel|vh|vw)(?:\\b|_)",
                     "captures": {
                         "1": {
                             "name": "support.constant.property-value.css"
