@@ -1,6 +1,7 @@
 {
 	"name": "svelte-with-just-in-time",
 	"version": "0.0.1",
+	"private": true,
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
