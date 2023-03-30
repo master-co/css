@@ -9,10 +9,10 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@master/css": "",
         "lit": "^2.6.1"
     },
     "devDependencies": {
+        "@master/css.vite": "*",
         "typescript": "^4.9.3",
         "vite": "^4.0.1"
     }
