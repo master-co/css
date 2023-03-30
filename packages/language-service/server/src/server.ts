@@ -26,6 +26,7 @@ import { positionCheck } from './position-check'
 import { getDocumentColors, getColorPresentation, getConfigFileColorRender } from './providers/color'
 import * as path from 'path'
 import { defaultClassNameMatches } from './constant'
+import uri2path from 'file-uri-to-path'
 
 const connection = createConnection(ProposedFeatures.all)
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument)
@@ -140,17 +141,20 @@ async function loadMasterCssConfig(resource: string) {
     }
     if (root?.uri) {
         try {
-            try {
-                const uri2path = (await import('file-uri-to-path')) as any
-                configFileLocation = uri2path(root.uri.replace('%3A', ':'))
-                const compiler = new MasterCSSCompiler({ cwd: configFileLocation, config: settings.config })
-                const config: any = compiler.readConfig()
-                MasterCSSObject = new MasterCSS(config)
-                MasterCSSOriginConfig = config
-            } catch (_) {
-                MasterCSSObject = new MasterCSS()
-            }
-        } catch (_) { /* empty */ }
+            console.log(1)
+            configFileLocation = uri2path(root.uri.replace('%3A', ':'))
+            console.log(2)
+            const compiler = new MasterCSSCompiler({ cwd: configFileLocation, config: settings.config })
+            console.log(3)
+            const config: any = compiler.config
+            console.log(4)
+            MasterCSSObject = new MasterCSS(config)
+            console.log(5)
+            MasterCSSOriginConfig = config
+        } catch (ex) {
+            console.log(ex)
+            MasterCSSObject = new MasterCSS()
+        }
     }
 }
 
