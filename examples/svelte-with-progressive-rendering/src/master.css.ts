@@ -1,5 +1,4 @@
-import MasterCSS from '@master/css'
-import type { Config } from '@master/css'
+import { MasterCSS, type Config } from '@master/css'
 
 export const config: Config = {
     themes: {},

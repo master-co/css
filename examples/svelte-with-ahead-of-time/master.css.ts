@@ -1,4 +1,4 @@
-import { Config } from '@master/css'
+import { MasterCSS, type Config } from '@master/css'
 
 export const config: Config = {
     themes: {},
@@ -10,3 +10,5 @@ export const config: Config = {
     selectors: {},
     mediaQueries: {}
 }
+
+export const css = new MasterCSS(config)

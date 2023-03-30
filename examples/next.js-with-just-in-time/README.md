@@ -1,2 +1,1 @@
-- Official Guide: https://beta.css.master.co/docs/guides/nextjs/just-in-time
-- Online Production Example: https://nextjs.jit.beta.css.master.co
+Check out the [official guide](https://beta.css.master.co/docs/guides/nextjs/just-in-time)

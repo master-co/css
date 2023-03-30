@@ -1,2 +1,1 @@
-- Official Guide: https://beta.css.master.co/docs/guides/nextjs/progressive-rendering
-- Online Production Example: https://nextjs.pr.beta.css.master.co
+Check out the [official guide](https://beta.css.master.co/docs/guides/nextjs)
