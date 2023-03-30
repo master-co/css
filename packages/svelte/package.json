@@ -47,8 +47,7 @@
         "svelte": ">= 3.0.0"
     },
     "dependencies": {
-        "@master/css": "",
-        "techor": "^1.2.5"
+        "@master/css": ""
     },
     "devDependencies": {
         "@tsconfig/svelte": "^3.0.0",
