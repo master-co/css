@@ -36,6 +36,7 @@ let hasDiagnosticRelatedInformationCapability = false
 let settings: MasterCSSSettings
 
 let MasterCSSObject: MasterCSS | undefined
+let MasterCSSOriginConfig: any
 let configFileLocation = ''
 
 // The example settings
@@ -145,6 +146,7 @@ async function loadMasterCssConfig(resource: string) {
                 const compiler = await new MasterCSSCompiler({ cwd: configFileLocation, config: settings.config })
                 const config: any = compiler.readConfig()
                 MasterCSSObject = new MasterCSS(config)
+                MasterCSSOriginConfig = config
             } catch (_) {
                 MasterCSSObject = new MasterCSS()
             }
@@ -315,7 +317,7 @@ connection.onHover(textDocumentPosition => {
             const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
             const HoverInstance = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classNameMatches)
             if (HoverInstance.IsMatch) {
-                return doHover(HoverInstance.instance.instanceString, indexToRange(HoverInstance.instance.index, document), MasterCSSObject)
+                return doHover(HoverInstance.instance.instanceString, indexToRange(HoverInstance.instance.index, document), MasterCSSOriginConfig)
             }
         }
     }

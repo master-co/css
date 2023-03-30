@@ -8,11 +8,11 @@ import { cssData } from 'vscode-css-languageservice/lib/esm/data/webCustomData'
 import { CSSDataProvider } from 'vscode-css-languageservice/lib/esm/languageFacts/dataProvider'
 
 
-export function doHover(instance: string, range: Range, masterCss: MasterCSS = new MasterCSS({ observe: false })): Hover | null {
+export function doHover(instance: string, range: Range, config: any): Hover | null {
     
     const contents = []
 
-    const cssPreview = getCssPreview(instance, masterCss)
+    const cssPreview = getCssPreview(instance, config)
     if (cssPreview) {
         contents.push(cssPreview)
     }
@@ -28,8 +28,8 @@ export function doHover(instance: string, range: Range, masterCss: MasterCSS = n
     }
 }
 
-function getCssPreview(instance: string, masterCss: MasterCSS = new MasterCSS({ observe: false })) {
-    const renderText = render(instance.split(' '), masterCss.config)
+function getCssPreview(instance: string, config: any) {
+    const renderText = render([instance], config)
     if (!renderText || renderText == ' ') {
         return null
     }
