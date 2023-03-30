@@ -19,7 +19,7 @@ export class Game {
 		} else {
 			this.index = Math.floor(Math.random() * words.length);
 			this.guesses = ['', '', '', '', '', ''];
-			this.answers = [] ;
+			this.answers = [];
 		}
 
 		this.answer = words[this.index];
