@@ -1,7 +1,7 @@
 {
     "private": true,
     "scripts": {
-        "install": "husky install && npm ls --link=true",
+        "postinstall": "husky install && npm ls --link=true",
         "build": "turbo run build --filter=./packages/**/*",
         "build:clean": "rm -rf ./packages/**/*dist && turbo run build --force --no-cache --filter=./packages/**/*",
         "check": "npm run commit-check && npm run build && turbo run test lint type-check --parallel --filter=./packages/**/*",
