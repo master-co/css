@@ -143,7 +143,7 @@ async function loadMasterCssConfig(resource: string) {
             try {
                 const uri2path = (await import('file-uri-to-path')) as any
                 configFileLocation = uri2path(root.uri.replace('%3A', ':'))
-                const compiler = await new MasterCSSCompiler({ cwd: configFileLocation, config: settings.config })
+                const compiler = new MasterCSSCompiler({ cwd: configFileLocation, config: settings.config })
                 const config: any = compiler.readConfig()
                 MasterCSSObject = new MasterCSS(config)
                 MasterCSSOriginConfig = config
