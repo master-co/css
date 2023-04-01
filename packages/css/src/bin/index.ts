@@ -21,7 +21,7 @@ program.command('init')
             if (fs.existsSync('tsconfig.json')) {
                 ext = 'ts'
             } else {
-                const { type } = readFileAsJSON('./package.json')
+                const { type } = readFileAsJSON('./package.json') || {}
                 if (type === 'module') {
                     ext = 'mjs'
                 } else {
@@ -114,7 +114,7 @@ program.command('build', { isDefault: true })
         }
     })
 
-const { version, name, description } = readFileAsJSON(path.join(__dirname, '../../package.json'))
+const { version, name, description } = readFileAsJSON('../../../package.json', { cwd: __dirname }) || {}
 
 program.name(name)
 program.description(description)
