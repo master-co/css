@@ -7,7 +7,7 @@ import { Declarations, Rule, RuleConfig, RuleNative } from '../rule'
 // TODO 於 index.node.ts 引入且防止被樹搖，目前被視為無副作用並被清除
 import { cssEscape } from '../utils/css-escape'
 
-export const rules: Record<string, RuleConfig> = {
+const defaultRules = {
     group: {
         match: '^(?:.+?[*_>~+])?\\{.+?\\}',
         analyze(className: string) {
@@ -1433,6 +1433,8 @@ export const rules: Record<string, RuleConfig> = {
         }
     }
 }
+
+export const rules = defaultRules as any as Record<keyof typeof defaultRules, RuleConfig>
 
 function animationCreate(className: string) {
     if (!this.css.config.keyframes)

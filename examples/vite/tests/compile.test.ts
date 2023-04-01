@@ -59,6 +59,7 @@ describe('dev', () => {
         expect(newClassNameElementHandle).not.toBeNull()
         // -> classes: { btn43848384: 'xxx' }
         fs.writeFileSync(configPath, originalConfigContent.replace(/(btn):/, newBtnClassName + ':'))
+        await new Promise((x) => setTimeout(x, 1000))
         await page.waitForNetworkIdle()
         const styleHandle = await page.$('[data-vite-dev-id$="master.css"]')
         expect(styleHandle).not.toBeNull()
