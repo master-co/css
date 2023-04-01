@@ -26,7 +26,6 @@ export const CSSProvider = ({
             css.observe(root)
             return () => {
                 css.disconnect()
-                console.log('disconnect')
             }
         }
     }, [css, root])

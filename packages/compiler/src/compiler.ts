@@ -1,7 +1,6 @@
 import upath from 'upath'
 import { default as defaultOptions, Options } from './options'
 import MasterCSS, { Rule } from '@master/css'
-import { performance } from 'perf_hooks'
 import type { Config } from '@master/css'
 import extract from './extract'
 import fs from 'fs'
@@ -40,27 +39,6 @@ export class MasterCSSCompiler extends Techor<Options, Config> {
                 ? customOptions.config
                 : definition?.config
         )
-    }
-
-    readConfig(key = 'config', buildOptions?): Config | any {
-        const { config, cwd } = this.options
-        if (typeof config === 'object') {
-            return config as Config
-        }
-        let userConfig: Config
-        try {
-            const configPath = this.configPath
-            if (configPath) {
-                const userConfigModule = crossImport(configPath, { cwd }, buildOptions as any)
-                userConfig = (key ? userConfigModule[key] : undefined) || userConfigModule.default || userConfigModule
-                this.logConfigFound(configPath)
-            } else {
-                this.logConfigNotFound(config as string)
-            }
-        } catch (err) {
-            log.error(err)
-        }
-        return userConfig
     }
 
     async refresh() {
@@ -145,7 +123,7 @@ export class MasterCSSCompiler extends Techor<Options, Config> {
                 return true
             })
 
-        const p1 = performance.now()
+        let time = process.hrtime()
         /* 根據類名尋找並插入規則 ( MasterCSS 本身帶有快取機制，重複的類名不會再編譯及產生 ) */
         const validExtractions = []
 
@@ -162,8 +140,8 @@ export class MasterCSSCompiler extends Techor<Options, Config> {
                     }
                 })
         )
-
-        const spent = Math.round((performance.now() - p1) * 100) / 100
+        time = process.hrtime(time)
+        const spent = Math.round(((time[0] * 1e9 + time[1]) / 1e6) * 10) / 10
 
         if (extractions.length) {
             console.log('')
