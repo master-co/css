@@ -141,15 +141,10 @@ async function loadMasterCssConfig(resource: string) {
     }
     if (root?.uri) {
         try {
-            console.log(1)
             configFileLocation = uri2path(root.uri.replace('%3A', ':'))
-            console.log(2)
             const compiler = new MasterCSSCompiler({ cwd: configFileLocation, config: settings.config })
-            console.log(3)
             const config: any = compiler.config
-            console.log(4)
             MasterCSSObject = new MasterCSS(config)
-            console.log(5)
             MasterCSSOriginConfig = config
         } catch (ex) {
             console.log(ex)

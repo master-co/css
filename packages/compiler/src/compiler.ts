@@ -10,7 +10,7 @@ import minimatch from 'minimatch'
 import Techor from 'techor'
 import log, { chalk } from '@techor/log'
 import stylelint from 'stylelint'
-import extend from 'to-extend'
+import extend from '@techor/extend'
 
 export class MasterCSSCompiler extends Techor<Options, Config> {
 
@@ -35,7 +35,32 @@ export class MasterCSSCompiler extends Techor<Options, Config> {
         super(defaultOptions, customOptions)
         const definition = this.readConfig(null)
         this.options = extend(this.options, definition?.compilerOptions, customOptions)
-        this.css = definition?.css ?? new MasterCSS(definition?.config)
+        this.css = definition?.css ?? new MasterCSS(
+            typeof customOptions?.config === 'object'
+                ? customOptions.config
+                : definition?.config
+        )
+    }
+
+    readConfig(key = 'config', buildOptions?): Config | any {
+        const { config, cwd } = this.options
+        if (typeof config === 'object') {
+            return config as Config
+        }
+        let userConfig: Config
+        try {
+            const configPath = this.configPath
+            if (configPath) {
+                const userConfigModule = crossImport(configPath, { cwd }, buildOptions as any)
+                userConfig = (key ? userConfigModule[key] : undefined) || userConfigModule.default || userConfigModule
+                this.logConfigFound(configPath)
+            } else {
+                this.logConfigNotFound(config as string)
+            }
+        } catch (err) {
+            log.error(err)
+        }
+        return userConfig
     }
 
     async refresh() {

@@ -13,7 +13,6 @@
         "node": "*"
     },
     "devDependencies": {
-        "@master/css": "",
         "@master/css-compiler": "",
         "file-uri-to-path": "^2.0.0",
         "js-beautify": "^1.14.7",
@@ -24,17 +23,7 @@
         "vscode-languageserver-textdocument": "^1.0.4"
     },
     "main": "./dist/index.js",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "require": "./dist/index.default.js",
-            "import": "./dist/index.default.mjs",
-            "types": "./dist/index.default.d.ts"
-        }
-    },
     "files": [
         "dist"
     ],

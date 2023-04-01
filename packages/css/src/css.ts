@@ -1,4 +1,4 @@
-import extend from 'to-extend'
+import extend from '@techor/extend'
 import { Rule, RuleMeta, RuleNative } from './rule'
 import type { Config } from './config'
 import { config as defaultConfig } from './config'

@@ -1,6 +1,6 @@
 import { testCSS } from './test-css'
 import { config } from '../../../master.css.js'
-import extend from 'to-extend'
+import extend from '@techor/extend'
 
 test('classes', () => {
     testCSS(

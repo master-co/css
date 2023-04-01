@@ -1,7 +1,7 @@
 {
     "name": "@master/css-compiler",
     "scripts": {
-        "build": "techor pack --platform node --shakable",
+        "build": "techor pack --platform node --extra-external @swc/wasm @swc/core-darwin-arm64",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
         "test": "jest"
@@ -31,21 +31,31 @@
         "vite-plugin"
     ],
     "sideEffects": false,
-    "main": "./dist/cjs/index.js",
-    "jsnext:main": "./dist/esm/index.mjs",
-    "esnext": "./dist/esm/index.mjs",
-    "module": "./dist/esm/index.mjs",
+    "main": "./dist/index.js",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "node": {
-                "require": "./dist/cjs/index.js",
-                "import": "./dist/esm/index.mjs",
-                "types": "./dist/index.d.ts"
-            },
-            "require": "./dist/cjs/index.default.js",
-            "import": "./dist/esm/index.default.mjs",
-            "types": "./dist/index.default.d.ts"
+            "require": "./dist/index.js",
+            "import": "./dist/index.mjs",
+            "types": "./dist/index.d.ts"
+        },
+        "./options": {
+            "require": "./dist/options/index.js",
+            "import": "./dist/options/index.mjs",
+            "types": "./dist/options/index.d.ts"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "*": [
+                "./dist/index.d.ts"
+            ],
+            "options": [
+                "./dist/options/index.d.ts"
+            ]
         }
     },
     "files": [
@@ -56,15 +66,14 @@
     },
     "dependencies": {
         "@master/css": "",
+        "@techor/extend": "^2.0.5",
         "fast-glob": "^3.2.12",
         "minimatch": "^5.1.1",
         "stylelint": "^15.2.0",
-        "techor": "^1.2.7",
-        "to-extend": "^1.5.2",
+        "techor": "^2.0.5",
         "upath": "^2.0.1"
     },
     "devDependencies": {
-        "@swc-node/jest": "^1.6.2",
         "ts-jest": "^29.0.5"
     }
 }
