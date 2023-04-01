@@ -1434,7 +1434,7 @@ const defaultRules = {
     }
 }
 
-export const rules = defaultRules as any as Record<keyof typeof defaultRules, RuleConfig>
+export const rules = defaultRules as any as { [key in keyof typeof defaultRules]: RuleConfig } & { [key: string]: RuleConfig }
 
 function animationCreate(className: string) {
     if (!this.css.config.keyframes)
