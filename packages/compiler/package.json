@@ -1,7 +1,7 @@
 {
     "name": "@master/css-compiler",
     "scripts": {
-        "build": "techor pack --platform node --extra-external @swc/wasm @swc/core-darwin-arm64",
+        "build": "techor pack --platform node",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
         "test": "jest"

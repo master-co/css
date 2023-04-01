@@ -598,7 +598,6 @@ export class MasterCSS {
 
                 switch (this.config.precedence) {
                     case 'highest':
-                        console.log(isDocumentRoot ? document.body : targetRoot);
                         (isDocumentRoot ? document.body : targetRoot).append(this.style)
                         break
                     case 'higher':
