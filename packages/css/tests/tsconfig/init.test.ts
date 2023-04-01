@@ -3,7 +3,7 @@ import dedent from 'dedent'
 import { expectFileIncludes } from '../../../../utils/expect-file-includes'
 
 it('init (with tsconfig.json)', () => {
-    execSync('node ../../dist/cjs/bin/index init -o', { cwd: __dirname }).toString()
+    execSync('node ../../dist/cjs/bin init -o', { cwd: __dirname }).toString()
     expectFileIncludes('master.css.ts', [
         dedent`
             import { Config } from '@master/css'
@@ -23,7 +23,7 @@ it('init (with tsconfig.json)', () => {
 })
 
 it('init --jit (with tsconfig.json)', () => {
-    execSync('node ../../dist/cjs/bin/index init --jit -o', { cwd: __dirname }).toString()
+    execSync('node ../../dist/cjs/bin init --jit -o', { cwd: __dirname }).toString()
     expectFileIncludes('master.css.ts', [
         dedent`
             import MasterCSS, { Config } from '@master/css'
@@ -45,7 +45,7 @@ it('init --jit (with tsconfig.json)', () => {
 })
 
 it('init --compiler (with tsconfig.json)', () => {
-    execSync('node ../../dist/cjs/bin/index init --compiler -o', { cwd: __dirname }).toString()
+    execSync('node ../../dist/cjs/bin init --compiler -o', { cwd: __dirname }).toString()
     expectFileIncludes('master.css.ts', [
         dedent`
             import { Config } from '@master/css'
@@ -74,7 +74,7 @@ it('init --compiler (with tsconfig.json)', () => {
 })
 
 it('init --jit --compiler (with tsconfig.json)', () => {
-    execSync('node ../../dist/cjs/bin/index init --jit --compiler -o', { cwd: __dirname }).toString()
+    execSync('node ../../dist/cjs/bin init --jit --compiler -o', { cwd: __dirname }).toString()
     expectFileIncludes('master.css.ts', [
         dedent`
             import MasterCSS, { Config } from '@master/css'

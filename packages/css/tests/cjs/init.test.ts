@@ -1,9 +1,9 @@
-import { execSync, exec } from 'child_process'
+import { execSync } from 'child_process'
 import dedent from 'dedent'
 import { expectFileIncludes } from '../../../../utils/expect-file-includes'
 
 it('init', () => {
-    execSync('node ../../dist/cjs/bin/index init -o', { cwd: __dirname })
+    execSync('node ../../dist/cjs/bin init -o', { cwd: __dirname })
     expectFileIncludes('master.css.js', [
         dedent`
             /** @type {import('@master/css').Config} */
@@ -24,7 +24,7 @@ it('init', () => {
 })
 
 it('init --jit', () => {
-    execSync('node ../../dist/cjs/bin/index init --jit -o', { cwd: __dirname }).toString()
+    execSync('node ../../dist/cjs/bin init --jit -o', { cwd: __dirname }).toString()
     expectFileIncludes('master.css.js', [
         dedent`
             const { MasterCSS } = require('@master/css')
@@ -49,7 +49,7 @@ it('init --jit', () => {
 })
 
 it('init --compiler', () => {
-    execSync('node ../../dist/cjs/bin/index init --compiler -o', { cwd: __dirname }).toString()
+    execSync('node ../../dist/cjs/bin init --compiler -o', { cwd: __dirname }).toString()
     expectFileIncludes('master.css.js', [
         dedent`
             /** @type {import('@master/css').Config} */
