@@ -1,7 +1,16 @@
 <br>
 <div align="center">
 
-<p align="center">Lit & Master CSS JIT</p>
+<p align="center">
+    <a href="https://css.master.co">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/33840671/201701649-3bb7d698-abec-4d5f-ac30-ccc4d7bafcd4.svg">
+            <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg">
+            <img alt="Master CSS" src="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg" width="100%">
+        </picture>
+    </a>
+</p>
+<p align="center">Master CSS JIT CDN out of the box in the browser</p>
 
 <p align="center">
     <a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
@@ -18,11 +27,18 @@
             <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
         </picture>
     </a>
-    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css.vite">
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.vite?color=212022&label=%20&logo=npm&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.vite?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css.vite?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css?color=212022&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+        </picture>
+    </a>
+    <a aria-label="JSDelivr" href="https://www.jsdelivr.com/package/npm/@master/css">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=212022&label=%20&logo=jsdelivr&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
+            <img alt="JSDelivr hits (npm scoped)" src="https://img.shields.io/jsdelivr/npm/hm/@master/css?color=f6f7f8&label=%20&logo=jsdelivr&style=for-the-badge">
         </picture>
     </a>
     <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -52,46 +68,7 @@
 
 ## Getting Started
 
-```bash
-npm install lit @master/css
-```
-
-./main.ts
-```js
-import MasterCSS from '@master/css'
-import config from '../master.css'
-import { LitElement, html } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
-
-@customElement('hello-world')
-export class HelloWorld extends LitElement {
-
-    css?: MasterCSS
-
-    connectedCallback() {
-        super.connectedCallback()
-        this.css = new MasterCSS({ ...config, observe: false })
-            .observe(this.shadowRoot)
-    }
-
-    disconnectedCallback() {
-        super.disconnectedCallback()
-        this.css?.destroy()
-    }
-
-    @property()
-    name?: string = 'World'
-
-    render() {
-        return html`
-            <h1 class="font:40 font:heavy italic m:50 text:center fg:primary">
-                Hello ${this.name}
-            </h1>
-        `
-    }
-}
-```
-./index.html
+`index.html`
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -99,11 +76,19 @@ export class HelloWorld extends LitElement {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="module" src="/main.ts"></script>
+    <link rel="stylesheet" href="https://cdn.master.co/normal.css@beta">
+    <script>
+        window.masterCSSConfig = {
+            colors: {
+                primary: '#ff0000'
+            }
+        }
+    </script>
+    <script src="https://cdn.master.co/css@beta"></script>
 </head>
 
 <body>
-    <hello-world />
+    <h1 class="font:40 font:heavy italic m:50 text:center fg:primary">Hello World</h1>
 </body>
 
 </html>
