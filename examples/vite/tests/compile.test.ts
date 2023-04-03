@@ -31,7 +31,7 @@ describe('dev', () => {
                 done()
             }
         })
-    }, 20000)
+    })
 
     it('check if the browser contains [data-vite-dev-id="master.css"]', async () => {
         expect(await page.$('[data-vite-dev-id$="master.css"]')).toBeTruthy()
@@ -48,7 +48,7 @@ describe('dev', () => {
         expect(styleHandle).not.toBeNull()
         const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
         expect(cssText).toContain(newClassNameSelector)
-    }, 15000)
+    })
 
     it('change master.css.mjs and check result in the browser during HMR', async () => {
         const newBtnClassName = 'btn' + new Date().getTime()
@@ -65,7 +65,7 @@ describe('dev', () => {
         expect(styleHandle).not.toBeNull()
         const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
         expect(cssText).toContain(newBtnClassNameSelector)
-    }, 15000)
+    })
 
     afterAll(async () => {
         await browser?.close()
