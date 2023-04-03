@@ -10,7 +10,6 @@ const hasWindow = typeof window !== 'undefined'
 const createStyle = () => {
     const style = document.createElement('style')
     style.id = 'master'
-    style.setAttribute('blocking', 'render')
     return style
 }
 
@@ -53,165 +52,9 @@ export class MasterCSS {
     readonly countBy = {}
     readonly observing = false
 
-    observer = hasWindow ? new MutationObserver((mutationRecords) => {
-        // console.time('css engine');
-        const correctionOfClassName = {}
-        const attributeMutationRecords: MutationRecord[] = []
-        const updatedElements: Element[] = []
-        const unchangedElements: Element[] = []
+    observer: MutationObserver
 
-        /**
-        * 取得所有深層後代的 class names
-        */
-        const handleClassNameDeeply = (element: Element, remove: boolean) => {
-            if (remove) {
-                element.classList.forEach(removeClassName)
-            } else {
-                element.classList.forEach(addClassName)
-            }
-
-            const children = element.children
-            for (let i = 0; i < children.length; i++) {
-                const eachChildren = children[i]
-                if (eachChildren.classList) {
-                    updatedElements.push(eachChildren)
-
-                    handleClassNameDeeply(eachChildren, remove)
-                }
-            }
-        }
-
-        const addClassName = (className: string) => {
-            if (className in correctionOfClassName) {
-                correctionOfClassName[className]++
-            } else {
-                correctionOfClassName[className] = 1
-            }
-        }
-
-        const removeClassName = (className: string) => {
-            if (className in correctionOfClassName) {
-                correctionOfClassName[className]--
-            } else if (className in this.countBy) {
-                correctionOfClassName[className] = -1
-            }
-        }
-
-        const handleNodes = (nodes: HTMLCollection, remove: boolean) => {
-            for (let i = 0; i < nodes.length; i++) {
-                const eachNode = nodes[i]
-                if (eachNode.classList && !updatedElements.includes(eachNode) && !unchangedElements.includes(eachNode)) {
-                    if (eachNode.isConnected !== remove) {
-                        updatedElements.push(eachNode)
-                        handleClassNameDeeply(eachNode, remove)
-                    } else {
-                        unchangedElements.push(eachNode)
-                    }
-                }
-            }
-        }
-
-        for (let i = 0; i < mutationRecords.length; i++) {
-            const mutationRecord = mutationRecords[i]
-            const { addedNodes, removedNodes, type, target } = mutationRecord
-            if (type === 'attributes') {
-                /**
-                 * 防止同樣的 MutationRecord 重複執行
-                 * According to this history,
-                 * MutationObserver was designed to work that way.
-                 * Any call to setAttribute triggers a mutation,
-                 * regardless of whether the value is being changed or set to the current value
-                 */
-                if (
-                    attributeMutationRecords
-                        .find((eachAttributeMutationRecord) => eachAttributeMutationRecord.target === target)
-                ) {
-                    continue
-                } else {
-                    /**
-                     * 第一個匹配到的 oldValue 一定是該批變動前的原始狀態值
-                     */
-                    attributeMutationRecords.push(mutationRecord)
-                }
-            } else {
-                // 先判斷節點新增或移除
-                handleNodes(addedNodes as any, false)
-
-                // 忽略處理新元素的已刪除子節點
-                if (!target.isConnected || !updatedElements.includes(target as any)) {
-                    handleNodes(removedNodes as any, true)
-                }
-            }
-        }
-
-        if (!attributeMutationRecords.length && !Object.keys(correctionOfClassName).length) {
-            // console.timeEnd('css engine');
-            return
-        }
-
-        for (const { oldValue, target } of attributeMutationRecords) {
-            /**
-             * 如果被操作的元素中包含了屬性變更的目標，
-             * 則將該目標從 existedAttributeMutationTargets 中移除，
-             * 以防止執行接下來的屬性變更處理
-             *
-             * 該批 mutationRecords 中，某個 target 同時有 attribute 及 childList 的變更，
-             * 則以 childList 節點插入及移除的 target.className 為主
-             */
-            const updated = updatedElements.includes(target as Element)
-            const classNames = (target as Element).classList
-            const oldClassNames = oldValue ? oldValue.split(' ') : []
-            if (updated) {
-                if (target.isConnected) {
-                    continue
-                } else {
-                    for (const oldClassName of oldClassNames) {
-                        if (!classNames.contains(oldClassName)) {
-                            removeClassName(oldClassName)
-                        }
-                    }
-                }
-            } else if (target.isConnected) {
-                classNames.forEach((className) => {
-                    if (!oldClassNames.includes(className)) {
-                        addClassName(className)
-                    }
-                })
-                for (const oldClassName of oldClassNames) {
-                    if (!classNames.contains(oldClassName)) {
-                        removeClassName(oldClassName)
-                    }
-                }
-            }
-        }
-
-        for (const className in correctionOfClassName) {
-            const correction = correctionOfClassName[className]
-            const count = (this.countBy[className] || 0) + correction
-            if (count === 0) {
-                // remove
-                delete this.countBy[className]
-                /**
-                 * class name 從 DOM tree 中被移除，
-                 * 匹配並刪除對應的 rule
-                 */
-                this.delete(className)
-            } else {
-                if (!(className in this.countBy)) {
-                    // add
-                    /**
-                     * 新 class name 被 connected 至 DOM tree，
-                     * 匹配並創建對應的 Rule
-                     */
-                    this.insert(className)
-                }
-
-                this.countBy[className] = count
-            }
-        }
-
-        // console.timeEnd('css engine');
-    }) : null
+    private _containerObserver: MutationObserver
 
     constructor(
         public config?: Config
@@ -595,25 +438,9 @@ export class MasterCSS {
             } else {
                 // @ts-ignore
                 this.style = createStyle()
-
-                switch (this.config.precedence) {
-                    case 'highest':
-                        (isDocumentRoot ? document.body : targetRoot).append(this.style)
-                        break
-                    case 'higher':
-                        container.append(this.style)
-                        break
-                    default:
-                        // eslint-disable-next-line no-case-declarations
-                        const firstStyleElement = container.querySelector('link[rel="styleSheet"], style')
-                        if (firstStyleElement) {
-                            firstStyleElement.before(this.style)
-                        } else {
-                            container.append(this.style)
-                        }
-                        break
-                }
             }
+
+            container.append(this.style)
 
             const handleClassList = (classList: DOMTokenList) => {
                 classList.forEach((className) => {
@@ -626,6 +453,7 @@ export class MasterCSS {
                     }
                 })
             }
+
             handleClassList(this.host.classList)
 
             if (options.subtree) {
@@ -637,12 +465,196 @@ export class MasterCSS {
                     .forEach((element) => handleClassList(element.classList))
             }
 
+            this.observer = new MutationObserver((mutationRecords) => {
+                // console.time('css engine');
+                const correctionOfClassName = {}
+                const attributeMutationRecords: MutationRecord[] = []
+                const updatedElements: Element[] = []
+                const unchangedElements: Element[] = []
+
+                /**
+                * 取得所有深層後代的 class names
+                */
+                const handleClassNameDeeply = (element: Element, remove: boolean) => {
+                    if (remove) {
+                        element.classList.forEach(removeClassName)
+                    } else {
+                        element.classList.forEach(addClassName)
+                    }
+
+                    const children = element.children
+                    for (let i = 0; i < children.length; i++) {
+                        const eachChildren = children[i]
+                        if (eachChildren.classList) {
+                            updatedElements.push(eachChildren)
+
+                            handleClassNameDeeply(eachChildren, remove)
+                        }
+                    }
+                }
+
+                const addClassName = (className: string) => {
+                    if (className in correctionOfClassName) {
+                        correctionOfClassName[className]++
+                    } else {
+                        correctionOfClassName[className] = 1
+                    }
+                }
+
+                const removeClassName = (className: string) => {
+                    if (className in correctionOfClassName) {
+                        correctionOfClassName[className]--
+                    } else if (className in this.countBy) {
+                        correctionOfClassName[className] = -1
+                    }
+                }
+
+                const handleNodes = (nodes: HTMLCollection, remove: boolean) => {
+                    for (let i = 0; i < nodes.length; i++) {
+                        const eachNode = nodes[i]
+                        if (eachNode.classList && !updatedElements.includes(eachNode) && !unchangedElements.includes(eachNode)) {
+                            if (eachNode.isConnected !== remove) {
+                                updatedElements.push(eachNode)
+                                handleClassNameDeeply(eachNode, remove)
+                            } else {
+                                unchangedElements.push(eachNode)
+                            }
+                        }
+                    }
+                }
+
+                for (let i = 0; i < mutationRecords.length; i++) {
+                    const mutationRecord = mutationRecords[i]
+                    const { addedNodes, removedNodes, type, target } = mutationRecord
+                    if (type === 'attributes') {
+                        /**
+                         * 防止同樣的 MutationRecord 重複執行
+                         * According to this history,
+                         * MutationObserver was designed to work that way.
+                         * Any call to setAttribute triggers a mutation,
+                         * regardless of whether the value is being changed or set to the current value
+                         */
+                        if (
+                            attributeMutationRecords
+                                .find((eachAttributeMutationRecord) => eachAttributeMutationRecord.target === target)
+                        ) {
+                            continue
+                        } else {
+                            /**
+                             * 第一個匹配到的 oldValue 一定是該批變動前的原始狀態值
+                             */
+                            attributeMutationRecords.push(mutationRecord)
+                        }
+                    } else {
+                        // 先判斷節點新增或移除
+                        handleNodes(addedNodes as any, false)
+
+                        // 忽略處理新元素的已刪除子節點
+                        if (!target.isConnected || !updatedElements.includes(target as any)) {
+                            handleNodes(removedNodes as any, true)
+                        }
+                    }
+                }
+
+                if (!attributeMutationRecords.length && !Object.keys(correctionOfClassName).length) {
+                    // console.timeEnd('css engine');
+                    return
+                }
+
+                for (const { oldValue, target } of attributeMutationRecords) {
+                    /**
+                     * 如果被操作的元素中包含了屬性變更的目標，
+                     * 則將該目標從 existedAttributeMutationTargets 中移除，
+                     * 以防止執行接下來的屬性變更處理
+                     *
+                     * 該批 mutationRecords 中，某個 target 同時有 attribute 及 childList 的變更，
+                     * 則以 childList 節點插入及移除的 target.className 為主
+                     */
+                    const updated = updatedElements.includes(target as Element)
+                    const classNames = (target as Element).classList
+                    const oldClassNames = oldValue ? oldValue.split(' ') : []
+                    if (updated) {
+                        if (target.isConnected) {
+                            continue
+                        } else {
+                            for (const oldClassName of oldClassNames) {
+                                if (!classNames.contains(oldClassName)) {
+                                    removeClassName(oldClassName)
+                                }
+                            }
+                        }
+                    } else if (target.isConnected) {
+                        classNames.forEach((className) => {
+                            if (!oldClassNames.includes(className)) {
+                                addClassName(className)
+                            }
+                        })
+                        for (const oldClassName of oldClassNames) {
+                            if (!classNames.contains(oldClassName)) {
+                                removeClassName(oldClassName)
+                            }
+                        }
+                    }
+                }
+
+                for (const className in correctionOfClassName) {
+                    const correction = correctionOfClassName[className]
+                    const count = (this.countBy[className] || 0) + correction
+                    if (count === 0) {
+                        // remove
+                        delete this.countBy[className]
+                        /**
+                         * class name 從 DOM tree 中被移除，
+                         * 匹配並刪除對應的 rule
+                         */
+                        this.delete(className)
+                    } else {
+                        if (!(className in this.countBy)) {
+                            // add
+                            /**
+                             * 新 class name 被 connected 至 DOM tree，
+                             * 匹配並創建對應的 Rule
+                             */
+                            this.insert(className)
+                        }
+
+                        this.countBy[className] = count
+                    }
+                }
+
+                // console.timeEnd('css engine');
+            })
             this.observer.observe(targetRoot, {
                 ...options,
                 attributes: true,
                 attributeOldValue: true,
                 attributeFilter: ['class'],
-            });
+            })
+
+            /**
+             * 觀測 root 的子元素變動，一旦最後一個 <style> 不是 <style id="master"> 將重新 append
+             */
+            this._containerObserver = new MutationObserver((mutationRecords) => {
+                for (const eachMutationRecord of mutationRecords) {
+                    for (const eachAddedNode of eachMutationRecord.addedNodes) {
+                        if (eachAddedNode.nodeName === 'STYLE' || eachAddedNode.nodeName === 'LINK' && eachAddedNode['rel'] === 'stylesheet') {
+                            const styleSheets = this.root.styleSheets
+                            const lastStyleSheet = styleSheets.item(styleSheets.length - 1)
+                            if (lastStyleSheet.ownerNode !== this.style) {
+                                const sheet = this.style.sheet
+                                const cssRules = sheet.cssRules
+                                container.append(this.style)
+                                // 重新插入 style 先前的 sheet 將不存在，需重新插入
+                                for (const eachCSSRule of cssRules) {
+                                    this.style.sheet.insertRule(eachCSSRule.cssText)
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+            this._containerObserver.observe(container, { childList: true });
+
             (this.host as HTMLElement).style.display = null
             // @ts-ignore
             this.observing = true
@@ -651,7 +663,14 @@ export class MasterCSS {
     }
 
     disconnect(): void {
-        this.observer?.disconnect?.()
+        if (this.observer) {
+            this.observer.disconnect()
+            this.observer = null
+        }
+        if (this._containerObserver) {
+            this._containerObserver.disconnect()
+            this._containerObserver = null
+        }
         // @ts-ignore
         this.observing = false
         // @ts-ignore
