@@ -1,5 +1,5 @@
 import { execSync } from 'child_process'
-import dedent from 'dedent'
+import dedent from 'ts-dedent'
 
 it('tree-shaking', async () => {
     // expect(

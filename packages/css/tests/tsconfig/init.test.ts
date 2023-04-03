@@ -1,5 +1,5 @@
 import { execSync } from 'child_process'
-import dedent from 'dedent'
+import dedent from 'ts-dedent'
 import { expectFileIncludes } from '../../../../utils/expect-file-includes'
 
 it('init (with tsconfig.json)', () => {

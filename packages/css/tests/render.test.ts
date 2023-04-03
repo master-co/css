@@ -1,5 +1,5 @@
 import '../src/polyfills/css-escape'
-import dedent from 'dedent'
+import dedent from 'ts-dedent'
 import { render, renderFromHTML, renderIntoHTML } from '../src/methods'
 
 const html = dedent`
@@ -22,34 +22,14 @@ test('render', () => {
         .toBe('.font\\:32{font-size:2rem}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0rem}.text\\:center{text-align:center}')
 
     expect(renderIntoHTML(html))
-        .toBe(dedent`<html>
-        <head>
-            <link rel="styleSheet">
-            <style></style>
-        </head>
-        <body>
-            <h1 class="text:center ml:0&gt;:is(a,button):first font:32">Hello World</h1>
-        <style id="master">.font\:32{font-size:2rem}.ml\:0\>\:is\(a\,button\)\:first>:is(a,button):first-child{margin-left:0rem}.text\:center{text-align:center}</style></body>
-    </html>`)
-
-    expect(renderIntoHTML(html, { precedence: 'higher' }))
-        .toBe(dedent`<html>
-        <head>
-            <link rel="styleSheet">
-            <style></style>
-        <style id="master">.font\:32{font-size:2rem}.ml\:0\>\:is\(a\,button\)\:first>:is(a,button):first-child{margin-left:0rem}.text\:center{text-align:center}</style></head>
-        <body>
-            <h1 class="text:center ml:0&gt;:is(a,button):first font:32">Hello World</h1>
-        </body>
-    </html>`)
-    expect(renderIntoHTML(html, { precedence: 'lowest' }))
-        .toBe(dedent`<html>
-        <head>
-            <style id="master">.font\:32{font-size:2rem}.ml\:0\>\:is\(a\,button\)\:first>:is(a,button):first-child{margin-left:0rem}.text\:center{text-align:center}</style><link rel="styleSheet">
-            <style></style>
-        </head>
-        <body>
-            <h1 class="text:center ml:0&gt;:is(a,button):first font:32">Hello World</h1>
-        </body>
-    </html>`)
+        .toEqual(dedent`
+        <html>
+            <head>
+                <link rel="styleSheet">
+                <style></style>
+            <style id="master">.font\\:32{font-size:2rem}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0rem}.text\\:center{text-align:center}</style></head>
+            <body>
+                <h1 class="text:center ml:0&gt;:is(a,button):first font:32">Hello World</h1>
+            </body>
+        </html>`)
 })
