@@ -9,6 +9,7 @@ import MasterCSSCompiler from '@master/css-compiler'
 import upath from 'upath'
 
 describe('dev', () => {
+
     let childProcess: ChildProcess
     let browser: Browser
     let page: Page
@@ -79,5 +80,5 @@ describe('dev', () => {
             Object.keys(compiler.css.ruleBy).map(cssEscape)
         )
     })
-})
 
+})

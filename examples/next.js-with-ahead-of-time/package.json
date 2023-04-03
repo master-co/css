@@ -7,8 +7,7 @@
         "build": "next build",
         "start": "next start --port 3208",
         "lint": "next lint",
-        "preview": "npm run build && npm run start",
-        "test": "jest"
+        "preview": "npm run build && npm run start"
     },
     "dependencies": {
         "@master/css.webpack": "",
