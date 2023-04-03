@@ -20,7 +20,6 @@ describe('dev', () => {
 
     beforeAll((done) => {
         childProcess = exec('npm run dev')
-
         childProcess.stdout?.on('data', async data => {
             const message = stripAnsi(data.toString())
             const result = /(http:\/\/localhost:).*?([0-9]+)/.exec(message)
@@ -73,7 +72,6 @@ describe('dev', () => {
         childProcess.kill()
         execSync('git restore index.html')
         execSync('git restore master.css.mjs')
-
         execSync('npm run build')
         const compiler = await new MasterCSSCompiler().compile()
         expectFileIncludes(

@@ -71,10 +71,10 @@ export class Theme {
     set current(current: string) {
         const previous = this._current
         this._current = current
-        if (this.host) {
+        if (this.host && previous !== current) {
             if (previous)
                 this.host.classList.remove(previous)
-            if (!this.host.classList.contains(current)) {
+            if (current && !this.host.classList.contains(current)) {
                 this.host.classList.add(current)
                 if ((this.host as any).style) {
                     (this.host as any).style.colorScheme = current
