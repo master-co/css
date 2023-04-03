@@ -14,7 +14,7 @@ export const config = {
         }
     },
     classes: {
-        btn: 'font:14 h:40 text:center',
+        btn1680549536551: 'font:14 h:40 text:center',
         blue: {
             btn: {
                 '': 'btn bg:blue'
