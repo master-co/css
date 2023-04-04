@@ -26,6 +26,8 @@ it('run dev without errors', () => {
 
 afterAll(async () => {
     devProcess.stdout?.destroy()
+    devProcess.stdin?.destroy()
     devProcess.kill()
+    await page.close()
     await browser.close()
 })
