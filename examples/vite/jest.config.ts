@@ -2,6 +2,7 @@ const esModules = ['strip-ansi'].join('|')
 
 /** @type {import('jest').Config} */
 export default {
-    preset: '@techor/jest-puppeteer',
+    ...require('@techor/jest'),
+    preset: 'jest-puppeteer',
     transformIgnorePatterns: [`../../node_modules/(?:${esModules})`]
 }

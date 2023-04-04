@@ -5,7 +5,7 @@
         "build": "turbo run build",
         "build:clean": "rm -rf ./packages/**/*dist && turbo run build --force --no-cache --filter=./packages/**/*",
         "check": "npm run commit-check && npm run build && turbo run test lint type-check --parallel --filter=./packages/**/*",
-        "test": "turbo run test",
+        "test": "turbo run test --parallel",
         "lint": "turbo run lint --parallel --filter=./packages/**/*",
         "type-check": "turbo run type-check --parallel --filter=./packages/**/*",
         "commit-check": "commitlint --from=HEAD~1 --verbose",
@@ -21,10 +21,10 @@
         "examples/*"
     ],
     "devDependencies": {
-        "@techor/jest": "^2.1.3",
-        "@techor/jest-dom": "^2.1.3",
-        "@techor/jest-puppeteer": "^2.1.3",
-        "@techor/repo": "^2.1.3",
+        "@techor/jest": "^2.1.4",
+        "@techor/jest-dom": "^2.1.4",
+        "@techor/jest-puppeteer": "^2.1.4",
+        "@techor/repo": "^2.1.4",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
         "strip-ansi": "^7.0.1",
