@@ -16,9 +16,7 @@ export const config = {
     classes: {
         btn1680549536551: 'font:14 h:40 text:center',
         blue: {
-            btn: {
-                '': 'btn bg:blue'
-            }
+            btn: 'btn bg:blue'
         }
     },
     themes: {
