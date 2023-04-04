@@ -7,7 +7,7 @@
         "dev": "vite",
         "build": "tsc && vite build",
         "preview": "vite preview",
-        "test": "jest --no-cache"
+        "test": "jest --no-cache --detectOpenHandles"
     },
     "devDependencies": {
         "@master/css.vite": "",
