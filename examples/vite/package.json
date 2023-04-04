@@ -7,13 +7,15 @@
         "dev": "vite",
         "build": "tsc && vite build",
         "preview": "vite preview",
-        "test": "jest --env node"
+        "test": "jest"
     },
     "devDependencies": {
         "@master/css.vite": "",
-        "puppeteer": "^19.4.1",
         "typescript": "^4.9.3",
-        "upath": "^2.0.1",
         "vite": "^4.0.1"
+    },
+    "dependencies": {
+        "jest-environment-puppeteer": "^8.0.6",
+        "puppeteer": "^19.8.3"
     }
 }

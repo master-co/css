@@ -1,8 +1,11 @@
+/**
+ * @jest-environment node
+ */
+
 import MasterCSSCompiler from '@master/css-compiler'
 
 it('extract class names from entry HTML file ( like index.html, app.html )', async () => {
     const compiler = await new MasterCSSCompiler({ include: ['index.html'] }).compile()
-
     const result = Object.keys(compiler.css.ruleBy).join(' ')
     for (const className of [
         'flex',
@@ -18,7 +21,6 @@ it('extract class names from entry HTML file ( like index.html, app.html )', asy
 
 it('extract class names from framework component file', async () => {
     const compiler = await new MasterCSSCompiler({ include: ['./src/main.ts'] }).compile()
-
     const result = Object.keys(compiler.css.ruleBy).join(' ')
     for (const className of [
         '~transform|.3s',
