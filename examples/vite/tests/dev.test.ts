@@ -20,7 +20,8 @@ it('run dev without errors', () => {
     expect(() => { if (error) throw error }).not.toThrowError()
 })
 
-afterAll(() => {
+afterAll((done) => {
     devProcess.stdout?.destroy()
     devProcess.kill()
+    done()
 })
