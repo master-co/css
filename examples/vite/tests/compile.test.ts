@@ -60,5 +60,6 @@ afterAll(async () => {
     execSync('git restore master.css.mjs')
     devProcess.stdout?.destroy()
     devProcess.kill()
+    await page.close()
     await browser.close()
 })
