@@ -13,9 +13,5 @@
         "@master/css.vite": "",
         "typescript": "^4.9.3",
         "vite": "^4.0.1"
-    },
-    "dependencies": {
-        "jest-environment-puppeteer": "^8.0.6",
-        "puppeteer": "^19.8.3"
     }
 }
