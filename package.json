@@ -25,6 +25,7 @@
         "@techor/jest-dom": "^2.1.4",
         "@techor/jest-puppeteer": "^2.1.4",
         "@techor/repo": "^2.1.4",
+        "@types/jest": "^29.5.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
         "strip-ansi": "^7.0.1",

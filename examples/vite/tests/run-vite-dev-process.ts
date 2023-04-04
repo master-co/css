@@ -1,7 +1,8 @@
 import { ChildProcess, exec } from 'child_process'
 import stripAnsi from 'strip-ansi'
+import type { Page } from 'puppeteer'
 
-export function runViteDevProcess(): Promise<ChildProcess> {
+export function runViteDevProcess(page: Page): Promise<ChildProcess> {
     return new Promise((resolve) => {
         const devProcess = exec('vite dev')
         let url: string
