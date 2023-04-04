@@ -18,7 +18,7 @@ beforeAll(async () => {
     page.on('pageerror', (e) => error = e)
     page.on('error', (e) => error = e)
     devProcess = await runViteDevProcess(page)
-}, 15000)
+}, 15000) // 15s timeout for the slow windows OS
 
 it('run dev without errors', () => {
     expect(() => { if (error) throw error }).not.toThrowError()
