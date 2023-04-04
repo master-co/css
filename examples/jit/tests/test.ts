@@ -1,11 +1,8 @@
 import { ChildProcess, exec } from 'child_process'
-import puppeteer, { Browser, Page } from 'puppeteer'
 import stripAnsi from 'strip-ansi'
 
 describe('dev', () => {
     let childProcess: ChildProcess
-    let browser: Browser
-    let page: Page
     let url: string
 
     beforeAll((done) => {
@@ -14,8 +11,6 @@ describe('dev', () => {
             const message = stripAnsi(data.toString())
             const result = /(http:\/\/localhost:).*?([0-9]+)/.exec(message)
             if (result) {
-                browser = await puppeteer.launch()
-                page = await browser.newPage()
                 url = result[1] + result[2]
                 done()
             }
@@ -36,8 +31,7 @@ describe('dev', () => {
         await page.waitForNetworkIdle()
     })
 
-    afterAll(async () => {
-        await browser?.close()
+    afterAll(() => {
         childProcess.stdout?.destroy()
         childProcess.kill()
     })

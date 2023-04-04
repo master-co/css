@@ -50,7 +50,6 @@
         "@master/css": ""
     },
     "devDependencies": {
-        "@tsconfig/svelte": "^3.0.0",
-        "esbuild-plugin-copy": "^2.1.1"
+        "@tsconfig/svelte": "^3.0.0"
     }
 }

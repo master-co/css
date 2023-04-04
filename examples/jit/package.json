@@ -7,7 +7,7 @@
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
-        "test": "jest --env node"
+        "test": "jest"
     },
     "dependencies": {
         "@master/css": ""
