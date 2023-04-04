@@ -1,11 +1,8 @@
-import { ChildProcess, exec, execSync } from 'child_process'
+import { ChildProcess, execSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
-import stripAnsi from 'strip-ansi'
 import { cssEscape } from '../../../packages/css/src/utils/css-escape'
-import { expectFileIncludes } from '../../../utils/expect-file-includes'
-import MasterCSSCompiler from '@master/css-compiler'
-import upath from 'upath'
+import { runViteDevProcess } from '../../vite/tests/run-vite-dev-process'
 
 describe('dev', () => {
 
@@ -16,16 +13,8 @@ describe('dev', () => {
     const configPath = path.resolve(__dirname, '../master.css.mjs')
     const originalConfigContent = fs.readFileSync(configPath, { encoding: 'utf-8' })
 
-    beforeAll((done) => {
-        childProcess = exec('npm run dev')
-        childProcess.stdout?.on('data', async data => {
-            const message = stripAnsi(data.toString())
-            const result = /(http:\/\/localhost:).*?([0-9]+)/.exec(message)
-            if (result) {
-                await page.goto(result[1] + result[2])
-                done()
-            }
-        })
+    beforeAll(async () => {
+        childProcess = await runViteDevProcess()
     })
 
     it('check if the browser contains [data-vite-dev-id="master.css"]', async () => {
