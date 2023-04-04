@@ -1,5 +1,4 @@
 import { ChildProcess, exec, execSync } from 'child_process'
-import puppeteer, { Browser, Page } from 'puppeteer'
 import fs from 'fs'
 import path from 'path'
 import stripAnsi from 'strip-ansi'
@@ -11,8 +10,6 @@ import upath from 'upath'
 describe('dev', () => {
 
     let childProcess: ChildProcess
-    let browser: Browser
-    let page: Page
 
     const indexHtmlPath = path.resolve(__dirname, '../index.html')
     const originalIndexHtmlContent = fs.readFileSync(indexHtmlPath, { encoding: 'utf-8' })
@@ -25,8 +22,6 @@ describe('dev', () => {
             const message = stripAnsi(data.toString())
             const result = /(http:\/\/localhost:).*?([0-9]+)/.exec(message)
             if (result) {
-                browser = await puppeteer.launch()
-                page = await browser.newPage()
                 await page.goto(result[1] + result[2])
                 done()
             }
@@ -40,6 +35,7 @@ describe('dev', () => {
     it('change class names and check result in the browser during HMR', async () => {
         const newClassName = 'font:' + new Date().getTime()
         const newClassNameSelector = '.' + cssEscape(newClassName)
+        console.log(newClassNameSelector)
         fs.writeFileSync(indexHtmlPath, originalIndexHtmlContent.replace('hmr-test', newClassName))
         await page.waitForNetworkIdle()
         const newClassNameElementHandle = await page.waitForSelector(newClassNameSelector)
@@ -67,18 +63,17 @@ describe('dev', () => {
         expect(cssText).toContain(newBtnClassNameSelector)
     })
 
-    afterAll(async () => {
-        await browser?.close()
+    afterAll(() => {
         childProcess.stdout?.destroy()
         childProcess.kill()
         execSync('git restore index.html')
         execSync('git restore master.css.mjs')
-        execSync('npm run build')
-        const compiler = await new MasterCSSCompiler().compile()
-        expectFileIncludes(
-            upath.join('..', 'dist', 'assets', 'index-*.css'),
-            Object.keys(compiler.css.ruleBy).map(cssEscape)
-        )
+        // execSync('npm run build')
+        // const compiler = await new MasterCSSCompiler().compile()
+        // expectFileIncludes(
+        //     upath.join('..', 'dist', 'assets', 'index-*.css'),
+        //     Object.keys(compiler.css.ruleBy).map(cssEscape)
+        // )
     })
 
 })

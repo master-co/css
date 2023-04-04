@@ -76,14 +76,14 @@
     "dependencies": {
         "@master/keyframes.css": "",
         "@master/normal.css": "",
-        "@techor/fs": "^2.0.5",
-        "@techor/log": "^2.0.5",
+        "@techor/fs": "^2.1.1",
+        "@techor/log": "^2.1.1",
         "chokidar": "^3.5.3",
         "commander": "^10.0.0",
         "fast-glob": "^3.2.12"
     },
     "devDependencies": {
-        "@techor/extend": "^2.0.5",
+        "@techor/extend": "^2.1.1",
         "ts-dedent": "^2.2.0",
         "vite": "^4.2.1"
     }

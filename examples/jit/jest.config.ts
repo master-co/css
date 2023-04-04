@@ -1,4 +1,4 @@
 /** @type {import('jest').Config} */
 export default {
-    preset: 'techor-web-jest',
+    preset: '@techor/jest-dom',
 }

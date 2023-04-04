@@ -66,11 +66,11 @@
     },
     "dependencies": {
         "@master/css": "",
-        "@techor/extend": "^2.0.5",
+        "@techor/extend": "^2.1.1",
         "fast-glob": "^3.2.12",
         "minimatch": "^5.1.1",
         "stylelint": "^15.2.0",
-        "techor": "^2.0.5",
+        "techor": "^2.1.1",
         "upath": "^2.0.1"
     },
     "devDependencies": {
