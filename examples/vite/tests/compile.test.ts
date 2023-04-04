@@ -52,7 +52,7 @@ describe('dev', () => {
         expect(cssText).toContain(newBtnClassNameSelector)
     })
 
-    afterAll(() => {
+    afterAll((done) => {
         childProcess.stdout?.destroy()
         childProcess.kill()
         execSync('git restore index.html')
@@ -63,6 +63,7 @@ describe('dev', () => {
         //     upath.join('..', 'dist', 'assets', 'index-*.css'),
         //     Object.keys(compiler.css.ruleBy).map(cssEscape)
         // )
+        done()
     })
 
 })
