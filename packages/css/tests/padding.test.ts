@@ -7,7 +7,7 @@ it('checks padding order', () => {
     )
 })
 
-it('validate output CSS rules', () => {
+it('validate output padding rules', () => {
     testProp('pl:16', 'padding-left:1rem')
     testProp('pr:16', 'padding-right:1rem')
     testProp('pt:16', 'padding-top:1rem')
