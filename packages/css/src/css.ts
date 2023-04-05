@@ -54,8 +54,6 @@ export class MasterCSS {
 
     observer: MutationObserver
 
-    private _containerObserver: MutationObserver
-
     constructor(
         public config?: Config
     ) {
@@ -362,11 +360,11 @@ export class MasterCSS {
             for (const sheet of styleSheets) {
                 const { href, ownerNode } = sheet
                 if (
-                    (ownerNode as HTMLStyleElement).id === 'master'
-                    || href && href.startsWith(window.location.origin) && /master(?:\..+)?\.css/.test(href)
+                    (ownerNode as HTMLStyleElement).id === 'master' || href && href.startsWith(window.location.origin) && /master(?:\..+)?\.css/.test(href)
                 ) {
                     // @ts-ignore
                     this.style = ownerNode
+                    break
                 }
             }
 
@@ -438,9 +436,8 @@ export class MasterCSS {
             } else {
                 // @ts-ignore
                 this.style = createStyle()
+                container.append(this.style)
             }
-
-            container.append(this.style)
 
             const handleClassList = (classList: DOMTokenList) => {
                 classList.forEach((className) => {
@@ -629,31 +626,7 @@ export class MasterCSS {
                 attributes: true,
                 attributeOldValue: true,
                 attributeFilter: ['class'],
-            })
-
-            /**
-             * 觀測 root 的子元素變動，一旦最後一個 <style> 不是 <style id="master"> 將重新 append
-             */
-            this._containerObserver = new MutationObserver((mutationRecords) => {
-                for (const eachMutationRecord of mutationRecords) {
-                    for (const eachAddedNode of eachMutationRecord.addedNodes) {
-                        if (eachAddedNode.nodeName === 'STYLE' || eachAddedNode.nodeName === 'LINK' && eachAddedNode['rel'] === 'stylesheet') {
-                            const styleSheets = this.root.styleSheets
-                            const lastStyleSheet = styleSheets.item(styleSheets.length - 1)
-                            if (lastStyleSheet.ownerNode !== this.style) {
-                                const sheet = this.style.sheet
-                                const cssRules = sheet.cssRules
-                                container.append(this.style)
-                                // 重新插入 style 先前的 sheet 將不存在，需重新插入
-                                for (const eachCSSRule of cssRules) {
-                                    this.style.sheet.insertRule(eachCSSRule.cssText)
-                                }
-                            }
-                        }
-                    }
-                }
-            })
-            this._containerObserver.observe(container, { childList: true });
+            });
 
             (this.host as HTMLElement).style.display = null
             // @ts-ignore
@@ -666,10 +639,6 @@ export class MasterCSS {
         if (this.observer) {
             this.observer.disconnect()
             this.observer = null
-        }
-        if (this._containerObserver) {
-            this._containerObserver.disconnect()
-            this._containerObserver = null
         }
         // @ts-ignore
         this.observing = false
