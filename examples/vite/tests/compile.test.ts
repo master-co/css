@@ -56,10 +56,10 @@ it('change master.css.mjs and check result in the browser during HMR', async () 
 })
 
 afterAll(async () => {
-    execSync('git restore index.html')
-    execSync('git restore master.css.mjs')
+    fs.writeFileSync(indexHtmlPath, originalIndexHtmlContent)
+    fs.writeFileSync(configPath, originalConfigContent)
     devProcess.stdout?.destroy()
     devProcess.kill()
     await page.close()
     await browser.close()
-})
+}, 15000) // 15s timeout for the slow windows OS

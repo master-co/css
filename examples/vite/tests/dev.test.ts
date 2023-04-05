@@ -30,4 +30,4 @@ afterAll(async () => {
     devProcess.kill()
     await page.close()
     await browser.close()
-})
+}, 15000) // 15s timeout for the slow windows OS
