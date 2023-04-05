@@ -1,7 +1,4 @@
 import { START_SYMBOL } from '../constants/start-symbol'
-import { BOX_UNDERNEATH } from '../constants/box-underneath'
-import { CONTENT_EXTREMA } from '../constants/content-extrema'
-import { SIZING_VALUES } from '../constants/sizing-values'
 import { Declarations, Rule, RuleConfig, RuleNative } from '../rule'
 
 // TODO 於 index.node.ts 引入且防止被樹搖，目前被視為無副作用並被清除
@@ -313,7 +310,22 @@ const defaultRules = {
         order: -1
     },
     flexBasis: {
-        values: SIZING_VALUES,
+        values: {
+            full: '100%',
+            fit: 'fit-content',
+            max: 'max-content',
+            min: 'min-content',
+            '3xs': 360,
+            '2xs': 480,
+            xs: 600,
+            sm: 768,
+            md: 1024,
+            lg: 1280,
+            xl: 1440,
+            '2xl': 1600,
+            '3xl': 1920,
+            '4xl': 2560
+        },
         unit: 'rem',
         native: true,
     },
@@ -347,25 +359,85 @@ const defaultRules = {
         match: '^w:.',
         unit: 'rem',
         native: true,
-        values: SIZING_VALUES
+        values: {
+            full: '100%',
+            fit: 'fit-content',
+            max: 'max-content',
+            min: 'min-content',
+            '3xs': 360,
+            '2xs': 480,
+            xs: 600,
+            sm: 768,
+            md: 1024,
+            lg: 1280,
+            xl: 1440,
+            '2xl': 1600,
+            '3xl': 1920,
+            '4xl': 2560
+        }
     },
     height: {
         match: '^h:.',
         unit: 'rem',
         native: true,
-        values: SIZING_VALUES
+        values: {
+            full: '100%',
+            fit: 'fit-content',
+            max: 'max-content',
+            min: 'min-content',
+            '3xs': 360,
+            '2xs': 480,
+            xs: 600,
+            sm: 768,
+            md: 1024,
+            lg: 1280,
+            xl: 1440,
+            '2xl': 1600,
+            '3xl': 1920,
+            '4xl': 2560
+        }
     },
     minWidth: {
         match: '^min-w:.',
         unit: 'rem',
         native: true,
-        values: SIZING_VALUES
+        values: {
+            full: '100%',
+            fit: 'fit-content',
+            max: 'max-content',
+            min: 'min-content',
+            '3xs': 360,
+            '2xs': 480,
+            xs: 600,
+            sm: 768,
+            md: 1024,
+            lg: 1280,
+            xl: 1440,
+            '2xl': 1600,
+            '3xl': 1920,
+            '4xl': 2560
+        }
     },
     minHeight: {
         match: '^min-h:.',
         unit: 'rem',
         native: true,
-        values: SIZING_VALUES
+        values: {
+            full: '100%',
+            fit: 'fit-content',
+            max: 'max-content',
+            min: 'min-content',
+            '3xs': 360,
+            '2xs': 480,
+            xs: 600,
+            sm: 768,
+            md: 1024,
+            lg: 1280,
+            xl: 1440,
+            '2xl': 1600,
+            '3xl': 1920,
+            '4xl': 2560
+        }
     },
     box: {
         match: '^(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)x(?:(?:max|min|clamp|calc)\\(.+\\)|[0-9]+[a-z]*?)',
@@ -550,13 +622,43 @@ const defaultRules = {
         match: '^max-h:.',
         unit: 'rem',
         native: true,
-        values: SIZING_VALUES
+        values: {
+            full: '100%',
+            fit: 'fit-content',
+            max: 'max-content',
+            min: 'min-content',
+            '3xs': 360,
+            '2xs': 480,
+            xs: 600,
+            sm: 768,
+            md: 1024,
+            lg: 1280,
+            xl: 1440,
+            '2xl': 1600,
+            '3xl': 1920,
+            '4xl': 2560
+        }
     },
     maxWidth: {
         match: '^max-w:.',
         unit: 'rem',
         native: true,
-        values: SIZING_VALUES
+        values: {
+            full: '100%',
+            fit: 'fit-content',
+            max: 'max-content',
+            min: 'min-content',
+            '3xs': 360,
+            '2xs': 480,
+            xs: 600,
+            sm: 768,
+            md: 1024,
+            lg: 1280,
+            xl: 1440,
+            '2xl': 1600,
+            '3xl': 1920,
+            '4xl': 2560
+        }
     },
     boxSizing: {
         match: '^box:(?:$values)(?!\\|)',
@@ -729,7 +831,9 @@ const defaultRules = {
         match: '^transform:(?:$values)(?!\\|)',
         native: true,
         values: {
-            ...BOX_UNDERNEATH,
+            content: 'content-box',
+            border: 'border-box',
+            padding: 'padding-box',
             fill: 'fill-box',
             stroke: 'stroke-box',
             view: 'view-box'
@@ -1064,12 +1168,20 @@ const defaultRules = {
                 'background-clip': value + unit
             }
         },
-        values: BOX_UNDERNEATH
+        values: {
+            content: 'content-box',
+            border: 'border-box',
+            padding: 'padding-box'
+        }
     },
     backgroundOrigin: {
         match: '^(?:bg|background):(?:$values)(?!\\|)',
         native: true,
-        values: BOX_UNDERNEATH
+        values: {
+            content: 'content-box',
+            border: 'border-box',
+            padding: 'padding-box'
+        }
     },
     backgroundPosition: {
         match: '^(?:bg|background):(?:top|bottom|right|left|center|$values)(?!\\|)',
@@ -1234,14 +1346,20 @@ const defaultRules = {
     gridAutoColumns: {
         match: '^grid-auto-cols:.',
         native: true,
-        values: CONTENT_EXTREMA
+        values: {
+            min: 'min-content',
+            max: 'max-content'
+        }
     },
     gridAutoFlow: {
         match: '^grid-flow:.',
         native: true
     },
     gridAutoRows: {
-        values: CONTENT_EXTREMA,
+        values: {
+            min: 'min-content',
+            max: 'max-content'
+        },
         native: true
     },
     gridTemplateAreas: {
@@ -1251,12 +1369,18 @@ const defaultRules = {
         match: '^grid-template-cols:.',
         native: true,
         unit: 'rem',
-        values: CONTENT_EXTREMA
+        values: {
+            min: 'min-content',
+            max: 'max-content'
+        }
     },
     gridTemplateRows: {
         native: true,
         unit: 'rem',
-        values: CONTENT_EXTREMA
+        values: {
+            min: 'min-content',
+            max: 'max-content'
+        }
     },
     gridTemplate: {
         native: true,
@@ -1547,7 +1671,9 @@ const defaultRules = {
         match: '^shape:(?:(?:inset|circle|ellipse|polygon|url|linear-gradient)\\(.*\\)|$values)(?!\\|)',
         native: true,
         values: {
-            ...BOX_UNDERNEATH,
+            content: 'content-box',
+            border: 'border-box',
+            padding: 'padding-box',
             margin: 'margin-box'
         }
     },
@@ -1563,7 +1689,9 @@ const defaultRules = {
         match: '^clip:.',
         native: true,
         values: {
-            ...BOX_UNDERNEATH,
+            content: 'content-box',
+            border: 'border-box',
+            padding: 'padding-box',
             margin: 'margin-box',
             fill: 'fill-box',
             stroke: 'stroke-box',
