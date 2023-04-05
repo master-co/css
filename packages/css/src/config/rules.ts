@@ -940,18 +940,75 @@ const defaultRules = {
         unit: 'rem',
         native: true
     },
-    borderColor: {
-        match: '^b(?:[xytblr]|(?:order(?:-(?:left|right|top|bottom))?))?(?:-color)?:(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))',
+    // border color
+    borderTopColor: {
+        match: '^b(?:t|order-top(?:-color)?):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        native: true,
+        colored: true,
+        values: {
+            current: 'currentColor'
+        },
+    },
+    borderBottomColor: {
+        match: '^b(?:b|order-bottom(?:-color)?):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        native: true,
+        colored: true,
+        values: {
+            current: 'currentColor'
+        },
+    },
+    borderLeftColor: {
+        match: '^b(?:l|order-left(?:-color)?):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        native: true,
+        colored: true,
+        values: {
+            current: 'currentColor'
+        },
+    },
+    borderRightColor: {
+        match: '^b(?:r|order-right(?:-color)?):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        native: true,
+        colored: true,
+        values: {
+            current: 'currentColor'
+        },
+    },
+    borderXColor: {
+        match: '^b(?:x|order-x(?:-color)?):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        order: -.5,
         colored: true,
         values: {
             current: 'currentColor'
         },
         declare(value, unit) {
-            return declareBorderRelated(this.prefix, value + unit, 'color')
+            return {
+                'border-left-color': value + unit,
+                'border-right-color': value + unit
+            }
         },
-        order(prefix) {
-            return (prefix === 'border-color' + ':' || prefix === 'b:' || prefix === 'border' + ':') ? -1 : 0
-        }
+    },
+    borderYColor: {
+        match: '^b(?:y|order-y(?:-color)?):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        order: -.5,
+        colored: true,
+        values: {
+            current: 'currentColor'
+        },
+        declare(value, unit) {
+            return {
+                'border-top-color': value + unit,
+                'border-bottom-color': value + unit
+            }
+        },
+    },
+    borderColor: {
+        match: '^b(?:order)?(?:-color)?:(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        native: true,
+        order: -1,
+        colored: true,
+        values: {
+            current: 'currentColor'
+        },
     },
     // border radius
     borderTopLeftRadius: {
