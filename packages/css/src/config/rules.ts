@@ -217,43 +217,101 @@ const defaultRules = {
             current: 'currentColor'
         }
     },
-    margin: {
-        match: '^m(?:argin(?:-(?:left|right|top|bottom))?|[xytblr]?):.',
+    marginLeft: {
+        match: '^ml:.',
+        native: true,
+        unit: 'rem'
+    },
+    marginRight: {
+        match: '^mr:.',
+        native: true,
+        unit: 'rem'
+    },
+    marginTop: {
+        match: '^mt:.',
+        native: true,
+        unit: 'rem'
+    },
+    marginBottom: {
+        match: '^mb:.',
+        native: true,
+        unit: 'rem'
+    },
+    marginX: {
+        match: '^mx:.',
         unit: 'rem',
+        order: -0.5,
         declare(value, unit) {
-            return declareSpacing.call(this, value + unit)
-        },
-        get margin(): number {
-            switch (this.prefix) {
-                case 'margin:':
-                case 'm:':
-                    return -1
-                case 'mx:':
-                case 'my:':
-                    return -.5
-                default:
-                    return 0
+            return {
+                'margin-left': value + unit,
+                'margin-right': value + unit
             }
-        }
+        },
+    },
+    marginY: {
+        match: '^my:.',
+        unit: 'rem',
+        order: -0.5,
+        declare(value, unit) {
+            return {
+                'margin-top': value + unit,
+                'margin-bottom': value + unit
+            }
+        },
+    },
+    margin: {
+        match: '^m:.',
+        native: true,
+        unit: 'rem',
+        order: -1
+    },
+    paddingLeft: {
+        match: '^pl:.',
+        native: true,
+        unit: 'rem'
+    },
+    paddingRight: {
+        match: '^pr:.',
+        native: true,
+        unit: 'rem'
+    },
+    paddingTop: {
+        match: '^pt:.',
+        native: true,
+        unit: 'rem'
+    },
+    paddingBottom: {
+        match: '^pb:.',
+        native: true,
+        unit: 'rem'
+    },
+    paddingX: {
+        match: '^px:.',
+        unit: 'rem',
+        order: -0.5,
+        declare(value, unit) {
+            return {
+                'padding-left': value + unit,
+                'padding-right': value + unit
+            }
+        },
+    },
+    paddingY: {
+        match: '^py:.',
+        unit: 'rem',
+        order: -0.5,
+        declare(value, unit) {
+            return {
+                'padding-top': value + unit,
+                'padding-bottom': value + unit
+            }
+        },
     },
     padding: {
-        match: '^p(?:adding(?:-(?:left|right|top|bottom))?|[xytblr]?):.',
+        match: '^p:.',
+        native: true,
         unit: 'rem',
-        declare(value, unit) {
-            return declareSpacing.call(this, value + unit)
-        },
-        get order(): number {
-            switch (this.prefix) {
-                case 'padding:':
-                case 'p:':
-                    return -1
-                case 'px:':
-                case 'py:':
-                    return -.5
-                default:
-                    return 0
-            }
-        }
+        order: -1
     },
     flexBasis: {
         values: SIZING_VALUES,
@@ -459,10 +517,17 @@ const defaultRules = {
         match: '^(?:top|bottom|left|right):.',
         unit: 'rem',
         native: true,
-        order: -1,
         declare(value, unit) {
             return {
                 [this.prefix.slice(0, -1)]: value + unit
+            }
+        },
+        order(prefix) {
+            switch (prefix) {
+                case 'inset:':
+                    return -1
+                default:
+                    return 0
             }
         }
     },
@@ -778,8 +843,8 @@ const defaultRules = {
         declare(value, unit) {
             return declareBorderRelated(this.prefix, value + unit, 'color')
         },
-        get order(): number {
-            return (this.prefix === 'border-color' + ':' || this.prefix === 'b:' || this.prefix === 'border' + ':') ? -1 : 0
+        order(prefix) {
+            return (prefix === 'border-color' + ':' || prefix === 'b:' || prefix === 'border' + ':') ? -1 : 0
         }
     },
     borderRadius: {
@@ -849,8 +914,8 @@ const defaultRules = {
                 [['border-top-left-radius', 'border-top-right-radius', 'border-bottom-left-radius', 'border-bottom-right-radius'].includes(prefix) ? prefix : 'border-radius']: value + unit
             }
         },
-        get order(): number {
-            return (this.prefix === 'border-radius' + ':' || this.prefix === 'r:') ? -1 : 0
+        order(prefix) {
+            return (prefix === 'border-radius' + ':' || prefix === 'r:') ? -1 : 0
         }
     },
     borderStyle: {
@@ -858,8 +923,8 @@ const defaultRules = {
         declare(value, unit) {
             return declareBorderRelated(this.prefix, value + unit, 'style')
         },
-        get order(): number {
-            return (this.prefix === 'border-style' + ':' || this.prefix === 'b:' || this.prefix === 'border' + ':') ? -1 : 0
+        order(prefix) {
+            return (prefix === 'border-style' + ':' || prefix === 'b:' || prefix === 'border' + ':') ? -1 : 0
         }
     },
     borderWidth: {
@@ -868,8 +933,8 @@ const defaultRules = {
         declare(value, unit) {
             return declareBorderRelated(this.prefix, value + unit, 'width')
         },
-        get order(): number {
-            return (this.prefix === 'border-width' + ':' || this.prefix === 'b:' || this.prefix === 'border' + ':') ? -1 : 0
+        order(prefix) {
+            return (prefix === 'border-width' + ':' || prefix === 'b:' || prefix === 'border' + ':') ? -1 : 0
         }
     },
     borderCollapse: {
@@ -913,8 +978,8 @@ const defaultRules = {
         declare(value, unit) {
             return declareBorderRelated(this.prefix, value + unit)
         },
-        get order(): number {
-            return (this.prefix === 'border' + ':' || this.prefix === 'b:') ? -2 : -1
+        order(prefix) {
+            return (prefix === 'border' + ':' || prefix === 'b:') ? -2 : -1
         }
     },
     backgroundAttachment: {
@@ -1340,8 +1405,8 @@ const defaultRules = {
                 }
             }
         },
-        get order(): number {
-            return (this.prefix === 'scroll-margin:' || this.prefix === 'scroll-m:') ? -1 : 0
+        order(prefix) {
+            return (prefix === 'scroll-margin:' || prefix === 'scroll-m:') ? -1 : 0
         }
     },
     scrollPadding: {
@@ -1349,7 +1414,6 @@ const defaultRules = {
         unit: 'rem',
         declare(value, unit) {
             if (this.prefix.slice(-3, -2) === 'p') {
-
                 switch (this.prefix.slice(-2, -1)) {
                     case 'x':
                         return {
@@ -1384,8 +1448,8 @@ const defaultRules = {
                 }
             }
         },
-        get order(): number {
-            return (this.prefix === 'scroll-padding:' || this.prefix === 'scroll-p:') ? -1 : 0
+        order(prefix) {
+            return (prefix === 'scroll-padding:' || prefix === 'scroll-p:') ? -1 : 0
         }
     },
     scrollSnapAlign: {
@@ -1551,52 +1615,6 @@ function animationInsert() {
                 }
             }
         }
-    }
-}
-
-function declareSpacing(declaration) {
-    if (this.prefix.includes('-'))
-        return {
-            [this.prefix.slice(0, -1)]: declaration
-        }
-
-    const charAt1 = this.prefix[0]
-    const SPACING = charAt1 === 'm' ? 'margin' : 'padding'
-    const SPACING_LEFT = SPACING + '-left'
-    const SPACING_RIGHT = SPACING + '-right'
-    const SPACING_TOP = SPACING + '-top'
-    const SPACING_BOTTOM = SPACING + '-bottom'
-    switch (this.prefix[1]) {
-        case 'x':
-            return {
-                [SPACING_LEFT]: declaration,
-                [SPACING_RIGHT]: declaration
-            }
-        case 'y':
-            return {
-                [SPACING_TOP]: declaration,
-                [SPACING_BOTTOM]: declaration
-            }
-        case 'l':
-            return {
-                [SPACING_LEFT]: declaration
-            }
-        case 'r':
-            return {
-                [SPACING_RIGHT]: declaration
-            }
-        case 't':
-            return {
-                [SPACING_TOP]: declaration
-            }
-        case 'b':
-            return {
-                [SPACING_BOTTOM]: declaration
-            }
-        default:
-            return {
-                [SPACING]: declaration
-            }
     }
 }
 
