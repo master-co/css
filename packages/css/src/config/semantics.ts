@@ -86,7 +86,7 @@ export const semantics = {
     isolate: {
         isolation: 'isolate'
     },
-    overflow: {
+    overflowed: {
         overflow: 'visible'
     },
     untouchable: {
