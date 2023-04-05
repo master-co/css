@@ -1,4 +1,4 @@
-import { testProp } from './css'
+import { expectOrderOfRules, testProp } from './css'
 
 it('validate output border-radius rules', () => {
     testProp('r:16', 'border-radius:1rem')
@@ -18,4 +18,11 @@ it('validate output border-radius rules', () => {
     testProp('rb:16', 'border-bottom-left-radius:1rem;border-bottom-right-radius:1rem')
     testProp('rl:16', 'border-top-left-radius:1rem;border-bottom-left-radius:1rem')
     testProp('rr:16', 'border-top-right-radius:1rem;border-bottom-right-radius:1rem')
+})
+
+it('checks border-radius order', () => {
+    expectOrderOfRules(
+        ['rrt:16', 'r:16', 'rl:16', 'rrb:16'],
+        ['r:16', 'rl:16', 'rrb:16', 'rrt:16']
+    )
 })
