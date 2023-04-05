@@ -7,7 +7,7 @@ it('checks margin order', () => {
     )
 })
 
-it('validate output margin rules', () => {
+it('validate margin rules', () => {
     testProp('ml:16', 'margin-left:1rem')
     testProp('mr:16', 'margin-right:1rem')
     testProp('mt:16', 'margin-top:1rem')
