@@ -912,14 +912,26 @@ const defaultRules = {
         native: true,
         order: -1
     },
+    borderTopStyle: {
+        match: '^b(?:t|order-top(?:-style)?):(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|)',
+        native: true,
+    },
+    borderBottomStyle: {
+        match: '^b(?:b|order-bottom(?:-style)?):(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|)',
+        native: true,
+    },
+    borderLeftStyle: {
+        match: '^b(?:l|order-left(?:-style)?):(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|)',
+        native: true,
+    },
+    borderRightStyle: {
+        match: '^b(?:r|order-right(?:-style)?):(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|)',
+        native: true,
+    },
     borderStyle: {
-        match: '^(?:border(?:-(?:left|right|top|bottom))?-style:.|b(?:[xytblr]|order(?:-(?:left|right|top|bottom))?)?:(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|))',
-        declare(value, unit) {
-            return declareBorderRelated(this.prefix, value + unit, 'style')
-        },
-        order(prefix) {
-            return (prefix === 'border-style' + ':' || prefix === 'b:' || prefix === 'border' + ':') ? -1 : 0
-        }
+        match: '^b(?:order)?(?:-style)?:(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|)',
+        native: true,
+        order: -1
     },
     borderWidth: {
         match: '^(?:border(?:-(?:left|right|top|bottom))?-width:.|b(?:[xytblr]|order(?:-(?:left|right|top|bottom))?)?:(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$)',
