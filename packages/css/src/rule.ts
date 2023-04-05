@@ -34,7 +34,6 @@ export class Rule {
         const { scope, important, functions } = css.config
         const { themeNames, colorNames, colorThemesMap, selectors, breakpoints, mediaQueries, themeAffectedClassesBy, globalValues } = css
         const themeAffectedClasses = themeAffectedClassesBy[className]
-        this.order = order
 
         if (create) create.call(this, className)
 
@@ -44,6 +43,7 @@ export class Rule {
         let prefixToken: string
         let suffixToken: string
         let valueSplits: (string | { value: string, unit?: string })[]
+
         if (meta.origin === 'semantics') {
             const [semanticName, semanticValue] = meta.value
             suffixToken = className.slice(semanticName.length)
@@ -244,6 +244,10 @@ export class Rule {
 
             suffixToken = valueToken.slice(i)
         }
+
+        this.order = typeof order === 'function'
+            ? order.call(this, this.prefix)
+            : order
 
         // 2. !important
         if (suffixToken[0] === '!') {
@@ -810,7 +814,7 @@ export interface RuleConfig {
     colored?: boolean
     unit?: any
     native?: string | true
-    order?: number,
+    order?: number | ((this: Rule, prefix: string) => number),
     values?: Values,
     analyze?(this: Rule, className: string): [valueToken: string, prefixToken?: string]
     transform?(this: Rule, value: string): string

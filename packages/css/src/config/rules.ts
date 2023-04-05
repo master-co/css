@@ -513,23 +513,26 @@ const defaultRules = {
     whiteSpace: {
         native: true
     },
-    inset: {
-        match: '^(?:top|bottom|left|right):.',
-        unit: 'rem',
+    top: {
         native: true,
-        declare(value, unit) {
-            return {
-                [this.prefix.slice(0, -1)]: value + unit
-            }
-        },
-        order(prefix) {
-            switch (prefix) {
-                case 'inset:':
-                    return -1
-                default:
-                    return 0
-            }
-        }
+        unit: 'rem'
+    },
+    bottom: {
+        native: true,
+        unit: 'rem'
+    },
+    left: {
+        native: true,
+        unit: 'rem'
+    },
+    right: {
+        native: true,
+        unit: 'rem'
+    },
+    inset: {
+        native: true,
+        unit: 'rem',
+        order: -1
     },
     lines: {
         match: '^lines:.',
@@ -579,33 +582,25 @@ const defaultRules = {
     isolation: {
         native: true
     },
+    overflowX: {
+        native: true
+    },
+    overflowY: {
+        native: true
+    },
     overflow: {
-        match: '^overflow(?:-x|-y)?:(?:visible|overlay|hidden|scroll|auto|clip|inherit|initial|revert|revert-layer|unset|\\$|var|$values)',
-        declare(value, unit) {
-            if (this.prefix) {
-                switch (this.prefix.slice(-2, -1)) {
-                    case 'x':
-                        return { 'overflow-x': value + unit }
-                    case 'y':
-                        return { 'overflow-y': value + unit }
-                }
-            }
-            return { 'overflow': value + unit }
-        },
+        native: true,
         order: -1
     },
+    overscrollBehaviorX: {
+        native: true
+    },
+    overscrollBehaviorY: {
+        native: true
+    },
     overscrollBehavior: {
-        match: '^overscroll-behavior(?:-[xy])?:',
-        declare(value, unit) {
-            switch (this.prefix.slice(-2, -1)) {
-                case 'x':
-                    return { 'overscroll-behavior-x': value + unit }
-                case 'y':
-                    return { 'overscroll-behavior-y': value + unit }
-                default:
-                    return { 'overscroll-behavior': value + unit }
-            }
-        }
+        native: true,
+        order: -1
     },
     zIndex: {
         match: '^z:.',

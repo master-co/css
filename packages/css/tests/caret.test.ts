@@ -1,4 +1,4 @@
-import { testProp } from './test-css'
+import { testProp } from './css'
 
 test('caret', () => {
     testProp('caret:current', 'caret-color:currentColor')

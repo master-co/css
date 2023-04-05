@@ -1,4 +1,4 @@
-import { testProp } from './test-css'
+import { testProp } from './css'
 
 test('border', () => {
     testProp('br:1px|solid|gray', 'border-right:1px solid #6b6a6d')

@@ -1,4 +1,4 @@
-import { testCSS } from './test-css'
+import { testCSS } from './css'
 import { config } from '../../../master.css.js'
 
 test('colors', () => {
@@ -17,48 +17,48 @@ test('colors', () => {
         '.fg\\:primary-stage-1{color:#999999}.light .fg\\:primary-stage-1{color:#888888}.dark .fg\\:primary-stage-1{color:#AAAAAA}',
         config
     ),
-    testCSS(
-        'b:input',
-        '.b\\:input{border-color:#123456}',
-        config
-    ),
-    testCSS(
-        'bg:blue-100',
-        '.bg\\:blue-100{background-color:#777}',
-        {
-            colors: {
-                'blue-100': '#777'
+        testCSS(
+            'b:input',
+            '.b\\:input{border-color:#123456}',
+            config
+        ),
+        testCSS(
+            'bg:blue-100',
+            '.bg\\:blue-100{background-color:#777}',
+            {
+                colors: {
+                    'blue-100': '#777'
+                }
             }
-        }
-    ),
-    testCSS(
-        'bg:primary-alpha',
-        '.bg\\:primary-alpha{background-color:#175fe91a}',
-        config
-    ),
-    testCSS(
-        'bg:primary-rgb1',
-        '.bg\\:primary-rgb1{background-color:#000000}',
-        config
-    ),
-    testCSS(
-        'bg:primary-rgb2',
-        '.bg\\:primary-rgb2{background-color:#000000}',
-        config
-    ),
-    testCSS(
-        'bg:primary-rgb3',
-        '.bg\\:primary-rgb3{background-color:#00000080}',
-        config
-    ),
-    testCSS(
-        'bg:primary-rgb4',
-        '.bg\\:primary-rgb4{background-color:#00000080}',
-        config
-    ),
-    testCSS(
-        'bg:primary-2',
-        '.bg\\:primary-2{background-color:#000000b3}',
-        config
-    )
+        ),
+        testCSS(
+            'bg:primary-alpha',
+            '.bg\\:primary-alpha{background-color:#175fe91a}',
+            config
+        ),
+        testCSS(
+            'bg:primary-rgb1',
+            '.bg\\:primary-rgb1{background-color:#000000}',
+            config
+        ),
+        testCSS(
+            'bg:primary-rgb2',
+            '.bg\\:primary-rgb2{background-color:#000000}',
+            config
+        ),
+        testCSS(
+            'bg:primary-rgb3',
+            '.bg\\:primary-rgb3{background-color:#00000080}',
+            config
+        ),
+        testCSS(
+            'bg:primary-rgb4',
+            '.bg\\:primary-rgb4{background-color:#00000080}',
+            config
+        ),
+        testCSS(
+            'bg:primary-2',
+            '.bg\\:primary-2{background-color:#000000b3}',
+            config
+        )
 })

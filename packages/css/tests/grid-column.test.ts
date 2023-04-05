@@ -1,4 +1,4 @@
-import { testCSS, testProp } from './test-css'
+import { testCSS, testProp } from './css'
 
 test('grid-column', () => {
     testCSS('grid-col-span:2', '.grid-col-span\\:2{grid-column:span 2/span 2}')

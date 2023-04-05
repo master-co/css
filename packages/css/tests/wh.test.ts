@@ -1,4 +1,4 @@
-import { testCSS } from './test-css'
+import { testCSS } from './css'
 
 test('wh', () => {
     testCSS('16x10', '.\\31 6x10{width:1rem;height:0.625rem}')

@@ -1,6 +1,6 @@
 import '../../../utils/matchMedia.mock'
 import '../src/polyfills/css-escape'
-import { Config } from '../src'
+import { Config, MasterCSS } from '../src'
 import { render } from '../src/methods'
 
 export const testCSS = (cls: string, expected: string, config?: Config): void => {
@@ -17,4 +17,13 @@ export const testProp = (cls: string, expected?: string): void => {
         expected = cls
     }
     expect(render(cls.split(' '))).toBe(`.${selector}{${expected}}`)
+}
+
+export const expectOrderOfRules = (classNames: string[], expected: string[]): void => {
+    const css = new MasterCSS({ observe: false })
+    classNames.forEach((eachClassName) => {
+        css.insert(eachClassName)
+    })
+    const sortedClassNames = css.rules.map((rule) => rule.className)
+    expect(sortedClassNames).toEqual(expected)
 }

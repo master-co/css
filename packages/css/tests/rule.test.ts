@@ -1,4 +1,4 @@
-import { testCSS } from './test-css'
+import { testCSS } from './css'
 
 test('classes', () => {
     testCSS(

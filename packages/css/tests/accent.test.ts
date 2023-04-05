@@ -1,4 +1,4 @@
-import { testProp } from './test-css'
+import { testProp } from './css'
 
 test('accent', () => {
     testProp('accent:current', 'accent-color:currentColor')

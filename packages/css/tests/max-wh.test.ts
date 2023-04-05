@@ -1,4 +1,4 @@
-import { testCSS } from './test-css'
+import { testCSS } from './css'
 
 test('max-wh', () => {
     testCSS('max:16x10', '.max\\:16x10{max-width:1rem;max-height:0.625rem}')

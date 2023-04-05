@@ -1,4 +1,4 @@
-import { testCSS, testProp } from './test-css'
+import { testCSS, testProp } from './css'
 
 test('content', () => {
     // testCSS('content:\'foo\'', '.content\\:\\\'foo\\\'{content:\'foo\'}')

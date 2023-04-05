@@ -1,4 +1,4 @@
-import { testCSS, testProp } from './test-css'
+import { testCSS, testProp } from './css'
 
 test('color', () => {
     testCSS('color:current:hover', '.color\\:current\\:hover:hover{color:currentColor}')

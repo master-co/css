@@ -1,4 +1,4 @@
-import { testCSS } from './test-css'
+import { testCSS } from './css'
 import MasterCSS from '../src'
 import { config } from '../../../master.css.js'
 
