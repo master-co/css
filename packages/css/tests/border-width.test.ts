@@ -12,7 +12,7 @@ it('validates border-width rules', () => {
 
 it('checks border-width order', () => {
     expectOrderOfRules(
-        ['bt:16', 'b:16', 'bl:dotted'],
-        ['b:16', 'bl:dotted', 'bt:16']
+        ['bt:16', 'b:16', 'bl:16', 'bx:16'],
+        ['b:16', 'bx:16', 'bl:16', 'bt:16']
     )
 })

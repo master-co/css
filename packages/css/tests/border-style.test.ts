@@ -12,7 +12,7 @@ it('validates border-style rules', () => {
 
 it('checks border-style order', () => {
     expectOrderOfRules(
-        ['bt:solid', 'b:solid', 'bl:dotted'],
-        ['b:solid', 'bl:dotted', 'bt:solid']
+        ['bt:solid', 'b:solid', 'bl:dotted', 'bx:solid'],
+        ['b:solid', 'bx:solid', 'bl:dotted', 'bt:solid']
     )
 })
