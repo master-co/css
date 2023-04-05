@@ -1,10 +1,10 @@
 export const keyframes = {
     fade: {
-        from: { opacity: 0 },
+        '0%': { opacity: 0 },
         to: { opacity: 0 }
     },
     flash: {
-        'from,50%,to': { opacity: 1 },
+        '0%,50%,to': { opacity: 1 },
         '25%,75%': { opacity: 0 }
     },
     float: {
@@ -41,7 +41,7 @@ export const keyframes = {
         '100%': { transform: 'none' }
     },
     rotate: {
-        from: { transform: 'rotate(-360deg)' },
+        '0%': { transform: 'rotate(-360deg)' },
         to: { transform: 'none' }
     },
     shake: {
@@ -53,7 +53,7 @@ export const keyframes = {
         '50%': { transform: 'none' }
     },
     zoom: {
-        from: { transform: 'scale(0)' },
+        '0%': { transform: 'scale(0)' },
         '100%': { transform: 'none' }
     }
 }
