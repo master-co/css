@@ -223,8 +223,17 @@ const defaultRules = {
         declare(value, unit) {
             return declareSpacing.call(this, value + unit)
         },
-        get order(): number {
-            return (this.prefix === 'margin:' || this.prefix === 'm:') ? -1 : 0
+        get margin(): number {
+            switch (this.prefix) {
+                case 'margin:':
+                case 'm:':
+                    return -1
+                case 'mx:':
+                case 'my:':
+                    return -.5
+                default:
+                    return 0
+            }
         }
     },
     padding: {
@@ -234,7 +243,16 @@ const defaultRules = {
             return declareSpacing.call(this, value + unit)
         },
         get order(): number {
-            return (this.prefix === 'padding:' || this.prefix === 'p:') ? -1 : 0
+            switch (this.prefix) {
+                case 'padding:':
+                case 'p:':
+                    return -1
+                case 'px:':
+                case 'py:':
+                    return -.5
+                default:
+                    return 0
+            }
         }
     },
     flexBasis: {
