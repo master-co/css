@@ -176,19 +176,18 @@ const defaultRules = {
     fontSmoothing: {
         match: '^f(?:ont)?:(?:antialiased|subpixel-antialiased|$values)(?!\\|)',
         declare(value) {
-            const props = {}
             switch (value) {
                 case 'subpixel-antialiased':
-                    props['-webkit-font-smoothing'] = props['-moz-osx-font-smoothing'] = 'auto'
-                    break
+                    return {
+                        '-webkit-font-smoothing': 'auto',
+                        '-moz-osx-font-smoothing': 'auto'
+                    }
                 case 'antialiased':
-                    props['-webkit-font-smoothing'] = 'antialiased'
-                    props['-moz-osx-font-smoothing'] = 'grayscale'
-                    break
-                // default:
-                //     props[WEBKIT_FONT_SMOOTHING] = props[MOZ_OSXFONT_SMOOTHING] = this;
+                    return {
+                        '-webkit-font-smoothing': 'antialiased',
+                        '-moz-osx-font-smoothing': 'grayscale'
+                    }
             }
-            return props
         }
     },
     fontStyle: {
