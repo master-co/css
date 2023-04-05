@@ -58,13 +58,18 @@ export class MasterCSS {
         public config: Config = defaultConfig
     ) {
         if (!config.override && config !== defaultConfig) {
-            for (const eachOptionName in config) {
-                const eachOption = config[eachOptionName]
+            for (const eachDefaultOptionName in defaultConfig) {
+                const eachOption = config[eachDefaultOptionName]
+                const eachDefaultOption = defaultConfig[eachDefaultOptionName]
                 // 防止 config.keyframes 被深層擴展
-                if (eachOptionName === 'keyframes') {
-                    config[eachOptionName] = Object.assign(defaultConfig[eachOptionName], eachOption)
+                if (eachDefaultOptionName === 'keyframes') {
+                    config[eachDefaultOptionName] = eachOption
+                        ? Object.assign(eachDefaultOption, eachOption)
+                        : eachDefaultOption
                 } else {
-                    config[eachOptionName] = extend(defaultConfig[eachOptionName], eachOption)
+                    config[eachDefaultOptionName] = eachOption
+                        ? extend(eachDefaultOption, eachOption)
+                        : eachDefaultOption
                 }
             }
         }

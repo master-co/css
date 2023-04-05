@@ -508,9 +508,7 @@ const defaultRules = {
             }
             return { 'overflow': value + unit }
         },
-        get order(): number {
-            return -1
-        }
+        order: -1
     },
     overscrollBehavior: {
         match: '^overscroll-behavior(?:-[xy])?:',
@@ -1442,8 +1440,8 @@ function animationCreate(className: string) {
 
     const keyframeNames = (
         this.meta.origin === 'symbol'
-        ? className.slice(this.meta.config.symbol.length)
-        : className.slice(className.indexOf(':') + 1)
+            ? className.slice(this.meta.config.symbol.length)
+            : className.slice(className.indexOf(':') + 1)
     )
         .split('|')
         .filter(eachKeyframe => eachKeyframe in this.css.config.keyframes)
@@ -1495,9 +1493,9 @@ function animationInsert() {
                     (keyframeRule = rules[0]).natives.push(native)
                 } else {
                     rules.splice(
-                        0, 
-                        0, 
-                        keyframeRule = { 
+                        0,
+                        0,
+                        keyframeRule = {
                             natives: [native],
                             get text() {
                                 return this.natives.map((eachNative) => eachNative.text).join('')
@@ -1512,13 +1510,13 @@ function animationInsert() {
                         const cssRule = sheet.cssRules[i]
                         if (cssRule.constructor.name !== 'CSSKeyframesRule')
                             break
-                            
+
                         if ((cssRule as CSSKeyframesRule).name === eachKeyframeName) {
                             nativeCssRule = cssRule
                             break
                         }
                     }
-    
+
                     if (nativeCssRule) {
                         native.cssRule = nativeCssRule
                     } else {
@@ -1527,7 +1525,7 @@ function animationInsert() {
                         native.cssRule = sheet.cssRules[cssRuleIndex]
                     }
                 }
-                
+
                 keyframes[eachKeyframeName] = {
                     native,
                     count: 1
