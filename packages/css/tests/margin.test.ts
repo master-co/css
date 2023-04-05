@@ -15,4 +15,6 @@ it('validates margin rules', () => {
     testProp('m:16', 'margin:1rem')
     testProp('mx:16', 'margin-left:1rem;margin-right:1rem')
     testProp('my:16', 'margin-top:1rem;margin-bottom:1rem')
+    testProp('margin-x:16', 'margin-left:1rem;margin-right:1rem')
+    testProp('margin-y:16', 'margin-top:1rem;margin-bottom:1rem')
 })

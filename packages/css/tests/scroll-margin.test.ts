@@ -15,4 +15,6 @@ it('validates scroll-margin rules', () => {
     testProp('sm:16', 'scroll-margin:1rem')
     testProp('smx:16', 'scroll-margin-left:1rem;scroll-margin-right:1rem')
     testProp('smy:16', 'scroll-margin-top:1rem;scroll-margin-bottom:1rem')
+    testProp('scroll-margin-x:16', 'scroll-margin-left:1rem;scroll-margin-right:1rem')
+    testProp('scroll-margin-y:16', 'scroll-margin-top:1rem;scroll-margin-bottom:1rem')
 })

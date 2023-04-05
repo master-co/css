@@ -15,4 +15,6 @@ it('validates scroll-padding rules', () => {
     testProp('sp:16', 'scroll-padding:1rem')
     testProp('spx:16', 'scroll-padding-left:1rem;scroll-padding-right:1rem')
     testProp('spy:16', 'scroll-padding-top:1rem;scroll-padding-bottom:1rem')
+    testProp('scroll-padding-x:16', 'scroll-padding-left:1rem;scroll-padding-right:1rem')
+    testProp('scroll-padding-y:16', 'scroll-padding-top:1rem;scroll-padding-bottom:1rem')
 })

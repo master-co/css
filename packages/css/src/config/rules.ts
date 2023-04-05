@@ -237,7 +237,7 @@ const defaultRules = {
         unit: 'rem'
     },
     marginX: {
-        match: '^mx:.',
+        match: '^(?:mx|margin-x):.',
         unit: 'rem',
         order: -0.5,
         declare(value, unit) {
@@ -248,7 +248,7 @@ const defaultRules = {
         },
     },
     marginY: {
-        match: '^my:.',
+        match: '^(?:my|margin-y):.',
         unit: 'rem',
         order: -0.5,
         declare(value, unit) {
@@ -285,7 +285,7 @@ const defaultRules = {
         unit: 'rem'
     },
     paddingX: {
-        match: '^px:.',
+        match: '^(?:px|padding-x):.',
         unit: 'rem',
         order: -0.5,
         declare(value, unit) {
@@ -296,7 +296,7 @@ const defaultRules = {
         },
     },
     paddingY: {
-        match: '^py:.',
+        match: '^(?:py|padding-y):.',
         unit: 'rem',
         order: -0.5,
         declare(value, unit) {
@@ -1444,7 +1444,7 @@ const defaultRules = {
         unit: 'rem'
     },
     scrollMarginX: {
-        match: '^smx:.',
+        match: '^(?:smx|scroll-margin-x):.',
         unit: 'rem',
         order: -0.5,
         declare(value, unit) {
@@ -1455,7 +1455,7 @@ const defaultRules = {
         },
     },
     scrollMarginY: {
-        match: '^smy:.',
+        match: '^(?:smy|scroll-margin-y):.',
         unit: 'rem',
         order: -0.5,
         declare(value, unit) {
@@ -1493,7 +1493,7 @@ const defaultRules = {
         unit: 'rem'
     },
     scrollPaddingX: {
-        match: '^spx:.',
+        match: '^(?:spx|scroll-padding-x):.',
         unit: 'rem',
         order: -0.5,
         declare(value, unit) {
@@ -1504,7 +1504,7 @@ const defaultRules = {
         },
     },
     scrollPaddingY: {
-        match: '^spy:.',
+        match: '^(?:spy|scroll-padding-y):.',
         unit: 'rem',
         order: -0.5,
         declare(value, unit) {
