@@ -2,6 +2,16 @@ import '../src/polyfills/css-escape'
 import MasterCSS, { Rule } from '../src'
 import delay from '../src/utils/delay'
 
+it('make sure not to extend keyframes deeply', () => {
+    const css = new MasterCSS({
+        keyframes: {
+            fade: {}
+        },
+        observe: false
+    })
+    expect(css.config.keyframes?.fade).toEqual({})
+})
+
 test('keyframes', async () => {
     const p1 = document.createElement('p')
     p1.classList.add('block', 'font:bold')

@@ -55,19 +55,23 @@ export class MasterCSS {
     observer: MutationObserver
 
     constructor(
-        public config?: Config
+        public config: Config = defaultConfig
     ) {
-
-        if (!this.config?.override) {
-            this.config = extend(defaultConfig, config)
+        if (!config.override && config !== defaultConfig) {
+            for (const eachOptionName in config) {
+                const eachOption = config[eachOptionName]
+                // 防止 config.keyframes 被深層擴展
+                if (eachOptionName === 'keyframes') {
+                    config[eachOptionName] = Object.assign(defaultConfig[eachOptionName], eachOption)
+                } else {
+                    config[eachOptionName] = extend(defaultConfig[eachOptionName], eachOption)
+                }
+            }
         }
-
         this.cache()
-
         if (hasWindow && this.config.observe) {
             this.observe(document)
         }
-
         MasterCSS.instances.push(this)
     }
 
