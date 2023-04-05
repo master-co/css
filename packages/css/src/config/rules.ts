@@ -912,6 +912,7 @@ const defaultRules = {
         native: true,
         order: -1
     },
+    // border style
     borderTopStyle: {
         match: '^b(?:t|order-top(?:-style)?):(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|)',
         native: true,
@@ -933,15 +934,32 @@ const defaultRules = {
         native: true,
         order: -1
     },
-    borderWidth: {
-        match: '^(?:border(?:-(?:left|right|top|bottom))?-width:.|b(?:[xytblr]|order(?:-(?:left|right|top|bottom))?)?:(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$)',
+    // border width
+    borderTopWidth: {
+        match: '^b(?:t|order-top(?:-width)?):(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
         unit: 'rem',
-        declare(value, unit) {
-            return declareBorderRelated(this.prefix, value + unit, 'width')
-        },
-        order(prefix) {
-            return (prefix === 'border-width' + ':' || prefix === 'b:' || prefix === 'border' + ':') ? -1 : 0
-        }
+        native: true,
+    },
+    borderBottomWidth: {
+        match: '^b(?:b|order-bottom(?:-width)?):(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
+        unit: 'rem',
+        native: true,
+    },
+    borderLeftWidth: {
+        match: '^b(?:l|order-left(?:-width)?):(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
+        unit: 'rem',
+        native: true,
+    },
+    borderRightWidth: {
+        match: '^b(?:r|order-right(?:-width)?):(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
+        unit: 'rem',
+        native: true,
+    },
+    borderWidth: {
+        match: '^b(?:order)?(?:-width)?:(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
+        unit: 'rem',
+        native: true,
+        order: -1
     },
     borderCollapse: {
         match: '^b(?:order)?:(?:collapse|separate|$values)(?!\\|)',
