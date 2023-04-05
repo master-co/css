@@ -1,6 +1,6 @@
 import { expectOrderOfRules, testProp } from './css'
 
-it('validate border-radius rules', () => {
+it('validates border-radius rules', () => {
     testProp('r:16', 'border-radius:1rem')
     testProp('border-radius:1rem')
 
