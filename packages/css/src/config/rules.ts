@@ -441,6 +441,7 @@ const defaultRules = {
         match: '^(?:top|bottom|left|right):.',
         unit: 'rem',
         native: true,
+        order: -1,
         declare(value, unit) {
             return {
                 [this.prefix.slice(0, -1)]: value + unit
