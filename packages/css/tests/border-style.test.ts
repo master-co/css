@@ -1,6 +1,6 @@
 import { expectOrderOfRules, testProp } from './css'
 
-it('validates border-radius rules', () => {
+it('validates border-style rules', () => {
     testProp('b:solid', 'border-style:solid')
     testProp('border:solid', 'border-style:solid')
     testProp('border-style:solid', 'border-style:solid')
@@ -20,9 +20,11 @@ it('validates border-radius rules', () => {
     testProp('br:solid', 'border-right-style:solid')
     testProp('border-right:solid', 'border-right-style:solid')
     testProp('border-right-style:solid')
+
+    testProp('border:solid|1', 'border:solid 0.0625rem')
 })
 
-it('checks border-radius order', () => {
+it('checks border-style order', () => {
     expectOrderOfRules(
         ['bt:solid', 'b:solid', 'bl:dotted'],
         ['b:solid', 'bl:dotted', 'bt:solid']
