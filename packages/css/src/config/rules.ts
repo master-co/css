@@ -1422,92 +1422,105 @@ const defaultRules = {
     scrollBehavior: {
         native: true
     },
-    scrollMargin: {
-        match: '^scroll-m(?:[xytblr]|argin(?:-(?:top|bottom|left|right))?)?:.',
+    // scroll margin
+    scrollMarginLeft: {
+        match: '^sml:.',
+        native: true,
+        unit: 'rem'
+    },
+    scrollMarginRight: {
+        match: '^smr:.',
+        native: true,
+        unit: 'rem'
+    },
+    scrollMarginTop: {
+        match: '^smt:.',
+        native: true,
+        unit: 'rem'
+    },
+    scrollMarginBottom: {
+        match: '^smb:.',
+        native: true,
+        unit: 'rem'
+    },
+    scrollMarginX: {
+        match: '^smx:.',
         unit: 'rem',
+        order: -0.5,
         declare(value, unit) {
-            if (this.prefix.slice(-3, -2) === 'm') {
-                switch (this.prefix.slice(-2, -1)) {
-                    case 'x':
-                        return {
-                            'scroll-margin-left': value + unit,
-                            'scroll-margin-right': value + unit
-                        }
-                    case 'y':
-                        return {
-                            'scroll-margin-top': value + unit,
-                            'scroll-margin-bottom': value + unit
-                        }
-                    case 'l':
-                        return {
-                            'scroll-margin-left': value + unit
-                        }
-                    case 'r':
-                        return {
-                            'scroll-margin-right': value + unit
-                        }
-                    case 't':
-                        return {
-                            'scroll-margin-top': value + unit
-                        }
-                    case 'b':
-                        return {
-                            'scroll-margin-bottom': value + unit
-                        }
-                }
-            } else {
-                return {
-                    [this.prefix.replace(/-m(?!argin)/, '-' + 'margin').slice(0, -1)]: value + unit
-                }
+            return {
+                'scroll-margin-left': value + unit,
+                'scroll-margin-right': value + unit
             }
         },
-        order(prefix) {
-            return (prefix === 'scroll-margin:' || prefix === 'scroll-m:') ? -1 : 0
-        }
+    },
+    scrollMarginY: {
+        match: '^smy:.',
+        unit: 'rem',
+        order: -0.5,
+        declare(value, unit) {
+            return {
+                'scroll-margin-top': value + unit,
+                'scroll-margin-bottom': value + unit
+            }
+        },
+    },
+    scrollMargin: {
+        match: '^sm:.',
+        native: true,
+        unit: 'rem',
+        order: -1
+    },
+    // scroll padding
+    scrollPaddingLeft: {
+        match: '^spl:.',
+        native: true,
+        unit: 'rem'
+    },
+    scrollPaddingRight: {
+        match: '^spr:.',
+        native: true,
+        unit: 'rem'
+    },
+    scrollPaddingTop: {
+        match: '^spt:.',
+        native: true,
+        unit: 'rem'
+    },
+    scrollPaddingBottom: {
+        match: '^spb:.',
+        native: true,
+        unit: 'rem'
+    },
+    scrollPaddingX: {
+        match: '^spx:.',
+        unit: 'rem',
+        order: -0.5,
+        declare(value, unit) {
+            return {
+                'scroll-padding-left': value + unit,
+                'scroll-padding-right': value + unit
+            }
+        },
+    },
+    scrollPaddingY: {
+        match: '^spy:.',
+        unit: 'rem',
+        order: -0.5,
+        declare(value, unit) {
+            return {
+                'scroll-padding-top': value + unit,
+                'scroll-padding-bottom': value + unit
+            }
+        },
     },
     scrollPadding: {
-        match: '^scroll-p(?:[xytblr]|adding(?:-(?:top|bottom|left|right))?)?:.',
+        match: '^sp:.',
+        native: true,
         unit: 'rem',
-        declare(value, unit) {
-            if (this.prefix.slice(-3, -2) === 'p') {
-                switch (this.prefix.slice(-2, -1)) {
-                    case 'x':
-                        return {
-                            'scroll-padding-left': value + unit,
-                            'scroll-padding-right': value + unit
-                        }
-                    case 'y':
-                        return {
-                            'scroll-padding-top': value + unit,
-                            'scroll-padding-bottom': value + unit
-                        }
-                    case 'l':
-                        return {
-                            'scroll-padding-left': value + unit
-                        }
-                    case 'r':
-                        return {
-                            'scroll-padding-right': value + unit
-                        }
-                    case 't':
-                        return {
-                            'scroll-padding-top': value + unit
-                        }
-                    case 'b':
-                        return {
-                            'scroll-padding-bottom': value + unit
-                        }
-                }
-            } else {
-                return {
-                    [this.prefix.replace(/-p(?!adding)/, '-' + 'padding').slice(0, -1)]: value + unit
-                }
-            }
-        },
-        order(prefix) {
-            return (prefix === 'scroll-padding:' || prefix === 'scroll-p:') ? -1 : 0
-        }
+        order: -1
     },
+    // scroll snap
     scrollSnapAlign: {
         match: '^scroll-snap:(?:start|end|center|$values)',
         native: true
