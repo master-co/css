@@ -842,76 +842,75 @@ const defaultRules = {
             return (prefix === 'border-color' + ':' || prefix === 'b:' || prefix === 'border' + ':') ? -1 : 0
         }
     },
-    borderRadius: {
-        match: '^(?:r[tblr]?[tblr]?|border(?:-(?:top|bottom)-(?:left|right))?-radius):.',
+    borderTopLeftRadius: {
+        match: '^r(?:tl|lt):.',
         unit: 'rem',
+        native: true
+    },
+    borderTopRightRadius: {
+        match: '^r(?:tr|rt):.',
+        unit: 'rem',
+        native: true
+    },
+    borderBottomLeftRadius: {
+        match: '^r(?:bl|lb):.',
+        unit: 'rem',
+        native: true
+    },
+    borderBottomRightRadius: {
+        match: '^r(?:br|rb):.',
+        unit: 'rem',
+        native: true
+    },
+    borderTopRadius: {
+        match: '^rt:.',
+        unit: 'rem',
+        order: -.5,
         declare(value, unit) {
-            if (this.prefix) {
-                let suffix = ''
-                const splits = this.prefix.split('-')
-                if (splits.length > 1) {
-                    for (let i = 1; i < splits.length - 1; i++) {
-                        suffix += splits[i][0]
-                    }
-                } else {
-                    suffix = this.prefix.slice(1, -1)
-                }
-                switch (suffix) {
-                    case 't':
-                        return {
-                            'border-top-left-radius': value + unit,
-                            'border-top-right-radius': value + unit
-                        }
-                    case 'tl':
-                    case 'lt':
-                        return {
-                            'border-top-left-radius': value + unit
-                        }
-                    case 'rt':
-                    case 'tr':
-                        return {
-                            'border-top-right-radius': value + unit
-                        }
-                    case 'b':
-                        return {
-                            'border-bottom-left-radius': value + unit,
-                            'border-bottom-right-radius': value + unit
-                        }
-                    case 'bl':
-                    case 'lb':
-                        return {
-                            'border-bottom-left-radius': value + unit
-                        }
-                    case 'br':
-                    case 'rb':
-                        return {
-                            'border-bottom-right-radius': value + unit
-                        }
-                    case 'l':
-                        return {
-                            'border-top-left-radius': value + unit,
-                            'border-bottom-left-radius': value + unit
-                        }
-                    case 'r':
-                        return {
-                            'border-top-right-radius': value + unit,
-                            'border-bottom-right-radius': value + unit
-                        }
-                    default:
-                        return {
-                            'border-radius': value + unit
-                        }
-                }
-            }
-
-            const prefix = this.prefix?.slice(0, -1)
             return {
-                [['border-top-left-radius', 'border-top-right-radius', 'border-bottom-left-radius', 'border-bottom-right-radius'].includes(prefix) ? prefix : 'border-radius']: value + unit
+                'border-top-left-radius': value + unit,
+                'border-top-right-radius': value + unit
             }
-        },
-        order(prefix) {
-            return (prefix === 'border-radius' + ':' || prefix === 'r:') ? -1 : 0
         }
+    },
+    borderBottomRadius: {
+        match: '^rb:.',
+        unit: 'rem',
+        order: -.5,
+        declare(value, unit) {
+            return {
+                'border-bottom-left-radius': value + unit,
+                'border-bottom-right-radius': value + unit
+            }
+        }
+    },
+    borderLeftRadius: {
+        match: '^rl:.',
+        unit: 'rem',
+        order: -.5,
+        declare(value, unit) {
+            return {
+                'border-top-left-radius': value + unit,
+                'border-bottom-left-radius': value + unit
+            }
+        }
+    },
+    borderRightRadius: {
+        match: '^rr:.',
+        unit: 'rem',
+        order: -.5,
+        declare(value, unit) {
+            return {
+                'border-top-right-radius': value + unit,
+                'border-bottom-right-radius': value + unit
+            }
+        }
+    },
+    borderRadius: {
+        match: '^r:.',
+        unit: 'rem',
+        native: true,
+        order: -1
     },
     borderStyle: {
         match: '^(?:border(?:-(?:left|right|top|bottom))?-style:.|b(?:[xytblr]|order(?:-(?:left|right|top|bottom))?)?:(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|))',
