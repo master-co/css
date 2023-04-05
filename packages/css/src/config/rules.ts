@@ -1271,20 +1271,18 @@ const defaultRules = {
         native: true,
         order: -1
     },
-    gap: {
-        match: '^gap(?:-x|-y)?:.',
+    gapX: {
         unit: 'rem',
-        order: -1,
-        declare(value, unit) {
-            switch (this.prefix[4]) {
-                case 'x':
-                    return { 'column-gap': value + unit }
-                case 'y':
-                    return { 'row-gap': value + unit }
-                default:
-                    return { gap: value + unit }
-            }
-        }
+        native: true
+    },
+    gapY: {
+        unit: 'rem',
+        native: true
+    },
+    gap: {
+        unit: 'rem',
+        native: true,
+        order: -1
     },
     order: {
         match: '^o:.',
