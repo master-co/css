@@ -953,6 +953,7 @@ const defaultRules = {
             return (prefix === 'border-color' + ':' || prefix === 'b:' || prefix === 'border' + ':') ? -1 : 0
         }
     },
+    // border radius
     borderTopLeftRadius: {
         match: '^r(?:tl|lt):.',
         unit: 'rem',
@@ -1040,6 +1041,26 @@ const defaultRules = {
         match: '^b(?:r|order-right(?:-style)?):(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|)',
         native: true,
     },
+    borderXStyle: {
+        match: '^b(?:x|order-x(?:-style)?):(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|)',
+        order: -.5,
+        declare(value, unit) {
+            return {
+                'border-left-style': value + unit,
+                'border-right-style': value + unit
+            }
+        },
+    },
+    borderYStyle: {
+        match: '^b(?:y|order-y(?:-style)?):(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|)',
+        order: -.5,
+        declare(value, unit) {
+            return {
+                'border-top-style': value + unit,
+                'border-bottom-style': value + unit
+            }
+        },
+    },
     borderStyle: {
         match: '^b(?:order)?(?:-style)?:(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|)',
         native: true,
@@ -1065,6 +1086,28 @@ const defaultRules = {
         match: '^b(?:r|order-right(?:-width)?):(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
         unit: 'rem',
         native: true,
+    },
+    borderXWidth: {
+        match: '^b(?:x|order-x(?:-width)?):(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
+        unit: 'rem',
+        order: -.5,
+        declare(value, unit) {
+            return {
+                'border-left-width': value + unit,
+                'border-right-width': value + unit
+            }
+        },
+    },
+    borderYWidth: {
+        match: '^b(?:y|order-y(?:-width)?):(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
+        unit: 'rem',
+        order: -.5,
+        declare(value, unit) {
+            return {
+                'border-top-width': value + unit,
+                'border-bottom-width': value + unit
+            }
+        },
     },
     borderWidth: {
         match: '^b(?:order)?(?:-width)?:(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
@@ -1133,6 +1176,36 @@ const defaultRules = {
         values: {
             current: 'currentColor'
         }
+    },
+    borderX: {
+        match: '^(?:bx|border-x):.',
+        unit: 'rem',
+        colored: true,
+        order: -.5,
+        values: {
+            current: 'currentColor'
+        },
+        declare(value) {
+            return {
+                'border-left': value,
+                'border-right': value
+            }
+        },
+    },
+    borderY: {
+        match: '^(?:by|border-y):.',
+        unit: 'rem',
+        colored: true,
+        order: -.5,
+        values: {
+            current: 'currentColor'
+        },
+        declare(value) {
+            return {
+                'border-top': value,
+                'border-bottom': value
+            }
+        },
     },
     border: {
         match: '^b:.',

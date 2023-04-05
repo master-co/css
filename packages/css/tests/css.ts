@@ -11,12 +11,17 @@ export const testCSS = (cls: string, expected: string, config?: Config): void =>
 // examples:
 // testProp("z-index:1") // equals to testCSS("z-index:1", ".z-index\\:1{z-index:1}")
 // testProp("z-index:1") // equals to testProp("z-index:1", "z-index:1")
-export const testProp = (cls: string, expected?: string): void => {
-    const selector = CSS.escape(cls)
-    if (expected === undefined) {
-        expected = cls
+export const testProp = (className: string | string[], expected?: string): void => {
+    if (typeof className === 'string') {
+        className = [className]
     }
-    expect(render(cls.split(' '))).toBe(`.${selector}{${expected}}`)
+    className.forEach((eachClassName) => {
+        const selector = CSS.escape(eachClassName)
+        if (expected === undefined) {
+            expected = eachClassName
+        }
+        expect(render(eachClassName.split(' '))).toBe(`.${selector}{${expected}}`)
+    })
 }
 
 export const expectOrderOfRules = (classNames: string[], expected: string[]): void => {
