@@ -829,6 +829,14 @@ const defaultRules = {
             return animationInsert.call(this)
         }
     },
+    borderCollapse: {
+        match: '^b(?:order)?:(?:collapse|separate|$values)(?!\\|)',
+        native: true
+    },
+    borderSpacing: {
+        unit: 'rem',
+        native: true
+    },
     borderColor: {
         match: '^b(?:[xytblr]|(?:order(?:-(?:left|right|top|bottom))?))?(?:-color)?:(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))',
         colored: true,
@@ -961,14 +969,7 @@ const defaultRules = {
         native: true,
         order: -1
     },
-    borderCollapse: {
-        match: '^b(?:order)?:(?:collapse|separate|$values)(?!\\|)',
-        native: true
-    },
-    borderSpacing: {
-        unit: 'rem',
-        native: true
-    },
+    // border image
     borderImageOutset: {
         unit: 'rem',
         native: true
@@ -990,21 +991,55 @@ const defaultRules = {
         native: true
     },
     borderImage: {
-        native: true
+        native: true,
+        order: -1
+    },
+    // border
+    borderTop: {
+        match: '^bt:.',
+        native: true,
+        unit: 'rem',
+        colored: true,
+        values: {
+            current: 'currentColor'
+        }
+    },
+    borderBottom: {
+        match: '^bb:.',
+        native: true,
+        unit: 'rem',
+        colored: true,
+        values: {
+            current: 'currentColor'
+        }
+    },
+    borderLeft: {
+        match: '^bl:.',
+        native: true,
+        unit: 'rem',
+        colored: true,
+        values: {
+            current: 'currentColor'
+        }
+    },
+    borderRight: {
+        match: '^br:.',
+        native: true,
+        unit: 'rem',
+        colored: true,
+        values: {
+            current: 'currentColor'
+        }
     },
     border: {
-        match: '^b(?:[xytblr]?|order(?:-(?:left|right|top|bottom))?):.',
+        match: '^b:.',
+        native: true,
         unit: 'rem',
         colored: true,
         values: {
             current: 'currentColor'
         },
-        declare(value, unit) {
-            return declareBorderRelated(this.prefix, value + unit)
-        },
-        order(prefix) {
-            return (prefix === 'border' + ':' || prefix === 'b:') ? -2 : -1
-        }
+        order: -2
     },
     backgroundAttachment: {
         match: '^(?:bg|background):(?:fixed|local|scroll|$values)(?!\\|)',
