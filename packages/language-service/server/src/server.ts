@@ -25,8 +25,8 @@ import { doHover } from './providers/hover'
 import { positionCheck } from './position-check'
 import { getDocumentColors, getColorPresentation, getConfigFileColorRender } from './providers/color'
 import * as path from 'path'
-import { defaultClassNameMatches } from './constant'
 import uri2path from 'file-uri-to-path'
+import { settings as defaultSettings } from './settings'
 
 const connection = createConnection(ProposedFeatures.all)
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument)
@@ -40,40 +40,18 @@ let MasterCSSObject: MasterCSS | undefined
 let MasterCSSOriginConfig: any
 let configFileLocation = ''
 
-// The example settings
 interface MasterCSSSettings {
     // eslint-disable-next-line @typescript-eslint/ban-types
     languages: {},
-    classNameMatches: string[],
+    classMatch: string[],
     files: { exclude: string[] },
     suggestions: boolean,
-    PreviewOnHovers: boolean,
-    PreviewColor: boolean,
+    inspect: boolean,
+    previewColors: boolean,
     config: string
 }
-// The global settings, used when the `workspace/configuration` request is not supported by the client.
-// Please note that this is not the case when using this server with the client provided in this example
-// but could happen with other clients.
-const defaultSettings: MasterCSSSettings = {
-    languages: [
-        'html',
-        'php',
-        'javascript',
-        'typescript',
-        'javascriptreact',
-        'typescriptreact',
-        'vue',
-        'svelte',
-        'rust'
-    ],
-    classNameMatches: defaultClassNameMatches,
-    files: { exclude: ['**/.git/**', '**/node_modules/**', '**/.hg/**'] },
-    suggestions: true,
-    PreviewOnHovers: true,
-    PreviewColor: true,
-    config: 'master.css.{ts,js,mjs,cjs}'
-}
-let globalSettings: MasterCSSSettings = defaultSettings
+
+let globalSettings: any = defaultSettings
 
 // Cache the settings of all open documents
 const documentSettings: Map<string, Thenable<MasterCSSSettings>> = new Map()
@@ -215,7 +193,7 @@ connection.onCompletion(
                 const positionIndex = document.offsetAt(position) ?? 0
                 const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
                 const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
-                const inMasterCSS = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classNameMatches).IsMatch
+                const inMasterCSS = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch).IsMatch
 
 
                 const lineText: string = document.getText({
@@ -250,7 +228,7 @@ connection.onDocumentColor(
         if (settings == null) {
             return []
         }
-        if (settings.PreviewColor == true && CheckFilesExclude(documentColor.textDocument.uri)) {
+        if (settings.previewColors == true && CheckFilesExclude(documentColor.textDocument.uri)) {
             const documentUri = documentColor.textDocument.uri
             const document = documents.get(documentUri)
             if (document) {
@@ -288,7 +266,7 @@ connection.onDocumentColor(
     })
 
 connection.onColorPresentation((params: ColorPresentationParams) => {
-    if (settings.PreviewColor == true && CheckFilesExclude(params.textDocument.uri)) {
+    if (settings.previewColors == true && CheckFilesExclude(params.textDocument.uri)) {
         const document = documents.get(params.textDocument.uri)
         if (document) {
             const text = document.getText()
@@ -306,7 +284,7 @@ connection.onColorPresentation((params: ColorPresentationParams) => {
 })
 
 connection.onHover(textDocumentPosition => {
-    if (settings.PreviewOnHovers == true && CheckFilesExclude(textDocumentPosition.textDocument.uri)) {
+    if (settings.inspect == true && CheckFilesExclude(textDocumentPosition.textDocument.uri)) {
         const document = documents.get(textDocumentPosition.textDocument.uri)
         const position = textDocumentPosition.position
         if (document) {
@@ -314,7 +292,7 @@ connection.onHover(textDocumentPosition => {
             const positionIndex = document.offsetAt(position) ?? 0
             const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
             const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
-            const HoverInstance = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classNameMatches)
+            const HoverInstance = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
             if (HoverInstance.IsMatch) {
                 return doHover(HoverInstance.instance.instanceString, indexToRange(HoverInstance.instance.index, document), MasterCSSOriginConfig)
             }

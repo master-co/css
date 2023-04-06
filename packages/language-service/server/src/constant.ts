@@ -1,17 +1,5 @@
 import type { CompletionItem } from 'vscode-languageserver'
 
-export const defaultClassNameMatches = [
-    '(class(?:Name)?\\s?=\\s?)((?:"[^"]+")|(?:\'[^\']+\')|(?:`[^`]+`))',
-    '(class(?:Name)?={)([^}]*)}',
-    '(?:(\\$|(?:(?:element|el|style)\\.[^\\s.`]+)`)([^`]+)`)',
-    '(style\\.(?:.*)\\()([^)]*)\\)',
-    '(classList.(?:add|remove|replace|replace|toggle)\\()([^)]*)\\)',
-    '(template\\s*\\:\\s*)((?:"[^"]+")|(?:\'[^\']+\')|(?:`[^`]+`))',
-    '(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^\']*)(\'[^\']*\')',
-    '(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^"]*)("[^"]*")',
-    '(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^`]*)(`[^`]*`)'
-]
-
 interface MasterCssKey {
     key: string[];
     colored: boolean,

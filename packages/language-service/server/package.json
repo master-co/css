@@ -13,6 +13,7 @@
         "node": "*"
     },
     "devDependencies": {
+        "@master/css": "",
         "@master/css-compiler": "",
         "file-uri-to-path": "^2.0.0",
         "js-beautify": "^1.14.7",
@@ -24,6 +25,25 @@
     },
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./dist/index.default.js",
+            "import": "./dist/index.default.mjs",
+            "types": "./dist/index.default.d.ts"
+        },
+        "./settings": {
+            "require": "./dist/settings.js",
+            "import": "./dist/settings.mjs",
+            "types": "./dist/settings.d.ts"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "./settings": [
+                "./dist/settings.d.ts"
+            ]
+        }
+    },
     "files": [
         "dist"
     ],

@@ -16,9 +16,9 @@
   - [`editor.quickSuggestions`](#editorquicksuggestions)
   - [`masterCSS.languages`](#mastercsslanguages)
   - [`masterCSS.files.exclude`](#mastercssfilesexclude)
-  - [`masterCSS.classNameMatches`](#mastercssclassnamematches)
-  - [`masterCSS.previewColor: true`](#mastercsspreviewcolor-true)
-  - [`masterCSS.previewOnHover: true`](#mastercsspreviewonhover-true)
+  - [`masterCSS.classMatch`](#mastercssclassmatch)
+  - [`masterCSS.previewColors: true`](#mastercsspreviewcolors-true)
+  - [`masterCSS.inspect: true`](#mastercssinspect-true)
   - [`masterCSS.suggestions: true`](#mastercsssuggestions-true)
 
 <br>
@@ -88,10 +88,10 @@ Configure a glob pattern to prevent Master CSS Language Service from being appli
 ],
 ```
 
-### `masterCSS.classNameMatches`
+### `masterCSS.classMatch`
 Configure Regex patterns as conditions for triggering Suggestions and generating previews.
 ```json
-"masterCSS.classNameMatches": [
+"masterCSS.classMatch": [
   "(class(?:Name)?\\s?=\\s?)((?:\"[^\"]+\")|(?:'[^']+')|(?:`[^`]+`))",
   "(class(?:Name)?={)([^}]*)}",
   "(?:(\\$|(?:(?:element|el)\\.[^\\s.`]+)`)([^`]+)`)",
@@ -100,10 +100,10 @@ Configure Regex patterns as conditions for triggering Suggestions and generating
 ],
 ```
 
-### `masterCSS.previewColor: true`
+### `masterCSS.previewColors: true`
 Render color boxes by color-related class names as previews.
 
-### `masterCSS.previewOnHover: true`
+### `masterCSS.inspect: true`
 Preview the generated CSS rules when hovering over a class name.
 
 ### `masterCSS.suggestions: true`
