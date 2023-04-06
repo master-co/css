@@ -28,6 +28,7 @@
         "@types/jest": "^29.5.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
+        "shuffle-array": "^1.0.1",
         "strip-ansi": "^7.0.1",
         "techor": "^2.0.4",
         "ts-dedent": "^2.2.0",
