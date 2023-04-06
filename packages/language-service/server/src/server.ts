@@ -38,7 +38,7 @@ let settings: MasterCSSSettings
 
 let MasterCSSObject: MasterCSS | undefined
 let MasterCSSOriginConfig: any
-let configFileLocation = ''
+const configFileLocation = ''
 
 interface MasterCSSSettings {
     // eslint-disable-next-line @typescript-eslint/ban-types
@@ -119,11 +119,12 @@ async function loadMasterCssConfig(resource: string) {
     }
     if (root?.uri) {
         try {
-            configFileLocation = uri2path(root.uri.replace('%3A', ':'))
-            const compiler = new MasterCSSCompiler({ cwd: configFileLocation, config: settings.config })
-            const config: any = compiler.config
-            MasterCSSObject = new MasterCSS(config)
-            MasterCSSOriginConfig = config
+            throw ''
+            // configFileLocation = uri2path(root.uri.replace('%3A', ':'))
+            // const compiler = new MasterCSSCompiler({ cwd: configFileLocation, config: settings.config })
+            // const config: any = compiler.config
+            // MasterCSSObject = new MasterCSS(config)
+            // MasterCSSOriginConfig = config
         } catch (ex) {
             console.log(ex)
             MasterCSSObject = new MasterCSS()
