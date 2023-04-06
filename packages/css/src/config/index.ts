@@ -11,7 +11,6 @@ import { observe } from './observe'
 import { important } from './important'
 import { keyframes } from './keyframes'
 import { functions, FunctionConfig } from './functions'
-import { precedence } from './precedence'
 
 const config: Config = {
     breakpoints,
@@ -26,8 +25,7 @@ const config: Config = {
     observe,
     important,
     functions,
-    keyframes,
-    precedence
+    keyframes
 }
 
 export {
@@ -44,8 +42,7 @@ export {
     observe,
     important,
     functions,
-    keyframes,
-    precedence
+    keyframes
 }
 
 import type { RuleConfig } from '../rule'

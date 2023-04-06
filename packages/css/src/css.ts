@@ -357,10 +357,8 @@ export class MasterCSS {
             const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : targetRoot.styleSheets
             // @ts-ignore
             for (const sheet of styleSheets) {
-                const { href, ownerNode } = sheet
-                if (
-                    (ownerNode as HTMLStyleElement).id === 'master' || href && href.startsWith(window.location.origin) && /master(?:\..+)?\.css/.test(href)
-                ) {
+                const { ownerNode } = sheet
+                if ((ownerNode as HTMLStyleElement).id === 'master') {
                     // @ts-ignore
                     this.style = ownerNode
                     break
