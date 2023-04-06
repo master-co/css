@@ -256,7 +256,7 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
 }
 
 
-function getReturnItem(items: Array<string | CompletionItem>, kind: CompletionItemKind, insertText = ''): CompletionItem[] {
+export function getReturnItem(items: Array<string | CompletionItem>, kind: CompletionItemKind, insertText = ''): CompletionItem[] {
     const masterStyleCompletionItem: CompletionItem[] = []
 
     items.forEach(x => {

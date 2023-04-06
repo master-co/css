@@ -140,7 +140,7 @@
                     ],
                     "description": "Configure glob patterns to exclude from all Master Language Service features."
                 },
-                "masterCSS.classNameMatches": {
+                "masterCSS.classMatch": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -161,11 +161,11 @@
                     "type": "boolean",
                     "default": true
                 },
-                "masterCSS.PreviewOnHovers": {
+                "masterCSS.inspect": {
                     "type": "boolean",
                     "default": true
                 },
-                "masterCSS.PreviewColor": {
+                "masterCSS.previewColors": {
                     "type": "boolean",
                     "default": true
                 },
