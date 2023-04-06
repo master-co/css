@@ -1889,11 +1889,11 @@ function animationInsert() {
                 keyframes[eachKeyframeName].count++
             } else {
                 const native: RuleNative = {
-                    text: `@keyframes ${eachKeyframeName} {`
+                    text: `@keyframes ${eachKeyframeName}{`
                         + Object
                             .entries(config.keyframes[eachKeyframeName])
-                            .map(([key, values]) => `${key} {${Object.entries(values).map(([name, value]) => name + ': ' + value).join(';')}}`)
-                            .join(',')
+                            .map(([key, values]) => `${key}{${Object.entries(values).map(([name, value]) => name + ':' + value).join(';')}}`)
+                            .join('')
                         + '}',
                     theme: ''
                 }

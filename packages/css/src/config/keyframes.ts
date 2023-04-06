@@ -10,7 +10,7 @@ export const keyframes = {
     float: {
         '0%': { transform: 'none' },
         '50%': { transform: 'translateY(-1.25rem)' },
-        '100%': { transform: 'none' }
+        to: { transform: 'none' }
     },
     heart: {
         '0%': { transform: 'scale(1)' },
@@ -20,17 +20,17 @@ export const keyframes = {
         '70%': { transform: 'scale(1)' }
     },
     jump: {
-        '0%,100%': {
+        '0%,to': {
             transform: 'translateY(-25%)',
-            'animation-timing-function': 'cubic-bezier(0.8, 0, 1, 1)'
+            'animation-timing-function': 'cubic-bezier(.8,0,1,1)'
         },
         '50%': {
             transform: 'translateY(0)',
-            'animation-timing-function': 'cubic-bezier(0, 0, 0.2, 1)'
+            'animation-timing-function': 'cubic-bezier(0,0,.2,1)'
         }
     },
     ping: {
-        '75%,100%': {
+        '75%,to': {
             transform: 'scale(2)',
             opacity: 0
         }
@@ -38,7 +38,7 @@ export const keyframes = {
     pulse: {
         '0%': { transform: 'none' },
         '50%': { transform: 'scale(1.05)' },
-        '100%': { transform: 'none' }
+        to: { transform: 'none' }
     },
     rotate: {
         '0%': { transform: 'rotate(-360deg)' },
@@ -54,6 +54,6 @@ export const keyframes = {
     },
     zoom: {
         '0%': { transform: 'scale(0)' },
-        '100%': { transform: 'none' }
+        to: { transform: 'none' }
     }
 }
