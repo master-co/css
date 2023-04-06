@@ -1,6 +1,5 @@
 import type { Values } from './config'
 import type { MasterCSS } from './css'
-import { SORTED_SELECTORS } from './constants/sorted-selectors'
 import { START_SYMBOL } from './constants/start-symbol'
 import { cssEscape } from './utils/css-escape'
 import extend from '@techor/extend'
@@ -366,7 +365,7 @@ export class Rule {
                     if (this.hasWhere !== false) {
                         this.hasWhere = eachSuffixSelector.includes(':where(')
                     }
-
+                    const SORTED_SELECTORS = [':disabled', ':active', ':focus', ':hover']
                     for (let i = 0; i < SORTED_SELECTORS.length; i++) {
                         if (eachSuffixSelector.includes(SORTED_SELECTORS[i])) {
                             if (this.priority === -1 || this.priority > i) {
