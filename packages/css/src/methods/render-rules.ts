@@ -1,11 +1,9 @@
 import { MasterCSS } from '../css'
 import type { Config } from '../config'
-import { extractClassesFromHTML } from './extract-classes-from-html'
+import type { Rule } from '../rule'
 
-export function renderFromHTML(html: string, config?: Config): string {
-    if (!html) return
-    const classes = extractClassesFromHTML(html)
-    if (!classes.length) return
+export function renderRules(classes: string[], config?: Config): Rule[] {
+    if (!classes?.length) return
     const css = new MasterCSS({ ...config, observe: false })
     for (const eachClassName of classes) {
         if (!(eachClassName in css.countBy)) {
@@ -13,5 +11,5 @@ export function renderFromHTML(html: string, config?: Config): string {
                 css.countBy[eachClassName] = 1
         }
     }
-    return css.text
+    return css.rules
 }

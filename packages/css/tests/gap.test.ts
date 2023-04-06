@@ -1,8 +1,8 @@
 import { expectOrderOfRules, testProp } from './css'
 
 it('validates gap rules', () => {
-    testProp('gap-x:16', 'gap-x:1rem')
-    testProp('gap-y:16', 'gap-y:1rem')
+    testProp('gap-x:16', 'column-gap:1rem')
+    testProp('gap-y:16', 'row-gap:1rem')
     testProp('gap:16', 'gap:1rem')
 })
 
