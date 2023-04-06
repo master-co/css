@@ -17,7 +17,7 @@ it('expects the animation output', () => {
 })
 
 it('expects the keyframe output', () => {
-    expect(render(['@fade|1s'])).toContain('@keyframes fade{0%{opacity:0}to{opacity:0}}')
+    expect(render(['@fade|1s'])).toContain('@keyframes fade{0%{opacity:0}to{opacity:1}}')
     expect(render(['@flash|1s'])).toContain('@keyframes flash{0%,50%,to{opacity:1}25%,75%{opacity:0}}')
     expect(render(['@float|1s'])).toContain('@keyframes float{0%{transform:none}50%{transform:translateY(-1.25rem)}to{transform:none}}')
     expect(render(['@heart|1s'])).toContain('@keyframes heart{0%{transform:scale(1)}14%{transform:scale(1.3)}28%{transform:scale(1)}42%{transform:scale(1.3)}70%{transform:scale(1)}}')
