@@ -844,6 +844,7 @@ export class MasterCSS {
              * @example <1  <2  <3  ALL  >=1 >=2 >=3
              * @description
              */
+            const hasKeyframeRule = Object.keys(this.keyframes).length
             const endIndex = this.rules.length - 1
             const { media, order, priority, hasWhere, className } = rule
             const findPrioritySelectorInsertIndex = (
@@ -852,7 +853,7 @@ export class MasterCSS {
                 findEndIndex?: (rule: Rule) => any,
                 ignoreRule?: (rule: Rule) => any
             ) => {
-                let sIndex = 0
+                let sIndex = hasKeyframeRule ? 1 : 0
                 let eIndex: number
 
                 // 1. 找尋目標陣列
@@ -1136,34 +1137,38 @@ export class MasterCSS {
             } else {
                 if (priority === -1) {
                     // 不含優先 selector
+                    let i = hasKeyframeRule ? 1 : 0
                     if (hasWhere) {
                         // 含有 where，優先級最低
-                        index = this.rules.findIndex(eachRule => !eachRule.hasWhere
-                            || eachRule.media
-                            || eachRule.priority !== -1
-                            || eachRule.order >= order)
-
-                        if (index === -1) {
-                            index = endIndex + 1
-                        }
-                    } else {
-                        // 不含 where，優先級緊接 where 之後
-                        let i = 0
                         for (; i < this.rules.length; i++) {
                             const eachRule = this.rules[i]
-                            if (eachRule.media || !eachRule.hasWhere && (eachRule.order >= order || eachRule.priority !== -1)) {
+                            if (
+                                !eachRule.hasWhere
+                                || eachRule.media
+                                || eachRule.priority !== -1
+                                || eachRule.order >= order
+                            ) {
                                 index = i
                                 break
                             }
                         }
-
-                        if (index === undefined) {
-                            index = i
+                    } else {
+                        // 不含 where，優先級緊接 where 之後
+                        for (; i < this.rules.length; i++) {
+                            const eachRule = this.rules[i]
+                            if (
+                                eachRule.media 
+                                || !eachRule.hasWhere 
+                                && (eachRule.order >= order || eachRule.priority !== -1)
+                            ) {
+                                index = i
+                                break
+                            }
                         }
                     }
 
-                    if (!index && Object.keys(this.keyframes).length) {
-                        index++
+                    if (index === undefined) {
+                        index = i
                     }
                 } else {
                     // 含有優先 selector
