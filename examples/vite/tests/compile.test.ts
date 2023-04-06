@@ -18,7 +18,7 @@ beforeAll(async () => {
     browser = await puppeteer.launch()
     page = await browser.newPage()
     devProcess = await runViteDevProcess(page)
-}, 15000) // 15s timeout for the slow windows OS
+}, 30000) // 30s timeout for the slow windows OS
 
 it('check if the browser contains [data-vite-dev-id="master.css"]', async () => {
     expect(await page.$('[data-vite-dev-id$="master.css"]')).toBeTruthy()
@@ -62,4 +62,4 @@ afterAll(async () => {
     devProcess.kill()
     await page.close()
     await browser.close()
-}, 15000) // 15s timeout for the slow windows OS
+}, 30000) // 30s timeout for the slow windows OS
