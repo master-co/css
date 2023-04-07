@@ -554,9 +554,9 @@ export class Rule {
             const newValueSplits: string[] = []
 
             if (valueSplits) {
-                const themes = this.theme ? [this.theme, ''] : [theme]
+                const themes = [this.theme ?? theme, '']
                 let anyColorMatched: boolean = undefined
-                let colorMatched: boolean = undefined
+                let anyColorMismatched = false
                 for (const eachValueToken of valueSplits) {
                     if (typeof eachValueToken === 'string') {
                         newValueSplits.push(eachValueToken)
@@ -566,23 +566,26 @@ export class Rule {
                             token += eachValueToken.unit
                         } else if (colored && colorThemesMap && colorNames) {
                             let anyMatched = false
-                            let hasColorName = false
 
                             token = token.replace(
                                 new RegExp(`(^|,| |\\()((?:${colorNames.join('|')})(?:-(?:[0-9A-Za-z-]+))?)(?:\\/(\\.?[0-9]+%?))?(?=(\\)|\\}|,| |$))`, 'gm'),
                                 (origin, prefix, colorName, opacityStr) => {
-                                    hasColorName = true
-
                                     const themeColorMap = colorThemesMap[colorName]
                                     if (themeColorMap) {
                                         let color: string
+                                        let appliedTheme: string
                                         for (const eachTheme of themes) {
-                                            if ((color = themeColorMap[eachTheme]))
+                                            if ((color = themeColorMap[eachTheme])) {
+                                                appliedTheme = eachTheme
                                                 break
+                                            }
                                         }
 
                                         if (color) {
-                                            anyMatched = true
+                                            anyMatched = !bypassWhenUnmatchColor || appliedTheme === theme
+                                            if (!anyColorMatched) {
+                                                anyColorMatched = anyMatched
+                                            }
 
                                             let newValue = color
                                             if (opacityStr) {
@@ -598,26 +601,19 @@ export class Rule {
                                             }
 
                                             return prefix + newValue
+                                        } else {
+                                            anyColorMismatched = true
                                         }
                                     }
 
                                     return origin
                                 })
-
-                            if (hasColorName) {
-                                colorMatched = anyMatched
-                            }
                         }
-
-                        if (colorMatched !== undefined && !anyColorMatched) {
-                            anyColorMatched = colorMatched
-                        }
-
                         newValueSplits.push(token)
                     }
                 }
 
-                if (bypassWhenUnmatchColor && (anyColorMatched === undefined ? theme : !anyColorMatched))
+                if (bypassWhenUnmatchColor && (anyColorMismatched || (anyColorMatched === undefined ? theme : !anyColorMatched)))
                     return
 
                 newValue = newValueSplits.reduce((previousVal, currentVal, i) => previousVal + currentVal + ((currentVal === ',' || valueSplits[i + 1] === ',' || i === valueSplits.length - 1) ? '' : ' '), '')
