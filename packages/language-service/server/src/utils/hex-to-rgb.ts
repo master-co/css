@@ -1,6 +1,4 @@
-import {
-    Color
-} from 'vscode-languageserver/node'
+import type { Color } from 'vscode-languageserver/node'
 
 export function hexToRgb(hex: string): Color {
     const aRgbHex = hex.replace('#', '').match(/.{1,2}/g)

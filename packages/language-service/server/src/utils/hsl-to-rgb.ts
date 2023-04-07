@@ -1,4 +1,4 @@
-import { Color } from 'vscode-languageserver'
+import type { Color } from 'vscode-languageserver'
 
 export function hslToRgb(h: number, s: number, l: number, alpha?: number): Color {
     l /= 100

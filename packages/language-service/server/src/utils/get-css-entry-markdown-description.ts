@@ -1,5 +1,3 @@
-import { MarkupKind } from 'vscode-languageserver'
-
 export function getCssEntryMarkdownDescription(entry: any): string {
     if (!entry?.description || entry?.description === '') {
         return ''
@@ -13,7 +11,7 @@ export function getCssEntryMarkdownDescription(entry: any): string {
     if (typeof entry.description === 'string') {
         result += textToMarkedString(entry.description)
     } else {
-        result += entry.description.kind === MarkupKind.Markdown ? entry.description.value : textToMarkedString(entry.description.value)
+        result += entry.description.kind === 'markdown' ? entry.description.value : textToMarkedString(entry.description.value)
     }
 
     const browserLabel = getBrowserLabel(entry.browsers)
@@ -67,7 +65,7 @@ function getBrowserLabel(browsers: string[] = []): string | null {
     return browsers
         .map(b => {
             let result = ''
-            const matches = b.match(/([A-Z]+)(\d+)?/)!
+            const matches = b.match(/([A-Z]+)(\d+)?/) ?? ''
 
             const name = matches[1]
             const version = matches[2]

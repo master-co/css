@@ -1,4 +1,4 @@
-import { Color } from 'vscode-languageserver'
+import type { Color } from 'vscode-languageserver'
 
 export interface HSLA { h: number; s: number; l: number; a: number; }
 
