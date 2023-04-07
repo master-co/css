@@ -14,4 +14,6 @@ test('background', () => {
     testProp('bg:linear-gradient(0deg,gray-14|0%,gray-16|100%)', 'background-image:linear-gradient(0deg,#272628 0%,#29282a 100%)')
 
     testProp('bg:url(\'#test\')', 'background-image:url(\'#test\')')
+
+    testProp('bg:gray-50|url(\'/images/wallpaper.jpg\')|no-repeat|top|left/cover', 'background:#6b6a6d url(\'/images/wallpaper.jpg\') no-repeat top left/cover')
 })

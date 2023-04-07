@@ -781,7 +781,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         native: true,
     },
     textDecorationColor: {
-        match: '^text-decoration:(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))',
+        match: '^text-decoration:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         native: true,
         colored: true,
         values: {
@@ -1036,7 +1036,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
     },
     textFillColor: {
         native: true,
-        match: '^(?:text-fill|text|t):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))',
+        match: '^(?:text-fill|text|t):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         colored: true,
         values: {
             current: 'currentColor'
@@ -1057,7 +1057,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         }
     },
     textStrokeColor: {
-        match: '^text-stroke:(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))',
+        match: '^text-stroke:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         native: true,
         colored: true,
         values: {
@@ -1205,7 +1205,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
     },
     // border color
     borderTopColor: {
-        match: '^b(?:t|order-top(?:-color)?):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        match: '^b(?:t|order-top(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         native: true,
         colored: true,
         values: {
@@ -1213,7 +1213,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         },
     },
     borderBottomColor: {
-        match: '^b(?:b|order-bottom(?:-color)?):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        match: '^b(?:b|order-bottom(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         native: true,
         colored: true,
         values: {
@@ -1221,7 +1221,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         },
     },
     borderLeftColor: {
-        match: '^b(?:l|order-left(?:-color)?):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        match: '^b(?:l|order-left(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         native: true,
         colored: true,
         values: {
@@ -1229,7 +1229,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         },
     },
     borderRightColor: {
-        match: '^b(?:r|order-right(?:-color)?):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        match: '^b(?:r|order-right(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         native: true,
         colored: true,
         values: {
@@ -1237,7 +1237,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         },
     },
     borderXColor: {
-        match: '^b(?:x|order-x(?:-color)?):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        match: '^b(?:x|order-x(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         order: -.5,
         colored: true,
         values: {
@@ -1251,7 +1251,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         },
     },
     borderYColor: {
-        match: '^b(?:y|order-y(?:-color)?):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        match: '^b(?:y|order-y(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         order: -.5,
         colored: true,
         values: {
@@ -1265,7 +1265,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         },
     },
     borderColor: {
-        match: '^b(?:order)?(?:-color)?:(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))[^|]*$',
+        match: '^b(?:order)?(?:-color)?:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         native: true,
         order: -1,
         colored: true,
@@ -1545,7 +1545,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         native: true
     },
     backgroundColor: {
-        match: '^(?:bg|background):(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))',
+        match: '^(?:bg|background):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         native: true,
         colored: true,
         values: {
@@ -1634,7 +1634,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         }
     },
     fill: {
-        match: '^fill:(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))',
+        match: '^fill:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         native: true,
         colored: true,
         values: {
@@ -1890,7 +1890,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         order: -1
     },
     outlineColor: {
-        match: '^outline:(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))',
+        match: '^outline:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         native: true,
         colored: true,
         values: {
@@ -1920,7 +1920,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         }
     },
     accentColor: {
-        match: '^accent:(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))',
+        match: '^accent:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         native: true,
         colored: true,
         values: {
@@ -1931,7 +1931,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         native: true
     },
     caretColor: {
-        match: '^caret:(?:(?:#|(rgb|hsl)\\(.*\\))((?!\\|).)*$|(?:transparent|currentColor|inherit|$values|$colors))',
+        match: '^caret:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
         native: true,
         colored: true,
         values: {
