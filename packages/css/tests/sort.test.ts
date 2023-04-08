@@ -9,7 +9,7 @@ it('checks the ordering of state selectors', () => {
     )
 })
 
-it('aaaa', () => {
+it('checks the ordering of state selectors, :where(), and @media', () => {
     const expected = [
         // :where()
         'block:where(button)',
