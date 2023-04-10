@@ -10,6 +10,7 @@ import Techor from 'techor'
 import log, { chalk } from '@techor/log'
 import stylelint from 'stylelint'
 import extend from '@techor/extend'
+import crossImport from 'cross-import'
 
 export class MasterCSSCompiler extends Techor<Options, Config> {
 
@@ -17,8 +18,6 @@ export class MasterCSSCompiler extends Techor<Options, Config> {
     extractions = new Set<string>()
     validExtractions = new Set<string>()
     invalidExtractions = new Set<string>()
-    logConfigFound = (configPath: string) => log.ok`**${configPath}** definition file found`
-    logConfigNotFound = (configPath: string) => log.i`No **${configPath}** definition file found`
 
     get resolvedModuleId() {
         return '\0' + this.options.module
@@ -29,26 +28,32 @@ export class MasterCSSCompiler extends Techor<Options, Config> {
     }
 
     constructor(
-        protected customOptions?: Options
+        public customOptions?: Options
     ) {
         super(defaultOptions, customOptions)
-        const definition = this.readConfig(null)
-        this.options = extend(this.options, definition?.compilerOptions, customOptions)
-        this.css = definition?.css ?? new MasterCSS(
-            typeof customOptions?.config === 'object'
-                ? customOptions.config
-                : definition?.config
-        )
+        this.init(customOptions)
     }
 
-    async refresh() {
+    private init(customOptions: Options = this.customOptions) {
+        this.options = extend(this.options, this.readOptions(), customOptions)
+        this.css = new MasterCSS({
+            ...(typeof this.options.config === 'object' ? this.options.config : (this.readConfig() || {})),
+            observe: false
+        })
+    }
+
+    readOptions(): Options {
+        const compilerOptionsModule = crossImport('master.css-compiler.*', { cwd: this.options.cwd })
+        if (!compilerOptionsModule) return
+        return compilerOptionsModule.default || compilerOptionsModule.options || compilerOptionsModule
+    }
+
+    async refresh(customOptions: Options = this.customOptions) {
         this.extractions.clear()
         this.validExtractions.clear()
         this.invalidExtractions.clear()
         console.log('')
-        const definition = this.readConfig(null)
-        this.css = new MasterCSS(definition?.config)
-        this.options = extend({ cwd: this.options.cwd }, defaultOptions, definition?.compilerOptions, this.customOptions)
+        this.init(customOptions)
         await this.compile()
         return this
     }
