@@ -1,4 +1,4 @@
-const decodeRegExp = /&(amp|#38|lt|#60|gt|#62|apos|#39|quot|#34);/g
+const decodeRegExp = /&(amp|#38|lt|#60|gt|#62|apos|#39|#x27|quot|#34);/g
 const decodeSymbol = {
     'amp': '&',
     '#38': '&',
@@ -8,6 +8,7 @@ const decodeSymbol = {
     '#62': '>',
     'apos': '\'',
     '#39': '\'',
+    '#x27': '\'',
     'quot': '"',
     '#34': '"'
 }
