@@ -94,7 +94,8 @@ export const functions: Record<string, FunctionConfig> = {
     rgb: { unit: '' },
     rgba: { unit: '' },
     hsl: { unit: '' },
-    hsla: { unit: '' }
+    hsla: { unit: '' },
+    repeat: { unit: '' }
 }
 
 export interface FunctionConfig {
