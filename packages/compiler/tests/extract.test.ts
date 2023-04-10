@@ -263,3 +263,12 @@ test('$', () => {
         `
     }, css)).toEqual([])
 })
+
+test('comment2', () => {
+    expect(extract({
+        name: 'test',
+        content: `
+        // @todo
+        `
+    }, css)).toEqual([])
+})

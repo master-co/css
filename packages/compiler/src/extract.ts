@@ -95,6 +95,7 @@ const preExclude = (content: string) => {
         c => c
             .replace(/\/\*(?:(?!\*\/)[\S\s])*\*\//g, '')
             .replace(/<!--(?:(?!-->)[\S\s])*-->/g, '')
+            .replace(/\/\/.*/g, '')
             .replace(/<style[^>]*>(?:(?!<\/style>)[\S\s])*<\/style>/g, '')
             .replace(/import.*from\s*COMPLETE-STRING--\d+--/g, '')
             .replace(/import\s*(?:COMPLETE-STRING--\d+--|\([^;\s]*\))/g, '')
