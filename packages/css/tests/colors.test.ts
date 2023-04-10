@@ -66,4 +66,70 @@ test('colors', () => {
         '.light .bg\\:linear-gradient\\(180deg\\,major\\,gray-60\\){background-image:linear-gradient(180deg,#19212d,#9e9da0)}.dark .bg\\:linear-gradient\\(180deg\\,major\\,gray-60\\){background-image:linear-gradient(180deg,#dad9db,#9e9da0)}',
         config
     )
+    testCSS(
+        'bg:linear-gradient(180deg,primary,accent)',
+        '.light .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#000000,#111111)}.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,#eeeeee)}',
+        {
+            themes: {
+                light: { colors: { primary: '#000000', accent: '#111111' }  },
+                dark: { colors: { primary: '#ffffff', accent: '#eeeeee' } }
+            }
+        }
+    )
+    testCSS(
+        'bg:linear-gradient(180deg,primary,accent)',
+        '.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,#eeeeee)}',
+        {
+            themes: {
+                light: { colors: { primary: '#000000' }  },
+                dark: { colors: { primary: '#ffffff', accent: '#eeeeee' } }
+            }
+        }
+    )
+    testCSS(
+        'bg:linear-gradient(180deg,primary,accent)',
+        '.light .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#000000,accent)}.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,accent)}',
+        {
+            themes: {
+                light: { colors: { primary: '#000000' }  },
+                dark: { colors: { primary: '#ffffff' } }
+            }
+        }
+    )
+    testCSS(
+        'bg:linear-gradient(180deg,primary,accent)',
+        '.light .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#000000,#ff0000)}.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,#ff0000)}',
+        {
+            themes: {
+                light: { colors: { primary: '#000000' }  },
+                dark: { colors: { primary: '#ffffff' } }
+            },
+            colors: {
+                accent: '#ff0000'
+            }
+        }
+    )
+    testCSS(
+        'bg:linear-gradient(180deg,primary,accent)',
+        '.light .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#000000,#ff0000)}.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,#aa0000)}',
+        {
+            themes: {
+                light: { colors: { primary: '#000000' }  },
+                dark: { colors: { primary: '#ffffff', accent: '#aa0000' } }
+            },
+            colors: {
+                accent: '#ff0000'
+            }
+        }
+    )
+    testCSS(
+        '{block;fg:fade}_:where(p)_code:before',
+        '.\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{display:block}.light .\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{color:#cccccc}.dark .\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{color:#333333}',
+        {
+            themes: {
+                light: { colors: { fade: '#cccccc' } },
+                dark: { colors: { fade: '#333333' } }
+            }
+        }
+    )
 })
