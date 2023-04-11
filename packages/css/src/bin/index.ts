@@ -70,9 +70,6 @@ program.command('build', { isDefault: true })
         const compiler = await new (await import('@master/css-compiler')).default().compile()
         const insert = (path: string) => compiler.insert(path, fs.readFileSync(path, { encoding: 'utf-8' }))
         const write = () => fs.writeFileSync(output, compiler.css.text)
-        const sources = compiler.sources
-        console.log('')
-        log`[sources] ${sources}`
         if (watch) {
             const watchers: chokidar.FSWatcher[] = []
             const reload = async () => {
@@ -88,9 +85,9 @@ program.command('build', { isDefault: true })
                         ignoreInitial: true
                     }))
                 }
-
                 write()
-
+                console.log('')
+                log`[sources] ${compiler.sources}`
                 log.tree(compiler.options)
             }
             const handle = async (path: string) => {
@@ -109,15 +106,11 @@ program.command('build', { isDefault: true })
 
             console.log('')
             log.t`Start watching source changes`
-            log.tree(compiler.options)
 
             const reloadConfig = async () => {
                 await Promise.all(watchers.map(eachWatcher => eachWatcher.close()))
-
                 watchers.length = 0
-
                 await compiler.refresh()
-
                 await reload()
             }
             chokidar
@@ -129,6 +122,9 @@ program.command('build', { isDefault: true })
                 .on('unlink', reloadConfig)
         } else {
             write()
+            console.log('')
+            log`[sources] ${compiler.sources}`
+            log.tree(compiler.options)
         }
     })
 
