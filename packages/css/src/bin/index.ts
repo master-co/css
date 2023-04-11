@@ -67,7 +67,8 @@ program.command('build', { isDefault: true })
     .option('-w, --watch', 'Watch file changed and generate CSS rules.')
     .option('-o, --output <path>', 'Specify your master CSS file output path', 'master.css')
     .action(async function ({ watch, output }) {
-        const compiler = await new (await import('@master/css-compiler')).default().compile()
+        const { MasterCSSCompiler } = await import('@master/css-compiler')
+        const compiler = await (new MasterCSSCompiler).compile()
         const insert = (path: string) => compiler.insert(path, fs.readFileSync(path, { encoding: 'utf-8' }))
         const write = () => fs.writeFileSync(output, compiler.css.text)
         if (watch) {

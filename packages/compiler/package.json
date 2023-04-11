@@ -32,30 +32,11 @@
     ],
     "sideEffects": false,
     "main": "./dist/index.js",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/index.js",
-            "import": "./dist/index.mjs",
-            "types": "./dist/index.d.ts"
-        },
-        "./options": {
-            "require": "./dist/options/index.js",
-            "import": "./dist/options/index.mjs",
-            "types": "./dist/options/index.d.ts"
-        }
-    },
-    "typesVersions": {
-        "*": {
-            "*": [
-                "./dist/index.d.ts"
-            ],
-            "options": [
-                "./dist/options/index.d.ts"
-            ]
+            "node": "./dist/index.js",
+            "default": "./dist/default.js"
         }
     },
     "files": [
@@ -66,12 +47,12 @@
     },
     "dependencies": {
         "@master/css": "",
-        "@techor/extend": "^2.1.10",
-        "cross-import": "^2.1.10",
+        "@techor/extend": "^2.1.12",
+        "cross-import": "^2.1.12",
         "fast-glob": "^3.2.12",
         "minimatch": "^5.1.1",
         "stylelint": "^15.2.0",
-        "techor": "^2.1.10",
+        "techor": "^2.1.12",
         "upath": "^2.0.1"
     },
     "devDependencies": {
