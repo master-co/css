@@ -6,7 +6,7 @@ import extract from './extract'
 import fs from 'fs'
 import fg from 'fast-glob'
 import minimatch from 'minimatch'
-import Techor from 'techor'
+import Techor, { options as techorOptions } from 'techor'
 import log, { chalk } from '@techor/log'
 import stylelint from 'stylelint'
 import extend from '@techor/extend'
@@ -35,17 +35,47 @@ export class MasterCSSCompiler extends Techor<Options, Config> {
     }
 
     private init(customOptions: Options = this.customOptions) {
-        this.options = extend(this.options, this.readOptions(), customOptions)
+        this.options = extend(techorOptions, defaultOptions, this.readOptions(), customOptions)
         this.css = new MasterCSS({
             ...(typeof this.options.config === 'object' ? this.options.config : (this.readConfig() || {})),
             observe: false
         })
     }
 
-    readOptions(): Options {
-        const compilerOptionsModule = crossImport('master.css-compiler.*', { cwd: this.options.cwd })
-        if (!compilerOptionsModule) return
-        return compilerOptionsModule.default || compilerOptionsModule.options || compilerOptionsModule
+    logOptionsFound = (optionsPath: string) => log.ok`**${optionsPath}** file found`
+    logOptionsNotFound = (optionsPath: string) => log.i`No **${optionsPath}** file found`
+
+    readOptions(key = 'options'): Options | any {
+        const { cwd } = this.options
+        if (typeof this.options.path === 'object') {
+            return this.options.path as Options
+        }
+        let userOptions: Options
+        try {
+            const optionsPath = this.optionsPath
+            if (optionsPath) {
+                const userOptionsModule = crossImport(optionsPath, { cwd })
+                userOptions = (key ? userOptionsModule[key] : undefined) || userOptionsModule.default || userOptionsModule
+                this.logOptionsFound(optionsPath)
+            } else {
+                this.logOptionsNotFound(this.options.path)
+            }
+        } catch (err) {
+            log.error(err)
+        }
+        return userOptions
+    }
+
+    get optionsPath(): string {
+        if (!this.options.path || typeof this.options.path !== 'string') {
+            return
+        }
+        return fg.sync(this.options.path, { cwd: this.options.cwd })[0]
+    }
+
+    get resolvedOptionsPath() {
+        const optionsPath = this.optionsPath
+        return optionsPath ? upath.resolve(this.options.cwd, optionsPath) : ''
     }
 
     async refresh(customOptions: Options = this.customOptions) {
@@ -206,11 +236,12 @@ export class MasterCSSCompiler extends Techor<Options, Config> {
             ignore: exclude
         })
         if (sources?.length) {
-            sourcePaths.push(
-                ...fg.sync(sources, { cwd: this.options.cwd })
-            )
+            sourcePaths
+                .push(
+                    ...fg.sync(sources, { cwd: this.options.cwd })
+                )
         }
-        return sourcePaths
+        return sourcePaths.filter((eachSourcePath) => !!eachSourcePath)
     }
 
     checkSourcePath(name: string): boolean {
