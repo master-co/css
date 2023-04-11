@@ -3,6 +3,8 @@ import type { Pattern as FastGlobPattern } from 'fast-glob'
 import type { Options as TechorOptions } from 'techor'
 
 const options: Options = {
+    // specify config file path or set `Config`
+    path: 'master.css-compiler.*',
     // specify virtual CSS module id (e.g. virtual:master.css)
     module: 'master.css',
     // specify config file path or set `Config`
@@ -40,6 +42,7 @@ export declare type Source = {
 
 export interface Options extends TechorOptions<Config> {
     output?: string,
+    path?: string,
     module?: string,
     sources?: FastGlobPattern[]
     include?: FastGlobPattern[]
