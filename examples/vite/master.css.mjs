@@ -1,6 +1,4 @@
-import MasterCSS from '@master/css'
-
-export const config = {
+const config = {
     colors: {
         primary: {
             '': 'blue-50',
@@ -14,7 +12,7 @@ export const config = {
         }
     },
     classes: {
-        btn: 'btn bg:blue'
+        btn: 'bg:blue'
     },
     themes: {
         light: {
@@ -140,4 +138,4 @@ export const config = {
     rootSize: 16
 }
 
-export const css = new MasterCSS(config)
+export default config

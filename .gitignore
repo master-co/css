@@ -15,6 +15,9 @@
 **/*out
 **/*master.css
 packages/css/**/*master.css.*
+packages/css/**/*master.*
+packages/compiler/**/*master.css-compiler.*
+packages/compiler/**/*master.css.*
 
 # Only exists if Bazel was run
 /bazel-out

@@ -1,4 +1,4 @@
-export const START_SYMBOL = {
+export const START_SYMBOLS = {
     '(': ')',
     '\'': '\'',
     '"': '"',

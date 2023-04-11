@@ -1,6 +1,6 @@
 import type { Values } from './config'
 import type { MasterCSS } from './css'
-import { START_SYMBOL } from './constants/start-symbol'
+import { START_SYMBOLS } from './constants/start-symbol'
 import { cssEscape } from './utils/css-escape'
 import extend from '@techor/extend'
 
@@ -160,7 +160,7 @@ export class Rule {
                         }
 
                         return
-                    } else if (!isString && val in START_SYMBOL) {
+                    } else if (!isString && val in START_SYMBOLS) {
                         const functionConfig = val === '(' && functionName && functions?.[functionName]
                         if (functionConfig?.name) {
                             currentValueToken = currentValueToken.slice(0, currentValueToken.length - functionName.length) + functionConfig.name
@@ -170,7 +170,7 @@ export class Rule {
                         currentValueToken += val
                         i++
 
-                        const nextEndSymbol = START_SYMBOL[val]
+                        const nextEndSymbol = START_SYMBOLS[val]
                         analyze(valueToken,
                             functionConfig?.unit ?? unit,
                             nextEndSymbol,

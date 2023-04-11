@@ -4,51 +4,69 @@ import { program } from 'commander'
 import path from 'path'
 import chokidar from 'chokidar'
 import fs from 'fs'
-import { defineContent } from '../methods/define-content'
+import { CONFIG_TS_TEXT, CONFIG_ESM_TEXT, CONFIG_TEXT } from '../constants'
 import log from '@techor/log'
 import { readFileAsJSON } from '@techor/fs'
 
 program.command('init')
-    .description('Create a Master CSS definition file with configuration')
-    .allowUnknownOption()
-    .option('--jit', 'With initialization of the just-in-time program')
-    .option('-c, --compiler', 'With compiler options')
-    .option('-o, --override', 'Override the existing definition file')
-    .option('--ext <extension>', 'Definition extension `ts`, `js`, `mjs`')
-    .action(function (options) {
-        let { ext } = options
-        if (!ext) {
+    .description('Initialize definition files for Master CSS')
+    .option('-c, --compiler', 'Comes with a `./master.css-compiler.*` for compiler options')
+    .option('-o, --override', 'Override existing definition file')
+    .option('-f, --format <esm,cjs,ts>', 'With ES Module / CommonJS / TypeScript')
+    .action(async function (options) {
+        let { format } = options
+        // automatically detect the format
+        if (!format) {
             if (fs.existsSync('tsconfig.json')) {
-                ext = 'ts'
+                format = 'ts'
             } else {
                 const { type } = readFileAsJSON('./package.json') || {}
-                if (type === 'module') {
-                    ext = 'mjs'
-                } else {
-                    ext = 'js'
-                }
+                format = type === 'module' ? 'esm' : 'cjs'
             }
         }
-        const definition = defineContent({ ...options, ext })
-        const fileName = `master.css.${ext}`
-        const definitionExists = fs.existsSync(path.join(process.cwd(), fileName))
-        if (!definitionExists) {
-            fs.writeFileSync(fileName, definition)
-            log.ok`**${fileName}** definition file is created`
-        } else if (definitionExists && options.override) {
-            fs.writeFileSync(fileName, definition)
-            log.ok`**${fileName}** definition file is overridden`
-        } else {
-            log.x`**${fileName}** definition file already exists`
+        const create = (fileName: string, text: string) => {
+            const configExists = fs.existsSync(path.join(process.cwd(), fileName))
+            if (!configExists) {
+                fs.writeFileSync(fileName, text)
+                log.ok`**${fileName}** file is created`
+            } else if (configExists && options.override) {
+                fs.writeFileSync(fileName, text)
+                log.ok`**${fileName}** file is overridden`
+            } else {
+                log.x`**${fileName}** file already exists`
+            }
+        }
+        // create master.css.* file
+        switch (format) {
+            case 'esm':
+                create('master.css.mjs', CONFIG_ESM_TEXT)
+                break
+            case 'ts':
+                create('master.css.ts', CONFIG_TS_TEXT)
+                break
+            default:
+                create('master.css.js', CONFIG_TEXT)
+        }
+        // create master.css-compiler.* file
+        if (options.compiler) {
+            const { OPTIONS_TEXT, OPTIONS_ESM_TEXT, OPTIONS_TS_TEXT } = await import('@master/css-compiler')
+            switch (format) {
+                case 'esm':
+                    create('master.css-compiler.mjs', OPTIONS_ESM_TEXT)
+                    break
+                case 'ts':
+                    create('master.css-compiler.ts', OPTIONS_TS_TEXT)
+                    break
+                default:
+                    create('master.css-compiler.js', OPTIONS_TEXT)
+            }
         }
     })
 
 program.command('build', { isDefault: true })
-    .allowUnknownOption()
     .option('-w, --watch', 'Watch file changed and generate CSS rules.')
     .option('-o, --output <path>', 'Specify your master CSS file output path', 'master.css')
     .action(async function ({ watch, output }) {
-        // @ts-ignore
         const compiler = await new (await import('@master/css-compiler')).default().compile()
         const insert = (path: string) => compiler.insert(path, fs.readFileSync(path, { encoding: 'utf-8' }))
         const write = () => fs.writeFileSync(output, compiler.css.text)

@@ -1,4 +1,4 @@
-import { START_SYMBOL } from '../constants/start-symbol'
+import { START_SYMBOLS } from '../constants/start-symbol'
 import { Declarations, Rule, RuleConfig, RuleNative } from '../rule'
 
 // TODO 於 index.node.ts 引入且防止被樹搖，目前被視為無副作用並被清除
@@ -357,9 +357,9 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
                         }
 
                         break
-                    } else if (char in START_SYMBOL && (end !== '\'' && end !== '"')) {
+                    } else if (char in START_SYMBOLS && (end !== '\'' && end !== '"')) {
                         i++
-                        analyze(START_SYMBOL[char])
+                        analyze(START_SYMBOLS[char])
                     }
                 }
             })(undefined)

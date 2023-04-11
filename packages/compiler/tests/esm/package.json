@@ -1,5 +1,5 @@
 {
-    "name": "css-test-module",
+    "name": "css-compiler-test-module",
     "type": "module",
     "private": true
 }
