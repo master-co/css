@@ -3,7 +3,7 @@ import { expectFileIncludes } from '../../../../utils/expect-file-includes'
 import '../../../css/src/polyfills/css-escape'
 
 it('build master.css', () => {
-    execSync('node ../../../css/dist/cjs/bin init -c -o', { cwd: __dirname })
+    execSync('node ../../../css/dist/cjs/bin init -c -o --format esm', { cwd: __dirname })
     execSync('node ../../../css/dist/cjs/bin', { cwd: __dirname })
     expectFileIncludes('master.css', [
         CSS.escape('fg:primary'),

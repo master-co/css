@@ -230,15 +230,15 @@ export class MasterCSSCompiler extends Techor<Options, Config> {
     }
 
     get sources(): string[] {
-        const { include, exclude, sources } = this.options
+        const { include, exclude, sources, cwd } = this.options
         const sourcePaths = fg.sync(include, {
-            cwd: this.options.cwd,
+            cwd,
             ignore: exclude
         })
         if (sources?.length) {
             sourcePaths
                 .push(
-                    ...fg.sync(sources, { cwd: this.options.cwd })
+                    ...fg.sync(sources, { cwd })
                 )
         }
         return sourcePaths.filter((eachSourcePath) => !!eachSourcePath)
