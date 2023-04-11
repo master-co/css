@@ -8,7 +8,7 @@ import { cssData } from 'vscode-css-languageservice/lib/esm/data/webCustomData'
 import { CSSDataProvider } from 'vscode-css-languageservice/lib/esm/languageFacts/dataProvider'
 
 export function doHover(instance: string, range: Range, config?: any): Hover | null {
-    
+
     const contents = []
 
     const cssPreview = getCssPreview(instance, config)

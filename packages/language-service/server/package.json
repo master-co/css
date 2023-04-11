@@ -27,13 +27,11 @@
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/index.default.js",
-            "import": "./dist/index.default.mjs",
-            "types": "./dist/index.default.d.ts"
+            "require": "./dist/default.js",
+            "types": "./dist/default.d.ts"
         },
         "./settings": {
             "require": "./dist/settings.js",
-            "import": "./dist/settings.mjs",
             "types": "./dist/settings.d.ts"
         }
     },
