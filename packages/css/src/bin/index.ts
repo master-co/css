@@ -49,6 +49,7 @@ program.command('init')
         }
         // create master.css-compiler.* file
         if (options.compiler) {
+            // @ts-ignore
             const { OPTIONS_TEXT, OPTIONS_ESM_TEXT, OPTIONS_TS_TEXT } = await import('@master/css-compiler')
             switch (format) {
                 case 'esm':
@@ -67,6 +68,7 @@ program.command('build', { isDefault: true })
     .option('-w, --watch', 'Watch file changed and generate CSS rules.')
     .option('-o, --output <path>', 'Specify your master CSS file output path', 'master.css')
     .action(async function ({ watch, output }) {
+        // @ts-ignore
         const { MasterCSSCompiler } = await import('@master/css-compiler')
         const compiler = await (new MasterCSSCompiler).compile()
         const insert = (path: string) => compiler.insert(path, fs.readFileSync(path, { encoding: 'utf-8' }))
