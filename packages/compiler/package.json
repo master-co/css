@@ -4,6 +4,7 @@
         "build": "techor pack --platform node",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
+        "type-check": "tsc --noEmit",
         "test": "jest"
     },
     "license": "MIT",
