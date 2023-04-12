@@ -2,7 +2,9 @@
  * @jest-environment node
  */
 
-import MasterCSSCompiler from '@master/css-compiler'
+import { MasterCSSCompiler } from '@master/css-compiler'
+
+console.log('🔺', MasterCSSCompiler)
 
 it('extract class names from entry HTML file ( like index.html, app.html )', async () => {
     const compiler = await new MasterCSSCompiler({ include: ['index.html'] }).compile()

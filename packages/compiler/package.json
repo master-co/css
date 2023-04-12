@@ -35,9 +35,17 @@
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
-        ".": {
-            "node": "./dist/index.js",
-            "default": "./dist/default.js"
+        ".": "./dist/index.js",
+        "./options": "./dist/options/index.js"
+    },
+    "typesVersions": {
+        "*": {
+            ".": [
+                "./dist/index.d.js"
+            ],
+            "./options": [
+                "./dist/options/index.d.ts"
+            ]
         }
     },
     "files": [
