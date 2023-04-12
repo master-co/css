@@ -56,12 +56,12 @@
     },
     "dependencies": {
         "@master/css": "",
-        "@techor/extend": "^2.1.14",
-        "cross-import": "^2.1.14",
+        "@techor/extend": "^2.1.15",
+        "cross-import": "^2.1.15",
         "fast-glob": "^3.2.12",
         "minimatch": "^5.1.1",
         "stylelint": "^15.2.0",
-        "techor": "^2.1.14",
+        "techor": "^2.1.15",
         "upath": "^2.0.1"
     },
     "devDependencies": {
