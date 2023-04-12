@@ -21,16 +21,15 @@
         "examples/*"
     ],
     "devDependencies": {
-        "@techor/jest": "^2.1.4",
-        "@techor/jest-dom": "^2.1.4",
-        "@techor/jest-puppeteer": "^2.1.4",
-        "@techor/repo": "^2.1.4",
+        "@techor/jest": "^2.1.13",
+        "@techor/jest-dom": "^2.1.13",
+        "@techor/repo": "^2.1.13",
         "@types/jest": "^29.5.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
         "shuffle-array": "^1.0.1",
         "strip-ansi": "^7.0.1",
-        "techor": "^2.0.4",
+        "techor": "^2.1.13",
         "ts-dedent": "^2.2.0",
         "upath": "^2.0.1"
     },
