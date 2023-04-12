@@ -27,6 +27,7 @@
         "@types/jest": "^29.5.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
+        "nodemon": "^2.0.22",
         "puppeteer": "^19.8.5",
         "shuffle-array": "^1.0.1",
         "strip-ansi": "^7.0.1",
