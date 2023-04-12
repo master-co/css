@@ -1,6 +1,6 @@
 import { testCSS } from './css'
 import { config } from '../../../master.css.js'
-import extend from '@techor/extend'
+import { extend } from '@techor/extend'
 
 test('semantics fuck', () => {
     testCSS(

@@ -1,4 +1,4 @@
-import extend from '@techor/extend'
+import { extend } from '@techor/extend'
 
 export declare interface ThemeSettings {
     default?: ThemeValue

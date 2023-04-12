@@ -1,6 +1,5 @@
-import type { Color } from 'vscode-languageserver'
 
-export function hslToRgb(h: number, s: number, l: number, alpha?: number): Color {
+export function hslToRgb(h: number, s: number, l: number, alpha?: number): any {
     l /= 100
     const k = (n: number) => (n + h / 30) % 12
     const a = (s / 100) * Math.min(l, 1 - l)

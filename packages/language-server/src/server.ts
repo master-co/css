@@ -15,19 +15,12 @@ import {
 } from 'vscode-languageserver/node'
 
 import { WorkspaceFolder } from 'vscode-languageserver'
-import MasterCSS from '@master/css'
-
+import { MasterCSS } from '@master/css'
 import minimatch from 'minimatch'
-
 import { TextDocument } from 'vscode-languageserver-textdocument'
-import { getLastInstance, getCompletionItem, getConfigColorsCompletionItem, checkConfigColorsBlock } from './providers/completion'
-import { doHover } from './providers/hover'
-import { positionCheck } from './position-check'
-import { getDocumentColors, getColorPresentation, getConfigFileColorRender } from './providers/color'
-import * as path from 'path'
+import path from 'path'
 import uri2path from 'file-uri-to-path'
-import { settings as defaultSettings } from './settings'
-
+import { settings as defaultSettings, doHover, positionCheck, getConfigFileColorRender, getColorPresentation, getDocumentColors, getLastInstance, getCompletionItem, getConfigColorsCompletionItem, checkConfigColorsBlock } from '@master/css-language-service'
 const connection = createConnection(ProposedFeatures.all)
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument)
 

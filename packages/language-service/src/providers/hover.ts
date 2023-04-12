@@ -1,5 +1,4 @@
-import type { Hover } from 'vscode-languageserver/node'
-import type { Range } from 'vscode-languageserver-textdocument'
+import type { Hover, Range } from 'vscode-languageserver-types'
 import { render } from '@master/css'
 import { css_beautify } from 'js-beautify'
 import { getCssEntryMarkdownDescription } from '../utils/get-css-entry-markdown-description'

@@ -8,9 +8,9 @@ import {
     masterCssCommonValues
 } from '../constant'
 
-import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver/node'
+import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver-types'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
-import MasterCSS from '@master/css'
+import { MasterCSS } from '@master/css'
 import { cssData } from 'vscode-css-languageservice/lib/esm/data/webCustomData'
 import { CSSDataProvider } from 'vscode-css-languageservice/lib/esm/languageFacts/dataProvider'
 
@@ -158,7 +158,7 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
 
             masterCssValues = masterCssValues.concat(
                 originalCssValues
-                    .filter((cssValue, index) => cssValue.description || (!cssValue.description && originalCssValues.indexOf(cssValue)===index))
+                    .filter((cssValue, index) => cssValue.description || (!cssValue.description && originalCssValues.indexOf(cssValue) === index))
                     .map(cssValue => ({
                         label: cssValue.name,
                         kind: 10,
