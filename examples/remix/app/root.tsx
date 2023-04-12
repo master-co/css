@@ -7,7 +7,7 @@ import {
     Scripts,
     ScrollRestoration,
 } from '@remix-run/react'
-import { MasterCSS } from '@master/css'
+import MasterCSS from '@master/css'
 import { useLayoutEffect } from 'react'
 
 export const meta: MetaFunction = () => ({

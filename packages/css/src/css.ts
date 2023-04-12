@@ -1,4 +1,4 @@
-import extend from '@techor/extend'
+import { extend } from '@techor/extend'
 import { Rule, RuleMeta, RuleNative } from './rule'
 import type { Config } from './config'
 import { config as defaultConfig } from './config'
@@ -857,13 +857,13 @@ export class MasterCSS {
                     if (stopCheck?.(eachRule))
                         return matchCheck
                             ? -1
-                            :  i - 1
+                            : i - 1
                     if (matchCheck?.(eachRule))
                         return i
                 }
 
                 return matchCheck
-                    ? -1   
+                    ? -1
                     : i - 1
             }
 
@@ -887,20 +887,20 @@ export class MasterCSS {
                                  * find 第一個所遇到同樣 feature 且範圍值比自己大的 rule，
                                  * 並插入在該 rule 之後，讓自己優先被套用
                                  */
-                                if (priority === -1) { 
+                                if (priority === -1) {
                                     matchStartIndex = findIndex(
-                                        mediaWidthStartIndex, 
-                                        eachRule => eachRule.priority !== -1, 
+                                        mediaWidthStartIndex,
+                                        eachRule => eachRule.priority !== -1,
                                         eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width']
                                     )
                                     matchEndIndex = findIndex(
-                                        mediaWidthStartIndex, 
+                                        mediaWidthStartIndex,
                                         eachRule => eachRule.priority !== -1
                                     )
                                 } else {
                                     matchStartIndex = findIndex(
-                                        mediaWidthStartIndex, 
-                                        undefined, 
+                                        mediaWidthStartIndex,
+                                        undefined,
                                         eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1
                                     )
                                     matchEndIndex = endIndex
@@ -943,10 +943,10 @@ export class MasterCSS {
                                  * find 第一個所遇到同樣 feature 且值比自己大的 rule，
                                  * 並插入在該 rule 之後，讓自己優先被套用
                                  */
-                                if (priority === -1) { 
+                                if (priority === -1) {
                                     matchStartIndex = findIndex(
-                                        mediaWidthStartIndex, 
-                                        eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] || eachRule.priority !== -1, 
+                                        mediaWidthStartIndex,
+                                        eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] || eachRule.priority !== -1,
                                         eachRule => !eachRule.media.features['max-width'] && eachRule.media.features['min-width']
                                     )
                                     matchEndIndex = findIndex(
@@ -956,7 +956,7 @@ export class MasterCSS {
                                 } else {
                                     matchStartIndex = findIndex(
                                         mediaWidthStartIndex,
-                                        eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1, 
+                                        eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1,
                                         eachRule => !eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1
                                     )
                                     matchEndIndex = findIndex(
@@ -981,10 +981,10 @@ export class MasterCSS {
                                  * find 第一個所遇到同樣 feature 且值比自己大的 rule，
                                  * 並插入在該 rule 之後，讓自己優先被套用
                                  */
-                                if (priority === -1) { 
+                                if (priority === -1) {
                                     matchStartIndex = findIndex(
-                                        mediaWidthStartIndex, 
-                                        eachRule => eachRule.media.features['min-width'] || eachRule.priority !== -1, 
+                                        mediaWidthStartIndex,
+                                        eachRule => eachRule.media.features['min-width'] || eachRule.priority !== -1,
                                         eachRule => eachRule.media.features['max-width']
                                     )
                                     matchEndIndex = findIndex(
@@ -993,12 +993,12 @@ export class MasterCSS {
                                     )
                                 } else {
                                     matchStartIndex = findIndex(
-                                        mediaWidthStartIndex, 
-                                        eachRule => eachRule.media.features['min-width'] && eachRule.priority !== -1, 
+                                        mediaWidthStartIndex,
+                                        eachRule => eachRule.media.features['min-width'] && eachRule.priority !== -1,
                                         eachRule => eachRule.media.features['max-width'] && eachRule.priority !== -1
                                     )
                                     matchEndIndex = findIndex(
-                                        mediaWidthStartIndex, 
+                                        mediaWidthStartIndex,
                                         eachRule => eachRule.media.features['min-width'] && eachRule.priority !== -1
                                     )
                                 }
@@ -1017,7 +1017,7 @@ export class MasterCSS {
                             }
                         }
                     } else {
-                        if (priority === -1) { 
+                        if (priority === -1) {
                             matchStartIndex = mediaStartIndex
                             matchEndIndex = findIndex(
                                 mediaStartIndex,
@@ -1067,7 +1067,7 @@ export class MasterCSS {
                             const currentRule = this.rules[i]
                             if (!hasWhere && currentRule.hasWhere)
                                 continue
-        
+
                             if (
                                 hasWhere && !currentRule.hasWhere
                                 || currentRule.order >= order
@@ -1081,7 +1081,7 @@ export class MasterCSS {
                             const currentRule = this.rules[i]
                             if (!hasWhere && currentRule.hasWhere)
                                 continue
-        
+
                             if (hasWhere && !currentRule.hasWhere) {
                                 index = i
                                 break
@@ -1100,7 +1100,7 @@ export class MasterCSS {
                             }
                         }
                     }
-                   
+
                     if (index === undefined) {
                         index = matchEndIndex + 1
                     }

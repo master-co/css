@@ -9,7 +9,7 @@ import minimatch from 'minimatch'
 import Techor, { options as techorOptions } from 'techor'
 import log, { chalk } from '@techor/log'
 import stylelint from 'stylelint'
-import extend from '@techor/extend'
+import { extend } from '@techor/extend'
 import crossImport from 'cross-import'
 
 export class MasterCSSCompiler extends Techor<Options, Config> {

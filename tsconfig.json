@@ -3,6 +3,7 @@
         "experimentalDecorators": true,
         "baseUrl": ".",
         "moduleResolution": "Node",
+        "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "allowJs": true,
         "target": "ESNext",

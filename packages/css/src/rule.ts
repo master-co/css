@@ -2,7 +2,7 @@ import type { Values } from './config'
 import type { MasterCSS } from './css'
 import { START_SYMBOLS } from './constants/start-symbol'
 import { cssEscape } from './utils/css-escape'
-import extend from '@techor/extend'
+import { extend } from '@techor/extend'
 
 
 // TODO 於 index.node.ts 引入且防止被樹搖，目前被視為無副作用並被清除

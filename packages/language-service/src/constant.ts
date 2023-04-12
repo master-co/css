@@ -1,4 +1,4 @@
-import type { CompletionItem } from 'vscode-languageserver'
+import type { CompletionItem } from 'vscode-languageserver-types'
 
 interface MasterCssKey {
     key: string[];

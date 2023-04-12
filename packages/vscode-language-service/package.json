@@ -1,0 +1,195 @@
+{
+    "name": "master-css-vscode-language-service",
+    "scripts": {
+        "build": "techor pack --platform node",
+        "dev": "npm run build -- --watch",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint src",
+        "deploy": "mv ../../package.json ../../_package.json && npm i vsce -D && vsce publish && mv ../../_package.json ../../package.json"
+    },
+    "description": "Master CSS Language Service for Visual Studio Code",
+    "displayName": "Master CSS Language Service",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://docs.master.co/css/donate",
+    "homepage": "https://beta.css.master.co/docs/guides/language-service",
+    "license": "MIT",
+    "publisher": "masterco",
+    "version": "2.1.35",
+    "icon": "icon.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/language-service"
+    },
+    "engines": {
+        "vscode": "^1.63.0"
+    },
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./dist/extension.js",
+    "types": "./dist/extension.d.ts",
+    "exports": {
+        ".": "./dist/extension.js",
+        "./server": "./dist/server.js"
+    },
+    "files": [
+        "dist"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "master-css",
+                "aliases": [
+                    "master-css",
+                    "mastercss"
+                ],
+                "extensions": [
+                    ".mastercss"
+                ]
+            }
+        ],
+        "grammars": [
+            {
+                "language": "master-css",
+                "scopeName": "source.master-css",
+                "path": "./syntaxes/master-css.tmLanguage.json"
+            },
+            {
+                "scopeName": "source.master-css.injection-class",
+                "path": "./syntaxes/master-css.injection-class.tmLanguage.json",
+                "injectTo": [
+                    "source",
+                    "text"
+                ]
+            },
+            {
+                "scopeName": "source.master-css.injection-react",
+                "path": "./syntaxes/master-css.injection-react.tmLanguage.json",
+                "injectTo": [
+                    "source.js.jsx",
+                    "source.ts.tsx",
+                    "source.jsx",
+                    "source.tsx"
+                ]
+            },
+            {
+                "scopeName": "source.master-css.injection-vue",
+                "path": "./syntaxes/master-css.injection-vue.tmLanguage.json",
+                "injectTo": [
+                    "source.vue"
+                ]
+            },
+            {
+                "scopeName": "source.master-css.injection-js",
+                "path": "./syntaxes/master-css.injection-js.tmLanguage.json",
+                "injectTo": [
+                    "source.js.jsx",
+                    "source.ts.tsx",
+                    "source.jsx",
+                    "source.tsx",
+                    "source.js",
+                    "source.ts",
+                    "source.svelte"
+                ],
+                "embeddedLanguages": {
+                    "meta.embedded.block.master-css.class": "master-css"
+                }
+            },
+            {
+                "scopeName": "source.master-css.injection-string",
+                "path": "./syntaxes/master-css.injection-string.tmLanguage.json",
+                "injectTo": [
+                    "source.js.jsx",
+                    "source.ts.tsx",
+                    "source.jsx",
+                    "source.tsx",
+                    "source.js",
+                    "source.ts",
+                    "source.svelte",
+                    "source.vue"
+                ]
+            }
+        ],
+        "configuration": {
+            "title": "Master CSS IntelliSense",
+            "properties": {
+                "masterCSS.languages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        "html",
+                        "php",
+                        "javascript",
+                        "typescript",
+                        "javascriptreact",
+                        "typescriptreact",
+                        "vue",
+                        "svelte",
+                        "rust"
+                    ]
+                },
+                "masterCSS.files.exclude": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        "**/.git/**",
+                        "**/node_modules/**",
+                        "**/.hg/**"
+                    ],
+                    "description": "Configure glob patterns to exclude from all Master Language Service features."
+                },
+                "masterCSS.classMatch": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        "(class(?:Name)?\\s?=\\s?)((?:\"[^\"]+\")|(?:'[^']+')|(?:`[^`]+`))",
+                        "(class(?:Name)?={)([^}]*)}",
+                        "(?:(\\$|(?:(?:element|el|style)\\.[^\\s.`]+)`)([^`]+)`)",
+                        "(style\\.(?:.*)\\()([^)]*)\\)",
+                        "(classList.(?:add|remove|replace|replace|toggle)\\()([^)]*)\\)",
+                        "(template\\s*\\:\\s*)((?:\"[^\"]+\")|(?:'[^']+')|(?:`[^`]+`))",
+                        "(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^']*)('[^']*')",
+                        "(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^\"]*)(\"[^\"]*\")",
+                        "(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^`]*)(`[^`]*`)"
+                    ]
+                },
+                "masterCSS.suggestions": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "masterCSS.inspect": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "masterCSS.previewColors": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "masterCSS.config": {
+                    "type": "string",
+                    "default": "master.css.{ts,js,mjs,cjs}"
+                }
+            }
+        }
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "peerDependencies": {
+        "vscode": ""
+    },
+    "devDependencies": {
+        "@master/css-language-server": "",
+        "vsce": "^2.15.0",
+        "@types/vscode": "^1.63.0",
+        "@vscode/test-electron": "^2.1.2",
+        "vscode-languageclient": "^7.0.0"
+    }
+}

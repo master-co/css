@@ -1,19 +1,17 @@
 import type {
     Color,
-    ColorPresentationParams,
     ColorPresentation
-} from 'vscode-languageserver/node'
+} from 'vscode-languageserver-types'
 
-import MasterCSS from '@master/css'
+import { MasterCSS } from '@master/css'
 import { hexToRgb } from '../utils/hex-to-rgb'
 import { instancePattern } from '../utils/regex'
 import { rgbToHsl } from '../utils/rgb-to-hsl'
 import { hslToRgb } from '../utils/hsl-to-rgb'
 import { toTwoDigitHex } from '../utils/to-two-digit-hex'
 
-
 export async function getConfigFileColorRender(text: string, masterCss: MasterCSS = new MasterCSS({ observe: false })): Promise<any[]> {
-    
+
     const colors: any[] = []
 
     let classMatch: RegExpExecArray | null
@@ -75,7 +73,7 @@ function parseColorString(colorString: string, theme: string, masterCss: MasterC
     const rgbaColorPattern = /rgba?\(([\d.]+),([\d.]+),([\d.]+)(?:,([\d.]+))?\)/g
     const hslaColorPattern = /hsla?\(([\d.]+),([\d.]+)%,([\d.]+)%(?:,([\d.]+))?\)/g
     const hexColorPattern = /#([0-9a-fA-F]{6,8})/g
-    
+
     let colorMatch2: RegExpExecArray | null
     //#region  for rgb、hls
     if ((colorMatch2 = rgbaColorPattern.exec(colorString))) {
@@ -88,7 +86,7 @@ function parseColorString(colorString: string, theme: string, masterCss: MasterC
         return getColorValue(hexToRgb(colorMatch2[1]))
     }
     //#endregion for rgb、hls
-    
+
     //#region for mastercss color
     let colorAlpha = 1
     let colorName = colorString
@@ -124,7 +122,7 @@ export function getColorValue(color: Color): Color {
     return { red: color.red / 255.0, green: color.green / 255.0, blue: color.blue / 255.0, alpha: color.alpha }
 }
 
-export function getColorPresentation(params: ColorPresentationParams, isColorRender = false) {
+export function getColorPresentation(params: any, isColorRender = false) {
     const result: ColorPresentation[] = []
     const color = params.color
     const range = params.range

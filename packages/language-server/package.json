@@ -6,42 +6,25 @@
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
     },
-    "description": "VSCode part of a language server",
+    "description": "Master CSS Language Server",
     "author": "Aoyue Design LLC.",
     "license": "MIT",
     "engines": {
         "node": "*"
     },
-    "devDependencies": {
+    "dependencies": {
         "@master/css": "",
         "@master/css-compiler": "",
+        "@master/css-language-service": "",
         "file-uri-to-path": "^2.0.0",
         "js-beautify": "^1.14.7",
         "minimatch": "^5.1.2",
         "pascal-case": "^3.1.2",
-        "vscode-css-languageservice": "^6.2.3",
         "vscode-languageserver": "^7.0.0",
-        "vscode-languageserver-textdocument": "^1.0.4"
+        "vscode-languageserver-textdocument": "^1.0.9"
     },
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "require": "./dist/default.js",
-            "types": "./dist/default.d.ts"
-        },
-        "./settings": {
-            "require": "./dist/settings.js",
-            "types": "./dist/settings.d.ts"
-        }
-    },
-    "typesVersions": {
-        "*": {
-            "./settings": [
-                "./dist/settings.d.ts"
-            ]
-        }
-    },
+    "main": "./dist/server.js",
+    "types": "./dist/server.d.ts",
     "files": [
         "dist"
     ],
