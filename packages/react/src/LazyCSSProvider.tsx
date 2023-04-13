@@ -1,5 +1,5 @@
 import type { MasterCSS, Config } from '@master/css'
-import { ReactElement, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Context, createContext, useContext } from 'react'
 
 export const LazyCSSContext: Context<MasterCSS> = createContext<MasterCSS>(null)
@@ -13,7 +13,7 @@ export const LazyCSSProvider = ({
     config,
     root = typeof document !== 'undefined' ? document : null
 }: {
-    children: ReactElement,
+    children: JSX.Element,
     config?: Config | Promise<any>,
     root?: Document | ShadowRoot | null
 }) => {
