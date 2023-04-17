@@ -9,9 +9,7 @@ export const functions: Record<string, FunctionConfig> = {
     },
     calc: {
         transform(value) {
-            const isOperator = (char: string) => char === '+' || char === '-' || char === '*' || char === '/'
-
-            let newValue = '', type: 1 | 2, current = '', endWithBracket = false, withUnit = false
+            let newValue = '', type: 1 | 2, current = '', withUnit = false
             const clear = (char: string, prefix = '', suffix = '') => {
                 if (type === 2 && !withUnit) {
                     const result = this.analyzeUnitValue(current, functions.calc.unit)
@@ -29,10 +27,27 @@ export const functions: Record<string, FunctionConfig> = {
             for (let i = 0; i < value.length; i++) {
                 const char = value[i]
                 if (char === '(' || char === ')') {
-                    endWithBracket = char === ')'
                     clear(char)
                 } else if (char === ',') {
                     clear(char, '', ' ')
+                } else if (char === '-' && type !== 1) {
+                    const previousValue = value[i - 1]
+                    if (previousValue === '(') {
+                        newValue += char
+                    } else if (previousValue === ')') {
+                        clear(char, ' ', ' ')
+                    } else if (isNaN(+value[i + 1])) {
+                        if (previousValue === '-') {
+                            clear(char)
+                            type = 1
+                        } else {
+                            clear(char, ' ', ' ')
+                        }
+                    } else {
+                        clear(char, current ? ' ' : '', current ? ' ' : '')
+                    }
+                } else if (char === '+' || char === '*' || char === '/') {
+                    clear(char, ' ', ' ')
                 } else {
                     switch (type) {
                         // 字串
@@ -40,24 +55,14 @@ export const functions: Record<string, FunctionConfig> = {
                             break
                         // 數字
                         case 2:
-                            if (isOperator(char)) {
-                                clear(char, ' ', ' ')
-                                continue
-                            } else if (!/[0-9]/.test(char)) {
+                            if (char !== '.' && !/[0-9]/.test(char)) {
                                 withUnit = true
                             }
                             break
                         default:
-                            if (endWithBracket) {
-                                newValue += ' '
-                            }
-
-                            if (!isNaN(+char)) {
-                                type = 2
-                            } else if (!isOperator(char)) {
-                                type = 1
-                            }
-                            break
+                            type = isNaN(+char)
+                                ? 1
+                                : 2
                     }
 
                     if (type) {
