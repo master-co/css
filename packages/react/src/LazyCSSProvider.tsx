@@ -1,3 +1,5 @@
+'use client'
+
 import type { MasterCSS, Config } from '@master/css'
 import { useEffect, useState } from 'react'
 import { Context, createContext, useContext } from 'react'
