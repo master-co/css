@@ -1,3 +1,5 @@
+'use client'
+
 import { Config, MasterCSS } from '@master/css'
 import { useEffect, useLayoutEffect, Context, createContext, useContext, EffectCallback, DependencyList, useState } from 'react'
 
