@@ -27,7 +27,7 @@ export const LazyCSSProvider = ({
                     if (existingCSS) {
                         setCSS(existingCSS)
                     } else {
-                        const resolvedConfig = configModule.config || configModule.default || configModule
+                        const resolvedConfig = configModule?.config || configModule?.default || configModule
                         setCSS(new MasterCSS(resolvedConfig))
                     }
                 })
