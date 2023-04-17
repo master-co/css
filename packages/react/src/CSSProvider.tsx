@@ -1,5 +1,5 @@
 import { Config, MasterCSS } from '@master/css'
-import { ReactElement, useEffect, useLayoutEffect, Context, createContext, useContext, EffectCallback, DependencyList, useState } from 'react'
+import { useEffect, useLayoutEffect, Context, createContext, useContext, EffectCallback, DependencyList, useState } from 'react'
 
 const { instances } = MasterCSS
 const useIsomorphicEffect: (effect: EffectCallback, deps?: DependencyList) => void =
@@ -15,7 +15,7 @@ export const CSSProvider = ({
     config,
     root = typeof document !== 'undefined' ? document : null
 }: {
-    children: ReactElement,
+    children: JSX.Element,
     config?: Config,
     root?: Document | ShadowRoot | null
 }) => {
