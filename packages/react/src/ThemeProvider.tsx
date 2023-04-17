@@ -1,5 +1,5 @@
 import { ThemeSettings, ThemeValue, Theme } from '@master/css'
-import { Context, createContext, DependencyList, EffectCallback, ReactElement, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { Context, createContext, DependencyList, EffectCallback, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 
 const useIsomorphicEffect: (effect: EffectCallback, deps?: DependencyList) => void =
     typeof window !== 'undefined' ? useLayoutEffect : useEffect
@@ -17,7 +17,7 @@ export function ThemeProvider({
 }: {
     host?: HTMLElement,
     config?: ThemeSettings,
-    children: ReactElement,
+    children: JSX.Element,
 }) {
     const theme = useMemo(() => new Theme({ ...config, init: false }, host), [config, host])
     // Make React hook theme members

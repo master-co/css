@@ -20,7 +20,9 @@
                 css.set(existingCSS);
             } else {
                 const resolvedConfig =
-                    configModule.config || configModule.default || configModule;
+                    configModule?.config ||
+                    configModule?.default ||
+                    configModule;
                 css.set(new MasterCSS(resolvedConfig));
             }
             return () => $css.destroy();
