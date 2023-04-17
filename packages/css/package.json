@@ -78,7 +78,9 @@
         "@techor/fs": "^2.1.15",
         "@techor/log": "^2.1.15",
         "chokidar": "^3.5.3",
-        "commander": "^10.0.0"
+        "commander": "^10.0.0",
+        "fast-glob": "^3.2.12",
+        "techor": "^2.1.15"
     },
     "devDependencies": {
         "@techor/extend": "^2.1.15",

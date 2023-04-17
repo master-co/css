@@ -7,6 +7,10 @@ import fs from 'fs'
 import { CONFIG_TS_TEXT, CONFIG_ESM_TEXT, CONFIG_TEXT } from '../constants'
 import log from '@techor/log'
 import { readFileAsJSON } from '@techor/fs'
+import fg from 'fast-glob'
+import { renderIntoHTML } from '../methods/render-into-html'
+import { renderFromHTML } from '../methods/render-from-html'
+import Techor from 'techor'
 
 program.command('init')
     .description('Initialize definition files for Master CSS')
@@ -128,6 +132,38 @@ program.command('build', { isDefault: true })
             console.log('')
             log`[sources] ${compiler.sources}`
             log.tree(compiler.options)
+        }
+    })
+
+program.command('render')
+    .description('Manual to generate CSS rules')
+    .argument('<file path>', 'file path')
+    .option('-c --config')
+    .action(async function (path, options) {
+        const sourcePaths = fg.sync(path)
+        if (sourcePaths.length) {
+            const techor = new Techor({ config: options.config })
+            const config = techor.readConfig()
+
+            await Promise.all(sourcePaths
+                .map(async (eachSourcePath) => {
+                    let styleExisted = false
+                    const content = fs.readFileSync(eachSourcePath, { encoding: 'utf-8' })
+                    let renderedContent = content.replace(
+                        /(<style id="master">).*?(<\/style>)/, 
+                        (_, prefix, suffix) => {
+                            styleExisted = true
+                            return prefix + renderFromHTML(content, config) + suffix
+                        }
+                    )
+                    if (!styleExisted) {
+                        renderedContent = renderIntoHTML(content, config)
+                    }
+    
+                    if (content !== renderedContent) {
+                        fs.writeFileSync(eachSourcePath, renderedContent)
+                    }
+                }))
         }
     })
 
