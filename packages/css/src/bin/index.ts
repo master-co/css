@@ -121,7 +121,7 @@ program.command('build', { isDefault: true })
                 await reload()
             }
             chokidar
-                .watch([compiler.resolvedConfigPath], {
+                .watch([compiler.resolvedConfigPath, compiler.resolvedOptionsPath], {
                     ignoreInitial: true
                 })
                 .on('add', reloadConfig)
