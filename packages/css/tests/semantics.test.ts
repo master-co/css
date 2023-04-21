@@ -1,12 +1,15 @@
 import { testCSS } from './css'
 import { config } from '../../../master.css.js'
-import { extend } from '@techor/extend'
 
 test('semantics fuck', () => {
     testCSS(
         'show',
         '.show{display:block}',
         config
+    )
+    testCSS(
+        'gradient-text',
+        '.gradient-text{-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text}'
     )
     // testCSS(
     //     'hide-text',

@@ -55,12 +55,7 @@ export class Rule {
                 if (meta.origin === 'match') {
                     const indexOfColon = className.indexOf(':')
                     this.prefix = className.slice(0, indexOfColon + 1)
-                    if (this.prefix.includes('(')) {
-                        this.prefix = undefined
-                        valueToken = className
-                    } else {
-                        valueToken = className.slice(indexOfColon + 1)
-                    }
+                    valueToken = className.slice(indexOfColon + 1)
                 } else if (meta.origin === 'symbol') {
                     this.symbol = className[0]
                     valueToken = className.slice(1)

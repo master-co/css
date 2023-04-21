@@ -1591,11 +1591,19 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         native: true
     },
     backgroundImage: {
-        match: '^(?:bg|background):(?:(?:url|linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient)\\(.*\\)|$values)(?!\\|)',
+        match: '^(?:(?:bg|background):(?:(?:url|linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient)\\(.*\\)|$values)|gradient\\(.*\\))(?!\\|)',
         native: true,
         colored: true,
         values: {
             current: 'currentColor'
+        },
+        analyze(className: string) {
+            if (className.startsWith('gradient'))
+                return ['linear-' + className]
+            
+            const indexOfColon = className.indexOf(':')
+            this.prefix = className.slice(0, indexOfColon + 1)
+            return [className.slice(indexOfColon + 1)]
         }
     },
     background: {
