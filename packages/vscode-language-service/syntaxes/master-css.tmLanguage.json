@@ -85,7 +85,7 @@
                     }
                 },
                 {
-                    "match": "(?<![^\\s;:{]+:[^\\s;]*)(order)(:)(?=first|last)",
+                    "match": "(?<![^\\s;:{]+:[^\\s;]*)(order|o)(:)(?=first|last)",
                     "captures": {
                         "1": {
                             "name": "support.type.property-name.css"
