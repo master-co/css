@@ -659,10 +659,16 @@ export class Rule {
                 const prefix = native + ':'
                 const declation = declarations[native]
                 if (typeof declation === 'object') {
-                    hasMultipleThemes = true
+                    if (Array.isArray(declation)) {
+                        for (const value of declation) {
+                            push(theme, prefix + value.toString())
+                        }
+                    } else {
+                        hasMultipleThemes = true
 
-                    for (const theme in declation) {
-                        push(theme, prefix + declation[theme])
+                        for (const theme in declation) {
+                            push(theme, prefix + declation[theme])
+                        }
                     }
                 } else {
                     push(theme, prefix + declation.toString())
@@ -788,7 +794,7 @@ export interface MediaQuery {
 }
 
 export declare type PropValue = string | number
-export declare type Declarations = Record<string, PropValue | Record<string, PropValue>>
+export declare type Declarations = Record<string, PropValue | PropValue[] | Record<string, PropValue>>
 
 export interface RuleMeta {
     origin?: 'match' | 'semantics' | 'symbol'

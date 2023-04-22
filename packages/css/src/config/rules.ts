@@ -947,14 +947,29 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         native: true
     },
     overflowX: {
-        native: true
+        native: true,
+        declare(value, unit) {
+            return value === 'overlay'
+                ? { 'overflow-x': ['auto', value] }
+                : { 'overflow-x': value }
+        }
     },
     overflowY: {
-        native: true
+        native: true,
+        declare(value, unit) {
+            return value === 'overlay'
+                ? { 'overflow-y': ['auto', value] }
+                : { 'overflow-y': value }
+        }
     },
     overflow: {
         native: true,
-        order: -1
+        order: -1,
+        declare(value, unit) {
+            return value === 'overlay'
+                ? { overflow: ['auto', value] }
+                : { overflow: value }
+        }
     },
     overscrollBehaviorX: {
         native: true
