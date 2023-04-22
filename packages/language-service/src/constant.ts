@@ -300,7 +300,7 @@ export const masterCssKeyValues: MasterCssKey[] = [
     {
         key: ['order', 'o'],
         colored: false,
-        values: []
+        values: ['first', 'last']
     },
     {
         key: ['place-content'],
