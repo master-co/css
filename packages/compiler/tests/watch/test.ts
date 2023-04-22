@@ -5,7 +5,7 @@ import { expectFileIncludes } from '../../../../utils/expect-file-includes'
 import '../../../css/src/polyfills/css-escape'
 import dedent from 'ts-dedent'
 
-const htmlPath = path.resolve(__dirname, 'index.html')
+const htmlPath = path.resolve(__dirname, 'test.html')
 const originalHtml = dedent`
     <!DOCTYPE html>
     <html lang="en">
@@ -23,7 +23,7 @@ const originalHtml = dedent`
 const cssCompilerConfigPath = path.resolve(__dirname, 'master.css-compiler.ts')
 const originalCssCompilerConfig = `import type { Options } from '@master/css-compiler'
 const options: Options = {
-    include: ['index.html'],
+    include: ['test.html'],
     classes: {
         fixed: [],
         ignored: []
