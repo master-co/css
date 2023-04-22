@@ -63,7 +63,7 @@ it('watch master.css', (done) => {
     child = exec('node ../../../css/dist/cjs/bin -w', { cwd: __dirname })
 
     let step = 0
-    child.stdout?.on('data', data => {
+    child.stdout?.on('data', async data => {
         console.log(data, step)
         if (step === 3) {
             if (/.*?compile.*?f:96/.test(data)) {
@@ -88,7 +88,9 @@ it('watch master.css', (done) => {
                         CSS.escape('btn')
                     ])
                     // change compiler config
-                    fs.writeFileSync(cssCompilerConfigPath, originalCssCompilerConfig.replace('fixed: []', 'fixed: [\'f:red\']'))
+                    setTimeout(() => {
+                        fs.writeFileSync(cssCompilerConfigPath, originalCssCompilerConfig.replace('fixed: []', 'fixed: [\'f:red\']'))
+                    }, 500)
                     break
                 case 1:
                     expectFileIncludes('master.css', [
@@ -99,7 +101,9 @@ it('watch master.css', (done) => {
                         CSS.escape('f:red')
                     ])
                     // change css config
-                    fs.writeFileSync(cssConfigPath, originalCssConfig.replace('bg:red', 'bg:blue'))
+                    setTimeout(() => {
+                        fs.writeFileSync(cssConfigPath, originalCssConfig.replace('bg:red', 'bg:blue'))
+                    }, 500)
                     break
                 case 2:
                     expectFileIncludes('master.css', [
