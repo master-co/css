@@ -3,22 +3,22 @@ import fs from 'fs'
 import path from 'path'
 import { expectFileIncludes } from '../../../../utils/expect-file-includes'
 import '../../../css/src/polyfills/css-escape'
+import dedent from 'ts-dedent'
 
 const htmlPath = path.resolve(__dirname, 'index.html')
-const originalHtml = `<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-
-<body>
-    <h1 class="font:heavy font:48 btn hmr-test">Hello World</h1>
-    <button class="bg:primary">Submit</button>
-</body>
-
-</html>`
+const originalHtml = dedent`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <h1 class="font:heavy font:48 btn hmr-test">Hello World</h1>
+        <button class="bg:primary">Submit</button>
+    </body>
+    </html>
+`
 
 const cssCompilerConfigPath = path.resolve(__dirname, 'master.css-compiler.ts')
 const originalCssCompilerConfig = `import type { Options } from '@master/css-compiler'
@@ -64,6 +64,7 @@ it('watch master.css', (done) => {
 
     let step = 0
     child.stdout?.on('data', data => {
+        console.log(data, step)
         if (step === 3) {
             if (/.*?compile.*?f:96/.test(data)) {
                 expectFileIncludes('master.css', [
@@ -112,10 +113,14 @@ it('watch master.css', (done) => {
                     // change index html
                     setTimeout(() => fs.writeFileSync(htmlPath, originalHtml.replace('hmr-test', 'f:96')), 500)
                     break
-            }     
-            step++   
+            }
+            step++
         }
     })
 }, 10000)
 
-afterAll(() => child?.kill())
+afterAll(() => {
+    child.stdout?.destroy()
+    child.stdin?.destroy()
+    child.kill()
+}, 30000) // 30s timeout for the slow windows OS
