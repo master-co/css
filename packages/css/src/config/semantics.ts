@@ -177,5 +177,10 @@ export const semantics = {
     'break-word': {
         'overflow-wrap': 'break-word',
         overflow: 'hidden'
+    },
+    'gradient-text': {
+        '-webkit-text-fill-color': 'transparent',
+        '-webkit-background-clip': 'text',
+        'background-clip': 'text'
     }
 }

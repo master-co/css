@@ -19,6 +19,7 @@ packages/css/**/*master.*
 packages/compiler/**/*master.css-compiler.*
 packages/compiler/**/*master.css.*
 packages/css/tests/cjs/*.html
+packages/compiler/tests/watch/*.html
 
 # Only exists if Bazel was run
 /bazel-out
