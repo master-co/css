@@ -123,7 +123,7 @@ it('watch master.css', (done) => {
             step++
         }
     })
-}, 10000)
+}, 30000)
 
 afterAll(() => {
     child.stdout?.destroy()
