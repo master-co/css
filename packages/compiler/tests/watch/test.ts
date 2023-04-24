@@ -78,7 +78,7 @@ it('watch master.css', (done) => {
                 ])
                 done()
             }
-        } else if (/.*?sources.*?index\.html/.test(data)) {
+        } else if (/.*?sources.*?test\.html/.test(data)) {
             switch (step) {
                 case 0:
                     expectFileIncludes('master.css', [
