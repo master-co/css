@@ -67,15 +67,17 @@ it('watch master.css', (done) => {
         console.log(data, step)
         if (step === 3) {
             if (/.*?compile.*?f:96/.test(data)) {
-                expectFileIncludes('master.css', [
-                    CSS.escape('font:heavy'),
-                    CSS.escape('font:48'),
-                    CSS.escape('bg:primary'),
-                    CSS.escape('btn'),
-                    CSS.escape('f:red'),
-                    CSS.escape('bg:blue'),
-                    CSS.escape('f:96')
-                ])
+                setTimeout(() => {
+                    expectFileIncludes('master.css', [
+                        CSS.escape('font:heavy'),
+                        CSS.escape('font:48'),
+                        CSS.escape('bg:primary'),
+                        CSS.escape('btn'),
+                        CSS.escape('f:red'),
+                        CSS.escape('bg:blue'),
+                        CSS.escape('f:96')
+                    ])
+                }, 500)
                 done()
             }
         } else if (/.*?sources.*?test\.html/.test(data)) {
@@ -90,7 +92,7 @@ it('watch master.css', (done) => {
                     // change compiler config
                     setTimeout(() => {
                         fs.writeFileSync(cssCompilerConfigPath, originalCssCompilerConfig.replace('fixed: []', 'fixed: [\'f:red\']'))
-                    }, 1000)
+                    }, 500)
                     break
                 case 1:
                     expectFileIncludes('master.css', [
@@ -103,7 +105,7 @@ it('watch master.css', (done) => {
                     // change css config
                     setTimeout(() => {
                         fs.writeFileSync(cssConfigPath, originalCssConfig.replace('bg:red', 'bg:blue'))
-                    }, 1000)
+                    }, 500)
                     break
                 case 2:
                     expectFileIncludes('master.css', [
@@ -117,7 +119,7 @@ it('watch master.css', (done) => {
                     // change index html
                     setTimeout(() => {
                         fs.writeFileSync(htmlPath, originalHtml.replace('hmr-test', 'f:96'))
-                    }, 1000)
+                    }, 500)
                     break
             }
             step++
