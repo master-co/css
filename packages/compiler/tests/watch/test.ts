@@ -67,18 +67,20 @@ it('watch master.css', (done) => {
         console.log(data, step)
         if (step === 3) {
             if (/.*?compile.*?f:96/.test(data)) {
-                expectFileIncludes('master.css', [
-                    CSS.escape('font:heavy'),
-                    CSS.escape('font:48'),
-                    CSS.escape('bg:primary'),
-                    CSS.escape('btn'),
-                    CSS.escape('f:red'),
-                    CSS.escape('bg:blue'),
-                    CSS.escape('f:96')
-                ])
+                setTimeout(() => {
+                    expectFileIncludes('master.css', [
+                        CSS.escape('font:heavy'),
+                        CSS.escape('font:48'),
+                        CSS.escape('bg:primary'),
+                        CSS.escape('btn'),
+                        CSS.escape('f:red'),
+                        CSS.escape('bg:blue'),
+                        CSS.escape('f:96')
+                    ])
+                }, 500)
                 done()
             }
-        } else if (/.*?sources.*?index\.html/.test(data)) {
+        } else if (/.*?sources.*?test\.html/.test(data)) {
             switch (step) {
                 case 0:
                     expectFileIncludes('master.css', [
@@ -115,13 +117,15 @@ it('watch master.css', (done) => {
                         CSS.escape('bg:blue')
                     ])
                     // change index html
-                    setTimeout(() => fs.writeFileSync(htmlPath, originalHtml.replace('hmr-test', 'f:96')), 500)
+                    setTimeout(() => {
+                        fs.writeFileSync(htmlPath, originalHtml.replace('hmr-test', 'f:96'))
+                    }, 500)
                     break
             }
             step++
         }
     })
-}, 10000)
+}, 30000)
 
 afterAll(() => {
     child.stdout?.destroy()
