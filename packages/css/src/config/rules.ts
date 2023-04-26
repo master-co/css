@@ -1615,7 +1615,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         analyze(className: string) {
             if (className.startsWith('gradient'))
                 return ['linear-' + className]
-            
+
             const indexOfColon = className.indexOf(':')
             this.prefix = className.slice(0, indexOfColon + 1)
             return [className.slice(indexOfColon + 1)]
@@ -1747,6 +1747,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         }
     },
     gridRows: {
+        match: '^grid-rows:.',
         declare(value, unit) {
             return {
                 display: 'grid',
