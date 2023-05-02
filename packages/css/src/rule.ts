@@ -30,7 +30,7 @@ export class Rule {
     ) {
         this.config = extend(defaultConfig, meta.config)
         const { unit, order, colored, native, analyze, transform, declare, create } = this.config
-        const { scope, important, functions } = css.config
+        const { scope, important, functions, themeDriver } = css.config
         const { themeNames, colorNames, colorThemesMap, selectors, breakpoints, mediaQueries, themeAffectedClassesBy, globalValues } = css
         const themeAffectedClasses = themeAffectedClassesBy[className]
 
@@ -512,7 +512,13 @@ export class Rule {
                 const prefixTexts = this.prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText)
                 const getCssText = (theme: string, name: string) =>
                     prefixTexts
-                        .map(eachPrefixText => (theme ? '.' + theme + ' ' : '') + (scope ? scope + ' ' : '') + eachPrefixText)
+                        .map(eachPrefixText => ((theme && themeDriver !== 'media')
+                            ? themeDriver === 'host'
+                                ? `:host(.${theme}) `
+                                : `.${theme} `
+                            : '') 
+                            + (scope ? scope + ' ' : '') 
+                            + eachPrefixText)
                         .reduce((arr, eachPrefixText) => {
                             arr.push(
                                 suffixSelectors
@@ -539,8 +545,13 @@ export class Rule {
                     + '{'
                     + propertiesText
                     + '}'
+
                 for (const key of Object.keys(this.at).sort((a, b) => b === 'supports' ? -1 : 1)) {
                     cssText = '@' + key + ' ' + this.at[key] + '{' + cssText + '}'
+                }
+
+                if (theme && themeDriver === 'media') {
+                    cssText = `@media(prefers-color-scheme:${theme}){` + cssText + '}'
                 }
 
                 return cssText
