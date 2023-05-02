@@ -11,6 +11,7 @@ import { observe } from './observe'
 import { important } from './important'
 import { keyframes } from './keyframes'
 import { functions, FunctionConfig } from './functions'
+import { themeDriver } from './themeDriver'
 
 const config: Config = {
     breakpoints,
@@ -25,7 +26,8 @@ const config: Config = {
     observe,
     important,
     functions,
-    keyframes
+    keyframes,
+    themeDriver
 }
 
 export {
@@ -42,7 +44,8 @@ export {
     observe,
     important,
     functions,
-    keyframes
+    keyframes,
+    themeDriver
 }
 
 import type { RuleConfig } from '../rule'
@@ -74,4 +77,5 @@ export interface Config {
     functions?: Record<string, FunctionConfig>
     keyframes?: Record<string, Record<string, Record<string, string | number>>>
     precedence?: 'highest' | 'higher' | 'lowest'
+    themeDriver?: 'class' | 'media' | 'host'
 }
