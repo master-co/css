@@ -351,7 +351,7 @@ export class MasterCSS {
             }
 
             // @ts-ignore
-            this.host = isDocumentRoot ? document.documentElement : (root as ShadowRoot).host
+            this.host = isDocumentRoot ? document.documentElement : (this.root as ShadowRoot).host
 
             const container = isDocumentRoot ? document.head : targetRoot
             const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : targetRoot.styleSheets
