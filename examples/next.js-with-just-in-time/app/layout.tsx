@@ -13,9 +13,11 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <CSSProvider>
-                {children}
-            </CSSProvider>
+            <body>
+                <CSSProvider>
+                    {children}
+                </CSSProvider>
+            </body>
         </html>
     )
 }
