@@ -1,3 +1,5 @@
+'use client'
+
 import { ThemeSettings, ThemeValue, Theme } from '@master/css'
 import { Context, createContext, DependencyList, EffectCallback, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 

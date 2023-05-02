@@ -7,6 +7,10 @@ import fs from 'fs'
 import { CONFIG_TS_TEXT, CONFIG_ESM_TEXT, CONFIG_TEXT } from '../constants'
 import log from '@techor/log'
 import { readFileAsJSON } from '@techor/fs'
+import fg from 'fast-glob'
+import { renderIntoHTML } from '../methods/render-into-html'
+import { renderFromHTML } from '../methods/render-from-html'
+import Techor from 'techor'
 
 program.command('init')
     .description('Initialize definition files for Master CSS')
@@ -71,7 +75,7 @@ program.command('build', { isDefault: true })
         // @ts-ignore
         const { MasterCSSCompiler } = await import('@master/css-compiler')
         const compiler = await (new MasterCSSCompiler).compile()
-        const insert = (path: string) => compiler.insert(path, fs.readFileSync(path, { encoding: 'utf-8' }))
+        const insert = async (path: string) => await compiler.insert(path, fs.readFileSync(path, { encoding: 'utf-8' }))
         const write = () => fs.writeFileSync(output, compiler.css.text)
         if (watch) {
             const watchers: chokidar.FSWatcher[] = []
@@ -94,7 +98,7 @@ program.command('build', { isDefault: true })
                 log.tree(compiler.options)
             }
             const handle = async (path: string) => {
-                insert(path)
+                await insert(path)
                 write()
             }
             const waching = (watcher: chokidar.FSWatcher) => {
@@ -105,29 +109,71 @@ program.command('build', { isDefault: true })
                 )
             }
 
-            await reload()
-
-            console.log('')
-            log.t`Start watching source changes`
-
             const reloadConfig = async () => {
                 await Promise.all(watchers.map(eachWatcher => eachWatcher.close()))
                 watchers.length = 0
                 await compiler.refresh()
                 await reload()
             }
-            chokidar
-                .watch([compiler.resolvedConfigPath], {
-                    ignoreInitial: true
-                })
-                .on('add', reloadConfig)
-                .on('change', reloadConfig)
-                .on('unlink', reloadConfig)
+
+            const configPaths = []
+            if (compiler.resolvedConfigPath) {
+                configPaths.push(compiler.resolvedConfigPath)
+            }
+            if (compiler.resolvedOptionsPath) {
+                configPaths.push(compiler.resolvedOptionsPath)
+            }
+            if (configPaths.length) {
+                chokidar
+                    .watch(configPaths, {
+                        ignoreInitial: true
+                    })
+                    .on('add', reloadConfig)
+                    .on('change', reloadConfig)
+                    .on('unlink', reloadConfig)
+            }
+
+            await reload()
+
+            console.log('')
+            log.t`Start watching source changes`
         } else {
             write()
             console.log('')
             log`[sources] ${compiler.sources}`
             log.tree(compiler.options)
+        }
+    })
+
+program.command('render')
+    .description('Manual to generate CSS rules')
+    .argument('<file path>', 'file path')
+    .option('-c --config')
+    .action(async function (path, options) {
+        const sourcePaths = fg.sync(path)
+        if (sourcePaths.length) {
+            const techor = new Techor({ config: options.config })
+            const config = techor.readConfig()
+
+            await Promise.all(sourcePaths
+                .map(async (eachSourcePath) => {
+                    let styleExisted = false
+                    const content = fs.readFileSync(eachSourcePath, { encoding: 'utf-8' })
+                    let renderedContent = content.replace(
+                        /(<style id="master">).*?(<\/style>)/, 
+                        (_, prefix, suffix) => {
+                            styleExisted = true
+                            return prefix + renderFromHTML(content, config) + suffix
+                        }
+                    )
+                    if (!styleExisted) {
+                        renderedContent = renderIntoHTML(content, config)
+                    }
+    
+                    if (content !== renderedContent) {
+                        fs.writeFileSync(eachSourcePath, renderedContent)
+                    }
+                }))
         }
     })
 

@@ -947,14 +947,29 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         native: true
     },
     overflowX: {
-        native: true
+        native: true,
+        declare(value, unit) {
+            return value === 'overlay'
+                ? { 'overflow-x': ['auto', value] }
+                : { 'overflow-x': value }
+        }
     },
     overflowY: {
-        native: true
+        native: true,
+        declare(value, unit) {
+            return value === 'overlay'
+                ? { 'overflow-y': ['auto', value] }
+                : { 'overflow-y': value }
+        }
     },
     overflow: {
         native: true,
-        order: -1
+        order: -1,
+        declare(value, unit) {
+            return value === 'overlay'
+                ? { overflow: ['auto', value] }
+                : { overflow: value }
+        }
     },
     overscrollBehaviorX: {
         native: true
@@ -1591,11 +1606,19 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         native: true
     },
     backgroundImage: {
-        match: '^(?:bg|background):(?:(?:url|linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient)\\(.*\\)|$values)(?!\\|)',
+        match: '^(?:(?:bg|background):(?:(?:url|linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient)\\(.*\\)|$values)|gradient\\(.*\\))(?!\\|)',
         native: true,
         colored: true,
         values: {
             current: 'currentColor'
+        },
+        analyze(className: string) {
+            if (className.startsWith('gradient'))
+                return ['linear-' + className]
+
+            const indexOfColon = className.indexOf(':')
+            this.prefix = className.slice(0, indexOfColon + 1)
+            return [className.slice(indexOfColon + 1)]
         }
     },
     background: {
@@ -1724,6 +1747,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         }
     },
     gridRows: {
+        match: '^grid-rows:.',
         declare(value, unit) {
             return {
                 display: 'grid',

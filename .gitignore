@@ -18,6 +18,8 @@ packages/css/**/*master.css.*
 packages/css/**/*master.*
 packages/compiler/**/*master.css-compiler.*
 packages/compiler/**/*master.css.*
+**/*test.html
+**/*.test.html
 
 # Only exists if Bazel was run
 /bazel-out
