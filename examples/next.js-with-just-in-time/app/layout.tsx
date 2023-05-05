@@ -1,4 +1,5 @@
-import { CSSProvider } from '@master/css.react'
+import CSSProvider from '@master/css.react/CSSProvider'
+import config from '../master.css'
 import './globals.css'
 
 export const metadata = {
@@ -12,9 +13,9 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <html lang="en">
+        <html lang="en" style={{ display: 'none' }}>
             <body>
-                <CSSProvider>
+                <CSSProvider config={config}>
                     {children}
                 </CSSProvider>
             </body>
