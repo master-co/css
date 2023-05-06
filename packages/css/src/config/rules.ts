@@ -314,13 +314,25 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
                         addProps(eachNative.theme, eachNative.text)
                     }
                 }
+
+                // animation
+                if (rule.keyframeNames) {
+                    if (!this.keyframeNames) {
+                        this.keyframeNames = []
+                    }
+                    for (const eachKeyframeName of rule.keyframeNames) {
+                        if (!this.keyframeNames.includes(eachKeyframeName)) {
+                            this.keyframeNames.push(eachKeyframeName)
+                        }
+                    }
+                }
             }
 
             const names = []
             let currentName = ''
             const addName = () => {
                 if (currentName) {
-                    names.push(currentName.replace(/ /g, ''))
+                    names.push(currentName.replace(/ /g, '|'))
                     currentName = ''
                 }
             }
@@ -394,6 +406,12 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
             }
 
             return declarations
+        },
+        delete() {
+            return animationDelete.call(this)
+        },
+        insert() {
+            return animationInsert.call(this)
         }
     },
     variable: {
@@ -1181,8 +1199,8 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         create(className) {
             return animationCreate.call(this, className)
         },
-        delete(className) {
-            return animationDelete.call(this, className)
+        delete() {
+            return animationDelete.call(this)
         },
         insert() {
             return animationInsert.call(this)
@@ -1203,8 +1221,8 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         create(className) {
             return animationCreate.call(this, className)
         },
-        delete(className) {
-            return animationDelete.call(this, className)
+        delete() {
+            return animationDelete.call(this)
         },
         insert() {
             return animationInsert.call(this)

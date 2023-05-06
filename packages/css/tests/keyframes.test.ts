@@ -1,4 +1,3 @@
-import '../src/polyfills/css-escape'
 import MasterCSS, { Rule, render } from '../src'
 import delay from '../src/utils/delay'
 
@@ -27,6 +26,7 @@ it('expects the keyframe output', () => {
     expect(render(['@rotate|1s'])).toContain('@keyframes rotate{0%{transform:rotate(-360deg)}to{transform:none}}')
     expect(render(['@shake|1s'])).toContain('@keyframes shake{0%{transform:none}6.5%{transform:translateX(-6px) rotateY(-9deg)}18.5%{transform:translateX(5px) rotateY(7deg)}31.5%{transform:translateX(-3px) rotateY(-5deg)}43.5%{transform:translateX(2px) rotateY(3deg)}50%{transform:none}}')
     expect(render(['@zoom|1s'])).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
+    expect(render(['{@zoom|1s;f:16}'])).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
 })
 
 test('keyframes', async () => {
@@ -58,7 +58,11 @@ test('keyframes', async () => {
         await delay()
 
         const rule = css.ruleBy[className]
-        const keyframeNames = (className.includes(':') ? className.split(':')[1] : className.slice(1)).split('|').filter(eachValue => configKeyframeNames.includes(eachValue))
+
+        const animationClassName = className.startsWith('{')
+            ? className.slice(1, className.length - 1)
+            : className
+        const keyframeNames = (animationClassName.includes(':') ? animationClassName.split(':')[1] : animationClassName.slice(1)).split('|').filter(eachValue => configKeyframeNames.includes(eachValue))
         expect(rule.keyframeNames.length).toEqual(keyframeNames.length)
         expect(rule.keyframeNames.every(eachKeyframeName => keyframeNames.includes(eachKeyframeName))).toBeTruthy()
 
@@ -95,8 +99,8 @@ test('keyframes', async () => {
     }
 
     await generateAnimation('@fade')
-    await generateAnimation('@name:flash|fade')
+    await generateAnimation('{@name:flash|fade}')
 
-    await deleteAnimation('@name:flash|fade')
+    await deleteAnimation('{@name:flash|fade}')
     await deleteAnimation('@fade')
 })
