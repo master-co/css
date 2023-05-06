@@ -9,7 +9,10 @@ export const functions: Record<string, FunctionConfig> = {
     },
     calc: {
         transform(value) {
-            let newValue = '', type: 1 | 2, current = '', withUnit = false
+            const values = this.values
+            const globalValues = this.css.globalValues
+
+            let newValue = '', type: 1 | 2, current = '', withUnit = false, functionName = '', isFirstChar = true
             const clear = (char: string, prefix = '', suffix = '') => {
                 if (type === 2 && !withUnit) {
                     const result = this.analyzeUnitValue(current, functions.calc.unit)
@@ -17,6 +20,21 @@ export const functions: Record<string, FunctionConfig> = {
                         current = result.value + result.unit
                     }
                 }
+
+                if (char !== '(') {
+                    if (values && current in values) {
+                        current = values[current].toString()
+                    } else if (globalValues && current in globalValues) {
+                        current = globalValues[current].toString()
+                    }
+                } else {
+                    functionName = current
+                }
+
+                if (char === ')') {
+                    functionName = ''
+                }
+
                 newValue += current + prefix + char + suffix
 
                 type = null
@@ -28,6 +46,8 @@ export const functions: Record<string, FunctionConfig> = {
                 const char = value[i]
                 if (char === '(' || char === ')') {
                     clear(char)
+                    isFirstChar = true
+                    continue
                 } else if (char === ',') {
                     clear(char, '', ' ')
                 } else if (char === '-' && type !== 1) {
@@ -41,12 +61,12 @@ export const functions: Record<string, FunctionConfig> = {
                             clear(char)
                             type = 1
                         } else {
-                            clear(char, ' ', ' ')
+                            clear(char, isFirstChar ? '' : ' ', isFirstChar ? '' : ' ')
                         }
                     } else {
                         clear(char, current ? ' ' : '', current ? ' ' : '')
                     }
-                } else if (char === '+' || char === '*' || char === '/') {
+                } else if (char === '+' || char === '*' || char === '/' || functionName !== 'var' && char === '-') {
                     clear(char, ' ', ' ')
                 } else {
                     switch (type) {
@@ -71,6 +91,8 @@ export const functions: Record<string, FunctionConfig> = {
                         newValue += char
                     }
                 }
+
+                isFirstChar = false
             }
 
             clear('')

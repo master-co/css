@@ -13,24 +13,32 @@ export function useCSS() {
     return useContext(CSSContext)
 }
 
-export const CSSProvider = ({
+const CSSProvider = ({
     children,
     config,
     root = typeof document !== 'undefined' ? document : null
 }: {
     children: React.ReactNode,
-    config?: Config,
+    config?: Config | Promise<any>,
     root?: Document | ShadowRoot | null
 }) => {
     const existingCSS = instances.find((eachCSS) => eachCSS.root === root)
-    const [css] = useState<MasterCSS>(existingCSS || new MasterCSS({ ...config, observe: false }))
+    const [css, setCSS] = useState<MasterCSS>(existingCSS)
     useIsomorphicEffect(() => {
-        if (!css.observing) {
+        if (!css) {
+            (async () => {
+                const configModule = await config
+                const resolvedConfig = configModule?.config || configModule?.default || configModule
+                setCSS(new MasterCSS(resolvedConfig))
+            })()
+        } else if (!css.observing) {
             css.observe(root)
-            return () => {
-                css.disconnect()
-            }
         }
-    }, [css, root])
+
+        return () => {
+            css?.disconnect()
+        }
+    }, [config, css, root])
     return <CSSContext.Provider value={css}>{children}</CSSContext.Provider>
 }
+export default CSSProvider

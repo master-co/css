@@ -1,5 +1,5 @@
 {
-    "name": "master-css-aot-in-nuxt.js",
+    "name": "nuxt.js-with-just-in-time",
     "private": true,
     "scripts": {
         "build": "nuxt build",
@@ -8,7 +8,7 @@
         "preview": "nuxt preview"
     },
     "devDependencies": {
-        "@master/css.vite": "",
+        "@master/css": "",
         "nuxt": "3.0.0",
         "vite": "^4.0.1"
     }

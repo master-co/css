@@ -1,6 +1,6 @@
 import { Config } from '@master/css'
 
-export const config: Config = {
+export default {
     themes: {},
     colors: {},
     classes: {},
@@ -9,4 +9,4 @@ export const config: Config = {
     breakpoints: {},
     selectors: {},
     mediaQueries: {}
-}
+} as Config

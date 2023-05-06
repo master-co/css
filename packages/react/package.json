@@ -37,6 +37,22 @@
             "require": "./dist/cjs/index.js",
             "import": "./dist/esm/index.mjs",
             "types": "./dist/index.d.ts"
+        },
+        "./CSSProvider": {
+            "require": "./dist/cjs/CSSProvider.js",
+            "import": "./dist/esm/CSSProvider.mjs",
+            "types": "./dist/CSSProvider.d.ts"
+        },
+        "./ThemeProvider": {
+            "require": "./dist/cjs/ThemeProvider.js",
+            "import": "./dist/esm/ThemeProvider.mjs",
+            "types": "./dist/ThemeProvider.d.ts"
+        }
+    },
+    "typesVersions": {
+        "*": {
+          "CSSProvider": ["./dist/CSSProvider.d.ts"],
+          "ThemeProvider": ["./dist/ThemeProvider.d.ts"]
         }
     },
     "files": [
