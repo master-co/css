@@ -91,7 +91,6 @@ export class MasterCSS {
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
         }
-
         function getFlatData(obj: Record<string, any>, hasObjectValue: boolean, parentKey = '', newData: Record<string, any> = {}) {
             const getCurrenyKey = (key) => key ? (parentKey ? parentKey + '-' : '') + key : parentKey
             const entries = Object.entries(obj)
@@ -121,6 +120,14 @@ export class MasterCSS {
 
             return newData
         }
+        function addNegativeValues(values: Record<string, string | number>) {
+            for (const [name, value] of Object.entries(values)) {
+                if (/^[0-9]+x$/.test(name) && typeof value === 'number') {
+                    values['-' + name] = value * -1
+                }
+            }
+            return values
+        }
 
         if (semantics) {
             for (const [semanticName, semanticValue] of Object.entries(getFlatData(semantics, true))) {
@@ -149,7 +156,7 @@ export class MasterCSS {
             }
         }
         if (values) {
-            this.globalValues = getFlatData(values, false)
+            this.globalValues = addNegativeValues(getFlatData(values, false))
         }
         if (breakpoints) {
             this.breakpoints = getFlatData(breakpoints, false)
@@ -315,7 +322,7 @@ export class MasterCSS {
                 eachRuleConfig.id = id
                 eachRuleConfig.native = native === true ? id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase() : undefined
                 if (values) {
-                    this.values[id] = getFlatData(values, false)
+                    this.values[id] = addNegativeValues(getFlatData(values, false))
                 }
                 if (match) {
                     const valueNames = Object.keys(this.values[id] ?? {})
