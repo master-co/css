@@ -146,4 +146,13 @@ test('values', () => {
             }
         }
     )
+    testCSS(
+        'w:-11x',
+        '.w\\:-11x{width:-3.75rem}',
+        {
+            values: {
+                '11x': 60
+            }
+        }
+    )
 })
