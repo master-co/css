@@ -358,7 +358,7 @@ export class MasterCSS {
             // @ts-ignore
             for (const sheet of styleSheets) {
                 const { ownerNode } = sheet
-                if ((ownerNode as HTMLStyleElement).id === 'master') {
+                if (ownerNode && (ownerNode as HTMLStyleElement).id === 'master') {
                     // @ts-ignore
                     this.style = ownerNode
                     break
