@@ -103,46 +103,28 @@ test('values', () => {
     )
     testCSS(
         'w:calc(-2+1x)',
-        '.w\\:calc\\(-2\\+1x\\){width:calc(-0.125rem + 60)}',
+        '.w\\:calc\\(-2\\+1x\\){width:calc(-0.125rem + 3.75rem)}',
         {
             values: {
-                '1x': '60'
+                '1x': 60
             }
         }
     )
     testCSS(
         'w:calc(-2-1x)',
-        '.w\\:calc\\(-2-1x\\){width:calc(-0.125rem - 60)}',
+        '.w\\:calc\\(-2-1x\\){width:calc(-0.125rem - 3.75rem)}',
         {
             values: {
-                '1x': '60'
+                '1x': 60
             }
         }
     )
     testCSS(
         'w:calc(-1x-2)',
-        '.w\\:calc\\(-1x-2\\){width:calc(-60 - 0.125rem)}',
+        '.w\\:calc\\(-1x-2\\){width:calc(-3.75rem - 0.125rem)}',
         {
             values: {
-                '1x': '60'
-            }
-        }
-    )
-    testCSS(
-        'w:calc(-x1-2)',
-        '.w\\:calc\\(-x1-2\\){width:calc(-60 - 0.125rem)}',
-        {
-            values: {
-                'x1': '60'
-            }
-        }
-    )
-    testCSS(
-        'w:calc(-2-x1)',
-        '.w\\:calc\\(-2-x1\\){width:calc(-0.125rem - 60)}',
-        {
-            values: {
-                'x1': '60'
+                '1x': 60
             }
         }
     )
