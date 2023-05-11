@@ -390,15 +390,15 @@ export class Rule {
                     let type: string
                     let queryText
 
-                    const underscoreIndex = atToken.indexOf('_')
-                    if (underscoreIndex !== -1) {
-                        type = atToken.slice(0, underscoreIndex)
-                        queryText = atToken.slice(underscoreIndex)
+                    const leftBracketIndex = atToken.indexOf('(')
+                    if (leftBracketIndex !== -1) {
+                        type = atToken.slice(0, leftBracketIndex)
+                        queryText = atToken.slice(leftBracketIndex)
                     } else {
-                        const leftBracketIndex = atToken.indexOf('(')
-                        if (leftBracketIndex !== -1) {
-                            type = atToken.slice(0, leftBracketIndex)
-                            queryText = atToken.slice(leftBracketIndex)
+                        const underscoreIndex = atToken.indexOf('_')
+                        if (underscoreIndex !== -1) {
+                            type = atToken.slice(0, underscoreIndex)
+                            queryText = atToken.slice(underscoreIndex)
                         }
                     }
 
@@ -489,7 +489,7 @@ export class Rule {
                         this.at[type] = (type in this.at
                             ? this.at[type] + ' and '
                             : '')
-                            + queryText.replace(/_/g, ' ')
+                            + queryText.replace(/[_|]/g, ' ')
                     }
                 }
             }

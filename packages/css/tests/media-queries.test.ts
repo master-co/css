@@ -12,4 +12,19 @@ test('mediaQueries', () => {
         '@media (max-device-width:42mm) and (min-device-width:38mm){.hide\\@device-watch{display:none}}',
         config
     )
+    testCSS(
+        'hide@device-watch',
+        '@media (max-device-width:42mm) and (min-device-width:38mm){.hide\\@device-watch{display:none}}',
+        config
+    )
+    testCSS(
+        'hide@supports(transform-origin:5%|5%)',
+        '@supports (transform-origin:5% 5%){.hide\\@supports\\(transform-origin\\:5\\%\\|5\\%\\){display:none}}',
+        config
+    )
+    testCSS(
+        'hide@supports(transform-origin:5%_5%)',
+        '@supports (transform-origin:5% 5%){.hide\\@supports\\(transform-origin\\:5\\%_5\\%\\){display:none}}',
+        config
+    )
 })
