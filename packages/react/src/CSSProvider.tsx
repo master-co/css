@@ -13,7 +13,7 @@ export function useCSS() {
     return useContext(CSSContext)
 }
 
-const CSSProvider = ({
+export default function CSSProvider({
     children,
     config,
     root = typeof document !== 'undefined' ? document : null
@@ -21,7 +21,7 @@ const CSSProvider = ({
     children: React.ReactNode,
     config?: Config | Promise<any>,
     root?: Document | ShadowRoot | null
-}) => {
+}) {
     const existingCSS = instances.find((eachCSS) => eachCSS.root === root)
     const [css, setCSS] = useState<MasterCSS>(existingCSS)
     useIsomorphicEffect(() => {
@@ -41,4 +41,3 @@ const CSSProvider = ({
     }, [config, css, root])
     return <CSSContext.Provider value={css}>{children}</CSSContext.Provider>
 }
-export default CSSProvider

@@ -12,7 +12,7 @@ export function useTheme() {
     return useContext(ThemeContext)
 }
 
-export function ThemeProvider({
+export default function ThemeProvider({
     config,
     host,
     children
