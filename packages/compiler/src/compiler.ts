@@ -36,6 +36,12 @@ export class MasterCSSCompiler extends Techor<Options, Config> {
 
     private init(customOptions: Options = this.customOptions) {
         this.options = extend(techorOptions, defaultOptions, this.readOptions(), customOptions)
+        if (this.options.standalone) {
+            this.options.exclude.push(
+                '**/node_modules/**',
+                'node_modules'
+            )
+        }
         this.css = new MasterCSS({
             ...(typeof this.options.config === 'object' ? this.options.config : (this.readConfig() || {})),
             observe: false
@@ -230,11 +236,14 @@ export class MasterCSSCompiler extends Techor<Options, Config> {
     }
 
     get sources(): string[] {
-        const { include, exclude, sources, cwd } = this.options
-        const sourcePaths = fg.sync(include, {
-            cwd,
-            ignore: exclude
-        })
+        const { standalone, include, exclude, sources, cwd } = this.options
+        let sourcePaths = []
+        if (standalone) {
+            sourcePaths = fg.sync(include, {
+                cwd,
+                ignore: exclude
+            })
+        }
         if (sources?.length) {
             sourcePaths
                 .push(

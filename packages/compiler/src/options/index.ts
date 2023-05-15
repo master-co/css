@@ -3,6 +3,7 @@ import type { Pattern as FastGlobPattern } from 'fast-glob'
 import type { Options as TechorOptions } from 'techor'
 
 const options: Options = {
+    standalone: true,
     // specify config file path or set `Config`
     path: 'master.css-compiler.*',
     // specify virtual CSS module id (e.g. virtual:master.css)
@@ -15,11 +16,9 @@ const options: Options = {
     include: ['**/*.{html,js,jsx,ts,tsx,svelte,astro,vue,md,mdx,pug,php}'],
     // specify sources to exclude
     exclude: [
-        '**/node_modules/**',
         '**/*.d.ts',
         '**/*.test.*',
         '**/*.config.*',
-        'node_modules',
         'master.css.*',
         'dist',
         'out',
@@ -41,6 +40,7 @@ export declare type Source = {
 }
 
 export interface Options extends TechorOptions<Config> {
+    standalone?: boolean,
     output?: string,
     path?: string,
     module?: string,
