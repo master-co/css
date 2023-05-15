@@ -38,21 +38,20 @@
             "import": "./dist/esm/index.mjs",
             "types": "./dist/index.d.ts"
         },
-        "./CSSProvider": {
-            "require": "./dist/cjs/CSSProvider.js",
-            "import": "./dist/esm/CSSProvider.mjs",
-            "types": "./dist/CSSProvider.d.ts"
-        },
-        "./ThemeProvider": {
-            "require": "./dist/cjs/ThemeProvider.js",
-            "import": "./dist/esm/ThemeProvider.mjs",
-            "types": "./dist/ThemeProvider.d.ts"
+        "./*": {
+            "require": "./dist/cjs/*.js",
+            "import": "./dist/esm/*.mjs",
+            "types": "./dist/*.d.ts"
         }
     },
     "typesVersions": {
         "*": {
-          "CSSProvider": ["./dist/CSSProvider.d.ts"],
-          "ThemeProvider": ["./dist/ThemeProvider.d.ts"]
+            ".": [
+                "./dist/index.d.ts"
+            ],
+            "./*": [
+                "./dist/*.d.ts"
+            ]
         }
     },
     "files": [

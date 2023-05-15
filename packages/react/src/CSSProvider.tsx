@@ -13,7 +13,7 @@ export function useCSS() {
     return useContext(CSSContext)
 }
 
-export default function CSSProvider({
+export function CSSProvider({
     children,
     config,
     root = typeof document !== 'undefined' ? document : null
@@ -41,3 +41,5 @@ export default function CSSProvider({
     }, [config, css, root])
     return <CSSContext.Provider value={css}>{children}</CSSContext.Provider>
 }
+
+export default CSSProvider
