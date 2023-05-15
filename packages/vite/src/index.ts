@@ -5,7 +5,10 @@ import upath from 'upath'
 import log from '@techor/log'
 
 export async function MasterCSSVitePlugin(options?: Options): Promise<Plugin> {
-    const compiler = await new MasterCSSCompiler(options).compile()
+    const compiler = await new MasterCSSCompiler({
+        ...options,
+        standalone: false
+    }).compile()
     let server: ViteDevServer
     return {
         name: 'vite-plugin-master-css',
@@ -62,21 +65,25 @@ export async function MasterCSSVitePlugin(options?: Options): Promise<Plugin> {
             // server.watcher.add(supportsGlobs ? compiler.options.include : compiler.sources)
         },
         transform(code, id) {
-            if (server && code.includes(compiler.options.module)) {
-                return `${code}
-if (import.meta.hot) {
-    try {
-        import.meta.hot.on('${compiler.moduleHMREvent}', (text) => {
-            const virtualCSSStyle = document.querySelector(\`[data-vite-dev-id*="master.css"]\`)
-            if (virtualCSSStyle) {
-                virtualCSSStyle.textContent = text
-            }
-        })
-    } catch (err) {
-        console.warn('[Master CSS HMR]', err)
+            if (server) {
+                if (code.includes(compiler.options.module)) {
+                    return `${code}
+    if (import.meta.hot) {
+        try {
+            import.meta.hot.on('${compiler.moduleHMREvent}', (text) => {
+                const virtualCSSStyle = document.querySelector(\`[data-vite-dev-id*="master.css"]\`)
+                if (virtualCSSStyle) {
+                    virtualCSSStyle.textContent = text
+                }
+            })
+        } catch (err) {
+            console.warn('[Master CSS HMR]', err)
+        }
     }
-}
-                `
+                    `
+                }
+            } else {
+                compiler.insert(id, code)
             }
         },
 
