@@ -9,6 +9,7 @@ const NAME = 'MasterCSSWebpackPlugin'
 export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
 
     apply(compiler: Compiler) {
+        this.options.standalone = false
 
         let configPath = this.resolvedConfigPath
         if (configPath && path.sep === '\\') {
@@ -42,6 +43,13 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
             updateCSS()
         })
 
+        compiler.hooks.compilation.tap(NAME, async (compilation) => {
+            compilation.hooks.succeedModule.tap(NAME, (module) => {
+                const id = module.identifier()
+                this.insert(compilation.getModule(module)['resource'], compilation.getModule(module)['_source']['_value'])
+            })
+
+        })
         compiler.hooks.watchRun.tapPromise(NAME, async () => {
             const { modifiedFiles } = compiler
             if (modifiedFiles) {
