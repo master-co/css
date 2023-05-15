@@ -1030,6 +1030,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         unit: 'em'
     },
     userDrag: {
+        native: true,
         declare(value, unit) {
             return {
                 'user-drag': value + unit,
