@@ -1164,3 +1164,9 @@ export class MasterCSS {
 if (hasWindow) {
     window.MasterCSS = MasterCSS
 }
+
+declare global {
+    interface Window {
+        MasterCSS: typeof MasterCSS
+    }
+}

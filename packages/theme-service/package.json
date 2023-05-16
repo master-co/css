@@ -1,57 +1,49 @@
 {
-    "name": "@master/css.react",
+    "name": "theme-service",
     "scripts": {
         "build": "techor pack --shakable",
         "dev": "npm run build -- --watch",
+        "test": "jest",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
     },
     "license": "MIT",
-    "description": "Integration of Master CSS in React",
+    "description": "A CSS theme-switching service for Master CSS",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
-    "homepage": "https://css.master.co",
+    "homepage": "https://beta.css.master.co/docs/theme-service",
     "bugs": {
         "url": "https://github.com/master-co/css/issues"
     },
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/react"
+        "directory": "packages/theme-service"
     },
     "keywords": [
-        "react",
-        "hooks",
-        "use",
         "css",
+        "theme",
+        "theme-switching",
+        "prefers-color-scheme",
+        "dark mode",
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/cjs/index.js",
-    "jsnext:main": "./dist/esm/index.mjs",
-    "esnext": "./dist/esm/index.mjs",
-    "module": "./dist/esm/index.mjs",
+    "main": "./dist/index.js",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "browser": "./dist/index.browser.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
+            "browser": {
+                "import": "./dist/index.mjs",
+                "types": "./dist/index.browser.d.ts"
+            },
             "require": "./dist/cjs/index.js",
             "import": "./dist/esm/index.mjs",
             "types": "./dist/index.d.ts"
-        },
-        "./*": {
-            "require": "./dist/cjs/*.js",
-            "import": "./dist/esm/*.mjs",
-            "types": "./dist/*.d.ts"
-        }
-    },
-    "typesVersions": {
-        "*": {
-            ".": [
-                "./dist/index.d.ts"
-            ],
-            "./*": [
-                "./dist/*.d.ts"
-            ]
         }
     },
     "files": [
@@ -60,11 +52,7 @@
     "publishConfig": {
         "access": "public"
     },
-    "peerDependencies": {
-        "react": ">= 16.8.0"
-    },
-    "dependencies": {
-        "@master/css": "",
-        "theme-service": ""
+    "devDependencies": {
+        "@techor/extend": "^2.1.15"
     }
 }

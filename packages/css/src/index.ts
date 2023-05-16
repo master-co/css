@@ -1,9 +1,8 @@
 // core
-export * from './css'
+export * from './core'
 export * from './rule'
-export * from './theme'
 export * from './constants'
-export { MasterCSS as default } from './css'
+export { MasterCSS as default } from './core'
 
 // methods
 export { default as extend } from '@techor/extend'

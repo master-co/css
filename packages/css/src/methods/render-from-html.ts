@@ -1,4 +1,4 @@
-import { MasterCSS } from '../css'
+import { MasterCSS } from '../core'
 import type { Config } from '../config'
 import { extractClassesFromHTML } from './extract-classes-from-html'
 

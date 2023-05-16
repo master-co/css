@@ -1,22 +1,10 @@
 import { extend } from '@techor/extend'
-
-export declare interface ThemeSettings {
-    default?: ThemeValue
-    store?: string | false
-    init?: boolean
-}
-
-export const themeSettings: ThemeSettings = {
-    store: 'theme',
-    init: true
-}
-
-export declare type ThemeValue = 'dark' | 'light' | 'system' | string
+import defaultOptions, { Options, ThemeValue } from './options'
 
 const hasDocument = typeof document !== 'undefined'
 const hasLocalStorage = typeof localStorage !== 'undefined'
 
-export class Theme {
+export class ThemeService {
 
     // 按照系統的主題切換，目前只支援 light dark
     private _darkMQL: MediaQueryList = typeof matchMedia !== 'undefined' ? matchMedia?.('(prefers-color-scheme:dark)') : undefined
@@ -24,17 +12,17 @@ export class Theme {
     private _current: string
 
     constructor(
-        public settings?: ThemeSettings,
+        public options?: Options,
         public host = hasDocument ? document.documentElement : null
     ) {
-        this.settings = settings ? extend(themeSettings, settings) : themeSettings
-        if (this.settings.init) {
+        this.options = options ? extend(defaultOptions, options) : defaultOptions
+        if (this.options.init) {
             this.init()
         }
     }
 
     init() {
-        let value = this.settings.default
+        let value = this.options.default
         const storage = this.storage
         if (storage) {
             value = storage
@@ -43,7 +31,7 @@ export class Theme {
     }
 
     get storage() {
-        const { store } = this.settings
+        const { store } = this.options
         if (hasLocalStorage && store) {
             return localStorage.getItem(store)
         }
@@ -87,14 +75,14 @@ export class Theme {
         return this._current
     }
 
-    switch(value: ThemeValue, settings: { store?: boolean, emit?: boolean } = { store: true, emit: true }) {
+    switch(value: ThemeValue, options: { store?: boolean, emit?: boolean } = { store: true, emit: true }) {
         if (value && value !== this.value) {
             this.value = value
             // 儲存 theme 到 localStorage
-            if (hasLocalStorage && this.storage !== value && this.settings.store) {
-                localStorage.setItem(this.settings.store, value)
+            if (hasLocalStorage && this.storage !== value && this.options.store) {
+                localStorage.setItem(this.options.store, value)
             }
-            if (settings.emit) {
+            if (options.emit) {
                 this.host.dispatchEvent(new CustomEvent('theme', { detail: this }))
             }
         }
@@ -113,27 +101,8 @@ export class Theme {
     }
 }
 
-export function getDocThemeInitScript(settings?: ThemeSettings) {
-    settings = Object.assign({ store: 'theme' }, settings)
-    return `let e${settings.default ? `='${settings.default}'` : ''};const c=localStorage.getItem("${settings.store}");c&&(e=c);let t=e;e==="system"&&(t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");const s=document.documentElement;s.classList.add(t);s.style.colorScheme=t;`
+declare global {
+    interface Window {
+        ThemeService: typeof ThemeService
+    }
 }
-
-// 原始碼參考
-// export function getDocThemeInitScript(settings: ThemeSettings = { store: 'theme' }) {
-//     return `
-//         let value = ${settings.default};
-//         ${settings.store ? `
-//             const storage = localStorage.getItem('${settings.store}');
-//             if (storage) {
-//                 value = storage;
-//             }
-//         ` : ''}
-//         let current = value;
-//         if (value === 'system') {
-//             current = matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
-//         };
-//         const host = document.documentElement;
-//         host.classList.add(current);
-//         host.style.colorScheme = current;
-//     `
-// }

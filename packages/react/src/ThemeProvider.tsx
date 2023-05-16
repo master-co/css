@@ -1,55 +1,55 @@
 'use client'
 
-import { ThemeSettings, ThemeValue, Theme } from '@master/css'
+import { Options, ThemeValue, ThemeService } from 'theme-service'
 import { Context, createContext, DependencyList, EffectCallback, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 
 const useIsomorphicEffect: (effect: EffectCallback, deps?: DependencyList) => void =
     typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
-export const ThemeContext: Context<Theme> = createContext<Theme>(null)
+export const ThemeContext: Context<ThemeService> = createContext<ThemeService>(null)
 
 export function useTheme() {
     return useContext(ThemeContext)
 }
 
 export function ThemeProvider({
-    config,
+    options,
     host,
     children
 }: {
     host?: HTMLElement,
-    config?: ThemeSettings,
+    options?: Options,
     children: JSX.Element,
 }) {
-    const theme = useMemo(() => new Theme({ ...config, init: false }, host), [config, host])
+    const themeService = useMemo(() => new ThemeService({ ...options, init: false }, host), [options, host])
     // Make React hook theme members
-    const [current, setCurrent] = useState<string>(theme.current)
-    const [value, setValue] = useState<ThemeValue>(theme.value)
+    const [current, setCurrent] = useState<string>(themeService.current)
+    const [value, setValue] = useState<ThemeValue>(themeService.value)
     const switchValue = useCallback((value: ThemeValue, options?: {
         store?: boolean;
         emit?: boolean;
     }) => {
-        theme.switch(value, options)
-        setCurrent(theme.current)
-        setValue(theme.value)
-    }, [theme])
+        themeService.switch(value, options)
+        setCurrent(themeService.current)
+        setValue(themeService.value)
+    }, [themeService])
 
     const onThemeChange = useCallback(() => {
-        setCurrent(theme.current)
-        setValue(theme.value)
-    }, [theme])
+        setCurrent(themeService.current)
+        setValue(themeService.value)
+    }, [themeService])
 
     useIsomorphicEffect(() => {
-        theme.init()
-        setCurrent(theme.current)
-        setValue(theme.value)
-        theme.host.addEventListener('theme', onThemeChange)
+        themeService.init()
+        setCurrent(themeService.current)
+        setValue(themeService.value)
+        themeService.host.addEventListener('theme', onThemeChange)
         return () => {
-            theme.host.removeEventListener('theme', onThemeChange)
+            themeService.host.removeEventListener('theme', onThemeChange)
         }
-    }, [onThemeChange, theme])
+    }, [onThemeChange, themeService])
 
-    return <ThemeContext.Provider value={{ ...theme, value, current, switch: switchValue } as Theme}>{children}</ThemeContext.Provider>
+    return <ThemeContext.Provider value={{ ...themeService, value, current, switch: switchValue } as ThemeService}>{children}</ThemeContext.Provider>
 }
 
 export default ThemeProvider
