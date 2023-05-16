@@ -1,5 +1,5 @@
 import type { Values } from './config'
-import type { MasterCSS } from './css'
+import type { MasterCSS } from './core'
 import { START_SYMBOLS } from './constants/start-symbol'
 import { cssEscape } from './utils/css-escape'
 import { extend } from '@techor/extend'
@@ -516,8 +516,8 @@ export class Rule {
                             ? themeDriver === 'host'
                                 ? `:host(.${theme}) `
                                 : `.${theme} `
-                            : '') 
-                            + (scope ? scope + ' ' : '') 
+                            : '')
+                            + (scope ? scope + ' ' : '')
                             + eachPrefixText)
                         .reduce((arr, eachPrefixText) => {
                             arr.push(
