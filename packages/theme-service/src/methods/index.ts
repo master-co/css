@@ -1,0 +1,1 @@
+export * from './generate-document-init-script'
