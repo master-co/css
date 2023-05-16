@@ -3,8 +3,8 @@ import { render } from '@master/css'
 import { css_beautify } from 'js-beautify'
 import { getCssEntryMarkdownDescription } from '../utils/get-css-entry-markdown-description'
 import { masterCssKeyValues } from '../constant'
-import { cssData } from 'vscode-css-languageservice/lib/umd/data/webCustomData'
-import { CSSDataProvider } from 'vscode-css-languageservice/lib/umd/languageFacts/dataProvider'
+import { cssData } from 'vscode-css-languageservice/lib/esm/data/webCustomData'
+import { CSSDataProvider } from 'vscode-css-languageservice/lib/esm/languageFacts/dataProvider'
 
 export function doHover(instance: string, range: Range, config?: any): Hover | null {
 

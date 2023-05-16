@@ -11,8 +11,8 @@ import {
 import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver-types'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import { MasterCSS } from '@master/css'
-import { cssData } from 'vscode-css-languageservice/lib/umd/data/webCustomData'
-import { CSSDataProvider } from 'vscode-css-languageservice/lib/umd/languageFacts/dataProvider'
+import { cssData } from 'vscode-css-languageservice/lib/esm/data/webCustomData'
+import { CSSDataProvider } from 'vscode-css-languageservice/lib/esm/languageFacts/dataProvider'
 
 let cssKeys: Array<string | CompletionItem> = []
 cssKeys = cssKeys.concat(masterCssOtherKeys)

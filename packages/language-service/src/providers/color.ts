@@ -1,8 +1,4 @@
-import type {
-    Color,
-    ColorPresentation
-} from 'vscode-languageserver-types'
-
+import type { Color, ColorPresentation } from 'vscode-languageserver-types'
 import { MasterCSS } from '@master/css'
 import { hexToRgb } from '../utils/hex-to-rgb'
 import { instancePattern } from '../utils/regex'
