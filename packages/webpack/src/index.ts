@@ -45,8 +45,7 @@ export class MasterCSSWebpackPlugin extends MasterCSSCompiler {
 
         compiler.hooks.compilation.tap(NAME, async (compilation) => {
             compilation.hooks.succeedModule.tap(NAME, (module) => {
-                const id = module.identifier()
-                this.insert(compilation.getModule(module)['resource'], compilation.getModule(module)['_source']['_value'])
+                this.insert(compilation.getModule(module)['resource'], compilation.getModule(module)['_source']?.['_value'])
             })
 
         })
