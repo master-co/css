@@ -44,9 +44,9 @@ export function ThemeServiceProvider({
         themeService.init()
         setCurrent(themeService.current)
         setValue(themeService.value)
-        themeService.host.addEventListener('theme', onThemeChange)
+        themeService.host.addEventListener('themeChange', onThemeChange)
         return () => {
-            themeService.host.removeEventListener('theme', onThemeChange)
+            themeService.host.removeEventListener('themeChange', onThemeChange)
             themeService.destroy()
         }
     }, [onThemeChange, themeService])

@@ -7,6 +7,7 @@ export class ThemeService {
     private _darkMQL: MediaQueryList = typeof window !== 'undefined' ? matchMedia?.('(prefers-color-scheme:dark)') : undefined
     private _value: ThemeValue
     private _current: string
+    public initialized = false
 
     constructor(
         public options?: Options,
@@ -25,6 +26,7 @@ export class ThemeService {
             value = storage
         }
         this.value = value
+        this.initialized = true
     }
 
     get storage() {
@@ -39,13 +41,16 @@ export class ThemeService {
     }
 
     set value(value: ThemeValue) {
-        this._value = value
         if (value === 'system') {
             this._darkMQL?.addEventListener?.('change', this._onThemeChange)
             this.current = this.systemCurrent
         } else {
             this._removeDarkMQLListener()
             this.current = value
+        }
+        if (value !== this._value) {
+            this.host.dispatchEvent(new CustomEvent('themeChange', { detail: this }))
+            this._value = value
         }
     }
 
@@ -73,15 +78,12 @@ export class ThemeService {
         return this._current
     }
 
-    switch(value: ThemeValue, options: { store?: boolean, emit?: boolean } = { store: true, emit: true }) {
+    switch(value: ThemeValue) {
         if (value && value !== this.value) {
             this.value = value
             // 儲存 theme 到 localStorage
             if (typeof localStorage !== 'undefined' && this.storage !== value && this.options.store) {
                 localStorage.setItem(this.options.store, value)
-            }
-            if (options.emit) {
-                this.host.dispatchEvent(new CustomEvent('theme', { detail: this }))
             }
         }
     }
@@ -103,6 +105,7 @@ export class ThemeService {
         if (typeof localStorage !== 'undefined' && this.options.store) {
             localStorage.removeItem(this.options.store)
         }
+        this.initialized = false
     }
 }
 
