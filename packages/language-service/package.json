@@ -15,13 +15,10 @@
     "dependencies": {
         "@master/css": "",
         "@master/css-compiler": "",
-        "file-uri-to-path": "^2.0.0",
-        "js-beautify": "^1.14.7",
-        "minimatch": "^5.1.2",
-        "pascal-case": "^3.1.2",
-        "vscode-css-languageservice": "^6.2.3"
+        "js-beautify": "^1.14.7"
     },
     "devDependencies": {
+        "vscode-css-languageservice": "^6.2.5",
         "vscode-languageserver-types": "^3.17.3"
     },
     "main": "./dist/index.js",
