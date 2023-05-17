@@ -49,8 +49,11 @@
             ".": [
                 "./dist/index.d.ts"
             ],
-            "./*": [
-                "./dist/*.d.ts"
+            "CSSProvider": [
+                "./dist/CSSProvider.d.ts"
+            ],
+            "ThemeProvider": [
+                "./dist/ThemeProvider.d.ts"
             ]
         }
     },
