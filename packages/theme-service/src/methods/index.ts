@@ -1,1 +1,1 @@
-export * from './generate-document-init-script'
+export * from './get-pre-init-script'

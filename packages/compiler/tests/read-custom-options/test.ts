@@ -6,12 +6,14 @@ test('read custom options', async () => {
     fs.writeFileSync(path.join(__dirname, 'master.css-compiler.js'), `
         module.exports = {
             module: 'virtual:master.css',
+            standalone: false
         }
     `)
     const compiler = new MasterCSSCompiler({ cwd: __dirname })
     expect(compiler.options)
         .toEqual({
             ...options,
+            standalone: false,
             cwd: __dirname,
             module: 'virtual:master.css'
         })

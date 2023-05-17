@@ -4,7 +4,7 @@ export declare interface Options {
     init?: boolean
 }
 
-const options: Options = {
+export const options: Options = {
     store: 'theme',
     init: true
 }

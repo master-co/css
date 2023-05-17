@@ -3,11 +3,11 @@ import reactLogo from './assets/react.svg'
 import masterLogo from './assets/master.svg'
 import './App.css'
 import ThemeSelect from './components/ThemeSelect'
-import { useTheme } from '@master/css.react'
+import { useThemeService } from '@master/css.react'
 
 function App() {
     const [count, setCount] = useState(0)
-    const theme = useTheme()
+    const theme = useThemeService()
 
     return (
         <div className="App">
