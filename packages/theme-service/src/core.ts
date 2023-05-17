@@ -1,19 +1,16 @@
 import { extend } from '@techor/extend'
 import defaultOptions, { Options, ThemeValue } from './options'
 
-const hasDocument = typeof document !== 'undefined'
-const hasLocalStorage = typeof localStorage !== 'undefined'
-
 export class ThemeService {
 
     // 按照系統的主題切換，目前只支援 light dark
-    private _darkMQL: MediaQueryList = typeof matchMedia !== 'undefined' ? matchMedia?.('(prefers-color-scheme:dark)') : undefined
+    private _darkMQL: MediaQueryList = typeof window !== 'undefined' ? matchMedia?.('(prefers-color-scheme:dark)') : undefined
     private _value: ThemeValue
     private _current: string
 
     constructor(
         public options?: Options,
-        public host = hasDocument ? document.documentElement : null
+        public host = typeof document !== 'undefined' ? document.documentElement : null
     ) {
         this.options = options ? extend(defaultOptions, options) : defaultOptions
         if (this.options.init) {
@@ -32,12 +29,12 @@ export class ThemeService {
 
     get storage() {
         const { store } = this.options
-        if (hasLocalStorage && store) {
+        if (typeof localStorage !== 'undefined' && store) {
             return localStorage.getItem(store)
         }
     }
 
-    get systemValue(): string {
+    get systemCurrent(): string {
         return this._darkMQL.matches ? 'dark' : 'light'
     }
 
@@ -45,7 +42,7 @@ export class ThemeService {
         this._value = value
         if (value === 'system') {
             this._darkMQL?.addEventListener?.('change', this._onThemeChange)
-            this.current = this.systemValue
+            this.current = this.systemCurrent
         } else {
             this._removeDarkMQLListener()
             this.current = value
@@ -65,7 +62,8 @@ export class ThemeService {
             if (current && !this.host.classList.contains(current)) {
                 this.host.classList.add(current)
                 if ((this.host as any).style) {
-                    (this.host as any).style.colorScheme = current
+                    (this.host as any).style.colorScheme =
+                        (current === 'dark' || current === 'light') ? current : null
                 }
             }
         }
@@ -79,7 +77,7 @@ export class ThemeService {
         if (value && value !== this.value) {
             this.value = value
             // 儲存 theme 到 localStorage
-            if (hasLocalStorage && this.storage !== value && this.options.store) {
+            if (typeof localStorage !== 'undefined' && this.storage !== value && this.options.store) {
                 localStorage.setItem(this.options.store, value)
             }
             if (options.emit) {
@@ -98,6 +96,13 @@ export class ThemeService {
 
     destroy() {
         this._removeDarkMQLListener()
+        if (this.host) {
+            this.host.style.colorScheme = null
+            this.host.classList.remove(this.current)
+        }
+        if (typeof localStorage !== 'undefined' && this.options.store) {
+            localStorage.removeItem(this.options.store)
+        }
     }
 }
 
