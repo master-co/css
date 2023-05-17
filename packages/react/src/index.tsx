@@ -1,2 +1,2 @@
 export * from './CSSProvider'
-export * from './ThemeProvider'
+export * from './ThemeServiceProvider'

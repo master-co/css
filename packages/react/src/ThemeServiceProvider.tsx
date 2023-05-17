@@ -6,13 +6,13 @@ import { Context, createContext, DependencyList, EffectCallback, useCallback, us
 const useIsomorphicEffect: (effect: EffectCallback, deps?: DependencyList) => void =
     typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
-export const ThemeContext: Context<ThemeService> = createContext<ThemeService>(null)
+export const ThemeServiceContext: Context<ThemeService> = createContext<ThemeService>(null)
 
-export function useTheme() {
-    return useContext(ThemeContext)
+export function useThemeService() {
+    return useContext(ThemeServiceContext)
 }
 
-export function ThemeProvider({
+export function ThemeServiceProvider({
     options,
     host,
     children
@@ -25,6 +25,7 @@ export function ThemeProvider({
     // Make React hook theme members
     const [current, setCurrent] = useState<string>(themeService.current)
     const [value, setValue] = useState<ThemeValue>(themeService.value)
+
     const switchValue = useCallback((value: ThemeValue, options?: {
         store?: boolean;
         emit?: boolean;
@@ -43,13 +44,12 @@ export function ThemeProvider({
         themeService.init()
         setCurrent(themeService.current)
         setValue(themeService.value)
-        themeService.host.addEventListener('theme', onThemeChange)
         return () => {
-            themeService.host.removeEventListener('theme', onThemeChange)
+            themeService.destroy()
         }
     }, [onThemeChange, themeService])
 
-    return <ThemeContext.Provider value={{ ...themeService, value, current, switch: switchValue } as ThemeService}>{children}</ThemeContext.Provider>
+    return <ThemeServiceContext.Provider value={{ ...themeService, value, current, switch: switchValue } as ThemeService}>{children}</ThemeServiceContext.Provider>
 }
 
-export default ThemeProvider
+export default ThemeServiceProvider

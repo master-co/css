@@ -52,8 +52,8 @@
             "CSSProvider": [
                 "./dist/CSSProvider.d.ts"
             ],
-            "ThemeProvider": [
-                "./dist/ThemeProvider.d.ts"
+            "ThemeServiceProvider": [
+                "./dist/ThemeServiceProvider.d.ts"
             ]
         }
     },
