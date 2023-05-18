@@ -105,6 +105,8 @@ export class ThemeService {
         if (typeof localStorage !== 'undefined' && this.options.store) {
             localStorage.removeItem(this.options.store)
         }
+        this._current = null
+        this._value = null
         this.initialized = false
     }
 }
