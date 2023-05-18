@@ -30,7 +30,7 @@ export function ThemeServiceProvider({
         store?: boolean;
         emit?: boolean;
     }) => {
-        themeService.switch(value, options)
+        themeService.switch(value)
         setCurrent(themeService.current)
         setValue(themeService.value)
     }, [themeService])
