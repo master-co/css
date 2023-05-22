@@ -5,6 +5,6 @@ import { MasterCSSVitePlugin } from '@master/css.vite'
 export default defineConfig({
 	plugins: [
         sveltekit(),
-        MasterCSSVitePlugin()
+        MasterCSSVitePlugin({ sources: ['./src/app.html'] })
     ]
 })
