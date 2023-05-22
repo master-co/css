@@ -65,25 +65,24 @@ export async function MasterCSSVitePlugin(options?: Options): Promise<Plugin> {
             // server.watcher.add(supportsGlobs ? compiler.options.include : compiler.sources)
         },
         transform(code, id) {
+            compiler.insert(id, code)
             if (server) {
                 if (code.includes(compiler.options.module)) {
                     return `${code}
-    if (import.meta.hot) {
-        try {
-            import.meta.hot.on('${compiler.moduleHMREvent}', (text) => {
-                const virtualCSSStyle = document.querySelector(\`[data-vite-dev-id*="master.css"]\`)
-                if (virtualCSSStyle) {
-                    virtualCSSStyle.textContent = text
-                }
-            })
-        } catch (err) {
-            console.warn('[Master CSS HMR]', err)
-        }
-    }
+                        if (import.meta.hot) {
+                            try {
+                                import.meta.hot.on('${compiler.moduleHMREvent}', (text) => {
+                                    const virtualCSSStyle = document.querySelector(\`[data-vite-dev-id*="master.css"]\`)
+                                    if (virtualCSSStyle) {
+                                        virtualCSSStyle.textContent = text
+                                    }
+                                })
+                            } catch (err) {
+                                console.warn('[Master CSS HMR]', err)
+                            }
+                        }
                     `
                 }
-            } else {
-                compiler.insert(id, code)
             }
         },
 
