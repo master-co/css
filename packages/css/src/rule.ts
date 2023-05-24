@@ -392,10 +392,10 @@ export class Rule {
 
                     const leftBracketIndex = atToken.indexOf('(')
                     if (leftBracketIndex !== -1) {
-                        type = atToken.slice(0, leftBracketIndex)
+                        type = atToken.slice(0, leftBracketIndex).replace(/\|/g, ' ')
                         queryText = atToken.slice(leftBracketIndex)
                     } else {
-                        const underscoreIndex = atToken.indexOf('_')
+                        const underscoreIndex = atToken.indexOf('|')
                         if (underscoreIndex !== -1) {
                             type = atToken.slice(0, underscoreIndex)
                             queryText = atToken.slice(underscoreIndex)
@@ -489,7 +489,7 @@ export class Rule {
                         this.at[type] = (type in this.at
                             ? this.at[type] + ' and '
                             : '')
-                            + queryText.replace(/[_|]/g, ' ')
+                            + queryText.replace(/\|/g, ' ')
                     }
                 }
             }
@@ -547,7 +547,7 @@ export class Rule {
                     + '}'
 
                 for (const key of Object.keys(this.at).sort((a, b) => b === 'supports' ? -1 : 1)) {
-                    cssText = '@' + key + ' ' + this.at[key] + '{' + cssText + '}'
+                    cssText = '@' + key + (key.includes(' ') ? '' : ' ') + this.at[key] + '{' + cssText + '}'
                 }
 
                 if (theme && themeDriver === 'media') {
