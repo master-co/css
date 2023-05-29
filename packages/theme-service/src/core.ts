@@ -96,13 +96,13 @@ export class ThemeService {
         this.current = mediaQueryList.matches ? 'dark' : 'light'
     }
 
-    destroy() {
+    destroy(complete = true) {
         this._removeDarkMQLListener()
         if (this.host) {
             this.host.style.colorScheme = null
             this.host.classList.remove(this.current)
         }
-        if (typeof localStorage !== 'undefined' && this.options.store) {
+        if (complete && typeof localStorage !== 'undefined' && this.options.store) {
             localStorage.removeItem(this.options.store)
         }
         this._current = null
