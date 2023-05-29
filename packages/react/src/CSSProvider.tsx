@@ -25,20 +25,22 @@ export function CSSProvider({
     const existingCSS = instances.find((eachCSS) => eachCSS.root === root)
     const [css, setCSS] = useState<MasterCSS>(existingCSS)
     useIsomorphicEffect(() => {
+        let newCSS: MasterCSS
         if (!css) {
             (async () => {
                 const configModule = await config
                 const resolvedConfig = configModule?.config || configModule?.default || configModule
-                setCSS(new MasterCSS(resolvedConfig))
+                newCSS = new MasterCSS(resolvedConfig)
+                setCSS(newCSS)
             })()
         } else if (!css.observing) {
             css.observe(root)
         }
 
         return () => {
-            css?.disconnect()
+            newCSS?.destroy()
         }
-    }, [config, css, root])
+    }, [config, root])
     return <CSSContext.Provider value={css}>{children}</CSSContext.Provider>
 }
 
