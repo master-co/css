@@ -6,7 +6,6 @@
         "start": "ng serve",
         "build": "ng build",
         "watch": "ng build --watch --configuration development",
-        "test": "ng test",
         "dev:ssr": "ng run angular-with-progressive-rendering:serve-ssr",
         "serve:ssr": "node dist/angular-with-progressive-rendering/server/main.js",
         "build:ssr": "ng build && ng run angular-with-progressive-rendering:server",
