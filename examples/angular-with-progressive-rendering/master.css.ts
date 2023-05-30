@@ -1,5 +1,5 @@
-import { Config } from '@master/css'
-const config: Config = {
+/** @type {import('@master/css').Config} */
+export default {
     classes: {},
     colors: {},
     themes: {},
@@ -12,5 +12,3 @@ const config: Config = {
     selectors: {},
     functions: {}
 }
-
-export default config
