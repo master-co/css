@@ -4,7 +4,7 @@ import defaultOptions, { Options, ThemeValue } from './options'
 export class ThemeService {
 
     // 按照系統的主題切換，目前只支援 light dark
-    private _darkMQL: MediaQueryList = typeof window !== 'undefined' ? matchMedia?.('(prefers-color-scheme:dark)') : undefined
+    private _darkMQL: MediaQueryList = typeof matchMedia !== 'undefined' ? matchMedia?.('(prefers-color-scheme:dark)') : undefined
     private _value: ThemeValue
     private _current: string
     public initialized = false
