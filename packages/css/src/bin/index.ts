@@ -4,7 +4,7 @@ import { program } from 'commander'
 import path from 'path'
 import chokidar from 'chokidar'
 import fs from 'fs'
-import { CONFIG_TS_TEXT, CONFIG_ESM_TEXT, CONFIG_TEXT } from '../constants'
+import { CONFIG_ESM_TEXT, CONFIG_TEXT } from '../constants'
 import log from '@techor/log'
 import { readFileAsJSON } from '@techor/fs'
 import fg from 'fast-glob'
@@ -46,7 +46,7 @@ program.command('init')
                 create('master.css.mjs', CONFIG_ESM_TEXT)
                 break
             case 'ts':
-                create('master.css.ts', CONFIG_TS_TEXT)
+                create('master.css.ts', CONFIG_ESM_TEXT)
                 break
             default:
                 create('master.css.js', CONFIG_TEXT)
