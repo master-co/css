@@ -1179,7 +1179,11 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
     },
     animationDirection: {
         match: '^@direction:.',
-        native: true
+        native: true,
+        values: {
+            alt: 'alternate',
+            'alt-reverse': 'alternate-reverse'
+        }
     },
     animationDuration: {
         match: '^@duration:.',
