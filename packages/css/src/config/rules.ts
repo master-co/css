@@ -1179,7 +1179,11 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
     },
     animationDirection: {
         match: '^@direction:.',
-        native: true
+        native: true,
+        values: {
+            alt: 'alternate',
+            'alt-reverse': 'alternate-reverse'
+        }
     },
     animationDuration: {
         match: '^@duration:.',
@@ -1187,11 +1191,11 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         unit: 'ms'
     },
     animationFillMode: {
-        match: '^@fill-mode:.',
+        match: '^@fill:.',
         native: true
     },
     animationIterationCount: {
-        match: '^@iteration-count:.',
+        match: '^@iteration:.',
         native: true
     },
     animationName: {
@@ -1208,7 +1212,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         }
     },
     animationPlayState: {
-        match: '^@play-state:.',
+        match: '^@play:.',
         native: true
     },
     animationTimingFunction: {
