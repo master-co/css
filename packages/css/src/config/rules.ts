@@ -1195,7 +1195,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         native: true
     },
     animationIterationCount: {
-        match: '^@iteration-count:.',
+        match: '^@iteration:.',
         native: true
     },
     animationName: {
