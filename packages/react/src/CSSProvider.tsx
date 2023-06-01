@@ -22,17 +22,27 @@ export function CSSProvider({
     config?: Config | Promise<any>,
     root?: Document | ShadowRoot | null
 }) {
-    const existingCSS = instances.find((eachCSS) => eachCSS.root === root)
-    const [css, setCSS] = useState<MasterCSS>(existingCSS)
+    const [css, setCSS] = useState<MasterCSS>(instances.find((eachCSS) => eachCSS.root === root))
     useIsomorphicEffect(() => {
         let newCSS: MasterCSS
         if (!css) {
-            (async () => {
-                const configModule = await config
-                const resolvedConfig = configModule?.config || configModule?.default || configModule
-                newCSS = new MasterCSS(resolvedConfig)
-                setCSS(newCSS)
-            })()
+            const init = (resolvedConfig: Config) => {
+                const existingCSS = instances.find((eachCSS) => eachCSS.root === root)
+                if (existingCSS) {
+                    setCSS(existingCSS)
+                } else {
+                    newCSS = new MasterCSS(resolvedConfig)
+                    setCSS(newCSS)
+                }
+            }
+            if (config instanceof Promise) {
+                (async () => {
+                    const configModule = await config
+                    init(configModule?.config || configModule?.default || configModule)
+                })()
+            } else {
+                init(config)
+            }
         } else if (!css.observing) {
             css.observe(root)
         }
