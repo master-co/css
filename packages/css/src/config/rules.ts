@@ -1208,7 +1208,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         }
     },
     animationPlayState: {
-        match: '^@play-state:.',
+        match: '^@play:.',
         native: true
     },
     animationTimingFunction: {
