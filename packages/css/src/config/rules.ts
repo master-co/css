@@ -1191,7 +1191,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         unit: 'ms'
     },
     animationFillMode: {
-        match: '^@fill-mode:.',
+        match: '^@fill:.',
         native: true
     },
     animationIterationCount: {
