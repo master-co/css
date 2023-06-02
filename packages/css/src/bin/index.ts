@@ -11,6 +11,8 @@ import fg from 'fast-glob'
 import { renderIntoHTML } from '../methods/render-into-html'
 import { renderFromHTML } from '../methods/render-from-html'
 import Techor from 'techor'
+import zlib from 'zlib'
+import prettyBytes from 'pretty-bytes'
 
 program.command('init')
     .description('Initialize definition files for Master CSS')
@@ -146,21 +148,21 @@ program.command('build', { isDefault: true })
     })
 
 program.command('render')
-    .description('Manual to generate CSS rules')
-    .argument('<file path>', 'file path')
-    .option('-c --config')
-    .action(async function (path, options) {
-        const sourcePaths = fg.sync(path)
+    .description('Scans HTML and injects generated CSS rules')
+    .argument('<file paths>', 'The path in glob patterns of the source of the HTML file')
+    .option('-c --config', 'The source path of the Master CSS configuration', 'master.css.*')
+    .action(async function (filePatterns, options) {
+        const sourcePaths = fg.sync(filePatterns)
         if (sourcePaths.length) {
             const techor = new Techor({ config: options.config })
             const config = techor.readConfig()
-
+            const t1 = performance.now()
             await Promise.all(sourcePaths
                 .map(async (eachSourcePath) => {
                     let styleExisted = false
                     const content = fs.readFileSync(eachSourcePath, { encoding: 'utf-8' })
                     let renderedContent = content.replace(
-                        /(<style id="master">).*?(<\/style>)/, 
+                        /(<style id="master">).*?(<\/style>)/,
                         (_, prefix, suffix) => {
                             styleExisted = true
                             return prefix + renderFromHTML(content, config) + suffix
@@ -169,11 +171,16 @@ program.command('render')
                     if (!styleExisted) {
                         renderedContent = renderIntoHTML(content, config)
                     }
-    
                     if (content !== renderedContent) {
                         fs.writeFileSync(eachSourcePath, renderedContent)
                     }
+                    const unrenderedContent = renderedContent.replace(/<style id="master">.*?<\/style>/, '')
+                    const renderedSize = zlib.brotliCompressSync(renderedContent).length
+                    const originSize = zlib.brotliCompressSync(unrenderedContent).length
+                    log.ok`**${eachSourcePath}** is rendered ${prettyBytes(renderedSize, { space: false })} = HTML ${prettyBytes(originSize, { space: false })} + CSS ${prettyBytes(renderedSize - originSize, { space: false })} (brotil)`
                 }))
+
+            log.success`**${sourcePaths.length}** files rendered in ${Math.round(performance.now() - t1)}ms`
         }
     })
 
