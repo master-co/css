@@ -376,19 +376,19 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
                 }
             })(undefined)
             addName()
-
+            
             for (const eachName of names) {
                 const result = this.css.create(eachName)
                 if (Array.isArray(result)) {
-                    for (const eachRule of result) {
-                        handleRule(eachRule)
-                    }
-                } else {
-                    if (result) {
-                        handleRule(result)
+                    if (result.length) {
+                        for (const eachRule of result) {
+                            handleRule(eachRule)
+                        }
                     } else {
                         addProp(this.theme ?? '', eachName)
                     }
+                } else {
+                    handleRule(result)
                 }
             }
 
