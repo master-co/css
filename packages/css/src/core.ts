@@ -671,7 +671,7 @@ export class MasterCSS {
         for (const id in this.config.rules) {
             const eachRuleConfig = this.config.rules[id]
             const match = this.matches[id]
-            const { symbol, native } = eachRuleConfig
+            const { native } = eachRuleConfig
             /**
              * STEP 1. matches
              */
@@ -679,13 +679,7 @@ export class MasterCSS {
                 return { origin: 'match', config: eachRuleConfig }
             }
             /**
-             * STEP 2. symbol
-             */
-            if (symbol && className.startsWith(symbol)) {
-                return { origin: 'symbol', config: eachRuleConfig }
-            }
-            /**
-             * STEP 3. key full className
+             * STEP 2. key full className
              */
             if (native && className.startsWith(native + ':')) {
                 return { origin: 'match', config: eachRuleConfig }
