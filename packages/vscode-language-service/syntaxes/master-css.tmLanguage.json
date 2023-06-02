@@ -134,7 +134,7 @@
                     }
                 },
                 {
-                    "match": "([^\\s;\\:\\|,@\"'`\\)]+)(\\()",
+                    "match": "(?<![^\\s]+@[^\\s]+)([^\\s;\\:\\|,@\"'`\\)]+)(\\()",
                     "captures": {
                         "1": {
                             "name": "support.function.misc.css"
@@ -392,10 +392,10 @@
         "master-css-media": {
             "patterns": [
                 {
-                    "match": "(?<!(?:\\s+)|(?:\\=[\"'`]))(@[^\\s;\"`'\\(]+)(?:(\\()([^\\s:\\)]+)(:)(\\d+)?(\\%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?([^\\s\\)]+)?(\\)))?",
+                    "match": "(?<!(?:\\s+)|(?:\\=[\"'`]))(@[^\\s;\"`'\\(|]+)(?:(\\()([^\\s:\\)]+)(:)(\\d+)?(\\%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?([^\\s\\)]+)?(\\)))?",
                     "captures": {
                         "1": {
-                            "name": "constant.character.escape"
+                            "name": "keyword.control.at-rule"
                         },
                         "2": {
                             "name": "variable punctuation.definition.parameters.begin.bracket.round.css"
@@ -417,6 +417,73 @@
                         },
                         "8": {
                             "name": "variable punctuation.definition.parameters.end.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<!(?:\\s+)|(?:\\=[\"'`]))(@)",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.at-rule"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[^\\s]+@)(charset|color\\-profile|container|counter\\-style|document|font\\-face|font\\-feature\\-values|font\\-palette\\-values|import|keyframes|layer|media|namespace|page|property|supports)",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.at-rule"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[^\\s]+@supports[^\\s])(selector|font\\-format)",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.at-rule"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[^\\s]+@(?:charset|color\\-profile|container|counter\\-style|document|font\\-face|font\\-feature\\-values|font\\-palette\\-values|import|keyframes|layer|media|namespace|page|property|supports)[^\\s]*)(\\|)",
+                    "captures": {
+                        "1": {
+                            "name": "comment.block"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[^\\s]+@(?:charset|color\\-profile|container|counter\\-style|document|font\\-face|font\\-feature\\-values|font\\-palette\\-values|import|keyframes|layer|media|namespace|page|property|supports)[^\\s]*)(not|and|or)",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.operator.logical.feature"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[^\\s]+@(?:charset|color\\-profile|container|counter\\-style|document|font\\-face|font\\-feature\\-values|font\\-palette\\-values|import|keyframes|layer|media|namespace|page|property|supports)[^\\s]*)(\\()",
+                    "captures": {
+                        "1": {
+                            "name": "variable punctuation.definition.parameters.begin.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[^\\s]+@(?:charset|color\\-profile|container|counter\\-style|document|font\\-face|font\\-feature\\-values|font\\-palette\\-values|import|keyframes|layer|media|namespace|page|property|supports)[^\\s]*)(\\))",
+                    "captures": {
+                        "1": {
+                            "name": "variable punctuation.definition.parameters.end.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[^\\s]+@(?:charset|color\\-profile|container|counter\\-style|document|font\\-face|font\\-feature\\-values|font\\-palette\\-values|import|keyframes|layer|media|namespace|page|property|supports)[^\\s]*)([^\\s():]+)(:)",
+                    "captures": {
+                        "1": {
+                            "name": "support.type.property-name"
+                        },
+                        "2": {
+                            "name": "punctuation.separator.key-value"
                         }
                     }
                 }
