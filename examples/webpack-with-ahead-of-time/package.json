@@ -1,0 +1,25 @@
+{
+    "name": "webpack-with-ahead-of-time",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "npm run preview",
+        "build": "webpack --mode=production --node-env=production",
+        "serve": "webpack serve --mode=development",
+        "preview": "webpack serve --mode=production"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@master/css.webpack": "^2.0.0-beta.159",
+        "html-webpack-plugin": "^5.5.1",
+        "webpack": "^5.85.0",
+        "webpack-cli": "^5.1.1",
+        "webpack-dev-server": "^4.15.0",
+        "css-loader": "^6.8.1",
+        "style-loader": "^3.3.3",
+        "ts-loader": "^9.4.3"
+    }
+}

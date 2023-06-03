@@ -1,0 +1,17 @@
+{
+  "name": "vite-with-just-in-time",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^4.3.9"
+  },
+  "dependencies": {
+    "@master/css": "^2.0.0-beta.159"
+  }
+}
