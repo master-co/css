@@ -7,7 +7,7 @@ const { instances } = MasterCSS
 
 const useIsomorphicEffect: (effect: EffectCallback, deps?: DependencyList) => void =
     typeof window !== 'undefined' ? useLayoutEffect : useEffect
-export const CSSContext: Context<MasterCSS> = createContext<MasterCSS>(null)
+export const CSSContext = createContext<MasterCSS | undefined>(undefined)
 
 export function useCSS() {
     return useContext(CSSContext)
@@ -22,11 +22,11 @@ export function CSSProvider({
     config?: Config | Promise<any>,
     root?: Document | ShadowRoot | null
 }) {
-    const [css, setCSS] = useState<MasterCSS>(instances.find((eachCSS) => eachCSS.root === root))
+    const [css, setCSS] = useState<MasterCSS | undefined>(instances.find((eachCSS) => eachCSS.root === root))
     useIsomorphicEffect(() => {
         let newCSS: MasterCSS
         if (!css) {
-            const init = (resolvedConfig: Config) => {
+            const init = (resolvedConfig?: Config) => {
                 const existingCSS = instances.find((eachCSS) => eachCSS.root === root)
                 if (existingCSS) {
                     setCSS(existingCSS)
