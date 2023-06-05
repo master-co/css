@@ -85,6 +85,7 @@
     "devDependencies": {
         "@techor/extend": "^2.1.15",
         "pretty-bytes": "^6.1.0",
+        "pretty-hrtime": "^1.0.3",
         "vite": "^4.2.1"
     }
 }
