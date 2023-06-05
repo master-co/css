@@ -52,14 +52,9 @@ export class Rule {
             if (analyze) {
                 [valueToken, prefixToken] = analyze.call(this, className)
             } else {
-                if (meta.origin === 'match') {
-                    const indexOfColon = className.indexOf(':')
-                    this.prefix = className.slice(0, indexOfColon + 1)
-                    valueToken = className.slice(indexOfColon + 1)
-                } else if (meta.origin === 'symbol') {
-                    this.symbol = className[0]
-                    valueToken = className.slice(1)
-                }
+                const indexOfColon = className.indexOf(':')
+                this.prefix = className.slice(0, indexOfColon + 1)
+                valueToken = className.slice(indexOfColon + 1)
             }
             valueSplits = []
 
@@ -761,7 +756,6 @@ export class Rule {
 
 export interface Rule {
     prefix?: string
-    symbol?: string
     token?: string
     prefixSelectors?: string[]
     vendorSuffixSelectors?: Record<string, string[]>
@@ -808,7 +802,7 @@ export declare type PropValue = string | number
 export declare type Declarations = Record<string, PropValue | PropValue[] | Record<string, PropValue>>
 
 export interface RuleMeta {
-    origin?: 'match' | 'semantics' | 'symbol'
+    origin?: 'match' | 'semantics'
     value?: [string, string | Record<string, string>]
     config?: RuleConfig
 }
@@ -817,7 +811,6 @@ export interface RuleConfig {
     id?: string
     match?: string
     separators?: string[]
-    symbol?: string
     colored?: boolean
     unit?: any
     native?: string | true

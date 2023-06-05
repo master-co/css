@@ -376,19 +376,19 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
                 }
             })(undefined)
             addName()
-
+            
             for (const eachName of names) {
                 const result = this.css.create(eachName)
                 if (Array.isArray(result)) {
-                    for (const eachRule of result) {
-                        handleRule(eachRule)
-                    }
-                } else {
-                    if (result) {
-                        handleRule(result)
+                    if (result.length) {
+                        for (const eachRule of result) {
+                            handleRule(eachRule)
+                        }
                     } else {
                         addProp(this.theme ?? '', eachName)
                     }
+                } else {
+                    handleRule(result)
                 }
             }
 
@@ -1168,8 +1168,17 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         unit: 'ms'
     },
     transition: {
-        symbol: '~',
+        match: '^~[^!*>+~:[@_]+\\|',
         native: true,
+        analyze(className: string) {
+            if (className.startsWith('~')) {
+                return [className.slice(1)]
+            } else {
+                const indexOfColon = className.indexOf(':')
+                this.prefix = className.slice(0, indexOfColon + 1)
+                return [className.slice(indexOfColon + 1)]
+            }
+        },
         order: -1
     },
     animationDelay: {
@@ -1220,9 +1229,18 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         native: true
     },
     animation: {
-        symbol: '@',
+        match: '^@[^!*>+~:[@_]+\\|',
         native: true,
         order: -1,
+        analyze(className: string) {
+            if (className.startsWith('@')) {
+                return [className.slice(1)]
+            } else {
+                const indexOfColon = className.indexOf(':')
+                this.prefix = className.slice(0, indexOfColon + 1)
+                return [className.slice(indexOfColon + 1)]
+            }
+        },
         create(className) {
             return animationCreate.call(this, className)
         },
@@ -2161,8 +2179,8 @@ function animationCreate(className: string) {
         return
 
     const keyframeNames = (
-        this.meta.origin === 'symbol'
-            ? className.slice(this.meta.config.symbol.length)
+        (className.startsWith('@') && this.config.order === -1)
+            ? className.slice(1)
             : className.slice(className.indexOf(':') + 1)
     )
         .split('|')

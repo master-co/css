@@ -59,10 +59,13 @@ test('keyframes', async () => {
 
         const rule = css.ruleBy[className]
 
-        const animationClassName = className.startsWith('{')
-            ? className.slice(1, className.length - 1)
-            : className
-        const keyframeNames = (animationClassName.includes(':') ? animationClassName.split(':')[1] : animationClassName.slice(1)).split('|').filter(eachValue => configKeyframeNames.includes(eachValue))
+        const animationClassNames = className.startsWith('{')
+            ? className.slice(1, className.length - 1).split(';')
+            : [className]
+        const keyframeNames = animationClassNames
+            .flatMap(eachAnimationClassName => (eachAnimationClassName.includes(':') 
+                ? eachAnimationClassName.split(':')[1] 
+                : eachAnimationClassName.slice(1)).split('|').filter(eachValue => configKeyframeNames.includes(eachValue)))
         expect(rule.keyframeNames.length).toEqual(keyframeNames.length)
         expect(rule.keyframeNames.every(eachKeyframeName => keyframeNames.includes(eachKeyframeName))).toBeTruthy()
 
@@ -98,9 +101,9 @@ test('keyframes', async () => {
         checkKeyframeCSSRule()
     }
 
-    await generateAnimation('@fade')
-    await generateAnimation('{@name:flash|fade}')
+    await generateAnimation('@fade|2s')
+    await generateAnimation('{@name:flash;@name:fade}')
 
-    await deleteAnimation('{@name:flash|fade}')
-    await deleteAnimation('@fade')
+    await deleteAnimation('{@name:flash;@name:fade}')
+    await deleteAnimation('@fade|2s')
 })
