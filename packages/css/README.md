@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center"><!-- package.description -->A Virtual CSS language with enhanced syntax<!----></p>
+<p align="center">A markup-driven CSS language with enhanced syntax</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">
@@ -73,25 +73,27 @@ Master CSS provides various [compilation modes](https://beta.css.master.co/docs/
 - [Ahead-of-time](https://beta.css.master.co/docs/compilation/ahead-of-time) - Scan source files for class names at build time, extract class names, and generate CSS files/virtual modules, then import them in the entry file
 
 ## Ecosystem
-We've built various integrations and tools around Master CSS:
+We've built various Master CSS core functionality/integration packages:
 
-##### Build Tools
-
-- [Vite Plugin](https://github.com/master-co/css/tree/beta/packages/vite) - A vite plugin for integrating Master CSS AOT compilation
-- [Webpack Plugin](https://github.com/master-co/css/tree/beta/packages/webpack) - A webpack plugin for integrating Master CSS AOT compilation
-- [Compiler](https://github.com/master-co/css/tree/beta/packages/compiler) - The ahead-of-time compiler of Master CSS
+- [CSS](https://github.com/master-co/css/tree/beta/packages/css) - The core of Master CSS, including the runtime engine
 
 ##### Frameworks
-- [React](https://github.com/master-co/css/tree/beta/packages/react) - React hooks for Master CSS
-- [Style Element](https://github.com/master-co/style-element) <sub><sup>React, Vue, ...</sup></sub> - Create reusable style elements using class names in one-linear.
+- [React](https://github.com/master-co/css/tree/beta/packages/react) - Integrate Master CSS the React way
+- [Svelte](https://github.com/master-co/css/tree/beta/packages/svelte) - Integrate Master CSS the Svelte way
+- [🚧 Nuxt](https://github.com/master-co/css/tree/beta/packages/nuxt) - Integrate Master CSS the Nuxt way
 
-##### Native Plugins
+##### Static Extraction
+- [Extractor](https://github.com/master-co/css/tree/beta/packages/extractor) - Master CSS static extractor for various raw text extraction.
+- [Extractor Vite](https://github.com/master-co/css/tree/beta/packages/vite) - Integrate Master CSS Static Extraction in Vite way
+- [Extractor Webpack](https://github.com/master-co/css/tree/beta/packages/webpack) - Integrate Master CSS Static Extraction in Webpack way
 
+##### Language
+- [Language Server](https://github.com/master-co/css/tree/beta/packages/language-server) - The core of the Master CSS language server
+- [Language Service](https://github.com/master-co/css/tree/beta/packages/language-service) - The core of the Master CSS language service
+
+##### Others
 - [Normal CSS](https://github.com/master-co/css/tree/beta/packages/normal.css) - Normalize the browser's styles
-- [Keyframes CSS](https://github.com/master-co/css/tree/beta/packages/keyframes.css) - Simple and useful CSS keyframes
-
-##### Extensions
-- [Language Service](https://github.com/master-co/css/tree/beta/packages/language-service) <sub><sup>Visual Studio Code</sup></sub> - Includes code completion, syntax highlighting, CSS hover preview, and inline color decorators
+- [Theme Service](https://github.com/master-co/css/tree/beta/packages/theme-service) - A CSS theme-switching service for Master CSS
 
 ## Community
 The Master CSS community can be found here:
