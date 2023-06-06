@@ -8,7 +8,7 @@
         "lint": "eslint src"
     },
     "license": "MIT",
-    "description": "A Virtual CSS language with enhanced syntax ~13KB",
+    "description": "A markup-driven CSS language with enhanced syntax",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",
