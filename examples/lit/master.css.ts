@@ -1,5 +1,5 @@
-import type { Config } from '@master/css'
-const config: Config = {
+/** @type {import('@master/css').Config} */
+const config = {
     classes: {},
     colors: {},
     themes: {},
