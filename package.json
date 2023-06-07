@@ -21,9 +21,8 @@
         "examples/*"
     ],
     "devDependencies": {
-        "@techor/jest": "^2.1.15",
-        "@techor/jest-dom": "^2.1.15",
-        "@techor/repo": "^2.1.15",
+        "@techor/jest-dom": "^2.2.1",
+        "@techor/repo": "^2.2.1",
         "@types/jest": "^29.5.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
@@ -32,7 +31,7 @@
         "puppeteer": "^19.8.5",
         "shuffle-array": "^1.0.1",
         "strip-ansi": "^7.0.1",
-        "techor": "^2.1.15",
+        "techor": "^2.2.1",
         "ts-dedent": "^2.2.0",
         "upath": "^2.0.1"
     },
