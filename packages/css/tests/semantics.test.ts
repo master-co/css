@@ -1,7 +1,7 @@
 import { testCSS } from './css'
 import { config } from '../../../master.css.js'
 
-test('semantics fuck', () => {
+test('semantics', () => {
     testCSS(
         'show',
         '.show{display:block}',
@@ -10,6 +10,17 @@ test('semantics fuck', () => {
     testCSS(
         'gradient-text',
         '.gradient-text{-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text}'
+    )
+    testCSS(
+        '@my-animation',
+        '@keyframes rotate{0%{transform:rotate(-360deg)}to{transform:none}}.\\@my-animation{animation:1s linear infinite rotate}',
+        {
+            semantics: {
+                '@my-animation': {
+                    animation: '1s linear infinite rotate'
+                }
+            }
+        }
     )
     // testCSS(
     //     'hide-text',

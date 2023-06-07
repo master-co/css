@@ -792,7 +792,25 @@ export class MasterCSS {
             this.rules.splice(this.rules.indexOf(rule), 1)
             delete this.ruleBy[name]
 
-            if (rule.config.delete) { rule.config.delete.call(rule, name) }
+            // keyframes
+            if (rule.keyframeNames) {
+                const keyframeRule = this.rules[0]
+                for (const eachKeyframeName of rule.keyframeNames) {
+                    const keyframe = this.keyframes[eachKeyframeName]
+                    if (!--keyframe.count) {
+                        const nativeIndex = keyframeRule.natives.indexOf(keyframe.native)
+                        this.style.sheet.deleteRule(nativeIndex)
+                        keyframeRule.natives.splice(nativeIndex, 1)
+                        delete this.keyframes[eachKeyframeName]
+                    }
+                }
+        
+                if (!keyframeRule.natives.length) {
+                    this.rules.splice(0, 1)
+                }
+            }
+
+            rule.config.delete?.call(rule, name)
         }
 
         if (className in this.classes) {
@@ -1142,6 +1160,69 @@ export class MasterCSS {
                     } catch (error) {
                         console.error(error)
                         rule.natives.splice(i, 1)
+                    }
+                }
+            }
+
+            // keyframes
+            if (rule.keyframeNames) {
+                const sheet = this.style?.sheet
+                for (const eachKeyframeName of rule.keyframeNames) {
+                    if (eachKeyframeName in this.keyframes) {
+                        this.keyframes[eachKeyframeName].count++
+                    } else {
+                        const native: RuleNative = {
+                            text: `@keyframes ${eachKeyframeName}{`
+                                + Object
+                                    .entries(this.config.keyframes[eachKeyframeName])
+                                    .map(([key, values]) => `${key}{${Object.entries(values).map(([name, value]) => name + ':' + value).join(';')}}`)
+                                    .join('')
+                                + '}',
+                            theme: ''
+                        }
+        
+                        let keyframeRule: Rule
+                        if (Object.keys(this.keyframes).length) {
+                            (keyframeRule = this.rules[0]).natives.push(native)
+                        } else {
+                            this.rules.splice(
+                                0,
+                                0,
+                                keyframeRule = {
+                                    natives: [native],
+                                    get text() {
+                                        return this.natives.map((eachNative) => eachNative.text).join('')
+                                    }
+                                } as Rule
+                            )
+                        }
+        
+                        if (sheet) {
+                            let nativeCssRule: CSSRule
+                            for (let i = 0; i < sheet.cssRules.length; i++) {
+                                const cssRule = sheet.cssRules[i]
+                                if (cssRule.constructor.name !== 'CSSKeyframesRule')
+                                    break
+        
+                                if ((cssRule as CSSKeyframesRule).name === eachKeyframeName) {
+                                    nativeCssRule = cssRule
+                                    break
+                                }
+                            }
+        
+                            if (nativeCssRule) {
+                                native.cssRule = nativeCssRule
+                            } else {
+                                const cssRuleIndex = keyframeRule.natives.length - 1
+                                sheet.insertRule(native.text, cssRuleIndex)
+                                native.cssRule = sheet.cssRules[cssRuleIndex]
+                            }
+                        }
+        
+                        this.keyframes[eachKeyframeName] = {
+                            native,
+                            count: 1
+                        }
                     }
                 }
             }

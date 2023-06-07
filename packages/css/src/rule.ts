@@ -30,7 +30,7 @@ export class Rule {
     ) {
         this.config = extend(defaultConfig, meta.config)
         const { unit, order, colored, native, analyze, transform, declare, create } = this.config
-        const { scope, important, functions, themeDriver } = css.config
+        const { scope, important, functions, themeDriver, keyframes } = css.config
         const { themeNames, colorNames, colorThemesMap, selectors, breakpoints, mediaQueries, themeAffectedClassesBy, globalValues } = css
         const themeAffectedClasses = themeAffectedClassesBy[className]
 
@@ -652,6 +652,24 @@ export class Rule {
             const propertiesTextByTheme: Record<string, string[]> = {}
             for (const native in declarations) {
                 const push = (theme: string, propertyText: string) => {
+                    // keyframes
+                    if (
+                        keyframes
+                        && (propertyText.startsWith('animation') || propertyText.startsWith('animation-name'))
+                    ) {
+                        const keyframeNames = propertyText
+                            .split(':')[1]
+                            .split('!important')[0]
+                            .split(' ')
+                            .filter(eachValue => eachValue in this.css.config.keyframes && (!this.keyframeNames || !this.keyframeNames.includes(eachValue)))
+                        if (keyframeNames.length) {
+                            if (!this.keyframeNames) {
+                                this.keyframeNames = []
+                            }
+                            this.keyframeNames.push(...keyframeNames)
+                        }
+                    }
+
                     const newPropertyText = propertyText
                         + (((this.important || important) && !propertyText.endsWith('!important')) ? '!important' : '')
 
