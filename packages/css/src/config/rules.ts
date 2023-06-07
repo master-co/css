@@ -406,12 +406,6 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
             }
 
             return declarations
-        },
-        delete() {
-            return animationDelete.call(this)
-        },
-        insert() {
-            return animationInsert.call(this)
         }
     },
     variable: {
@@ -1209,16 +1203,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
     },
     animationName: {
         match: '^@name:.',
-        native: true,
-        create(className) {
-            return animationCreate.call(this, className)
-        },
-        delete() {
-            return animationDelete.call(this)
-        },
-        insert() {
-            return animationInsert.call(this)
-        }
+        native: true
     },
     animationPlayState: {
         match: '^@play:.',
@@ -1240,15 +1225,6 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
                 this.prefix = className.slice(0, indexOfColon + 1)
                 return [className.slice(indexOfColon + 1)]
             }
-        },
-        create(className) {
-            return animationCreate.call(this, className)
-        },
-        delete() {
-            return animationDelete.call(this)
-        },
-        insert() {
-            return animationInsert.call(this)
         }
     },
     borderCollapse: {
@@ -2173,104 +2149,3 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
 }
 
 export const rules = defaultRules as { [key in keyof typeof defaultRules]: RuleConfig } & { [key: string]: RuleConfig }
-
-function animationCreate(className: string) {
-    if (!this.css.config.keyframes)
-        return
-
-    const keyframeNames = (
-        (className.startsWith('@') && this.config.order === -1)
-            ? className.slice(1)
-            : className.slice(className.indexOf(':') + 1)
-    )
-        .split('|')
-        .filter(eachKeyframe => eachKeyframe in this.css.config.keyframes)
-    if (keyframeNames?.length) {
-        this.keyframeNames = keyframeNames
-    }
-}
-
-function animationDelete() {
-    if (this.keyframeNames?.length) {
-        const keyframeRule = this.css.rules[0]
-        for (const eachKeyframeName of this.keyframeNames) {
-            const keyframe = this.css.keyframes[eachKeyframeName]
-            if (!--keyframe.count) {
-                const nativeIndex = keyframeRule.natives.indexOf(keyframe.native)
-                this.css.style.sheet.deleteRule(nativeIndex)
-                keyframeRule.natives.splice(nativeIndex, 1)
-                delete this.css.keyframes[eachKeyframeName]
-            }
-        }
-
-        if (!keyframeRule.natives.length) {
-            this.css.rules.splice(0, 1)
-        }
-    }
-}
-
-function animationInsert() {
-    if (this.keyframeNames) {
-        const { config, keyframes, style, rules } = this.css
-        const sheet = style?.sheet
-
-        for (const eachKeyframeName of this.keyframeNames) {
-            if (eachKeyframeName in keyframes) {
-                keyframes[eachKeyframeName].count++
-            } else {
-                const native: RuleNative = {
-                    text: `@keyframes ${eachKeyframeName}{`
-                        + Object
-                            .entries(config.keyframes[eachKeyframeName])
-                            .map(([key, values]) => `${key}{${Object.entries(values).map(([name, value]) => name + ':' + value).join(';')}}`)
-                            .join('')
-                        + '}',
-                    theme: ''
-                }
-
-                let keyframeRule: Rule
-                if (Object.keys(keyframes).length) {
-                    (keyframeRule = rules[0]).natives.push(native)
-                } else {
-                    rules.splice(
-                        0,
-                        0,
-                        keyframeRule = {
-                            natives: [native],
-                            get text() {
-                                return this.natives.map((eachNative) => eachNative.text).join('')
-                            }
-                        } as Rule
-                    )
-                }
-
-                if (sheet) {
-                    let nativeCssRule: CSSRule
-                    for (let i = 0; i < sheet.cssRules.length; i++) {
-                        const cssRule = sheet.cssRules[i]
-                        if (cssRule.constructor.name !== 'CSSKeyframesRule')
-                            break
-
-                        if ((cssRule as CSSKeyframesRule).name === eachKeyframeName) {
-                            nativeCssRule = cssRule
-                            break
-                        }
-                    }
-
-                    if (nativeCssRule) {
-                        native.cssRule = nativeCssRule
-                    } else {
-                        const cssRuleIndex = keyframeRule.natives.length - 1
-                        sheet.insertRule(native.text, cssRuleIndex)
-                        native.cssRule = sheet.cssRules[cssRuleIndex]
-                    }
-                }
-
-                keyframes[eachKeyframeName] = {
-                    native,
-                    count: 1
-                }
-            }
-        }
-    }
-}
