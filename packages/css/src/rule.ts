@@ -248,7 +248,7 @@ export class Rule {
         const transformSelectorToken = (selectorText: string) => {
             const transformedSelectorText =
                 selectorText.split(/(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/)
-                    .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/_/g, ' '))
+                    .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/(^|[^_])_(?!_)/g, '$1 '))
                     .join('')
             const selectors = []
 
