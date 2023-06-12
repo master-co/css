@@ -60,6 +60,7 @@ type Semantics = { [key: string]: SemanticsBase }
 export type Values = { [key: string]: string | number | Values }
 
 export interface Config {
+    extends?: (Config | { config: Config })[]
     classes?: Classes
     colors?: Colors
     breakpoints?: Breakpoints
