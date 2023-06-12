@@ -14,6 +14,8 @@ const defaultConfig: RuleConfig = {
     separators: [',']
 }
 
+const atRuleRegExp = /^(media|supports|page|font-face|keyframes|counter-style|font-feature-values|property|layer)(?=\||{|\(|$)/
+
 export class Rule {
 
     readonly at: Record<string, string> = {}
@@ -374,39 +376,27 @@ export class Rule {
         for (let i = 1; i < suffixTokens.length; i++) {
             const atToken = suffixTokens[i]
             if (atToken) {
-                if (themeNames.includes(atToken)) {
-                    this.theme = atToken
-                } else if (
+                if (
                     atToken === 'rtl'
                     || atToken === 'ltr'
                 ) {
                     this.direction = atToken
                 } else {
                     let type: string
-                    let queryText
+                    let queryText: string
 
-                    const leftBracketIndex = atToken.indexOf('(')
-                    if (leftBracketIndex !== -1) {
-                        type = atToken.slice(0, leftBracketIndex).replace(/\|/g, ' ')
-                        queryText = atToken.slice(leftBracketIndex)
+                    const atRuleResult = atRuleRegExp.exec(atToken)
+                    if (atRuleResult) {
+                        type = atRuleResult[1]
+                        queryText = atToken.slice(type.length)
                     } else {
-                        const underscoreIndex = atToken.indexOf('|')
-                        if (underscoreIndex !== -1) {
-                            type = atToken.slice(0, underscoreIndex)
-                            queryText = atToken.slice(underscoreIndex)
-                        }
-                    }
-
-                    if (!type) {
-                        type = 'media'
-                        const queryTexts = []
-
                         this.media = {
                             token: atToken,
                             features: {}
                         }
-                        const typeOrFeatureTokens = atToken.split('&')
-                        for (const typeOrFeatureToken of typeOrFeatureTokens) {
+                        const queryTexts = []
+
+                        const analyzeToken = (typeOrFeatureToken: string) => {
                             if (
                                 typeOrFeatureToken === 'all'
                                 || typeOrFeatureToken === 'print'
@@ -471,12 +461,29 @@ export class Rule {
                             }
                         }
 
-                        queryText = ''
+                        const isAmpersandIncluded = atToken.includes('&')
+                        if (isAmpersandIncluded) {
+                            const typeOrFeatureTokens = atToken.split('&')
+                            for (const typeOrFeatureToken of typeOrFeatureTokens) {
+                                analyzeToken(typeOrFeatureToken)
+                            }
+                        } else {
+                            analyzeToken(atToken)
+                        }
+
                         if (this.media.type) {
                             queryText = this.media.type
                         }
                         if (queryTexts.length) {
-                            queryText += (queryText ? ' and ' : '') + queryTexts.join(' and ')
+                            queryText = queryTexts.join(' and ')
+                        }
+                        if (!queryText) {
+                            if (!isAmpersandIncluded) {
+                                this.theme = atToken
+                                continue
+                            }
+                        } else {
+                            type = 'media'
                         }
                     }
 
