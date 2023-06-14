@@ -1,5 +1,5 @@
 {
-    "name": "@master/css-compiler",
+    "name": "@master/css-validator",
     "scripts": {
         "build": "techor pack --platform node",
         "dev": "npm run build -- --watch",
@@ -8,7 +8,7 @@
         "test": "jest --forceExit --detectOpenHandles"
     },
     "license": "MIT",
-    "description": "The ahead-of-time compiler of Master CSS",
+    "description": "Validator for Master CSS class syntax",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",
@@ -18,33 +18,25 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/compiler"
+        "directory": "packages/validator"
     },
     "keywords": [
-        "webpack",
-        "plugin",
-        "integration",
-        "vite",
-        "parcel",
-        "build tools",
+        "classes",
+        "class",
+        "validator",
         "css",
-        "mastercss",
-        "vite-plugin"
+        "mastercss"
     ],
     "sideEffects": false,
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
-        ".": "./dist/index.js",
-        "./options": "./dist/options/index.js"
+        ".": "./dist/index.js"
     },
     "typesVersions": {
         "*": {
             ".": [
                 "./dist/index.d.js"
-            ],
-            "./options": [
-                "./dist/options/index.d.ts"
             ]
         }
     },
@@ -56,15 +48,10 @@
     },
     "dependencies": {
         "@master/css": "",
-        "@techor/extend": "^2.1.15",
-        "cross-import": "^2.1.15",
-        "fast-glob": "^3.2.12",
-        "minimatch": "^5.1.1",
-        "stylelint": "^15.2.0",
-        "techor": "^2.1.15",
-        "upath": "^2.0.1"
+        "csstree-validator": "^3.0.0"
     },
     "devDependencies": {
-        "ts-jest": "^29.0.5"
+        "shared": "",
+        "ts-jest": "^29.1.0"
     }
 }
