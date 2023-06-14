@@ -1,0 +1,85 @@
+{
+    "name": "@master/css-extractor",
+    "scripts": {
+        "build": "techor pack --platform node",
+        "dev": "npm run build -- --watch",
+        "lint": "eslint ./src",
+        "type-check": "tsc --noEmit",
+        "test": "jest --forceExit --detectOpenHandles"
+    },
+    "license": "MIT",
+    "description": "Master CSS static extractor for various raw text",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://docs.master.co/css/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/extractor"
+    },
+    "keywords": [
+        "plugin",
+        "integration",
+        "extractor",
+        "static",
+        "build tools",
+        "css",
+        "mastercss"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./options": {
+            "import": "./dist/options/index.mjs",
+            "require": "./dist/options/index.js",
+            "types": "./dist/options/index.d.ts"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            ".": [
+                "./dist/index.d.js"
+            ],
+            "./options": [
+                "./dist/options/index.d.ts"
+            ]
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "bin": {
+        "mcss-extract": "./dist/bin/index.js",
+        "mastercss-extract": "./dist/bin/index.js"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@master/css": "",
+        "@master/css-validator": "",
+        "@techor/extend": "^2.2.8",
+        "@techor/log": "^2.2.8",
+        "chokidar": "^3.5.3",
+        "commander": "^10.0.1",
+        "explore-config": "^2.2.8",
+        "fast-glob": "^3.2.12",
+        "minimatch": "^5.1.1",
+        "upath": "^2.0.1"
+    },
+    "devDependencies": {
+        "ts-jest": "^29.0.5"
+    }
+}

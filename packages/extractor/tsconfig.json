@@ -1,0 +1,14 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "rootDir": "src"
+    },
+    "include": [
+        "src/**/*",
+        "../css/src/functions/extract-latent-classes.ts"
+    ],
+    "exclude": [
+        "src/**/*.test.*"
+    ]
+}
