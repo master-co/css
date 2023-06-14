@@ -10,7 +10,7 @@
         "type-check": "turbo run type-check --parallel --filter=./packages/**/*",
         "commit-check": "commitlint --from=HEAD~1 --verbose",
         "dev": "turbo run dev --filter=./packages/**/* --force",
-        "clean": "rm -rf package-lock.json && rm -rf node_modules && rm -rf ./packages/**/*dist && rm -rf ./{examples,packages}/**/*node_modules"
+        "clean": "rm -rf package-lock.json && rm -rf node_modules && rm -rf ./packages/**/*dist && rm -rf ./{examples,packages}/**/*node_modules && rm -rf ./{examples,packages}/**/*.turbo"
     },
     "repository": {
         "type": "git",

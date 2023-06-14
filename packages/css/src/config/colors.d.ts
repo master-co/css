@@ -1,0 +1,24 @@
+export declare const colors: {
+    black: string;
+    white: string;
+    slate: any;
+    gray: any;
+    brown: any;
+    orange: any;
+    gold: any;
+    yellow: any;
+    grass: any;
+    green: any;
+    beryl: any;
+    teal: any;
+    cyan: any;
+    sky: any;
+    blue: any;
+    indigo: any;
+    violet: any;
+    purple: any;
+    fuchsia: any;
+    pink: any;
+    crimson: any;
+    red: any;
+};

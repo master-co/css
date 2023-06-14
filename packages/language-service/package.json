@@ -23,19 +23,14 @@
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
-        ".": {
-            "require": "./dist/index.js",
-            "import": "./dist/index.js",
-            "types": "./dist/index.d.ts"
-        },
-        "./settings": {
-            "require": "./dist/settings.js",
-            "import": "./dist/settings.js",
-            "types": "./dist/settings.d.ts"
-        }
+        ".": "./dist/index.js",
+        "./settings": "./dist/settings.js"
     },
     "typesVersions": {
         "*": {
+            "./": [
+                "./dist/index.d.ts"
+            ],
             "./settings": [
                 "./dist/settings.d.ts"
             ]
