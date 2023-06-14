@@ -1,1 +1,0 @@
-Check out the official [Vite Guide](https://beta.css.master.co/docs/guides/vite)
