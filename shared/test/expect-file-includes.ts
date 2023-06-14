@@ -8,7 +8,7 @@ export function expectFileIncludes(filePath: string, includes: string[]) {
     const content = fs.readFileSync(
         fg.sync(upath.join(parentModuleDir, filePath))[0]
     ).toString()
-    includes.map((include) => {
+    includes.forEach((include) => {
         expect(content).toContain(include)
     })
 }

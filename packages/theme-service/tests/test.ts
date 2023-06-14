@@ -1,4 +1,4 @@
-import '../../../utils/matchMedia.mock'
+import 'shared/test/matchMedia.mock'
 import ThemeService from '../src'
 
 const themeService = new ThemeService({ default: 'dark' })

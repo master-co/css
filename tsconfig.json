@@ -18,6 +18,7 @@
     },
     "include": [
         "./master.css.js",
-        "./master.css.mjs"
+        "./master.css.mjs",
+        "./shared/**/*",
     ]
 }

@@ -1,4 +1,3 @@
-import MasterCSSCompiler from '@master/css-compiler'
 import {
     createConnection,
     TextDocuments,
@@ -23,14 +22,15 @@ import uri2path from 'file-uri-to-path'
 import { settings as defaultSettings, doHover, positionCheck, getConfigFileColorRender, getColorPresentation, getDocumentColors, getLastInstance, getCompletionItem, getConfigColorsCompletionItem, checkConfigColorsBlock } from '@master/css-language-service'
 const connection = createConnection(ProposedFeatures.all)
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument)
+import exploreConfig from 'explore-config'
 
 let hasConfigurationCapability = false
 let hasWorkspaceFolderCapability = false
 let hasDiagnosticRelatedInformationCapability = false
 let settings: MasterCSSSettings
 
-let MasterCSSObject: MasterCSS | undefined
-let MasterCSSOriginConfig: any
+let css: MasterCSS | undefined
+let customConfig: any
 const configFileLocation = ''
 
 interface MasterCSSSettings {
@@ -112,15 +112,12 @@ async function loadMasterCssConfig(resource: string) {
     }
     if (root?.uri) {
         try {
-            throw ''
-            // configFileLocation = uri2path(root.uri.replace('%3A', ':'))
-            // const compiler = new MasterCSSCompiler({ cwd: configFileLocation, config: settings.config })
-            // const config: any = compiler.config
-            // MasterCSSObject = new MasterCSS(config)
-            // MasterCSSOriginConfig = config
+            const configCWD = uri2path(root.uri.replace('%3A', ':'))
+            customConfig = exploreConfig(settings.config || 'master.css.*', { cwd: configCWD })
+            css = new MasterCSS(customConfig)
         } catch (ex) {
             console.log(ex)
-            MasterCSSObject = new MasterCSS()
+            css = new MasterCSS()
         }
     }
 }
@@ -200,9 +197,9 @@ connection.onCompletion(
 
 
                 if (lastInstance.isInstance == true && inMasterCSS == true) {
-                    return getCompletionItem(lastInstance.lastKey, lastInstance.triggerKey, lastInstance.isStart, lastInstance.language, MasterCSSObject)
+                    return getCompletionItem(lastInstance.lastKey, lastInstance.triggerKey, lastInstance.isStart, lastInstance.language, css)
                 } else if (lastInstance.isInstance == true && checkConfigColorsBlock(document, textDocumentPosition.position) == true) {
-                    return getConfigColorsCompletionItem(MasterCSSObject)
+                    return getConfigColorsCompletionItem(css)
                 }
             }
         }
@@ -231,9 +228,9 @@ connection.onDocumentColor(
                     return []
                 }
 
-                let colorIndexs = (await getDocumentColors(text, MasterCSSObject))
+                let colorIndexs = (await getDocumentColors(text, css))
 
-                colorIndexs = colorIndexs.concat(await getConfigFileColorRender(text, MasterCSSObject))
+                colorIndexs = colorIndexs.concat(await getConfigFileColorRender(text, css))
 
                 const colorIndexSet = new Set()
                 const colorInformations = colorIndexs
@@ -288,7 +285,7 @@ connection.onHover(textDocumentPosition => {
             const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
             const HoverInstance = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
             if (HoverInstance.IsMatch) {
-                return doHover(HoverInstance.instance.instanceString, indexToRange(HoverInstance.instance.index, document), MasterCSSOriginConfig)
+                return doHover(HoverInstance.instance.instanceString, indexToRange(HoverInstance.instance.index, document), customConfig)
             }
         }
     }

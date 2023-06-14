@@ -14,10 +14,6 @@
 **/*.turbo
 **/*out
 **/*master.css
-packages/css/**/*master.css.*
-packages/css/**/*master.*
-packages/compiler/**/*master.css-compiler.*
-packages/compiler/**/*master.css.*
 **/*test.html
 **/*.test.html
 
@@ -61,3 +57,12 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+packages/css/**/*master.css.*
+packages/css/**/*master.*
+packages/extractor/**/*master.css-extractor.*
+packages/extractor/**/*master.css.*
+packages/extractor.vite/tests/vite/index.html
+packages/extractor.vite/tests/vite/master.css.*
+packages/extractor.webpack/tests/webpack/src/index.html
+packages/extractor.webpack/tests/webpack/src/master.css.*

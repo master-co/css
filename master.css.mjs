@@ -1,5 +1,3 @@
-import MasterCSS from '@master/css'
-
 export const config = {
     colors: {
         primary: {
