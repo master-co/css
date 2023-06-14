@@ -1,6 +1,6 @@
 import '../src/polyfills/css-escape'
 import dedent from 'ts-dedent'
-import { render, renderFromHTML, renderIntoHTML } from '../src/methods'
+import { MasterCSS, generateFromClasses, generateFromHTML, renderHTML } from '../src'
 
 const html = dedent`
     <html>
@@ -15,16 +15,15 @@ const html = dedent`
 `
 
 it('render', () => {
-    expect(render(['text:center', 'font:32']))
-        .toBe('.font\\:32{font-size:2rem}.text\\:center{text-align:center}')
+    expect(generateFromClasses(['text:center', 'font:32'])).toEqual('.font\\:32{font-size:2rem}.text\\:center{text-align:center}')
 })
 
 it('renders from HTML', () => {
-    expect(renderFromHTML(html))
+    expect(generateFromHTML(html))
         .toBe('.font\\:32{font-size:2rem}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0rem}.text\\:center{text-align:center}')
 })
 
-const renderedHTML = renderIntoHTML(html)
+const renderedHTML = renderHTML(html)
 const expectedRenderedHTML = dedent`
 <html>
     <head>
@@ -41,6 +40,6 @@ it('renders into HTML', () => {
 })
 
 it('re-renders into HTML where style tags exist', () => {
-    expect(renderIntoHTML(renderedHTML))
+    expect(renderHTML(renderedHTML))
         .toEqual(expectedRenderedHTML)
 })

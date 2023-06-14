@@ -5,14 +5,6 @@ import { config as defaultConfig } from './config'
 import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 
-const hasWindow = typeof window !== 'undefined'
-
-const createStyle = () => {
-    const style = document.createElement('style')
-    style.id = 'master'
-    return style
-}
-
 export interface MasterCSS {
     readonly style: HTMLStyleElement
     readonly host: Element
@@ -64,7 +56,7 @@ export class MasterCSS {
             }
         }
         this.cache()
-        if (hasWindow && this.config.observe) {
+        if (typeof window !== 'undefined' && this.config.observe) {
             this.observe(document)
         }
         MasterCSS.instances.push(this)
@@ -347,7 +339,7 @@ export class MasterCSS {
         if (this.root === targetRoot) {
             return
         }
-        if (hasWindow && targetRoot) {
+        if (typeof window !== 'undefined' && targetRoot) {
             // @ts-ignore
             this.root = targetRoot
             const isDocumentRoot = targetRoot === document
@@ -439,7 +431,8 @@ export class MasterCSS {
                 }
             } else {
                 // @ts-ignore
-                this.style = createStyle()
+                this.style = document.createElement('style')
+                this.style.id = 'master'
                 container.append(this.style)
             }
 
@@ -665,9 +658,11 @@ export class MasterCSS {
     }
 
     /**
-     * 比對是否為 Master CSS 的類名語法
+     * Match check if Master CSS class syntax
+     * @param syntax class syntax 
+     * @returns css text
      */
-    match(className: string): RuleMeta {
+    match(syntax: string): RuleMeta {
         for (const id in this.config.rules) {
             const eachRuleConfig = this.config.rules[id]
             const match = this.matches[id]
@@ -675,19 +670,19 @@ export class MasterCSS {
             /**
              * STEP 1. matches
              */
-            if (match && match.test(className)) {
+            if (match && match.test(syntax)) {
                 return { origin: 'match', config: eachRuleConfig }
             }
             /**
-             * STEP 2. key full className
+             * STEP 2. key full syntax
              */
-            if (native && className.startsWith(native + ':')) {
+            if (native && syntax.startsWith(native + ':')) {
                 return { origin: 'match', config: eachRuleConfig }
             }
         }
 
         for (const eachSemanticEntry of this.semantics) {
-            if (className.match(eachSemanticEntry[0])) {
+            if (syntax.match(eachSemanticEntry[0])) {
                 return {
                     origin: 'semantics',
                     value: eachSemanticEntry[1]
@@ -697,26 +692,28 @@ export class MasterCSS {
     }
 
     /**
-     * 透過類名 ( 包含 .classes ) 生成 rules[]
+     * Create rules from class syntax
+     * @param syntax class syntax 
+     * @returns Rule[]
      */
-    create(className: string): Rule[] {
-        const create = (eachClassName: string) => {
-            if (eachClassName in this.ruleBy)
-                return this.ruleBy[eachClassName]
+    create(syntax: string): Rule[] {
+        const create = (eachSyntax: string) => {
+            if (eachSyntax in this.ruleBy)
+                return this.ruleBy[eachSyntax]
 
-            const meta = this.match(eachClassName)
+            const meta = this.match(eachSyntax)
             if (meta) {
                 return new Rule(
-                    eachClassName,
+                    eachSyntax,
                     meta,
                     this
                 )
             }
         }
         return (
-            className in this.classes
-                ? this.classes[className].map((eachClassName) => create(eachClassName))
-                : [create(className)]
+            syntax in this.classes
+                ? this.classes[syntax].map((eachSyntax) => create(eachSyntax))
+                : [create(syntax)]
         )
             .filter(eachRule => eachRule && eachRule.text)
     }
@@ -731,15 +728,14 @@ export class MasterCSS {
             this.config = config
         }
         this.cache()
-
         if (!this.style) {
             return
         }
-
-        const style = createStyle()
-        this.style.replaceWith(style)
+        const newStyle = document.createElement('style')
+        newStyle.id = 'master'
+        this.style.replaceWith(newStyle)
         // @ts-ignore
-        this.style = style
+        this.style = newStyle
         this.rules.length = 0
         // @ts-ignore
         this.ruleBy = {}
@@ -804,7 +800,7 @@ export class MasterCSS {
                         delete this.keyframes[eachKeyframeName]
                     }
                 }
-        
+
                 if (!keyframeRule.natives.length) {
                     this.rules.splice(0, 1)
                 }
@@ -829,8 +825,8 @@ export class MasterCSS {
     /**
     * 依類名插入規則
      */
-    insert(eachClassName: string): boolean {
-        const rules = this.create(eachClassName)
+    insert(syntax: string): boolean {
+        const rules = this.create(syntax)
         if (rules.length) {
             this.insertRules(rules)
             return true
@@ -1180,7 +1176,7 @@ export class MasterCSS {
                                 + '}',
                             theme: ''
                         }
-        
+
                         let keyframeRule: Rule
                         if (Object.keys(this.keyframes).length) {
                             (keyframeRule = this.rules[0]).natives.push(native)
@@ -1196,20 +1192,20 @@ export class MasterCSS {
                                 } as Rule
                             )
                         }
-        
+
                         if (sheet) {
                             let nativeCssRule: CSSRule
                             for (let i = 0; i < sheet.cssRules.length; i++) {
                                 const cssRule = sheet.cssRules[i]
                                 if (cssRule.constructor.name !== 'CSSKeyframesRule')
                                     break
-        
+
                                 if ((cssRule as CSSKeyframesRule).name === eachKeyframeName) {
                                     nativeCssRule = cssRule
                                     break
                                 }
                             }
-        
+
                             if (nativeCssRule) {
                                 native.cssRule = nativeCssRule
                             } else {
@@ -1218,7 +1214,7 @@ export class MasterCSS {
                                 native.cssRule = sheet.cssRules[cssRuleIndex]
                             }
                         }
-        
+
                         this.keyframes[eachKeyframeName] = {
                             native,
                             count: 1
@@ -1236,7 +1232,7 @@ export class MasterCSS {
     }
 }
 
-if (hasWindow) {
+if (typeof window !== 'undefined') {
     window.MasterCSS = MasterCSS
 }
 

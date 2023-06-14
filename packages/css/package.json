@@ -1,7 +1,7 @@
 {
     "name": "@master/css",
     "scripts": {
-        "build": "techor pack --extra-external @master/css-compiler --shakable",
+        "build": "techor pack --shakable",
         "dev": "npm run build -- --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",
@@ -40,12 +40,7 @@
         "build-tools",
         "mastercss"
     ],
-    "sideEffects": [
-        "./dist/polyfills/*",
-        "./src/polyfills/*",
-        "./polyfills/css-escape",
-        "./polyfills/*"
-    ],
+    "sideEffects": false,
     "main": "./dist/index.js",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
@@ -75,17 +70,15 @@
     },
     "dependencies": {
         "@master/normal.css": "",
-        "@techor/fs": "^2.1.15",
-        "@techor/log": "^2.1.15",
-        "chokidar": "^3.5.3",
-        "commander": "^10.0.0",
-        "fast-glob": "^3.2.12",
-        "techor": "^2.1.15"
+        "@techor/fs": "^2.2.8",
+        "@techor/log": "^2.2.8",
+        "commander": "^10.0.0"
     },
     "devDependencies": {
-        "@techor/extend": "^2.1.15",
+        "@techor/extend": "^2.2.8",
         "pretty-bytes": "^6.1.0",
         "pretty-hrtime": "^1.0.3",
-        "vite": "^4.2.1"
+        "vite": "^4.2.1",
+        "shared": ""
     }
 }

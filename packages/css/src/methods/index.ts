@@ -1,7 +1,0 @@
-export * from './render'
-export * from './render-from-html'
-export * from './render-into-html'
-export * from './render-rules'
-export * from './render-rules-from-html'
-export * from './extract-classes-from-html'
-export * from './fill-color-scale'

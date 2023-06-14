@@ -1,4 +1,4 @@
-import MasterCSS, { Rule, render } from '../src'
+import MasterCSS, { Rule, generateFromClasses } from '../src'
 import delay from '../src/utils/delay'
 
 it('make sure not to extend keyframes deeply', () => {
@@ -12,21 +12,21 @@ it('make sure not to extend keyframes deeply', () => {
 })
 
 it('expects the animation output', () => {
-    expect(render(['@fade|1s'])).toContain('.\\@fade\\|1s{animation:fade 1s}')
+    expect(generateFromClasses(['@fade|1s'])).toContain('.\\@fade\\|1s{animation:fade 1s}')
 })
 
 it('expects the keyframe output', () => {
-    expect(render(['@fade|1s'])).toContain('@keyframes fade{0%{opacity:0}to{opacity:1}}')
-    expect(render(['@flash|1s'])).toContain('@keyframes flash{0%,50%,to{opacity:1}25%,75%{opacity:0}}')
-    expect(render(['@float|1s'])).toContain('@keyframes float{0%{transform:none}50%{transform:translateY(-1.25rem)}to{transform:none}}')
-    expect(render(['@heart|1s'])).toContain('@keyframes heart{0%{transform:scale(1)}14%{transform:scale(1.3)}28%{transform:scale(1)}42%{transform:scale(1.3)}70%{transform:scale(1)}}')
-    expect(render(['@jump|1s'])).toContain('@keyframes jump{0%,to{transform:translateY(-25%);animation-timing-function:cubic-bezier(.8,0,1,1)}50%{transform:translateY(0);animation-timing-function:cubic-bezier(0,0,.2,1)}}')
-    expect(render(['@ping|1s'])).toContain('@keyframes ping{75%,to{transform:scale(2);opacity:0}}')
-    expect(render(['@pulse|1s'])).toContain('@keyframes pulse{0%{transform:none}50%{transform:scale(1.05)}to{transform:none}}')
-    expect(render(['@rotate|1s'])).toContain('@keyframes rotate{0%{transform:rotate(-360deg)}to{transform:none}}')
-    expect(render(['@shake|1s'])).toContain('@keyframes shake{0%{transform:none}6.5%{transform:translateX(-6px) rotateY(-9deg)}18.5%{transform:translateX(5px) rotateY(7deg)}31.5%{transform:translateX(-3px) rotateY(-5deg)}43.5%{transform:translateX(2px) rotateY(3deg)}50%{transform:none}}')
-    expect(render(['@zoom|1s'])).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
-    expect(render(['{@zoom|1s;f:16}'])).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
+    expect(generateFromClasses(['@fade|1s'])).toContain('@keyframes fade{0%{opacity:0}to{opacity:1}}')
+    expect(generateFromClasses(['@flash|1s'])).toContain('@keyframes flash{0%,50%,to{opacity:1}25%,75%{opacity:0}}')
+    expect(generateFromClasses(['@float|1s'])).toContain('@keyframes float{0%{transform:none}50%{transform:translateY(-1.25rem)}to{transform:none}}')
+    expect(generateFromClasses(['@heart|1s'])).toContain('@keyframes heart{0%{transform:scale(1)}14%{transform:scale(1.3)}28%{transform:scale(1)}42%{transform:scale(1.3)}70%{transform:scale(1)}}')
+    expect(generateFromClasses(['@jump|1s'])).toContain('@keyframes jump{0%,to{transform:translateY(-25%);animation-timing-function:cubic-bezier(.8,0,1,1)}50%{transform:translateY(0);animation-timing-function:cubic-bezier(0,0,.2,1)}}')
+    expect(generateFromClasses(['@ping|1s'])).toContain('@keyframes ping{75%,to{transform:scale(2);opacity:0}}')
+    expect(generateFromClasses(['@pulse|1s'])).toContain('@keyframes pulse{0%{transform:none}50%{transform:scale(1.05)}to{transform:none}}')
+    expect(generateFromClasses(['@rotate|1s'])).toContain('@keyframes rotate{0%{transform:rotate(-360deg)}to{transform:none}}')
+    expect(generateFromClasses(['@shake|1s'])).toContain('@keyframes shake{0%{transform:none}6.5%{transform:translateX(-6px) rotateY(-9deg)}18.5%{transform:translateX(5px) rotateY(7deg)}31.5%{transform:translateX(-3px) rotateY(-5deg)}43.5%{transform:translateX(2px) rotateY(3deg)}50%{transform:none}}')
+    expect(generateFromClasses(['@zoom|1s'])).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
+    expect(generateFromClasses(['{@zoom|1s;f:16}'])).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
 })
 
 test('keyframes', async () => {
@@ -63,8 +63,8 @@ test('keyframes', async () => {
             ? className.slice(1, className.length - 1).split(';')
             : [className]
         const keyframeNames = animationClassNames
-            .flatMap(eachAnimationClassName => (eachAnimationClassName.includes(':') 
-                ? eachAnimationClassName.split(':')[1] 
+            .flatMap(eachAnimationClassName => (eachAnimationClassName.includes(':')
+                ? eachAnimationClassName.split(':')[1]
                 : eachAnimationClassName.slice(1)).split('|').filter(eachValue => configKeyframeNames.includes(eachValue)))
         expect(rule.keyframeNames.length).toEqual(keyframeNames.length)
         expect(rule.keyframeNames.every(eachKeyframeName => keyframeNames.includes(eachKeyframeName))).toBeTruthy()

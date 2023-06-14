@@ -1,5 +1,5 @@
 import { execSync } from 'child_process'
-import { expectFileIncludes } from '../../../../utils/expect-file-includes'
+import { expectFileIncludes } from 'shared/test/expect-file-includes'
 import { CONFIG_TEXT } from '../../src'
 
 it('init cjs', () => {

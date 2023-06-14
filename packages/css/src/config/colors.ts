@@ -1,4 +1,4 @@
-import { fillColorScale } from '../methods/fill-color-scale'
+import fillColorScale from '../functions/fill-color-scale'
 
 export const colors = {
     black: '#000000',
