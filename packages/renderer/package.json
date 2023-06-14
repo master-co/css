@@ -1,0 +1,56 @@
+{
+    "name": "@master/css-renderer",
+    "scripts": {
+        "build": "techor pack --platform node",
+        "dev": "npm run build -- --watch",
+        "lint": "eslint ./src",
+        "type-check": "tsc --noEmit",
+        "test": "jest --forceExit --detectOpenHandles"
+    },
+    "license": "MIT",
+    "description": "Pre-renders Master CSS class syntax in HTML",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://docs.master.co/css/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/renderer"
+    },
+    "keywords": [
+        "methods",
+        "integration",
+        "renderer",
+        "static",
+        "prerendering",
+        "css",
+        "mastercss"
+    ],
+    "sideEffects": false,
+    "files": [
+        "dist"
+    ],
+    "bin": {
+        "mcss-render": "./dist/bin/index.js",
+        "mastercss-render": "./dist/bin/index.js"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@master/css": "",
+        "@techor/log": "^2.2.8",
+        "commander": "^10.0.1",
+        "explore-config": "^2.2.8",
+        "fast-glob": "^3.2.12",
+        "minimatch": "^5.1.1",
+        "upath": "^2.0.1"
+    },
+    "devDependencies": {
+        "ts-jest": "^29.0.5",
+        "shared": ""
+    }
+}
