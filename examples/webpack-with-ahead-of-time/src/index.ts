@@ -1,1 +1,1 @@
-import 'master.css';
+import 'master.css'

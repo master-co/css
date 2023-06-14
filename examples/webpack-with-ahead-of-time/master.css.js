@@ -1,7 +1,9 @@
 /** @type {import('@master/css').Config} */
 export default {
     classes: {},
-    colors: {},
+    colors: {
+        primary: 'red'
+    },
     themes: {},
     rules: {},
     values: {},

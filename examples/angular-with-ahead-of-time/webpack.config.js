@@ -1,7 +1,7 @@
-const { MasterCSSWebpackPlugin } = require('@master/css.webpack')
+const { CSSExtractorPlugin } = require('@master/css-extractor.webpack')
 module.exports = (config) => {
     config.plugins.push(
-        new MasterCSSWebpackPlugin()
+        new CSSExtractorPlugin()
     )
     return config
 }

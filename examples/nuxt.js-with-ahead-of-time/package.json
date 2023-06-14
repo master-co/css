@@ -8,7 +8,7 @@
         "preview": "nuxt preview"
     },
     "devDependencies": {
-        "@master/css.vite": "",
+        "@master/css-extractor.vite": "",
         "nuxt": "3.0.0",
         "vite": "^4.0.1"
     }

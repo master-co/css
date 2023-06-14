@@ -1,9 +1,9 @@
-import { MasterCSSVitePlugin } from '@master/css.vite'
+import { CSSExtractorPlugin } from '@master/css-extractor.vite'
 
 /** @type {import('vite').UserConfig} */
 const config = {
     plugins: [
-        MasterCSSVitePlugin({
+        CSSExtractorPlugin({
             sources: [
                 './index.html'
             ]

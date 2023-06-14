@@ -1,9 +1,9 @@
 import { defineConfig } from 'astro/config'
-import { MasterCSSVitePlugin } from '@master/css.vite'
+import { CSSExtractorPlugin } from '@master/css-extractor.vite'
 
 // https://astro.build/config
 export default defineConfig({
     vite: {
-        plugins: [MasterCSSVitePlugin()]
+        plugins: [CSSExtractorPlugin()]
     }
 })

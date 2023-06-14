@@ -12,7 +12,7 @@
     },
     "dependencies": {
         "@master/css": "",
-        "@master/css.vite": "",
+        "@master/css-extractor.vite": "",
         "astro": "^1.7.1"
     }
 }

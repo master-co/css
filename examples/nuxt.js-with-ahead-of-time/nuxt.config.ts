@@ -1,9 +1,9 @@
-import { MasterCSSVitePlugin } from '@master/css.vite'
+import { CSSExtractorPlugin } from '@master/css-extractor.vite'
 
 export default defineNuxtConfig({
     vite: {
         plugins: [
-            MasterCSSVitePlugin()
+            CSSExtractorPlugin()
         ]
     }
 })

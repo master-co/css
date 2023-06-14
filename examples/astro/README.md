@@ -27,11 +27,11 @@
             <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
         </picture>
     </a>
-    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css.webpack">
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-extractor.webpack">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.webpack?color=212022&label=%20&logo=npm&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css.webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-extractor.webpack?color=212022&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-extractor.webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-extractor.webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
         </picture>
     </a>
     <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -75,19 +75,19 @@ Choose a compilation mode you want to install:
 ### Ahead-of-time Compilation
 
 ```bash
-npm install @master/css.vite@beta -D
+npm install @master/css-extractor.vite@beta -D
 ```
 
 `astro.config.mjs`
 ```js
 import { defineConfig } from 'astro/config'
-import { MasterCSSVitePlugin } from '@master/css.vite'
+import { CSSExtractorPlugin } from '@master/css-extractor.vite'
 
 // https://astro.build/config
 export default defineConfig({
     vite: {
         plugins: [
-            MasterCSSVitePlugin()
+            CSSExtractorPlugin()
         ]
     }
 })

@@ -1,11 +1,11 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { MasterCSSWebpackPlugin } = require('@master/css.webpack')
+const { CSSExtractorPlugin } = require('@master/css-extractor.webpack')
 
 module.exports = {
     entry: './src/index.ts',
     plugins: [
         new HtmlWebpackPlugin({ template: './src/index.html' }),
-        new MasterCSSWebpackPlugin()
+        new CSSExtractorPlugin()
     ],
     devServer: {
         static: './src'

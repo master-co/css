@@ -1,10 +1,10 @@
 import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vite'
-import { MasterCSSVitePlugin } from '@master/css.vite'
+import { CSSExtractorPlugin } from '@master/css-extractor.vite'
 
 export default defineConfig({
-	plugins: [
+    plugins: [
         sveltekit(),
-        MasterCSSVitePlugin({ sources: ['./src/app.html'] })
+        CSSExtractorPlugin({ sources: ['./src/app.html'] })
     ]
 })

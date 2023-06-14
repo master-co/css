@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react'
 
 /* ahead-of-time */
-// import { MasterCSSVitePlugin } from '@master/css.vite'
+// import { CSSExtractorPlugin } from '@master/css-extractor.vite'
 
 /** @type {import('vite').UserConfig} */
 export default {
@@ -9,6 +9,6 @@ export default {
         react(),
 
         /* ahead-of-time */
-        // MasterCSSVitePlugin()
+        // CSSExtractorPlugin()
     ]
 }

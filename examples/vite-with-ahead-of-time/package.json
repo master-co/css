@@ -6,11 +6,10 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
-        "preview": "vite preview",
-        "test": "jest --forceExit --detectOpenHandles"
+        "preview": "vite preview"
     },
     "devDependencies": {
-        "@master/css.vite": "",
+        "@master/css-extractor.vite": "",
         "typescript": "^4.9.3",
         "vite": "^4.0.1"
     }
