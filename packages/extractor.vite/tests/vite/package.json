@@ -1,0 +1,10 @@
+{
+    "name": "test-master-css-extractor.vite",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "devDependencies": {
+        "typescript": "^4.9.3",
+        "vite": "^4.0.1"
+    }
+}
