@@ -1,0 +1,46 @@
+{
+    "name": "@master/css-extractor.webpack",
+    "scripts": {
+        "build": "techor pack --platform node",
+        "dev": "npm run build -- --watch",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint src",
+        "test": "jest --forceExit --detectOpenHandles"
+    },
+    "license": "MIT",
+    "description": "Integrate Master CSS Static Extraction in Webpack way",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://docs.master.co/css/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/extractor.webpack"
+    },
+    "keywords": [
+        "webpack",
+        "plugin",
+        "integration",
+        "build tools",
+        "css",
+        "mastercss",
+        "webpack-plugin"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@master/css": "",
+        "@master/css-extractor": "",
+        "webpack-virtual-modules": "^0.5.0"
+    }
+}
