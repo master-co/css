@@ -2,6 +2,7 @@
     "name": "@master/css-extractor",
     "scripts": {
         "build": "techor pack --platform node",
+        "postbuild": "npm link ./",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
@@ -76,7 +77,7 @@
         "commander": "^10.0.1",
         "explore-config": "^2.2.8",
         "fast-glob": "^3.2.12",
-        "minimatch": "^5.1.1",
+        "minimatch": "^9.0.1",
         "upath": "^2.0.1"
     },
     "devDependencies": {
