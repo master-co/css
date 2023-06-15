@@ -5,8 +5,7 @@
         "rootDir": "src"
     },
     "include": [
-        "src/**/*",
-        "../css/src/functions/extract-latent-classes.ts"
+        "src/**/*"
     ],
     "exclude": [
         "src/**/*.test.*"

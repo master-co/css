@@ -15,10 +15,10 @@ import {
 
 import { WorkspaceFolder } from 'vscode-languageserver'
 import { MasterCSS } from '@master/css'
-import minimatch from 'minimatch'
+import { minimatch } from 'minimatch'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'path'
-import uri2path from 'file-uri-to-path'
+import { fileURLToPath } from 'url'
 import { settings as defaultSettings, doHover, positionCheck, getConfigFileColorRender, getColorPresentation, getDocumentColors, getLastInstance, getCompletionItem, getConfigColorsCompletionItem, checkConfigColorsBlock } from '@master/css-language-service'
 const connection = createConnection(ProposedFeatures.all)
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument)
@@ -111,14 +111,9 @@ async function loadMasterCssConfig(resource: string) {
         root = workspaceFolders?.find(x => resource.includes(x.uri))
     }
     if (root?.uri) {
-        try {
-            const configCWD = uri2path(root.uri.replace('%3A', ':'))
-            customConfig = exploreConfig(settings.config || 'master.css.*', { cwd: configCWD })
-            css = new MasterCSS(customConfig)
-        } catch (ex) {
-            console.log(ex)
-            css = new MasterCSS()
-        }
+        const configCWD = fileURLToPath(root.uri.replace('%3A', ':'))
+        customConfig = exploreConfig(settings.config || 'master.css.*', { cwd: configCWD })
+        css = new MasterCSS(customConfig)
     }
 }
 

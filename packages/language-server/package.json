@@ -1,7 +1,9 @@
 {
     "name": "@master/css-language-server",
     "scripts": {
-        "build": "techor pack --platform node",
+        "build:cjs": "esbuild src/server.ts --bundle --minify --outfile=dist/server.js --format=cjs --platform=node --external:vscode-languageserver --external:vscode-languageserver-textdocument --external:explore-config --external:js-beautify --external:minimatch --external:@master/css --external:@master/css-language-service",
+        "build:type": "tsc --emitDeclarationOnly --preserveWatchOutput --outDir dist",
+        "build": "npm run build:cjs && npm run build:type",
         "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
@@ -16,10 +18,9 @@
     "dependencies": {
         "@master/css": "",
         "@master/css-language-service": "",
-        "explore-config": "^2.2.9",
-        "file-uri-to-path": "^2.0.0",
+        "explore-config": "^2.2.10",
         "js-beautify": "^1.14.7",
-        "minimatch": "^5.1.2",
+        "minimatch": "^9.0.1",
         "vscode-languageserver": "^7.0.0",
         "vscode-languageserver-textdocument": "^1.0.9"
     },

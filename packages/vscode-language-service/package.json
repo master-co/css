@@ -1,7 +1,9 @@
 {
     "name": "master-css-vscode-language-service",
     "scripts": {
-        "build": "techor pack --platform node",
+        "build:server": "esbuild src/server.ts --bundle --minify --outfile=dist/server.js --format=cjs --platform=node --external:vscode",
+        "build:extension": "esbuild src/extension.ts --bundle --minify --outfile=dist/extension.js --format=cjs --platform=node --external:vscode",
+        "build": "npm run build:server && npm run build:extension",
         "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",

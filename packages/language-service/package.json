@@ -1,7 +1,9 @@
 {
     "name": "@master/css-language-service",
     "scripts": {
-        "build": "techor pack --platform node",
+        "build:cjs": "esbuild src/index.ts --bundle --minify --outfile=dist/index.js --format=cjs --platform=node --external:@master/css --external:js-beautify",
+        "build:type": "tsc --emitDeclarationOnly --preserveWatchOutput --outDir dist",
+        "build": "npm run build:cjs && npm run build:type",
         "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
