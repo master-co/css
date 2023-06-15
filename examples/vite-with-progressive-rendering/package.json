@@ -1,27 +1,27 @@
 {
-  "name": "@vitejs/test-ssr-react",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "node server",
-    "build": "npm run build:client && npm run build:server",
-    "build:client": "vite build --outDir dist/client",
-    "build:server": "vite build --ssr src/entry-server.jsx --outDir dist/server",
-    "generate": "vite build --outDir dist/static && npm run build:server && node prerender",
-    "serve": "NODE_ENV=production node server",
-    "debug": "node --inspect-brk server"
-  },
-  "dependencies": {
-    "@master/css": "^2.0.0-beta.159",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.11.2"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^4.0.0",
-    "compression": "^1.7.4",
-    "express": "^4.18.2",
-    "serve-static": "^1.15.0"
-  }
+    "name": "@vitejs/test-ssr-react",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "node server",
+        "build": "npm run build:client && npm run build:server",
+        "build:client": "vite build --outDir dist/client",
+        "build:server": "vite build --ssr src/entry-server.jsx --outDir dist/server",
+        "generate": "vite build --outDir dist/static && npm run build:server && node prerender",
+        "serve": "NODE_ENV=production node server",
+        "debug": "node --inspect-brk server"
+    },
+    "dependencies": {
+        "@master/css": "",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.11.2"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react": "^4.0.0",
+        "compression": "^1.7.4",
+        "express": "^4.18.2",
+        "serve-static": "^1.15.0"
+    }
 }

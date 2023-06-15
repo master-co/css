@@ -2,15 +2,9 @@
 <div align="center">
 
 <p align="center">
-    <a href="https://css.master.co">
-        <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/33840671/201701649-3bb7d698-abec-4d5f-ac30-ccc4d7bafcd4.svg">
-            <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg">
-            <img alt="Master CSS" src="https://user-images.githubusercontent.com/33840671/201703010-77bf2373-9899-40cc-98f5-30cf9b546941.svg" width="100%">
-        </picture>
-    </a>
+    <img width="1331" alt="Screenshot 2022-12-17 at 1 28 08 AM" src="https://user-images.githubusercontent.com/33840671/208154785-3b5f2e04-8a3c-4d12-bc46-f7625639f6fe.png">
 </p>
-<p align="center">Astro + Master CSS</p>
+<p align="center">A vite plugin for integrating Master CSS static-extraction compilation</p>
 
 <p align="center">
     <a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
@@ -27,11 +21,11 @@
             <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
         </picture>
     </a>
-    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-extractor.webpack">
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-extractor.vite">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-extractor.webpack?color=212022&label=%20&logo=npm&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-extractor.webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-extractor.webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-extractor.vite?color=212022&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-extractor.vite?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-extractor.vite?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
         </picture>
     </a>
     <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -61,80 +55,38 @@
 
 ## Getting Started
 
-If you don't have one, you can interactively create a new Astro project by running:
-```bash
-npm create astro@latest <project-name>
-```
-
-```bash
-cd <project-name>
-```
-
-Choose a compilation mode you want to install:
-
-### Static Extraction
-
 ```bash
 npm install @master/css-extractor.vite@beta -D
 ```
 
-`astro.config.mjs`
+`vite.config.js`
 ```js
-import { defineConfig } from 'astro/config'
 import { CSSExtractorPlugin } from '@master/css-extractor.vite'
 
-// https://astro.build/config
-export default defineConfig({
-    vite: {
-        plugins: [
-            CSSExtractorPlugin()
-        ]
-    }
-})
-```
-Import the virtual CSS module into `src/layouts/Layout.astro`:
-```jsx
----
-import "master.css"
-
-export interface Props {
-    title: string
+/** @type {import('vite').UserConfig} */
+const config = {
+    plugins: [
+        CSSExtractorPlugin()
+    ]
 }
 
-const { title } = Astro.props
----
+export default config
 ```
-Now start the Astro development server:
+Import the virtual CSS module into `src/main.ts`:
+```ts
+import './style.css'
+import 'master.css'
+```
+
+Now start the Vite development server:
 ```bash
 npm run dev -- --open
 ```
 
-### Runtime Rendering
+Example https://github.com/master-co/css/tree/beta/examples/vite
 
-```
-npm install @master/css@beta
-```
+## Compiler Options
+Master presets common configurations for various frameworks and build tools, and it works almost out of the box.
 
-`src/layouts/Layout.astro`
-```html
-...
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        ...
-        <script>
-            import MasterCSS from "@master/css";
-            import { config } from "../../master.css";
-            export const css = new MasterCSS(config);
-        </script>
-    </head>
-    <body>
-        <slot />
-    </body>
-</html>
-```
+https://github.com/master-co/css/tree/beta/packages/compiler
 
-Now start the Astro development server:
-```bash
-npm run dev -- --open
-```

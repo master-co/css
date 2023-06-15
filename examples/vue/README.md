@@ -57,7 +57,7 @@
 
 Choose a compilation mode you want to install:
 
-### Ahead-of-time Compilation
+### Static Extraction
 
 ```bash
 npm install @master/css-extractor.vite@beta -D
@@ -88,7 +88,7 @@ Now start the Vite development server:
 npm run dev -- --open
 ```
 
-### Just-in-time Compilation
+### Runtime Rendering
 
 ```bash
 npm install @master/css

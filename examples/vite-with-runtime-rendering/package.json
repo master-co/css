@@ -1,19 +1,17 @@
 {
-    "name": "master-css-lit-with-runtime-rendering",
+    "name": "vite-with-runtime-rendering",
     "private": true,
     "version": "0.0.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "tsc && vite build",
+        "build": "vite build",
         "preview": "vite preview"
     },
-    "dependencies": {
-        "lit": "^2.7.5",
-        "@master/css": ""
-    },
     "devDependencies": {
-        "typescript": "^5.0.2",
-        "vite": "^4.3.2"
+        "vite": "^4.3.9"
+    },
+    "dependencies": {
+        "@master/css": ""
     }
 }

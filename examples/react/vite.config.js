@@ -1,6 +1,6 @@
 import react from '@vitejs/plugin-react'
 
-/* ahead-of-time */
+/* static-extraction */
 // import { CSSExtractorPlugin } from '@master/css-extractor.vite'
 
 /** @type {import('vite').UserConfig} */
@@ -8,7 +8,7 @@ export default {
     plugins: [
         react(),
 
-        /* ahead-of-time */
+        /* static-extraction */
         // CSSExtractorPlugin()
     ]
 }
