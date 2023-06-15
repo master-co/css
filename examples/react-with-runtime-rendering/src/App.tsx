@@ -7,8 +7,7 @@ import { useThemeService } from '@master/css.react'
 
 function App() {
     const [count, setCount] = useState(0)
-    const theme = useThemeService()
-
+    const themeService = useThemeService()
     return (
         <div className="App">
             <div className='grid-cols:2 w:fit mx:auto'>
@@ -27,7 +26,7 @@ function App() {
                     count is {count}
                 </button>
                 <button className="h:40 bg:gray-20@dark bg:slate-90@light ml:10 rel">
-                    {theme?.current === 'dark' ? '🌜' : '☀️'} {theme?.current}
+                    {themeService?.current === 'dark' ? '🌜' : '☀️'} {themeService?.current}
                     <ThemeSelect className="abs full inset:0 r:inherit opacity:0 font:inherit" />
                 </button>
                 <p className='mt:30'>

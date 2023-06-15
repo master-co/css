@@ -1,9 +1,6 @@
 /** @type {import('@master/css').Config} */
-export const config = {
+export default {
     colors: {
         primary: 'gold-75'
-    },
-    theme: {
-        default: 'system'
     }
 }
