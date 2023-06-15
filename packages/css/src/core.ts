@@ -50,10 +50,17 @@ export class MasterCSS {
         public config: Config = defaultConfig
     ) {
         if (!config?.override) {
-            this.config = extend(defaultConfig, config)
-            if ('keyframes' in config) {
-                Object.assign(this.config.keyframes, config.keyframes)
+            const getExtendedConfig = (parentConfig: Config, currentConfig: Config) => {
+                const extendedCurrentConfig: Config =  currentConfig.extends?.length
+                    ? extend({}, currentConfig, ...currentConfig.extends.map(eachConfig => getExtendedConfig(currentConfig, 'config' in eachConfig ? eachConfig.config : eachConfig)))
+                    : currentConfig
+                const extendedParentConfig: Config = extend(parentConfig, extendedCurrentConfig)
+                if ('keyframes' in extendedCurrentConfig) {
+                    Object.assign(extendedParentConfig.keyframes, extendedCurrentConfig.keyframes)
+                }
+                return extendedParentConfig
             }
+            this.config = getExtendedConfig(defaultConfig, config)
         }
         this.cache()
         if (typeof window !== 'undefined' && this.config.observe) {

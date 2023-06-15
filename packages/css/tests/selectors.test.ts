@@ -22,6 +22,10 @@ test('selectors', () => {
         '.hide\\:\\:slider-thumb::-webkit-slider-thumb{display:none}.hide\\:\\:slider-thumb::-moz-range-thumb{display:none}',
         config
     )
+    testCSS(
+        'bg:red:hover_.feature__tab-title',
+        '.bg\\:red\\:hover_\\.feature__tab-title:hover .feature__tab-title{background-color:#d11a1e}'
+    )
 })
 
 test('breakpoints', () => {
