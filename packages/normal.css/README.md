@@ -85,7 +85,7 @@
 [View the source code](https://github.com/master-co/normal.css/blob/main/src/index.scss)
 
 ## Documentation
-For the full documentation, check out the [Preset Global Styles - Master CSS](https://docs.master.co/css/preset-global-styles)
+For the full documentation, check out the [Preset Global Styles - Master CSS](https://beta.css.master.co/docs/global-styles)
 
 ## Installation
 ```sh

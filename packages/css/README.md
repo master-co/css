@@ -93,12 +93,12 @@ We've built various Master CSS core functionality/integration packages:
 ##### Language
 - [Server](https://github.com/master-co/css/tree/beta/packages/language-server) - The core of the Master CSS language server
 - [Service](https://github.com/master-co/css/tree/beta/packages/language-service) - The core of the Master CSS language service
-- [VSCode](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) - Master CSS Language Service for Visual Studio Code
+- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) - Master CSS Language Service for Visual Studio Code Extension
 
 ##### Others
 - [Normal CSS](https://github.com/master-co/css/tree/beta/packages/normal.css) - Normalize the browser's styles
 - [Theme Service](https://github.com/master-co/css/tree/beta/packages/theme-service) - A CSS theme-switching service for Master CSS
-- [Class Variant](https://github.com/master-co/css/tree/beta/packages/class-variant) - Create reusable, extensible, and customizable style class variants
+- [🚧 Class Variant](https://github.com/master-co/css/tree/beta/packages/class-variant) - Create reusable, extensible, and customizable style class variants
 
 ## Community
 The Master CSS community can be found here:

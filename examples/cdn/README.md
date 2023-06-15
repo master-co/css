@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">Master CSS JIT CDN out of the box in the browser</p>
+<p align="center">Master CSS Runtime CDN out of the box in the browser</p>
 
 <p align="center">
     <a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
@@ -66,16 +66,14 @@
 
 </div>
 
-## Getting Started
-
-`index.html`
 ```html
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" style="display: none">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preload" as="script" href="https://cdn.master.co/css@beta">
+    <link rel="preload" as="style" href="https://cdn.master.co/normal.css@beta">
     <link rel="stylesheet" href="https://cdn.master.co/normal.css@beta">
     <script>
         window.masterCSSConfig = {
@@ -86,10 +84,13 @@
     </script>
     <script src="https://cdn.master.co/css@beta"></script>
 </head>
-
 <body>
-    <h1 class="font:40 font:heavy italic m:50 text:center fg:primary">Hello World</h1>
+    <h1 class="font:40 font:heavy italic m:50 text:center">Hello World</h1>
 </body>
-
 </html>
 ```
+
+
+
+## Documentation
+Check out the official [documentation](https://beta.css.master.co/docs/installation/cdn).

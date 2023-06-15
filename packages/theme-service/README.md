@@ -60,4 +60,4 @@
 </div>
 
 ## Documentation
-Check out the [Theme Service - Master CSS](https://beta.css.master.co/docs/theme-service) documentation
+Check out the official [documentation](https://beta.css.master.co/docs/theme-service).
