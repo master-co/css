@@ -139,6 +139,7 @@ const needExclude = (content: string) => {
         || content.match(/^~\/.+.\w+$/)
         || content.match(/function\(|\(.*\)=>/)
         || content.match(/^\$\(.*/)
+        || content.match(/^COMPLETE-STRING--/)
 }
 
 const hasUnclosedBrackets = (content: string) => {
