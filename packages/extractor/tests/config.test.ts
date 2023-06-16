@@ -1,4 +1,6 @@
 import CSSExtractor from '../src'
+import fs from 'fs'
+import path from 'path'
 
 test('read master.css.js config in cwd', async () => {
     const extractor = new CSSExtractor({ cwd: __dirname })
@@ -7,6 +9,14 @@ test('read master.css.js config in cwd', async () => {
 })
 
 test('master.css.js config custom classname', async () => {
+    fs.writeFileSync(path.join(__dirname, 'master.css.ts'), `
+        export default {
+            classes: {
+                'blue-btn': 'bg:blue',
+                btn: 'bg:gray'
+            }
+        }
+    `, { flag: 'w' })
     const extractor = new CSSExtractor({ cwd: __dirname })
     expect(
         extractor.extract('test.tsx',

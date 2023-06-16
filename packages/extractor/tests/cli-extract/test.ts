@@ -6,6 +6,13 @@ import path from 'path'
 
 it('basic extract', () => {
     fs.rmSync(path.join(__dirname, 'master.css'), { force: true })
+    fs.writeFileSync(path.join(__dirname, 'master.css.ts'), `
+        export default {
+            colors: {
+                primary: 'blue'
+            }
+        }
+    `, { flag: 'w' })
     execSync('tsx ../../src/bin extract', { cwd: __dirname })
     expectFileIncludes('master.css', [
         CSS.escape('fg:primary'),

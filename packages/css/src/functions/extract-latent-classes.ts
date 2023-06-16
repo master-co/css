@@ -122,7 +122,6 @@ const checkToExclude = (content: string) => {
 }
 
 const needExclude = (content: string) => {
-    console.log(content)
     return !content
         || (
             !content.match(/(?:\S*\{\S*\})|(?:^[\w\-()]+:\S+)|(?:^[\w-]+\(\S+\))|(?:^[@~]\S+$)|(?:^[\w-]+)/)
