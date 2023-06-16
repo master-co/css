@@ -1,7 +1,7 @@
 {
     "name": "@master/css",
     "scripts": {
-        "build": "techor pack --shakable",
+        "build": "techor-pack --shakable",
         "postbuild": "npm link ./",
         "dev": "npm run build -- --watch",
         "test": "jest",

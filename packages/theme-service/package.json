@@ -1,7 +1,7 @@
 {
     "name": "theme-service",
     "scripts": {
-        "build": "techor pack --shakable",
+        "build": "techor-pack --shakable",
         "dev": "npm run build -- --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",
