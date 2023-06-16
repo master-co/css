@@ -1,11 +1,39 @@
 import MasterCSS, { extractLatentClasses } from '../../css/src'
 
+it('extract latent classes from js raw', () => {
+    const content = `
+        import { setupCounter } from './counter'
+
+        const counterElement = document.querySelector<HTMLButtonElement>('#counter')
+        const syntax = 'block'
+        counterElement?.classList.add('~transform|.3s', 'translateY(-5):hover', syntax)
+
+        setupCounter(counterElement!)
+    `
+    expect(
+        extractLatentClasses(content))
+        .toEqual([
+            'const',
+            'counterElement',
+            'syntax',
+            'block',
+            '~transform|.3s',
+            'translateY(-5):hover',
+            'setupCounter(counterElement!)',
+        ])
+})
+
 test('basic js object', () => {
     expect(extractLatentClasses(`
     const test = {
         'f:24': true
     }
-    `)).toEqual(['f:24'])
+    `)).toEqual([
+        'const',
+        'test',
+        'f:24',
+        'true',
+    ])
 })
 
 test('basic html', () => {
@@ -13,7 +41,13 @@ test('basic html', () => {
 })
 
 test('content', () => {
-    expect(extractLatentClasses(`<div class="content:'I\\'m_string' content:'I\\'m_string2'"></div>`)).toEqual(['content:\'I\\\'m_string\'', 'content:\'I\\\'m_string2\''])
+    expect(extractLatentClasses(`<div class="content:'I\\'m_string' content:'I\\'m_string2'"></div>`))
+        .toEqual([
+            'content:\'I\\\'m_string\'',
+            'm_string',
+            'content:\'I\\\'m_string2\'',
+            'm_string2'
+        ])
 })
 
 test('url', () => {
@@ -36,6 +70,8 @@ test('=', () => {
     content:'='
     content:"="
     `)).toEqual([
+        '{components[0]}',
+        '{data_0}>',
         'content:\'=\'',
         'content:"="'
     ])
@@ -79,6 +115,7 @@ test('wxh', () => {
         'calc(100vw-60)x20rem',
         '15pxxcalc(100vh-100px)',
         'calc(100vw-60)xcalc(100vh-100px)',
+        'logo',
         '172x172'
     ])
 })
@@ -92,20 +129,23 @@ test('group', () => {
     {/if}
     {bg:black;f:16}_div@dark
     .something{bg:white}
-    `)).toEqual([
-        '{bg:black;f:16}_div@dark',
-        '.something{bg:white}'
-    ])
+    `))
+        .toEqual([
+            '{form}',
+            '{data_0}',
+            '{bg:black;f:16}_div@dark',
+            '.something{bg:white}',
+        ])
 })
 
 test('import', () => {
-    const css = new MasterCSS()
     expect(extractLatentClasses(`
         import * as fs from 'fs'
         import css from '@master/css'
         require('fs')
         await import('file:///')
-    `)).toEqual([])
+    `))
+        .toEqual(['await'])
 })
 
 test('style tag', () => {
@@ -198,7 +238,15 @@ test('@', () => {
             unicode-range: U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;
         }
         `)
-    ).toEqual([])
+    ).toEqual([
+        'font-family',
+        'Fira',
+        'font-style',
+        'font-display',
+        'font-weight',
+        'src',
+        'unicode-range',
+    ])
 })
 
 test('home path', () => {
