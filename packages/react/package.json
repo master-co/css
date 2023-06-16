@@ -1,10 +1,11 @@
 {
     "name": "@master/css.react",
     "scripts": {
-        "build": "techor pack --shakable",
+        "build": "techor-pack --shakable",
         "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
-        "lint": "eslint src"
+        "lint": "eslint src",
+        "test": "jest"
     },
     "license": "MIT",
     "description": "Integrate Master CSS in React way",
@@ -20,11 +21,19 @@
         "directory": "packages/react"
     },
     "keywords": [
+        "styled",
+        "component",
+        "element",
+        "styled-component",
         "react",
         "hooks",
         "use",
         "css",
-        "mastercss"
+        "mastercss",
+        "class-name",
+        "reactjs",
+        "nextjs",
+        "solidjs"
     ],
     "sideEffects": false,
     "main": "./dist/cjs/index.js",
@@ -64,10 +73,16 @@
         "access": "public"
     },
     "peerDependencies": {
+        "@types/react": ">=15",
         "react": ">= 16.8.0"
     },
     "dependencies": {
         "@master/css": "",
-        "theme-service": ""
+        "class-variant": "",
+        "theme-service": "",
+        "@techor/one-liner": "^2.2.10"
+    },
+    "devDependencies": {
+        "util": "^0.12.5"
     }
 }
