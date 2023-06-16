@@ -1,7 +1,7 @@
 {
     "name": "@master/css-extractor",
     "scripts": {
-        "build": "techor pack --platform node",
+        "build": "techor-pack --platform node",
         "postbuild": "npm link ./",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",

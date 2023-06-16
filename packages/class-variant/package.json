@@ -1,13 +1,14 @@
 {
-    "name": "@master/css.svelte",
-    "type": "module",
+    "name": "class-variant",
     "scripts": {
-        "build": "techor-pack ./src/**/*.{ts,svelte} --format esm --esm-ext .js --no-bundle",
-        "dev": "npm run build -- -w",
-        "type-check": "tsc --noEmit"
+        "build": "techor-pack --shakable",
+        "dev": "npm run build -- --watch",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint src",
+        "test": "jest"
     },
     "license": "MIT",
-    "description": "Integration of Master CSS in Svelte",
+    "description": "Create reusable, extensible, and customizable style class variants",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",
@@ -17,23 +18,24 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/svelte"
+        "directory": "packages/class-variant"
     },
     "keywords": [
-        "svelte",
-        "providers",
+        "variant",
+        "classname",
         "css",
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "module": "./dist/index.js",
+    "main": "./dist/cjs/index.js",
+    "jsnext:main": "./dist/esm/index.mjs",
+    "esnext": "./dist/esm/index.mjs",
+    "module": "./dist/esm/index.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "import": "./dist/index.js",
+            "require": "./dist/cjs/index.js",
+            "import": "./dist/esm/index.mjs",
             "types": "./dist/index.d.ts"
         }
     },
@@ -44,13 +46,9 @@
         "access": "public"
     },
     "peerDependencies": {
-        "svelte": ">= 3.0.0"
+        "react": ">= 16.8.0"
     },
     "dependencies": {
-        "@master/css": "",
-        "theme-service": ""
-    },
-    "devDependencies": {
-        "@tsconfig/svelte": "^3.0.0"
+        "@techor/one-liner": "^2.2.10"
     }
 }
