@@ -26,12 +26,23 @@ export default function extractLatentClasses(content: string) {
 
 const trimString = (content: string) => {
     const originContent = content
-    content = keepCompleteStringAndProcessContent(
-        content,
-        c => c
-            .replace(/^[^:@~(]*(?:["'`]|(?<!@>?)=)/, '')
-            .replace(/(?:[([{\\:#=.]+|["'`].*)$/, '')
-    )
+    const wxh = content.match(/(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)x(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)/g)
+
+    if (wxh?.length) {
+        content = keepCompleteStringAndProcessContent(
+            content,
+            c => c
+                .replace(/^[^:@~(]*(?<!@>?)=/, '')
+                .replace(/(?:[([{\\:#=.]+|["'`].*)$/, '')
+        )
+    } else {
+        content = keepCompleteStringAndProcessContent(
+            content,
+            c => c
+                .replace(/^[^:@~(]*(?:["'`]|(?<!@>?)=)/, '')
+                .replace(/(?:[([{\\:#=.]+|["'`].*)$/, '')
+        )
+    }
 
     if (originContent === content || !content) {
         return content
