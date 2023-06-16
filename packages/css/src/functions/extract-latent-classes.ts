@@ -7,39 +7,28 @@ import type { Config } from '../config'
  * @param options 
  * @returns 
  */
-export default function extractLatentClasses(content: string, options?: { css?: MasterCSS, config?: Config }) {
-    let css: MasterCSS
-    if (options?.css) {
-        css = options?.css
-    } else {
-        css = new MasterCSS({ ...options?.config, observe: false })
-    }
+export default function extractLatentClasses(content: string) {
     content = preExclude(content)
-    const reservedWord = [
-        ...Object.keys(css.config.semantics),
-        ...Object.keys(css.classes)
-    ]
     const blocks = content.match(/\S+/g) ?? []
     const latentClasses = new Set<string>()
     for (const block of blocks) {
-        latentClasses.add(trimString(block, reservedWord))
+        latentClasses.add(trimString(block))
         const result = peelString(block)
         if (result.size) {
             for (const string of result) {
-                latentClasses.add(trimString(string, reservedWord))
+                latentClasses.add(trimString(string))
             }
         }
     }
     return Array.from(latentClasses)
-        .filter(x => x && !checkToExclude(x, reservedWord))
+        .filter(x => x && !checkToExclude(x))
 }
 
-const trimString = (content: string, reservedWord: string[]) => {
+const trimString = (content: string) => {
     const originContent = content
-
     const wxh = content.match(/(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)x(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)/g)
 
-    if ((wxh?.length ? reservedWord.concat(wxh) : reservedWord).find(x => originContent.startsWith(x))) {
+    if (wxh?.length) {
         content = keepCompleteStringAndProcessContent(
             content,
             c => c
@@ -58,7 +47,7 @@ const trimString = (content: string, reservedWord: string[]) => {
     if (originContent === content || !content) {
         return content
     } else {
-        return trimString(content, reservedWord)
+        return trimString(content)
     }
 }
 
@@ -120,24 +109,24 @@ const preExclude = (content: string) => {
     )
 }
 
-const checkToExclude = (content: string, reservedWord: string[]) => {
+const checkToExclude = (content: string) => {
     const completeStrings = findCompleteString(content)
     const checkContent: string = replaceCompleteString(content, completeStrings)
     const groupRegx = /{(.*)}/
     let m: RegExpExecArray
     while ((m = groupRegx.exec(checkContent)) !== null) {
         const groupClasses = m[1].split(';')
-        return groupClasses.find(x => needExclude(x, reservedWord)) !== undefined
+        return groupClasses.find(x => needExclude(x)) !== undefined
     }
-    return needExclude(checkContent, reservedWord) || hasUnclosedBrackets(content)
+    return needExclude(checkContent) || hasUnclosedBrackets(content)
 }
 
-const needExclude = (content: string, reservedWord: string[]) => {
+const needExclude = (content: string) => {
+    console.log(content)
     return !content
         || (
-            !content.match(/(?:\S*\{\S*\})|(?:^[\w\-()]+:\S+)|(?:^[\w-]+\(\S+\))|(?:^[@~]\S+$)/)
+            !content.match(/(?:\S*\{\S*\})|(?:^[\w\-()]+:\S+)|(?:^[\w-]+\(\S+\))|(?:^[@~]\S+$)|(?:^[\w-]+)/)
             && !content.match(/^(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)x(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)$/)
-            && !reservedWord.find(x => content.startsWith(x))
         )
         || content.match(/\*\*/)
         || content.match(/:\[/)

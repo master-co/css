@@ -1,8 +1,7 @@
-import MasterCSS from '../../css/src'
-import extract from '../src/extract-latent-classes'
+import MasterCSS, { extractLatentClasses } from '../../css/src'
 
 test('basic js object', () => {
-    expect(extract(`
+    expect(extractLatentClasses(`
     const test = {
         'f:24': true
     }
@@ -10,19 +9,19 @@ test('basic js object', () => {
 })
 
 test('basic html', () => {
-    expect(extract(`<div class="f:16 blur(2px) @shake|1s|infinite>li"></div>`)).toEqual(['f:16', 'blur(2px)', '@shake|1s|infinite>li'])
+    expect(extractLatentClasses(`<div class="f:16 blur(2px) @shake|1s|infinite>li"></div>`)).toEqual(['f:16', 'blur(2px)', '@shake|1s|infinite>li'])
 })
 
 test('content', () => {
-    expect(extract(`<div class="content:'I\\'m_string' content:'I\\'m_string2'"></div>`)).toEqual(['content:\'I\\\'m_string\'', 'content:\'I\\\'m_string2\''])
+    expect(extractLatentClasses(`<div class="content:'I\\'m_string' content:'I\\'m_string2'"></div>`)).toEqual(['content:\'I\\\'m_string\'', 'content:\'I\\\'m_string2\''])
 })
 
 test('url', () => {
-    expect(extract(`<div class="bg:url('https://master.co/test_logo.png')"></div>`)).toEqual(['bg:url(\'https://master.co/test_logo.png\')'])
+    expect(extractLatentClasses(`<div class="bg:url('https://master.co/test_logo.png')"></div>`)).toEqual(['bg:url(\'https://master.co/test_logo.png\')'])
 })
 
 test('comment', () => {
-    expect(extract(`<!-- comment -->
+    expect(extractLatentClasses(`<!-- comment -->
     /* bg:black */
     /*
         f:16
@@ -31,7 +30,7 @@ test('comment', () => {
 })
 
 test('=', () => {
-    expect(extract(`
+    expect(extractLatentClasses(`
     this={components[0]}
     data={data_0}>
     content:'='
@@ -43,7 +42,7 @@ test('=', () => {
 })
 
 test('media', () => {
-    expect(extract(`
+    expect(extractLatentClasses(`
     bg:black@xl
     font:24@media(min-width:1024px)
     font:16@<789
@@ -63,7 +62,7 @@ test('media', () => {
 })
 
 test('wxh', () => {
-    expect(extract(`
+    expect(extractLatentClasses(`
         1920x1080
         1024pxx786px
         min:40x80
@@ -85,7 +84,7 @@ test('wxh', () => {
 })
 
 test('group', () => {
-    expect(extract(`
+    expect(extractLatentClasses(`
     {form}
     {:else}
     {data_0}
@@ -101,7 +100,7 @@ test('group', () => {
 
 test('import', () => {
     const css = new MasterCSS()
-    expect(extract(`
+    expect(extractLatentClasses(`
         import * as fs from 'fs'
         import css from '@master/css'
         require('fs')
@@ -110,7 +109,7 @@ test('import', () => {
 })
 
 test('style tag', () => {
-    expect(extract(`<style data-sveltekit>.app.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;min-height:100vh}main.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{flex:1;display:flex;flex-direction:column;padding:1rem;width:100%;max-width:64rem;margin:0 auto;box-sizing:border-box}footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px}footer.s-7IPF32Wcq3s8 a.s-7IPF32Wcq3s8{font-weight:bold}@media(min-width: 480px){footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{padding:12px 0}}.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{}
+    expect(extractLatentClasses(`<style data-sveltekit>.app.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;min-height:100vh}main.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{flex:1;display:flex;flex-direction:column;padding:1rem;width:100%;max-width:64rem;margin:0 auto;box-sizing:border-box}footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px}footer.s-7IPF32Wcq3s8 a.s-7IPF32Wcq3s8{font-weight:bold}@media(min-width: 480px){footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{padding:12px 0}}.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{}
 /* fira-mono-cyrillic-ext-400-normal*/
 @font-face {
   font-family: 'Fira Mono';
@@ -187,7 +186,7 @@ test('style tag', () => {
 
 test('@', () => {
     expect(
-        extract(`
+        extractLatentClasses(`
         // @ts-ignore
         @font-face
         {
@@ -203,7 +202,7 @@ test('@', () => {
 })
 
 test('home path', () => {
-    expect(extract(`
+    expect(extractLatentClasses(`
         ~/assets/master.svg
         ~/master.svg
         ~padding|300ms|ease-in
@@ -219,11 +218,11 @@ test('home path', () => {
 })
 
 test('$', () => {
-    expect(extract(`$(size):calc(100%-20px)`)).toEqual([])
+    expect(extractLatentClasses(`$(size):calc(100%-20px)`)).toEqual([])
 })
 
 test('comment2', () => {
-    expect(extract(`
+    expect(extractLatentClasses(`
         // @todo
     `)).toEqual([])
 })
