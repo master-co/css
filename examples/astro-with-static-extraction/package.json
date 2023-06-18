@@ -1,8 +1,7 @@
 {
-    "name": "master-css-in-astro",
+    "name": "astro-with-static-extraction",
     "type": "module",
     "version": "0.0.1",
-    "private": true,
     "scripts": {
         "dev": "astro dev",
         "start": "astro dev",
@@ -11,8 +10,9 @@
         "astro": "astro"
     },
     "dependencies": {
-        "@master/css": "",
-        "@master/css-extractor.vite": "",
-        "astro": "^1.7.1"
+        "astro": "^2.6.4"
+    },
+    "devDependencies": {
+        "@master/css-extractor.vite": ""
     }
 }
