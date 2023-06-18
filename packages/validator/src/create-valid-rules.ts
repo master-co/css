@@ -4,7 +4,7 @@ import { validate as validateCSS } from 'csstree-validator'
 /**
  * @argument syntax A potential Master CSS syntactic class
  * @argument options Options for creating a new Master CSS instance
- * @returns Rules that are valid
+ * @returns Valid rules
  */
 export default function createValidRules(
     syntax: string,

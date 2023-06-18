@@ -2,9 +2,10 @@ import { Config, MasterCSS } from '@master/css'
 import { validate as validateCSS } from 'csstree-validator'
 
 /**
+ * Validates that the string is valid Master CSS class syntax.
  * @argument syntax A potential Master CSS syntactic class
  * @argument options Options for creating a new Master CSS instance
- * @returns SyntaxError[]
+ * @returns boolean
  */
 export default function isClassValid(
     syntax: string,
