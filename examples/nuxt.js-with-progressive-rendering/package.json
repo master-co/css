@@ -5,11 +5,12 @@
         "build": "nuxt build",
         "dev": "nuxt dev",
         "generate": "nuxt generate",
-        "preview": "nuxt preview"
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare"
     },
     "devDependencies": {
         "@master/css": "",
-        "nuxt": "3.0.0",
-        "vite": "^4.0.1"
+        "@types/node": "^18",
+        "nuxt": "^3.5.2"
     }
 }

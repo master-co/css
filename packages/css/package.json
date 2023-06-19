@@ -54,8 +54,8 @@
                 "import": "./dist/index.mjs",
                 "types": "./dist/index.browser.d.ts"
             },
-            "require": "./dist/cjs/index.js",
-            "import": "./dist/esm/index.mjs",
+            "require": "./dist/index.js",
+            "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
         }
     },
