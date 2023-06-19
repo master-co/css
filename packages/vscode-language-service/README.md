@@ -11,6 +11,7 @@
 - [Features](#features)
   - [Code-completion](#code-completion)
   - [Syntax highlighting](#syntax-highlighting)
+- [Documentation](#documentation)
   - [Generate preview](#generate-preview)
 - [Settings](#settings)
   - [`editor.quickSuggestions`](#editorquicksuggestions)
@@ -20,6 +21,7 @@
   - [`masterCSS.previewColors: true`](#mastercsspreviewcolors-true)
   - [`masterCSS.inspect: true`](#mastercssinspect-true)
   - [`masterCSS.suggestions: true`](#mastercsssuggestions-true)
+  - [`masterCSS.config`](#mastercssconfig)
 
 <br>
 
@@ -49,11 +51,7 @@ Hover over Master class names to see their CSS generation.
 ![rendering-preview](https://user-images.githubusercontent.com/33840671/185128766-614f302e-7cc3-4294-9179-76f29069d4a6.gif)
 
 ## Settings
-We have given friendly presets based on mainstream frameworks and languages. If you think there are other commonly used ones that should be built in, please [send a feature issue](https://github.com/master-co/css-language-service/issues/new?assignees=&labels=enhancement&template=feature_request.yml) to us.
-
 - [User and Workspace Settings - Visual Studio Code](https://code.visualstudio.com/docs/getstarted/settings#:~:text=To%20open%20the%20Settings%20editor,macOS%20%2D%20Code%20%3E%20Preferences%20%3E%20Settings)
-
-The following examples are default values：
 
 ### `editor.quickSuggestions`
 ```json
@@ -112,5 +110,5 @@ Enable autocomplete suggestions.
 ### `masterCSS.config`
 Configure the config file path.
 ```json
-"masterCSS.config": "master.css.{ts,js,mjs,cjs}"
+"masterCSS.config": "master.css.*"
 ```
