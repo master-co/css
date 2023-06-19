@@ -1,12 +1,14 @@
-import { Config } from '@master/css'
-
-export const config: Config = {
-    themes: {},
-    colors: {},
+/** @type {import('@master/css').Config} */
+export default {
     classes: {},
+    colors: {},
+    themes: {},
+    rules: {},
     values: {},
     semantics: {},
     breakpoints: {},
+    mediaQueries: {},
+    keyframes: {},
     selectors: {},
-    mediaQueries: {}
+    functions: {}
 }
