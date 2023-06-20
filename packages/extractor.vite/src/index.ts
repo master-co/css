@@ -8,13 +8,20 @@ import { Pattern } from 'fast-glob'
 export async function CSSExtractorPlugin(
     customOptions?: Options | Pattern | Pattern[]
 ): Promise<Plugin> {
-    const extractor = new CSSExtractor(customOptions)
-    await extractor.insertFixed()
+    let extractor
     let server: ViteDevServer
     const transformedIds = new Set<string>()
     return {
         name: 'vite-plugin-master-css',
         enforce: 'post',
+        parallel: true,
+        apply(config, env) {
+            return !env.ssrBuild
+        },
+        async buildStart() {
+            extractor = new CSSExtractor(customOptions)
+            await extractor.insertFixed()
+        },
         async resolveId(id) {
             if (id === extractor.options.module) {
                 return extractor.resolvedModuleId
