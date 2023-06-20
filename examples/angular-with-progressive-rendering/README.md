@@ -14,4 +14,4 @@
 </div>
 
 ## Documentation
-Check out the official [documentation](https://beta.css.master.co/docs/guides/angular).
+Check out the official [documentation](https://beta.css.master.co/docs/installation/angular).

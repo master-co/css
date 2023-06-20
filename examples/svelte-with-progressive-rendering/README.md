@@ -14,4 +14,4 @@
 </div>
 
 ## Documentation
-Check out the official [documentation](https://beta.css.master.co/docs/guides/svelte).
+Check out the official [documentation](https://beta.css.master.co/docs/installation/svelte).

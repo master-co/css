@@ -14,4 +14,4 @@
 </div>
 
 ## Documentation
-Check out the official [documentation](https://beta.css.master.co/docs/guides/nextjs/runtime-rendering).
+Check out the official [documentation](https://beta.css.master.co/docs/installation/nextjs/runtime-rendering).

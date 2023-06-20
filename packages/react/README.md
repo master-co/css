@@ -53,4 +53,4 @@
 </div>
 
 ## Documentation
-Check out the official [documentation](https://beta.css.master.co/docs/guides/react).
+Check out the official [documentation](https://beta.css.master.co/docs/installation/react).

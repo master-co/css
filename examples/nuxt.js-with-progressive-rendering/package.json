@@ -8,8 +8,10 @@
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare"
     },
+    "dependencies": {
+        "@master/css-server.nitro": ""
+    },
     "devDependencies": {
-        "@master/css": "",
         "@types/node": "^18",
         "nuxt": "^3.5.2"
     }

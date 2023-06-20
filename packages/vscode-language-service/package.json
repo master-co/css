@@ -13,7 +13,7 @@
     "displayName": "Master CSS Language Service",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
-    "homepage": "https://beta.css.master.co/docs/guides/language-service",
+    "homepage": "https://beta.css.master.co/docs/installation/language-service",
     "license": "MIT",
     "publisher": "masterco",
     "version": "2.1.35",

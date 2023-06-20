@@ -14,4 +14,4 @@
 </div>
 
 ## Documentation
-Check out the official [documentation](https://beta.css.master.co/docs/guides/svelte/static-extraction).
+Check out the official [documentation](https://beta.css.master.co/docs/installation/svelte/static-extraction).

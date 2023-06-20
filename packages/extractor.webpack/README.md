@@ -63,4 +63,4 @@ module.exports = {
 ```
 
 ## Documentation
-Check out the official [documentation](https://beta.css.master.co/docs/guides/webpack/static-extraction).
+Check out the official [documentation](https://beta.css.master.co/docs/installation/webpack/static-extraction).
