@@ -1,7 +1,11 @@
 <script>
-import MasterCSS from "@master/css";
-import config from "./master.css";
-new MasterCSS(config);
+(async () => {
+    const [{ MasterCSS }, { default: config }] = await Promise.all([
+        import("@master/css"),
+        import("./master.css"),
+    ]);
+    new MasterCSS(config);
+})();
 </script>
 
 <template>
