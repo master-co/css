@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { MasterCSS } from "@master/css";
-    import { onDestroy, onMount, setContext } from "svelte";
+    import { onMount, setContext } from "svelte";
     import { writable } from "svelte/store";
     import { lazyCSSSymbol } from "./lazy-css";
     export let config: Promise<any>;
@@ -8,10 +8,8 @@
     const css = writable<MasterCSS>();
     onMount(async () => {
         if (!$css) {
-            const [{ MasterCSS }, configModule] = await Promise.all([
-                import("@master/css"),
-                config,
-            ]);
+            const [{ MasterCSS, initRuntime }, configModule] =
+                await Promise.all([import("@master/css"), config]);
             const { instances } = MasterCSS;
             const existingCSS = instances.find(
                 (eachCSS) => eachCSS.root === root
@@ -23,7 +21,7 @@
                     configModule?.config ||
                     configModule?.default ||
                     configModule;
-                css.set(new MasterCSS(resolvedConfig));
+                css.set(initRuntime(resolvedConfig));
             }
             return () => $css.destroy();
         }

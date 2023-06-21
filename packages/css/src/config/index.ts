@@ -7,7 +7,6 @@ import { semantics } from './semantics'
 import { themes } from './themes'
 import { rules } from './rules'
 import { override } from './override'
-import { observe } from './observe'
 import { important } from './important'
 import { keyframes } from './keyframes'
 import { functions, FunctionConfig } from './functions'
@@ -23,7 +22,6 @@ const config: Config = {
     themes,
     rules,
     override,
-    observe,
     important,
     functions,
     keyframes,
@@ -41,7 +39,6 @@ export {
     themes,
     rules,
     override,
-    observe,
     important,
     functions,
     keyframes,
@@ -74,7 +71,6 @@ export interface Config {
     scope?: string
     important?: boolean
     override?: boolean
-    observe?: boolean
     functions?: Record<string, FunctionConfig>
     keyframes?: Record<string, Record<string, Record<string, string | number>>>
     precedence?: 'highest' | 'higher' | 'lowest'

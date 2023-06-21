@@ -9,7 +9,7 @@ import { MasterCSS } from '../core'
  */
 export default function generateFromClasses(classes: string[], config?: Config) {
     if (!classes.length) return
-    const css = new MasterCSS({ ...config, observe: false })
+    const css = new MasterCSS(config)
     for (const eachClass of classes) {
         css.insert(eachClass)
     }

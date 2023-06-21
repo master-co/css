@@ -6,7 +6,7 @@ import { rgbToHsl } from '../utils/rgb-to-hsl'
 import { hslToRgb } from '../utils/hsl-to-rgb'
 import { toTwoDigitHex } from '../utils/to-two-digit-hex'
 
-export async function getConfigFileColorRender(text: string, masterCss: MasterCSS = new MasterCSS({ observe: false })): Promise<any[]> {
+export async function getConfigFileColorRender(text: string, css: MasterCSS = new MasterCSS()): Promise<any[]> {
 
     const colors: any[] = []
 
@@ -17,7 +17,7 @@ export async function getConfigFileColorRender(text: string, masterCss: MasterCS
     const classPattern = /(?<=colors:\s*{\s*.*)([^}]*)}/g
     while ((classMatch = classPattern.exec(text)) !== null) {
         while ((colorMatch = colorNamePattern.exec(classMatch[0]))) {
-            const colorValue = parseColorString(colorMatch[2], '', masterCss)
+            const colorValue = parseColorString(colorMatch[2], '', css)
             if (colorValue) {
                 const colorIndex: any = {
                     index: {
@@ -33,21 +33,21 @@ export async function getConfigFileColorRender(text: string, masterCss: MasterCS
     return colors
 }
 
-export async function getDocumentColors(text: string, masterCss: MasterCSS = new MasterCSS({ observe: false })
+export async function getDocumentColors(text: string, css: MasterCSS = new MasterCSS()
 ): Promise<any[]> {
     const colors: any[] = []
 
     let instanceMatch: RegExpExecArray | null
     while ((instanceMatch = instancePattern.exec(text)) !== null) {
         const instanceStartIndex = instanceMatch.index
-        const theme = masterCss.themeNames.find(x => instanceMatch?.[0]?.endsWith(`@${x}`)) ?? ''
+        const theme = css.themeNames.find(x => instanceMatch?.[0]?.endsWith(`@${x}`)) ?? ''
 
         const colorPattern = /(?<=[:;|])(?:#?\w+(?:-[\d]{1,2})?(?:\/.?[\d]*)?(?:\([^\s)]+\))?)/g
         let colorMatch: RegExpExecArray | null
 
         //check color
         while ((colorMatch = colorPattern.exec(instanceMatch[0])) !== null) {
-            const colorValue = parseColorString(colorMatch[0], theme, masterCss)
+            const colorValue = parseColorString(colorMatch[0], theme, css)
             if (colorValue) {
                 const colorIndex: any = {
                     index: {
@@ -65,7 +65,7 @@ export async function getDocumentColors(text: string, masterCss: MasterCSS = new
     return colors
 }
 
-function parseColorString(colorString: string, theme: string, masterCss: MasterCSS = new MasterCSS({ observe: false })) {
+function parseColorString(colorString: string, theme: string, css: MasterCSS = new MasterCSS()) {
     const rgbaColorPattern = /rgba?\(([\d.]+),([\d.]+),([\d.]+)(?:,([\d.]+))?\)/g
     const hslaColorPattern = /hsla?\(([\d.]+),([\d.]+)%,([\d.]+)%(?:,([\d.]+))?\)/g
     const hexColorPattern = /#([0-9a-fA-F]{6,8})/g
@@ -86,7 +86,7 @@ function parseColorString(colorString: string, theme: string, masterCss: MasterC
     //#region for mastercss color
     let colorAlpha = 1
     let colorName = colorString
-    const allMasterCssColorKeys = Object.keys(masterCss.colorThemesMap)
+    const allMasterCssColorKeys = Object.keys(css.colorThemesMap)
     if (colorString.split('/').length == 2) {
         colorAlpha = Number('0' + colorString.split('/')[1])
     }
@@ -97,14 +97,14 @@ function parseColorString(colorString: string, theme: string, masterCss: MasterC
     }
 
     if (allMasterCssColorKeys.find(x => x == colorName)) {
-        return getColorsRGBA(colorName, colorAlpha, theme, masterCss)
+        return getColorsRGBA(colorName, colorAlpha, theme, css)
     }
     //#endregion  for mastercss color
 }
 
-function getColorsRGBA(colorName: string, colorAlpha = 1, theme = '', masterCss: MasterCSS = new MasterCSS({ observe: false })): Color {
+function getColorsRGBA(colorName: string, colorAlpha = 1, theme = '', css: MasterCSS = new MasterCSS()): Color {
     try {
-        const colorNumberMap = masterCss.colorThemesMap[colorName]
+        const colorNumberMap = css.colorThemesMap[colorName]
         const levelRgb = hexToRgb(colorNumberMap[theme] ?? colorNumberMap[''] ?? Object.values(colorNumberMap)[0])
 
         return { red: levelRgb.red / 255, green: levelRgb.green / 255, blue: levelRgb.blue / 255, alpha: colorAlpha }

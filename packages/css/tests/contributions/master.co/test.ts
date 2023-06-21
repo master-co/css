@@ -5,7 +5,7 @@ import path from 'path'
 describe('master.co', () => {
     const html = fs.readFileSync(path.resolve(__dirname, './docs/animation.html'), 'utf8')
     const classes = extractClassesFromHTML(html)
-    const css = new MasterCSS({ observe: false })
+    const css = new MasterCSS()
     classes.forEach((eachClass) => css.insert(eachClass))
     it('docs/animation', () => {
         const whereAndNonMediaRules = css.rules.filter(({ hasWhere, media, priority }) => hasWhere && !media && priority === -1)

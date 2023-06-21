@@ -51,7 +51,7 @@ export class MasterCSS {
     ) {
         if (!config?.override) {
             const getExtendedConfig = (parentConfig: Config, currentConfig: Config) => {
-                const extendedCurrentConfig: Config =  currentConfig.extends?.length
+                const extendedCurrentConfig: Config = currentConfig.extends?.length
                     ? extend({}, currentConfig, ...currentConfig.extends.map(eachConfig => getExtendedConfig(currentConfig, 'config' in eachConfig ? eachConfig.config : eachConfig)))
                     : currentConfig
                 const extendedParentConfig: Config = extend(parentConfig, extendedCurrentConfig)
@@ -63,9 +63,6 @@ export class MasterCSS {
             this.config = getExtendedConfig(defaultConfig, config)
         }
         this.cache()
-        if (typeof window !== 'undefined' && this.config.observe) {
-            this.observe(document)
-        }
         MasterCSS.instances.push(this)
     }
 
@@ -341,12 +338,23 @@ export class MasterCSS {
         }
     }
 
+    /**
+     * Observe the DOM for changes and update the running stylesheet. (browser only)
+     * @param targetRoot root element to observe. default: document
+     * @param options mutation observer options
+     * @returns this
+     */
     observe(targetRoot: Document | ShadowRoot | null, options: MutationObserverInit = { subtree: true, childList: true }) {
-        // prevent repeated observation of the same root element
-        if (this.root === targetRoot) {
-            return
-        }
-        if (typeof window !== 'undefined' && targetRoot) {
+        if (typeof window !== 'undefined') {
+            if (!targetRoot) {
+                targetRoot = document
+            }
+
+            // prevent repeated observation of the same root element
+            if (this.root === targetRoot) {
+                return this
+            }
+
             // @ts-ignore
             this.root = targetRoot
             const isDocumentRoot = targetRoot === document

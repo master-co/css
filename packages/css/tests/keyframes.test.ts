@@ -5,8 +5,7 @@ it('make sure not to extend keyframes deeply', () => {
     const css = new MasterCSS({
         keyframes: {
             fade: {}
-        },
-        observe: false
+        }
     })
     expect(css.config.keyframes?.fade).toEqual({})
 })

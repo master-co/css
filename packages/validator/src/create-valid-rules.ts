@@ -14,7 +14,7 @@ export default function createValidRules(
     if (options?.css) {
         css = options?.css
     } else {
-        css = new MasterCSS({ ...options?.config, observe: false })
+        css = new MasterCSS(options?.config)
     }
     const rules = css.create(syntax)
     if (rules.length) {

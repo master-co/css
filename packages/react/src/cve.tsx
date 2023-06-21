@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react'
 import cv from 'class-variant'
 import line from '@techor/one-liner'
 
-type baseType<E> = string 
+type baseType<E> = string
     | string[]
     | Record<string, boolean>
     | [string, { [key in keyof E]?: E[key] }]
@@ -14,12 +14,12 @@ type TagParams = Array<[TemplateStringsArray, any[]]>;
 type IntrinsicElementsKeys = keyof JSX.IntrinsicElements;
 type MasterComponentProps<K extends IntrinsicElementsKeys | React.ComponentType<any>, E extends object = object> = Omit<K extends IntrinsicElementsKeys
     ? JSX.IntrinsicElements[K] extends React.DetailedHTMLProps<infer Attributes, infer Element>
-        ? Attributes & Partial<E>
-        : never
+    ? Attributes & Partial<E>
+    : never
     : K extends React.ComponentType<infer U>
-        ? U & Partial<E>
-        : never, 'className' | 'ref'> & extraType<E>;
-type MasterExoticComponent<K extends IntrinsicElementsKeys | React.ComponentType<any>, E extends object = object> = React.ForwardRefExoticComponent<MasterComponentProps<K, E> & React.RefAttributes<K>> & { tag: K, params: TagParam };
+    ? U & Partial<E>
+    : never, 'className' | 'ref'> & extraType<E>;
+type MasterExoticComponent<K extends IntrinsicElementsKeys | React.ComponentType<any>, E extends object = object> = React.ForwardRefExoticComponent<MasterComponentProps<K, E> & React.RefAttributes<K>> & { tag: K, params: TagParams };
 
 type ParamsType<K extends IntrinsicElementsKeys | React.ComponentType<any>, E extends object = object> = Array<((props: MasterComponentProps<K, E>) => baseLoopType<MasterComponentProps<K, E>> | undefined) | baseLoopType<MasterComponentProps<K, E>>>;
 
@@ -34,14 +34,14 @@ type ReturnType<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
 
 const cve: {
     [key in IntrinsicElementsKeys]: (<F extends MasterExoticComponent<any, any>, E extends object = object>(firstParam: F) => F extends MasterExoticComponent<any, infer ME> ? ReturnType<key, ME & E> : never)
-        & (<E extends object = object>(firstParam: TemplateStringsArray | baseType<E>, ...params: ParamsType<key, E>) => MasterExoticComponent<key, E>)
+    & (<E extends object = object>(firstParam: TemplateStringsArray | baseType<E>, ...params: ParamsType<key, E>) => MasterExoticComponent<key, E>)
 } & {
     <F extends MasterExoticComponent<any>, E extends object = object>(firstParam: F): F extends MasterExoticComponent<infer K, infer ME> ? ReturnType<K, ME & E> : never
 } & {
     <E extends object = object>(firstParam: TemplateStringsArray | baseType<MasterComponentProps<'div', E>>, ...params: ParamsType<'div', E>): MasterExoticComponent<'div', E>
 } & {
     //@ts-ignore
-    <F extends React.ComponentType<any>, E extends object = object>(firstParam: F, ...params: F extends React.ComponentType<infer RE> ? ParamsType<'div', RE & E> : never): F extends React.ComponentType<infer RE> ? ReturnType<React.ComponentType<RE & E>> :never
+    <F extends React.ComponentType<any>, E extends object = object>(firstParam: F, ...params: F extends React.ComponentType<infer RE> ? ParamsType<'div', RE & E> : never): F extends React.ComponentType<infer RE> ? ReturnType<React.ComponentType<RE & E>> : never
 } = new Proxy(
     ((firstParam, ...params) => {
         return (Array.isArray(firstParam) && 'raw' in firstParam || typeof firstParam !== 'object' || !('render' in firstParam))
@@ -107,14 +107,14 @@ function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
                                                 valuesByProp = param
                                             }
                                             break
-                                    } 
+                                    }
                                 }
                             }
                             break
                         case 'function':
                             // eslint-disable-next-line no-case-declarations
                             const transformedParam = param(props)
-                            if (typeof transformedParam === 'object' && handleParam(transformedParam)) 
+                            if (typeof transformedParam === 'object' && handleParam(transformedParam))
                                 return true
                             break
                     }
@@ -136,7 +136,7 @@ function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
                     const eachHandledTagParam = unhandledTagParams[i]
                     classNames.push(cv(eachHandledTagParam[0], ...eachHandledTagParam[1])(props))
                 }
-    
+
                 const newProps: Record<string, any> = {}
                 for (const key in props) {
                     if (!key.startsWith('$')) {
@@ -150,7 +150,7 @@ function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
                 // @ts-ignore
                 return <Tag ref={ref} {...newProps} className={line(classNames, props.className)} />
             }) as any as MasterExoticComponent<K, E>
-    
+
             component.displayName = displayName
             component.tag = Tag
             component.params = newTagParams

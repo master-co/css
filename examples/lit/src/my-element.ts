@@ -2,7 +2,7 @@ import { LitElement, css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import masterLogo from './assets/master.svg'
 import litLogo from './assets/lit.svg'
-import MasterCSS from '@master/css'
+import MasterCSS, { initRuntime } from '@master/css'
 import config from '../master.css'
 
 /**
@@ -14,35 +14,32 @@ import config from '../master.css'
 @customElement('my-element')
 export class MyElement extends LitElement {
 
-	css: MasterCSS | undefined
+    css: MasterCSS | undefined
 
-	/**
-	 * Copy for the read the docs hint.
-	 */
-	@property()
-	docsHint = 'Click on the Vite and Lit logos to learn more'
+    /**
+     * Copy for the read the docs hint.
+     */
+    @property()
+    docsHint = 'Click on the Vite and Lit logos to learn more'
 
-	/**
-	 * The number of times the button has been clicked.
-	 */
-	@property({ type: Number })
-	count = 0
+    /**
+     * The number of times the button has been clicked.
+     */
+    @property({ type: Number })
+    count = 0
 
-	connectedCallback() {
-		super.connectedCallback()
-		this.css = new MasterCSS({
-			...config,
-			observe: false
-		}).observe(this.shadowRoot)
-	}
+    connectedCallback() {
+        super.connectedCallback()
+        this.css = initRuntime(config, this.shadowRoot)
+    }
 
-	disconnectedCallback() {
-		super.disconnectedCallback()
-		this.css?.destroy()
-	}
+    disconnectedCallback() {
+        super.disconnectedCallback()
+        this.css?.destroy()
+    }
 
-	render() {
-		return html`
+    render() {
+        return html`
       <div class="flex center-content">
         <a href="https://vitejs.dev" target="_blank">
           <img src=${litLogo} class="logo" alt="Vite logo" />
@@ -59,13 +56,13 @@ export class MyElement extends LitElement {
       </div>
       <p class="read-the-docs">${this.docsHint}</p>
     `
-	}
+    }
 
-	private _onClick() {
-		this.count++
-	}
+    private _onClick() {
+        this.count++
+    }
 
-	static styles = css`
+    static styles = css`
     :host {
       max-width: 1280px;
       margin: 0 auto;
@@ -139,7 +136,7 @@ export class MyElement extends LitElement {
 }
 
 declare global {
-	interface HTMLElementTagNameMap {
-		'my-element': MyElement
-	}
+    interface HTMLElementTagNameMap {
+        'my-element': MyElement
+    }
 }

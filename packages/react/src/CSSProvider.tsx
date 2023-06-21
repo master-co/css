@@ -1,12 +1,8 @@
 'use client'
 
-import { Config, MasterCSS } from '@master/css'
-import { useEffect, useLayoutEffect, Context, createContext, useContext, EffectCallback, DependencyList, useState } from 'react'
+import { Config, MasterCSS, initRuntime } from '@master/css'
+import { useEffect, useLayoutEffect, createContext, useContext, useState } from 'react'
 
-const { instances } = MasterCSS
-
-const useIsomorphicEffect: (effect: EffectCallback, deps?: DependencyList) => void =
-    typeof window !== 'undefined' ? useLayoutEffect : useEffect
 export const CSSContext = createContext<MasterCSS | undefined>(undefined)
 
 export function useCSS() {
@@ -22,16 +18,17 @@ export function CSSProvider({
     config?: Config | Promise<any>,
     root?: Document | ShadowRoot | null
 }) {
-    const [css, setCSS] = useState<MasterCSS | undefined>(instances.find((eachCSS) => eachCSS.root === root))
-    useIsomorphicEffect(() => {
+    const [css, setCSS] = useState<MasterCSS | undefined>(MasterCSS.instances.find((eachCSS) => eachCSS.root === root));
+
+    (typeof window !== 'undefined' ? useLayoutEffect : useEffect)(() => {
         let newCSS: MasterCSS
         if (!css) {
             const init = (resolvedConfig?: Config) => {
-                const existingCSS = instances.find((eachCSS) => eachCSS.root === root)
+                const existingCSS = MasterCSS.instances.find((eachCSS) => eachCSS.root === root)
                 if (existingCSS) {
                     setCSS(existingCSS)
                 } else {
-                    newCSS = new MasterCSS(resolvedConfig)
+                    newCSS = initRuntime(resolvedConfig)
                     setCSS(newCSS)
                 }
             }

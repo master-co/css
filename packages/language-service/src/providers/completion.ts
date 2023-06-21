@@ -78,15 +78,15 @@ export function getLastInstance(lineText: string, position: Position, language: 
     return { isInstance: true, lastKey: lastKey, triggerKey: triggerKey, isStart: isStart, language: language }
 }
 
-export function getConfigColorsCompletionItem(masterCss: MasterCSS = new MasterCSS({ observe: false })) {
+export function getConfigColorsCompletionItem(css: MasterCSS = new MasterCSS()) {
     let masterStyleCompletionItem: CompletionItem[] = []
 
-    masterStyleCompletionItem = masterStyleCompletionItem.concat(getColorsItem(masterCss))
+    masterStyleCompletionItem = masterStyleCompletionItem.concat(getColorsItem(css))
 
     return masterStyleCompletionItem
 }
 
-export function getCompletionItem(instance: string, triggerKey: string, isStart: boolean, language: string, masterCss: MasterCSS = new MasterCSS({ observe: false })) {
+export function getCompletionItem(instance: string, triggerKey: string, isStart: boolean, language: string, css: MasterCSS = new MasterCSS()) {
 
     const cssDataProvider = new CSSDataProvider(cssData)
     const cssProperties = cssDataProvider.provideProperties()
@@ -108,7 +108,7 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
     const masterCssKeyCompletionItems: Array<CompletionItem> = []
     let masterCssValues: Array<string | CompletionItem> = []
 
-    const masterCustomSelectors = Object.keys(masterCss.config?.selectors ?? {})
+    const masterCustomSelectors = Object.keys(css.config?.selectors ?? {})
         .map(x => x.endsWith('(') ? `${x})` : x)
         .filter(x => x.match(/:[^:]+/) && !masterCssSelectors.find(existedSelector => (typeof existedSelector === 'string' ? existedSelector : existedSelector.label) === `:${x}`))
         .map(x => {
@@ -119,7 +119,7 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
             return x
         })
 
-    const masterCustomElements = Object.keys(masterCss.config?.selectors ?? {})
+    const masterCustomElements = Object.keys(css.config?.selectors ?? {})
         .map(x => x.endsWith('(') ? `${x})` : x)
         .filter(x => x.match(/::[^:]+/) && !masterCssElements.find(existedElement => (typeof existedElement === 'string' ? existedElement : existedElement.label) === `::${x}`))
         .map(x => {
@@ -170,8 +170,8 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
             )
 
             const pascalCaseFullKey = fullKey.split('-').map(x => x ? x[0].toUpperCase() + x.substring(1) : '').join('')
-            if (masterCss.config?.values?.[pascalCaseFullKey]) {
-                const masterCustomValues = Object.keys(masterCss.config?.values[pascalCaseFullKey])
+            if (css.config?.values?.[pascalCaseFullKey]) {
+                const masterCustomValues = Object.keys(css.config?.values[pascalCaseFullKey])
                 masterCssValues = masterCssValues.concat(
                     masterCustomValues
                         .filter(customValue =>
@@ -192,7 +192,7 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
 
     if ((isStart == true || !masterCssKeys.includes(key)) && triggerKey !== '@' && triggerKey !== ':') {  //ex " background"
         masterStyleCompletionItem = masterStyleCompletionItem.concat(masterCssKeyCompletionItems)
-        masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(Object.keys(masterCss.config?.semantics ?? {}), 10))
+        masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(Object.keys(css.config?.semantics ?? {}), 10))
 
         if (language == 'tsx' || language == 'vue' || language == 'jsx') {
             return HaveDash(key, masterStyleCompletionItem)
@@ -214,15 +214,15 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
 
     if (masterCssKeys.includes(key) && key !== null && isMedia === true) { //show media
         masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(masterCssMedia as any, 10))
-        masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(Object.keys(masterCss.config?.breakpoints ?? {}), 10))
-        masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(masterCss.themeNames, 10))
+        masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(Object.keys(css.config?.breakpoints ?? {}), 10))
+        masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(css.themeNames, 10))
         if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerKey !== '@' && triggerKey !== ':') {
             return HaveDash('@' + last, masterStyleCompletionItem)
         }
         return masterStyleCompletionItem
     }
 
-    if (Object.keys(masterCss.config?.semantics ?? {}).includes(key) && !masterCssKeyValues.find(x => x.key.includes(key))) {
+    if (Object.keys(css.config?.semantics ?? {}).includes(key) && !masterCssKeyValues.find(x => x.key.includes(key))) {
         masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(masterCssSelectors as any, 10))
         masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(masterCustomSelectors as any, 10))
         if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerKey !== '@' && triggerKey !== ':') {
@@ -236,7 +236,7 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
         masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(masterCssCommonValues as any, 13).map(x => { x.sortText = 'z' + x; return x }))
 
         if (isColorful) {
-            masterStyleCompletionItem = masterStyleCompletionItem.concat(getColorsItem(masterCss))
+            masterStyleCompletionItem = masterStyleCompletionItem.concat(getColorsItem(css))
         }
         if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerKey !== '@' && triggerKey !== ':') {
             return HaveDash(last, masterStyleCompletionItem)
@@ -294,12 +294,12 @@ export function getReturnItem(items: Array<string | CompletionItem>, kind: Compl
 
 
 
-function getColorsItem(masterCss: MasterCSS = new MasterCSS({ observe: false })): CompletionItem[] {
+function getColorsItem(css: MasterCSS = new MasterCSS()): CompletionItem[] {
 
     const masterStyleCompletionItem: CompletionItem[] = []
-    Object.keys(masterCss.colorThemesMap)
+    Object.keys(css.colorThemesMap)
         .forEach((colorName: string) => {
-            const colorValue: any = masterCss.colorThemesMap[colorName]
+            const colorValue: any = css.colorThemesMap[colorName]
             masterStyleCompletionItem.push({
                 label: colorName,
                 documentation: Object.values<string>(colorValue)[0],

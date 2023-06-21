@@ -51,12 +51,11 @@ export default class CSSExtractor {
         } else {
             this.options = extend(defaultOptions, customOptions)
         }
-        this.css = new MasterCSS({
-            ...(
-                typeof this.options.config === 'object' ? this.options.config : (exploreConfig(this.options.config, { cwd: this.options.cwd }) || {})
-            ),
-            observe: false
-        })
+        this.css = new MasterCSS(
+            typeof this.options.config === 'object'
+                ? this.options.config
+                : (exploreConfig(this.options.config, { cwd: this.options.cwd }) || {})
+        )
         return this
     }
 

@@ -24,7 +24,7 @@ export const testProp = (className: string | string[], expected?: string): void 
 }
 
 export const expectOrderOfRules = (classNames: string[], expected: string[]): void => {
-    const css = new MasterCSS({ observe: false })
+    const css = new MasterCSS()
     classNames.forEach((eachClassName) => {
         css.insert(eachClassName)
     })
