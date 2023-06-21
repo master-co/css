@@ -5,6 +5,9 @@
             "cache": false,
             "dependsOn": [
                 "^build"
+            ],
+            "outputs": [
+                "dist/**"
             ]
         },
         "build": {
