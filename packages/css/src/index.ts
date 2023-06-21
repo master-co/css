@@ -9,7 +9,6 @@ export { CONFIG_ESM_TEXT } from './constants/config-esm-text'
 // functions
 export { default as extend } from '@techor/extend'
 export { default as extractClassesFromHTML } from './functions/extract-classes-from-html'
-export { default as extractLatentClasses } from './functions/extract-latent-classes'
 export { default as fillColorScale } from './functions/fill-color-scale'
 export { default as generateFromClasses } from './functions/generate-from-classes'
 export { default as generateFromHTML } from './functions/generate-from-html'

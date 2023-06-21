@@ -1,5 +1,5 @@
-import { MasterCSS } from '../core'
-import type { Config } from '../config'
+import { MasterCSS } from '@master/css/src/core'
+import type { Config } from '@master/css/src/config'
 
 /**
  * @description Extract latent classes from content

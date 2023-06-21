@@ -2,7 +2,7 @@ import upath from 'upath'
 import { default as defaultOptions, Options } from './options'
 import MasterCSS, { Rule } from '@master/css'
 import type { Config } from '@master/css'
-import { extractLatentClasses } from '@master/css'
+import extractLatentClasses from './functions/extract-latent-classes'
 import fs from 'fs'
 import fg, { Pattern } from 'fast-glob'
 import { minimatch } from 'minimatch'
@@ -89,7 +89,7 @@ export default class CSSExtractor {
             return []
         }
         const latentClasses: string[] = []
-        for (const eachLatentClasses of extractLatentClasses(content, this.css)) {
+        for (const eachLatentClasses of extractLatentClasses(content)) {
             if (this.latentClasses.has(eachLatentClasses)) {
                 continue
             } else {

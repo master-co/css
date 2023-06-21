@@ -1,4 +1,4 @@
-import MasterCSS, { extractLatentClasses } from '../../css/src'
+import { extractLatentClasses } from '../src'
 
 it('extract latent classes from js raw', () => {
     const content = `
