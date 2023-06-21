@@ -52,10 +52,14 @@ export class MasterCSS {
         if (!config?.override) {
             const getExtendedConfig = (parentConfig: Config, currentConfig: Config) => {
                 const extendedCurrentConfig: Config = currentConfig.extends?.length
-                    ? extend({}, currentConfig, ...currentConfig.extends.map(eachConfig => getExtendedConfig(currentConfig, 'config' in eachConfig ? eachConfig.config : eachConfig)))
+                    ? extend(
+                        {},
+                        currentConfig,
+                        ...currentConfig.extends.map(eachConfig => getExtendedConfig(currentConfig, 'config' in eachConfig ? eachConfig.config : eachConfig))
+                    )
                     : currentConfig
                 const extendedParentConfig: Config = extend(parentConfig, extendedCurrentConfig)
-                if ('keyframes' in extendedCurrentConfig) {
+                if (Object.prototype.hasOwnProperty.call(extendedCurrentConfig, 'keyframes')) {
                     Object.assign(extendedParentConfig.keyframes, extendedCurrentConfig.keyframes)
                 }
                 return extendedParentConfig
@@ -173,7 +177,7 @@ export class MasterCSS {
             ...Object.entries(flattedThemeClasses).flatMap(([_, classes]) => Object.keys(classes))
         ]
         const handleSemanticName = (semanticName: string) => {
-            if (semanticName in this.classes)
+            if (Object.prototype.hasOwnProperty.call(this.classes, semanticName))
                 return
 
             const currentClass = this.classes[semanticName] = []
@@ -190,8 +194,8 @@ export class MasterCSS {
                         .split(' ')
                 for (const eachClassName of classNames) {
                     const handle = (className: string) => {
-                        if (className in this.themeAffectedClassesBy) {
-                            if (theme in this.themeAffectedClassesBy[className]) {
+                        if (Object.prototype.hasOwnProperty.call(this.themeAffectedClassesBy, className)) {
+                            if (Object.prototype.hasOwnProperty.call(this.themeAffectedClassesBy[className], theme)) {
                                 this.themeAffectedClassesBy[className][theme].push(semanticName)
                             } else {
                                 this.themeAffectedClassesBy[className][theme] = [semanticName]
@@ -246,7 +250,7 @@ export class MasterCSS {
                 const levelMap: Record<string, string> = typeof value === 'string' ? { '': value } : value
                 for (const [level, color] of Object.entries(levelMap)) {
                     const colorName = mainColorName + (level ? '-' + level : '')
-                    if (colorName in this.colorThemesMap) {
+                    if (Object.prototype.hasOwnProperty.call(this.colorThemesMap, colorName)) {
                         this.colorThemesMap[colorName][theme] = color
                     } else {
                         this.colorThemesMap[colorName] = { [theme]: color }
@@ -415,7 +419,10 @@ export class MasterCSS {
                                         className += char
                                     }
 
-                                    if (!(className in this.ruleBy) && !(className in this.classes)) {
+                                    if (
+                                        !(Object.prototype.hasOwnProperty.call(this.ruleBy, className))
+                                        && !(Object.prototype.hasOwnProperty.call(this.classes, className))
+                                    ) {
                                         const currentRule = this.create(className)[0]
                                         if (currentRule)
                                             return currentRule
@@ -453,7 +460,7 @@ export class MasterCSS {
 
             const handleClassList = (classList: DOMTokenList) => {
                 classList.forEach((className) => {
-                    if (className in this.countBy) {
+                    if (Object.prototype.hasOwnProperty.call(this.countBy, className)) {
                         this.countBy[className]++
                     } else {
                         this.countBy[className] = 1
@@ -503,7 +510,7 @@ export class MasterCSS {
                 }
 
                 const addClassName = (className: string) => {
-                    if (className in correctionOfClassName) {
+                    if (Object.prototype.hasOwnProperty.call(correctionOfClassName, className)) {
                         correctionOfClassName[className]++
                     } else {
                         correctionOfClassName[className] = 1
@@ -511,9 +518,9 @@ export class MasterCSS {
                 }
 
                 const removeClassName = (className: string) => {
-                    if (className in correctionOfClassName) {
+                    if (Object.prototype.hasOwnProperty.call(correctionOfClassName, className)) {
                         correctionOfClassName[className]--
-                    } else if (className in this.countBy) {
+                    } else if (Object.prototype.hasOwnProperty.call(this.countBy, className)) {
                         correctionOfClassName[className] = -1
                     }
                 }
@@ -618,7 +625,7 @@ export class MasterCSS {
                          */
                         this.delete(className)
                     } else {
-                        if (!(className in this.countBy)) {
+                        if (!(Object.prototype.hasOwnProperty.call(this.countBy, className))) {
                             // add
                             /**
                              * 新 class name 被 connected 至 DOM tree，
@@ -713,7 +720,7 @@ export class MasterCSS {
      */
     create(syntax: string): Rule[] {
         const create = (eachSyntax: string) => {
-            if (eachSyntax in this.ruleBy)
+            if (Object.prototype.hasOwnProperty.call(this.ruleBy, eachSyntax))
                 return this.ruleBy[eachSyntax]
 
             const meta = this.match(eachSyntax)
@@ -726,7 +733,8 @@ export class MasterCSS {
             }
         }
         return (
-            syntax in this.classes
+            // `in` cannot be used
+            Object.prototype.hasOwnProperty.call(this.classes, syntax)
                 ? this.classes[syntax].map((eachSyntax) => create(eachSyntax))
                 : [create(syntax)]
         )
@@ -783,7 +791,7 @@ export class MasterCSS {
             const rule = this.ruleBy[name]
             if (
                 !rule
-                || name in this.classesBy && this.classesBy[name].some(eachClassName => eachClassName in this.countBy)
+                || Object.prototype.hasOwnProperty.call(this.classesBy, name) && this.classesBy[name].some(eachClassName => Object.prototype.hasOwnProperty.call(this.countBy, eachClassName))
             )
                 return
 
@@ -824,9 +832,9 @@ export class MasterCSS {
             rule.config.delete?.call(rule, name)
         }
 
-        if (className in this.classes) {
+        if (Object.prototype.hasOwnProperty.call(this.classes, className)) {
             for (const eachClassName of this.classes[className]) {
-                if (!(eachClassName in this.countBy)) {
+                if (!Object.prototype.hasOwnProperty.call(this.countBy, eachClassName)) {
                     deleteRule(eachClassName)
                 }
             }
@@ -1179,7 +1187,7 @@ export class MasterCSS {
             if (rule.keyframeNames) {
                 const sheet = this.style?.sheet
                 for (const eachKeyframeName of rule.keyframeNames) {
-                    if (eachKeyframeName in this.keyframes) {
+                    if (Object.prototype.hasOwnProperty.call(this.keyframes, eachKeyframeName)) {
                         this.keyframes[eachKeyframeName].count++
                     } else {
                         const native: RuleNative = {
