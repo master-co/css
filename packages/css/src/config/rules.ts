@@ -1141,7 +1141,10 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
     },
     transform: {
         match: '^(?:translate|scale|skew|rotate|perspective|matrix)(?:3d|[XYZ])?\\(',
-        native: true
+        native: true,
+        analyze(className: string) {
+            return [className.startsWith('transform') ? className.slice(10) : className]
+        }
     },
     transitionProperty: {
         match: '^~property:.',
