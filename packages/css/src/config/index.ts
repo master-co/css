@@ -4,7 +4,6 @@ import { rootSize } from './root-size'
 import { scope } from './scope'
 import { selectors } from './selectors'
 import { semantics } from './semantics'
-import { themes } from './themes'
 import { rules } from './rules'
 import { override } from './override'
 import { important } from './important'
@@ -19,7 +18,6 @@ const config: Config = {
     scope,
     selectors,
     semantics,
-    themes,
     rules,
     override,
     important,
@@ -36,7 +34,6 @@ export {
     scope,
     selectors,
     semantics,
-    themes,
     rules,
     override,
     important,
@@ -66,7 +63,6 @@ export interface Config {
     semantics?: Semantics
     values?: Values
     rules?: Record<string, RuleConfig>
-    themes?: Record<string, { classes?: Classes, colors?: Colors }> | string[]
     rootSize?: number
     scope?: string
     important?: boolean

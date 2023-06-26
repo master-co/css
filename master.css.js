@@ -3,9 +3,18 @@ const config = {
     colors: {
         primary: {
             '': 'blue-50',
-            code: '#777777',
+            '@light': '#ebbb40',
+            '@dark': '#fbe09d',
+            code: {
+                '': '#777777',
+                '@dark': 'gray'
+            },
             stage: {
-                '1': '#999999'
+                '1': {
+                    '': '#999999',
+                    '@light': '#888888',
+                    '@dark': '#AAAAAA'
+                }
             },
             alpha: 'blue-50/.1',
             rgb1: 'rgb(0, 0, 0)',
@@ -16,53 +25,29 @@ const config = {
         },
         input: {
             '': '#123456'
+        },
+        accent: {
+            '@light': 'gold-70',
+            '@dark': '#fbe09d'
+        },
+        major: {
+            '@light': 'slate-10',
+            '@dark': 'gray-80'
+        },
+        content: {
+            '@light': 'slate-30',
+            '@dark': 'gray-60'
+        },
+        fade: {
+            '@light': 'slate-55',
+            '#dark': 'gray-60'
         }
     },
     classes: {
-        btn: 'font:14 h:40 text:center',
+        btn: 'font:14 h:40 text:center bg:primary@light fg:white@light font:semibold@light bg:white@dark fg:primary@dark font:medium@dark',
         blue: {
             btn: {
-                '': 'btn bg:blue'
-            }
-        }
-    },
-    themes: {
-        light: {
-            colors: {
-                primary: {
-                    '': '#ebbb40',
-                    stage: {
-                        '1': '#888888'
-                    }
-                },
-                accent: 'gold-70',
-                major: 'slate-10',
-                content: 'slate-30',
-                fade: 'slate-55'
-            },
-            classes: {
-                btn: 'bg:primary fg:white font:semibold',
-                blue: {
-                    btn: 'f:20'
-                }
-            }
-        },
-        dark: {
-            colors: {
-                primary: {
-                    '': '#fbe09d',
-                    code: 'gray',
-                    stage: {
-                        '1': '#AAAAAA'
-                    }
-                },
-                accent: '#fbe09d',
-                major: 'gray-80',
-                content: 'gray-60',
-                fade: 'gray-60'
-            },
-            classes: {
-                btn: 'bg:white fg:primary font:medium'
+                '': 'btn bg:blue f:20@light'
             }
         }
     },

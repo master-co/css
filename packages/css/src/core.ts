@@ -14,7 +14,6 @@ export interface MasterCSS {
     colorThemesMap: Record<string, Record<string, string>>
     colorNames: string[]
     themeNames: string[]
-    themeAffectedClassesBy: Record<string, Record<string, string[]>>
     classesBy: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>
     values: Record<string, Record<string, string | number>>
@@ -70,9 +69,7 @@ export class MasterCSS {
         this.semantics = []
         this.classes = {}
         this.colorThemesMap = {}
-        this.themeAffectedClassesBy = {}
         this.classesBy = {}
-        this.colorNames = []
         this.themeNames = ['']
         this.selectors = {}
         this.values = {}
@@ -82,7 +79,7 @@ export class MasterCSS {
         this.matches = {}
         this.keyframes = {}
 
-        const { semantics, classes, selectors, themes, colors, values, breakpoints, mediaQueries, rules } = this.config
+        const { semantics, classes, selectors, colors, values, breakpoints, mediaQueries, rules } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -162,116 +159,78 @@ export class MasterCSS {
         }
 
         const flattedClasses: Record<string, string> = classes ? getFlatData(classes, false) : {}
-        const flattedThemeClasses: Record<string, Record<string, string>> = (themes && !Array.isArray(themes))
-            ? Object.entries(themes).filter(([, { classes }]) => classes).reduce((obj, [themeName, { classes }]) => {
-                obj[themeName] = getFlatData(classes, false)
-                return obj
-            }, {})
-            : {}
-        const semanticNames = [
-            ...Object.keys(flattedClasses),
-            ...Object.entries(flattedThemeClasses).flatMap(([_, classes]) => Object.keys(classes))
-        ]
+        const semanticNames = Object.keys(flattedClasses)
         const handleSemanticName = (semanticName: string) => {
             if (semanticName in this.classes)
                 return
 
             const currentClass = this.classes[semanticName] = []
 
-            const handleClassNames = (theme: string, className: string | string[]) => {
-                if (!className)
-                    return
+            const className = flattedClasses[semanticName]
+            if (!className)
+                return
 
-                const classNames: string[] = Array.isArray(className)
-                    ? className
-                    : className
-                        .replace(/(?:\n(?:\s*))+/g, ' ')
-                        .trim()
-                        .split(' ')
-                for (const eachClassName of classNames) {
-                    const handle = (className: string) => {
-                        if (className in this.themeAffectedClassesBy) {
-                            if (theme in this.themeAffectedClassesBy[className]) {
-                                this.themeAffectedClassesBy[className][theme].push(semanticName)
-                            } else {
-                                this.themeAffectedClassesBy[className][theme] = [semanticName]
-                            }
-                        } else {
-                            this.themeAffectedClassesBy[className] = { [theme]: [semanticName] }
-                        }
-
-                        if (!currentClass.includes(className)) {
-                            currentClass.push(className)
-                        }
-                    }
-
-                    if (semanticNames.includes(eachClassName)) {
-                        handleSemanticName(eachClassName)
-
-                        for (const parentClassName of this.classes[eachClassName]) {
-                            handle(parentClassName)
+            const classNames: string[] = className
+                .replace(/(?:\n(?:\s*))+/g, ' ')
+                .trim()
+                .split(' ')
+            for (const eachClassName of classNames) {
+                const handle = (className: string) => {
+                    if (className in this.classesBy) {
+                        const currentRelation = this.classesBy[className]
+                        if (!currentRelation.includes(semanticName)) {
+                            currentRelation.push(semanticName)
                         }
                     } else {
-                        handle(eachClassName)
+                        this.classesBy[className] = [semanticName]
+                    }
+
+                    if (!currentClass.includes(className)) {
+                        currentClass.push(className)
                     }
                 }
-            }
 
-            handleClassNames('', flattedClasses?.[semanticName])
-            for (const [eachTheme, classes] of Object.entries(flattedThemeClasses)) {
-                handleClassNames(eachTheme, classes?.[semanticName])
+                if (semanticNames.includes(eachClassName)) {
+                    handleSemanticName(eachClassName)
+
+                    for (const parentClassName of this.classes[eachClassName]) {
+                        handle(parentClassName)
+                    }
+                } else {
+                    handle(eachClassName)
+                }
             }
         }
         for (const eachSemanticName of semanticNames) {
             handleSemanticName(eachSemanticName)
         }
 
-        for (const className in this.themeAffectedClassesBy) {
-            const currentRelation = this.classesBy[className] = []
-            for (const semanticNames of Object.values(this.themeAffectedClassesBy[className])) {
-                for (const eachSemanticName of semanticNames) {
-                    if (!currentRelation.includes(eachSemanticName)) {
-                        currentRelation.push(eachSemanticName)
-                    }
-                }
-            }
-        }
-
-        const mergeColors = (theme: string, originalColors: Record<string, any>) => {
-            if (!originalColors)
-                return
-
-            const colors = getFlatData(originalColors, true)
-            for (const [mainColorName, value] of Object.entries(colors)) {
-                const levelMap: Record<string, string> = typeof value === 'string' ? { '': value } : value
-                for (const [level, color] of Object.entries(levelMap)) {
-                    const colorName = mainColorName + (level ? '-' + level : '')
-                    if (colorName in this.colorThemesMap) {
-                        this.colorThemesMap[colorName][theme] = color
+        const flattedColors = colors ? getFlatData(colors, true) : {}
+        for (const [mainColorName, value] of Object.entries(flattedColors)) {
+            const levelMap: Record<string, string> = typeof value === 'string' ? { '': value } : value
+            for (const [level, color] of Object.entries(levelMap)) {
+                const handle = (theme: string, name: string) => {
+                    if (name in this.colorThemesMap) {
+                        this.colorThemesMap[name][theme] = color
                     } else {
-                        this.colorThemesMap[colorName] = { [theme]: color }
+                        this.colorThemesMap[name] = { [theme]: color }
                     }
                 }
-            }
 
-            for (const colorName in originalColors) {
-                if (!this.colorNames.includes(colorName)) {
-                    this.colorNames.push(colorName)
+                if (level.startsWith('@')) {
+                    const themeName = level.slice(1)
+                    handle(themeName, mainColorName)
+
+                    if (!this.themeNames.includes(themeName)) {
+                        this.themeNames.push(themeName)
+                    }
+                } else {
+                    handle('', mainColorName + (level ? '-' + level : ''))
                 }
             }
         }
-        mergeColors('', colors)
-        if (themes) {
-            if (Array.isArray(themes)) {
-                this.themeNames.push(...themes)
-            } else {
-                for (const eachTheme in themes) {
-                    const themeValue = themes[eachTheme]
-                    mergeColors(eachTheme, themeValue.colors)
-                    this.themeNames.push(eachTheme)
-                }
-            }
-        }
+
+        this.colorNames = colors ? Object.keys(colors) : []
 
         const colorThemesMapLoop = (func: (colorName: string, themeColorMap: Record<string, string>, theme: string, color: string) => void) => {
             for (const [colorName, themeColorMap] of Object.entries(this.colorThemesMap)) {
