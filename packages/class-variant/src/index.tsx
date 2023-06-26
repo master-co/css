@@ -4,7 +4,7 @@ type Param<T> = string
     | string[]
     | Record<string, boolean>
     | [string, { [key in keyof T]?: T[key] }]
-    | { [key in keyof T]?: Record<string, T[key]> }
+    | { [key in keyof T]?: T[key] extends boolean | undefined ? string : Record<string, string> }
     | ((valueByProp: T) => any)
 type ReturnType<T> = { default?: Partial<T> } & ((valueByProp?: T) => string) 
 
@@ -13,7 +13,7 @@ type ReturnType<T> = { default?: Partial<T> } & ((valueByProp?: T) => string)
  * 2. ['inline-flex', 'rounded']
  * 3. { 'bg:red': true, 'fg:30': false }
  * 4. ['uppercase', { intent: 'primary', size: 'md' }]
- * 5. { intent: { primary: 'bg:blue-50 fg:white', secondary: 'bg:white fg:gray-80' }, size: { sm: 'font:20 py:1 px:2', md: 'font:16 py:2 px:4' } }
+ * 5. { intent: { primary: 'bg:blue-50 fg:white', secondary: 'bg:white fg:gray-80' }, size: { sm: 'font:20 py:1 px:2', md: 'font:16 py:2 px:4' }, disabled: 'opacity:.5' }
  * 6. ({ $intent, $size }) => $intent && $size && 'font:italic'
  */
 function cv<T extends Record<string, string | number | boolean>>(...params: Array<Param<T>>): ReturnType<T>
@@ -23,6 +23,7 @@ function cv<T extends Record<string, string | number | boolean>>(firstParam: Tem
         const mergedValueByProp = Object.assign({}, getClassNames['default'], valueByProp)
         const classesConditions: [string, Record<string, string | number | boolean>][] = []
         const valuesByProp: Record<string, Record<string, string>> = {}
+        const classesByBooleanProp: Record<string, string> = {}
         const handledParams = []
         const handleParam = (param: Param<T>) => {
             switch (typeof param) {
@@ -57,17 +58,25 @@ function cv<T extends Record<string, string | number | boolean>>(firstParam: Tem
                             if (keys.length) {
                                 switch (typeof param[keys[0]]) {
                                     case 'object':
+                                    case 'string':
                                         handledParams.push(param)
-            
+
                                         for (const eachProp of keys) {
-                                            const newClassesByPropValue = param[eachProp] as Record<string, string>
-                                            if (eachProp in valuesByProp) {
-                                                const classesByPropValue = valuesByProp[eachProp]
-                                                for (const eachPropValue in newClassesByPropValue) {
-                                                    classesByPropValue[eachPropValue] = newClassesByPropValue[eachPropValue]
-                                                }
-                                            } else {
-                                                valuesByProp[eachProp] = newClassesByPropValue
+                                            const value = param[eachProp]
+                                            switch (typeof value) {
+                                                case 'object':
+                                                    if (eachProp in valuesByProp) {
+                                                        const classesByPropValue = valuesByProp[eachProp]
+                                                        for (const eachPropValue in value) {
+                                                            classesByPropValue[eachPropValue] = value[eachPropValue] as string
+                                                        }
+                                                    } else {
+                                                        valuesByProp[eachProp] = value
+                                                    }
+                                                    break
+                                                case 'string':
+                                                    classesByBooleanProp[eachProp] = value
+                                                    break
                                             }
                                         }
                                         break
@@ -124,6 +133,13 @@ function cv<T extends Record<string, string | number | boolean>>(firstParam: Tem
             const classes = valuesByProp[eachProp][value]
             if (classes) {
                 classNames.push(classes)
+            }
+        }
+
+        for (const eachProp in classesByBooleanProp) {
+            const value = mergedValueByProp[eachProp] ?? mergedValueByProp['$' + eachProp]
+            if (value) {
+                classNames.push(classesByBooleanProp[eachProp])
             }
         }
     

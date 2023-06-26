@@ -43,7 +43,8 @@ test('Prop composition', () => {
             $size: {
                 sm: 'font:20 py:1 px:2',
                 md: 'font:16 py:2 px:4'
-            }
+            },
+            disabled: 'opacity:.5'
         }}
         ${['uppercase', { $intent: 'primary', $size: 'md' }]}
         ${({ $intent, $size }) => $intent && $size && 'font:italic'}
@@ -54,8 +55,8 @@ test('Prop composition', () => {
     
     expect(renderToStaticMarkup(<Button $size="md" />))
         .toBe('<button class="font:semibold rounded font:italic uppercase bg:blue-50 fg:white bg:blue-60:hover font:16 py:2 px:4"></button>')
-    expect(renderToStaticMarkup(<Button $intent="secondary" />))
-        .toBe('<button class="font:semibold rounded bg:white fg:gray-80 b:gray-40 bg:gray-50:hover"></button>')
+    expect(renderToStaticMarkup(<Button disabled $intent="secondary" />))
+        .toBe('<button disabled="" class="font:semibold rounded bg:white fg:gray-80 b:gray-40 bg:gray-50:hover opacity:.5"></button>')
 
     const ExtendButton = cve(Button)`
         ${{
@@ -64,7 +65,8 @@ test('Prop composition', () => {
             },
             $size: {
                 lg: 'font:32 py:5 px:7'
-            }
+            },
+            disabled: 'opacity:.6'
         }}
         ${['uppercase', { $intent: 'primary', $size: 'md' }]}
     `
@@ -74,8 +76,8 @@ test('Prop composition', () => {
     expect(renderToStaticMarkup(<ExtendButton $intent="secondary" />))
         .toBe('<button class="font:semibold rounded bg:white fg:gray-80 b:gray-40 bg:gray-50:hover"></button>')
 
-    expect(renderToStaticMarkup(<ExtendButton $intent="secondary" $size="lg" />))
-        .toBe('<button class="font:semibold rounded font:italic bg:white fg:gray-80 b:gray-40 bg:gray-50:hover font:32 py:5 px:7"></button>')
+    expect(renderToStaticMarkup(<ExtendButton disabled $intent="secondary" $size="lg" />))
+        .toBe('<button disabled="" class="font:semibold rounded font:italic bg:white fg:gray-80 b:gray-40 bg:gray-50:hover font:32 py:5 px:7 opacity:.6"></button>')
 })
 
 test('Alternative syntax', () => {

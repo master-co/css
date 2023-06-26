@@ -29,8 +29,8 @@ export class Rule {
         this.config = extend(defaultConfig, meta.config)
         const { unit, order, colored, native, analyze, transform, declare, create } = this.config
         const { scope, important, functions, themeDriver, keyframes } = css.config
-        const { themeNames, colorNames, colorThemesMap, selectors, breakpoints, mediaQueries, themeAffectedClassesBy, globalValues } = css
-        const themeAffectedClasses = themeAffectedClassesBy[className]
+        const { themeNames, colorNames, colorThemesMap, selectors, breakpoints, mediaQueries, classesBy, globalValues } = css
+        const classNames = classesBy[className]
 
         if (create) create.call(this, className)
 
@@ -531,14 +531,8 @@ export class Rule {
                         .join(',')
 
                 let cssText = getCssText(theme, className)
-                    + (themeAffectedClasses
-                        ? Object
-                            .entries(themeAffectedClasses)
-                            .filter(([relationTheme]) => this.theme || !colored || !theme || !relationTheme || relationTheme === theme)
-                            .map(([relationTheme, classNames]) =>
-                                classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? ((colored || hasMultipleThemes) ? theme || relationTheme : relationTheme), className), '')
-                            )
-                            .join('')
+                    + ((classNames && (this.theme || !colored || !theme))
+                        ? classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? ((colored || hasMultipleThemes) ? theme : ''), className), '')
                         : '')
                     + '{'
                     + propertiesText

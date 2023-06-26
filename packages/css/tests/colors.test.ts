@@ -4,7 +4,7 @@ import { config } from '../../../master.css.js'
 test('colors', () => {
     testCSS(
         'fg:primary',
-        '.fg\\:primary,.dark .btn,.blue-btn{color:#175fe9}.light .fg\\:primary,.light .blue-btn{color:#ebbb40}.dark .fg\\:primary,.dark .btn,.dark .blue-btn{color:#fbe09d}',
+        '.fg\\:primary{color:#175fe9}.dark .fg\\:primary{color:#fbe09d}.light .fg\\:primary{color:#ebbb40}',
         config
     )
     testCSS(
@@ -14,7 +14,7 @@ test('colors', () => {
     )
     testCSS(
         'fg:primary-stage-1',
-        '.fg\\:primary-stage-1{color:#999999}.light .fg\\:primary-stage-1{color:#888888}.dark .fg\\:primary-stage-1{color:#AAAAAA}',
+        '.fg\\:primary-stage-1{color:#999999}.dark .fg\\:primary-stage-1{color:#AAAAAA}.light .fg\\:primary-stage-1{color:#888888}',
         config
     )
     testCSS(
@@ -63,16 +63,22 @@ test('colors', () => {
     )
     testCSS(
         'bg:linear-gradient(180deg,major,gray-60)',
-        '.light .bg\\:linear-gradient\\(180deg\\,major\\,gray-60\\){background-image:linear-gradient(180deg,#19212d,#9e9da0)}.dark .bg\\:linear-gradient\\(180deg\\,major\\,gray-60\\){background-image:linear-gradient(180deg,#dad9db,#9e9da0)}',
+        '.dark .bg\\:linear-gradient\\(180deg\\,major\\,gray-60\\){background-image:linear-gradient(180deg,#dad9db,#9e9da0)}.light .bg\\:linear-gradient\\(180deg\\,major\\,gray-60\\){background-image:linear-gradient(180deg,#19212d,#9e9da0)}',
         config
     )
     testCSS(
         'bg:linear-gradient(180deg,primary,accent)',
         '.light .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#000000,#111111)}.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,#eeeeee)}',
         {
-            themes: {
-                light: { colors: { primary: '#000000', accent: '#111111' }  },
-                dark: { colors: { primary: '#ffffff', accent: '#eeeeee' } }
+            colors: {
+                primary: {
+                    '@light': '#000000',
+                    '@dark': '#ffffff'
+                },
+                accent: {
+                    '@light': '#111111',
+                    '@dark': '#eeeeee'
+                }
             }
         }
     )
@@ -80,9 +86,14 @@ test('colors', () => {
         'bg:linear-gradient(180deg,primary,accent)',
         '.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,#eeeeee)}',
         {
-            themes: {
-                light: { colors: { primary: '#000000' }  },
-                dark: { colors: { primary: '#ffffff', accent: '#eeeeee' } }
+            colors: {
+                primary: {
+                    '@light': '#000000',
+                    '@dark': '#ffffff'
+                },
+                accent: {
+                    '@dark': '#eeeeee'
+                }
             }
         }
     )
@@ -90,9 +101,11 @@ test('colors', () => {
         'bg:linear-gradient(180deg,primary,accent)',
         '.light .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#000000,accent)}.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,accent)}',
         {
-            themes: {
-                light: { colors: { primary: '#000000' }  },
-                dark: { colors: { primary: '#ffffff' } }
+            colors: {
+                primary: {
+                    '@light': '#000000',
+                    '@dark': '#ffffff'
+                }
             }
         }
     )
@@ -100,25 +113,28 @@ test('colors', () => {
         'bg:linear-gradient(180deg,primary,accent)',
         '.light .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#000000,#ff0000)}.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,#ff0000)}',
         {
-            themes: {
-                light: { colors: { primary: '#000000' }  },
-                dark: { colors: { primary: '#ffffff' } }
-            },
             colors: {
-                accent: '#ff0000'
+                accent: '#ff0000',
+                primary: {
+                    '@light': '#000000',
+                    '@dark': '#ffffff'
+                }
             }
         }
     )
     testCSS(
         'bg:linear-gradient(180deg,primary,accent)',
-        '.light .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#000000,#ff0000)}.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,#aa0000)}',
+        '.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,#aa0000)}.light .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#000000,#ff0000)}',
         {
-            themes: {
-                light: { colors: { primary: '#000000' }  },
-                dark: { colors: { primary: '#ffffff', accent: '#aa0000' } }
-            },
             colors: {
-                accent: '#ff0000'
+                accent: {
+                    '': '#ff0000',
+                    '@dark': '#aa0000'
+                },
+                primary: {
+                    '@light': '#000000',
+                    '@dark': '#ffffff'
+                }
             }
         }
     )
@@ -126,9 +142,11 @@ test('colors', () => {
         '{block;fg:fade}_:where(p)_code:before',
         '.\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{display:block}.light .\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{color:#cccccc}.dark .\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{color:#333333}',
         {
-            themes: {
-                light: { colors: { fade: '#cccccc' } },
-                dark: { colors: { fade: '#333333' } }
+            colors: {
+                fade: {
+                    '@light': '#cccccc',
+                    '@dark': '#333333'
+                }
             }
         }
     )
