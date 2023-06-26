@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Master CSS</title>
+    <title>Master CSS Static Extraction in Vite</title>
 </head>
 
 <body>
@@ -19,16 +19,21 @@
                     <img src="/master.svg" class="logo 172x172" alt="Master logo" />
                 </a>
             </div>
-            <h1 class="font:sans ls:.25 fg:white">Vite v4 + Master CSS v2</h1>
-            <div class="card hmr-test">
-                <button id="counter" type="button" class="btn fg:white"></button>
+            <h1
+                class="font:sans ls:-.25 fg:white@dark font:heavy">
+                <span class="gradient-text bg:linear-gradient(120deg,#bd34fe|30%,#41d1ff)">Vite</span>
+                <span class="fg:slate-70 mx:10 font:semibold">+</span>
+                <span>Master CSS</span>
+            </h1>
+            <div class="card">
+                <button id="counter" type="button" class="fg:white@dark"></button>
             </div>
             <p class="read-the-docs">
                 Click on the Vite and Master CSS logos to learn more
             </p>
         </div>
     </div>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="src/main.ts"></script>
 </body>
 
 </html>
