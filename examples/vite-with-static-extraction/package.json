@@ -11,6 +11,6 @@
     "devDependencies": {
         "@master/css-extractor.vite": "",
         "typescript": "^4.9.3",
-        "vite": "^4.0.1"
+        "vite": "^4.3.9"
     }
 }

@@ -5,6 +5,7 @@ import path from 'path'
 import fs from 'fs'
 import { CONFIG_ESM_TEXT } from '../constants/config-esm-text'
 import { CONFIG_TEXT } from '../constants/config-text'
+import { CONFIG_TS_TEXT } from '../constants/config-ts-text'
 import log from '@techor/log'
 import { readFileAsJSON } from '@techor/fs'
 
@@ -46,7 +47,7 @@ program.command('init')
             create('master.css.mjs', CONFIG_ESM_TEXT)
         }
         if (ts) {
-            create('master.css.ts', CONFIG_ESM_TEXT)
+            create('master.css.ts', CONFIG_TS_TEXT)
         }
         if (cjs) {
             create('master.css.js', CONFIG_TEXT)

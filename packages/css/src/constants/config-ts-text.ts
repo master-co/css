@@ -1,4 +1,4 @@
-import type { Config } from '@master/css'
+export const CONFIG_TS_TEXT = `import type { Config } from '@master/css'
 
 export default {
     classes: {},
@@ -13,3 +13,4 @@ export default {
     selectors: {},
     functions: {}
 } as Config
+`

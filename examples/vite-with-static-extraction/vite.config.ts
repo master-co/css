@@ -1,7 +1,7 @@
+import { defineConfig } from 'vite'
 import { CSSExtractorPlugin } from '@master/css-extractor.vite'
 
-/** @type {import('vite').UserConfig} */
-const config = {
+export default defineConfig({
     plugins: [
         CSSExtractorPlugin({
             sources: [
@@ -9,6 +9,4 @@ const config = {
             ]
         })
     ]
-}
-
-export default config
+})

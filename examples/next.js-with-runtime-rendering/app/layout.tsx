@@ -1,4 +1,4 @@
-import CSSProvider from '@master/css.react/CSSProvider'
+import { CSSProvider } from '@master/css.react'
 import config from '../master.css'
 import './globals.css'
 

@@ -1,5 +1,5 @@
 {
-    "name": "@vitejs/test-ssr-react",
+    "name": "react-with-progressive-rendering",
     "private": true,
     "version": "0.0.0",
     "type": "module",
@@ -13,7 +13,7 @@
         "debug": "node --inspect-brk server"
     },
     "dependencies": {
-        "@master/css": "",
+        "@master/css.react": "",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-router-dom": "^6.11.2"
