@@ -6,7 +6,7 @@ type baseType<E> = string
     | string[]
     | Record<string, boolean>
     | [string, { [key in keyof E]?: E[key] }]
-    | { [key in keyof E]?: Record<string, E[key]> }
+    | { [key in keyof E]?: E[key] extends boolean | undefined ? string : Record<string, string> }
 type baseLoopType<E> = baseType<E> | Array<baseType<E>>;
 type extraType<E> = { className?: baseLoopType<E> | undefined, [key: string]: any };
 type TagParams = Array<[TemplateStringsArray, any[]]>;
@@ -65,7 +65,7 @@ function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
             const newTagParams: TagParams = [...(tagParams || []), [defaultClassNames, params]]
             const component = forwardRef<K, MasterComponentProps<K, E>>((props, ref) => {
                 const classesConditions: [string, Record<string, string | number | boolean>][] = []
-                let valuesByProp: Record<string, Record<string, string>>
+                let valuesByProp: Record<string, string | Record<string, string>>
                 const unhandledTagParams: TagParams = []
                 const handleParam = (param: any) => {
                     switch (typeof param) {
@@ -89,18 +89,28 @@ function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
                                 if (keys.length) {
                                     switch (typeof param[keys[0]]) {
                                         case 'object':
+                                        case 'string':
                                             if (valuesByProp) {
                                                 for (const eachProp of keys) {
-                                                    const newClassesByPropValue = param[eachProp] as Record<string, string>
-                                                    if (eachProp in valuesByProp) {
-                                                        const classesByPropValue = valuesByProp[eachProp]
-                                                        for (const eachNewPropValue in newClassesByPropValue) {
-                                                            if (!(eachNewPropValue in classesByPropValue)) {
-                                                                classesByPropValue[eachNewPropValue] = newClassesByPropValue[eachNewPropValue]
+                                                    const value = param[eachProp]
+                                                    switch (typeof value) {
+                                                        case 'object':
+                                                            if (eachProp in valuesByProp) {
+                                                                const classesByPropValue = valuesByProp[eachProp] as Record<string, string>
+                                                                for (const eachPropValue in value) {
+                                                                    if (!(eachPropValue in classesByPropValue)) {
+                                                                        classesByPropValue[eachPropValue] = value[eachPropValue] as string
+                                                                    }
+                                                                }
+                                                            } else {
+                                                                valuesByProp[eachProp] = value
                                                             }
-                                                        }
-                                                    } else {
-                                                        valuesByProp[eachProp] = newClassesByPropValue
+                                                            break
+                                                        case 'string':
+                                                            if (!(eachProp in valuesByProp)) {
+                                                                valuesByProp[eachProp] = value
+                                                            }
+                                                            break
                                                     }
                                                 }
                                                 return true
