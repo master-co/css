@@ -1,9 +1,9 @@
 import '../src/polyfills/css-escape'
-import MasterCSS from '../src'
+import { initRuntime } from '../src'
 import delay from '../src/utils/delay'
 import { complexHTML } from './complex-html'
 
-const css = new MasterCSS()
+const css = initRuntime()
 /**
  * <p class="block font:bold">
  * <p class="block font:bold italic">

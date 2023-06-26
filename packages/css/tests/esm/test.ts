@@ -3,6 +3,6 @@ import { expectFileIncludes } from 'shared/test/expect-file-includes'
 import { CONFIG_ESM_TEXT } from '../../src'
 
 it('init (type="module")', () => {
-    execSync('node ../../dist/cjs/bin init -o', { cwd: __dirname }).toString()
+    execSync('tsx ../../src/bin init -o', { cwd: __dirname }).toString()
     expectFileIncludes('master.css.mjs', [CONFIG_ESM_TEXT])
 })
