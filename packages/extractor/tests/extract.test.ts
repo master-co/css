@@ -44,6 +44,7 @@ test('content', () => {
     expect(extractLatentClasses(`<div class="content:'I\\'m_string' content:'I\\'m_string2'"></div>`))
         .toEqual([
             'content:\'I\\\'m_string\'',
+            'I',
             'm_string',
             'content:\'I\\\'m_string2\'',
             'm_string2'
@@ -241,6 +242,7 @@ test('@', () => {
     ).toEqual([
         'font-family',
         'Fira',
+        'Mono',
         'font-style',
         'font-display',
         'font-weight',

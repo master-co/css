@@ -12,37 +12,41 @@ export default function extractLatentClasses(content: string) {
     const blocks = content.match(/\S+/g) ?? []
     const latentClasses = new Set<string>()
     for (const block of blocks) {
-        latentClasses.add(trimString(block))
-        const result = peelString(block)
-        if (result.size) {
-            for (const string of result) {
-                latentClasses.add(trimString(string))
+        for (const splitResult of splitStringByQuotation(block)) {
+            latentClasses.add(trimString(splitResult))
+        }
+
+        const peelResults = peelCompleteString(block)
+        if (peelResults.size) {
+            for (const peelResult of peelResults) {
+                for (const splitResult of splitStringByQuotation(peelResult)) {
+                    latentClasses.add(trimString(splitResult))
+                }
             }
         }
     }
+    
     return Array.from(latentClasses)
         .filter(x => x && !checkToExclude(x))
 }
 
+const splitStringByQuotation = (content: string) => {
+    const blocks = keepCompleteStringAndProcessContent(
+        content,
+        c => (c.match(/[^"'`]+/g) ?? []).join('SPLIT_BY_THIS')
+    ).split('SPLIT_BY_THIS')
+    return blocks
+}
+
 const trimString = (content: string) => {
     const originContent = content
-    const wxh = content.match(/(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)x(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)/g)
-
-    if (wxh?.length) {
-        content = keepCompleteStringAndProcessContent(
-            content,
-            c => c
-                .replace(/^[^:@~(]*(?<!@>?)=/, '')
-                .replace(/(?:[([{\\:#=.]+|["'`].*)$/, '')
-        )
-    } else {
-        content = keepCompleteStringAndProcessContent(
-            content,
-            c => c
-                .replace(/^[^:@~(]*(?:["'`]|(?<!@>?)=)/, '')
-                .replace(/(?:[([{\\:#=.]+|["'`].*)$/, '')
-        )
-    }
+    
+    content = keepCompleteStringAndProcessContent(
+        content,
+        c => c
+            .replace(/^[^:@~(]*(?<!@>?)=/, '')
+            .replace(/[([{\\:#=.]+$/, '')
+    )
 
     if (originContent === content || !content) {
         return content
@@ -75,7 +79,7 @@ const keepCompleteStringAndProcessContent = (content: string, process: (content:
     return content
 }
 
-const peelString = (content: string) => {
+const peelCompleteString = (content: string) => {
     const strings = new Set<string>()
     const stringRegx = /((?<!\\)["'`])((?:\\\1|(?:(?!\1))[\S\s])*)((?<!\\)\1)/g
     let m: RegExpExecArray
@@ -84,7 +88,7 @@ const peelString = (content: string) => {
             stringRegx.lastIndex++
         }
         strings.add(m[2])
-        const result = peelString(m[2])
+        const result = peelCompleteString(m[2])
         if (result.size) {
             for (const string of result) {
                 strings.add(string)
@@ -125,6 +129,7 @@ const needExclude = (content: string) => {
     return !content
         || (
             !content.match(/(?:\S*\{\S*\})|(?:^[\w\-()]+:\S+)|(?:^[\w-]+\(\S+\))|(?:^[@~]\S+$)|(?:^[\w-]+)/)
+            && !content.match(/center-content/)
             && !content.match(/^(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)x(?:calc\(.*\)|\d+(?:%|ch|cm|em|ex|in|mm|pc|pt|px|rem|vh|vmax|vmin|vw|deg|grad|rad|turn|s)?)$/)
         )
         || content.match(/\*\*/)

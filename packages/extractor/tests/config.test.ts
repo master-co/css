@@ -25,5 +25,5 @@ test('master.css.js config custom classname', async () => {
             <h1 className="{styles.title + ' ' + 'blue-btn'}">
             <button className="test btn">
         `)
-    ).toEqual(['rel', 'blue-btn', 'btn'])
+    ).toEqual(['rel', 'blue-btn', 'test', 'btn'])
 })

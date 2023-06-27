@@ -52,12 +52,14 @@ it('extract latent classes from html', () => {
             'image/svg+xml',
             'viewport',
             'device-width,',
+            '1.0',
             'CSS',
             'Static',
             'Extraction',
             'in',
             'app',
             'flex',
+            'center-content',
             '_blank',
             'logo',
             'Vite',
@@ -85,7 +87,6 @@ it('extract latent classes from html', () => {
             'learn',
             'more',
             'module',
-            'src/main.ts',
-            'center-content'
+            'src/main.ts'
         ])
 })
