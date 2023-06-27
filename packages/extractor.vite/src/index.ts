@@ -111,6 +111,11 @@ export async function CSSExtractorPlugin(
                 }
             }
         },
+        transformIndexHtml(html, { filename }) {
+            extractor.insert(filename, html)
+            transformedIds.add(filename)
+            return html
+        },
     } as Plugin
 }
 
