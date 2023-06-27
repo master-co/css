@@ -11,7 +11,6 @@ export async function CSSExtractorPlugin(
 ): Promise<Plugin> {
     const extractor = new CSSExtractor(customOptions)
     extractor.options.include = []
-    extractor.options.exclude = []
     let server: ViteDevServer
     let transformedIndexHTMLModule: { id: string, code: string }
     const reloadVirtualCSSModule = () => {
@@ -64,7 +63,6 @@ export async function CSSExtractorPlugin(
             const reset = async () => {
                 extractor.reset()
                 extractor.options.include = []
-                extractor.options.exclude = []
                 const tasks = []
                 /* 1. transform index.html */
                 if (transformedIndexHTMLModule) {
@@ -80,9 +78,7 @@ export async function CSSExtractorPlugin(
                             if (!eachModuleCode) {
                                 eachModuleCode = readFileSync(eachModuleId, 'utf-8')
                             }
-                            if (eachModuleCode) {
-                                await extractor.insert(eachModuleId, eachModuleCode)
-                            }
+                            await extractor.insert(eachModuleId, eachModuleCode)
                         })
                 )
                 /* 3. fixed sources */

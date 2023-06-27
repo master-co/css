@@ -20,6 +20,7 @@ const options: Options = {
         '**/*master.css-renderer.*',
         '**/*README.md',
         '**/dist/**',
+        '**/.vite/**',
         'dist',
         '**/out/**',
         'out',
