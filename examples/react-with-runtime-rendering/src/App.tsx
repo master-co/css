@@ -1,12 +1,9 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import masterLogo from './assets/master.svg'
-import ThemeSelect from './components/ThemeSelect'
-import { useThemeService } from '@master/css.react'
 
 function App() {
     const [count, setCount] = useState(0)
-    const themeService = useThemeService()
     return (
         <>
             <div className='grid-cols:2 w:fit mx:auto'>
@@ -23,12 +20,8 @@ function App() {
                 <span>Master CSS</span>
             </h1>
             <div className="card">
-                <button className="h:40 bg:gray-20@dark bg:white@light" onClick={() => setCount((count) => count + 1)}>
+                <button className="h:40 bg:gray-20@dark bg:slate-90@light" onClick={() => setCount((count) => count + 1)}>
                     count is {count}
-                </button>
-                <button className="h:40 bg:gray-20@dark bg:white@light ml:10 rel">
-                    {themeService?.current === 'dark' ? '🌜' : '☀️'} {themeService?.current}
-                    <ThemeSelect className="abs full inset:0 r:inherit opacity:0 font:inherit" />
                 </button>
             </div>
             <p className="read-the-docs">

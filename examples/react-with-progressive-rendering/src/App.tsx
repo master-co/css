@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useThemeService } from '@master/css.react'
+import reactLogo from './assets/react.svg'
+import masterLogo from './assets/master.svg'
 
 function App() {
     const [count, setCount] = useState(0)
@@ -8,10 +10,10 @@ function App() {
         <>
             <div className='grid-cols:2 w:fit mx:auto'>
                 <a href="https://reactjs.org" target="_blank">
-                    <img src="/react.svg" className="logo react" alt="React logo" />
+                    <img src={reactLogo} className="logo react" alt="React logo" />
                 </a>
                 <a href="https://beta.css.master.co" target="_blank">
-                    <img src="/master.svg" className="logo master scale(1.6)" alt="Master logo" />
+                    <img src={masterLogo} className="logo master scale(1.6)" alt="Master logo" />
                 </a>
             </div>
             <h1 className="font:sans ls:-.25 fg:white@dark font:heavy">
