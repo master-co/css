@@ -11,6 +11,28 @@ export async function CSSExtractorPlugin(
     let extractor
     let server: ViteDevServer
     const transformedIds = new Set<string>()
+    const reloadVirtualCSSModule = () => {
+        const virtualCSSModuleId = extractor.resolvedModuleId
+        const virtualCSSModule = server.moduleGraph.getModuleById(virtualCSSModuleId)
+        if (virtualCSSModule) {
+            server.moduleGraph.invalidateModule(virtualCSSModule)
+            server.ws.send({
+                type: 'update',
+                updates: [{
+                    type: 'js-update',
+                    path: virtualCSSModuleId,
+                    acceptedPath: virtualCSSModuleId,
+                    timestamp: +Date.now()
+                }]
+            })
+            server.ws.send({
+                type: 'custom',
+                event: extractor.moduleHMREvent,
+                data: extractor.css.text
+            })
+        }
+    }
+    let runtimeCodeInserted = false
     return {
         name: 'vite-plugin-master-css',
         enforce: 'post',
@@ -44,6 +66,7 @@ export async function CSSExtractorPlugin(
                 extractor.reset()
                 server.moduleGraph.invalidateAll()
                 await extractor.insertFixed()
+                reloadVirtualCSSModule()
             }
             if (resolvedFilePath === resolvedConfigPath) {
                 log``
@@ -55,28 +78,7 @@ export async function CSSExtractorPlugin(
                 log.t`[change] **${extractor.optionsPath}**`
                 log``
                 await reset()
-            } else {
-                /* 掃描 HMR 期異動的檔案 */
-                await extractor.insert(filepath, await read())
             }
-            const virtualCSSModule = server.moduleGraph.getModuleById(extractor.resolvedModuleId)
-            if (virtualCSSModule) {
-                server.moduleGraph.invalidateModule(virtualCSSModule)
-                server.ws.send({
-                    type: 'update',
-                    updates: [{
-                        type: 'js-update',
-                        path: virtualCSSModule.url,
-                        acceptedPath: virtualCSSModule.url,
-                        timestamp: Date.now()
-                    }]
-                })
-            }
-            server.ws.send({
-                type: 'custom',
-                event: extractor.moduleHMREvent,
-                data: extractor.css.text
-            })
         },
         configureServer(_server) {
             server = _server
@@ -88,33 +90,42 @@ export async function CSSExtractorPlugin(
             // TODO 目前會重複 watch 相同的檔案
             // const supportsGlobs = server.config.server.watch?.disableGlobbing === false
             // server.watcher.add(supportsGlobs ? extractor.options.include : extractor.fixedSourcePaths)
+            server.ws.on('connection', (socket) => {
+                if (!runtimeCodeInserted) {
+                    log``
+                    log.warn`Runtime code is not inserted.`
+                }
+            })
         },
-        transform(code, id) {
-            extractor.insert(id, code)
+        async transformIndexHtml(html, { filename }) {
+            await extractor.insert(filename, html)
+            transformedIds.add(filename)
+            if (server) {
+                reloadVirtualCSSModule()
+            }
+        },
+        async transform(code, id) {
+            await extractor.insert(id, code)
             transformedIds.add(id)
             if (server) {
-                if (code.includes(extractor.options.module || 'master.css')) {
-                    return `${code}
-                        if (import.meta.hot) {
-                            try {
-                                import.meta.hot.on('${extractor.moduleHMREvent}', (text) => {
-                                    const virtualCSSStyle = document.querySelector(\`[data-vite-dev-id*="master.css"]\`)
-                                    if (virtualCSSStyle) {
-                                        virtualCSSStyle.textContent = text
-                                    }
-                                })
-                            } catch (err) {
-                                console.warn('[Master CSS HMR]', err)
-                            }
+                reloadVirtualCSSModule()
+                /* Insert runtime code if `index.html` is not transformed */
+                if (new RegExp(`["']` + extractor.options.module.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + `["']`).test(code)) {
+                    runtimeCodeInserted = true
+                    return code + `
+                        try {
+                            import.meta.hot.on('${extractor.moduleHMREvent}', (text) => {
+                                const virtualCSSStyle = document.querySelector(\`[data-vite-dev-id*="${extractor.options.module}"]\`)
+                                if (virtualCSSStyle) {
+                                    virtualCSSStyle.textContent = text
+                                }
+                            })
+                        } catch (err) {
+                            console.warn('[Master CSS Extractor]', err)
                         }
                     `
                 }
             }
-        },
-        transformIndexHtml(html, { filename }) {
-            extractor.insert(filename, html)
-            transformedIds.add(filename)
-            return html
         },
     } as Plugin
 }
