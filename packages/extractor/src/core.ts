@@ -54,7 +54,7 @@ export default class CSSExtractor {
         this.css = new MasterCSS(
             typeof this.options.config === 'object'
                 ? this.options.config
-                : (exploreConfig(this.options.config, { cwd: this.options.cwd }) || {})
+                : (exploreConfig(this.options.config, { cwd: this.cwd }) || {})
         )
         return this
     }
@@ -164,19 +164,15 @@ export default class CSSExtractor {
 
         if (this.css.rules.length && validClasses.length) {
             console.log('')
-            log.ok`**${upath.relative(this.options.cwd, source)}**`
-            const excludedClasses = validClasses.filter((eachValidExtraction) => !latentClasses.includes(eachValidExtraction))
-            if (excludedClasses.length) {
-                log`[exclude] ${excludedClasses.length} unknown ${excludedClasses}`
-            }
-            log`  ${validClasses.length} valid inserted ${chalk.gray('in')} ${spent}ms ${validClasses}`
+            log.ok`**${upath.relative(this.cwd, source)}** ${validClasses.length} valid inserted ${chalk.gray('in')} ${spent}ms`
+            log`  ${validClasses}`
         }
 
         return true
     }
 
     insertFile(source: string) {
-        return this.insert(source, fs.readFileSync(upath.resolve(this.options.cwd, source), { encoding: 'utf-8' }).toString())
+        return this.insert(source, fs.readFileSync(upath.resolve(this.cwd, source), { encoding: 'utf-8' }).toString())
     }
 
     insertFiles(sources: string[]) {
@@ -184,7 +180,7 @@ export default class CSSExtractor {
     }
 
     export(filename = this.options.module) {
-        const filepath = upath.resolve(this.options.cwd, filename)
+        const filepath = upath.resolve(this.cwd, filename)
         fs.writeFileSync(filepath, this.css.text)
         log``
         log.success`${this.css.rules.length} rules exported ${chalk.gray('in')} **${filename}**`
@@ -196,9 +192,16 @@ export default class CSSExtractor {
     get fixedSourcePaths(): string[] {
         const { sources } = this.options
         return sources?.length
-            ? fg.sync(sources, { cwd: this.options.cwd })
+            ? fg.sync(sources, { cwd: this.cwd })
                 .filter((eachSourcePath) => !!eachSourcePath)
             : []
+    }
+
+    /**
+     * resolved from `fixedSourcePaths`
+     */
+    get resolvedFixedSourcePaths(): string[] {
+        return this.fixedSourcePaths.map((eachSourcePath) => upath.resolve(this.cwd, eachSourcePath))
     }
 
     /**
@@ -207,9 +210,16 @@ export default class CSSExtractor {
     get allowedSourcePaths(): string[] {
         const { include, exclude } = this.options
         return include?.length
-            ? fg.sync(include, { cwd: this.options.cwd, ignore: exclude })
+            ? fg.sync(include, { cwd: this.cwd, ignore: exclude })
                 .filter((eachSourcePath) => !!eachSourcePath)
             : []
+    }
+
+    /**
+     * resolved from `allowedSourcePaths`
+     */
+    get resolvedAllowedSourcePaths(): string[] {
+        return this.allowedSourcePaths.map((eachSourcePath) => upath.resolve(this.cwd, eachSourcePath))
     }
 
     isSourceAllowed(source: string): boolean {
@@ -247,7 +257,7 @@ export default class CSSExtractor {
     */
     get resolvedConfigPath(): string {
         if (typeof this.options.config === 'string' || Array.isArray(this.options.config)) {
-            return exploreResolvedConfigPath(this.options.config, { cwd: this.options.cwd })
+            return exploreResolvedConfigPath(this.options.config, { cwd: this.cwd })
         }
     }
 
@@ -265,7 +275,11 @@ export default class CSSExtractor {
     */
     get resolvedOptionsPath(): string {
         if (typeof this.customOptions === 'string' || Array.isArray(this.customOptions)) {
-            return exploreResolvedConfigPath(this.customOptions, { cwd: this.options.cwd })
+            return exploreResolvedConfigPath(this.customOptions, { cwd: this.cwd })
         }
+    }
+
+    get cwd(): string {
+        return this.options.cwd || process.cwd()
     }
 }

@@ -4,13 +4,16 @@ import type { Plugin, ViteDevServer } from 'vite'
 import upath from 'upath'
 import log from '@techor/log'
 import { Pattern } from 'fast-glob'
+import { readFileSync } from 'fs'
 
 export async function CSSExtractorPlugin(
     customOptions?: Options | Pattern | Pattern[]
 ): Promise<Plugin> {
-    let extractor
+    const extractor = new CSSExtractor(customOptions)
+    extractor.options.include = []
+    extractor.options.exclude = []
     let server: ViteDevServer
-    const transformedIds = new Set<string>()
+    let transformedIndexHTMLModule: { id: string, code: string }
     const reloadVirtualCSSModule = () => {
         const virtualCSSModuleId = extractor.resolvedModuleId
         const virtualCSSModule = server.moduleGraph.getModuleById(virtualCSSModuleId)
@@ -41,7 +44,6 @@ export async function CSSExtractorPlugin(
             return !env.ssrBuild
         },
         async buildStart() {
-            extractor = new CSSExtractor(customOptions)
             await extractor.insertFixed()
         },
         async resolveId(id) {
@@ -59,13 +61,33 @@ export async function CSSExtractorPlugin(
             const resolvedFilePath = upath.resolve(filepath)
             const resolvedConfigPath = extractor.resolvedConfigPath
             const resolvedOptionsPath = extractor.resolvedOptionsPath
-            /**
-             * Reset extractor based on stored `transformedIds` and corresponding transformed code
-             */
             const reset = async () => {
                 extractor.reset()
-                server.moduleGraph.invalidateAll()
-                await extractor.insertFixed()
+                extractor.options.include = []
+                extractor.options.exclude = []
+                const tasks = []
+                /* 1. transform index.html */
+                if (transformedIndexHTMLModule) {
+                    tasks.push(extractor.insert(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
+                }
+                /* 2. transformed modules */
+                tasks.concat(
+                    Array.from(server.moduleGraph.idToModuleMap.keys())
+                        .filter((eachModuleId) => eachModuleId !== extractor.resolvedModuleId)
+                        .map(async (eachModuleId: string) => {
+                            const eachModule = server.moduleGraph.idToModuleMap.get(eachModuleId)
+                            let eachModuleCode = eachModule.transformResult?.code
+                            if (!eachModuleCode) {
+                                eachModuleCode = readFileSync(eachModuleId, 'utf-8')
+                            }
+                            if (eachModuleCode) {
+                                await extractor.insert(eachModuleId, eachModuleCode)
+                            }
+                        })
+                )
+                /* 3. fixed sources */
+                tasks.push(await extractor.insertFixed())
+                await Promise.all(tasks)
                 reloadVirtualCSSModule()
             }
             if (resolvedFilePath === resolvedConfigPath) {
@@ -77,19 +99,33 @@ export async function CSSExtractorPlugin(
                 log``
                 log.t`[change] **${extractor.optionsPath}**`
                 log``
+                const oldFixedSourcePaths = extractor.fixedSourcePaths
+                if (oldFixedSourcePaths) {
+                    server.watcher.unwatch(oldFixedSourcePaths)
+                }
                 await reset()
+                const fixedSourcePaths = extractor.fixedSourcePaths
+                if (fixedSourcePaths) {
+                    server.watcher.add(fixedSourcePaths)
+                }
             }
         },
-        configureServer(_server) {
-            server = _server
-            // const configPath = extractor.configPath
-            // console.log('🔺', configPath)
-            // if (configPath) {
-            //     server.watcher.add(configPath)
-            // }
-            // TODO 目前會重複 watch 相同的檔案
-            // const supportsGlobs = server.config.server.watch?.disableGlobbing === false
-            // server.watcher.add(supportsGlobs ? extractor.options.include : extractor.fixedSourcePaths)
+        configureServer(devServer) {
+            server = devServer
+            /* watch all fixed sources */
+            const fixedSourcePaths = extractor.fixedSourcePaths
+            if (fixedSourcePaths) {
+                server.watcher.add(fixedSourcePaths)
+                server.watcher.on('change', async (resolvedChangedPath) => {
+                    const relChangedPath = upath.relative(extractor.cwd, resolvedChangedPath)
+                    if (extractor.isSourceAllowed(relChangedPath)) {
+                        const content = readFileSync(resolvedChangedPath, 'utf-8')
+                        if (content) {
+                            await extractor.insert(resolvedChangedPath, content)
+                        }
+                    }
+                })
+            }
             server.ws.on('connection', (socket) => {
                 if (!runtimeCodeInserted) {
                     log``
@@ -99,14 +135,16 @@ export async function CSSExtractorPlugin(
         },
         async transformIndexHtml(html, { filename }) {
             await extractor.insert(filename, html)
-            transformedIds.add(filename)
             if (server) {
                 reloadVirtualCSSModule()
+            }
+            transformedIndexHTMLModule = {
+                id: filename,
+                code: html
             }
         },
         async transform(code, id) {
             await extractor.insert(id, code)
-            transformedIds.add(id)
             if (server) {
                 reloadVirtualCSSModule()
                 /* Insert runtime code if `index.html` is not transformed */
