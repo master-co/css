@@ -1,7 +1,4 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import masterLogo from './assets/master.svg'
-import ThemeSelect from './components/ThemeSelect'
 import { useThemeService } from '@master/css.react'
 
 function App() {
@@ -11,10 +8,10 @@ function App() {
         <>
             <div className='grid-cols:2 w:fit mx:auto'>
                 <a href="https://reactjs.org" target="_blank">
-                    <img src={reactLogo} className="logo react" alt="React logo" />
+                    <img src="/react.svg" className="logo react" alt="React logo" />
                 </a>
                 <a href="https://beta.css.master.co" target="_blank">
-                    <img src={masterLogo} className="logo master scale(1.6)" alt="Master logo" />
+                    <img src="/master.svg" className="logo master scale(1.6)" alt="Master logo" />
                 </a>
             </div>
             <h1 className="font:sans ls:-.25 fg:white@dark font:heavy">
@@ -23,12 +20,16 @@ function App() {
                 <span>Master CSS</span>
             </h1>
             <div className="card">
-                <button className="h:40 bg:gray-20@dark bg:white@light" onClick={() => setCount((count) => count + 1)}>
+                <button className="h:40 bg:gray-20@dark bg:slate-90@light" onClick={() => setCount((count) => count + 1)}>
                     count is {count}
                 </button>
-                <button className="h:40 bg:gray-20@dark bg:white@light ml:10 rel">
+                <button className="h:40 bg:gray-20@dark bg:slate-90@light ml:10 rel">
                     {themeService?.current === 'dark' ? '🌜' : '☀️'} {themeService?.current}
-                    <ThemeSelect className="abs full inset:0 r:inherit opacity:0 font:inherit" />
+                    <select className="abs full inset:0 r:inherit opacity:0 font:inherit" value={themeService?.value} onChange={(event) => themeService?.switch(event.target.value)}>
+                        <option value="light">☀️ Light</option>
+                        <option value="dark">🌜 Dark</option>
+                        <option value="system">System</option>
+                    </select>
                 </button>
             </div>
             <p className="read-the-docs">
