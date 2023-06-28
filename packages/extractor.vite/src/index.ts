@@ -1,8 +1,6 @@
 import CSSExtractor from '@master/css-extractor'
 import type { Options } from '@master/css-extractor'
 import type { Plugin, ViteDevServer } from 'vite'
-import upath from 'upath'
-import log from '@techor/log'
 import { Pattern } from 'fast-glob'
 import { readFileSync } from 'fs'
 
@@ -10,31 +8,12 @@ export async function CSSExtractorPlugin(
     customOptions?: Options | Pattern | Pattern[]
 ): Promise<Plugin> {
     const extractor = new CSSExtractor(customOptions)
-    extractor.options.include = []
+    extractor.on('init', (options: Options) => {
+        options.include = []
+    })
+    extractor.init()
     let server: ViteDevServer
     let transformedIndexHTMLModule: { id: string, code: string }
-    const reloadVirtualCSSModule = () => {
-        const virtualCSSModuleId = extractor.resolvedModuleId
-        const virtualCSSModule = server.moduleGraph.getModuleById(virtualCSSModuleId)
-        if (virtualCSSModule) {
-            server.moduleGraph.invalidateModule(virtualCSSModule)
-            server.ws.send({
-                type: 'update',
-                updates: [{
-                    type: 'js-update',
-                    path: virtualCSSModuleId,
-                    acceptedPath: virtualCSSModuleId,
-                    timestamp: +Date.now()
-                }]
-            })
-            server.ws.send({
-                type: 'custom',
-                event: extractor.moduleHMREvent,
-                data: extractor.css.text
-            })
-        }
-    }
-    let runtimeCodeInserted = false
     return {
         name: 'vite-plugin-master-css',
         enforce: 'post',
@@ -43,122 +22,77 @@ export async function CSSExtractorPlugin(
             return !env.ssrBuild
         },
         async buildStart() {
-            await extractor.insertFixed()
+            await extractor.prepare()
         },
         async resolveId(id) {
             if (id === extractor.options.module) {
-                return extractor.resolvedModuleId
+                return extractor.hotModuleId
             }
         },
         load(id) {
-            if (id === extractor.resolvedModuleId) {
-                extractor.fixedSourcePaths.forEach((eachSourcePath) => this.addWatchFile(eachSourcePath))
+            if (id === extractor.hotModuleId) {
                 return extractor.css.text
-            }
-        },
-        async handleHotUpdate({ server, file: filepath, read }) {
-            const resolvedFilePath = upath.resolve(filepath)
-            const resolvedConfigPath = extractor.resolvedConfigPath
-            const resolvedOptionsPath = extractor.resolvedOptionsPath
-            const reset = async () => {
-                extractor.reset()
-                extractor.options.include = []
-                const tasks = []
-                /* 1. transform index.html */
-                if (transformedIndexHTMLModule) {
-                    tasks.push(extractor.insert(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
-                }
-                /* 2. transformed modules */
-                tasks.concat(
-                    Array.from(server.moduleGraph.idToModuleMap.keys())
-                        .filter((eachModuleId) => eachModuleId !== extractor.resolvedModuleId)
-                        .map(async (eachModuleId: string) => {
-                            const eachModule = server.moduleGraph.idToModuleMap.get(eachModuleId)
-                            let eachModuleCode = eachModule.transformResult?.code
-                            if (!eachModuleCode) {
-                                eachModuleCode = readFileSync(eachModuleId, 'utf-8')
-                            }
-                            await extractor.insert(eachModuleId, eachModuleCode)
-                        })
-                )
-                /* 3. fixed sources */
-                tasks.push(await extractor.insertFixed())
-                await Promise.all(tasks)
-                reloadVirtualCSSModule()
-            }
-            if (resolvedFilePath === resolvedConfigPath) {
-                log``
-                log.t`[change] **${extractor.configPath}**`
-                log``
-                await reset()
-            } else if (resolvedFilePath === resolvedOptionsPath) {
-                log``
-                log.t`[change] **${extractor.optionsPath}**`
-                log``
-                const oldFixedSourcePaths = extractor.fixedSourcePaths
-                if (oldFixedSourcePaths) {
-                    server.watcher.unwatch(oldFixedSourcePaths)
-                }
-                await reset()
-                const fixedSourcePaths = extractor.fixedSourcePaths
-                if (fixedSourcePaths) {
-                    server.watcher.add(fixedSourcePaths)
-                }
             }
         },
         configureServer(devServer) {
             server = devServer
-            /* watch all fixed sources */
-            const fixedSourcePaths = extractor.fixedSourcePaths
-            if (fixedSourcePaths) {
-                server.watcher.add(fixedSourcePaths)
-                server.watcher.on('change', async (resolvedChangedPath) => {
-                    const relChangedPath = upath.relative(extractor.cwd, resolvedChangedPath)
-                    if (extractor.isSourceAllowed(relChangedPath)) {
-                        const content = readFileSync(resolvedChangedPath, 'utf-8')
-                        if (content) {
-                            await extractor.insert(resolvedChangedPath, content)
-                        }
+            extractor
+                .on('reset', async () => {
+                    const tasks = []
+                    /* 1. fixed sources */
+                    tasks.push(await extractor.prepare())
+                    /* 2. transform index.html */
+                    if (transformedIndexHTMLModule) {
+                        tasks.push(extractor.insert(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
+                    }
+                    /* 3. transformed modules */
+                    tasks.concat(
+                        Array.from(server.moduleGraph.idToModuleMap.keys())
+                            .filter((eachModuleId) => eachModuleId !== extractor.hotModuleId)
+                            .map(async (eachModuleId: string) => {
+                                const eachModule = server.moduleGraph.idToModuleMap.get(eachModuleId)
+                                let eachModuleCode = eachModule.transformResult?.code
+                                if (!eachModuleCode) {
+                                    eachModuleCode = readFileSync(eachModuleId, 'utf-8')
+                                }
+                                await extractor.insert(eachModuleId, eachModuleCode)
+                            })
+                    )
+                    await Promise.all(tasks)
+                })
+                .on('change', () => {
+                    const hotModuleId = extractor.hotModuleId
+                    const virtualCSSModule = server.moduleGraph.getModuleById(hotModuleId)
+                    if (virtualCSSModule) {
+                        server.reloadModule(virtualCSSModule)
+                        server.ws.send({
+                            type: 'update',
+                            updates: [{
+                                type: 'css-update',
+                                path: hotModuleId,
+                                acceptedPath: hotModuleId,
+                                timestamp: +Date.now()
+                            }]
+                        })
+                        server.ws.send({
+                            type: 'custom',
+                            event: extractor.hotModuleEvent,
+                            data: extractor.css.text
+                        })
                     }
                 })
-            }
-            server.ws.on('connection', (socket) => {
-                if (!runtimeCodeInserted) {
-                    log``
-                    log.warn`Runtime code is not inserted.`
-                }
-            })
+            extractor.startWatch()
         },
         async transformIndexHtml(html, { filename }) {
             await extractor.insert(filename, html)
-            if (server) {
-                reloadVirtualCSSModule()
-            }
             transformedIndexHTMLModule = {
                 id: filename,
                 code: html
             }
         },
-        async transform(code, id) {
-            await extractor.insert(id, code)
-            if (server) {
-                reloadVirtualCSSModule()
-                /* Insert runtime code if `index.html` is not transformed */
-                if (new RegExp(`["']` + extractor.options.module.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + `["']`).test(code)) {
-                    runtimeCodeInserted = true
-                    return code + `
-                        try {
-                            import.meta.hot.on('${extractor.moduleHMREvent}', (text) => {
-                                const virtualCSSStyle = document.querySelector(\`[data-vite-dev-id*="${extractor.options.module}"]\`)
-                                if (virtualCSSStyle) {
-                                    virtualCSSStyle.textContent = text
-                                }
-                            })
-                        } catch (err) {
-                            console.warn('[Master CSS Extractor]', err)
-                        }
-                    `
-                }
+        transform(code, id) {
+            if (id !== extractor.hotModuleId) {
+                extractor.insert(id, code)
             }
         },
     } as Plugin
