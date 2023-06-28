@@ -1,6 +1,6 @@
 import upath from 'upath'
 import { default as defaultOptions, Options } from './options'
-import MasterCSS, { Rule } from '@master/css'
+import MasterCSS from '@master/css'
 import type { Config } from '@master/css'
 import extractLatentClasses from './functions/extract-latent-classes'
 import fs from 'fs'
@@ -10,6 +10,8 @@ import log, { chalk } from '@techor/log'
 import { extend } from '@techor/extend'
 import exploreConfig, { exploreConfigPath, exploreResolvedConfigPath } from 'explore-config'
 import { createValidRules } from '@master/css-validator'
+import chokidar from 'chokidar'
+import { EventEmitter } from 'node:events'
 
 export default class CSSExtractor {
 
@@ -18,6 +20,15 @@ export default class CSSExtractor {
     validClasses = new Set<string>()
     invalidClasses = new Set<string>()
     options: Options
+    watching = false
+    watchers: chokidar.FSWatcher[] = []
+    emitter = new EventEmitter()
+
+    on = this.emitter.on
+    off = this.emitter.off
+    once = this.emitter.once
+    emit = this.emitter.emit
+    removeAllListeners = this.emitter.removeAllListeners
 
     get resolvedModuleId() {
         return '\0' + this.options.module
@@ -29,18 +40,9 @@ export default class CSSExtractor {
 
     constructor(
         public customOptions: Options | Pattern | Pattern[] = 'master.css-extractor.*'
-    ) {
-        log``
-        this.refresh(this.customOptions)
-    }
+    ) { }
 
-    logOptions() {
-        log.ok`**options**`
-        log.tree(this.options)
-        log``
-    }
-
-    refresh(customOptions = this.customOptions) {
+    async init(customOptions = this.customOptions) {
         if (typeof customOptions === 'string' || Array.isArray(customOptions)) {
             this.options = extend(defaultOptions, exploreConfig(customOptions, {
                 on: {
@@ -51,19 +53,39 @@ export default class CSSExtractor {
         } else {
             this.options = extend(defaultOptions, customOptions)
         }
+        if (this.options.verbose > 1) {
+            log.ok`**options**`
+            log.tree(this.options)
+            log``
+        }
         this.css = new MasterCSS(
             typeof this.options.config === 'object'
                 ? this.options.config
                 : (exploreConfig(this.options.config, { cwd: this.cwd }) || {})
         )
-        return this
+        this.emit('init', this.options, this.config)
     }
 
-    reset(customOptions = this.customOptions) {
+    async reset(customOptions = this.customOptions) {
+        if (this.watchers.length) {
+            await Promise.all(this.watchers.map(eachWatcher => eachWatcher.removeAllListeners()))
+        }
         this.latentClasses.clear()
         this.validClasses.clear()
         this.invalidClasses.clear()
-        this.refresh(customOptions)
+        this.init(customOptions)
+        await this.insertFixed()
+        if (this.watching) await this.startWatch()
+        this.emit('reset')
+        return this
+    }
+
+    async destroy() {
+        this.latentClasses.clear()
+        this.validClasses.clear()
+        this.invalidClasses.clear()
+        this.removeAllListeners()
+        this.emit('destroy')
         return this
     }
 
@@ -73,7 +95,9 @@ export default class CSSExtractor {
             for (const eachFixedClass of this.options.classes.fixed) {
                 this.css.insert(eachFixedClass)
             }
-            log.ok`${this.options.classes.fixed.length} fixed classes inserted ${this.options.classes.fixed}`
+            if (this.options.verbose) {
+                log.ok`${this.options.classes.fixed.length} fixed classes inserted ${this.options.classes.fixed}`
+            }
         }
         await this.insertFiles(this.fixedSourcePaths)
     }
@@ -162,10 +186,8 @@ export default class CSSExtractor {
         time = process.hrtime(time)
         const spent = Math.round(((time[0] * 1e9 + time[1]) / 1e6) * 10) / 10
 
-        if (this.css.rules.length && validClasses.length) {
-            console.log('')
-            log.ok`**${upath.relative(this.cwd, source)}** ${validClasses.length} valid inserted ${chalk.gray('in')} ${spent}ms`
-            log`  ${validClasses}`
+        if (this.options.verbose && this.css.rules.length && validClasses.length) {
+            log.ok`**${upath.relative(this.cwd, source)}** ${validClasses.length} valid inserted ${chalk.gray('in')} ${spent}ms ${this.options.verbose > 1 ? validClasses : ''}`
         }
 
         return true
@@ -182,8 +204,76 @@ export default class CSSExtractor {
     export(filename = this.options.module) {
         const filepath = upath.resolve(this.cwd, filename)
         fs.writeFileSync(filepath, this.css.text)
-        log``
-        log.success`${this.css.rules.length} rules exported ${chalk.gray('in')} **${filename}**`
+        if (this.options.verbose) {
+            log.success`${this.css.rules.length} rules exported ${chalk.gray('in')} **${filename}**`
+        }
+    }
+
+    watchSource(paths: string | readonly string[], watchOptions?: chokidar.WatchOptions) {
+        const handle = async (source: string) => {
+            const oldCSStext = this.css.text
+            await this.insertFile(source)
+            if (oldCSStext !== this.css.text) {
+                this.emit('change')
+            }
+        }
+        this.watch('add change', paths, handle, watchOptions)
+    }
+
+    watch(events: string, paths: string | readonly string[], handle: (path: string, stats?: fs.Stats) => void, watchOptions?: chokidar.WatchOptions) {
+        watchOptions = extend({ ignoreInitial: true, cwd: this.cwd }, watchOptions)
+        const watcher = chokidar.watch(paths, watchOptions)
+        this.watchers.push(watcher)
+        events
+            .split(' ')
+            .forEach((eachEvent) => watcher.on(eachEvent, handle))
+    }
+
+    async startWatch() {
+        const resolvedConfigPath = this.resolvedConfigPath
+        const resolvedOptionsPath = this.resolvedOptionsPath
+
+        if (this.options.sources) {
+            this.watchSource(this.options.sources)
+        }
+
+        if (resolvedConfigPath) {
+            this.watch('add change unlink', resolvedConfigPath, async () => {
+                if (this.options.verbose) {
+                    log``
+                    log.t`[change] **${this.configPath}**`
+                }
+                await this.reset()
+                this.emit('configChange')
+            })
+        }
+
+        if (resolvedOptionsPath) {
+            this.watch('add change unlink', resolvedOptionsPath, async () => {
+                if (this.options.verbose) {
+                    log``
+                    log.t`[change] **${this.customOptions}**`
+                }
+                await this.reset()
+                this.emit('optionsChange')
+            })
+        }
+
+        if (!this.watching) {
+            this.watching = true
+            this.emit('watchStart')
+        }
+    }
+
+    async closeWatch() {
+        if (this.watchers.length) {
+            await Promise.all(this.watchers.map(eachWatcher => eachWatcher.close()))
+            this.watchers.length = 0
+        }
+        if (this.watching) {
+            this.watching = false
+            this.emit('watchClose')
+        }
     }
 
     /**

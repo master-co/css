@@ -4,8 +4,8 @@ import path from 'path'
 import '../../../css/src/polyfills/css-escape'
 import dedent from 'ts-dedent'
 
-const htmlPath = path.resolve(__dirname, 'test.html')
-const originalHtml = dedent`
+const HTMLFilepath = path.resolve(__dirname, 'test.html')
+const originHTMLText = dedent`
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -19,10 +19,9 @@ const originalHtml = dedent`
     </html>
 `
 
-const resolvedExtractorOptionsPath = path.resolve(__dirname, 'master.css-extractor.ts')
-const originalExtractorOptions = `import type { Options } from '@master/css-extractor'
+const optionsFilepath = path.resolve(__dirname, 'master.css-extractor.ts')
+const originOptionsText = `import type { Options } from '@master/css-extractor'
 const options: Options = {
-    include: ['test.html'],
     classes: {
         fixed: [],
         ignored: []
@@ -32,8 +31,8 @@ const options: Options = {
 export default options
 `
 
-const resolvedConfigPath = path.resolve(__dirname, 'master.css.ts')
-const originalCSSConfig = `import type { Config } from '@master/css'
+const configFilepath = path.resolve(__dirname, 'master.css.ts')
+const originConfigText = `import type { Config } from '@master/css'
 const config: Config = {
     classes: {
         btn: 'bg:red'
@@ -41,7 +40,6 @@ const config: Config = {
     colors: {
         primary: 'blue'
     },
-    themes: {},
     rules: {},
     values: {},
     semantics: {},
@@ -57,56 +55,71 @@ export default config
 
 let child: ChildProcess
 
-it('mcss extract -w', (done) => {
-    fs.writeFileSync(htmlPath, originalHtml, { flag: 'w' })
-    fs.writeFileSync(resolvedExtractorOptionsPath, originalExtractorOptions, { flag: 'w' })
-    fs.writeFileSync(resolvedConfigPath, originalCSSConfig, { flag: 'w' })
+beforeAll(() => {
+    fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w' })
+    fs.writeFileSync(optionsFilepath, originOptionsText, { flag: 'w' })
+    fs.writeFileSync(configFilepath, originConfigText, { flag: 'w' })
     child = exec('tsx ../../src/bin extract -w', { cwd: __dirname })
-    let step = 0
-    let watchReady = false
-    child.stdout?.on('data', async data => {
-        if (data.includes('Start watching source changes')) {
-            watchReady = true
-        } else if (!watchReady) {
-            return
-        }
-        const fileCSSText = fs.readFileSync(path.join(__dirname, 'master.css'), { encoding: 'utf8' })
-        expect(fileCSSText).toContain(CSS.escape('font:heavy'))
-        expect(fileCSSText).toContain(CSS.escape('font:48'))
-        expect(fileCSSText).toContain(CSS.escape('bg:primary'))
-        expect(fileCSSText).toContain(CSS.escape('btn'))
-        if (step === 0) {
-            // add fixed class names
-            fs.writeFileSync(resolvedExtractorOptionsPath, originalExtractorOptions.replace('fixed: []', 'fixed: [\'f:red\']'))
-            step++
-        } else {
-            if (data.includes('exported in master.css')) {
-                // expect fixed class names to be added
-                expect(fileCSSText).toContain(CSS.escape('f:red'))
+})
 
-                switch (step) {
-                    case 1:
-                        // change master.css.* bg:red -> bg:blue
-                        fs.writeFileSync(resolvedConfigPath, originalCSSConfig.replace('bg:red', 'bg:blue'))
-                        step++
-                        break
-                    case 2:
-                        expect(fileCSSText).not.toContain(CSS.escape('bg:red'))
-                        expect(fileCSSText).toContain(CSS.escape('bg:blue'))
+describe('extract watch', () => {
 
-                        // change test.html hmr-test -> f:96
-                        fs.writeFileSync(htmlPath, originalHtml.replace('hmr-test', 'f:96'))
-                        step++
-                        break
-                    case 3:
-                        expect(fileCSSText).toContain(CSS.escape('f:96'))
-                        done()
-                        break
-                }
+    it('start watch process', (done) => {
+        const handle = data => {
+            if (data.includes('Start watching source changes')) {
+                const fileCSSText = fs.readFileSync(path.join(__dirname, 'master.css'), { encoding: 'utf8' })
+                expect(fileCSSText).toContain(CSS.escape('font:heavy'))
+                expect(fileCSSText).toContain(CSS.escape('font:48'))
+                expect(fileCSSText).toContain(CSS.escape('bg:primary'))
+                expect(fileCSSText).toContain(CSS.escape('btn'))
+                child.stdout?.off('data', handle)
+                done()
             }
         }
+        child.stdout?.on('data', handle)
     })
-}, 30000)
+
+    it('change options file `fixed` and reset process', (done) => {
+        const handle = data => {
+            if (data.includes('Restart watching source changes')) {
+                const fileCSSText = fs.readFileSync(path.join(__dirname, 'master.css'), { encoding: 'utf8' })
+                expect(fileCSSText).toContain(CSS.escape('fg:red'))
+                child.stdout?.off('data', handle)
+                done()
+            }
+        }
+        child.stdout?.on('data', handle)
+        fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
+    })
+
+    it('change config file `classes` and reset process', (done) => {
+        const handle = data => {
+            if (data.includes('Restart watching source changes')) {
+                const fileCSSText = fs.readFileSync(path.join(__dirname, 'master.css'), { encoding: 'utf8' })
+                expect(fileCSSText).toContain(CSS.escape('bg:blue'))
+                child.stdout?.off('data', handle)
+                done()
+            }
+        }
+        child.stdout?.on('data', handle)
+        fs.writeFileSync(configFilepath, originConfigText.replace('bg:red', 'bg:blue'))
+    })
+
+    it('change html file class attr and update', (done) => {
+        const handle = data => {
+            console.log(data)
+            if (data.includes('exported')) {
+                const fileCSSText = fs.readFileSync(path.join(__dirname, 'master.css'), { encoding: 'utf8' })
+                /** There is no recycling mechanism during the development */
+                expect(fileCSSText).toContain(CSS.escape('text:underline'))
+                child.stdout?.off('data', handle)
+                done()
+            }
+        }
+        child.stdout?.on('data', handle)
+        fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'text:underline'))
+    })
+})
 
 afterAll(() => {
     child.stdout?.destroy()

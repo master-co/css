@@ -2,6 +2,8 @@ import type { Config } from '@master/css'
 import type { Pattern as FastGlobPattern, Pattern } from 'fast-glob'
 
 const options: Options = {
+    // enable verbose Logs
+    verbose: 1,
     // specify virtual CSS module id (e.g. virtual:master.css)
     module: 'master.css',
     // specify options file path or set `Options`
@@ -14,6 +16,7 @@ const options: Options = {
     exclude: [
         '**/*.d.ts',
         '**/*.test.*',
+        '**/*test.{js,cjs,mjs,ts}',
         '**/*.options.*',
         '**/*master.css.*',
         '**/*master.css-extractor.*',
@@ -39,6 +42,7 @@ const options: Options = {
 }
 
 export interface Options {
+    verbose?: number
     config?: Pattern | Pattern[] | Config,
     output?: string,
     path?: string,
