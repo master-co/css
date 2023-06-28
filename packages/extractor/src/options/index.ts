@@ -14,6 +14,7 @@ const options: Options = {
     include: ['**/*.{html,js,jsx,ts,tsx,svelte,astro,vue,md,mdx,pug,php}'],
     // specify sources to exclude
     exclude: [
+        '**/*.css',
         '**/*.d.ts',
         '**/*.test.*',
         '**/*test.{js,cjs,mjs,ts}',

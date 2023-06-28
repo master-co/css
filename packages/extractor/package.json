@@ -2,7 +2,6 @@
     "name": "@master/css-extractor",
     "scripts": {
         "build": "techor-pack --platform node",
-        "postbuild": "npm link ./",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",

@@ -30,11 +30,11 @@ export default class CSSExtractor {
     emit = this.emitter.emit
     removeAllListeners = this.emitter.removeAllListeners
 
-    get resolvedModuleId() {
+    get hotModuleId() {
         return '\0' + this.options.module
     }
 
-    get moduleHMREvent() {
+    get hotModuleEvent() {
         return `HMR:${this.options.module}`
     }
 
@@ -42,7 +42,7 @@ export default class CSSExtractor {
         public customOptions: Options | Pattern | Pattern[] = 'master.css-extractor.*'
     ) { }
 
-    async init(customOptions = this.customOptions) {
+    init(customOptions = this.customOptions) {
         if (typeof customOptions === 'string' || Array.isArray(customOptions)) {
             this.options = extend(defaultOptions, exploreConfig(customOptions, {
                 on: {
@@ -74,7 +74,7 @@ export default class CSSExtractor {
         this.validClasses.clear()
         this.invalidClasses.clear()
         this.init(customOptions)
-        await this.insertFixed()
+        await this.prepare()
         if (this.watching) await this.startWatch()
         this.emit('reset')
         return this
@@ -89,7 +89,7 @@ export default class CSSExtractor {
         return this
     }
 
-    async insertFixed() {
+    async prepare() {
         /* 插入指定的固定 class */
         if (this.options.classes?.fixed?.length) {
             for (const eachFixedClass of this.options.classes.fixed) {
@@ -186,10 +186,12 @@ export default class CSSExtractor {
         time = process.hrtime(time)
         const spent = Math.round(((time[0] * 1e9 + time[1]) / 1e6) * 10) / 10
 
-        if (this.options.verbose && this.css.rules.length && validClasses.length) {
-            log.ok`**${upath.relative(this.cwd, source)}** ${validClasses.length} valid inserted ${chalk.gray('in')} ${spent}ms ${this.options.verbose > 1 ? validClasses : ''}`
+        if (this.css.rules.length && validClasses.length) {
+            if (this.options.verbose) {
+                log.ok`**${upath.relative(this.cwd, source)}** ${validClasses.length} classes inserted ${chalk.gray('in')} ${spent}ms ${this.options.verbose > 1 ? validClasses : ''}`
+            }
+            this.emit('change')
         }
-
         return true
     }
 
@@ -213,9 +215,6 @@ export default class CSSExtractor {
         const handle = async (source: string) => {
             const oldCSStext = this.css.text
             await this.insertFile(source)
-            if (oldCSStext !== this.css.text) {
-                this.emit('change')
-            }
         }
         this.watch('add change', paths, handle, watchOptions)
     }

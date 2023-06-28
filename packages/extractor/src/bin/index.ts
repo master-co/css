@@ -51,11 +51,10 @@ program.command('extract', { isDefault: true })
                 if (!specifiedSourcePaths?.length) {
                     extractor.watchSource(extractor.options.include, { ignored: extractor.options.exclude })
                 }
-                extractor.export()
             }
             extractor
                 .on('watchStart', async () => {
-                    await extractor.insertFixed()
+                    await extractor.prepare()
                     await refresh()
                     log``
                     log.t`Start watching source changes`
@@ -74,7 +73,7 @@ program.command('extract', { isDefault: true })
                 })
             await extractor.startWatch()
         } else {
-            await extractor.insertFixed()
+            await extractor.prepare()
             await insert()
             extractor.export()
         }

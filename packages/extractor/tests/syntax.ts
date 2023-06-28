@@ -62,7 +62,7 @@ test('syntax', async () => {
         '.sidebar:hover_{opacity:.75}',
         '.navitem:hover_{bg:black/.75}'
     ]
-    await extractor.insertFixed()
+    await extractor.prepare()
     for (const eachGeneratedClass of Object.keys(extractor.css.ruleBy)) {
         expect(testClasses)
             .toContain(eachGeneratedClass)
