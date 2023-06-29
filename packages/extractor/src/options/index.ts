@@ -46,8 +46,7 @@ const options: Options = {
         fixed: [],
         // blacklist of class names to exclude accidentally captured
         ignored: []  // or RegExp[]
-    },
-    cwd: process.cwd()
+    }
 }
 
 export interface Options {
