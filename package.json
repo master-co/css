@@ -2,14 +2,14 @@
     "private": true,
     "scripts": {
         "postinstall": "husky install && npm ls --link=true",
-        "build": "turbo run build",
+        "build": "turbo run build && npm i",
         "build:clean": "rm -rf ./packages/**/*dist && turbo run build --force --no-cache --filter=./packages/**/*",
         "check": "npm run commit-check && npm run build && turbo run test lint type-check --parallel --filter=./packages/**/*",
         "test": "turbo run test --parallel",
         "lint": "turbo run lint --parallel --filter=./packages/**/*",
         "type-check": "turbo run type-check --parallel --filter=./packages/**/*",
         "commit-check": "commitlint --from=HEAD~1 --verbose",
-        "dev": "turbo run dev --filter=./packages/**/*",
+        "dev": "turbo run dev --filter=./packages/*",
         "clean": "rm -rf package-lock.json && rm -rf node_modules && rm -rf ./packages/**/*dist && rm -rf ./{examples,packages}/**/*node_modules && rm -rf ./{examples,packages}/**/*.turbo"
     },
     "repository": {
@@ -17,7 +17,7 @@
         "url": "https://github.com/master-co/css.git"
     },
     "workspaces": [
-        "packages/**",
+        "packages/*",
         "examples/*",
         "shared/"
     ],
@@ -25,6 +25,7 @@
         "@techor/jest-dom": "^2.2.8",
         "@techor/repo": "^2.2.8",
         "@types/jest": "^29.5.0",
+        "concurrently": "^8.2.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
         "jest-extended": "^4.0.0",
@@ -38,7 +39,7 @@
         "ts-dedent": "^2.2.0",
         "ts-jest": "^29.1.0",
         "tsx": "^3.12.7",
-        "turbo": "^1.10.3",
+        "turbo": "^1.10.6",
         "upath": "^2.0.1"
     },
     "engines": {

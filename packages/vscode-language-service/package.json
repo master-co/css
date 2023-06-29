@@ -3,8 +3,8 @@
     "scripts": {
         "build:server": "esbuild src/server.ts --bundle --minify --outfile=dist/server.js --format=cjs --platform=node --external:vscode",
         "build:extension": "esbuild src/extension.ts --bundle --minify --outfile=dist/extension.js --format=cjs --platform=node --external:vscode",
-        "build": "npm run build:server && npm run build:extension",
-        "dev": "npm run build -- --watch",
+        "build": "conc 'npm:build:*'",
+        "dev": "conc 'npm:build:* -- --watch'",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
         "deploy": "mv ../../package.json ../../_package.json && npm i vsce -D && vsce publish && mv ../../_package.json ../../package.json"

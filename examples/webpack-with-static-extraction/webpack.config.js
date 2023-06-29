@@ -4,11 +4,12 @@ const { CSSExtractorPlugin } = require('@master/css-extractor.webpack')
 module.exports = {
     entry: './src/index.ts',
     plugins: [
-        new HtmlWebpackPlugin({ template: './src/index.html' }),
+        new HtmlWebpackPlugin({ template: './src/index.html', filename: 'index.html' }),
         new CSSExtractorPlugin()
     ],
+    devtool: 'inline-source-map',
     devServer: {
-        static: './src'
+        watchFiles: ['./src/index.html']
     },
     module: {
         rules: [
@@ -21,7 +22,7 @@ module.exports = {
                 test: /\.css$/,
                 use: ['style-loader', 'css-loader']
             }
-        ],
+        ]
     },
     resolve: {
         extensions: ['.ts', '.js']

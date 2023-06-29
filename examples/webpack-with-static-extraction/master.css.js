@@ -2,7 +2,7 @@
 export default {
     classes: {},
     colors: {
-        primary: 'red'
+        primary: 'green'
     },
     themes: {},
     rules: {},
