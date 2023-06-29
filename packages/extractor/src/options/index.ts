@@ -31,7 +31,15 @@ const options: Options = {
         '**/styles/**',
         'styles',
         '**/public/**',
-        'public'
+        'public',
+        '**/node_modules/webpack*/**',
+        '**/node_modules/events/**',
+        '**/node_modules/html-entities/**',
+        '**/node_modules/ansi-html-community/**',
+        '**/node_modules/util/**',
+        '**/node_modules/react/**',
+        '**/node_modules/react-dom/**',
+        '**/node_modules/vue/**'
     ],
     classes: {
         // whitelist of class names for unpredictable dynamics

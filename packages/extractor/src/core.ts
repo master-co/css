@@ -67,15 +67,13 @@ export default class CSSExtractor {
     }
 
     async reset(customOptions = this.customOptions) {
-        if (this.watchers.length) {
-            await Promise.all(this.watchers.map(eachWatcher => eachWatcher.removeAllListeners()))
-        }
+        if (this.watching) await this.disableWatch()
         this.latentClasses.clear()
         this.validClasses.clear()
         this.invalidClasses.clear()
         this.init(customOptions)
         await this.prepare()
-        if (this.watching) await this.startWatch()
+        if (this.watching) await this.initWatch()
         this.emit('reset')
         return this
     }
@@ -185,7 +183,6 @@ export default class CSSExtractor {
         )
         time = process.hrtime(time)
         const spent = Math.round(((time[0] * 1e9 + time[1]) / 1e6) * 10) / 10
-
         if (this.css.rules.length && validClasses.length) {
             if (this.options.verbose) {
                 log.ok`**${upath.relative(this.cwd, source)}** ${validClasses.length} classes inserted ${chalk.gray('in')} ${spent}ms ${this.options.verbose > 1 ? validClasses : ''}`
@@ -212,11 +209,7 @@ export default class CSSExtractor {
     }
 
     watchSource(paths: string | readonly string[], watchOptions?: chokidar.WatchOptions) {
-        const handle = async (source: string) => {
-            const oldCSStext = this.css.text
-            await this.insertFile(source)
-        }
-        this.watch('add change', paths, handle, watchOptions)
+        this.watch('add change', paths, (source) => this.insertFile(source), watchOptions)
     }
 
     watch(events: string, paths: string | readonly string[], handle: (path: string, stats?: fs.Stats) => void, watchOptions?: chokidar.WatchOptions) {
@@ -228,7 +221,7 @@ export default class CSSExtractor {
             .forEach((eachEvent) => watcher.on(eachEvent, handle))
     }
 
-    async startWatch() {
+    private initWatch() {
         const resolvedConfigPath = this.resolvedConfigPath
         const resolvedOptionsPath = this.resolvedOptionsPath
 
@@ -257,22 +250,30 @@ export default class CSSExtractor {
                 this.emit('optionsChange')
             })
         }
+    }
 
-        if (!this.watching) {
-            this.watching = true
-            this.emit('watchStart')
+    private async disableWatch() {
+        if (this.watchers.length) {
+            await Promise.all(this.watchers.map(eachWatcher => eachWatcher.removeAllListeners()))
+            this.watchers.length = 0
         }
     }
 
+    async startWatch() {
+        if (this.watching) return
+        this.initWatch()
+        this.watching = true
+        this.emit('watchStart')
+    }
+
     async closeWatch() {
+        if (!this.watching) return
         if (this.watchers.length) {
             await Promise.all(this.watchers.map(eachWatcher => eachWatcher.close()))
             this.watchers.length = 0
         }
-        if (this.watching) {
-            this.watching = false
-            this.emit('watchClose')
-        }
+        this.watching = false
+        this.emit('watchClose')
     }
 
     /**
