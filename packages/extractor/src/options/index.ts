@@ -4,8 +4,8 @@ import type { Pattern as FastGlobPattern, Pattern } from 'fast-glob'
 const options: Options = {
     // enable verbose Logs
     verbose: 1,
-    // specify virtual CSS module id (e.g. virtual:master.css)
-    module: 'master.css',
+    // specify virtual CSS module id
+    module: 'virtual:master.css',
     // specify options file path or set `Options`
     config: 'master.css.*',
     // forcibly specify sources for scanning, not excluded by `options.exclude`
