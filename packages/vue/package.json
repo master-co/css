@@ -1,0 +1,68 @@
+{
+    "name": "@master/css.vue",
+    "scripts": {
+        "build:esm": "techor-pack ./src/**/*.{ts,vue} --format esm --esm-ext .js --no-bundle",
+        "build:type": "vue-tsc --declaration --emitDeclarationOnly",
+        "build": "conc 'npm:build:*'",
+        "dev": "conc 'npm:build:* -- --watch'",
+        "type-check": "vue-tsc --noEmit",
+        "lint": "eslint src",
+        "test": "jest"
+    },
+    "license": "MIT",
+    "description": "Integrate Master CSS in React way",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://docs.master.co/css/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/vue"
+    },
+    "keywords": [
+        "styled",
+        "component",
+        "element",
+        "styled-component",
+        "vue",
+        "hooks",
+        "use",
+        "css",
+        "mastercss",
+        "class-name",
+        "vuejs",
+        "nuxtjs"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.js",
+    "jsnext:main": "./dist/index.js",
+    "esnext": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "peerDependencies": {
+        "vue": ">= 3.0.0"
+    },
+    "dependencies": {
+        "@master/css": ""
+    },
+    "devDependencies": {
+        "@vue/compiler-sfc": "^3.3.4",
+        "@vue/tsconfig": "^0.4.0",
+        "vue-tsc": "^1.8.3"
+    }
+}

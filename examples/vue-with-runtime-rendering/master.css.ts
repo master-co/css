@@ -1,4 +1,5 @@
-/** @type {import('@master/css').Config} */
+import type { Config } from '@master/css'
+
 export default {
     classes: {},
     colors: {},
@@ -11,4 +12,4 @@ export default {
     keyframes: {},
     selectors: {},
     functions: {}
-}
+} as Config
