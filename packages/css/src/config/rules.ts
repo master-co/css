@@ -1987,27 +1987,27 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
     },
     // scroll margin
     scrollMarginLeft: {
-        match: '^sml:.',
+        match: '^scroll-ml:.',
         native: true,
         unit: 'rem'
     },
     scrollMarginRight: {
-        match: '^smr:.',
+        match: '^scroll-mr:.',
         native: true,
         unit: 'rem'
     },
     scrollMarginTop: {
-        match: '^smt:.',
+        match: '^scroll-mt:.',
         native: true,
         unit: 'rem'
     },
     scrollMarginBottom: {
-        match: '^smb:.',
+        match: '^scroll-mb:.',
         native: true,
         unit: 'rem'
     },
     scrollMarginX: {
-        match: '^(?:smx|scroll-margin-x):.',
+        match: '^(?:scroll-margin-x|scroll-mx):.',
         unit: 'rem',
         order: -0.5,
         declare(value, unit) {
@@ -2018,7 +2018,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         },
     },
     scrollMarginY: {
-        match: '^(?:smy|scroll-margin-y):.',
+        match: '^(?:scroll-margin-y|scroll-my):.',
         unit: 'rem',
         order: -0.5,
         declare(value, unit) {
@@ -2029,34 +2029,33 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         },
     },
     scrollMargin: {
-        match: '^sm:.',
         native: true,
         unit: 'rem',
         order: -1
     },
     // scroll padding
     scrollPaddingLeft: {
-        match: '^spl:.',
+        match: '^scroll-pl:.',
         native: true,
         unit: 'rem'
     },
     scrollPaddingRight: {
-        match: '^spr:.',
+        match: '^scroll-pr:.',
         native: true,
         unit: 'rem'
     },
     scrollPaddingTop: {
-        match: '^spt:.',
+        match: '^scroll-pt:.',
         native: true,
         unit: 'rem'
     },
     scrollPaddingBottom: {
-        match: '^spb:.',
+        match: '^scroll-pb:.',
         native: true,
         unit: 'rem'
     },
     scrollPaddingX: {
-        match: '^(?:spx|scroll-padding-x):.',
+        match: '^(?:scroll-padding-x|scroll-px):.',
         unit: 'rem',
         order: -0.5,
         declare(value, unit) {
@@ -2067,7 +2066,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         },
     },
     scrollPaddingY: {
-        match: '^(?:spy|scroll-padding-y):.',
+        match: '^(?:scroll-padding-y|scroll-py):.',
         unit: 'rem',
         order: -0.5,
         declare(value, unit) {
@@ -2078,7 +2077,6 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         },
     },
     scrollPadding: {
-        match: '^sp:.',
         native: true,
         unit: 'rem',
         order: -1
