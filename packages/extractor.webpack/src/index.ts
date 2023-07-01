@@ -29,17 +29,22 @@ export class CSSExtractorPlugin extends CSSExtractor {
         }
 
         const virtualModuleId = 'node_modules/' + this.options.module
+        const resolveVirtualModulePath = path.resolve(compiler.context, virtualModuleId)
         /** prevent multiple plugin instances to one virtual id */
         const virtualModule = new VirtualModulesPlugin({
             [virtualModuleId]: ''
         })
+
         if (!compiler.options.resolve)
             compiler.options.resolve = {}
 
         compiler.options.resolve.alias = {
             ...compiler.options.resolve.alias,
-            [this.options.module]: path.resolve(compiler.context, virtualModuleId)
+            [this.options.module]: resolveVirtualModulePath
         }
+
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const plugin = this
 
         virtualModule.apply(compiler)
 

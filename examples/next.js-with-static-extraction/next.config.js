@@ -10,7 +10,7 @@ const webpackConfig = {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     webpack: (config) => {
-        config.plugins.concat(webpackConfig.plugins)
+        config.plugins.push(...webpackConfig.plugins)
         return config
     }
 }

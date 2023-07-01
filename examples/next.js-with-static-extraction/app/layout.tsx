@@ -1,4 +1,5 @@
 import './globals.css'
+import 'virtual:master.css'
 
 export const metadata = {
     title: 'Create Next App',

@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import MasterCSS from "@master/css";
-import config from "./master.css";
-new MasterCSS(config);
+import { CSSProvider } from '@master/css.vue'
+import config from './master.css'
 </script>
 
 <template>
-    <html class="dark">
-    <NuxtWelcome class="{font:32!;font:heavy!;my:20;ls:-.02em}_h1@sm" />
-
-    </html>
+    <CSSProvider :config="config">
+        <NuxtWelcome class="{font:32!;font:heavy!;my:20;ls:-.02em}_h1@sm" />
+    </CSSProvider>
 </template>

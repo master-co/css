@@ -2,7 +2,6 @@
     "name": "@master/css",
     "scripts": {
         "build": "techor-pack --shakable",
-        "postbuild": "npm link ./",
         "dev": "npm run build -- --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",
