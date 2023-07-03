@@ -1,5 +1,5 @@
 import CSSExtractor, { Options } from '@master/css-extractor'
-import type { Compiler } from 'webpack'
+import type { Compiler, Module } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import path from 'path'
 import log from '@techor/log'
@@ -7,24 +7,36 @@ import log from '@techor/log'
 const NAME = 'MasterCSSExtractorPlugin'
 
 export class CSSExtractorPlugin extends CSSExtractor {
+
     initialized = false
+    moduleContentByPath = {}
+
     apply(compiler: Compiler) {
+        const getLatestCSSText = () => {
+            return (compiler.watchMode ? `/*${this.hotModuleEvent}*/` : '') + this.css.text
+        }
         if (!this.initialized) {
             this
                 .on('init', (options: Options) => {
                     options.include = []
                 })
                 .on('change', () => {
-                    virtualModule.writeModule(
-                        virtualModuleId,
-                        (compiler.watchMode ? `/*${this.hotModuleEvent}*/` : '') + this.css.text
-                    )
+                    virtualModule.writeModule(virtualModuleId, getLatestCSSText())
+                })
+                .on('reset', () => {
+                    for (const modulePath in this.moduleContentByPath) {
+                        const moduleContent = this.moduleContentByPath[modulePath]
+                        this.insert(modulePath, moduleContent)
+                    }
                 })
             this.init()
-            /* prevent watch twice */
-            compiler.hooks.watchRun.tap(NAME, async () => {
+
+            compiler.hooks.watchRun.tapPromise(NAME, async () => {
                 await this.startWatch()
+                // update after watch ready
+                virtualModule.writeModule(virtualModuleId, getLatestCSSText())
             })
+
             this.initialized = true
         }
 
@@ -42,45 +54,22 @@ export class CSSExtractorPlugin extends CSSExtractor {
             ...compiler.options.resolve.alias,
             [this.options.module]: resolveVirtualModulePath
         }
-
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        const plugin = this
-
         virtualModule.apply(compiler)
-
         /* update the Virtual CSS module after initialization */
         compiler.hooks.initialize.tap(NAME, async () => {
             await this.prepare()
             log``
         })
-
-        const moduleSources = {}
-
-        compiler.hooks.compilation.tap(NAME, async (compilation) => {
-
-            const insert = async (module) => {
-                const modulePath = compilation.getModule(module)['resource']
+        compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
+            compilation.hooks.succeedModule.tap(NAME, async (module) => {
+                const modulePath = module['resourceResolveData']?.['path'] || module['resource']
                 if (modulePath) {
-                    const moduleSource = compilation.getModule(module)['_source']
+                    const moduleSource = module['_source']
                     const moduleContent = moduleSource?.source()
-                    moduleSources[modulePath] = moduleSource
+                    this.moduleContentByPath[modulePath] = moduleContent
                     await this.insert(modulePath, moduleContent)
                 }
-            }
-
-            compilation.hooks.succeedModule.tap(NAME, (module) => {
-                insert(module)
             })
-
-            if (compiler.watching)
-                compilation.hooks.buildModule.tap(NAME, async (module) => {
-                    const modulePath = compilation.getModule(module)['resource']
-                    compiler.modifiedFiles?.forEach((eachModulePath) => {
-                        if (modulePath === eachModulePath) {
-                            insert(module)
-                        }
-                    })
-                })
         })
     }
 }

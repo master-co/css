@@ -1,6 +1,3 @@
-import { MasterCSS } from '@master/css/src/core'
-import type { Config } from '@master/css/src/config'
-
 /**
  * @description Extract latent classes from content
  * @param content 
@@ -25,7 +22,7 @@ export default function extractLatentClasses(content: string) {
             }
         }
     }
-    
+
     return Array.from(latentClasses)
         .filter(x => x && !checkToExclude(x))
 }
@@ -40,7 +37,7 @@ const splitStringByQuotation = (content: string) => {
 
 const trimString = (content: string) => {
     const originContent = content
-    
+
     content = keepCompleteStringAndProcessContent(
         content,
         c => c
@@ -57,7 +54,7 @@ const trimString = (content: string) => {
 
 
 const findCompleteString = (content: string) => {
-    const completeStrings = content.match(/((?<!\\)["'`])(?:\\\1|(?:(?!\1))[\S\s])*(?<!\\)\1/g)
+    const completeStrings = content?.match(/((?<!\\)["'`])(?:\\\1|(?:(?!\1))[\S\s])*(?<!\\)\1/g)
     return completeStrings
 }
 
