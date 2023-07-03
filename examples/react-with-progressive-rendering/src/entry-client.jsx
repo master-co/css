@@ -6,7 +6,7 @@ import { lazy } from 'react'
 const CSSProvider = lazy(() => import('@master/css.react/CSSProvider'))
 
 ReactDOM.hydrateRoot(
-    document.getElementById('root') as HTMLElement,
+    document.getElementById('root'),
     <CSSProvider config={import('../master.css')}>
         <ThemeServiceProvider options={{ default: 'system' }}>
             <App />

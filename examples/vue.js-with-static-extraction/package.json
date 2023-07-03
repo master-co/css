@@ -1,5 +1,5 @@
 {
-    "name": "vue-with-runtime-rendering",
+    "name": "vue.js-with-static-extraction",
     "private": true,
     "version": "0.0.0",
     "type": "module",
@@ -9,10 +9,10 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@master/css.vue": "",
         "vue": "^3.2.47"
     },
     "devDependencies": {
+        "@master/css-extractor.vite": "",
         "@vitejs/plugin-vue": "^4.1.0",
         "typescript": "^5.0.2",
         "vite": "^4.3.9",

@@ -15,7 +15,7 @@ const { render } = await import('./dist/server/entry-server.js')
 const routesToPrerender = fs
     .readdirSync(toAbsolute('src/pages'))
     .map((file) => {
-        const name = file.replace(/\.tsx$/, '').toLowerCase()
+        const name = file.replace(/\.jsx$/, '').toLowerCase()
         return name === 'home' ? `/` : `/${name}`
     })
 
