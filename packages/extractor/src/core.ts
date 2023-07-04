@@ -30,14 +30,6 @@ export default class CSSExtractor {
     emit = this.emitter.emit
     removeAllListeners = this.emitter.removeAllListeners
 
-    get hotModuleId() {
-        return '\0' + this.options.module
-    }
-
-    get hotModuleEvent() {
-        return `HMR:${this.options.module}`
-    }
-
     constructor(
         public customOptions: Options | Pattern | Pattern[] = 'master.css-extractor.*'
     ) { }
@@ -371,5 +363,9 @@ export default class CSSExtractor {
 
     get cwd(): string {
         return this.options.cwd || process.cwd()
+    }
+
+    get resolvedVirtualModuleId(): string {
+        return '\0' + this.options.module
     }
 }

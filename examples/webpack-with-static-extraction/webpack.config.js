@@ -9,7 +9,13 @@ module.exports = {
         new CSSExtractorPlugin({ sources: ['./src/index.html'] })
     ],
     devServer: {
-        hot: true
+        webSocketServer: 'ws',
+        watchFiles: {
+            paths: ['src/**/*.html'],
+            options: {
+                usePolling: false,
+            }
+        }
     },
     module: {
         rules: [
