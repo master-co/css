@@ -4,22 +4,50 @@ import type { Plugin } from 'vite'
 /**
  * Pre-insert code for all modules
  */
-export default function VirtualCSSModulePlugin(
+export default function VirtualCSSModulePlugins(
     extractor: CSSExtractor,
-): Plugin {
-    return {
-        name: 'master-css-extractor:virtual-css-module',
-        enforce: 'post',
-        async resolveId(id) {
-            if (id === extractor.options.module) {
-                return extractor.resolvedVirtualModuleId
+): Plugin[] {
+    return [
+        {
+            name: 'master-css-extractor:virtual-css-module:serve',
+            apply: 'serve',
+            enforce: 'post',
+            async resolveId(id) {
+                if (id === extractor.options.module) {
+                    return extractor.resolvedVirtualModuleId
+                }
+            },
+            load(id) {
+                if (id === extractor.resolvedVirtualModuleId) {
+                    return extractor.css.text
+                }
             }
-        },
-        load(id) {
-            if (id === extractor.resolvedVirtualModuleId) {
-                console.log('🔺')
-                return extractor.css.text
+        } as Plugin,
+        {
+            name: 'master-css-extractor:virtual-css-module:build',
+            apply: 'build',
+            enforce: 'post',
+            async resolveId(id) {
+                if (id === extractor.options.module) {
+                    return extractor.resolvedVirtualModuleId
+                }
+            },
+            load(id) {
+                if (id === extractor.resolvedVirtualModuleId) {
+                    return 'Master-CSS'
+                }
+            },
+            generateBundle(options, bundle) {
+                const cssFileNames = Object.keys(bundle).filter(eachFileName => eachFileName.endsWith('.css'))
+                for (const eachCssFileName of cssFileNames) {
+                    const chunk = bundle[eachCssFileName]
+                    if (chunk.type === 'asset') {
+                        bundle[eachCssFileName]['source'] = bundle[eachCssFileName]['source'].replace('Master-CSS', extractor.css.text)
+                    }
+                }
+        
+                return null
             }
-        },
-    } as Plugin
+        } as Plugin
+    ]
 }

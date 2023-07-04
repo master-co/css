@@ -22,13 +22,11 @@ export default function PreInsertionPlugin(
         transformIndexHtml: {
             order: 'pre',
             handler: async (html, { filename }) => {
-                console.log('🟢 index.html')
                 await extractor.insert(filename, html)
             }
         },
         async transform(code, id) {
             if (id !== extractor.resolvedVirtualModuleId) {
-                console.log('🟢')
                 await extractor.insert(id, code)
             }
         },

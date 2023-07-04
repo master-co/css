@@ -4,7 +4,7 @@ import type { Plugin } from 'vite'
 import { Pattern } from 'fast-glob'
 import PreInsertionPlugin from './pre-insertion'
 import HMRPlugin from './hmr-plugin'
-import VirtualCSSModulePlugin from './virtual-css-module'
+import VirtualCSSModulePlugins from './virtual-css-module'
 
 export default function CSSExtractorPlugin(
     customOptions?: Options | Pattern | Pattern[]
@@ -17,6 +17,6 @@ export default function CSSExtractorPlugin(
     return [
         HMRPlugin(extractor),
         PreInsertionPlugin(extractor),
-        VirtualCSSModulePlugin(extractor),
+        ...VirtualCSSModulePlugins(extractor),
     ]
 }
