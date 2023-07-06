@@ -2,7 +2,7 @@
     "name": "class-variant",
     "scripts": {
         "build": "techor-pack",
-        "dev": "npm run build -- --watch",
+        "dev": "npm run build -- --watch --no-declare",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
         "test": "jest"

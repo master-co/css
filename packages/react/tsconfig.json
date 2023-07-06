@@ -9,5 +9,16 @@
     ],
     "exclude": [
         "src/**/*.test.*"
+    ],
+    "references": [
+        {
+            "path": "../css"
+        },
+        {
+            "path": "../class-variant"
+        },
+        {
+            "path": "../theme-service"
+        }
     ]
 }

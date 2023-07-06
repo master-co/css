@@ -2,8 +2,7 @@
     "name": "@master/css",
     "scripts": {
         "build": "techor-pack",
-        "postbuild": "npm link ./ --no-save",
-        "dev": "npm run build -- --watch",
+        "dev": "npm run build -- --watch --no-declare",
         "test": "jest",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
@@ -71,12 +70,12 @@
     },
     "dependencies": {
         "@master/normal.css": "",
-        "@techor/fs": "^2.3.7",
-        "@techor/log": "^2.3.7",
+        "@techor/fs": "^2.3.8",
+        "@techor/log": "^2.3.8",
         "commander": "^10.0.0"
     },
     "devDependencies": {
-        "@techor/extend": "^2.3.7",
+        "@techor/extend": "^2.3.8",
         "vite": "^4.2.1",
         "shared": ""
     }

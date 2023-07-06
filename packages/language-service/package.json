@@ -2,7 +2,7 @@
     "name": "@master/css-language-service",
     "scripts": {
         "build": "techor-pack --platform node",
-        "dev": "npm run build -- --watch",
+        "dev": "npm run build -- --watch --no-declare",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
     },
