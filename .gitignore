@@ -16,6 +16,7 @@
 **/*master.css
 **/*test.html
 **/*.test.html
+**/*tsconfig.tsbuildinfo
 
 # Only exists if Bazel was run
 /bazel-out
