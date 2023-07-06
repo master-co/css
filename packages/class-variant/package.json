@@ -1,7 +1,7 @@
 {
     "name": "class-variant",
     "scripts": {
-        "build": "techor-pack --shakable",
+        "build": "techor-pack",
         "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
@@ -27,15 +27,15 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/cjs/index.js",
-    "jsnext:main": "./dist/esm/index.mjs",
-    "esnext": "./dist/esm/index.mjs",
-    "module": "./dist/esm/index.mjs",
+    "main": "./dist/index.bundle.js",
+    "jsnext:main": "./dist/index.bundle.mjs",
+    "esnext": "./dist/index.bundle.mjs",
+    "module": "./dist/index.bundle.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/cjs/index.js",
-            "import": "./dist/esm/index.mjs",
+            "require": "./dist/index.bundle.js",
+            "import": "./dist/index.bundle.mjs",
             "types": "./dist/index.d.ts"
         }
     },

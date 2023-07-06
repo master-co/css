@@ -1,7 +1,7 @@
 {
     "name": "@master/css.react",
     "scripts": {
-        "build": "techor-pack --shakable",
+        "build": "techor-pack --bundle",
         "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
@@ -36,21 +36,26 @@
         "solidjs"
     ],
     "sideEffects": false,
-    "main": "./dist/cjs/index.js",
-    "jsnext:main": "./dist/esm/index.mjs",
-    "esnext": "./dist/esm/index.mjs",
-    "module": "./dist/esm/index.mjs",
+    "main": "./dist/index.bundle.js",
+    "jsnext:main": "./dist/index.bundle.mjs",
+    "esnext": "./dist/index.bundle.mjs",
+    "module": "./dist/index.bundle.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/cjs/index.js",
-            "import": "./dist/esm/index.mjs",
+            "require": "./dist/index.bundle.js",
+            "import": "./dist/index.bundle.mjs",
             "types": "./dist/index.d.ts"
         },
-        "./*": {
-            "require": "./dist/cjs/*.js",
-            "import": "./dist/esm/*.mjs",
-            "types": "./dist/*.d.ts"
+        "./CSSProvider": {
+            "require": "./dist/CSSProvider.bundle.js",
+            "import": "./dist/CSSProvider.bundle.mjs",
+            "types": "./dist/CSSProvider.d.ts"
+        },
+        "./ThemeServiceProvider": {
+            "require": "./dist/ThemeServiceProvider.bundle.js",
+            "import": "./dist/ThemeServiceProvider.bundle.mjs",
+            "types": "./dist/ThemeServiceProvider.d.ts"
         }
     },
     "typesVersions": {

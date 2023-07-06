@@ -31,15 +31,15 @@
         "ssr"
     ],
     "sideEffects": false,
-    "main": "./dist/index.js",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
+    "main": "./dist/index.bundle.js",
+    "jsnext:main": "./dist/index.bundle.mjs",
+    "esnext": "./dist/index.bundle.mjs",
+    "module": "./dist/index.bundle.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/index.js",
-            "import": "./dist/index.mjs",
+            "require": "./dist/index.bundle.js",
+            "import": "./dist/index.bundle.mjs",
             "types": "./dist/index.d.ts"
         }
     },

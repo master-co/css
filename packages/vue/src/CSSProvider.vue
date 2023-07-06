@@ -15,7 +15,7 @@ onMounted(() => {
     if (typeof window === 'undefined') { return }
     if (!css.value) {
         const init = (resolvedConfig: Config | undefined) => {
-            const existingCSS = MasterCSS.instances.find((eachCSS) => eachCSS.root === props.root)
+            const existingCSS = MasterCSS.instances.find((eachCSS: any) => eachCSS.root === props.root)
             if (existingCSS) {
                 css.value = existingCSS
             } else {

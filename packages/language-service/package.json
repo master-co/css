@@ -1,10 +1,8 @@
 {
     "name": "@master/css-language-service",
     "scripts": {
-        "build:cjs": "esbuild src/index.ts --bundle --minify --outfile=dist/index.js --format=cjs --platform=node --external:@master/css --external:js-beautify",
-        "build:type": "tsc --emitDeclarationOnly --preserveWatchOutput --outDir dist",
-        "build": "conc 'npm:build:*'",
-        "dev": "conc 'npm:build:* -- --watch'",
+        "build": "techor-pack --platform node",
+        "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
     },
@@ -22,11 +20,11 @@
         "vscode-css-languageservice": "^6.2.5",
         "vscode-languageserver-types": "^3.17.3"
     },
-    "main": "./dist/index.js",
+    "main": "./dist/index.bundle.js",
     "types": "./dist/index.d.ts",
     "exports": {
-        ".": "./dist/index.js",
-        "./settings": "./dist/settings.js"
+        ".": "./dist/index.bundle.js",
+        "./settings": "./dist/settings.bundle.js"
     },
     "typesVersions": {
         "*": {

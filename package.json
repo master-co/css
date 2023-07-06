@@ -22,8 +22,8 @@
         "shared/"
     ],
     "devDependencies": {
-        "@techor/jest-dom": "^2.2.8",
-        "@techor/repo": "^2.2.8",
+        "@techor/jest-dom": "^2.3.7",
+        "@techor/repo": "^2.3.7",
         "@types/jest": "^29.5.0",
         "concurrently": "^8.2.0",
         "eslint-plugin-react-hooks": "^4.6.0",
@@ -35,14 +35,18 @@
         "shared": "",
         "shuffle-array": "^1.0.1",
         "strip-ansi": "^7.0.1",
-        "techor": "^2.2.8",
         "ts-dedent": "^2.2.0",
         "ts-jest": "^29.1.0",
         "tsx": "^3.12.7",
-        "turbo": "^1.10.6",
+        "turbo": "^1.10.7",
         "upath": "^2.0.1"
     },
     "engines": {
         "node": "^18"
+    },
+    "dependencies": {
+        "@master/css": "*",
+        "@master/css-extractor": "*",
+        "@master/css-renderer": "*"
     }
 }

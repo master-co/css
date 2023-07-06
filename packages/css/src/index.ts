@@ -1,6 +1,6 @@
 // core
 export { MasterCSS, MasterCSS as default } from './core'
-export { Rule } from './rule'
+export { Rule, RuleConfig, RuleMeta, RuleNative, MediaFeatureRule, MediaQuery, PropValue, Declarations } from './rule'
 
 // constants
 export { CONFIG_TEXT } from './constants/config-text'
@@ -18,5 +18,3 @@ export { default as renderHTML } from './functions/render-html'
 
 // config
 export * from './config'
-
-export type * from './rule'

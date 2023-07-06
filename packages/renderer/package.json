@@ -2,6 +2,7 @@
     "name": "@master/css-renderer",
     "scripts": {
         "build": "techor-pack --platform node",
+        "postbuild": "npm link ./ --no-save",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
@@ -34,21 +35,23 @@
         "dist"
     ],
     "bin": {
-        "mcss-render": "./dist/bin/index.js",
-        "mastercss-render": "./dist/bin/index.js"
+        "mcss-render": "./dist/bin/index.bundle.js",
+        "mastercss-render": "./dist/bin/index.bundle.js"
     },
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
         "@master/css": "",
-        "@techor/log": "^2.2.8",
+        "@techor/log": "^2.3.7",
         "commander": "^10.0.1",
-        "explore-config": "^2.2.8",
+        "explore-config": "^2.3.7",
         "fast-glob": "^3.2.12"
     },
     "devDependencies": {
-        "ts-jest": "^29.0.5",
-        "shared": ""
+        "pretty-bytes": "^6.1.0",
+        "pretty-hrtime": "^1.0.3",
+        "shared": "",
+        "ts-jest": "^29.0.5"
     }
 }

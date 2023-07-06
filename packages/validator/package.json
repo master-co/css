@@ -28,18 +28,8 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.js",
+    "main": "./dist/index.bundle.js",
     "types": "./dist/index.d.ts",
-    "exports": {
-        ".": "./dist/index.js"
-    },
-    "typesVersions": {
-        "*": {
-            ".": [
-                "./dist/index.d.js"
-            ]
-        }
-    },
     "files": [
         "dist"
     ],
