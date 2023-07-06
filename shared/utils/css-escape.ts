@@ -1,4 +1,4 @@
-export function cssEscape(value) {
+export default function cssEscape(value) {
     if (typeof CSS !== 'undefined') return CSS.escape(value)
     if (arguments.length == 0) {
         throw new TypeError('`CSS.escape` requires an argument.')

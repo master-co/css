@@ -34,7 +34,7 @@ export default function VirtualCSSModulePlugins(
             },
             load(id) {
                 if (id === extractor.resolvedVirtualModuleId) {
-                    return 'Master-CSS'
+                    return extractor.slotCSSRule
                 }
             },
             generateBundle(options, bundle) {
@@ -42,10 +42,9 @@ export default function VirtualCSSModulePlugins(
                 for (const eachCssFileName of cssFileNames) {
                     const chunk = bundle[eachCssFileName]
                     if (chunk.type === 'asset') {
-                        bundle[eachCssFileName]['source'] = bundle[eachCssFileName]['source'].replace('Master-CSS', extractor.css.text)
+                        bundle[eachCssFileName]['source'] = bundle[eachCssFileName]['source'].replace(extractor.slotCSSRule, extractor.css.text)
                     }
                 }
-        
                 return null
             }
         } as Plugin

@@ -2,7 +2,7 @@ import { START_SYMBOLS } from '../constants/start-symbol'
 import { Declarations, Rule, RuleConfig, RuleNative } from '../rule'
 
 // TODO 於 index.node.ts 引入且防止被樹搖，目前被視為無副作用並被清除
-import { cssEscape } from '../utils/css-escape'
+import cssEscape from 'shared/utils/css-escape'
 
 type RuleKey = 'group'
     | 'variable'
@@ -376,7 +376,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
                 }
             })(undefined)
             addName()
-            
+
             for (const eachName of names) {
                 const result = this.css.create(eachName)
                 if (Array.isArray(result)) {

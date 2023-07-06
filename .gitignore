@@ -13,6 +13,7 @@
 **/*node_modules
 **/*.turbo
 **/*out
+**/*tmp
 **/*master.css
 **/*test.html
 **/*.test.html

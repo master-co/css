@@ -1,7 +1,7 @@
 import { ChildProcess, exec } from 'child_process'
 import fs from 'fs'
 import path from 'path'
-import { cssEscape } from '../../../css/src/utils/css-escape'
+import cssEscape from 'shared/utils/css-escape'
 import puppeteer, { type Browser, type Page } from 'puppeteer'
 import dedent from 'ts-dedent'
 import stripAnsi from 'strip-ansi'

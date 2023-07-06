@@ -12,9 +12,9 @@ import exploreConfig, { exploreConfigPath, exploreResolvedConfigPath } from 'exp
 import { createValidRules } from '@master/css-validator'
 import chokidar from 'chokidar'
 import { EventEmitter } from 'node:events'
+import cssEscape from 'shared/utils/css-escape'
 
 export default class CSSExtractor {
-
     css: MasterCSS
     latentClasses = new Set<string>()
     validClasses = new Set<string>()
@@ -367,5 +367,9 @@ export default class CSSExtractor {
 
     get resolvedVirtualModuleId(): string {
         return '\0' + this.options.module
+    }
+
+    get slotCSSRule(): string {
+        return '#' + cssEscape(this.options.module) + '{--slot:0}'
     }
 }

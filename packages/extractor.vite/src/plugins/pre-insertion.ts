@@ -16,9 +16,6 @@ export default function PreInsertionPlugin(
         async buildStart() {
             await extractor.prepare()
         },
-        moduleParsed({ id, importedIds }) {
-            console.log(id)
-        },
         transformIndexHtml: {
             order: 'pre',
             handler: async (html, { filename }) => {
