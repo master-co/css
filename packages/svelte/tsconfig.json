@@ -1,7 +1,6 @@
 {
     "extends": "@tsconfig/svelte/tsconfig.json",
     "compilerOptions": {
-        "composite": true,
         "ignoreDeprecations": "5.0",
         "outDir": "src",
         "declaration": true,
@@ -14,13 +13,5 @@
         "node_modules/*",
         "__sapper__/*",
         "public/*"
-    ],
-    "references": [
-        {
-            "path": "../css"
-        },
-        {
-            "path": "../theme-service"
-        }
     ]
 }

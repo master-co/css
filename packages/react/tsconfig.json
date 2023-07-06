@@ -1,7 +1,6 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "composite": true,
         "baseUrl": ".",
         "jsx": "react-jsx"
     },
@@ -10,16 +9,5 @@
     ],
     "exclude": [
         "src/**/*.test.*"
-    ],
-    "references": [
-        {
-            "path": "../css"
-        },
-        {
-            "path": "../class-variant"
-        },
-        {
-            "path": "../theme-service"
-        }
     ]
 }

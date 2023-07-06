@@ -1,7 +1,6 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "composite": true,
         "baseUrl": ".",
         "rootDir": "src"
     },
@@ -10,13 +9,5 @@
     ],
     "exclude": [
         "src/**/*.test.*"
-    ],
-    "references": [
-        {
-            "path": "../css"
-        },
-        {
-            "path": "../validator"
-        }
     ]
 }

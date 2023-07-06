@@ -1,7 +1,6 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "composite": true,
         "baseUrl": "."
     },
     "include": [
@@ -9,10 +8,5 @@
     ],
     "exclude": [
         "src/**/*.test.*"
-    ],
-    "references": [
-        {
-            "path": "../css"
-        }
     ]
 }

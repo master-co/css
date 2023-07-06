@@ -14,50 +14,9 @@
         "lib": [
             "es2021",
             "dom"
-        ],
-        "paths": {
-            "class-variant": [
-                "./packages/class-variant/src/index.ts"
-            ],
-            "@master/css": [
-                "./packages/src/index.ts"
-            ],
-            "@master/css-extractor": [
-                "./packages/extractor/src/index.ts"
-            ],
-            "@master/css-extractor.vite": [
-                "./packages/extractor.vite/src/index.ts"
-            ],
-            "@master/css-extractor.webpack": [
-                "./packages/extractor.webpack/src/index.ts"
-            ],
-            "@master/css-language-server": [
-                "./packages/language-server/src/server.ts"
-            ],
-            "@master/css-language-service": [
-                "./packages/language-service/src/index.ts"
-            ],
-            "@master/css.react": [
-                "./packages/react/src/index.ts"
-            ],
-            "@master/css-server.nitro": [
-                "./packages/src/index.ts"
-            ],
-            "@master/css.svelte": [
-                "./packages/svelte/src/index.ts"
-            ],
-            "theme-service": [
-                "./packages/theme-service/src/index.ts"
-            ],
-            "@master/css-validator": [
-                "./packages/validator/src/index.ts"
-            ],
-            "@master/css.vue": [
-                "./packages/vue/src/index.ts"
-            ]
-        }
+        ]
     },
     "include": [
-        "./shared/**/*",
+        "shared/**/*",
     ]
 }
