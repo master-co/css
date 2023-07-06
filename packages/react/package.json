@@ -2,7 +2,7 @@
     "name": "@master/css.react",
     "scripts": {
         "build": "techor-pack --bundle",
-        "dev": "npm run build -- --watch --no-declare",
+        "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
         "test": "jest"

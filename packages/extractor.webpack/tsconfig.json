@@ -12,10 +12,7 @@
     ],
     "references": [
         {
-            "path": "../css"
-        },
-        {
-            "path": "../validator"
+            "path": "../extractor"
         }
     ]
 }

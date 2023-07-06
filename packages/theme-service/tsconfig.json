@@ -1,12 +1,13 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
+        "composite": true,
         "baseUrl": ".",
         "rootDir": "src"
     },
     "include": [
         "src/**/*"
-     ],
+    ],
     "exclude": [
         "src/**/*.test.*"
     ]

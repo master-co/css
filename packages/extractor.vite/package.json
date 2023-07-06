@@ -2,7 +2,7 @@
     "name": "@master/css-extractor.vite",
     "scripts": {
         "build": "techor-pack --platform node",
-        "dev": "npm run build -- --watch --no-declare",
+        "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
         "test": "jest --forceExit --detectOpenHandles"

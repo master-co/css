@@ -20,7 +20,7 @@
         "module": "ESNext",
         // We expect users to use bundlers.
         // So here we enable some resolution features that are only available in bundlers.
-        "moduleResolution": "bundler",
+        "moduleResolution": "node",
         "resolveJsonModule": true,
         // `allowImportingTsExtensions` can only be used when `noEmit` or `emitDeclarationOnly` is set.
         // But `noEmit` may cause problems with solution-style tsconfigs:
@@ -55,7 +55,7 @@
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         // See <https://github.com/vuejs/vue-cli/pull/5688>
-        "skipLibCheck": true,
+        "skipLibCheck": true
     },
     "include": [
         "src/**/*.ts",
@@ -63,10 +63,5 @@
         "src/**/*.tsx",
         "src/**/*.vue",
         "vue.shims.d.ts"
-    ],
-    "references": [
-        {
-            "path": "../css"
-        }
     ]
 }
