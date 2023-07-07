@@ -5,7 +5,7 @@ const count = ref(0)
 </script>
 
 <template>
-    <div class='grid-cols:2 w:fit gap:20 mx:auto bg:blue'>
+    <div class='grid-cols:2 w:fit gap:20 mx:auto'>
         <a href="https://vitejs.dev" target="_blank">
             <img src="../assets/vue.svg" class="logo" alt="Vite logo" />
         </a>

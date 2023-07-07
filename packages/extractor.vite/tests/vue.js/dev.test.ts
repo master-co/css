@@ -1,27 +1,27 @@
-import { copySync } from 'fs-extra'
-import fs from 'fs'
+import fs from 'fs-extra'
 import path from 'path'
 import { ChildProcess, exec } from 'child_process'
 import cssEscape from 'shared/utils/css-escape'
 import puppeteer, { type Browser, type Page } from 'puppeteer'
 import stripAnsi from 'strip-ansi'
 
-const examplePath = path.join(__dirname, '../../../../examples/vite-with-static-extraction')
+const examplePath = path.join(__dirname, '../../../../examples/vue.js-with-static-extraction')
 const tmpDir = path.join(__dirname, 'tmp')
 
 let devProcess: ChildProcess
 let browser: Browser
 let page: Page
 let error: Error
-let indexHTMLPath: string
-let indexHTMLContent: string
+let templatePath: string
+let templateContent: string
 let masterCSSConfigPath: string
 let masterCSSConfigContent: string
 
 beforeAll(async () => {
-    copySync(examplePath, tmpDir)
-    indexHTMLPath = path.join(tmpDir, 'index.html')
-    indexHTMLContent = fs.readFileSync(indexHTMLPath).toString()
+    fs.rmSync(tmpDir, { recursive: true, force: true })
+    fs.copySync(examplePath, tmpDir, { filter: (src: string) => !/(node_modules|dist|\/\.)/.test(src) })
+    templatePath = path.join(tmpDir, 'src/components/HelloWorld.vue')
+    templateContent = fs.readFileSync(templatePath).toString()
     masterCSSConfigPath = path.join(tmpDir, 'master.css.ts')
     masterCSSConfigContent = fs.readFileSync(masterCSSConfigPath).toString()
     browser = await puppeteer.launch({ headless: 'new' })
@@ -34,7 +34,7 @@ beforeAll(async () => {
     page.on('pageerror', (e) => error = e)
     page.on('error', (e) => error = e)
     devProcess = await new Promise((resolve) => {
-        devProcess = exec('vite dev', { cwd: tmpDir })
+        devProcess = exec('npm run dev', { cwd: tmpDir })
         devProcess.stdout?.on('data', async (data) => {
             const message = stripAnsi(data)
             const result = /(http:\/\/localhost:).*?([0-9]+)/.exec(message)
@@ -60,7 +60,7 @@ it('check if the page contains [data-vite-dev-id=".virtual/master.css"]', async 
 it('change class names and check result in the browser during HMR', async () => {
     const newClassName = 'font:' + new Date().getTime()
     const newClassNameSelector = '.' + cssEscape(newClassName)
-    fs.writeFileSync(indexHTMLPath, indexHTMLContent.replace('class="card"', `class="${newClassName}"`))
+    fs.writeFileSync(templatePath, templateContent.replace('class="card"', `class="${newClassName}"`))
     await page.waitForNetworkIdle()
     const newClassNameElementHandle = await page.waitForSelector(newClassNameSelector)
     expect(newClassNameElementHandle).not.toBeNull()
@@ -73,7 +73,7 @@ it('change class names and check result in the browser during HMR', async () => 
 it('change master.css.ts and check result in the browser during HMR', async () => {
     const newBtnClassName = 'btn' + new Date().getTime()
     const newBtnClassNameSelector = '.' + cssEscape(newBtnClassName)
-    fs.writeFileSync(indexHTMLPath, indexHTMLContent.replace('class="card"', `class="${newBtnClassName}"`))
+    fs.writeFileSync(templatePath, templateContent.replace('class="card"', `class="${newBtnClassName}"`))
     await page.waitForNetworkIdle()
     const newClassNameElementHandle = await page.waitForSelector(newBtnClassNameSelector)
     expect(newClassNameElementHandle).not.toBeNull()

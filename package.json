@@ -26,6 +26,7 @@
     "devDependencies": {
         "@techor/jest-dom": "^2.3.8",
         "@techor/repo": "^2.3.8",
+        "@types/fs-extra": "^11.0.1",
         "@types/jest": "^29.5.2",
         "concurrently": "^8.2.0",
         "eslint-plugin-react-hooks": "^4.6.0",
