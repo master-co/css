@@ -1,53 +1,50 @@
 import fs from 'fs-extra'
 import path from 'path'
-import { ChildProcess, exec } from 'child_process'
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import cssEscape from 'shared/utils/css-escape'
 import puppeteer, { type Browser, type Page } from 'puppeteer'
 import stripAnsi from 'strip-ansi'
+import { copy, rm } from 'shared/utils/fs'
 
 const examplePath = path.join(__dirname, '../../../../examples/vite-with-static-extraction')
-const tmpDir = path.join(__dirname, 'tmp')
+const tmpDir = path.join(__dirname, 'tmp/dev')
 
-let devProcess: ChildProcess
+let devProcess: ChildProcessWithoutNullStreams
 let browser: Browser
 let page: Page
 let error: Error
 let templatePath: string
 let templateContent: string
 let masterCSSConfigPath: string
-let masterCSSConfigContent: string
 
-beforeAll(async () => {
-    fs.rmSync(tmpDir, { recursive: true, force: true })
-    fs.copySync(examplePath, tmpDir, { filter: (src: string) => !/(node_modules|dist|\/\.)/.test(src) })
+beforeAll((done) => {
+    copy(examplePath, tmpDir)
     templatePath = path.join(tmpDir, 'index.html')
     templateContent = fs.readFileSync(templatePath).toString()
     masterCSSConfigPath = path.join(tmpDir, 'master.css.ts')
-    masterCSSConfigContent = fs.readFileSync(masterCSSConfigPath).toString()
-    browser = await puppeteer.launch({ headless: 'new' })
-    page = await browser.newPage()
-    page.on('console', (consoleMessage) => {
-        if (consoleMessage.type() === 'error') {
-            error = new Error(consoleMessage.text())
+    devProcess = spawn('npm', ['run', 'dev'], { cwd: tmpDir, env: process.env })
+    devProcess.stdout?.on('data', async (data) => {
+        const message = stripAnsi(data.toString())
+        const result = /(http:\/\/localhost:).*?([0-9]+)/.exec(message)
+        if (result) {
+            devProcess.stdout?.removeAllListeners()
+            browser = await puppeteer.launch({ headless: 'new' })
+            page = await browser.newPage()
+            page.on('console', (consoleMessage) => {
+                if (consoleMessage.type() === 'error') {
+                    error = new Error(consoleMessage.text())
+                }
+            })
+            page.on('pageerror', (e) => error = e)
+            page.on('error', (e) => error = e)
+            await page.goto(result[1] + result[2])
+            done()
         }
     })
-    page.on('pageerror', (e) => error = e)
-    page.on('error', (e) => error = e)
-    devProcess = await new Promise((resolve) => {
-        devProcess = exec('npm run dev', { cwd: tmpDir })
-        devProcess.stdout?.on('data', async (data) => {
-            const message = stripAnsi(data)
-            const result = /(http:\/\/localhost:).*?([0-9]+)/.exec(message)
-            if (result) {
-                await page.goto(result[1] + result[2])
-                resolve(devProcess)
-            }
-        })
-        devProcess.stderr?.on('data', (data) => {
-            console.error(data)
-        })
+    devProcess.stderr?.on('data', (data) => {
+        console.error(data.toString())
     })
-}, 30000) // 30s timeout for the slow windows OS
+})
 
 it('run dev without errors', () => {
     expect(() => { if (error) throw error }).not.toThrowError()
@@ -89,8 +86,17 @@ it('change master.css.ts and check result in the browser during HMR', async () =
 })
 
 afterAll(async () => {
-    devProcess.stdout?.destroy()
+    rm(tmpDir)
+    await page?.close()
+    await browser?.close()
+    page?.removeAllListeners()
+    browser?.removeAllListeners()
+    devProcess.unref()
     devProcess.kill()
-    await page.close()
-    await browser.close()
-}, 30000) // 30s timeout for the slow windows OS
+    devProcess.removeAllListeners()
+    devProcess.stdout?.destroy()
+    devProcess.stderr?.destroy()
+    devProcess.stdout?.removeAllListeners()
+    devProcess.stderr?.removeAllListeners()
+    devProcess.pid && process.kill(devProcess.pid, 'SIGINT')
+})

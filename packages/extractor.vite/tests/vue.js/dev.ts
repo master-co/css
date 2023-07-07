@@ -1,12 +1,13 @@
 import fs from 'fs-extra'
 import path from 'path'
-import { ChildProcess, exec } from 'child_process'
+import { ChildProcess, spawn } from 'child_process'
 import cssEscape from 'shared/utils/css-escape'
 import puppeteer, { type Browser, type Page } from 'puppeteer'
 import stripAnsi from 'strip-ansi'
+import { copy, rm } from 'shared/utils/fs'
 
 const examplePath = path.join(__dirname, '../../../../examples/vue.js-with-static-extraction')
-const tmpDir = path.join(__dirname, 'tmp')
+const tmpDir = path.join(__dirname, 'tmp/dev')
 
 let devProcess: ChildProcess
 let browser: Browser
@@ -18,8 +19,7 @@ let masterCSSConfigPath: string
 let masterCSSConfigContent: string
 
 beforeAll(async () => {
-    fs.rmSync(tmpDir, { recursive: true, force: true })
-    fs.copySync(examplePath, tmpDir, { filter: (src: string) => !/(node_modules|dist|\/\.)/.test(src) })
+    copy(examplePath, tmpDir)
     templatePath = path.join(tmpDir, 'src/components/HelloWorld.vue')
     templateContent = fs.readFileSync(templatePath).toString()
     masterCSSConfigPath = path.join(tmpDir, 'master.css.ts')
@@ -34,9 +34,9 @@ beforeAll(async () => {
     page.on('pageerror', (e) => error = e)
     page.on('error', (e) => error = e)
     devProcess = await new Promise((resolve) => {
-        devProcess = exec('npm run dev', { cwd: tmpDir })
+        devProcess = spawn('npm', ['run', 'dev'], { cwd: tmpDir, env: { ...process.env, NODE_ENV: 'development' } })
         devProcess.stdout?.on('data', async (data) => {
-            const message = stripAnsi(data)
+            const message = stripAnsi(data.toString())
             const result = /(http:\/\/localhost:).*?([0-9]+)/.exec(message)
             if (result) {
                 await page.goto(result[1] + result[2])
@@ -44,7 +44,7 @@ beforeAll(async () => {
             }
         })
         devProcess.stderr?.on('data', (data) => {
-            console.error(data)
+            console.error(data.toString())
         })
     })
 }, 30000) // 30s timeout for the slow windows OS
@@ -89,8 +89,16 @@ it('change master.css.ts and check result in the browser during HMR', async () =
 })
 
 afterAll(async () => {
-    devProcess.stdout?.destroy()
+    rm(tmpDir)
+    await page?.close()
+    await browser?.close()
+    page?.removeAllListeners()
+    browser?.removeAllListeners()
+    devProcess.unref()
     devProcess.kill()
-    await page.close()
-    await browser.close()
-}, 30000) // 30s timeout for the slow windows OS
+    devProcess.removeAllListeners()
+    devProcess.stdout?.destroy()
+    devProcess.stderr?.destroy()
+    devProcess.stdout?.removeAllListeners()
+    devProcess.stderr?.removeAllListeners()
+}) // 30s timeout for the slow windows OS

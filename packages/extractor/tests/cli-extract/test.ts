@@ -1,4 +1,4 @@
-import { execSync } from 'child_process'
+import { spawnSync } from 'child_process'
 import { expectFileIncludes } from 'shared/test/expect-file-includes'
 import '../../../css/src/polyfills/css-escape'
 import fs from 'fs'
@@ -13,7 +13,7 @@ it('basic extract', () => {
             }
         }
     `, { flag: 'w' })
-    execSync('tsx ../../src/bin extract', { cwd: __dirname })
+    spawnSync('tsx ../../src/bin extract', { cwd: __dirname })
     expectFileIncludes('.virtual/master.css', [
         CSS.escape('fg:primary'),
         CSS.escape('m:50'),

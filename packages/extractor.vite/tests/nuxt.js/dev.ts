@@ -1,15 +1,16 @@
-import fs from 'fs-extra'
+import fs from 'fs'
 import path from 'path'
-import { ChildProcess, exec } from 'child_process'
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import cssEscape from 'shared/utils/css-escape'
 import delay from 'shared/utils/delay'
 import puppeteer, { type Browser, type Page } from 'puppeteer'
 import stripAnsi from 'strip-ansi'
+import { copy, rm } from 'shared/utils/fs'
 
 const examplePath = path.join(__dirname, '../../../../examples/nuxt.js-with-static-extraction')
-const tmpDir = path.join(__dirname, 'tmp')
+const tmpDir = path.join(__dirname, 'tmp/dev')
 
-let devProcess: ChildProcess
+let devProcess: ChildProcessWithoutNullStreams
 let browser: Browser
 let page: Page
 let error: Error
@@ -19,18 +20,17 @@ let masterCSSConfigPath: string
 let masterCSSConfigContent: string
 
 beforeAll(async () => {
-    fs.rmSync(tmpDir, { recursive: true, force: true })
-    fs.copySync(examplePath, tmpDir, { filter: (src: string) => !/(node_modules|dist|\/\.)/.test(src) })
+    copy(examplePath, tmpDir)
     templatePath = path.join(tmpDir, 'app.vue')
     templateContent = fs.readFileSync(templatePath).toString()
     masterCSSConfigPath = path.join(tmpDir, 'master.css.ts')
     masterCSSConfigContent = fs.readFileSync(masterCSSConfigPath).toString()
     browser = await puppeteer.launch({ headless: 'new' })
     page = await browser.newPage()
-    devProcess = await new Promise((resolve) => {
-        devProcess = exec('NODE_ENV=development npm run dev', { cwd: tmpDir })
+    await new Promise((resolve) => {
+        devProcess = spawn('npm', ['run', 'dev'], { cwd: tmpDir, env: { ...process.env, NODE_ENV: 'development' } })
         devProcess.stdout?.on('data', async (data) => {
-            const message = stripAnsi(data)
+            const message = stripAnsi(data.toString())
             const result = /(http:\/\/localhost:).*?([0-9]+)/.exec(message)
             if (result) {
                 await page.goto(result[1] + result[2])
@@ -46,9 +46,9 @@ beforeAll(async () => {
                 resolve(devProcess)
             }
         })
-        devProcess.stderr?.on('data', (data) => {
-            console.error(data)
-        })
+        // devProcess.stderr?.on('data', (data) => {
+        //     console.error(data)
+        // })
     })
 }, 30000) // 30s timeout for the slow windows OS
 
@@ -92,8 +92,16 @@ it('change master.css.ts and check result in the browser during HMR', async () =
 })
 
 afterAll(async () => {
-    devProcess.stdout?.destroy()
+    await page?.close()
+    await browser?.close()
+    page?.removeAllListeners()
+    browser?.removeAllListeners()
     devProcess.kill()
-    await page.close()
-    await browser.close()
-}, 30000) // 30s timeout for the slow windows OS
+    devProcess.unref()
+    devProcess.removeAllListeners()
+    devProcess.stdout?.destroy()
+    devProcess.stderr?.destroy()
+    devProcess.stdout?.removeAllListeners()
+    devProcess.stderr?.removeAllListeners()
+    rm(tmpDir)
+}) // 30s timeout for the slow windows OS

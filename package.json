@@ -28,11 +28,13 @@
         "@techor/repo": "^2.3.8",
         "@types/fs-extra": "^11.0.1",
         "@types/jest": "^29.5.2",
+        "@types/node": "^20.4.0",
         "concurrently": "^8.2.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
         "fs-extra": "^11.1.1",
         "jest-extended": "^4.0.0",
+        "nanoid": "^4.0.2",
         "nodemon": "^2.0.22",
         "pretty-ms": "^8.0.0",
         "puppeteer": "^20.8.0",
@@ -43,7 +45,8 @@
         "ts-jest": "^29.1.1",
         "tsx": "^3.12.7",
         "turbo": "^1.10.7",
-        "upath": "^2.0.1"
+        "upath": "^2.0.1",
+        "why-is-node-running": "^2.2.2"
     },
     "engines": {
         "node": "^18"
@@ -51,6 +54,7 @@
     "dependencies": {
         "@master/css": "*",
         "@master/css-extractor": "*",
-        "@master/css-renderer": "*"
+        "@master/css-renderer": "*",
+        "jest": "^29.6.1"
     }
 }

@@ -1,14 +1,15 @@
 import fs from 'fs-extra'
 import fg from 'fast-glob'
 import path from 'path'
-import { execSync } from 'child_process'
+import { spawnSync } from 'child_process'
+import { copy, rm } from 'shared/utils/fs'
 
 const examplePath = path.join(__dirname, '../../../../examples/react-with-static-extraction')
-const tmpDir = path.join(__dirname, 'tmp')
+// const tmpDir = path.join(__dirname, 'tmp/build')
 
-it('vite build', () => {
-    fs.rmSync(tmpDir, { recursive: true, force: true })
-    fs.copySync(examplePath, tmpDir, { filter: (src: string) => !/(node_modules|dist|\/\.)/.test(src) })
-    execSync('npm run build', { cwd: tmpDir })
-    expect(fs.readFileSync(fg.sync(path.join(tmpDir, 'dist/assets/index-*.css'))[0]).toString()).toContain('font\\:heavy')
+it('build', () => {
+    // copy(examplePath, tmpDir)
+    spawnSync('npm', ['run', 'build'], { cwd: examplePath })
+    expect(fs.readFileSync(fg.sync(path.join(examplePath, 'dist/assets/index-*.css'))[0]).toString()).toContain('font\\:heavy')
+    // rm(tmpDir)
 })
