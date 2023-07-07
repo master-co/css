@@ -5,7 +5,7 @@ import fs from 'fs'
 import path from 'path'
 
 it('basic extract', () => {
-    fs.rmSync(path.join(__dirname, 'master.css'), { force: true })
+    fs.rmSync(path.join(__dirname, '.virtual/master.css'), { force: true })
     fs.writeFileSync(path.join(__dirname, 'master.css.ts'), `
         export default {
             colors: {
@@ -14,7 +14,7 @@ it('basic extract', () => {
         }
     `, { flag: 'w' })
     execSync('tsx ../../src/bin extract', { cwd: __dirname })
-    expectFileIncludes('master.css', [
+    expectFileIncludes('.virtual/master.css', [
         CSS.escape('fg:primary'),
         CSS.escape('m:50'),
         CSS.escape('text:center'),

@@ -5,7 +5,7 @@ const options: Options = {
     // enable verbose Logs
     verbose: 1,
     // specify virtual CSS module id (e.g. .virtual:home.css)
-    module: '.virtual:master.css',
+    module: '.virtual/master.css',
     // specify options file path or set `Options`
     config: 'master.css.*',
     // forcibly specify sources for scanning, not excluded by `options.exclude`
@@ -39,7 +39,7 @@ const options: Options = {
         '**/node_modules/util/**',
         '**/node_modules/react/**',
         '**/node_modules/react-dom/**',
-        '**/node_modules/vue/**'
+        '**/node_modules/vue/**',
     ],
     classes: {
         // whitelist of class names for unpredictable dynamics

@@ -194,6 +194,10 @@ export default class CSSExtractor {
 
     export(filename = this.options.module) {
         const filepath = upath.resolve(this.cwd, filename)
+        const dir = upath.dirname(filepath)
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true })
+        }
         fs.writeFileSync(filepath, this.css.text)
         if (this.options.verbose) {
             log.success`${this.css.rules.length} rules exported ${chalk.gray('in')} **${filename}**`

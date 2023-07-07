@@ -8,7 +8,7 @@ import { Options } from '../options'
 program.command('extract', { isDefault: true })
     .argument('[source paths]', 'The glob pattern path to extract sources')
     .option('-w, --watch', 'Watch file changed and generate CSS rules.')
-    .option('-o, --output <path>', 'Specify your CSS file output path', 'master.css')
+    .option('-o, --output <path>', 'Specify your CSS file output path')
     .option('-v, --verbose', 'Verbose logging 0~N', '1')
     .option('--options <path>', 'Specify your extractor options sources', 'master.css-extractor.*')
     .action(async function (specifiedSourcePaths, { watch, output, verbose, options: customOptions }) {

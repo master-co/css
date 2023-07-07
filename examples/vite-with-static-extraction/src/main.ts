@@ -1,5 +1,5 @@
 import './style.css'
-import '.virtual:master.css'
+import '.virtual/master.css'
 import { setupCounter } from './counter'
 
 const counterElement = document.querySelector<HTMLButtonElement>('#counter')

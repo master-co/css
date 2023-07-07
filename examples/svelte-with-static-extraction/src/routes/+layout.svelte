@@ -1,7 +1,7 @@
 <script>
     import Header from "./Header.svelte";
     import "./styles.css";
-    import ".virtual:master.css";
+    import ".virtual/master.css";
 </script>
 
 <div class="app">

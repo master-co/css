@@ -67,7 +67,7 @@ describe('extract watch', () => {
     it('start watch process', (done) => {
         const handle = data => {
             if (data.includes('Start watching source changes')) {
-                const fileCSSText = fs.readFileSync(path.join(__dirname, 'master.css'), { encoding: 'utf8' })
+                const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
                 expect(fileCSSText).toContain(CSS.escape('font:heavy'))
                 expect(fileCSSText).toContain(CSS.escape('font:48'))
                 expect(fileCSSText).toContain(CSS.escape('bg:primary'))
@@ -82,7 +82,7 @@ describe('extract watch', () => {
     it('change options file `fixed` and reset process', (done) => {
         const handle = data => {
             if (data.includes('Restart watching source changes')) {
-                const fileCSSText = fs.readFileSync(path.join(__dirname, 'master.css'), { encoding: 'utf8' })
+                const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
                 expect(fileCSSText).toContain(CSS.escape('fg:red'))
                 child.stdout?.off('data', handle)
                 done()
@@ -95,7 +95,7 @@ describe('extract watch', () => {
     it('change config file `classes` and reset process', (done) => {
         const handle = data => {
             if (data.includes('Restart watching source changes')) {
-                const fileCSSText = fs.readFileSync(path.join(__dirname, 'master.css'), { encoding: 'utf8' })
+                const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
                 expect(fileCSSText).toContain(CSS.escape('bg:blue'))
                 child.stdout?.off('data', handle)
                 done()
@@ -109,7 +109,7 @@ describe('extract watch', () => {
         const handle = data => {
             console.log(data)
             if (data.includes('exported')) {
-                const fileCSSText = fs.readFileSync(path.join(__dirname, 'master.css'), { encoding: 'utf8' })
+                const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
                 /** There is no recycling mechanism during the development */
                 expect(fileCSSText).toContain(CSS.escape('text:underline'))
                 child.stdout?.off('data', handle)
