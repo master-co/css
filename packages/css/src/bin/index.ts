@@ -8,10 +8,7 @@ import { CONFIG_TEXT } from '../constants/config-text'
 import { CONFIG_TS_TEXT } from '../constants/config-ts-text'
 import log from '@techor/log'
 import { readFileAsJSON } from '@techor/fs'
-import { execSync } from 'child_process'
 
-program.command('render').action(() => { const args = process.argv.slice(4); execSync('npx mcss-render ' + args.join(' '), { stdio: 'inherit' }) })
-program.command('extract').action(() => { const args = process.argv.slice(4); execSync('npx mcss-extract ' + args.join(' '), { stdio: 'inherit' }) })
 program.command('init')
     .description('Initialize definition files for Master CSS')
     .option('-o, --override', 'Override existing definition file')
@@ -52,6 +49,45 @@ program.command('init')
         }
         if (cjs) {
             create('master.css.js', CONFIG_TEXT)
+        }
+    })
+
+program.command('render')
+    .description('Scans HTML and injects generated CSS rules')
+    .argument('<source paths>', 'The path in glob patterns of the source of the HTML file')
+    .option('-c --config', 'The source path of the Master CSS configuration', 'master.css.*')
+    .option('-a --analyze', 'Analyze injected CSS and HTML size ( brotli ) without writing to file')
+    .action(async function (args, options) {
+        try {
+            // @ts-expect-error dynamic import action
+            const { default: action } = await import('@master/css-renderer/actions/main')
+            await action(args, options)
+        } catch (error) {
+            if (error.code === 'ERR_MODULE_NOT_FOUND') {
+                log.i`Please run **npm** **install** **@master/css-renderer** first`
+            } else {
+                console.error(error)
+            }
+        }
+    })
+
+program.command('extract')
+    .argument('[source paths]', 'The glob pattern path to extract sources')
+    .option('-w, --watch', 'Watch file changed and generate CSS rules.')
+    .option('-o, --output <path>', 'Specify your CSS file output path')
+    .option('-v, --verbose', 'Verbose logging 0~N', '1')
+    .option('--options <path>', 'Specify your extractor options sources', 'master.css-extractor.*')
+    .action(async function (args, options) {
+        try {
+            // @ts-expect-error dynamic import action
+            const { default: action } = await import('@master/css-extractor/actions/main')
+            await action(args, options)
+        } catch (error) {
+            if (error.code === 'ERR_MODULE_NOT_FOUND') {
+                log.i`Please run **npm** **install** **@master/css-extractor** first`
+            } else {
+                console.error(error)
+            }
         }
     })
 

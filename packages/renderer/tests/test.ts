@@ -1,9 +1,9 @@
-import { execSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import dedent from 'ts-dedent'
+import action from '../src/actions/main'
 
-it('render css text into <head>', () => {
+it('render css text into <head>', async () => {
     const filePath = path.resolve(__dirname, './a.test.html')
     fs.rmSync(filePath, { force: true })
     fs.writeFileSync(filePath, dedent`
@@ -17,7 +17,7 @@ it('render css text into <head>', () => {
             </body>
         </html>
     `)
-    execSync('tsx ../src/bin render ./a.test.html', { cwd: __dirname })
+    await action(filePath)
     expect(fs.readFileSync(filePath, { encoding: 'utf-8' })).toMatch(dedent`
         <html>
             <head>
@@ -31,7 +31,7 @@ it('render css text into <head>', () => {
     `)
 })
 
-it('render css text into head and create <style id="master">', () => {
+it('render css text into head and create <style id="master">', async () => {
     const filePath = path.resolve(__dirname, './b.test.html')
     fs.rmSync(filePath, { force: true })
     fs.writeFileSync(filePath, dedent`
@@ -46,7 +46,7 @@ it('render css text into head and create <style id="master">', () => {
             </body>
         </html>
     `)
-    execSync('tsx ../src/bin render ./b.test.html', { cwd: __dirname })
+    await action(filePath)
     expect(fs.readFileSync(filePath, { encoding: 'utf-8' })).toMatch(dedent`
         <html>
             <head>

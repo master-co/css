@@ -33,9 +33,8 @@
     "files": [
         "dist"
     ],
-    "bin": {
-        "mcss-render": "./dist/bin/index.bundle.js",
-        "mastercss-render": "./dist/bin/index.bundle.js"
+    "exports": {
+        "./actions/main": "./dist/actions/main.bundle.js"
     },
     "publishConfig": {
         "access": "public"
@@ -43,7 +42,6 @@
     "dependencies": {
         "@master/css": "",
         "@techor/log": "^2.3.8",
-        "commander": "^10.0.1",
         "explore-config": "^2.3.8",
         "fast-glob": "^3.2.12"
     },

@@ -5,7 +5,7 @@
         "build": "npm run build:packages && npm run build:examples",
         "build:packages": "turbo run build --filter=./packages/**/* && npm i",
         "build:examples": "turbo run build --filter=./examples/**/*",
-        "build:clean": "rm -rf ./packages/**/*dist && turbo run build --force --no-cache --filter=./packages/**/*",
+        "build:clean": "rm -rf ./packages/**/*dist && turbo run build --force --no-cache",
         "check": "npm run commit-check && npm run build && turbo run test lint type-check --parallel --filter=./packages/**/*",
         "test": "turbo run test --parallel --filter=./packages/**/*",
         "lint": "turbo run lint --parallel --filter=./packages/**/*",
