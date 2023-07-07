@@ -1,7 +1,7 @@
 import CSSExtractor from '../../src'
 
 test('AristideBH', async () => {
-    const extractor = new CSSExtractor({ cwd: __dirname, include: ['**/test.svelte'] })
+    const extractor = new CSSExtractor({ cwd: __dirname, include: ['**/test.svelte'] }).init()
     await extractor.insert('test.svelte',
         `
 <script lang="ts">

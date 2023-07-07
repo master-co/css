@@ -1,6 +1,5 @@
 import { testCSS } from './css'
-import MasterCSS from '../src'
-import { config } from '../../../master.css.js'
+import config from './master.css'
 
 test('breakpoints', () => {
     testCSS(

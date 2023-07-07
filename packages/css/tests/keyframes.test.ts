@@ -1,8 +1,8 @@
-import { initRuntime, Rule, generateFromClasses } from '../src'
+import { initRuntime, MasterCSS, Rule, generateFromClasses } from '../src'
 import delay from '../src/utils/delay'
 
 it('make sure not to extend keyframes deeply', () => {
-    const css = initRuntime({
+    const css = new MasterCSS({
         keyframes: {
             fade: {}
         }

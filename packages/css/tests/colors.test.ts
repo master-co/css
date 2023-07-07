@@ -1,5 +1,5 @@
 import { testCSS } from './css'
-import { config } from '../../../master.css.js'
+import config from './master.css'
 
 test('colors', () => {
     testCSS(

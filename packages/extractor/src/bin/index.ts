@@ -12,7 +12,7 @@ program.command('extract', { isDefault: true })
     .option('-v, --verbose', 'Verbose logging 0~N', '1')
     .option('--options <path>', 'Specify your extractor options sources', 'master.css-extractor.*')
     .action(async function (specifiedSourcePaths, { watch, output, verbose, options: customOptions }) {
-        const extractor = new CSSExtractor(customOptions)
+        const extractor = new CSSExtractor(customOptions).init()
 
         extractor.on('init', (options: Options) => {
             if (specifiedSourcePaths?.length) {

@@ -4,8 +4,7 @@
         "build": "techor-pack --platform node",
         "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
-        "lint": "eslint src",
-        "test": "jest --forceExit --detectOpenHandles"
+        "lint": "eslint src"
     },
     "license": "MIT",
     "description": "Integrate Master CSS Static Extraction in Webpack way",

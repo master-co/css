@@ -2029,6 +2029,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         },
     },
     scrollMargin: {
+        match: '^scroll-m:.',
         native: true,
         unit: 'rem',
         order: -1
@@ -2077,6 +2078,7 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         },
     },
     scrollPadding: {
+        match: '^scroll-p:.',
         native: true,
         unit: 'rem',
         order: -1

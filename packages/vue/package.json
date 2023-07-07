@@ -6,8 +6,7 @@
         "build": "conc 'npm:build:*'",
         "dev": "npm run build:esm -- --watch",
         "type-check": "vue-tsc --noEmit",
-        "lint": "eslint src",
-        "test": "jest"
+        "lint": "eslint src"
     },
     "license": "MIT",
     "description": "Integrate Master CSS in React way",

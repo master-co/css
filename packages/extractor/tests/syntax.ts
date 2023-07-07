@@ -1,7 +1,7 @@
 import CSSExtractor from '../src'
 
 test('syntax', async () => {
-    const extractor = new CSSExtractor({ sources: ['syntax.html'], cwd: __dirname })
+    const extractor = new CSSExtractor({ sources: ['syntax.html'], cwd: __dirname }).init()
     const testClasses = [
         '{fg:blue-40/.5;font:32;p:16;w:full;text:center}>li:hover@md',
         'w:calc(+100%-1.25rem)',

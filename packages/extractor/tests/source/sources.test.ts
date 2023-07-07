@@ -11,7 +11,7 @@ export default {
 `, { flag: 'w' })
 
 it('check the excluded files', async () => {
-    const extractor = new CSSExtractor({ cwd: __dirname })
+    const extractor = new CSSExtractor({ cwd: __dirname }).init()
     expect(extractor.fixedSourcePaths).not.toContain('master.css.ts')
 })
 
@@ -19,6 +19,6 @@ it('should contain the specific source', async () => {
     const extractor = new CSSExtractor({
         sources: ['master.css.ts'], // master.css.js is excluded by default `options.exclude`
         cwd: __dirname
-    })
+    }).init()
     expect(extractor.fixedSourcePaths).toContain('master.css.ts')
 })

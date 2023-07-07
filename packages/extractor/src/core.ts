@@ -56,6 +56,7 @@ export default class CSSExtractor {
                 : (exploreConfig(this.options.config, { cwd: this.cwd }) || {})
         )
         this.emit('init', this.options, this.config)
+        return this
     }
 
     async reset(customOptions = this.customOptions) {
