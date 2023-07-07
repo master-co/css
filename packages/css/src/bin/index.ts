@@ -8,9 +8,10 @@ import { CONFIG_TEXT } from '../constants/config-text'
 import { CONFIG_TS_TEXT } from '../constants/config-ts-text'
 import log from '@techor/log'
 import { readFileAsJSON } from '@techor/fs'
+import { execSync } from 'child_process'
 
-program.command('render', 'Alias for mcss-render')
-program.command('extract', 'Alias for mcss-extract')
+program.command('render').action(() => { const args = process.argv.slice(4); execSync('npx mcss-render ' + args.join(' '), { stdio: 'inherit' }) })
+program.command('extract').action(() => { const args = process.argv.slice(4); execSync('npx mcss-extract ' + args.join(' '), { stdio: 'inherit' }) })
 program.command('init')
     .description('Initialize definition files for Master CSS')
     .option('-o, --override', 'Override existing definition file')

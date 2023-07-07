@@ -18,5 +18,3 @@ export { default as renderHTML } from './functions/render-html'
 
 // config
 export * from './config'
-
-const a: Teswt = '123s'
