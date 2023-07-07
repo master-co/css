@@ -1,6 +1,6 @@
 import '../src/polyfills/css-escape'
 import { initRuntime } from '../src'
-import delay from '../src/utils/delay'
+import delay from 'shared/utils/delay'
 import { complexHTML } from './complex-html'
 
 const css = initRuntime()

@@ -5,7 +5,8 @@
         "rootDir": "src"
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "../../shared/utils/delay.ts"
     ],
     "exclude": [
         "src/**/*.test.*"

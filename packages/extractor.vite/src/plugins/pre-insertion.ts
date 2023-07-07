@@ -13,9 +13,27 @@ export default function PreInsertionPlugin(
     let transformedIndexHTMLModule: { id: string, code: string }
     let readyForHMR = false
     const straightUpdateVirtualModule = () => {
-        const virtualCSSModule = server.moduleGraph.getModuleById(extractor.resolvedVirtualModuleId)
+        const resolvedVirtualModuleId = extractor.resolvedVirtualModuleId
+        const virtualCSSModule = server.moduleGraph.getModuleById(resolvedVirtualModuleId)
         if (virtualCSSModule) {
             server.reloadModule(virtualCSSModule)
+            server.ws.send({
+                type: 'update',
+                updates: [{
+                    type: 'js-update',
+                    path: resolvedVirtualModuleId,
+                    acceptedPath: resolvedVirtualModuleId,
+                    timestamp: +Date.now()
+                }]
+            })
+            server.ws.send({
+                type: 'custom',
+                event: `master-css-hmr:update`,
+                data: {
+                    id: resolvedVirtualModuleId,
+                    css: extractor.css.text
+                }
+            })
         }
     }
     const debounceUpdateVirtualModule = debounce(straightUpdateVirtualModule, 100)
@@ -24,6 +42,13 @@ export default function PreInsertionPlugin(
             straightUpdateVirtualModule()
         } else {
             debounceUpdateVirtualModule()
+        }
+    }
+    const insert = async (id: string, code: string) => {
+        if (await extractor.insert(id, code)) {
+            if (server) {
+                updateVirtualModule()
+            }
         }
     }
     return {
@@ -42,18 +67,13 @@ export default function PreInsertionPlugin(
                     id: filename,
                     code: html
                 }
-                await extractor.insert(filename, html)
-
+                await insert(filename, html)
             }
         },
         async transform(code, id) {
             const resolvedVirtualModuleId = extractor.resolvedVirtualModuleId
             if (id !== resolvedVirtualModuleId) {
-                if (await extractor.insert(id, code)) {
-                    if (server) {
-                        updateVirtualModule()
-                    }
-                }
+                await insert(id, code)
             }
         },
         configureServer(devServer) {
@@ -79,44 +99,14 @@ export default function PreInsertionPlugin(
                         })
                 )
                 await Promise.all(tasks)
-            }
-            const sendCustomHMREvent = () => {
-                const resolvedVirtualModuleId = extractor.resolvedVirtualModuleId
-                server.ws.send({
-                    type: 'update',
-                    updates: [{
-                        type: 'js-update',
-                        path: resolvedVirtualModuleId,
-                        acceptedPath: resolvedVirtualModuleId,
-                        timestamp: +Date.now()
-                    }]
-                })
-                server.ws.send({
-                    type: 'custom',
-                    event: `master-css-hmr:update`,
-                    data: {
-                        id: resolvedVirtualModuleId,
-                        css: extractor.css.text
-                    }
-                })
+                updateVirtualModule()
             }
             server = devServer
             server.ws.on('connection', () => {
                 extractor
-                    .on('reset', resetHandler)
-                    .on('change', sendCustomHMREvent)
-                readyForHMR = true
-            })
-            server.ws.on('close', () => {
-                extractor
                     .off('reset', resetHandler)
-                    .off('change', sendCustomHMREvent)
-                readyForHMR = false
-            })
-            server.ws.on('master-css-hmr:update', ({ id }) => {
-                const resolvedVirtualModuleId = extractor.resolvedVirtualModuleId
-                if (id !== resolvedVirtualModuleId) return
-                updateVirtualModule()
+                    .on('reset', resetHandler)
+                readyForHMR = true
             })
             extractor.startWatch()
         },

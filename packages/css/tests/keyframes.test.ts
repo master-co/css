@@ -1,5 +1,5 @@
 import { initRuntime, MasterCSS, Rule, generateFromClasses } from '../src'
-import delay from '../src/utils/delay'
+import delay from 'shared/utils/delay'
 
 it('make sure not to extend keyframes deeply', () => {
     const css = new MasterCSS({
