@@ -309,6 +309,10 @@ export default class CSSExtractor {
     }
 
     isSourceAllowed(source: string): boolean {
+        /* remove if params exists */
+        if (source.includes('?')) {
+            source = source.split('?')[0]
+        }
         const { include, exclude, sources } = this.options
         for (const eachSource of sources) {
             if (minimatch(source, eachSource)) return true
