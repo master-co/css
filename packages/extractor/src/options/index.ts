@@ -61,8 +61,7 @@ export interface Options {
     classes?: {
         fixed?: string[]
         ignored?: string[] | RegExp[]
-    },
-    cwd?: string
+    }
 }
 
 export default options

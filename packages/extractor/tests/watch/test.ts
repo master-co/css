@@ -1,7 +1,9 @@
+/** require: `npm run dev` in root */
+
 import { exec, ChildProcess } from 'child_process'
 import fs from 'fs'
 import path from 'path'
-import '../../../css/src/polyfills/css-escape'
+import cssEscape from 'shared/utils/css-escape'
 import dedent from 'ts-dedent'
 
 const HTMLFilepath = path.resolve(__dirname, 'test.html')
@@ -59,7 +61,7 @@ beforeAll(() => {
     fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w' })
     fs.writeFileSync(optionsFilepath, originOptionsText, { flag: 'w' })
     fs.writeFileSync(configFilepath, originConfigText, { flag: 'w' })
-    child = exec('tsx ../../src/bin extract -w', { cwd: __dirname })
+    child = exec('tsx ../../../css/src/bin extract -w', { cwd: __dirname })
 })
 
 describe('extract watch', () => {
@@ -68,10 +70,10 @@ describe('extract watch', () => {
         const handle = data => {
             if (data.includes('Start watching source changes')) {
                 const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
-                expect(fileCSSText).toContain(CSS.escape('font:heavy'))
-                expect(fileCSSText).toContain(CSS.escape('font:48'))
-                expect(fileCSSText).toContain(CSS.escape('bg:primary'))
-                expect(fileCSSText).toContain(CSS.escape('btn'))
+                expect(fileCSSText).toContain(cssEscape('font:heavy'))
+                expect(fileCSSText).toContain(cssEscape('font:48'))
+                expect(fileCSSText).toContain(cssEscape('bg:primary'))
+                expect(fileCSSText).toContain(cssEscape('btn'))
                 child.stdout?.off('data', handle)
                 done()
             }
@@ -83,7 +85,7 @@ describe('extract watch', () => {
         const handle = data => {
             if (data.includes('Restart watching source changes')) {
                 const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
-                expect(fileCSSText).toContain(CSS.escape('fg:red'))
+                expect(fileCSSText).toContain(cssEscape('fg:red'))
                 child.stdout?.off('data', handle)
                 done()
             }
@@ -96,7 +98,7 @@ describe('extract watch', () => {
         const handle = data => {
             if (data.includes('Restart watching source changes')) {
                 const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
-                expect(fileCSSText).toContain(CSS.escape('bg:blue'))
+                expect(fileCSSText).toContain(cssEscape('bg:blue'))
                 child.stdout?.off('data', handle)
                 done()
             }
@@ -111,7 +113,7 @@ describe('extract watch', () => {
             if (data.includes('exported')) {
                 const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
                 /** There is no recycling mechanism during the development */
-                expect(fileCSSText).toContain(CSS.escape('text:underline'))
+                expect(fileCSSText).toContain(cssEscape('text:underline'))
                 child.stdout?.off('data', handle)
                 done()
             }

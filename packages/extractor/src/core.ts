@@ -14,7 +14,7 @@ import chokidar from 'chokidar'
 import { EventEmitter } from 'node:events'
 import cssEscape from 'shared/utils/css-escape'
 
-export default class CSSExtractor {
+export default class CSSExtractor extends EventEmitter {
     css: MasterCSS
     latentClasses = new Set<string>()
     validClasses = new Set<string>()
@@ -22,17 +22,13 @@ export default class CSSExtractor {
     options: Options
     watching = false
     watchers: chokidar.FSWatcher[] = []
-    emitter = new EventEmitter()
-
-    on = this.emitter.on
-    off = this.emitter.off
-    once = this.emitter.once
-    emit = this.emitter.emit
-    removeAllListeners = this.emitter.removeAllListeners
 
     constructor(
-        public customOptions: Options | Pattern | Pattern[] = 'master.css-extractor.*'
-    ) { }
+        public customOptions: Options | Pattern | Pattern[] = 'master.css-extractor.*',
+        public cwd = process.cwd()
+    ) {
+        super()
+    }
 
     init(customOptions = this.customOptions) {
         if (typeof customOptions === 'string' || Array.isArray(customOptions)) {
@@ -40,7 +36,8 @@ export default class CSSExtractor {
                 on: {
                     found: (foundPath: string) => log.ok`**${foundPath}** file found`,
                     notFound: () => log.i`No **${customOptions}** file found`
-                }
+                },
+                cwd: this.cwd
             }), customOptions)
         } else {
             this.options = extend(defaultOptions, customOptions)
@@ -76,6 +73,7 @@ export default class CSSExtractor {
         this.validClasses.clear()
         this.invalidClasses.clear()
         this.removeAllListeners()
+        await this.closeWatch()
         this.emit('destroy')
         return this
     }
@@ -203,6 +201,7 @@ export default class CSSExtractor {
         if (this.options.verbose) {
             log.success`${this.css.rules.length} rules exported ${chalk.gray('in')} **${filename}**`
         }
+        this.emit('export', filename, filepath)
     }
 
     watchSource(paths: string | readonly string[], watchOptions?: chokidar.WatchOptions) {
@@ -339,7 +338,7 @@ export default class CSSExtractor {
     */
     get configPath(): string {
         if (typeof this.options.config === 'string' || Array.isArray(this.options.config)) {
-            return exploreConfigPath(this.options.config)
+            return exploreConfigPath(this.options.config, { cwd: this.cwd })
         }
     }
 
@@ -357,7 +356,7 @@ export default class CSSExtractor {
     */
     get optionsPath(): string {
         if (typeof this.customOptions === 'string' || Array.isArray(this.customOptions)) {
-            return exploreConfigPath(this.customOptions)
+            return exploreConfigPath(this.customOptions, { cwd: this.cwd })
         }
     }
 
@@ -368,10 +367,6 @@ export default class CSSExtractor {
         if (typeof this.customOptions === 'string' || Array.isArray(this.customOptions)) {
             return exploreResolvedConfigPath(this.customOptions, { cwd: this.cwd })
         }
-    }
-
-    get cwd(): string {
-        return this.options.cwd || process.cwd()
     }
 
     get resolvedVirtualModuleId(): string {

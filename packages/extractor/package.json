@@ -45,7 +45,8 @@
             "import": "./dist/options/index.bundle.mjs",
             "require": "./dist/options/index.bundle.js",
             "types": "./dist/options/index.d.ts"
-        }
+        },
+        "./actions/main": "./dist/actions/main.bundle.js"
     },
     "typesVersions": {
         "*": {
@@ -60,10 +61,6 @@
     "files": [
         "dist"
     ],
-    "bin": {
-        "mcss-extract": "./dist/bin/index.bundle.js",
-        "mastercss-extract": "./dist/bin/index.bundle.js"
-    },
     "publishConfig": {
         "access": "public"
     },
@@ -73,7 +70,6 @@
         "@techor/extend": "^2.3.8",
         "@techor/log": "^2.3.8",
         "chokidar": "^3.5.3",
-        "commander": "^10.0.1",
         "explore-config": "^2.3.8",
         "fast-glob": "^3.2.12",
         "minimatch": "^9.0.1",
