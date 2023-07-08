@@ -25,13 +25,11 @@
     "devDependencies": {
         "@techor/jest-dom": "^2.3.8",
         "@techor/repo": "^2.3.8",
-        "@types/fs-extra": "^11.0.1",
         "@types/jest": "^29.5.2",
         "@types/node": "^20.4.0",
         "concurrently": "^8.2.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
-        "fs-extra": "^11.1.1",
         "jest-extended": "^4.0.0",
         "nanoid": "^4.0.2",
         "nodemon": "^2.0.22",

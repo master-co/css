@@ -1,4 +1,4 @@
-import fs from 'fs-extra'
+import fs from 'fs'
 import fg from 'fast-glob'
 import path from 'path'
 import { execSync } from 'child_process'
