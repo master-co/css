@@ -35,7 +35,6 @@ export default async function action(specifiedSourcePaths: string[], options?: {
         if (specifiedSourcePaths?.length) {
             await extractor.insertFiles(specifiedSourcePaths)
         } else {
-            console.log(extractor.allowedSourcePaths)
             await extractor.insertFiles(extractor.allowedSourcePaths)
         }
     }

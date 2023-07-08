@@ -1,6 +1,6 @@
 /** require: `npm run dev` in root */
 
-import { exec, ChildProcess } from 'child_process'
+import { exec, ChildProcess, spawn } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import cssEscape from 'shared/utils/css-escape'
@@ -61,14 +61,14 @@ beforeAll(() => {
     fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w' })
     fs.writeFileSync(optionsFilepath, originOptionsText, { flag: 'w' })
     fs.writeFileSync(configFilepath, originConfigText, { flag: 'w' })
-    child = exec('tsx ../../../css/src/bin extract -w', { cwd: __dirname })
+    child = spawn('tsx', ['../../../css/src/bin', 'extract', '-w'], { cwd: __dirname })
 })
 
 describe('extract watch', () => {
 
     it('start watch process', (done) => {
         const handle = data => {
-            if (data.includes('Start watching source changes')) {
+            if (data.toString().includes('Start watching source changes')) {
                 const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
                 expect(fileCSSText).toContain(cssEscape('font:heavy'))
                 expect(fileCSSText).toContain(cssEscape('font:48'))
@@ -83,7 +83,7 @@ describe('extract watch', () => {
 
     it('change options file `fixed` and reset process', (done) => {
         const handle = data => {
-            if (data.includes('Restart watching source changes')) {
+            if (data.toString().includes('Restart watching source changes')) {
                 const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
                 expect(fileCSSText).toContain(cssEscape('fg:red'))
                 child.stdout?.off('data', handle)
@@ -96,7 +96,7 @@ describe('extract watch', () => {
 
     it('change config file `classes` and reset process', (done) => {
         const handle = data => {
-            if (data.includes('Restart watching source changes')) {
+            if (data.toString().includes('Restart watching source changes')) {
                 const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
                 expect(fileCSSText).toContain(cssEscape('bg:blue'))
                 child.stdout?.off('data', handle)
@@ -109,8 +109,7 @@ describe('extract watch', () => {
 
     it('change html file class attr and update', (done) => {
         const handle = data => {
-            console.log(data)
-            if (data.includes('exported')) {
+            if (data.toString().includes('exported')) {
                 const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
                 /** There is no recycling mechanism during the development */
                 expect(fileCSSText).toContain(cssEscape('text:underline'))
