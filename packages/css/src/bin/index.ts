@@ -60,7 +60,7 @@ program.command('render')
     .action(async function (args, options) {
         try {
             // @ts-expect-error dynamic import action
-            const { default: action } = await import('@master/css-renderer/actions/main')
+            const action = (await import('@master/css-renderer/actions/main')).default
             await action(args, options)
         } catch (error) {
             if (error.code === 'ERR_MODULE_NOT_FOUND') {
@@ -80,7 +80,7 @@ program.command('extract')
     .action(async function (args, options) {
         try {
             // @ts-expect-error dynamic import action
-            const { default: action } = await import('@master/css-extractor/actions/main')
+            const action = (await import('@master/css-extractor/actions/main')).default
             await action(args, options)
         } catch (error) {
             if (error.code === 'ERR_MODULE_NOT_FOUND') {
