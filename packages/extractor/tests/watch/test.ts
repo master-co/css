@@ -66,51 +66,64 @@ beforeAll(() => {
 
 it('start watch process', (done) => {
     child.stdout.on('data', (data) => {
+        console.log(data.toString())
         if (data.toString().includes('Start watching source changes')) {
+            child.stdout.removeAllListeners()
             const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
             expect(fileCSSText).toContain(cssEscape('font:heavy'))
             expect(fileCSSText).toContain(cssEscape('font:48'))
             expect(fileCSSText).toContain(cssEscape('bg:primary'))
             expect(fileCSSText).toContain(cssEscape('btn'))
-            child.stdout.removeAllListeners()
             done()
         }
+    })
+    child.stderr.on('data', (data) => {
+        done.fail(data.toString())
     })
 }, 30000)
 
 it('change options file `fixed` and reset process', (done) => {
     child.stdout.on('data', (data) => {
         if (data.toString().includes('Restart watching source changes')) {
+            child.stdout.removeAllListeners()
             const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
             expect(fileCSSText).toContain(cssEscape('fg:red'))
-            child.stdout.removeAllListeners()
             done()
         }
+    })
+    child.stderr.on('data', (data) => {
+        done.fail(data.toString())
     })
     fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
 }, 30000)
 
 it('change config file `classes` and reset process', (done) => {
-    child.stdout?.on('data', (data) => {
+    child.stdout.on('data', (data) => {
         if (data.toString().includes('Restart watching source changes')) {
+            child.stdout.removeAllListeners()
             const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
             expect(fileCSSText).toContain(cssEscape('bg:blue'))
-            child.stdout.removeAllListeners()
             done()
         }
+    })
+    child.stderr.on('data', (data) => {
+        done.fail(data.toString())
     })
     fs.writeFileSync(configFilepath, originConfigText.replace('bg:red', 'bg:blue'))
 }, 30000)
 
 it('change html file class attr and update', (done) => {
-    child.stdout?.on('data', (data) => {
+    child.stdout.on('data', (data) => {
         if (data.toString().includes('exported')) {
+            child.stdout.removeAllListeners()
             const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
             /** There is no recycling mechanism during the development */
             expect(fileCSSText).toContain(cssEscape('text:underline'))
-            child.stdout.removeAllListeners()
             done()
         }
+    })
+    child.stderr.on('data', (data) => {
+        done.fail(data.toString())
     })
     fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'text:underline'))
 }, 30000)
