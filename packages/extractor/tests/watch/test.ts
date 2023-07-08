@@ -57,13 +57,6 @@ export default config
 
 let child: SpawndChildProcess
 
-beforeAll(() => {
-    fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w' })
-    fs.writeFileSync(optionsFilepath, originOptionsText, { flag: 'w' })
-    fs.writeFileSync(configFilepath, originConfigText, { flag: 'w' })
-    child = spawnd('tsx ../../../css/src/bin extract -w', { shell: true, cwd: __dirname })
-})
-
 export function waitForDataMatch(child: SpawndChildProcess, doesDataMatch: (data: string) => boolean) {
     return new Promise<void>((resolve, reject) => {
         let isDone = false
@@ -86,6 +79,13 @@ export function waitForDataMatch(child: SpawndChildProcess, doesDataMatch: (data
     })
 }
 
+beforeAll(() => {
+    fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w' })
+    fs.writeFileSync(optionsFilepath, originOptionsText, { flag: 'w' })
+    fs.writeFileSync(configFilepath, originConfigText, { flag: 'w' })
+    child = spawnd('tsx ../../../css/src/bin extract -w', { shell: true, cwd: __dirname })
+}, 30000)
+
 it('start watch process', async () => {
     await waitForDataMatch(child, (data) => data.includes('Start watching source changes'))
     const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
@@ -93,7 +93,7 @@ it('start watch process', async () => {
     expect(fileCSSText).toContain(cssEscape('font:48'))
     expect(fileCSSText).toContain(cssEscape('bg:primary'))
     expect(fileCSSText).toContain(cssEscape('btn'))
-})
+}, 30000)
 
 test.todo('extractor watch tests do not work in CI')
 // it('change options file `fixed` and reset process', async () => {
@@ -122,4 +122,4 @@ test.todo('extractor watch tests do not work in CI')
 
 afterAll(async () => {
     await child.destroy()
-}) 
+}, 30000)
