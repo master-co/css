@@ -5,7 +5,6 @@ import path from 'path'
 import cssEscape from 'shared/utils/css-escape'
 import dedent from 'ts-dedent'
 import { SpawndChildProcess, spawnd } from 'spawnd'
-import stripAnsi from 'strip-ansi'
 
 const HTMLFilepath = path.resolve(__dirname, 'test.html')
 const originHTMLText = dedent`
@@ -65,73 +64,58 @@ beforeAll(() => {
     child = spawnd('tsx ../../../css/src/bin extract -w', { shell: true, cwd: __dirname })
 })
 
-it('start watch process', (done) => {
-    child.stdout.on('data', (data) => {
-        if (data.toString().includes('Start watching source changes')) {
-            child.stdout.removeAllListeners()
-            const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
-            expect(fileCSSText).toContain(cssEscape('font:heavy'))
-            expect(fileCSSText).toContain(cssEscape('font:48'))
-            expect(fileCSSText).toContain(cssEscape('bg:primary'))
-            expect(fileCSSText).toContain(cssEscape('btn'))
-            done()
+export function waitForDataMatch(child: SpawndChildProcess, doesDataMatch: (data: string) => boolean) {
+    return new Promise<void>((resolve, reject) => {
+        let isDone = false
+        const handler = (data) => {
+            if (isDone) return
+            if (doesDataMatch(data.toString())) {
+                isDone = true
+                child.stdout.off('data', handler)
+                child.stderr.off('data', errorHandler)
+                resolve()
+            }
         }
+        const errorHandler = (data) => {
+            child.stdout.off('data', handler)
+            child.stderr.off('data', errorHandler)
+            reject(data.toString())
+        }
+        child.stdout.on('data', handler)
+        child.stderr.on('data', errorHandler)
     })
-    child.stderr.on('data', (data) => {
-        done.fail(data.toString())
-    })
-}, 30000)
+}
 
-it('change options file `fixed` and reset process', (done) => {
-    child.stdout.on('data', (data) => {
-        console.log(
-            data.toString(), data.toString().includes('Restart watching source changes'),
-            stripAnsi(data.toString()), stripAnsi(data.toString()).includes('Restart watching source changes')
-        )
-        if (data.toString().includes('Restart watching source changes')) {
-            console.log('🟢 Restart')
-            child.stdout.removeAllListeners()
-            const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
-            expect(fileCSSText).toContain(cssEscape('fg:red'))
-            done()
-        }
-    })
-    child.stderr.on('data', (data) => {
-        done.fail(data.toString())
-    })
-    fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
-}, 30000)
+it('start watch process', async () => {
+    await waitForDataMatch(child, (data) => data.includes('Start watching source changes'))
+    const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
+    expect(fileCSSText).toContain(cssEscape('font:heavy'))
+    expect(fileCSSText).toContain(cssEscape('font:48'))
+    expect(fileCSSText).toContain(cssEscape('bg:primary'))
+    expect(fileCSSText).toContain(cssEscape('btn'))
+})
 
-it('change config file `classes` and reset process', (done) => {
-    child.stdout.on('data', (data) => {
-        if (data.toString().includes('Restart watching source changes')) {
-            child.stdout.removeAllListeners()
-            const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
-            expect(fileCSSText).toContain(cssEscape('bg:blue'))
-            done()
-        }
-    })
-    child.stderr.on('data', (data) => {
-        done.fail(data.toString())
-    })
+it('change options file `fixed` and reset process', async () => {
+    setTimeout(() => fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']')))
+    await waitForDataMatch(child, (data) => data.includes('Restart watching source changes'))
+    const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
+    expect(fileCSSText).toContain(cssEscape('fg:red'))
+})
+
+it('change config file `classes` and reset process', async () => {
     fs.writeFileSync(configFilepath, originConfigText.replace('bg:red', 'bg:blue'))
-}, 30000)
+    await waitForDataMatch(child, (data) => data.includes('Restart watching source changes'))
+    const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
+    expect(fileCSSText).toContain(cssEscape('bg:blue'))
+})
 
-it('change html file class attr and update', (done) => {
-    child.stdout.on('data', (data) => {
-        if (data.toString().includes('exported')) {
-            child.stdout.removeAllListeners()
-            const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
-            /** There is no recycling mechanism during the development */
-            expect(fileCSSText).toContain(cssEscape('text:underline'))
-            done()
-        }
-    })
-    child.stderr.on('data', (data) => {
-        done.fail(data.toString())
-    })
+it('change html file class attr and update', async () => {
     fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'text:underline'))
-}, 30000)
+    await waitForDataMatch(child, (data) => data.includes('exported'))
+    const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
+    /** There is no recycling mechanism during the development */
+    expect(fileCSSText).toContain(cssEscape('text:underline'))
+})
 
 afterAll(async () => {
     await child.destroy()
