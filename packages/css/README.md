@@ -80,9 +80,11 @@ We've built various Master CSS core functionality/integration packages:
 ##### Frameworks
 - [React](https://github.com/master-co/css/tree/beta/packages/react) - Integrate Master CSS the React way
 - [Svelte](https://github.com/master-co/css/tree/beta/packages/svelte) - Integrate Master CSS the Svelte way
+- [Vue](https://github.com/master-co/css/tree/beta/packages/vue) - Integrate Master CSS the Vue.js way
 
 ##### Progressive Rendering
-- [Nitro Server](https://github.com/master-co/css/tree/beta/packages/css-server.nitro) - Integrate Master CSS Pre-rendering the Nitro way
+- [Renderer](https://github.com/master-co/css/tree/beta/packages/renderer) - Pre-renders and injects HTML-required CSS
+- [Nitro Server](https://github.com/master-co/css/tree/beta/packages/server.nitro) - Integrate Master CSS Pre-rendering the Nitro way
 
 ##### Static Extraction
 - [Extractor](https://github.com/master-co/css/tree/beta/packages/extractor) - Master CSS static extractor for various raw text extraction.

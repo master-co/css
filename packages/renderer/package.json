@@ -8,7 +8,7 @@
         "test": "jest"
     },
     "license": "MIT",
-    "description": "Pre-renders Master CSS class syntax in HTML",
+    "description": "Pre-renders and injects HTML-required CSS",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",

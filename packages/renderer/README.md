@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">Pre-renders Master CSS class syntax in HTML</p>
+<p align="center">Pre-renders and injects HTML-required CSS</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">
