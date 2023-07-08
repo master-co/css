@@ -1,17 +1,21 @@
 
 import log from '@techor/log'
 import fg, { Pattern } from 'fast-glob'
-import { renderHTML } from '@master/css'
+import { extend, renderHTML } from '@master/css'
 import zlib from 'zlib'
 import fs from 'fs'
 import prettyBytes from 'pretty-bytes'
 import prettyHartime from 'pretty-hrtime'
 import exploreConfig from 'explore-config'
 
-export default async function action(filePatterns: Pattern | Pattern[], options?) {
+export default async function action(filePatterns: Pattern | Pattern[], options: any = {
+    config: 'master.css.*'
+}) {
     const sourcePaths = fg.sync(filePatterns)
     if (sourcePaths.length) {
-        const config = exploreConfig(options?.config)
+        const config = typeof options.config === 'string'
+            ? exploreConfig(options.config)
+            : undefined
         const renderStart = process.hrtime()
         const col1Width = sourcePaths
             .reduce((max: any, current: any) => {
@@ -34,12 +38,12 @@ export default async function action(filePatterns: Pattern | Pattern[], options?
                     return ''
                 })
                 const renderedCSSSize = renderedCSSText
-                    ? (options?.analyze
+                    ? (options.analyze
                         ? zlib.brotliCompressSync(renderedCSSText).length
                         : renderedCSSText.length)
                     : 0
                 const prettifiedCSSSize = prettyBytes(renderedCSSSize, { space: false })
-                if (!options?.analyze) {
+                if (!options.analyze) {
                     if (content !== renderedContent) {
                         fs.writeFileSync(eachSourcePath, renderedContent)
                     }
@@ -48,7 +52,7 @@ export default async function action(filePatterns: Pattern | Pattern[], options?
                 log.ok`**${eachSourcePath}**${c1Gap}${prettifiedCSSSize}`
             }))
         const renderTime = process.hrtime(renderStart)
-        if (options?.analyze) {
+        if (options.analyze) {
             log`  ${' '.repeat(col1Width + 2)}(Brotli)`
             log``
             log.success`**${sourcePaths.length}** files analyzed in ${prettyHartime(renderTime).replace(' ', '')}`
