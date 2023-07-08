@@ -1,9 +1,13 @@
-import { spawnSync } from 'child_process'
+import { execSync, spawnSync } from 'child_process'
 import { CONFIG_TS_TEXT } from '../../src'
 import { readFileSync } from 'fs'
 import { join } from 'path'
+import { rm } from 'shared/utils/fs'
 
 it('init by tsconfig.json', () => {
-    spawnSync('tsx ../../src/bin init -o', { cwd: __dirname }).toString()
-    expect(readFileSync(join(__dirname, 'master.css.ts')).toString()).toBe(CONFIG_TS_TEXT)
+    const configFilepath = join(__dirname, 'master.css.ts')
+    rm(configFilepath)
+    execSync('tsx ../../src/bin init', { cwd: __dirname, stdio: 'inherit' })
+    expect(readFileSync(configFilepath).toString()).toBe(CONFIG_TS_TEXT)
+    rm(configFilepath)
 })

@@ -1,9 +1,13 @@
-import { spawnSync } from 'child_process'
+import { execSync, spawnSync } from 'child_process'
 import { CONFIG_ESM_TEXT } from '../../src'
 import { join } from 'path'
 import { readFileSync } from 'fs'
+import { rm } from 'shared/utils/fs'
 
 it('init (type="module")', () => {
-    spawnSync('tsx ../../src/bin init -o', { cwd: __dirname }).toString()
-    expect(readFileSync(join(__dirname, 'master.css.mjs')).toString()).toBe(CONFIG_ESM_TEXT)
+    const configFilepath = join(__dirname, 'master.css.mjs')
+    rm(configFilepath)
+    execSync('tsx ../../src/bin init', { cwd: __dirname, stdio: 'inherit' })
+    expect(readFileSync(configFilepath).toString()).toBe(CONFIG_ESM_TEXT)
+    rm(configFilepath)
 })
