@@ -5,6 +5,7 @@ import path from 'path'
 import cssEscape from 'shared/utils/css-escape'
 import dedent from 'ts-dedent'
 import { SpawndChildProcess, spawnd } from 'spawnd'
+import stripAnsi from 'strip-ansi'
 
 const HTMLFilepath = path.resolve(__dirname, 'test.html')
 const originHTMLText = dedent`
@@ -67,7 +68,6 @@ beforeAll(() => {
 it('start watch process', (done) => {
     child.stdout.on('data', (data) => {
         if (data.toString().includes('Start watching source changes')) {
-            console.log(data.toString())
             child.stdout.removeAllListeners()
             const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
             expect(fileCSSText).toContain(cssEscape('font:heavy'))
@@ -84,7 +84,12 @@ it('start watch process', (done) => {
 
 it('change options file `fixed` and reset process', (done) => {
     child.stdout.on('data', (data) => {
+        console.log(
+            data.toString(), data.toString().includes('Restart watching source changes'),
+            stripAnsi(data.toString()), stripAnsi(data.toString()).includes('Restart watching source changes')
+        )
         if (data.toString().includes('Restart watching source changes')) {
+            console.log('🟢 Restart')
             child.stdout.removeAllListeners()
             const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
             expect(fileCSSText).toContain(cssEscape('fg:red'))

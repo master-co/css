@@ -45,8 +45,7 @@
         "ts-jest": "^29.1.1",
         "tsx": "^3.12.7",
         "turbo": "^1.10.7",
-        "upath": "^2.0.1",
-        "why-is-node-running": "^2.2.2"
+        "upath": "^2.0.1"
     },
     "engines": {
         "node": "^18"
