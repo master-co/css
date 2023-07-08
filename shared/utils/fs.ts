@@ -14,7 +14,7 @@ export function copy(sourceDir: string, destinationDir: string) {
     mkdir(destinationDir)
     const items = readdirSync(sourceDir)
     for (const item of items) {
-        if (['node_modules', 'dist', 'out'].includes(item) || item.startsWith('.')) {
+        if (['dist', 'out'].includes(item)) {
             continue
         }
         const sourcePath = join(sourceDir, item)

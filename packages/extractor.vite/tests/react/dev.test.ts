@@ -1,56 +1,49 @@
-import fs from 'fs'
+import fs from 'fs-extra'
 import path from 'path'
-import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import cssEscape from 'shared/utils/css-escape'
-import delay from 'shared/utils/delay'
 import puppeteer, { type Browser, type Page } from 'puppeteer'
-import stripAnsi from 'strip-ansi'
 import { copy, rm } from 'shared/utils/fs'
+import { SpawndChildProcess, spawnd } from 'spawnd'
 
-const examplePath = path.join(__dirname, '../../../../examples/nuxt.js-with-static-extraction')
+const examplePath = path.join(__dirname, '../../../../examples/react-with-static-extraction')
 const tmpDir = path.join(__dirname, 'tmp/dev')
 
-let devProcess: ChildProcessWithoutNullStreams
+let devProcess: SpawndChildProcess
 let browser: Browser
 let page: Page
 let error: Error
 let templatePath: string
 let templateContent: string
 let masterCSSConfigPath: string
-let masterCSSConfigContent: string
 
-beforeAll(async () => {
+beforeAll((done) => {
     copy(examplePath, tmpDir)
-    templatePath = path.join(tmpDir, 'app.vue')
+    templatePath = path.join(tmpDir, 'src/App.tsx')
     templateContent = fs.readFileSync(templatePath).toString()
     masterCSSConfigPath = path.join(tmpDir, 'master.css.ts')
-    masterCSSConfigContent = fs.readFileSync(masterCSSConfigPath).toString()
-    browser = await puppeteer.launch({ headless: 'new' })
-    page = await browser.newPage()
-    await new Promise((resolve) => {
-        devProcess = spawn('npm', ['run', 'dev'], { cwd: tmpDir, env: { ...process.env, NODE_ENV: 'development' } })
-        devProcess.stdout?.on('data', async (data) => {
-            const message = stripAnsi(data.toString())
-            const result = /(http:\/\/localhost:).*?([0-9]+)/.exec(message)
-            if (result) {
-                await page.goto(result[1] + result[2])
-                // wait for the nuxt.js page to be loaded
-                await delay(3000)
-                page.on('console', (consoleMessage) => {
-                    if (consoleMessage.type() === 'error') {
-                        error = new Error(consoleMessage.text())
-                    }
-                })
-                page.on('pageerror', (e) => error = e)
-                page.on('error', (e) => error = e)
-                resolve(devProcess)
-            }
-        })
-        // devProcess.stderr?.on('data', (data) => {
-        //     console.error(data)
-        // })
+    devProcess = spawnd('npm run dev', { shell: true, cwd: tmpDir })
+    devProcess.stdout.on('data', async (data) => {
+        const message = data.toString()
+        const result = /(http:\/\/localhost:).*?([0-9]+)/.exec(message)
+        if (result) {
+            devProcess.stdout.removeAllListeners()
+            browser = await puppeteer.launch({ headless: 'new' })
+            page = await browser.newPage()
+            page.on('console', (consoleMessage) => {
+                if (consoleMessage.type() === 'error') {
+                    error = new Error(consoleMessage.text())
+                }
+            })
+            page.on('pageerror', (e) => error = e)
+            page.on('error', (e) => error = e)
+            await page.goto(result[1] + result[2])
+            done()
+        }
     })
-}, 30000) // 30s timeout for the slow windows OS
+    devProcess.stderr.on('data', (data) => {
+        console.error(data.toString())
+    })
+}, 30000)
 
 it('run dev without errors', () => {
     expect(() => { if (error) throw error }).not.toThrowError()
@@ -63,7 +56,7 @@ it('check if the page contains [data-vite-dev-id=".virtual/master.css"]', async 
 it('change class names and check result in the browser during HMR', async () => {
     const newClassName = 'font:' + new Date().getTime()
     const newClassNameSelector = '.' + cssEscape(newClassName)
-    fs.writeFileSync(templatePath, templateContent.replace(/class="([^"]+)"/, `class="${newClassName}"`))
+    fs.writeFileSync(templatePath, templateContent.replace('className="card"', `className="${newClassName}"`))
     await page.waitForNetworkIdle()
     const newClassNameElementHandle = await page.waitForSelector(newClassNameSelector)
     expect(newClassNameElementHandle).not.toBeNull()
@@ -76,7 +69,7 @@ it('change class names and check result in the browser during HMR', async () => 
 it('change master.css.ts and check result in the browser during HMR', async () => {
     const newBtnClassName = 'btn' + new Date().getTime()
     const newBtnClassNameSelector = '.' + cssEscape(newBtnClassName)
-    fs.writeFileSync(templatePath, templateContent.replace(/class="([^"]+)"/, `class="${newBtnClassName}"`))
+    fs.writeFileSync(templatePath, templateContent.replace('className="card"', `className="${newBtnClassName}"`))
     await page.waitForNetworkIdle()
     const newClassNameElementHandle = await page.waitForSelector(newBtnClassNameSelector)
     expect(newClassNameElementHandle).not.toBeNull()
@@ -92,16 +85,8 @@ it('change master.css.ts and check result in the browser during HMR', async () =
 })
 
 afterAll(async () => {
-    await page?.close()
-    await browser?.close()
-    page?.removeAllListeners()
-    browser?.removeAllListeners()
-    devProcess.kill()
-    devProcess.unref()
-    devProcess.removeAllListeners()
-    devProcess.stdout?.destroy()
-    devProcess.stderr?.destroy()
-    devProcess.stdout?.removeAllListeners()
-    devProcess.stderr?.removeAllListeners()
+    await page.close()
+    await browser.close()
+    await devProcess.destroy()
     rm(tmpDir)
-}) // 30s timeout for the slow windows OS
+})
