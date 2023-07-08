@@ -6,7 +6,7 @@ export default function copy(sourceDir: string, destinationDir: string) {
     fs.mkdirSync(destinationDir, { recursive: true })
     const items = fs.readdirSync(sourceDir)
     for (const item of items) {
-        if (['node_modules', 'dist', 'out'].includes(item) || item.startsWith('.')) {
+        if (['dist', 'out'].includes(item)) {
             continue
         }
         const sourcePath = path.join(sourceDir, item)
