@@ -46,7 +46,7 @@ beforeAll((done) => {
     devProcess.stderr.on('data', (data) => {
         // console.error(data.toString())
     })
-}, 30000)
+})
 
 it('run dev without errors', () => {
     expect(() => { if (error) throw error }).not.toThrowError()
