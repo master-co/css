@@ -1,5 +1,5 @@
 import { testCSS } from './css'
-import config from './master.css'
+import config from './config'
 import { extend } from '@techor/extend'
 
 test('classes', () => {
