@@ -1,8 +1,9 @@
 import { spawnSync } from 'child_process'
-import { expectFileIncludes } from 'shared/test/expect-file-includes'
 import { CONFIG_ESM_TEXT } from '../../src'
+import { join } from 'path'
+import { readFileSync } from 'fs'
 
 it('init (type="module")', () => {
     spawnSync('tsx ../../src/bin init -o', { cwd: __dirname }).toString()
-    expectFileIncludes('master.css.mjs', [CONFIG_ESM_TEXT])
+    expect(readFileSync(join(__dirname, 'master.css.mjs')).toString()).toBe(CONFIG_ESM_TEXT)
 })
