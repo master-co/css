@@ -1,5 +1,5 @@
 import fs from 'fs'
-import path from 'path'
+import path from 'upath'
 
 export default function writeFile(filePath: string, data: string | NodeJS.ArrayBufferView, options?: fs.WriteFileOptions) {
     const dirname = path.dirname(filePath)

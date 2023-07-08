@@ -1,6 +1,6 @@
 import { MasterCSS, extractClassesFromHTML } from '../../../src'
 import fs from 'fs'
-import path from 'path'
+import path from 'upath'
 
 describe('master.co', () => {
     const html = fs.readFileSync(path.resolve(__dirname, './docs/animation.html'), 'utf8')

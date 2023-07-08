@@ -1,5 +1,5 @@
 import fs from 'fs'
-import path from 'path'
+import path from 'upath'
 import cssEscape from 'shared/utils/css-escape'
 import delay from 'shared/utils/delay'
 import puppeteer, { type Browser, type Page } from 'puppeteer'

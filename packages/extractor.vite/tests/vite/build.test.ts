@@ -1,6 +1,6 @@
 import fs from 'fs'
 import fg from 'fast-glob'
-import path from 'path'
+import path from 'upath'
 import { execSync } from 'child_process'
 import { copy, rm } from 'shared/utils/fs'
 

@@ -1,7 +1,7 @@
 /** require: `npm run dev` in root */
 
 import fs from 'fs'
-import path from 'path'
+import path from 'upath'
 import cssEscape from 'shared/utils/css-escape'
 import dedent from 'ts-dedent'
 import { SpawndChildProcess, spawnd } from 'spawnd'
