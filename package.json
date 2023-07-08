@@ -39,6 +39,7 @@
         "puppeteer": "^20.8.0",
         "shared": "",
         "shuffle-array": "^1.0.1",
+        "spawnd": "^9.0.0",
         "strip-ansi": "^7.0.1",
         "ts-dedent": "^2.2.0",
         "ts-jest": "^29.1.1",

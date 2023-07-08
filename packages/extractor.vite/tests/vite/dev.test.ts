@@ -1,15 +1,14 @@
 import fs from 'fs-extra'
 import path from 'path'
-import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import cssEscape from 'shared/utils/css-escape'
 import puppeteer, { type Browser, type Page } from 'puppeteer'
-import stripAnsi from 'strip-ansi'
 import { copy, rm } from 'shared/utils/fs'
+import { SpawndChildProcess, spawnd } from 'spawnd'
 
 const examplePath = path.join(__dirname, '../../../../examples/vite-with-static-extraction')
 const tmpDir = path.join(__dirname, 'tmp/dev')
 
-let devProcess: ChildProcessWithoutNullStreams
+let devProcess: SpawndChildProcess
 let browser: Browser
 let page: Page
 let error: Error
@@ -22,12 +21,12 @@ beforeAll((done) => {
     templatePath = path.join(tmpDir, 'index.html')
     templateContent = fs.readFileSync(templatePath).toString()
     masterCSSConfigPath = path.join(tmpDir, 'master.css.ts')
-    devProcess = spawn('npm', ['run', 'dev'], { cwd: tmpDir, env: process.env })
-    devProcess.stdout?.on('data', async (data) => {
-        const message = stripAnsi(data.toString())
+    devProcess = spawnd('npm run dev', { shell: true, cwd: tmpDir })
+    devProcess.stdout.on('data', async (data) => {
+        const message = data.toString()
         const result = /(http:\/\/localhost:).*?([0-9]+)/.exec(message)
         if (result) {
-            devProcess.stdout?.removeAllListeners()
+            devProcess.stdout.removeAllListeners()
             browser = await puppeteer.launch({ headless: 'new' })
             page = await browser.newPage()
             page.on('console', (consoleMessage) => {
@@ -41,7 +40,7 @@ beforeAll((done) => {
             done()
         }
     })
-    devProcess.stderr?.on('data', (data) => {
+    devProcess.stderr.on('data', (data) => {
         console.error(data.toString())
     })
 })
@@ -86,17 +85,8 @@ it('change master.css.ts and check result in the browser during HMR', async () =
 })
 
 afterAll(async () => {
+    await page.close()
+    await browser.close()
+    await devProcess.destroy()
     rm(tmpDir)
-    await page?.close()
-    await browser?.close()
-    page?.removeAllListeners()
-    browser?.removeAllListeners()
-    devProcess.unref()
-    devProcess.kill()
-    devProcess.removeAllListeners()
-    devProcess.stdout?.destroy()
-    devProcess.stderr?.destroy()
-    devProcess.stdout?.removeAllListeners()
-    devProcess.stderr?.removeAllListeners()
-    devProcess.pid && process.kill(devProcess.pid, 'SIGINT')
 })

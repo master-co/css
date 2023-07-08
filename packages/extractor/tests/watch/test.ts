@@ -1,10 +1,10 @@
 /** require: `npm run dev` in root */
 
-import { exec, ChildProcess, spawn } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import cssEscape from 'shared/utils/css-escape'
 import dedent from 'ts-dedent'
+import { SpawndChildProcess, spawnd } from 'spawnd'
 
 const HTMLFilepath = path.resolve(__dirname, 'test.html')
 const originHTMLText = dedent`
@@ -55,75 +55,69 @@ const config: Config = {
 export default config
 `
 
-let child: ChildProcess
+let child: SpawndChildProcess
 
 beforeAll(() => {
     fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w' })
     fs.writeFileSync(optionsFilepath, originOptionsText, { flag: 'w' })
     fs.writeFileSync(configFilepath, originConfigText, { flag: 'w' })
-    child = spawn('tsx', ['../../../css/src/bin', 'extract', '-w'], { cwd: __dirname })
+    child = spawnd('tsx ../../../css/src/bin extract -w', { shell: true, cwd: __dirname })
 })
 
 describe('extract watch', () => {
 
     it('start watch process', (done) => {
-        const handle = data => {
+        child.stdout.on('data', (data) => {
             if (data.toString().includes('Start watching source changes')) {
                 const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
                 expect(fileCSSText).toContain(cssEscape('font:heavy'))
                 expect(fileCSSText).toContain(cssEscape('font:48'))
                 expect(fileCSSText).toContain(cssEscape('bg:primary'))
                 expect(fileCSSText).toContain(cssEscape('btn'))
-                child.stdout?.off('data', handle)
+                child.stdout.removeAllListeners()
                 done()
             }
-        }
-        child.stdout?.on('data', handle)
-    })
+        })
+    }, 30000)
 
     it('change options file `fixed` and reset process', (done) => {
-        const handle = data => {
+        child.stdout.on('data', (data) => {
             if (data.toString().includes('Restart watching source changes')) {
                 const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
                 expect(fileCSSText).toContain(cssEscape('fg:red'))
-                child.stdout?.off('data', handle)
+                child.stdout.removeAllListeners()
                 done()
             }
-        }
-        child.stdout?.on('data', handle)
+        })
         fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
     })
 
     it('change config file `classes` and reset process', (done) => {
-        const handle = data => {
+        child.stdout?.on('data', (data) => {
             if (data.toString().includes('Restart watching source changes')) {
                 const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
                 expect(fileCSSText).toContain(cssEscape('bg:blue'))
-                child.stdout?.off('data', handle)
+                child.stdout.removeAllListeners()
                 done()
             }
-        }
-        child.stdout?.on('data', handle)
+        })
         fs.writeFileSync(configFilepath, originConfigText.replace('bg:red', 'bg:blue'))
     })
 
     it('change html file class attr and update', (done) => {
-        const handle = data => {
+        child.stdout?.on('data', (data) => {
             if (data.toString().includes('exported')) {
                 const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
                 /** There is no recycling mechanism during the development */
                 expect(fileCSSText).toContain(cssEscape('text:underline'))
-                child.stdout?.off('data', handle)
+                child.stdout.removeAllListeners()
                 done()
             }
-        }
-        child.stdout?.on('data', handle)
+        })
         fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'text:underline'))
     })
 })
 
-afterAll(() => {
-    child.stdout?.destroy()
-    child.stdin?.destroy()
-    child.kill()
-}, 30000) // 30s timeout for the slow windows OS
+afterAll(async () => {
+    await child.destroy()
+}) 
