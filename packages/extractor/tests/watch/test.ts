@@ -66,8 +66,8 @@ beforeAll(() => {
 
 it('start watch process', (done) => {
     child.stdout.on('data', (data) => {
-        console.log(data.toString())
         if (data.toString().includes('Start watching source changes')) {
+            console.log(data.toString())
             child.stdout.removeAllListeners()
             const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
             expect(fileCSSText).toContain(cssEscape('font:heavy'))
