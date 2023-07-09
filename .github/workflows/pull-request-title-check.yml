@@ -13,11 +13,11 @@ jobs:
         runs-on: ubuntu-20.04
         strategy:
             matrix:
-                node-version: [18.16.1]
+                node-version: [18]
         steps:
             - name: Aron Actions
               uses: 1aron/aronrepo@1.0.0
               with:
-                  action: 'check-pull-request-title'
+                  action: "check-pull-request-title"
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

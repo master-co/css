@@ -2,7 +2,7 @@ name: Commit Check
 on:
     push:
         branches:
-            - '**'
+            - "**"
     pull_request_target:
         types:
             - opened
@@ -12,12 +12,12 @@ on:
 
 jobs:
     check:
-        name: 'commit-check'
+        name: "commit-check"
         timeout-minutes: 20
         runs-on: ubuntu-20.04
         strategy:
             matrix:
-                node-version: [18.16.1]
+                node-version: [18]
         steps:
             - uses: actions/checkout@v3
               with:
@@ -25,6 +25,6 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node-version }}
-                  cache: 'npm'
+                  cache: "npm"
             - run: npm ci
             - run: npm run commit-check

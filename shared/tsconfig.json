@@ -1,4 +1,5 @@
 {
+    "extends": "../tsconfig.json",
     "compilerOptions": {
         "experimentalDecorators": true,
         "baseUrl": ".",
@@ -15,5 +16,8 @@
             "es2021",
             "dom"
         ]
-    }
+    },
+    "include": [
+        "**/*.ts"
+    ]
 }

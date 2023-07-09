@@ -3,10 +3,11 @@
 import fs from 'fs'
 import path from 'upath'
 import cssEscape from 'shared/utils/css-escape'
+import waitForDataMatch from 'shared/utils/wait-for-data-match'
 import dedent from 'ts-dedent'
 import { SpawndChildProcess, spawnd } from 'spawnd'
 
-const HTMLFilepath = path.resolve(__dirname, 'test.html')
+const HTMLFilepath = path.join(__dirname, 'test.html')
 const originHTMLText = dedent`
     <!DOCTYPE html>
     <html lang="en">
@@ -21,7 +22,7 @@ const originHTMLText = dedent`
     </html>
 `
 
-const optionsFilepath = path.resolve(__dirname, 'master.css-extractor.ts')
+const optionsFilepath = path.join(__dirname, 'master.css-extractor.ts')
 const originOptionsText = `import type { Options } from '@master/css-extractor'
 const options: Options = {
     classes: {
@@ -33,7 +34,7 @@ const options: Options = {
 export default options
 `
 
-const configFilepath = path.resolve(__dirname, 'master.css.ts')
+const configFilepath = path.join(__dirname, 'master.css.ts')
 const originConfigText = `import type { Config } from '@master/css'
 const config: Config = {
     classes: {
@@ -55,40 +56,20 @@ const config: Config = {
 export default config
 `
 
+const virtualCSSFilepath = path.join(__dirname, '.virtual/master.css')
+
 let child: SpawndChildProcess
 
-export function waitForDataMatch(child: SpawndChildProcess, doesDataMatch: (data: string) => boolean) {
-    return new Promise<void>((resolve, reject) => {
-        let isDone = false
-        const handler = (data) => {
-            if (isDone) return
-            if (doesDataMatch(data.toString())) {
-                isDone = true
-                child.stdout.off('data', handler)
-                child.stderr.off('data', errorHandler)
-                resolve()
-            }
-        }
-        const errorHandler = (data) => {
-            child.stdout.off('data', handler)
-            child.stderr.off('data', errorHandler)
-            reject(data.toString())
-        }
-        child.stdout.on('data', handler)
-        child.stderr.on('data', errorHandler)
-    })
-}
-
 beforeAll(() => {
-    fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w' })
-    fs.writeFileSync(optionsFilepath, originOptionsText, { flag: 'w' })
-    fs.writeFileSync(configFilepath, originConfigText, { flag: 'w' })
+    fs.writeFileSync(HTMLFilepath, originHTMLText)
+    fs.writeFileSync(optionsFilepath, originOptionsText)
+    fs.writeFileSync(configFilepath, originConfigText)
     child = spawnd('tsx ../../../css/src/bin extract -w', { shell: true, cwd: __dirname })
 }, 30000)
 
 it('start watch process', async () => {
     await waitForDataMatch(child, (data) => data.includes('Start watching source changes'))
-    const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
+    const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
     expect(fileCSSText).toContain(cssEscape('font:heavy'))
     expect(fileCSSText).toContain(cssEscape('font:48'))
     expect(fileCSSText).toContain(cssEscape('bg:primary'))
@@ -97,24 +78,24 @@ it('start watch process', async () => {
 
 it('change options file `fixed` and reset process', async () => {
     await new Promise<void>((resolve) => {
-        waitForDataMatch(child, (data) => data.includes('Restart watching source changes')).then(resolve)
+        waitForDataMatch(child, (data) => data.includes('Restart watching source changes')).then(() => resolve())
         fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
     })
-    const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
+    const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
     expect(fileCSSText).toContain(cssEscape('fg:red'))
 }, 30000)
 
 it('change config file `classes` and reset process', async () => {
     fs.writeFileSync(configFilepath, originConfigText.replace('bg:red', 'bg:blue'))
     await waitForDataMatch(child, (data) => data.includes('Restart watching source changes'))
-    const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
+    const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
     expect(fileCSSText).toContain(cssEscape('bg:blue'))
 }, 30000)
 
 it('change html file class attr and update', async () => {
     fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'text:underline'))
     await waitForDataMatch(child, (data) => data.includes('exported'))
-    const fileCSSText = fs.readFileSync(path.join(__dirname, '.virtual/master.css'), { encoding: 'utf8' })
+    const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
     /** There is no recycling mechanism during the development */
     expect(fileCSSText).toContain(cssEscape('text:underline'))
 }, 30000)

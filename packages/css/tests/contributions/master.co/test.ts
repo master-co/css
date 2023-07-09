@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'upath'
 
 describe('master.co', () => {
-    const html = fs.readFileSync(path.resolve(__dirname, './docs/animation.html'), 'utf8')
+    const html = fs.readFileSync(path.join(__dirname, './docs/animation.html'), 'utf8')
     const classes = extractClassesFromHTML(html)
     const css = new MasterCSS()
     classes.forEach((eachClass) => css.insert(eachClass))
