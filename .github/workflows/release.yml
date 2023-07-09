@@ -22,7 +22,7 @@ jobs:
             - run: npm ci
             - run: npm run build
 
-            - uses: lewagon/wait-on-check-action@v1.2.0
+            - uses: lewagon/wait-on-check-action@v1.3.1
               with:
                   ref: ${{ github.ref }}
                   check-regexp: test.*|check.*|commit-check.*|lint.*
