@@ -37,7 +37,6 @@ beforeAll(async () => {
     // page.on('pageerror', (e) => error = e)
     // page.on('error', (e) => error = e)
     if (result) {
-        console.log(result[1] + result[2])
         await page.goto(result[1] + result[2])
         await delay(2000)
     }
