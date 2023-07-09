@@ -112,14 +112,5 @@ export default defineConfig(({ command, ssrBuild }) => ({
     },
     build: {
         minify: false,
-    },
-    ssr: {
-        noExternal: [
-            // this package has uncompiled .vue files
-            '@vitejs/test-example-external-component',
-        ],
-    },
-    optimizeDeps: {
-        exclude: ['@vitejs/test-example-external-component'],
-    },
+    }
 }))

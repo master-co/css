@@ -18,8 +18,5 @@ export default Object.assign(config, {
                 replacement: '@vue/runtime-core/dist/runtime-core.cjs.js',
             },
         ],
-    },
-    optimizeDeps: {
-        exclude: ['@vitejs/test-example-external-component'],
-    },
+    }
 })

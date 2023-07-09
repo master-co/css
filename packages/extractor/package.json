@@ -67,11 +67,11 @@
     "dependencies": {
         "@master/css": "",
         "@master/css-validator": "",
-        "@techor/extend": "^2.4.0",
-        "@techor/glob": "^2.4.0",
-        "@techor/log": "^2.4.0",
+        "@techor/extend": "^2.4.1",
+        "@techor/glob": "^2.4.1",
+        "@techor/log": "^2.4.1",
         "chokidar": "^3.5.3",
-        "explore-config": "^2.4.0",
+        "explore-config": "^2.4.1",
         "minimatch": "^9.0.1"
     },
     "devDependencies": {

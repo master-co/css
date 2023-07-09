@@ -9,7 +9,7 @@ import prettyHartime from 'pretty-hrtime'
 import exploreConfig from 'explore-config'
 import { explorePathsSync } from '@techor/glob'
 
-export default async function action(filePatterns: Pattern | Pattern[], options: any = {
+module.exports = async function action(filePatterns: Pattern | Pattern[], options: any = {
     config: 'master.css.*'
 }) {
     const sourcePaths = explorePathsSync(filePatterns)

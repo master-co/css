@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { program } from 'commander'
+import { Command } from 'commander'
 import path from 'upath'
 import fs from 'fs'
 import { CONFIG_ESM_TEXT } from '../constants/config-esm-text'
@@ -8,6 +8,14 @@ import { CONFIG_TEXT } from '../constants/config-text'
 import { CONFIG_TS_TEXT } from '../constants/config-ts-text'
 import log from '@techor/log'
 import { readJSONFileSync } from '@techor/fs'
+
+const { version, name, description } = readJSONFileSync(path.resolve(__dirname, '../../package.json'))
+const program = new Command()
+
+program
+    .name(name)
+    .description(description)
+    .version(version || '0.0.0')
 
 program.command('init')
     .description('Initialize definition files for Master CSS')
@@ -59,8 +67,7 @@ program.command('render')
     .option('-a --analyze', 'Analyze injected CSS and HTML size ( brotli ) without writing to file')
     .action(async function (args, options) {
         try {
-            // @ts-expect-error dynamic import action
-            const action = (await import('@master/css-renderer/actions/main')).default
+            const action = require('@master/css-renderer/actions/main')
             await action(args, options)
         } catch (error) {
             if (error.code === 'ERR_MODULE_NOT_FOUND') {
@@ -79,8 +86,7 @@ program.command('extract')
     .option('--options <path>', 'Specify your extractor options sources', 'master.css-extractor.*')
     .action(async function (args, options) {
         try {
-            // @ts-expect-error dynamic import action
-            const action = (await import('@master/css-extractor/actions/main')).default
+            const action = require('@master/css-extractor/actions/main')
             await action(args, options)
         } catch (error) {
             if (error.code === 'ERR_MODULE_NOT_FOUND') {
@@ -91,9 +97,4 @@ program.command('extract')
         }
     })
 
-const { version, name, description } = readJSONFileSync(path.resolve(__dirname, '../../../package.json')) || {}
-
-program.parse(process.argv)
-program.name(name)
-program.description(description)
-program.version(version)
+program.parse()

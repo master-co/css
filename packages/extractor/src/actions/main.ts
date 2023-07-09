@@ -2,7 +2,7 @@ import { Options } from '../options'
 import CSSExtractor from '../core'
 import log from '@techor/log'
 
-export default async function action(specifiedSourcePaths: string[], options?: {
+module.exports = async function action(specifiedSourcePaths: string[], options?: {
     watch?: boolean,
     output?: string,
     verbose?: number,

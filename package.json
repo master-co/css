@@ -23,10 +23,10 @@
         "shared/"
     ],
     "devDependencies": {
-        "@techor/fs": "^2.4.0",
-        "@techor/glob": "^2.4.0",
-        "@techor/jest-dom": "^2.4.0",
-        "@techor/repo": "^2.4.0",
+        "@techor/fs": "^2.4.1",
+        "@techor/glob": "^2.4.1",
+        "@techor/jest-dom": "^2.4.1",
+        "@techor/repo": "^2.4.1",
         "@types/jest": "^29.5.2",
         "@types/node": "^20.4.0",
         "concurrently": "^8.2.0",

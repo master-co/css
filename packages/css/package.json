@@ -70,13 +70,13 @@
     },
     "dependencies": {
         "@master/normal.css": "",
-        "@techor/fs": "^2.4.0",
-        "@techor/log": "^2.4.0",
-        "commander": "^10.0.0"
+        "@techor/fs": "^2.4.1",
+        "@techor/log": "^2.4.1",
+        "commander": "^11.0.0"
     },
     "devDependencies": {
-        "@techor/extend": "^2.4.0",
-        "vite": "^4.2.1",
-        "shared": ""
+        "@techor/extend": "^2.4.1",
+        "shared": "",
+        "vite": "^4.2.1"
     }
 }
