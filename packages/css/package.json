@@ -1,7 +1,7 @@
 {
     "name": "@master/css",
     "scripts": {
-        "build": "techor-pack --external @master/css-renderer @master/css-extractor",
+        "build": "techor pack --external @master/css-renderer @master/css-extractor",
         "dev": "npm run build -- --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",
@@ -70,12 +70,12 @@
     },
     "dependencies": {
         "@master/normal.css": "",
-        "@techor/fs": "^2.3.8",
-        "@techor/log": "^2.3.8",
+        "@techor/fs": "^2.4.0",
+        "@techor/log": "^2.4.0",
         "commander": "^10.0.0"
     },
     "devDependencies": {
-        "@techor/extend": "^2.3.8",
+        "@techor/extend": "^2.4.0",
         "vite": "^4.2.1",
         "shared": ""
     }

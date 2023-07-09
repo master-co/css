@@ -1,7 +1,7 @@
 import CSSExtractor from '@master/css-extractor'
 import type { Options } from '@master/css-extractor'
 import type { Plugin } from 'vite'
-import { Pattern } from 'fast-glob'
+import type { Pattern } from 'fast-glob'
 import PreInsertionPlugin from './pre-insertion'
 import VirtualCSSModulePlugins from './virtual-css-module'
 

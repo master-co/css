@@ -1,7 +1,7 @@
 {
     "name": "@master/css-extractor",
     "scripts": {
-        "build": "techor-pack --platform node",
+        "build": "techor pack --platform node",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
@@ -67,13 +67,12 @@
     "dependencies": {
         "@master/css": "",
         "@master/css-validator": "",
-        "@techor/extend": "^2.3.8",
-        "@techor/log": "^2.3.8",
+        "@techor/extend": "^2.4.0",
+        "@techor/glob": "^2.4.0",
+        "@techor/log": "^2.4.0",
         "chokidar": "^3.5.3",
-        "explore-config": "^2.3.8",
-        "fast-glob": "^3.2.12",
-        "minimatch": "^9.0.1",
-        "upath": "^2.0.1"
+        "explore-config": "^2.4.0",
+        "minimatch": "^9.0.1"
     },
     "devDependencies": {
         "ts-jest": "^29.0.5"

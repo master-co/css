@@ -1,7 +1,7 @@
 {
     "name": "@master/css-renderer",
     "scripts": {
-        "build": "techor-pack --platform node",
+        "build": "techor pack --platform node",
         "dev": "npm run build -- --watch",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
@@ -41,9 +41,9 @@
     },
     "dependencies": {
         "@master/css": "",
-        "@techor/log": "^2.3.8",
-        "explore-config": "^2.3.8",
-        "fast-glob": "^3.2.12"
+        "@techor/log": "^2.4.0",
+        "@techor/glob": "^2.4.0",
+        "explore-config": "^2.4.0"
     },
     "devDependencies": {
         "pretty-bytes": "^6.1.0",

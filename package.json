@@ -11,7 +11,7 @@
         "type-check": "turbo run type-check --parallel --filter=./packages/**/*",
         "commit-check": "commitlint --from=HEAD~1 --verbose",
         "dev": "turbo run dev --filter=./packages/* --no-cache --force --concurrency=30",
-        "clean": "rm -rf package-lock.json && rm -rf node_modules && rm -rf ./packages/**/*dist && rm -rf ./{examples,packages}/**/*node_modules && rm -rf ./{examples,packages}/**/*.turbo"
+        "clean": "rm -rf node_modules && rm -rf package-lock.json && rm -rf **/*package-lock.json && rm -rf **/*node_modules && rm -rf **/*dist && rm -rf **/*.turbo"
     },
     "repository": {
         "type": "git",
@@ -23,13 +23,16 @@
         "shared/"
     ],
     "devDependencies": {
-        "@techor/jest-dom": "^2.3.8",
-        "@techor/repo": "^2.3.8",
+        "@techor/fs": "^2.4.0",
+        "@techor/glob": "^2.4.0",
+        "@techor/jest-dom": "^2.4.0",
+        "@techor/repo": "^2.4.0",
         "@types/jest": "^29.5.2",
         "@types/node": "^20.4.0",
         "concurrently": "^8.2.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
+        "jest": "^29.6.1",
         "jest-extended": "^4.0.0",
         "nanoid": "^4.0.2",
         "nodemon": "^2.0.22",
@@ -47,11 +50,5 @@
     },
     "engines": {
         "node": "^18"
-    },
-    "dependencies": {
-        "@master/css": "*",
-        "@master/css-extractor": "*",
-        "@master/css-renderer": "*",
-        "jest": "^29.6.1"
     }
 }

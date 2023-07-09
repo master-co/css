@@ -7,7 +7,7 @@ import { CONFIG_ESM_TEXT } from '../constants/config-esm-text'
 import { CONFIG_TEXT } from '../constants/config-text'
 import { CONFIG_TS_TEXT } from '../constants/config-ts-text'
 import log from '@techor/log'
-import { readFileAsJSON } from '@techor/fs'
+import { readJSONFileSync } from '@techor/fs'
 
 program.command('init')
     .description('Initialize definition files for Master CSS')
@@ -22,7 +22,7 @@ program.command('init')
             if (fs.existsSync('tsconfig.json')) {
                 ts = true
             } else {
-                const { type } = readFileAsJSON('./package.json') || {}
+                const { type } = readJSONFileSync('./package.json') || {}
                 type === 'module'
                     ? esm = true
                     : cjs = true
@@ -91,7 +91,7 @@ program.command('extract')
         }
     })
 
-const { version, name, description } = readFileAsJSON('../../../package.json', { cwd: __dirname }) || {}
+const { version, name, description } = readJSONFileSync(path.resolve(__dirname, '../../../package.json')) || {}
 
 program.parse(process.argv)
 program.name(name)

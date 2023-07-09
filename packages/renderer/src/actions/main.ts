@@ -1,17 +1,18 @@
 
 import log from '@techor/log'
-import fg, { Pattern } from 'fast-glob'
-import { extend, renderHTML } from '@master/css'
+import type { Pattern } from 'fast-glob'
+import { renderHTML } from '@master/css'
 import zlib from 'zlib'
 import fs from 'fs'
 import prettyBytes from 'pretty-bytes'
 import prettyHartime from 'pretty-hrtime'
 import exploreConfig from 'explore-config'
+import { explorePathsSync } from '@techor/glob'
 
 export default async function action(filePatterns: Pattern | Pattern[], options: any = {
     config: 'master.css.*'
 }) {
-    const sourcePaths = fg.sync(filePatterns)
+    const sourcePaths = explorePathsSync(filePatterns)
     if (sourcePaths.length) {
         const config = typeof options.config === 'string'
             ? exploreConfig(options.config)

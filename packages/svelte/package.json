@@ -2,7 +2,7 @@
     "name": "@master/css.svelte",
     "type": "module",
     "scripts": {
-        "build": "techor-pack './src/**/*.{ts,svelte}' --bundle --format esm --esm-ext .js --entry-names [dir]/[name]",
+        "build": "techor pack './src/**/*.{ts,svelte}' --bundle --format esm --esm-ext .js --entry-names [dir]/[name]",
         "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit"
     },

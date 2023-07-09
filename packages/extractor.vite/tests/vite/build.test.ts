@@ -1,5 +1,5 @@
 import fs from 'fs'
-import fg from 'fast-glob'
+import { explorePathSync } from '@techor/glob'
 import path from 'upath'
 import { execSync } from 'child_process'
 import { copy, rm } from 'shared/utils/fs'
@@ -10,6 +10,6 @@ const tmpDir = path.join(__dirname, 'tmp/build')
 it('build', () => {
     copy(examplePath, tmpDir)
     execSync('npm run build', { cwd: tmpDir, stdio: 'inherit' })
-    expect(fs.readFileSync(fg.sync(path.join(tmpDir, 'dist/assets/index-*.css'))[0]).toString()).toContain('center-content')
+    expect(fs.readFileSync(explorePathSync(path.join(tmpDir, 'dist/assets/index-*.css'))).toString()).toContain('center-content')
     rm(tmpDir)
 })

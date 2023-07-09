@@ -1,18 +1,18 @@
-import upath from 'upath'
 import { default as defaultOptions, Options } from './options'
 import MasterCSS from '@master/css'
 import type { Config } from '@master/css'
 import extractLatentClasses from './functions/extract-latent-classes'
 import fs from 'fs'
-import fg, { Pattern } from 'fast-glob'
 import { minimatch } from 'minimatch'
 import log, { chalk } from '@techor/log'
 import { extend } from '@techor/extend'
-import exploreConfig, { exploreConfigPath, exploreResolvedConfigPath } from 'explore-config'
+import exploreConfig from 'explore-config'
 import { createValidRules } from '@master/css-validator'
 import chokidar from 'chokidar'
 import { EventEmitter } from 'node:events'
 import cssEscape from 'shared/utils/css-escape'
+import { explorePathsSync, explorePathSync } from '@techor/glob'
+import path from 'path'
 
 export default class CSSExtractor extends EventEmitter {
     css: MasterCSS
@@ -24,7 +24,7 @@ export default class CSSExtractor extends EventEmitter {
     watchers: chokidar.FSWatcher[] = []
 
     constructor(
-        public customOptions: Options | Pattern | Pattern[] = 'master.css-extractor.*',
+        public customOptions: Options | string | string[] = 'master.css-extractor.*',
         public cwd = process.cwd()
     ) {
         super()
@@ -176,7 +176,7 @@ export default class CSSExtractor extends EventEmitter {
         const spent = Math.round(((time[0] * 1e9 + time[1]) / 1e6) * 10) / 10
         if (this.css.rules.length && validClasses.length) {
             if (this.options.verbose) {
-                log.ok`**${upath.relative(this.cwd, source)}** ${validClasses.length} classes inserted ${chalk.gray('in')} ${spent}ms ${this.options.verbose > 1 ? validClasses : ''}`
+                log.ok`**${path.relative(this.cwd, source)}** ${validClasses.length} classes inserted ${chalk.gray('in')} ${spent}ms ${this.options.verbose > 1 ? validClasses : ''}`
             }
             this.emit('change')
         }
@@ -184,7 +184,7 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     insertFile(source: string) {
-        return this.insert(source, fs.readFileSync(upath.resolve(this.cwd, source), { encoding: 'utf-8' }).toString())
+        return this.insert(source, fs.readFileSync(path.resolve(this.cwd, source), { encoding: 'utf-8' }).toString())
     }
 
     insertFiles(sources: string[]) {
@@ -192,8 +192,8 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     export(filename = this.options.module) {
-        const filepath = upath.resolve(this.cwd, filename)
-        const dir = upath.dirname(filepath)
+        const filepath = path.resolve(this.cwd, filename)
+        const dir = path.dirname(filepath)
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true })
         }
@@ -278,7 +278,7 @@ export default class CSSExtractor extends EventEmitter {
     get fixedSourcePaths(): string[] {
         const { sources } = this.options
         return sources?.length
-            ? fg.sync(sources, { cwd: this.cwd })
+            ? explorePathsSync(sources, { cwd: this.cwd })
                 .filter((eachSourcePath) => !!eachSourcePath)
             : []
     }
@@ -287,7 +287,7 @@ export default class CSSExtractor extends EventEmitter {
      * resolved from `fixedSourcePaths`
      */
     get resolvedFixedSourcePaths(): string[] {
-        return this.fixedSourcePaths.map((eachSourcePath) => upath.resolve(this.cwd, eachSourcePath))
+        return this.fixedSourcePaths.map((eachSourcePath) => path.resolve(this.cwd, eachSourcePath))
     }
 
     /**
@@ -296,7 +296,7 @@ export default class CSSExtractor extends EventEmitter {
     get allowedSourcePaths(): string[] {
         const { include, exclude } = this.options
         return include?.length
-            ? fg.sync(include, { cwd: this.cwd, ignore: exclude })
+            ? explorePathsSync(include, { cwd: this.cwd, ignore: exclude })
                 .filter((eachSourcePath) => !!eachSourcePath)
             : []
     }
@@ -305,7 +305,7 @@ export default class CSSExtractor extends EventEmitter {
      * resolved from `allowedSourcePaths`
      */
     get resolvedAllowedSourcePaths(): string[] {
-        return this.allowedSourcePaths.map((eachSourcePath) => upath.resolve(this.cwd, eachSourcePath))
+        return this.allowedSourcePaths.map((eachSourcePath) => path.resolve(this.cwd, eachSourcePath))
     }
 
     isSourceAllowed(source: string): boolean {
@@ -338,7 +338,7 @@ export default class CSSExtractor extends EventEmitter {
     */
     get configPath(): string {
         if (typeof this.options.config === 'string' || Array.isArray(this.options.config)) {
-            return exploreConfigPath(this.options.config, { cwd: this.cwd })
+            return explorePathSync(this.options.config, { cwd: this.cwd })
         }
     }
 
@@ -346,8 +346,9 @@ export default class CSSExtractor extends EventEmitter {
      * computed from string `options.config`
     */
     get resolvedConfigPath(): string {
-        if (typeof this.options.config === 'string' || Array.isArray(this.options.config)) {
-            return exploreResolvedConfigPath(this.options.config, { cwd: this.cwd })
+        const configPath = this.configPath
+        if (configPath) {
+            return path.resolve(this.cwd, configPath)
         }
     }
 
@@ -356,7 +357,7 @@ export default class CSSExtractor extends EventEmitter {
     */
     get optionsPath(): string {
         if (typeof this.customOptions === 'string' || Array.isArray(this.customOptions)) {
-            return exploreConfigPath(this.customOptions, { cwd: this.cwd })
+            return explorePathSync(this.customOptions, { cwd: this.cwd })
         }
     }
 
@@ -364,8 +365,9 @@ export default class CSSExtractor extends EventEmitter {
      * computed from string `customOptions`
     */
     get resolvedOptionsPath(): string {
-        if (typeof this.customOptions === 'string' || Array.isArray(this.customOptions)) {
-            return exploreResolvedConfigPath(this.customOptions, { cwd: this.cwd })
+        const optionsPath = this.optionsPath
+        if (optionsPath) {
+            return path.resolve(this.cwd, optionsPath)
         }
     }
 
