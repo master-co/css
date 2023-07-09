@@ -77,7 +77,7 @@ it('start watch process', async () => {
     expect(fileCSSText).toContain(cssEscape('btn'))
 }, 30000)
 
-test.todo('extractor watch tests do not work in CI')
+test.todo('extractor watch tests timeout in CI')
 // it('change options file `fixed` and reset process', async () => {
 //     fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
 //     await delay(1000)
