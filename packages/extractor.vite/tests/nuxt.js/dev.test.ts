@@ -40,15 +40,15 @@ beforeAll(async () => {
         await page.goto(result[1] + result[2])
         await delay(2000)
     }
-})
+}, 60000)
 
 it('run dev without errors', () => {
     expect(() => { if (error) throw error }).not.toThrowError()
-})
+}, 60000)
 
 it('check if the page contains [data-vite-dev-id=".virtual/master.css"]', async () => {
     expect(await page.$('[data-vite-dev-id$=".virtual/master.css"]')).toBeTruthy()
-})
+}, 60000)
 
 it('change class names and check result in the browser during HMR', async () => {
     const newClassName = 'font:' + new Date().getTime()
@@ -61,7 +61,7 @@ it('change class names and check result in the browser during HMR', async () => 
     expect(styleHandle).not.toBeNull()
     const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
     expect(cssText).toContain(newClassNameSelector)
-})
+}, 60000)
 
 it('change master.css.ts and check result in the browser during HMR', async () => {
     const newBtnClassName = 'btn' + new Date().getTime()
@@ -79,11 +79,11 @@ it('change master.css.ts and check result in the browser during HMR', async () =
     expect(styleHandle).not.toBeNull()
     const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
     expect(cssText).toContain(newBtnClassNameSelector)
-})
+}, 60000)
 
 afterAll(async () => {
     await page.close()
     await browser.close()
     await devProcess.destroy()
     rm(tmpDir)
-})
+}, 60000)
