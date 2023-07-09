@@ -35,8 +35,10 @@ beforeAll(async () => {
     })
     page.on('pageerror', (e) => error = e)
     page.on('error', (e) => error = e)
-    if (result)
+    if (result) {
+        console.log(result[1] + result[2])
         await page.goto(result[1] + result[2])
+    }
 }, 60000)
 
 it('run dev without errors', () => {
