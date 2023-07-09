@@ -77,10 +77,8 @@ it('start watch process', async () => {
 }, 30000)
 
 it('change options file `fixed` and reset process', async () => {
-    await new Promise<void>((resolve) => {
-        waitForDataMatch(child, (data) => data.includes('Restart watching source changes')).then(() => resolve())
-        fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
-    })
+    setTimeout(() => fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']')))
+    await waitForDataMatch(child, (data) => data.includes('Restart watching source changes'))
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
     expect(fileCSSText).toContain(cssEscape('fg:red'))
 }, 30000)
