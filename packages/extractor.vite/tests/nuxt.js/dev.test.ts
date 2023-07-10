@@ -89,5 +89,4 @@ afterAll(async () => {
     await page.close()
     await browser.close()
     await devProcess.destroy()
-    rm(tmpDir)
 }, 60000)
