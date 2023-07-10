@@ -77,37 +77,37 @@ it('start watch process', async () => {
     expect(fileCSSText).toContain(cssEscape('btn'))
 }, 30000)
 
-test.todo('extractor watch tests timeout on CI')
+// test.todo('extractor watch tests timeout on CI')
 
-if (!process.env.GITHUB_ACTIONS) {
-    it('change options file `fixed` and reset process', (done) => {
-        waitForDataMatch(child, (data) => data.includes('Restart watching source changes')).then(() => {
-            const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
-            expect(fileCSSText).toContain(cssEscape('fg:red'))
-            done()
-        })
-        fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
-    }, 30000)
+// if (!process.env.GITHUB_ACTIONS) {
+it('change options file `fixed` and reset process', (done) => {
+    waitForDataMatch(child, (data) => data.includes('Restart watching source changes')).then(() => {
+        const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
+        expect(fileCSSText).toContain(cssEscape('fg:red'))
+        done()
+    })
+    fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
+}, 30000)
 
-    it('change config file `classes` and reset process', (done) => {
-        waitForDataMatch(child, (data) => data.includes('Restart watching source changes')).then(() => {
-            const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
-            expect(fileCSSText).toContain(cssEscape('bg:blue'))
-            done()
-        })
-        fs.writeFileSync(configFilepath, originConfigText.replace('bg:red', 'bg:blue'))
-    }, 30000)
+it('change config file `classes` and reset process', (done) => {
+    waitForDataMatch(child, (data) => data.includes('Restart watching source changes')).then(() => {
+        const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
+        expect(fileCSSText).toContain(cssEscape('bg:blue'))
+        done()
+    })
+    fs.writeFileSync(configFilepath, originConfigText.replace('bg:red', 'bg:blue'))
+}, 30000)
 
-    it('change html file class attr and update', (done) => {
-        waitForDataMatch(child, (data) => data.includes('exported')).then(() => {
-            const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
-            /** There is no recycling mechanism during the development */
-            expect(fileCSSText).toContain(cssEscape('text:underline'))
-            done()
-        })
-        fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'text:underline'))
-    }, 30000)
-}
+it('change html file class attr and update', (done) => {
+    waitForDataMatch(child, (data) => data.includes('exported')).then(() => {
+        const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
+        /** There is no recycling mechanism during the development */
+        expect(fileCSSText).toContain(cssEscape('text:underline'))
+        done()
+    })
+    fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'text:underline'))
+}, 30000)
+// }
 
 afterAll(async () => {
     await child.destroy()
