@@ -79,7 +79,7 @@ it('start watch process', async () => {
 
 it('change options file `fixed` and reset process', async () => {
     await waitForDataMatch(child, (data) => data.includes('exported'), async () => {
-        await delay(3000)
+        await delay(5000)
         fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
     })
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
@@ -88,7 +88,7 @@ it('change options file `fixed` and reset process', async () => {
 
 it('change config file `classes` and reset process', async () => {
     await waitForDataMatch(child, (data) => data.includes('exported'), async () => {
-        await delay(3000)
+        await delay(5000)
         fs.writeFileSync(configFilepath, originConfigText.replace('bg:red', 'bg:blue'))
     })
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
@@ -97,7 +97,7 @@ it('change config file `classes` and reset process', async () => {
 
 it('change html file class attr and update', async () => {
     await waitForDataMatch(child, (data) => data.includes('exported'), async () => {
-        await delay(3000)
+        await delay(5000)
         fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'text:underline'))
     })
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
