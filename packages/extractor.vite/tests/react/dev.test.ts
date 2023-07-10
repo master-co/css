@@ -37,7 +37,6 @@ beforeAll(async () => {
     page.on('error', (e) => error = e)
     if (result) {
         await page.goto(result[1] + result[2])
-        await page.waitForNavigation()
     }
 }, 60000)
 
