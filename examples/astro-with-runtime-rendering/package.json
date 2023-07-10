@@ -1,5 +1,6 @@
 {
     "name": "astro-with-runtime-rendering",
+    "private": true,
     "type": "module",
     "version": "0.0.1",
     "scripts": {

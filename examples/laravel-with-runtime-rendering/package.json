@@ -1,4 +1,5 @@
 {
+    "name": "laravel-with-runtime-rendering",
     "private": true,
     "type": "module",
     "scripts": {
