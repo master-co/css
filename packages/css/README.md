@@ -103,6 +103,7 @@ We've built various Master CSS core functionality/integration packages:
 - [Normal CSS](https://github.com/master-co/css/tree/beta/packages/normal.css) - Normalize the browser's styles
 - [Theme Service](https://github.com/master-co/css/tree/beta/packages/theme-service) - A CSS theme-switching service for Master CSS
 - [🚧 Class Variant](https://github.com/master-co/css/tree/beta/packages/class-variant) - Create reusable, extensible, and customizable style class variants
+- 🚧 Resolve Class - Conditionally apply classes and trim it to a non-wrap string
 
 ## Community
 The Master CSS community can be found here:
@@ -113,7 +114,7 @@ The Master CSS community can be found here:
 <sub>Our [《 Code of Conduct 》](https://github.com/master-co/css/blob/main/CODE_OF_CONDUCT.md) applies to all Master CSS community channels.</sub>
 
 ## Contributing
-Please see our [CONTRIBUTING.md](https://github.com/master-co/css/blob/beta/.github/CONTRIBUTING.md) for workflow.
+Please see our [CONTRIBUTING](https://github.com/master-co/css/blob/beta/.github/CONTRIBUTING.md) for workflow.
 
 ## Inspiration
 Some of the core concepts and designs are inspired by these giants.
