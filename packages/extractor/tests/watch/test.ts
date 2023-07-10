@@ -77,29 +77,31 @@ it('start watch process', async () => {
     expect(fileCSSText).toContain(cssEscape('btn'))
 }, 30000)
 
-// test.todo('extractor watch tests timeout in CI')
+// test.todo('extractor watch tests timeout on CI')
+
+// if (process.platform === 'darwin') {
 it('change options file `fixed` and reset process', async () => {
-    fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
-    await delay(1000)
-    // await waitForDataMatch(child, (data) => data.includes('Restart watching source changes')) // TODO: failed on CI
+    setTimeout(() => fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']')))
+    await waitForDataMatch(child, (data) => data.includes('Restart watching source changes'))
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
     expect(fileCSSText).toContain(cssEscape('fg:red'))
 }, 30000)
 
 it('change config file `classes` and reset process', async () => {
-    fs.writeFileSync(configFilepath, originConfigText.replace('bg:red', 'bg:blue'))
+    setTimeout(() => fs.writeFileSync(configFilepath, originConfigText.replace('bg:red', 'bg:blue')))
     await waitForDataMatch(child, (data) => data.includes('Restart watching source changes'))
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
     expect(fileCSSText).toContain(cssEscape('bg:blue'))
 }, 30000)
 
 it('change html file class attr and update', async () => {
-    fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'text:underline'))
+    setTimeout(() => fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'text:underline')))
     await waitForDataMatch(child, (data) => data.includes('exported'))
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
     /** There is no recycling mechanism during the development */
     expect(fileCSSText).toContain(cssEscape('text:underline'))
 }, 30000)
+// }
 
 afterAll(async () => {
     await child.destroy()
