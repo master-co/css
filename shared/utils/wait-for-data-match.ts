@@ -1,7 +1,7 @@
 import { SpawndChildProcess, spawnd } from 'spawnd'
 import stripAnsi from 'strip-ansi'
 
-export default function (child: SpawndChildProcess, doesDataMatch: (data: string) => any): Promise<string> {
+export default function (child: SpawndChildProcess, doesDataMatch: (data: string) => any, onReady?: () => void): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         const handler = (data) => {
             const strippedData = stripAnsi(data.toString())
@@ -19,5 +19,6 @@ export default function (child: SpawndChildProcess, doesDataMatch: (data: string
         }
         child.stdout.on('data', handler)
         child.stderr.on('data', errorHandler)
+        onReady?.()
     })
 }
