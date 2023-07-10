@@ -25,6 +25,7 @@
     "devDependencies": {
         "@techor/fs": "^2.4.1",
         "@techor/glob": "^2.4.1",
+        "@techor/jest": "^2.4.2",
         "@techor/jest-dom": "^2.4.1",
         "@techor/repo": "^2.4.1",
         "@types/jest": "^29.5.2",
