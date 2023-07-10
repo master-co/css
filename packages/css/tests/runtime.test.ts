@@ -4,17 +4,17 @@ import { complexHTML } from './complex-html'
 
 let css: MasterCSS
 
-// beforeAll(() => {
-//     css = initRuntime()
-// })
+beforeAll(() => {
+    css = initRuntime()
+})
 
-test.todo('Exceeded timeout of 5000 ms for a test on CI. It\'s required to refactor the test using puppeteer')
+// test.todo('Exceeded timeout of 5000 ms for a test on CI. It\'s required to refactor the test using puppeteer')
 
 /**
  * <p class="block font:bold">
  * <p class="block font:bold italic">
  */
-test.skip('css count class add', async () => {
+it('css count class add', async () => {
     const p1 = document.createElement('p')
     p1.classList.add('block', 'font:bold')
     document.body.append(p1)
@@ -27,10 +27,12 @@ test.skip('css count class add', async () => {
     })
 })
 
-test.skip('css count class complicated example', async () => {
+it('css count class complicated example', async () => {
     document.body.innerHTML = complexHTML
     await delay(500)
     document.body.innerHTML = ''
     await delay(500)
+    console.log('START')
     expect(css.countBy).toEqual({})
+    console.log('END')
 })
