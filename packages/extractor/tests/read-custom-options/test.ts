@@ -1,6 +1,6 @@
 import { CSSExtractor, options } from '../../src'
 import fs from 'fs'
-import path from 'upath'
+import path from 'path'
 import dedent from 'ts-dedent'
 
 test('read custom options', async () => {

@@ -5,7 +5,7 @@
         "dev": "npm run build -- --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
-        "test": "jest -i"
+        "test": "jest"
     },
     "license": "MIT",
     "description": "Integrate Master CSS Static Extraction in Vite way",
@@ -46,7 +46,6 @@
     "dependencies": {
         "@master/css": "",
         "@master/css-extractor": "",
-        "lodash.debounce": "^4.0.8",
-        "upath": "^2.0.1"
+        "lodash.debounce": "^4.0.8"
     }
 }

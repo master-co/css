@@ -1,6 +1,6 @@
 import CSSExtractor from '../../src'
 import fs from 'fs'
-import path from 'upath'
+import path from 'path'
 
 fs.writeFileSync(path.join(__dirname, 'master.css.ts'), `
 export default {

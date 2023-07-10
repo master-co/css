@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander'
-import path from 'upath'
+import path from 'path'
 import fs from 'fs'
 import { CONFIG_ESM_TEXT } from '../constants/config-esm-text'
 import { CONFIG_TEXT } from '../constants/config-text'

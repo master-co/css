@@ -1,7 +1,7 @@
 /** require: `npm run dev` in root */
 
 import fs from 'fs'
-import path from 'upath'
+import path from 'path'
 import cssEscape from 'shared/utils/css-escape'
 import waitForDataMatch from 'shared/utils/wait-for-data-match'
 import delay from 'shared/utils/delay'

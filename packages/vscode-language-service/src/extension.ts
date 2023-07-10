@@ -1,4 +1,4 @@
-import path from 'upath'
+import path from 'path'
 import { workspace, ExtensionContext, Disposable } from 'vscode'
 
 import {

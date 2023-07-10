@@ -1,5 +1,5 @@
 import fs from 'fs'
-import path from 'upath'
+import path from 'path'
 import dedent from 'ts-dedent'
 import action from '../src/actions/main'
 

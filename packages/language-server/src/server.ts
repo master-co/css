@@ -17,7 +17,7 @@ import { WorkspaceFolder } from 'vscode-languageserver'
 import { MasterCSS } from '@master/css'
 import { minimatch } from 'minimatch'
 import { TextDocument } from 'vscode-languageserver-textdocument'
-import path from 'upath'
+import path from 'path'
 import { fileURLToPath } from 'url'
 import { settings as defaultSettings, doHover, positionCheck, getConfigFileColorRender, getColorPresentation, getDocumentColors, getLastInstance, getCompletionItem, getConfigColorsCompletionItem, checkConfigColorsBlock } from '@master/css-language-service'
 const connection = createConnection(ProposedFeatures.all)

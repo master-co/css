@@ -1,6 +1,6 @@
 import CSSExtractor from '../src'
 import fs from 'fs'
-import path from 'upath'
+import path from 'path'
 
 test('read master.css.js config in cwd', async () => {
     const extractor = new CSSExtractor({}, __dirname).init()

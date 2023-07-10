@@ -18,6 +18,7 @@
 **/*test.html
 **/*.test.html
 **/*tsconfig.tsbuildinfo
+**/*.virtual
 
 # Only exists if Bazel was run
 /bazel-out
