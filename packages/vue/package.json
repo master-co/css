@@ -3,7 +3,7 @@
     "scripts": {
         "build:esm": "techor pack './src/**/*.{ts,vue}' --bundle --format esm --esm-ext .js --entry-names [dir]/[name] --no-declare",
         "build:type": "vue-tsc --declaration --emitDeclarationOnly",
-        "build": "conc 'npm:build:*'",
+        "build": "conc 'npm:build:esm' 'npm:build:type'",
         "dev": "npm run build:esm -- --watch",
         "type-check": "vue-tsc --noEmit",
         "lint": "eslint src"
