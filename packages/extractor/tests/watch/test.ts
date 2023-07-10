@@ -69,7 +69,7 @@ beforeAll(() => {
 }, 30000)
 
 it('start watch process', async () => {
-    await waitForDataMatch(child, (data) => data.includes('Start watching source changes'))
+    await waitForDataMatch(child, (data) => data.includes('exported'))
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
     expect(fileCSSText).toContain(cssEscape('font:heavy'))
     expect(fileCSSText).toContain(cssEscape('font:48'))
@@ -78,8 +78,7 @@ it('start watch process', async () => {
 }, 30000)
 
 it('change options file `fixed` and reset process', async () => {
-    await waitForDataMatch(child, (data) => data.includes('Restart watching source changes'), async () => {
-        await delay(1000)
+    await waitForDataMatch(child, (data) => data.includes('exported'), async () => {
         fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
     })
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
@@ -87,8 +86,7 @@ it('change options file `fixed` and reset process', async () => {
 }, 30000)
 
 it('change config file `classes` and reset process', async () => {
-    await waitForDataMatch(child, (data) => data.includes('Restart watching source changes'), async () => {
-        await delay(1000)
+    await waitForDataMatch(child, (data) => data.includes('exported'), async () => {
         fs.writeFileSync(configFilepath, originConfigText.replace('bg:red', 'bg:blue'))
     })
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
@@ -97,7 +95,6 @@ it('change config file `classes` and reset process', async () => {
 
 it('change html file class attr and update', async () => {
     await waitForDataMatch(child, (data) => data.includes('exported'), async () => {
-        await delay(1000)
         fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'text:underline'))
     })
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
