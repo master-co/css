@@ -1,5 +1,6 @@
 {
     "name": "webpack-with-static-extraction",
+    "private": true,
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
