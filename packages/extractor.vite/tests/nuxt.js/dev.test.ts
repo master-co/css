@@ -29,16 +29,16 @@ beforeAll(async () => {
     const result = urlPattern.exec(data)
     browser = await puppeteer.launch({ headless: 'new' })
     page = await browser.newPage()
-    // page.on('console', (consoleMessage) => {
-    //     if (consoleMessage.type() === 'error') {
-    //         error = new Error(consoleMessage.text())
-    //     }
-    // })
-    // page.on('pageerror', (e) => error = e)
-    // page.on('error', (e) => error = e)
     if (result) {
         await page.goto(result[1] + result[2])
-        await delay(2000)
+        await page.waitForNavigation()
+        page.on('console', (consoleMessage) => {
+            if (consoleMessage.type() === 'error') {
+                error = new Error(consoleMessage.text())
+            }
+        })
+        page.on('pageerror', (e) => error = e)
+        page.on('error', (e) => error = e)
     }
 }, 60000)
 
