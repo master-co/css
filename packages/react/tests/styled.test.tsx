@@ -1,10 +1,10 @@
-import { cve } from '../src/cve'
+import { styled } from '../src/styled'
 import React, { forwardRef } from 'react'
 import ReactDOMServer from 'react-dom/server'
 
 const { renderToStaticMarkup } = ReactDOMServer
 
-const Button = cve.button<{ $color: string }>`
+const Button = styled.button<{ $color: string }>`
     inline-flex center-content
     ${['font:14', 'font:semibold']}
     ${{ test: true, test2: false, test3: true }}
@@ -18,22 +18,22 @@ test('Basic', () => {
 })
 
 test('Extend', () => {
-    const ExtendButton = cve(Button)`bg:${({ $color }) => $color}-54:hover`
+    const ExtendButton = styled(Button)`bg:${({ $color }) => $color}-54:hover`
     expect(renderToStaticMarkup(<ExtendButton $color="blue">Extend</ExtendButton>))
         .toBe('<button class="inline-flex center-content font:14 font:semibold test test3 fg:white px:18 h:40 r:4 bg:blue bg:blue-54:hover">Extend</button>')
 
-    const AButton = cve.a(Button)``
+    const AButton = styled.a(Button)``
     expect(renderToStaticMarkup(<AButton $color="purple">Tag Extend</AButton>))
         .toBe('<a class="inline-flex center-content font:14 font:semibold test test3 fg:white px:18 h:40 r:4 bg:purple">Tag Extend</a>')
 
     const CustomComponent = forwardRef((props: { $type: string }, ref: any) => <a ref={ref} {...props}></a>)
-    const ExtendCustomComponent = cve<typeof CustomComponent, { $newType: string }>(CustomComponent)`inline-flex center-content font:14 font:semibold ${(props) => props.$type} ${(props) => props.$newType}`
+    const ExtendCustomComponent = styled<typeof CustomComponent, { $newType: string }>(CustomComponent)`inline-flex center-content font:14 font:semibold ${(props) => props.$type} ${(props) => props.$newType}`
     expect(renderToStaticMarkup(<ExtendCustomComponent $newType="NewType" $type="CustomType">Extend Custom Component</ExtendCustomComponent>))
         .toBe('<a class="inline-flex center-content font:14 font:semibold CustomType NewType">Extend Custom Component</a>')
 })
 
 test('Prop composition', () => {
-    const Button = cve.button<{ $intent: string, $size: string }>`
+    const Button = styled.button<{ $intent: string, $size: string }>`
         font:semibold rounded
         ${{
             $intent: {
@@ -52,13 +52,13 @@ test('Prop composition', () => {
     Button.defaultProps = {
         $intent: 'primary'
     }
-    
+
     expect(renderToStaticMarkup(<Button $size="md" />))
         .toBe('<button class="font:semibold rounded font:italic uppercase bg:blue-50 fg:white bg:blue-60:hover font:16 py:2 px:4"></button>')
     expect(renderToStaticMarkup(<Button disabled $intent="secondary" />))
         .toBe('<button disabled="" class="font:semibold rounded bg:white fg:gray-80 b:gray-40 bg:gray-50:hover opacity:.5"></button>')
 
-    const ExtendButton = cve(Button)`
+    const ExtendButton = styled(Button)`
         ${{
             $intent: {
                 primary: 'bg:blue-70 fg:black bg:blue-80:hover'
@@ -81,7 +81,7 @@ test('Prop composition', () => {
 })
 
 test('Alternative syntax', () => {
-    const Div = cve<{ $intent: string, $size: string }>(
+    const Div = styled<{ $intent: string, $size: string }>(
         'font:semibold rounded',
         {
             $intent: {
@@ -99,7 +99,7 @@ test('Alternative syntax', () => {
     expect(renderToStaticMarkup(<Div $intent="primary" $size="md" />))
         .toBe('<div class="font:semibold rounded font:italic uppercase bg:blue-50 fg:white bg:blue-60:hover font:16 py:2 px:4"></div>')
 
-    const Button = cve.button<{ $intent: string, $size: string }>(
+    const Button = styled.button<{ $intent: string, $size: string }>(
         'font:semibold rounded',
         {
             $intent: {
@@ -117,7 +117,7 @@ test('Alternative syntax', () => {
         },
         ({ disabled }) => ([
             'b:2|solid|red',
-            { 
+            {
                 $intent: disabled ? 'secondary' : 'third',
                 $size: 'lg'
             }]
@@ -132,7 +132,7 @@ test('Alternative syntax', () => {
     expect(renderToStaticMarkup(<Button disabled $intent="secondary" $size="lg" />))
         .toBe('<button disabled="" class="font:semibold rounded font:italic b:2|solid|red bg:white fg:gray-80 b:gray-40 bg:gray-50:hover"></button>')
 
-    const ExtendButton = cve<typeof Button, { $intent: string, $size: string }>(Button)(
+    const ExtendButton = styled<typeof Button, { $intent: string, $size: string }>(Button)(
         {
             $intent: {
                 primary: 'bg:blue-70 fg:black bg:blue-80:hover'
@@ -143,7 +143,7 @@ test('Alternative syntax', () => {
         },
         ({ disabled }) => ([
             'b:2|solid|blue',
-            { 
+            {
                 $intent: disabled ? 'secondary' : 'third',
                 $size: 'lg',
             }

@@ -33,7 +33,7 @@ type ReturnType<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
     ? ReturnType<K, E>
     : MasterExoticComponent<K, E>)
 
-export const cve: {
+export const styled: {
     [key in IntrinsicElementsKeys]: (<E extends object = any>(firstParam: TemplateStringsArray | ParamType<key, E>, ...params: ParamsType<key, E>) => MasterExoticComponent<key, E>)
     & (<F extends MasterExoticComponent<any, any>, E extends object = object>(firstParam: F) => F extends MasterExoticComponent<any, infer ME> ? ReturnType<key, ME & E> : never)
 } & {
@@ -46,7 +46,7 @@ export const cve: {
 } = new Proxy(
     ((firstParam, ...params) => {
         return (Array.isArray(firstParam) && 'raw' in firstParam || typeof firstParam !== 'object' || !('render' in firstParam))
-            ? cve.div(firstParam as any, ...params)
+            ? styled.div(firstParam as any, ...params)
             : handle(firstParam.tag ?? firstParam, firstParam.params, firstParam.displayName)
     }) as any,
     {
