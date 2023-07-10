@@ -1,36 +1,53 @@
-import { MasterCSS, initRuntime } from '../src'
-import delay from 'shared/utils/delay'
+/**
+ * @jest-environment node
+ */
+
+import puppeteer, { Browser, Page } from 'puppeteer'
+import path from 'path'
 import { complexHTML } from './complex-html'
 
-let css: MasterCSS
+let browser: Browser
+let page: Page
 
-// beforeAll(() => {
-//     css = initRuntime()
-// })
-
-test.todo('Exceeded timeout of 5000 ms for a test on CI. It\'s required to refactor the test using puppeteer')
+beforeAll(async () => {
+    browser = await puppeteer.launch({ headless: 'new' })
+    page = (await browser.pages())[0]
+    await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
+})
 
 /**
  * <p class="block font:bold">
  * <p class="block font:bold italic">
  */
-test.skip('css count class add', async () => {
-    const p1 = document.createElement('p')
-    p1.classList.add('block', 'font:bold')
-    document.body.append(p1)
-    p1.classList.add('italic')
-    await delay(500)
-    expect(css.countBy).toEqual({
+it('css count class add', async () => {
+    await page.evaluate(() => {
+        const p1 = document.createElement('p')
+        p1.classList.add('block', 'font:bold')
+        document.body.append(p1)
+        p1.classList.add('italic')
+    })
+
+    await page.waitForNetworkIdle()
+
+    const countBy = await page.evaluate(() => window['MasterCSS'].root.countBy)
+    expect(countBy).toEqual({
         'block': 1,
         'font:bold': 1,
         'italic': 1
     })
 })
 
-test.skip('css count class complicated example', async () => {
-    document.body.innerHTML = complexHTML
-    await delay(500)
-    document.body.innerHTML = ''
-    await delay(500)
-    expect(css.countBy).toEqual({})
+it('css count class complicated example', async () => {
+    await page.evaluate((complexHTML) => document.body.innerHTML = complexHTML, complexHTML)
+    await page.waitForNetworkIdle()
+    await page.evaluate(() => document.body.innerHTML = '')
+    await page.waitForNetworkIdle()
+    
+    const countBy = await page.evaluate(() => window['MasterCSS'].root.countBy)
+    expect(countBy).toEqual({})
 })
+
+afterAll(async () => {
+    await page.close()
+    await browser.close()
+}, 60000)
