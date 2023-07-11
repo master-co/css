@@ -23,14 +23,16 @@ it('make sure not to extend keyframes deeply', async () => {
 }, 30000)
 
 it('expects the animation output', async () => {
-    await page.evaluate(() => {
+    const cssText = await page.evaluate(async () => {
         window.MasterCSS.root.refresh({})
         const p = document.createElement('p')
         p.id = 'mp'
         p.classList.add('@fade|1s')
         document.body.append(p)
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        await new Promise(resolve => setTimeout(resolve, 0))
+        return window.MasterCSS.root.text
     })
-    const cssText = await page.evaluate(() => window.MasterCSS.root.text)
     expect(cssText).toContain('.\\@fade\\|1s{animation:fade 1s}')
 }, 30000)
 
@@ -38,25 +40,23 @@ let p: ElementHandle<Element>
 
 it('expects the keyframe output', async () => {
     p = await page.$('#mp') as any
-    await page.evaluate(
-        (p) => {
-            p?.classList.add(
-                '@flash|1s',
-                '@float|1s',
-                '@heart|1s',
-                '@jump|1s',
-                '@ping|1s',
-                '@pulse|1s',
-                '@rotate|1s',
-                '@shake|1s',
-                '@zoom|1s',
-                '{@zoom|1s;f:16}'
-            )
-        },
-        p
-    )
-
-    const cssText = await page.evaluate(() => window.MasterCSS.root.text)
+    const cssText = await page.evaluate(async (p) => {
+        p?.classList.add(
+            '@flash|1s',
+            '@float|1s',
+            '@heart|1s',
+            '@jump|1s',
+            '@ping|1s',
+            '@pulse|1s',
+            '@rotate|1s',
+            '@shake|1s',
+            '@zoom|1s',
+            '{@zoom|1s;f:16}'
+        )
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        await new Promise(resolve => setTimeout(resolve, 0))
+        return window.MasterCSS.root.text
+    }, p)
     expect(cssText).toContain('@keyframes fade{0%{opacity:0}to{opacity:1}}')
     expect(cssText).toContain('@keyframes flash{0%,50%,to{opacity:1}25%,75%{opacity:0}}')
     expect(cssText).toContain('@keyframes float{0%{transform:none}50%{transform:translateY(-1.25rem)}to{transform:none}}')
