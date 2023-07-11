@@ -27,6 +27,7 @@ beforeAll(async () => {
     const data = await waitForDataMatch(devProcess, (data) => urlPattern.exec(data)?.length)
     const result = urlPattern.exec(data)
     browser = await puppeteer.launch({ headless: 'new' })
+    page = await browser.newPage()
     await page.waitForNetworkIdle()
     page.on('console', (consoleMessage) => {
         if (consoleMessage.type() === 'error') {
