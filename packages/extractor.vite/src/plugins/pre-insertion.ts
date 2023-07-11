@@ -93,7 +93,7 @@ export default function PreInsertionPlugin(
                             const eachModule = server.moduleGraph.idToModuleMap.get(eachModuleId)
                             let eachModuleCode = eachModule.transformResult?.code
                             if (!eachModuleCode) {
-                                eachModuleCode = readFileSync(eachModuleId, 'utf-8')
+                                eachModuleCode = readFileSync(eachModule.file, 'utf-8')
                             }
                             await extractor.insert(eachModuleId, eachModuleCode)
                         })
