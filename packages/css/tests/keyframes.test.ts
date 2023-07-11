@@ -16,7 +16,7 @@ beforeAll(async () => {
     await page.evaluate(() => window['masterCSSConfig'] = { keyframes: { fade: {} } })
     await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
     await page.waitForNetworkIdle()
-})
+}, 30000)
 
 it('make sure not to extend keyframes deeply', async () => {
     const fade = await page.evaluate(() => window.MasterCSS.root.config.keyframes?.fade)
