@@ -12,9 +12,11 @@ let page: Page
 beforeAll(async () => {
     browser = await puppeteer.launch({ headless: 'new' })
     page = await browser.newPage()
+    await page.waitForNetworkIdle()
     await page.evaluate(() => window['masterCSSConfig'] = { keyframes: { fade: {} } })
     await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
-})
+    await page.waitForNetworkIdle()
+}, 30000)
 
 it('make sure not to extend keyframes deeply', async () => {
     const fade = await page.evaluate(() => window.MasterCSS.root.config.keyframes?.fade)
@@ -53,7 +55,7 @@ it('expects the keyframe output', async () => {
                 '@zoom|1s',
                 '{@zoom|1s;f:16}'
             )
-        }, 
+        },
         p
     )
 
@@ -78,7 +80,7 @@ it('keyframes', async () => {
     const configKeyframeNames = await page.evaluate(() => Object.keys(window.MasterCSS.root.config?.keyframes || {}))
     const checkKeyframeCSSRule = async () => {
         const [ruleKeyframes, keyframeRuleNatives, hasKeyframeRule] = await page.evaluate(() => [
-            window.MasterCSS.root.keyframes, 
+            window.MasterCSS.root.keyframes,
             window.MasterCSS.root.rules[0].natives,
             Object.keys(window.MasterCSS.root.rules[0]).length === 2
         ] as const)
@@ -96,8 +98,8 @@ it('keyframes', async () => {
         }
     }
     const generateAnimation = async (className: string) => {
-        await page.evaluate((className, p) => 
-            p.classList.add(className), 
+        await page.evaluate((className, p) =>
+            p.classList.add(className),
             className,
             p
         )
@@ -133,7 +135,7 @@ it('keyframes', async () => {
                 const keyframeNames = window.MasterCSS.root.ruleBy[className].keyframeNames
                 p?.classList.remove(className)
                 return keyframeNames
-            }, 
+            },
             className,
             p
         )
