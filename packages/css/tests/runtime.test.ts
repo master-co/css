@@ -13,6 +13,7 @@ beforeAll(async () => {
     browser = await puppeteer.launch({ headless: 'new' })
     page = await browser.newPage()
     await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
+    await page.waitForNetworkIdle()
 })
 
 /**
@@ -39,7 +40,6 @@ it('css count class complicated example', async () => {
     await page.evaluate((complexHTML) => document.body.innerHTML = complexHTML, complexHTML)
     let countBy = await page.evaluate(() => window.MasterCSS.root.countBy)
     expect(Object.keys(countBy).length).toBeTruthy()
-
     await page.evaluate(() => document.body.innerHTML = '')
     countBy = await page.evaluate(() => window.MasterCSS.root.countBy)
     expect(countBy).toEqual({})
