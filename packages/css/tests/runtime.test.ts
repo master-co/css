@@ -12,6 +12,7 @@ let page: Page
 beforeAll(async () => {
     browser = await puppeteer.launch({ headless: 'new' })
     page = await browser.newPage()
+    await page.waitForNetworkIdle()
     await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
     await page.waitForNetworkIdle()
 })
