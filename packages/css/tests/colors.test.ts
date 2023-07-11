@@ -150,4 +150,58 @@ test('colors', () => {
             }
         }
     )
+    testCSS(
+        'btn',
+        '.bg\\:primary-filled,.btn{background-color:#dca000}.light .bg\\:primary-filled,.light .btn{background-color:#ecbb40}.dark .bg\\:primary-filled,.dark .btn{background-color:#dca000}',
+        {
+            colors: {
+                primary: {
+                    filled: {
+                        '': 'gold-70',
+                        '@light': 'gold-75',
+                        '@dark': 'gold-70'
+                    }
+                }
+            },
+            classes: {
+                btn: 'bg:primary-filled'
+            }
+        }
+    )
+    testCSS(
+        'bg:primary-filled',
+        '.bg\\:primary-filled,.btn{background-color:#dca000}.light .bg\\:primary-filled,.light .btn{background-color:#ecbb40}.dark .bg\\:primary-filled,.dark .btn{background-color:#dca000}',
+        {
+            colors: {
+                primary: {
+                    filled: {
+                        '': 'gold-70',
+                        '@light': 'gold-75',
+                        '@dark': 'gold-70'
+                    }
+                }
+            },
+            classes: {
+                btn: 'bg:primary-filled'
+            }
+        }
+    )
+    testCSS(
+        'bg:primary-filled@dark',
+        '.dark .bg\\:primary-filled\\@dark{background-color:#dca000}',
+        {
+            colors: {
+                primary: {
+                    filled: {
+                        '': 'gold-70',
+                        '@light': 'gold-75',
+                        '@dark': 'gold-70'
+                    }
+                }
+            },
+            classes: {
+                btn: 'bg:primary-filled'
+            }
+        }
+    )
 })

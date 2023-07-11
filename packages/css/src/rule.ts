@@ -531,7 +531,7 @@ export class Rule {
                         .join(',')
 
                 let cssText = getCssText(theme, className)
-                    + ((classNames && (this.theme || !colored || !theme))
+                    + (classNames
                         ? classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? ((colored || hasMultipleThemes) ? theme : ''), className), '')
                         : '')
                     + '{'
