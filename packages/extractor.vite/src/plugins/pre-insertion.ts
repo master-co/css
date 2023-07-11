@@ -1,6 +1,6 @@
 import CSSExtractor from '@master/css-extractor'
 import type { Plugin, ViteDevServer } from 'vite'
-import { readFileSync } from 'fs'
+import { exists, existsSync, readFileSync } from 'fs'
 import debounce from 'lodash.debounce'
 
 /**
@@ -86,13 +86,14 @@ export default function PreInsertionPlugin(
                     tasks.push(extractor.insert(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
                 }
                 /* 3. transformed modules */
+                const resolvedVirtualModuleId = extractor.resolvedVirtualModuleId
                 tasks.concat(
                     Array.from(server.moduleGraph.idToModuleMap.keys())
                         .filter((eachModuleId) => eachModuleId !== extractor.resolvedVirtualModuleId)
                         .map(async (eachModuleId: string) => {
                             const eachModule = server.moduleGraph.idToModuleMap.get(eachModuleId)
                             let eachModuleCode = eachModule.transformResult?.code
-                            if (!eachModuleCode) {
+                            if (typeof eachModuleCode !== 'string' && !eachModule.file.startsWith('virtual:') && existsSync(eachModule.file)) {
                                 eachModuleCode = readFileSync(eachModule.file, 'utf-8')
                             }
                             await extractor.insert(eachModuleId, eachModuleCode)
