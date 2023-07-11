@@ -204,29 +204,33 @@ export default class CSSExtractor extends EventEmitter {
         this.emit('export', filename, filepath)
     }
 
-    watchSource(paths: string | readonly string[], watchOptions?: chokidar.WatchOptions) {
-        this.watch('add change', paths, (source) => this.insertFile(source), watchOptions)
+    async watchSource(paths: string | readonly string[], watchOptions?: chokidar.WatchOptions): Promise<void> {
+        await this.watch('add change', paths, (source) => this.insertFile(source), watchOptions)
     }
 
-    watch(events: string, paths: string | readonly string[], handle: (path: string, stats?: fs.Stats) => void, watchOptions?: chokidar.WatchOptions) {
+    async watch(events: string, paths: string | readonly string[], handle: (path: string, stats?: fs.Stats) => void, watchOptions?: chokidar.WatchOptions): Promise<void> {
         watchOptions = extend({ ignoreInitial: true, cwd: this.cwd }, watchOptions)
         const watcher = chokidar.watch(paths, watchOptions)
         this.watchers.push(watcher)
         events
             .split(' ')
             .forEach((eachEvent) => watcher.on(eachEvent, handle))
+
+        await new Promise<void>(resolve => {
+            watcher.once('ready', resolve)
+        })
     }
 
-    private initWatch() {
+    private async initWatch() {
         const resolvedConfigPath = this.resolvedConfigPath
         const resolvedOptionsPath = this.resolvedOptionsPath
 
-        if (this.options.sources) {
-            this.watchSource(this.options.sources)
+        if (this.options.sources?.length) {
+            await this.watchSource(this.options.sources)
         }
 
         if (resolvedConfigPath) {
-            this.watch('add change unlink', resolvedConfigPath, async () => {
+            await this.watch('add change unlink', resolvedConfigPath, async () => {
                 if (this.options.verbose) {
                     log``
                     log.t`[change] **${this.configPath}**`
@@ -237,7 +241,7 @@ export default class CSSExtractor extends EventEmitter {
         }
 
         if (resolvedOptionsPath) {
-            this.watch('add change unlink', resolvedOptionsPath, async () => {
+            await this.watch('add change unlink', resolvedOptionsPath, async () => {
                 if (this.options.verbose) {
                     log``
                     log.t`[change] **${this.customOptions}**`
@@ -257,7 +261,7 @@ export default class CSSExtractor extends EventEmitter {
 
     async startWatch() {
         if (this.watching) return
-        this.initWatch()
+        await this.initWatch()
         this.watching = true
         this.emit('watchStart')
     }

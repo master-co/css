@@ -42,9 +42,9 @@ module.exports = async function action(specifiedSourcePaths: string[], options?:
     if (watch) {
         const reset = async () => {
             await insert()
-            /* If the fixed source does not exist, watch the `.include` - `.exclude` */
+            /* If the specified source does not exist, watch the .include - .exclude */
             if (!specifiedSourcePaths?.length) {
-                extractor.watchSource(extractor.options.include, { ignored: extractor.options.exclude })
+                await extractor.watchSource(extractor.options.include, { ignored: extractor.options.exclude })
             }
         }
         extractor
