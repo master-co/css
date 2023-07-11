@@ -11,7 +11,7 @@ let page: Page
 
 beforeAll(async () => {
     browser = await puppeteer.launch({ headless: 'new' })
-    page = (await browser.pages())[0]
+    page = await browser.newPage()
     await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
 })
 
@@ -27,9 +27,7 @@ it('css count class add', async () => {
         p1.classList.add('italic')
     })
 
-    await page.waitForNetworkIdle()
-
-    const countBy = await page.evaluate(() => window['MasterCSS'].root.countBy)
+    const countBy = await page.evaluate(() => window.MasterCSS.root.countBy)
     expect(countBy).toEqual({
         'block': 1,
         'font:bold': 1,
@@ -39,11 +37,11 @@ it('css count class add', async () => {
 
 it('css count class complicated example', async () => {
     await page.evaluate((complexHTML) => document.body.innerHTML = complexHTML, complexHTML)
-    await page.waitForNetworkIdle()
+    let countBy = await page.evaluate(() => window.MasterCSS.root.countBy)
+    expect(Object.keys(countBy).length).toBeTruthy()
+
     await page.evaluate(() => document.body.innerHTML = '')
-    await page.waitForNetworkIdle()
-    
-    const countBy = await page.evaluate(() => window['MasterCSS'].root.countBy)
+    countBy = await page.evaluate(() => window.MasterCSS.root.countBy)
     expect(countBy).toEqual({})
 })
 
