@@ -15,7 +15,7 @@ beforeAll(async () => {
     await page.waitForNetworkIdle()
     await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
     await page.waitForNetworkIdle()
-})
+}, 30000)
 
 /**
  * <p class="block font:bold">
