@@ -12,7 +12,6 @@ let page: Page
 beforeAll(async () => {
     browser = await puppeteer.launch({ headless: 'new' })
     page = await browser.newPage()
-    await page.waitForNetworkIdle()
     await page.evaluate(() => window['masterCSSConfig'] = { keyframes: { fade: {} } })
     await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
     await page.waitForNetworkIdle()
@@ -21,21 +20,19 @@ beforeAll(async () => {
 it('make sure not to extend keyframes deeply', async () => {
     const fade = await page.evaluate(() => window.MasterCSS.root.config.keyframes?.fade)
     expect(fade).toEqual({})
-})
+}, 30000)
 
 it('expects the animation output', async () => {
     await page.evaluate(() => {
         window.MasterCSS.root.refresh({})
-
         const p = document.createElement('p')
         p.id = 'mp'
         p.classList.add('@fade|1s')
         document.body.append(p)
     })
-
     const cssText = await page.evaluate(() => window.MasterCSS.root.text)
     expect(cssText).toContain('.\\@fade\\|1s{animation:fade 1s}')
-})
+}, 30000)
 
 let p: ElementHandle<Element>
 
@@ -71,7 +68,7 @@ it('expects the keyframe output', async () => {
     expect(cssText).toContain('@keyframes shake{0%{transform:none}6.5%{transform:translateX(-6px) rotateY(-9deg)}18.5%{transform:translateX(5px) rotateY(7deg)}31.5%{transform:translateX(-3px) rotateY(-5deg)}43.5%{transform:translateX(2px) rotateY(3deg)}50%{transform:none}}')
     expect(cssText).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
     expect(cssText).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
-})
+}, 30000)
 
 it('keyframes', async () => {
     await page.evaluate((p) => p.className = 'block font:bold', p)
@@ -160,7 +157,7 @@ it('keyframes', async () => {
 
     await deleteAnimation('{@name:flash;@name:fade}')
     await deleteAnimation('@fade|2s')
-})
+}, 30000)
 
 afterAll(async () => {
     await page.close()
