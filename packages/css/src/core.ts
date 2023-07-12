@@ -264,12 +264,7 @@ export class MasterCSS {
                     ? hexColor.slice(0, 7) + Math.round(255 * +alpha).toString(16)
                     : hexColor)
             } else {
-                console.warn(`\`${color}\` doesn't exist in the extended config \`.colors\``)
-                delete themeColorMap[theme]
-
-                if (!Object.keys(themeColorMap).length) {
-                    delete this.colorThemesMap[colorName]
-                }
+                console.error(`"${colorName}: ${color}" is an invalid ".colors" config`)
             }
         })
 
