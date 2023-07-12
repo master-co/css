@@ -1,9 +1,9 @@
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import { ThemeServiceProvider } from '@master/css.react'
 import { lazy } from 'react'
 
 const CSSProvider = lazy(() => import('@master/css.react/CSSProvider'))
+const ThemeServiceProvider = lazy(() => import('@master/css.react/ThemeServiceProvider'))
 
 ReactDOM.hydrateRoot(
     document.getElementById('root'),
