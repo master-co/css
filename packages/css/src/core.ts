@@ -246,7 +246,7 @@ export class MasterCSS {
             }
         }
         colorThemesMapLoop((colorName, themeColorMap, theme, color) => {
-            const result = /^rgba?\( *([0-9]{1,3}) *(?: |,) *([0-9]{1,3}) *(?: |,) *([0-9]{1,3}) *(?:(?:\/|,) *0?(\.[0-9]))?\)$/.exec(color)
+            const result = /^rgba?\( *([0-9]{1,3}) *(?:\|| |,) *([0-9]{1,3}) *(?:\|| |,) *([0-9]{1,3}) *(?:(?:\/|,) *0?(\.[0-9]))?\)$/.exec(color)
             if (result) {
                 let hexColor = '#' + rgbToHex(+result[1], +result[2], +result[3])
                 if (result[4]) {
