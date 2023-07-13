@@ -57,6 +57,16 @@ test('colors', () => {
         config
     )
     testCSS(
+        'bg:primary-rgb5',
+        '.bg\\:primary-rgb5{background-color:#000000}',
+        config
+    )
+    testCSS(
+        'bg:primary-rgb6',
+        '.bg\\:primary-rgb6{background-color:#00000080}',
+        config
+    )
+    testCSS(
         'bg:primary-2',
         '.bg\\:primary-2{background-color:#000000b3}',
         config

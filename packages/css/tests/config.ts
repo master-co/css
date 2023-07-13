@@ -20,6 +20,8 @@ export default {
             rgb2: 'rgb(0 0 0)',
             rgb3: 'rgb(0 0 0/.5)',
             rgb4: 'rgba(0,0,0,.5)',
+            rgb5: 'rgba(0|0|0)',
+            rgb6: 'rgba(0|0|0/.5)',
             '2': 'primary-rgb4/.7'
         },
         input: {
