@@ -24,6 +24,7 @@ export class ThemeService {
         }
         this.value = value
         this.initialized = true
+        return this
     }
 
     get storage() {
