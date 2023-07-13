@@ -1,12 +1,10 @@
 export declare interface Options {
     default?: ThemeValue
     store?: string | false
-    init?: boolean
 }
 
 export const options: Options = {
-    store: 'theme',
-    init: true
+    store: 'theme'
 }
 
 export default options

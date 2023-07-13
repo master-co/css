@@ -14,9 +14,6 @@ export class ThemeService {
         public host = typeof document !== 'undefined' ? document.documentElement : null
     ) {
         this.options = options ? extend(defaultOptions, options) : defaultOptions
-        if (this.options.init) {
-            this.init()
-        }
     }
 
     init() {
