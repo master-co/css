@@ -1,1 +1,0 @@
-export * from './get-pre-init-script'
