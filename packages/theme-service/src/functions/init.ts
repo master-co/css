@@ -1,4 +1,4 @@
-import { ThemeService } from 'src/core'
+import { ThemeService } from '../core'
 import { Options } from '../options'
 
 export default function init(options?: Options, host?: HTMLElement) {
