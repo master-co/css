@@ -49,6 +49,54 @@ export class MasterCSS {
         public config: Config = defaultConfig
     ) {
         if (!config?.override) {
+            const formatConfig = (config: Config) => {
+                const clonedConfig: Config = extend({}, config)
+
+                const formatDeeply = (
+                    obj: Record<string, any>, 
+                    handleValue?: (key: string, value: string | string[] | number, obj: Record<string, any>) => void
+                ) => {
+                    for (const key in obj) {
+                        const value = obj[key]
+                        if (typeof value === 'object' && !Array.isArray(value)) {
+                            formatDeeply(value, handleValue)
+                        } else if (handleValue) {
+                            handleValue(key, value, obj)
+                        } else if (key) {
+                            obj[key] = { '': value }
+                        }
+                    }
+                }
+                formatDeeply(clonedConfig.classes)
+                formatDeeply(clonedConfig.colors, (key, value, obj) => {
+                    if (key.startsWith('@'))
+                        return value
+
+                    const colorByTheme: Record<string, string> = {}
+                    const regexp = /(?:rgba?\(.*?\).*?(?= |$))|(?:[^ ]+)(?= |$)/g
+                    let result: RegExpExecArray
+                    while ((result = regexp.exec(value as string)) !== null) {
+                        const [color, theme] = result[0].split('@')
+                        colorByTheme[theme ? '@' + theme : ''] = color
+                    }
+
+                    if (key) {
+                        obj[key] = colorByTheme
+                    } else {
+                        Object.assign(obj, colorByTheme)
+                        if (!Object.prototype.hasOwnProperty.call(colorByTheme, '')) {
+                            delete obj[key]
+                        }
+                    }
+                })
+                formatDeeply(clonedConfig.breakpoints)
+                formatDeeply(clonedConfig.mediaQueries)
+                formatDeeply(clonedConfig.selectors)
+                formatDeeply(clonedConfig.values)
+
+                return clonedConfig
+            }
+
             const getExtendedConfig = (parentConfig: Config, currentConfig: Config) => {
                 const extendedCurrentConfig: Config = currentConfig.extends?.length
                     ? extend(
@@ -57,7 +105,7 @@ export class MasterCSS {
                         ...currentConfig.extends.map(eachConfig => getExtendedConfig(currentConfig, 'config' in eachConfig ? eachConfig.config : eachConfig))
                     )
                     : currentConfig
-                const extendedParentConfig: Config = extend(parentConfig, extendedCurrentConfig)
+                const extendedParentConfig: Config = extend(formatConfig(parentConfig), formatConfig(extendedCurrentConfig))
                 if (Object.prototype.hasOwnProperty.call(extendedCurrentConfig, 'keyframes')) {
                     Object.assign(extendedParentConfig.keyframes, extendedCurrentConfig.keyframes)
                 }
