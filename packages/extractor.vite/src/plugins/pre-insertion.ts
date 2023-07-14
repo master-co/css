@@ -11,8 +11,9 @@ export default function PreInsertionPlugin(
 ): Plugin {
     let server: ViteDevServer
     let transformedIndexHTMLModule: { id: string, code: string }
-    let readyForHMR = false
+    let HMRReady = false
     const straightUpdateVirtualModule = () => {
+        if (!server) return
         const resolvedVirtualModuleId = extractor.resolvedVirtualModuleId
         const virtualCSSModule = server.moduleGraph.getModuleById(resolvedVirtualModuleId)
         if (virtualCSSModule) {
@@ -38,19 +39,14 @@ export default function PreInsertionPlugin(
     }
     const debounceUpdateVirtualModule = debounce(straightUpdateVirtualModule, 100)
     const updateVirtualModule = () => {
-        if (readyForHMR) {
+        if (HMRReady) {
             straightUpdateVirtualModule()
         } else {
             debounceUpdateVirtualModule()
         }
     }
-    const insert = async (id: string, code: string) => {
-        if (await extractor.insert(id, code)) {
-            if (server) {
-                updateVirtualModule()
-            }
-        }
-    }
+    extractor
+        .on('change', updateVirtualModule)
     return {
         name: 'master-css-extractor:pre-insertion',
         enforce: 'pre',
@@ -67,13 +63,13 @@ export default function PreInsertionPlugin(
                     id: filename,
                     code: html
                 }
-                await insert(filename, html)
+                await extractor.insert(filename, html)
             }
         },
         async transform(code, id) {
             const resolvedVirtualModuleId = extractor.resolvedVirtualModuleId
             if (id !== resolvedVirtualModuleId) {
-                await insert(id, code)
+                await extractor.insert(id, code)
             }
         },
         configureServer(devServer) {
@@ -107,7 +103,7 @@ export default function PreInsertionPlugin(
                 extractor
                     .off('reset', resetHandler)
                     .on('reset', resetHandler)
-                readyForHMR = true
+                HMRReady = true
             })
             extractor.startWatch()
         },
