@@ -76,7 +76,6 @@ it('change master.css.ts and check result in the browser during HMR', async () =
         export default { classes: { '${newBtnClassName}': 'bg:pink' } }
     `)
     await page.waitForNetworkIdle()
-    await delay(500)
     const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
     expect(styleHandle).not.toBeNull()
     const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
