@@ -5,6 +5,7 @@ import puppeteer, { type Browser, type Page } from 'puppeteer'
 import { copy } from 'shared/utils/fs'
 import { SpawndChildProcess, spawnd } from 'spawnd'
 import waitForDataMatch from 'shared/utils/wait-for-data-match'
+import delay from 'shared/utils/delay'
 
 const examplePath = path.join(__dirname, '../../../../examples/svelte-with-static-extraction')
 const tmpDir = path.join(__dirname, 'tmp/dev')
@@ -74,6 +75,7 @@ it('change master.css.ts and check result in the browser during HMR', async () =
         export default { classes: { '${newBtnClassName}': 'bg:pink' } }
     `)
     await page.waitForNetworkIdle()
+    await delay(500)
     const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
     expect(styleHandle).not.toBeNull()
     const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
