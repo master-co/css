@@ -21,7 +21,7 @@ export function ThemeServiceProvider({
     options?: Options,
     children: JSX.Element,
 }) {
-    const themeService = useMemo(() => new ThemeService({ ...options, init: false }, host), [options, host])
+    const themeService = useMemo(() => new ThemeService(options, host), [options, host])
     // Make React hook theme members
     const [current, setCurrent] = useState<string>(themeService.current)
     const [value, setValue] = useState<ThemeValue>(themeService.value)
