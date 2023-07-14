@@ -1,6 +1,5 @@
-import './bootstrap';
+import './bootstrap'
+import { initRuntime } from '@master/css'
+import config from '../../master.css'
 
-import { initRuntime } from '@master/css';
-import config from './master.css';
-
-initRuntime(config);
+initRuntime(config)
