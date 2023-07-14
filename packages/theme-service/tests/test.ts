@@ -1,7 +1,7 @@
 import 'shared/test/matchMedia.mock'
-import ThemeService from '../src'
+import { init } from '../src'
 
-const themeService = new ThemeService({ default: 'dark' })
+const themeService = init({ default: 'dark' })
 
 it('contains dark class and the dark color scheme', () => {
     expect(document.documentElement.classList.contains('dark')).toBeTruthy()
