@@ -66,6 +66,7 @@ it('change master.css.ts and check result in the browser during HMR', async () =
     const newBtnClassName = 'btn' + new Date().getTime()
     const newBtnClassNameSelector = '.' + cssEscape(newBtnClassName)
     fs.writeFileSync(templatePath, templateContent.replace('className="card"', `className="${newBtnClassName}"`))
+    await page.waitForNetworkIdle()
     const newClassNameElementHandle = await page.waitForSelector(newBtnClassNameSelector)
     expect(newClassNameElementHandle).not.toBeNull()
     // -> classes: { btn43848384: 'xxx' }
@@ -73,7 +74,6 @@ it('change master.css.ts and check result in the browser during HMR', async () =
         export default { classes: { '${newBtnClassName}': 'bg:pink' } }
     `)
     await page.waitForNetworkIdle()
-    await delay(1000)
     const styleHandle = await page.waitForSelector('[data-vite-dev-id$=".virtual/master.css"]')
     expect(styleHandle).not.toBeNull()
     const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
