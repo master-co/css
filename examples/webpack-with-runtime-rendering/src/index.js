@@ -1,3 +1,4 @@
-import MasterCSS from '@master/css';
-import config from '../master.css.js';
-new MasterCSS(config);
+import { initRuntime } from '@master/css'
+import config from '../master.css.js'
+
+initRuntime(config)

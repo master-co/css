@@ -1,15 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="display: none">
 
 <head>
     <meta charset="utf-8" />
     <script src="./index.js"></script>
 </head>
 
-<body>
-    <h1 class="font:40 font:heavy italic m:50 text:center">
-        Hello World
-    </h1>
+<body class="m:0">
+    <div class="abs full flex center-content bg:slate-95@light bg:gray-15@dark">
+        <div class="h:fit">
+            <div class="flex center-content gap:30">
+                <a href="https://webpack.js.org" target="_blank">
+                    <img src="<%= require('/assets/webpack.svg') %>" class="110x110" alt="Webpack logo" />
+                </a>
+                <a href="https://css.master.co" target="_blank">
+                    <img src="<%= require('/assets/master.svg') %>" class="172x172" alt="Master logo" />
+                </a>
+            </div>
+            <h1 class="font:48 font:sans ls:-.25 fg:white@dark font:heavy">
+                <span class="gradient-text gradient(120deg,#1b78bf|30%,#8ed6fb)">Webpack</span>
+                <span class="fg:slate-70 mx:10 font:semibold">+</span>
+                <span>Master CSS</span>
+            </h1>
+        </div>
+    </div>
 </body>
 
 </html>

@@ -10,5 +10,6 @@ module.exports = {
     mediaQueries: {},
     keyframes: {},
     selectors: {},
-    functions: {}
+    functions: {},
+    themeDriver: 'media'
 }

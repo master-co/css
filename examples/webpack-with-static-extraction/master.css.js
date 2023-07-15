@@ -1,9 +1,7 @@
 /** @type {import('@master/css').Config} */
-export default {
+module.exports = {
     classes: {},
-    colors: {
-        primary: 'green'
-    },
+    colors: {},
     themes: {},
     rules: {},
     values: {},
@@ -12,5 +10,6 @@ export default {
     mediaQueries: {},
     keyframes: {},
     selectors: {},
-    functions: {}
+    functions: {},
+    themeDriver: 'media'
 }
