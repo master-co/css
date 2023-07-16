@@ -11,5 +11,6 @@ export default {
     mediaQueries: {},
     keyframes: {},
     selectors: {},
-    functions: {}
+    functions: {},
+    themeDriver: 'media'
 } as Config
