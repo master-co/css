@@ -4,7 +4,7 @@ import config from '../../config'
 test('colors', () => {
     testCSS(
         'fg:primary',
-        '.fg\\:primary{color:#175fe9}.dark .fg\\:primary{color:#fbe09d}.light .fg\\:primary{color:#ebbb40}',
+        '.fg\\:primary{color:#175fe9}.light .fg\\:primary{color:#ebbb40}.dark .fg\\:primary{color:#fbe09d}',
         config
     )
     testCSS(
@@ -14,7 +14,7 @@ test('colors', () => {
     )
     testCSS(
         'fg:primary-stage-1',
-        '.fg\\:primary-stage-1{color:#999999}.dark .fg\\:primary-stage-1{color:#AAAAAA}.light .fg\\:primary-stage-1{color:#888888}',
+        '.fg\\:primary-stage-1{color:#999999}.light .fg\\:primary-stage-1{color:#888888}.dark .fg\\:primary-stage-1{color:#AAAAAA}',
         config
     )
     testCSS(
@@ -73,7 +73,7 @@ test('colors', () => {
     )
     testCSS(
         'bg:linear-gradient(180deg,major,gray-60)',
-        '.dark .bg\\:linear-gradient\\(180deg\\,major\\,gray-60\\){background-image:linear-gradient(180deg,#dad9db,#9e9da0)}.light .bg\\:linear-gradient\\(180deg\\,major\\,gray-60\\){background-image:linear-gradient(180deg,#19212d,#9e9da0)}',
+        '.light .bg\\:linear-gradient\\(180deg\\,major\\,gray-60\\){background-image:linear-gradient(180deg,#19212d,#9e9da0)}.dark .bg\\:linear-gradient\\(180deg\\,major\\,gray-60\\){background-image:linear-gradient(180deg,#dad9db,#9e9da0)}',
         config
     )
     testCSS(
@@ -213,5 +213,20 @@ test('colors', () => {
                 btn: 'bg:primary-filled'
             }
         }
+    )
+    testCSS(
+        'bg:code',
+        '.light .bg\\:code{background-color:#dca000}.dark .bg\\:code{background-color:#fbe09d}',
+        config
+    )
+    testCSS(
+        'bg:code/.5',
+        '.light .bg\\:code\\/\\.5{background-color:#dca00080}.dark .bg\\:code\\/\\.5{background-color:#fbe09d80}',
+        config
+    )
+    testCSS(
+        'bg:fade-light',
+        '.light .bg\\:fade-light{background-color:#6c7693}',
+        config
     )
 })

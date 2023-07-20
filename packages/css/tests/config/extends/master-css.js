@@ -11,7 +11,8 @@ const config = {
         second: 'blue-30@dark',
         third: {
             '': 'blue-30'
-        }
+        },
+        fourth: 'blue-50@dark'
     }
 }
 

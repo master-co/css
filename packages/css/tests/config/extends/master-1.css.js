@@ -4,6 +4,7 @@ const config = {
         require('./master-1-2.css'),
     ],
     colors: {
+        fourth: 'first',
         first: '#111111 #222222@dark rgb(0, 0, 0)@light',
         second: '#999999@dark rgba(0 0 0/.5)@light',
         third: {
