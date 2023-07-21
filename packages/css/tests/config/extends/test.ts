@@ -10,7 +10,7 @@ it('config extends', () => {
             },
         },
         'btn': {
-            '': 'font:20 h:75 text:center'
+            '': 'font:14 h:40 text:center'
         },
         'btn3': {
             '': 'font:15 h:90 text:center'
@@ -19,20 +19,25 @@ it('config extends', () => {
             '': 'font:200'
         },
     })
-    expect(css.config.colors?.first).toEqual({
+    expect(css.colorThemesMap.first).toEqual({
         '': '#111111',
-        '@dark': 'blue-80',
-        '@light': 'rgb(0, 0, 0)'
+        'dark': '#c6dbfe',
+        'light': '#000000'
     })
-    expect(css.config.colors?.second).toEqual({
-        '@dark': 'blue-30',
-        '@light': 'rgba(0 0 0/.5)'
+    expect(css.colorThemesMap.second).toEqual({
+        'dark': '#0e3496',
+        'light': '#00000080'
     })
-    expect(css.config.colors?.third).toEqual({
-        '': 'blue-30',
-        '@dark': 'blue-50',
-        '2': {
-            '@dark': 'blue-60'
-        }
+    expect(css.colorThemesMap.third).toEqual({
+        '': '#0e3496',
+        'dark': '#175fe9'
+    })
+    expect(css.colorThemesMap['third-2']).toEqual({
+        'dark': '#6b9ef1'
+    })
+    expect(css.colorThemesMap.fourth).toEqual({
+        '': '#111111',
+        'dark': '#175fe9',
+        'light': '#000000'
     })
 })

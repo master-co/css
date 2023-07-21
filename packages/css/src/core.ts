@@ -1,9 +1,11 @@
 import { extend } from '@techor/extend'
 import { Rule, RuleMeta, RuleNative } from './rule'
-import type { Config } from './config'
+import type { Colors, Config } from './config'
 import { config as defaultConfig } from './config'
 import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
+
+const COLOR_NAME_OBJECT_PREFIX = '_CNO_'
 
 export interface MasterCSS {
     readonly style: HTMLStyleElement
@@ -44,74 +46,15 @@ export class MasterCSS {
     readonly observing = false
 
     observer: MutationObserver
+    private colorByThemeByColorName: Record<string, Record<string, string>>
 
     constructor(
         public config: Config = defaultConfig
     ) {
         if (!config?.override) {
-            const formatConfig = (config: Config) => {
-                const clonedConfig: Config = extend({}, config)
-
-                const formatDeeply = (
-                    obj: Record<string, any>, 
-                    handleValue?: (key: string, value: string | string[] | number, obj: Record<string, any>) => void
-                ) => {
-                    for (const key in obj) {
-                        const value = obj[key]
-                        if (typeof value === 'object' && !Array.isArray(value)) {
-                            formatDeeply(value, handleValue)
-                        } else if (handleValue) {
-                            handleValue(key, value, obj)
-                        } else if (key) {
-                            obj[key] = { '': value }
-                        }
-                    }
-                }
-                formatDeeply(clonedConfig.classes)
-                formatDeeply(clonedConfig.colors, (key, value, obj) => {
-                    if (key.startsWith('@'))
-                        return value
-
-                    const colorByTheme: Record<string, string> = {}
-                    const regexp = /(?:rgba?\(.*?\).*?(?= |$))|(?:[^ ]+)(?= |$)/g
-                    let result: RegExpExecArray
-                    while ((result = regexp.exec(value as string)) !== null) {
-                        const [color, theme] = result[0].split('@')
-                        colorByTheme[theme ? '@' + theme : ''] = color
-                    }
-
-                    if (key) {
-                        obj[key] = colorByTheme
-                    } else {
-                        Object.assign(obj, colorByTheme)
-                        if (!Object.prototype.hasOwnProperty.call(colorByTheme, '')) {
-                            delete obj[key]
-                        }
-                    }
-                })
-                formatDeeply(clonedConfig.breakpoints)
-                formatDeeply(clonedConfig.mediaQueries)
-                formatDeeply(clonedConfig.selectors)
-                formatDeeply(clonedConfig.values)
-
-                return clonedConfig
-            }
-
-            const getExtendedConfig = (parentConfig: Config, currentConfig: Config) => {
-                const extendedCurrentConfig: Config = currentConfig.extends?.length
-                    ? extend(
-                        {},
-                        currentConfig,
-                        ...currentConfig.extends.map(eachConfig => getExtendedConfig(currentConfig, 'config' in eachConfig ? eachConfig.config : eachConfig))
-                    )
-                    : currentConfig
-                const extendedParentConfig: Config = extend(formatConfig(parentConfig), formatConfig(extendedCurrentConfig))
-                if (Object.prototype.hasOwnProperty.call(extendedCurrentConfig, 'keyframes')) {
-                    Object.assign(extendedParentConfig.keyframes, extendedCurrentConfig.keyframes)
-                }
-                return extendedParentConfig
-            }
-            this.config = getExtendedConfig(defaultConfig, config)
+            this.config = this.getExtendedConfig(defaultConfig, config)
+        } else {
+            this.config = this.getExtendedConfig(this.config)
         }
         this.cache()
         MasterCSS.instances.push(this)
@@ -257,64 +200,84 @@ export class MasterCSS {
             handleSemanticName(eachSemanticName)
         }
 
-        const flattedColors = colors ? getFlatData(colors, true) : {}
-        for (const [mainColorName, value] of Object.entries(flattedColors)) {
-            const levelMap: Record<string, string> = typeof value === 'string' ? { '': value } : value
-            for (const [level, color] of Object.entries(levelMap)) {
-                const handle = (theme: string, name: string) => {
-                    if (Object.prototype.hasOwnProperty.call(this.colorThemesMap, name)) {
-                        this.colorThemesMap[name][theme] = color
-                    } else {
-                        this.colorThemesMap[name] = { [theme]: color }
-                    }
-                }
+        // colors
+        this.colorNames = Object.keys(colors)
 
-                if (level.startsWith('@')) {
-                    const themeName = level.slice(1)
-                    handle(themeName, mainColorName)
+        const unhandledActionByColorName: Record<string, () => void> = Object
+            .entries(this.colorByThemeByColorName)
+            .reduce((newUnhandledActionByColorName, [colorName, colorByTheme]) => {
+                newUnhandledActionByColorName[colorName] = () => {
+                    const getAlphaHexColor = (hexColor: string, alpha: string) => alpha
+                        ? hexColor.slice(0, 7) + Math.round(255 * +alpha).toString(16)
+                        : hexColor
 
-                    if (!this.themeNames.includes(themeName)) {
-                        this.themeNames.push(themeName)
+                    const hexColorByTheme: Record<string, string> = {}
+
+                    for (const themeKey in colorByTheme as Record<string, string>) {
+                        const colorsWithAlphaTheme: string[] = colorByTheme[themeKey].split(' ')
+                        for (const eachColorWithAlphaTheme of colorsWithAlphaTheme) {
+                            const atIndex = eachColorWithAlphaTheme.lastIndexOf('@')
+                            const colorWithAlpha = atIndex !== -1 ? eachColorWithAlphaTheme.slice(0, atIndex) : eachColorWithAlphaTheme
+                            const theme = atIndex !== -1 ? eachColorWithAlphaTheme.slice(atIndex + 1) : ''
+                            const currentTheme = themeKey.slice(1) || theme
+                            if (eachColorWithAlphaTheme.startsWith('#')) {
+                                hexColorByTheme[currentTheme] = colorWithAlpha
+                            } else if (eachColorWithAlphaTheme.startsWith(COLOR_NAME_OBJECT_PREFIX)) {
+                                const [replaceColorName, alpha] = colorWithAlpha.slice(COLOR_NAME_OBJECT_PREFIX.length).split('/')
+
+                                if (Object.prototype.hasOwnProperty.call(unhandledActionByColorName, replaceColorName)) {
+                                    const unhandledAction = unhandledActionByColorName[replaceColorName]
+                                    delete unhandledActionByColorName[replaceColorName]
+                                    unhandledAction()
+                                }
+
+                                const targetHexColorByTheme = Object.prototype.hasOwnProperty.call(this.colorThemesMap, replaceColorName) && this.colorThemesMap[replaceColorName]
+                                if (targetHexColorByTheme) {
+                                    for (const theme in targetHexColorByTheme) {
+                                        const hexColor = targetHexColorByTheme[theme]
+                                        hexColorByTheme[theme] = getAlphaHexColor(hexColor, alpha)
+                                    }
+                                } else {
+                                    console.error(`"${colorName}${themeKey}: ${eachColorWithAlphaTheme}" is an invalid ".colors" config`)
+                                }
+                            } else {
+                                const [colorNameWithAlpha, colorNameTheme] = colorWithAlpha.split('@')
+                                const [replaceColorName, alpha] = colorNameWithAlpha.split('/')
+
+                                if (Object.prototype.hasOwnProperty.call(unhandledActionByColorName, replaceColorName)) {
+                                    const unhandledAction = unhandledActionByColorName[replaceColorName]
+                                    delete unhandledActionByColorName[replaceColorName]
+                                    unhandledAction()
+                                }
+        
+                                const hexColor = Object.prototype.hasOwnProperty.call(this.colorThemesMap, replaceColorName) && this.colorThemesMap[replaceColorName][(themeKey ? theme : colorNameTheme) || '']
+                                if (hexColor) {
+                                    hexColorByTheme[currentTheme] = getAlphaHexColor(hexColor, alpha)
+                                } else {
+                                    console.error(`"${colorName}${themeKey}: ${eachColorWithAlphaTheme}" is an invalid ".colors" config`)
+                                }
+                            }
+                        }
                     }
-                } else {
-                    handle('', mainColorName + (level ? '-' + level : ''))
+
+                    const themes = Object.keys(hexColorByTheme)
+                    if (themes.length) {
+                        this.colorThemesMap[colorName] = hexColorByTheme
+
+                        for (const eachTheme of themes) {
+                            if (eachTheme && !this.themeNames.includes(eachTheme)) {
+                                this.themeNames.push(eachTheme)
+                            }
+                        }
+                    }
+
+                    delete unhandledActionByColorName[colorName]
                 }
-            }
+                return newUnhandledActionByColorName
+            }, {})
+        for (const eachColorName of Object.keys(unhandledActionByColorName)) {
+            unhandledActionByColorName[eachColorName]?.()
         }
-
-        this.colorNames = colors ? Object.keys(colors) : []
-
-        const colorThemesMapLoop = (func: (colorName: string, themeColorMap: Record<string, string>, theme: string, color: string) => void) => {
-            for (const [colorName, themeColorMap] of Object.entries(this.colorThemesMap)) {
-                for (const [theme, color] of Object.entries(themeColorMap)) {
-                    if (!color.startsWith('#')) {
-                        func(colorName, themeColorMap, theme, color)
-                    }
-                }
-            }
-        }
-        colorThemesMapLoop((colorName, themeColorMap, theme, color) => {
-            const result = /^rgba?\( *([0-9]{1,3}) *(?:\|| |,) *([0-9]{1,3}) *(?:\|| |,) *([0-9]{1,3}) *(?:(?:\/|,) *0?(\.[0-9]))?\)$/.exec(color)
-            if (result) {
-                let hexColor = '#' + rgbToHex(+result[1], +result[2], +result[3])
-                if (result[4]) {
-                    hexColor += Math.round(255 * +result[4]).toString(16)
-                }
-                themeColorMap[theme] = hexColor
-            }
-        })
-        colorThemesMapLoop((colorName, themeColorMap, theme, color) => {
-            const [replaceColorName, alpha] = color.split('/')
-            const replaceThemeColorMap = this.colorThemesMap[replaceColorName]
-            if (replaceThemeColorMap) {
-                const hexColor = (theme ? replaceThemeColorMap[theme] : undefined) ?? replaceThemeColorMap['']
-                themeColorMap[theme] = (alpha
-                    ? hexColor.slice(0, 7) + Math.round(255 * +alpha).toString(16)
-                    : hexColor)
-            } else {
-                console.error(`"${colorName}: ${color}" is an invalid ".colors" config`)
-            }
-        })
 
         if (rules) {
             for (const id in rules) {
@@ -748,9 +711,9 @@ export class MasterCSS {
      */
     refresh(config: Config) {
         if (!config?.override) {
-            this.config = extend(defaultConfig, config)
+            this.config = this.getExtendedConfig(defaultConfig, config)
         } else {
-            this.config = config
+            this.config = this.getExtendedConfig(config)
         }
         this.cache()
         if (!this.style) {
@@ -1254,6 +1217,167 @@ export class MasterCSS {
 
     get text() {
         return this.rules.map((eachRule) => eachRule.text).join('')
+    }
+
+    private getExtendedConfig(...configs: Config[]) {
+        this.colorByThemeByColorName = {}
+
+        const formatConfig = (config: Config) => {
+            const clonedConfig: Config = extend({}, config)
+
+            const formatDeeply = (obj: Record<string, any>) => {
+                for (const key in obj) {
+                    const value = obj[key]
+                    if (typeof value === 'object' && !Array.isArray(value)) {
+                        formatDeeply(value)
+                    } else if (key) {
+                        obj[key] = { '': value }
+                    }
+                }
+            }
+            if (clonedConfig.classes) {
+                formatDeeply(clonedConfig.classes)
+            } else {
+                clonedConfig.classes = {}
+            }
+            if (clonedConfig.breakpoints) {
+                formatDeeply(clonedConfig.breakpoints)
+            } else {
+                clonedConfig.breakpoints = {}
+            }
+            if (clonedConfig.mediaQueries) {
+                formatDeeply(clonedConfig.mediaQueries)
+            } else {
+                clonedConfig.mediaQueries = {}
+            }
+            if (clonedConfig.selectors) {
+                formatDeeply(clonedConfig.selectors)
+            } else {
+                clonedConfig.selectors = {}
+            }
+            if (clonedConfig.values) {
+                formatDeeply(clonedConfig.values)
+            } else {
+                clonedConfig.values = {}
+            }
+
+            // colors
+            if (clonedConfig.colors) {
+                const handleDeeply = (colors: Colors, parentColorName: string) => {
+                    const handle = (colorName: string, entries: [string, string][], single: boolean) => {
+                        if (!Object.prototype.hasOwnProperty.call(this.colorByThemeByColorName, colorName)) {
+                            this.colorByThemeByColorName[colorName] = {}
+                        }
+                        const colorByTheme = this.colorByThemeByColorName[colorName]
+                        const colorNameObjectContained = colorByTheme['']?.includes(COLOR_NAME_OBJECT_PREFIX)
+
+                        const rgbaToHexColor = (rgba: string) => rgba.replace(
+                            /^rgba?\( *([0-9]{1,3}) *(?:\|| |,) *([0-9]{1,3}) *(?:\|| |,) *([0-9]{1,3}) *(?:(?:\/|,) *0?(\.[0-9]))?\)$/,
+                            (_, r, g, b, a) => {
+                                let hexColor = '#' + rgbToHex(+r, +g, +b)
+                                if (a) {
+                                    hexColor += Math.round(255 * +a).toString(16)
+                                }
+                                return hexColor
+                            }
+                        )
+
+                        for (const [themeKey, colorWithTheme] of entries) {
+                            if (colorWithTheme) {
+                                const regexp = /(?:^| )(?:(rgba?\(.*?\).*?)|([^ ]+))(?= |$)/g
+                                let result: RegExpExecArray
+                                while ((result = regexp.exec(colorWithTheme)) !== null) {
+                                    const colorWithAlphaTheme = result[0].trimStart()
+                                    const atIndex = colorWithAlphaTheme.lastIndexOf('@')
+                                    const colorWithAlpha = atIndex !== -1 ? colorWithAlphaTheme.slice(0, atIndex) : colorWithAlphaTheme
+                                    const theme = atIndex !== -1 ? colorWithAlphaTheme.slice(atIndex) : ''
+                                    const currentTheme = themeKey || theme
+                                    const newColorNameObjectContained = single && result[2] && !result[2].startsWith('#') && !theme
+                                    const color =  result[1]
+                                        ? rgbaToHexColor(colorWithAlpha)
+                                        : (themeKey ? result[0] : colorWithAlpha)
+                                    if (colorNameObjectContained || newColorNameObjectContained) {
+                                        if (!Object.prototype.hasOwnProperty.call(colorByTheme, '')) {
+                                            colorByTheme[''] = ''
+                                        }
+                                        for (const eachTheme in colorByTheme) {
+                                            if (!eachTheme)
+                                                continue
+                                            
+                                            colorByTheme[''] += ' ' + colorByTheme[eachTheme]
+                                            delete colorByTheme[eachTheme]
+                                        }
+                                        colorByTheme[''] += (colorByTheme[''] ? ' ' : '')
+                                            + (newColorNameObjectContained ? COLOR_NAME_OBJECT_PREFIX : '') 
+                                            + color
+                                            + currentTheme
+                                    } else {
+                                        colorByTheme[currentTheme] = color
+                                    }
+        
+                                    if (themeKey)
+                                        break
+                                }
+                            } else {
+                                if (single) {
+                                    delete this.colorByThemeByColorName[colorName]
+                                    return
+                                } else {
+                                    delete colorByTheme[themeKey]
+                                }
+                            }
+                        }
+
+                        if (!Object.keys(colorByTheme).length) {
+                            delete this.colorByThemeByColorName[colorName]
+                        }
+                    }
+
+                    const entries = Object.entries(colors)
+                    
+                    const currentColorEntries = entries.filter(([key]) => key === '' || key.startsWith('@'))
+                    if (currentColorEntries.length) {
+                        handle(parentColorName, currentColorEntries as [string, string][], false)
+                    }
+
+                    const otherColorEntries = entries.filter(([key]) => key !== '' && !key.startsWith('@'))
+                    for (const [key, value] of otherColorEntries) {
+                        const colorName = (parentColorName ? parentColorName + '-' : '') + key
+                        if (typeof value === 'string') {
+                            handle(colorName, [['', value]], true)
+                        } else {
+                            handleDeeply(value, colorName)
+                        }
+                    }
+                }
+                handleDeeply(clonedConfig.colors, '')
+            }
+
+            return clonedConfig
+        }
+
+        const formattedConfigs: Config[] = []
+        for (const eachConfig of configs) {
+            (function getConfigsDeeply(config: Config) {
+                if (config.extends?.length) {
+                    for (const eachExtend of config.extends) {
+                        getConfigsDeeply('config' in eachExtend ? eachExtend.config : eachExtend)
+                    }
+                }
+                formattedConfigs.push(formatConfig(config))
+            })(eachConfig)
+        }
+
+        let extendedConfig = formattedConfigs[0]
+        for (let i = 1; i < formattedConfigs.length; i++) {
+            const currentFormattedConfig = formattedConfigs[i]
+            extendedConfig = extend(extendedConfig, currentFormattedConfig)
+            if (Object.prototype.hasOwnProperty.call(currentFormattedConfig, 'keyframes')) {
+                Object.assign(extendedConfig.keyframes, currentFormattedConfig.keyframes)
+            }
+        }
+
+        return extendedConfig
     }
 }
 
