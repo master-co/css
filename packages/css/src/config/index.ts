@@ -69,6 +69,5 @@ export interface Config {
     override?: boolean
     functions?: Record<string, FunctionConfig>
     keyframes?: Record<string, Record<string, Record<string, string | number>>>
-    precedence?: 'highest' | 'higher' | 'lowest'
     themeDriver?: 'class' | 'media' | 'host'
 }
