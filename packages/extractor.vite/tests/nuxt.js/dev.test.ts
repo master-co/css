@@ -57,12 +57,13 @@ it('change class names and check result in the browser during HMR', async () => 
     const newClassName = 'font:' + new Date().getTime()
     const newClassNameSelector = '.' + cssEscape(newClassName)
     fs.writeFileSync(templatePath, templateContent.replace(/class="([^"]+)"/, `class="${newClassName}"`))
-    const newClassNameElementHandle = await page.waitForSelector(newClassNameSelector)
+    const newClassNameElementHandle = await page.waitForSelector(newClassNameSelector, { timeout: 5000 })
     expect(newClassNameElementHandle).not.toBeNull()
     const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
     expect(styleHandle).not.toBeNull()
     const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
     expect(cssText).toContain(newClassNameSelector)
+    console.log()
 }, 60000)
 
 it('change master.css.ts and check result in the browser during HMR', async () => {
