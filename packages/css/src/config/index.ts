@@ -45,7 +45,7 @@ export {
 import type { RuleConfig } from '../rule'
 
 type Classes = { [key: string]: string | Classes }
-type Colors = { [key: string]: string | Colors }
+export type Colors = { [key: string]: string | Colors }
 type Breakpoints = { [key: string]: number | Breakpoints }
 type MediaQueries = { [key: string]: string | MediaQueries }
 type Selectors = { [key: string]: string | string[] | Selectors }

@@ -41,7 +41,11 @@ export default {
         },
         fade: {
             '@light': 'slate-55',
-            '#dark': 'gray-60'
+            '@dark': 'gray-60'
+        },
+        code: 'accent',
+        'fade-light': {
+            '@light': 'fade@light'
         }
     },
     classes: {
