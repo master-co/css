@@ -23,7 +23,8 @@
                 ".next/**",
                 ".svelte-kit/**",
                 ".nuxt/**",
-                ".output/**"
+                ".output/**",
+                ".vercel/**"
             ]
         },
         "test": {
