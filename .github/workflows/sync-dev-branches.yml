@@ -13,8 +13,8 @@ jobs:
                 node-version: [18]
         steps:
             - uses: actions/checkout@v3
-            - name: Aron Actions
-              uses: 1aron/aronrepo@v1.0.0-beta.49
+            - name: Sync dev branches
+              uses: 1aron/techor@v2.4.6
               with:
                   action: "sync-dev-branches"
               env:

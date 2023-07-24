@@ -1,15 +1,17 @@
-export const semantics = {
+import { Semantics } from './index'
+
+export const semantics: Semantics = {
     square: {
-        'aspect-ratio': '1/1'
+        aspectRatio: '1/1'
     },
     video: {
-        'aspect-ratio': '16/9'
+        aspectRatio: '16/9'
     },
     rounded: {
-        'border-radius': '1e9em'
+        borderRadius: '1e9em'
     },
     round: {
-        'border-radius': '50%'
+        borderRadius: '50%'
     },
     hidden: {
         display: 'none'
@@ -78,10 +80,10 @@ export const semantics = {
         display: 'table-footer-group'
     },
     italic: {
-        'font-style': 'italic'
+        fontStyle: 'italic'
     },
     oblique: {
-        'font-style': 'oblique'
+        fontStyle: 'oblique'
     },
     isolate: {
         isolation: 'isolate'
@@ -90,7 +92,7 @@ export const semantics = {
         overflow: 'visible'
     },
     untouchable: {
-        'pointer-events': 'none'
+        pointerEvents: 'none'
     },
     static: {
         position: 'static'
@@ -108,13 +110,13 @@ export const semantics = {
         position: 'sticky'
     },
     uppercase: {
-        'text-transform': 'uppercase'
+        textTransform: 'uppercase'
     },
     lowercase: {
-        'text-transform': 'lowercase'
+        textTransform: 'lowercase'
     },
     capitalize: {
-        'text-transform': 'capitalize'
+        textTransform: 'capitalize'
     },
     visible: {
         visibility: 'visible'
@@ -129,31 +131,31 @@ export const semantics = {
         height: '100vh'
     },
     'max-vw': {
-        'max-width': '100vw'
+        maxWidth: '100vw'
     },
     'max-vh': {
-        'max-height': '100vh'
+        maxHeight: '100vh'
     },
     'min-vw': {
-        'min-width': '100vw'
+        minWidth: '100vw'
     },
     'min-vh': {
-        'min-height': '100vh'
+        minHeight: '100vh'
     },
     'center-content': {
-        'justify-content': 'center',
-        'align-items': 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     'sr-only': {
-        'position': 'absolute',
-        'width': '1px',
-        'height': '1px',
-        'padding': '0',
-        'margin': '-1px',
-        'overflow': 'hidden',
-        'clip': 'rect(0,0,0,0)',
-        'white-space': 'nowrap',
-        'border-width': '0'
+        position: 'absolute',
+        width: '1px',
+        height: '1px',
+        padding: '0',
+        margin: '-1px',
+        overflow: 'hidden',
+        clip: 'rect(0,0,0,0)',
+        whiteSpace: 'nowrap',
+        borderWidth: '0'
     },
     full: {
         width: '100%',
@@ -162,26 +164,26 @@ export const semantics = {
     center: {
         left: 0,
         right: 0,
-        'margin-left': 'auto',
-        'margin-right': 'auto'
+        marginLeft: 'auto',
+        marginRight: 'auto'
     },
     middle: {
         top: 0,
         bottom: 0,
-        'margin-top': 'auto',
-        'margin-bottom': 'auto'
+        marginTop: 'auto',
+        marginBottom: 'auto'
     },
     'break-spaces': {
-        'white-space': 'break-spaces'
+        whiteSpace: 'break-spaces'
     },
     'break-word': {
-        'overflow-wrap': 'break-word',
+        overflowWrap: 'break-word',
         overflow: 'hidden'
     },
     'gradient-text': {
-        '-webkit-text-fill-color': 'transparent',
-        '-webkit-background-clip': 'text',
-        'background-clip': 'text'
+        WebkitTextFillColor: 'transparent',
+        WebkitBackgroundClip: 'text',
+        backgroundClip: 'text'
     },
     fit: {
         width: 'fit-content',

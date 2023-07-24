@@ -74,10 +74,10 @@ it('keyframes', async () => {
     await page.evaluate((p) => p.className = 'block font:bold', p)
 
     const countByKeyframeName = {}
-    const configKeyframeNames = await page.evaluate(() => Object.keys(window.MasterCSS.root.config?.keyframes || {}))
+    const configKeyframeNames = await page.evaluate(() => Object.keys(window.MasterCSS.root.keyframes || {}))
     const checkKeyframeCSSRule = async () => {
         const [ruleKeyframes, keyframeRuleNatives, hasKeyframeRule] = await page.evaluate(() => [
-            window.MasterCSS.root.keyframes,
+            window.MasterCSS.root.keyframesMap,
             window.MasterCSS.root.rules[0].natives,
             Object.keys(window.MasterCSS.root.rules[0]).length === 2
         ] as const)
@@ -108,7 +108,7 @@ it('keyframes', async () => {
             .flatMap(eachAnimationClassName => (eachAnimationClassName.includes(':')
                 ? eachAnimationClassName.split(':')[1]
                 : eachAnimationClassName.slice(1)).split('|').filter(eachValue => configKeyframeNames.includes(eachValue)))
-        const [ruleKeyframeNames, keyframes] = await page.evaluate((className) => [window.MasterCSS.root.ruleBy[className].keyframeNames, window.MasterCSS.root.keyframes] as const, className)
+        const [ruleKeyframeNames, keyframes] = await page.evaluate((className) => [window.MasterCSS.root.ruleBy[className].keyframeNames, window.MasterCSS.root.keyframesMap] as const, className)
 
         expect(ruleKeyframeNames.length).toEqual(keyframeNames.length)
         expect(ruleKeyframeNames.every(eachKeyframeName => keyframeNames.includes(eachKeyframeName))).toBeTruthy()
@@ -137,7 +137,7 @@ it('keyframes', async () => {
             p
         )
 
-        const keyframes = await page.evaluate(() => window.MasterCSS.root.keyframes)
+        const keyframes = await page.evaluate(() => window.MasterCSS.root.keyframesMap)
 
         for (const eachKeyframeName of keyframeNames) {
             countByKeyframeName[eachKeyframeName]--

@@ -1,9 +1,10 @@
 import { extend } from '@techor/extend'
 import { Rule, RuleMeta, RuleNative } from './rule'
-import type { Colors, Config } from './config'
+import type { Colors, Config, Keyframes } from './config'
 import { config as defaultConfig } from './config'
 import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
+import { camel2Kebab } from './utils/camel-2-kebab'
 
 const COLOR_NAME_OBJECT_PREFIX = '_CNO_'
 
@@ -23,10 +24,11 @@ export interface MasterCSS {
     viewports: Record<string, number>
     mediaQueries: Record<string, string>
     matches: Record<string, RegExp>
-    keyframes: Record<string, {
+    keyframesMap: Record<string, {
         native: RuleNative
         count: number
     }>
+    keyframes: Keyframes
 }
 
 export class MasterCSS {
@@ -72,9 +74,10 @@ export class MasterCSS {
         this.viewports = {}
         this.mediaQueries = {}
         this.matches = {}
+        this.keyframesMap = {}
         this.keyframes = {}
 
-        const { semantics, classes, selectors, colors, values, viewports, mediaQueries, rules } = this.config
+        const { semantics, classes, selectors, colors, values, viewports, mediaQueries, rules, keyframes } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -119,7 +122,12 @@ export class MasterCSS {
 
         if (semantics) {
             for (const [semanticName, semanticValue] of Object.entries(getFlatData(semantics, true))) {
-                this.semantics.push([new RegExp('^' + escapeString(semanticName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'), [semanticName, semanticValue]])
+                const newSemanticValue = {}
+                for (const propertyName of Object.keys(semanticValue)) {
+                    newSemanticValue[camel2Kebab(propertyName)] = semanticValue[propertyName]
+                }
+
+                this.semantics.push([new RegExp('^' + escapeString(semanticName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'), [semanticName, newSemanticValue]])
             }
         }
         if (selectors) {
@@ -151,6 +159,19 @@ export class MasterCSS {
         }
         if (mediaQueries) {
             this.mediaQueries = getFlatData(mediaQueries, false)
+        }
+        if (keyframes) {
+            for (const animationName in keyframes) {
+                const newValueByPropertyNameByKeyframeName = this.keyframes[animationName] = {}
+                const valueByPropertyNameByKeyframeName = keyframes[animationName]
+                for (const keyframeName in valueByPropertyNameByKeyframeName) {
+                    const newValueByPropertyName = newValueByPropertyNameByKeyframeName[keyframeName] = {}
+                    const valueByPropertyName = valueByPropertyNameByKeyframeName[keyframeName]
+                    for (const propertyName in valueByPropertyName) {
+                        newValueByPropertyName[camel2Kebab(propertyName)] = valueByPropertyName[propertyName]
+                    }
+                }
+            }
         }
 
         const flattedClasses: Record<string, string> = classes ? getFlatData(classes, false) : {}
@@ -780,12 +801,12 @@ export class MasterCSS {
             if (rule.keyframeNames) {
                 const keyframeRule = this.rules[0]
                 for (const eachKeyframeName of rule.keyframeNames) {
-                    const keyframe = this.keyframes[eachKeyframeName]
+                    const keyframe = this.keyframesMap[eachKeyframeName]
                     if (!--keyframe.count) {
                         const nativeIndex = keyframeRule.natives.indexOf(keyframe.native)
                         this.style.sheet.deleteRule(nativeIndex)
                         keyframeRule.natives.splice(nativeIndex, 1)
-                        delete this.keyframes[eachKeyframeName]
+                        delete this.keyframesMap[eachKeyframeName]
                     }
                 }
 
@@ -849,7 +870,7 @@ export class MasterCSS {
              * @example <1  <2  <3  ALL  >=1 >=2 >=3
              * @description
              */
-            const hasKeyframeRule = Object.keys(this.keyframes).length
+            const hasKeyframeRule = Object.keys(this.keyframesMap).length
             const endIndex = this.rules.length - 1
             const { media, order, priority, hasWhere, className } = rule
 
@@ -1152,8 +1173,8 @@ export class MasterCSS {
             if (rule.keyframeNames) {
                 const sheet = this.style?.sheet
                 for (const eachKeyframeName of rule.keyframeNames) {
-                    if (Object.prototype.hasOwnProperty.call(this.keyframes, eachKeyframeName)) {
-                        this.keyframes[eachKeyframeName].count++
+                    if (Object.prototype.hasOwnProperty.call(this.keyframesMap, eachKeyframeName)) {
+                        this.keyframesMap[eachKeyframeName].count++
                     } else {
                         const native: RuleNative = {
                             text: `@keyframes ${eachKeyframeName}{`
@@ -1166,7 +1187,7 @@ export class MasterCSS {
                         }
 
                         let keyframeRule: Rule
-                        if (Object.keys(this.keyframes).length) {
+                        if (Object.keys(this.keyframesMap).length) {
                             (keyframeRule = this.rules[0]).natives.push(native)
                         } else {
                             this.rules.splice(
@@ -1203,7 +1224,7 @@ export class MasterCSS {
                             }
                         }
 
-                        this.keyframes[eachKeyframeName] = {
+                        this.keyframesMap[eachKeyframeName] = {
                             native,
                             count: 1
                         }

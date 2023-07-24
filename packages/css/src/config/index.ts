@@ -10,6 +10,7 @@ import { important } from './important'
 import { keyframes } from './keyframes'
 import { functions, FunctionConfig } from './functions'
 import { themeDriver } from './themeDriver'
+import type { Properties } from 'csstype'
 
 const config: Config = {
     viewports,
@@ -44,14 +45,16 @@ export {
 
 import type { RuleConfig } from '../rule'
 
+type CSS = { [key in keyof Properties]?: Properties[key] } 
 type Classes = { [key: string]: string | Classes }
 export type Colors = { [key: string]: string | Colors }
 type Breakpoints = { [key: string]: number | Breakpoints }
 type MediaQueries = { [key: string]: string | MediaQueries }
 type Selectors = { [key: string]: string | string[] | Selectors }
-type SemanticsBase = { [key: string]: string | number | SemanticsBase }
-type Semantics = { [key: string]: SemanticsBase }
+type SemanticsBase = CSS | { [key: string]: SemanticsBase }
+export type Semantics = { [key: string]: SemanticsBase }
 export type Values = { [key: string]: string | number | Values }
+export type Keyframes = Record<string, { [key in 'from' | 'to']?: CSS } & { [key: string]: CSS }>
 
 export interface Config {
     extends?: (Config | { config: Config })[]
@@ -68,6 +71,6 @@ export interface Config {
     important?: boolean
     override?: boolean
     functions?: Record<string, FunctionConfig>
-    keyframes?: Record<string, Record<string, Record<string, string | number>>>
+    keyframes?: Keyframes
     themeDriver?: 'class' | 'media' | 'host'
 }
