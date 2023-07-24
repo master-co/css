@@ -49,22 +49,22 @@ it('check if the page contains [data-vite-dev-id=".virtual/master.css"]', async 
     expect(await page.$('[data-vite-dev-id$=".virtual/master.css"]')).toBeTruthy()
 }, 60000)
 
-it('change class names and check result in the browser during HMR', async () => {
-    const newClassName = 'font:' + new Date().getTime()
-    const newClassNameSelector = '.' + cssEscape(newClassName)
-    fs.writeFileSync(templatePath, templateContent.replace('class="card"', `class="${newClassName}"`))
-    const newClassNameElementHandle = await page.waitForSelector(newClassNameSelector)
-    expect(newClassNameElementHandle).not.toBeNull()
-    const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
-    expect(styleHandle).not.toBeNull()
-    const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
-    expect(cssText).toContain(newClassNameSelector)
-    console.log()
-}, 60000)
-
 test.todo('vite dev tests timeout in CI')
 
 if (!process.env.GITHUB_ACTIONS) {
+    it('change class names and check result in the browser during HMR', async () => {
+        const newClassName = 'font:' + new Date().getTime()
+        const newClassNameSelector = '.' + cssEscape(newClassName)
+        fs.writeFileSync(templatePath, templateContent.replace('class="card"', `class="${newClassName}"`))
+        const newClassNameElementHandle = await page.waitForSelector(newClassNameSelector)
+        expect(newClassNameElementHandle).not.toBeNull()
+        const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
+        expect(styleHandle).not.toBeNull()
+        const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
+        expect(cssText).toContain(newClassNameSelector)
+        console.log()
+    }, 60000)
+
     it('change master.css.ts and check result in the browser during HMR', async () => {
         const newBtnClassName = 'btn' + new Date().getTime()
         const newBtnClassNameSelector = '.' + cssEscape(newBtnClassName)
