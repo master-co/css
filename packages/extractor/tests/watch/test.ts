@@ -46,7 +46,7 @@ const config: Config = {
     rules: {},
     values: {},
     semantics: {},
-    breakpoints: {},
+    viewports: {},
     mediaQueries: {},
     keyframes: {},
     selectors: {},

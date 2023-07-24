@@ -1,7 +1,7 @@
 import { testCSS } from './css'
 import config from './config'
 
-test('breakpoints', () => {
+test('viewports', () => {
     testCSS(
         'hide@tablet',
         '@media (min-width:768px){.hide\\@tablet{display:none}}',

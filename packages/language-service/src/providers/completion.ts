@@ -214,7 +214,7 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
 
     if (masterCssKeys.includes(key) && key !== null && isMedia === true) { //show media
         masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(masterCssMedia as any, 10))
-        masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(Object.keys(css.config?.breakpoints ?? {}), 10))
+        masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(Object.keys(css.config?.viewports ?? {}), 10))
         masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(css.themeNames, 10))
         if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerKey !== '@' && triggerKey !== ':') {
             return HaveDash('@' + last, masterStyleCompletionItem)

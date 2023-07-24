@@ -1,4 +1,4 @@
-import { breakpoints } from './breakpoints'
+import { viewports } from './viewports'
 import { colors } from './colors'
 import { rootSize } from './root-size'
 import { scope } from './scope'
@@ -12,7 +12,7 @@ import { functions, FunctionConfig } from './functions'
 import { themeDriver } from './themeDriver'
 
 const config: Config = {
-    breakpoints,
+    viewports,
     colors,
     rootSize,
     scope,
@@ -28,7 +28,7 @@ const config: Config = {
 
 export {
     config,
-    breakpoints,
+    viewports,
     colors,
     rootSize,
     scope,
@@ -57,7 +57,7 @@ export interface Config {
     extends?: (Config | { config: Config })[]
     classes?: Classes
     colors?: Colors
-    breakpoints?: Breakpoints
+    viewports?: Breakpoints
     mediaQueries?: MediaQueries
     selectors?: Selectors
     semantics?: Semantics

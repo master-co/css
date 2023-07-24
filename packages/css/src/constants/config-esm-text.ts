@@ -6,7 +6,7 @@ export default {
     rules: {},
     values: {},
     semantics: {},
-    breakpoints: {},
+    viewports: {},
     mediaQueries: {},
     keyframes: {},
     selectors: {},

@@ -118,7 +118,7 @@ export default {
             height: '0px'
         }
     },
-    breakpoints: {
+    viewports: {
         tablet: 768,
         laptop: 1024,
         desktop: 1280,

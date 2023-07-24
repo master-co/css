@@ -20,7 +20,7 @@ export interface MasterCSS {
     selectors: Record<string, [RegExp, string[]][]>
     values: Record<string, Record<string, string | number>>
     globalValues: Record<string, string | number>
-    breakpoints: Record<string, number>
+    viewports: Record<string, number>
     mediaQueries: Record<string, string>
     matches: Record<string, RegExp>
     keyframes: Record<string, {
@@ -69,12 +69,12 @@ export class MasterCSS {
         this.selectors = {}
         this.values = {}
         this.globalValues = {}
-        this.breakpoints = {}
+        this.viewports = {}
         this.mediaQueries = {}
         this.matches = {}
         this.keyframes = {}
 
-        const { semantics, classes, selectors, colors, values, breakpoints, mediaQueries, rules } = this.config
+        const { semantics, classes, selectors, colors, values, viewports, mediaQueries, rules } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -146,8 +146,8 @@ export class MasterCSS {
         if (values) {
             this.globalValues = addNegativeValues(getFlatData(values, false))
         }
-        if (breakpoints) {
-            this.breakpoints = getFlatData(breakpoints, false)
+        if (viewports) {
+            this.viewports = getFlatData(viewports, false)
         }
         if (mediaQueries) {
             this.mediaQueries = getFlatData(mediaQueries, false)
@@ -249,7 +249,7 @@ export class MasterCSS {
                                     delete unhandledActionByColorName[replaceColorName]
                                     unhandledAction()
                                 }
-        
+
                                 const hexColor = Object.prototype.hasOwnProperty.call(this.colorThemesMap, replaceColorName) && this.colorThemesMap[replaceColorName][(themeKey ? theme : colorNameTheme) || '']
                                 if (hexColor) {
                                     hexColorByTheme[currentTheme] = getAlphaHexColor(hexColor, alpha)
@@ -646,7 +646,7 @@ export class MasterCSS {
 
     /**
      * Match check if Master CSS class syntax
-     * @param syntax class syntax 
+     * @param syntax class syntax
      * @returns css text
      */
     match(syntax: string): RuleMeta {
@@ -680,7 +680,7 @@ export class MasterCSS {
 
     /**
      * Create rules from class syntax
-     * @param syntax class syntax 
+     * @param syntax class syntax
      * @returns Rule[]
      */
     create(syntax: string): Rule[] {
@@ -729,7 +729,7 @@ export class MasterCSS {
         this.ruleBy = {}
 
         /**
-         * 拿當前所有的 classNames 按照最新的 colors, breakpoints, config.rules 匹配並生成新的 style
+         * 拿當前所有的 classNames 按照最新的 colors, viewports, config.rules 匹配並生成新的 style
          * 所以 refresh 過後 rules 可能會變多也可能會變少
          */
         for (const name in this.countBy) {
@@ -1240,10 +1240,10 @@ export class MasterCSS {
             } else {
                 clonedConfig.classes = {}
             }
-            if (clonedConfig.breakpoints) {
-                formatDeeply(clonedConfig.breakpoints)
+            if (clonedConfig.viewports) {
+                formatDeeply(clonedConfig.viewports)
             } else {
-                clonedConfig.breakpoints = {}
+                clonedConfig.viewports = {}
             }
             if (clonedConfig.mediaQueries) {
                 formatDeeply(clonedConfig.mediaQueries)
@@ -1303,18 +1303,18 @@ export class MasterCSS {
                                         for (const eachTheme in colorByTheme) {
                                             if (!eachTheme)
                                                 continue
-                                            
+
                                             colorByTheme[''] += ' ' + colorByTheme[eachTheme]
                                             delete colorByTheme[eachTheme]
                                         }
                                         colorByTheme[''] += (colorByTheme[''] ? ' ' : '')
-                                            + (newColorNameObjectContained ? COLOR_NAME_OBJECT_PREFIX : '') 
+                                            + (newColorNameObjectContained ? COLOR_NAME_OBJECT_PREFIX : '')
                                             + color
                                             + currentTheme
                                     } else {
                                         colorByTheme[currentTheme] = color
                                     }
-        
+
                                     if (themeKey)
                                         break
                                 }
@@ -1334,7 +1334,7 @@ export class MasterCSS {
                     }
 
                     const entries = Object.entries(colors)
-                    
+
                     const currentColorEntries = entries.filter(([key]) => key === '' || key.startsWith('@'))
                     if (currentColorEntries.length) {
                         handle(parentColorName, currentColorEntries as [string, string][], false)

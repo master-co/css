@@ -29,7 +29,7 @@ export class Rule {
         this.config = extend(defaultConfig, meta.config)
         const { unit, order, colored, native, analyze, transform, declare, create } = this.config
         const { scope, important, functions, themeDriver, keyframes } = css.config
-        const { themeNames, colorNames, colorThemesMap, selectors, breakpoints, mediaQueries, classesBy, globalValues } = css
+        const { themeNames, colorNames, colorThemesMap, selectors, viewports, mediaQueries, classesBy, globalValues } = css
         const classNames = classesBy[className]
 
         if (create) create.call(this, className)
@@ -421,7 +421,7 @@ export class Rule {
                                     if (typeOrFeatureToken.startsWith('<=')) {
                                         extremumOperator = '<='
                                         featureName = 'max-width'
-                                    } else if (typeOrFeatureToken.startsWith('>=') || breakpoints[typeOrFeatureToken]) {
+                                    } else if (typeOrFeatureToken.startsWith('>=') || viewports[typeOrFeatureToken]) {
                                         extremumOperator = '>='
                                         featureName = 'min-width'
                                     } else if (typeOrFeatureToken.startsWith('>')) {
@@ -437,12 +437,12 @@ export class Rule {
                                         = extremumOperator
                                             ? typeOrFeatureToken.replace(extremumOperator, '')
                                             : typeOrFeatureToken
-                                    const breakpoint = breakpoints[conditionUnitValueToken]
+                                    const viewport = viewports[conditionUnitValueToken]
                                     switch (featureName) {
                                         case 'max-width':
                                         case 'min-width':
-                                            if (breakpoint) {
-                                                Object.assign(feature, this.analyzeUnitValue(breakpoint.toString(), 'px'))
+                                            if (viewport) {
+                                                Object.assign(feature, this.analyzeUnitValue(viewport.toString(), 'px'))
                                             } else {
                                                 Object.assign(feature, this.analyzeUnitValue(conditionUnitValueToken, 'px'))
                                             }
