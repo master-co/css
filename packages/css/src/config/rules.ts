@@ -1503,6 +1503,12 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         colored: true,
         values: {
             current: 'currentColor'
+        },
+        transform(value) {
+            if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
+                value += ' solid'
+            }
+            return value
         }
     },
     borderBottom: {
@@ -1512,6 +1518,12 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         colored: true,
         values: {
             current: 'currentColor'
+        },
+        transform(value) {
+            if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
+                value += ' solid'
+            }
+            return value
         }
     },
     borderLeft: {
@@ -1521,6 +1533,12 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         colored: true,
         values: {
             current: 'currentColor'
+        },
+        transform(value) {
+            if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
+                value += ' solid'
+            }
+            return value
         }
     },
     borderRight: {
@@ -1530,6 +1548,12 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         colored: true,
         values: {
             current: 'currentColor'
+        },
+        transform(value) {
+            if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
+                value += ' solid'
+            }
+            return value
         }
     },
     borderX: {
@@ -1539,6 +1563,12 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         order: -.5,
         values: {
             current: 'currentColor'
+        },
+        transform(value) {
+            if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
+                value += ' solid'
+            }
+            return value
         },
         declare(value) {
             return {
@@ -1555,6 +1585,12 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         values: {
             current: 'currentColor'
         },
+        transform(value) {
+            if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
+                value += ' solid'
+            }
+            return value
+        },
         declare(value) {
             return {
                 'border-top': value,
@@ -1569,6 +1605,12 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         colored: true,
         values: {
             current: 'currentColor'
+        },
+        transform(value) {
+            if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
+                value += ' solid'
+            }
+            return value
         },
         order: -2
     },
@@ -1961,6 +2003,12 @@ const defaultRules: Record<RuleKey, RuleConfig> = {
         colored: true,
         values: {
             current: 'currentColor'
+        },
+        transform(value) {
+            if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
+                value += ' solid'
+            }
+            return value
         }
     },
     accentColor: {

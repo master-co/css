@@ -14,5 +14,6 @@ export const selectors = {
     ':last': ':last-child',
     ':even': ':nth-child(2n)',
     ':odd': ':nth-child(odd)',
-    ':nth(': ':nth-child('
+    ':nth(': ':nth-child(',
+    ':only': ':only-child'
 }

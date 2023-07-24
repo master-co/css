@@ -182,5 +182,9 @@ export const semantics = {
         '-webkit-text-fill-color': 'transparent',
         '-webkit-background-clip': 'text',
         'background-clip': 'text'
+    },
+    fit: {
+        width: 'fit-content',
+        height: 'fit-content'
     }
 }

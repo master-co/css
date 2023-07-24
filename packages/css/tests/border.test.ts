@@ -10,6 +10,7 @@ it('validates border rules', () => {
     testProp(['by:16|solid', 'border-y:16|solid'], 'border-top:1rem solid;border-bottom:1rem solid')
 
     testProp(['br:1px|solid|gray'], 'border-right:1px solid #6b6a6d')
+    testProp(['br:1px|gray'], 'border-right:1px #6b6a6d solid')
 })
 
 it('checks border order', () => {
