@@ -76,6 +76,7 @@
     },
     "devDependencies": {
         "@techor/extend": "^2.4.1",
+        "csstype": "^3.1.2",
         "shared": "",
         "vite": "^4.2.1"
     }

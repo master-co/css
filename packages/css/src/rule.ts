@@ -28,8 +28,8 @@ export class Rule {
     ) {
         this.config = extend(defaultConfig, meta.config)
         const { unit, order, colored, native, analyze, transform, declare, create } = this.config
-        const { scope, important, functions, themeDriver, keyframes } = css.config
-        const { themeNames, colorNames, colorThemesMap, selectors, breakpoints, mediaQueries, classesBy, globalValues } = css
+        const { scope, important, functions, themeDriver } = css.config
+        const { themeNames, colorNames, colorThemesMap, selectors, breakpoints, mediaQueries, classesBy, globalValues, keyframes } = css
         const classNames = classesBy[className]
 
         if (create) create.call(this, className)
@@ -658,7 +658,7 @@ export class Rule {
                             .split(':')[1]
                             .split('!important')[0]
                             .split(' ')
-                            .filter(eachValue => eachValue in this.css.config.keyframes && (!this.keyframeNames || !this.keyframeNames.includes(eachValue)))
+                            .filter(eachValue => eachValue in this.css.keyframes && (!this.keyframeNames || !this.keyframeNames.includes(eachValue)))
                         if (keyframeNames.length) {
                             if (!this.keyframeNames) {
                                 this.keyframeNames = []
