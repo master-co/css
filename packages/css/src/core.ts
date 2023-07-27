@@ -1179,7 +1179,7 @@ export class MasterCSS {
                         const native: RuleNative = {
                             text: `@keyframes ${eachKeyframeName}{`
                                 + Object
-                                    .entries(this.config.animations[eachKeyframeName])
+                                    .entries(this.animations[eachKeyframeName])
                                     .map(([key, values]) => `${key}{${Object.entries(values).map(([name, value]) => name + ':' + value).join(';')}}`)
                                     .join('')
                                 + '}',
