@@ -18,7 +18,7 @@ export class Rule {
     readonly priority: number = -1
     readonly natives: RuleNative[] = []
 
-    keyframeNames: string[]
+    animationNames: string[]
     config: RuleConfig
 
     constructor(
@@ -29,7 +29,7 @@ export class Rule {
         this.config = extend(defaultConfig, meta.config)
         const { unit, order, colored, native, analyze, transform, declare, create } = this.config
         const { scope, important, functions, themeDriver } = css.config
-        const { themeNames, colorNames, colorThemesMap, selectors, viewports, mediaQueries, classesBy, globalValues, keyframes } = css
+        const { themeNames, colorNames, colorThemesMap, selectors, viewports, mediaQueries, classesBy, globalValues, animations } = css
         const classNames = classesBy[className]
 
         if (create) create.call(this, className)
@@ -649,21 +649,21 @@ export class Rule {
             const propertiesTextByTheme: Record<string, string[]> = {}
             for (const native in declarations) {
                 const push = (theme: string, propertyText: string) => {
-                    // keyframes
+                    // animations
                     if (
-                        keyframes
+                        animations
                         && (propertyText.startsWith('animation') || propertyText.startsWith('animation-name'))
                     ) {
-                        const keyframeNames = propertyText
+                        const animationNames = propertyText
                             .split(':')[1]
                             .split('!important')[0]
                             .split(' ')
-                            .filter(eachValue => eachValue in this.css.keyframes && (!this.keyframeNames || !this.keyframeNames.includes(eachValue)))
-                        if (keyframeNames.length) {
-                            if (!this.keyframeNames) {
-                                this.keyframeNames = []
+                            .filter(eachValue => eachValue in this.css.animations && (!this.animationNames || !this.animationNames.includes(eachValue)))
+                        if (animationNames.length) {
+                            if (!this.animationNames) {
+                                this.animationNames = []
                             }
-                            this.keyframeNames.push(...keyframeNames)
+                            this.animationNames.push(...animationNames)
                         }
                     }
 

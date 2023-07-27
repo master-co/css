@@ -1,4 +1,4 @@
-export const viewports = {
+const viewports: Viewports = {
     '4xs': 360,
     '3xs': 480,
     '2xs': 600,
@@ -11,3 +11,7 @@ export const viewports = {
     '3xl': 1920,
     '4xl': 2560
 }
+
+export default viewports
+
+export type Viewports = { [key: string]: number | Viewports }

@@ -1,6 +1,6 @@
 import fillColorScale from '../functions/fill-color-scale'
 
-export const colors = {
+const colors: Colors = {
     black: '#000000',
     white: '#ffffff',
     slate: fillColorScale({
@@ -263,3 +263,7 @@ export const colors = {
         95: '#fff1f1'
     })
 }
+
+export default colors
+
+export type Colors = { [key: string]: string | Colors }

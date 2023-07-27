@@ -8,7 +8,7 @@ module.exports = {
     semantics: {},
     viewports: {},
     mediaQueries: {},
-    keyframes: {},
+    animations: {},
     selectors: {},
     functions: {}
 }

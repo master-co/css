@@ -1,6 +1,6 @@
 import { extend } from '@techor/extend'
 import { Rule, RuleMeta, RuleNative } from './rule'
-import type { Colors, Config, Keyframes } from './config'
+import type { Colors, Config, Animations } from './config'
 import { config as defaultConfig } from './config'
 import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
@@ -28,7 +28,7 @@ export interface MasterCSS {
         native: RuleNative
         count: number
     }>
-    keyframes: Keyframes
+    animations: Animations
 }
 
 export class MasterCSS {
@@ -75,9 +75,9 @@ export class MasterCSS {
         this.mediaQueries = {}
         this.matches = {}
         this.keyframesMap = {}
-        this.keyframes = {}
+        this.animations = {}
 
-        const { semantics, classes, selectors, colors, values, viewports, mediaQueries, rules, keyframes } = this.config
+        const { semantics, classes, selectors, colors, values, viewports, mediaQueries, rules, animations } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -160,13 +160,13 @@ export class MasterCSS {
         if (mediaQueries) {
             this.mediaQueries = getFlatData(mediaQueries, false)
         }
-        if (keyframes) {
-            for (const animationName in keyframes) {
-                const newValueByPropertyNameByKeyframeName = this.keyframes[animationName] = {}
-                const valueByPropertyNameByKeyframeName = keyframes[animationName]
-                for (const keyframeName in valueByPropertyNameByKeyframeName) {
-                    const newValueByPropertyName = newValueByPropertyNameByKeyframeName[keyframeName] = {}
-                    const valueByPropertyName = valueByPropertyNameByKeyframeName[keyframeName]
+        if (animations) {
+            for (const animationName in animations) {
+                const newValueByPropertyNameByKeyframeName = this.animations[animationName] = {}
+                const valueByPropertyNameByKeyframeName = animations[animationName]
+                for (const animationName in valueByPropertyNameByKeyframeName) {
+                    const newValueByPropertyName = newValueByPropertyNameByKeyframeName[animationName] = {}
+                    const valueByPropertyName = valueByPropertyNameByKeyframeName[animationName]
                     for (const propertyName in valueByPropertyName) {
                         newValueByPropertyName[camel2Kebab(propertyName)] = valueByPropertyName[propertyName]
                     }
@@ -797,10 +797,10 @@ export class MasterCSS {
             this.rules.splice(this.rules.indexOf(rule), 1)
             delete this.ruleBy[name]
 
-            // keyframes
-            if (rule.keyframeNames) {
+            // animations
+            if (rule.animationNames) {
                 const keyframeRule = this.rules[0]
-                for (const eachKeyframeName of rule.keyframeNames) {
+                for (const eachKeyframeName of rule.animationNames) {
                     const keyframe = this.keyframesMap[eachKeyframeName]
                     if (!--keyframe.count) {
                         const nativeIndex = keyframeRule.natives.indexOf(keyframe.native)
@@ -1169,17 +1169,17 @@ export class MasterCSS {
                 }
             }
 
-            // keyframes
-            if (rule.keyframeNames) {
+            // animations
+            if (rule.animationNames) {
                 const sheet = this.style?.sheet
-                for (const eachKeyframeName of rule.keyframeNames) {
+                for (const eachKeyframeName of rule.animationNames) {
                     if (Object.prototype.hasOwnProperty.call(this.keyframesMap, eachKeyframeName)) {
                         this.keyframesMap[eachKeyframeName].count++
                     } else {
                         const native: RuleNative = {
                             text: `@keyframes ${eachKeyframeName}{`
                                 + Object
-                                    .entries(this.config.keyframes[eachKeyframeName])
+                                    .entries(this.config.animations[eachKeyframeName])
                                     .map(([key, values]) => `${key}{${Object.entries(values).map(([name, value]) => name + ':' + value).join(';')}}`)
                                     .join('')
                                 + '}',
@@ -1314,7 +1314,7 @@ export class MasterCSS {
                                     const theme = atIndex !== -1 ? colorWithAlphaTheme.slice(atIndex) : ''
                                     const currentTheme = themeKey || theme
                                     const newColorNameObjectContained = single && result[2] && !result[2].startsWith('#') && !theme
-                                    const color =  result[1]
+                                    const color = result[1]
                                         ? rgbaToHexColor(colorWithAlpha)
                                         : (themeKey ? result[0] : colorWithAlpha)
                                     if (colorNameObjectContained || newColorNameObjectContained) {
@@ -1393,8 +1393,8 @@ export class MasterCSS {
         for (let i = 1; i < formattedConfigs.length; i++) {
             const currentFormattedConfig = formattedConfigs[i]
             extendedConfig = extend(extendedConfig, currentFormattedConfig)
-            if (Object.prototype.hasOwnProperty.call(currentFormattedConfig, 'keyframes')) {
-                Object.assign(extendedConfig.keyframes, currentFormattedConfig.keyframes)
+            if (Object.prototype.hasOwnProperty.call(currentFormattedConfig, 'animations')) {
+                Object.assign(extendedConfig.animations, currentFormattedConfig.animations)
             }
         }
 

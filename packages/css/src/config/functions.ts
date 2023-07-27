@@ -1,6 +1,6 @@
 import { Rule } from '../rule'
 
-export const functions: Record<string, FunctionConfig> = {
+const functions: Functions = {
     $: {
         name: 'var',
         transform(value) {
@@ -26,24 +26,24 @@ export const functions: Record<string, FunctionConfig> = {
                             current = globalValues[current].toString()
                         }
                     }
-    
+
                     if (current && !bypassHandlingUnit && !bypassHandlingUnitForcely) {
                         const result = instance.analyzeUnitValue(current, functions.calc.unit)
                         if (result) {
                             current = result.value + result.unit
                         }
                     }
-    
-                    newValue += current 
-                        + ((addPrefixSpace && value[i - 1] !== ' ') ? ' ' : '') 
-                        + char 
+
+                    newValue += current
+                        + ((addPrefixSpace && value[i - 1] !== ' ') ? ' ' : '')
+                        + char
                         + ((addSuffixSpace && value[i + 1] !== ' ') ? ' ' : '')
-    
+
                     current = ''
                     bypassHandlingUnit = false
                 }
 
-                for (;i < value.length; i++) {
+                for (; i < value.length; i++) {
                     const char = value[i]
                     if (char === '(') {
                         const newFunctionName = current
@@ -136,8 +136,12 @@ export const functions: Record<string, FunctionConfig> = {
     repeat: { unit: '' }
 }
 
+export default functions
+
 export interface FunctionConfig {
     unit?: string
     name?: string
     transform?(this: Rule, value: string): string
 }
+
+export type Functions = Record<string, FunctionConfig>

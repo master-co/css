@@ -9,7 +9,7 @@ export default {
     semantics: {},
     viewports: {},
     mediaQueries: {},
-    keyframes: {},
+    animations: {},
     selectors: {},
     functions: {},
     themeDriver: 'media'

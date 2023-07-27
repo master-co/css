@@ -48,7 +48,7 @@ const config: Config = {
     semantics: {},
     viewports: {},
     mediaQueries: {},
-    keyframes: {},
+    animations: {},
     selectors: {},
     functions: {}
 }
