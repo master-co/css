@@ -1,6 +1,6 @@
-import { Semantics } from './index'
+import type { CSSProperties } from '../types/css-properties'
 
-export const semantics: Semantics = {
+const semantics: Semantics = {
     square: {
         aspectRatio: '1/1'
     },
@@ -190,3 +190,8 @@ export const semantics: Semantics = {
         height: 'fit-content'
     }
 }
+
+export default semantics
+
+type SemanticsBase = CSSProperties | { [key: string]: SemanticsBase }
+export type Semantics = { [key: string]: SemanticsBase }

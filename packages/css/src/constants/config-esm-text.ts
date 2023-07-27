@@ -6,9 +6,9 @@ export default {
     rules: {},
     values: {},
     semantics: {},
-    breakpoints: {},
+    viewports: {},
     mediaQueries: {},
-    keyframes: {},
+    animations: {},
     selectors: {},
     functions: {}
 }

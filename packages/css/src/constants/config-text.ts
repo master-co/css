@@ -6,9 +6,9 @@ module.exports = {
     rules: {},
     values: {},
     semantics: {},
-    breakpoints: {},
+    viewports: {},
     mediaQueries: {},
-    keyframes: {},
+    animations: {},
     selectors: {},
     functions: {}
 }

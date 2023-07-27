@@ -12,12 +12,12 @@ test('classes', () => {
     )
 })
 
-test('breakpoints', () => {
+test('viewports', () => {
     testCSS(
         'hide@xss',
         '@media (min-width:500px){.hide\\@xss{display:none}}',
         {
-            'breakpoints': {
+            'viewports': {
                 'xss': 500
             }
         }

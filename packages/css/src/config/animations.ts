@@ -1,4 +1,6 @@
-export const keyframes = {
+import type { CSSProperties } from '../types/css-properties'
+
+const animations: Animations = {
     fade: {
         '0%': { opacity: 0 },
         to: { opacity: 1 }
@@ -22,11 +24,11 @@ export const keyframes = {
     jump: {
         '0%,to': {
             transform: 'translateY(-25%)',
-            'animation-timing-function': 'cubic-bezier(.8,0,1,1)'
+            animationTimingFunction: 'cubic-bezier(.8,0,1,1)'
         },
         '50%': {
             transform: 'translateY(0)',
-            'animation-timing-function': 'cubic-bezier(0,0,.2,1)'
+            animationTimingFunction: 'cubic-bezier(0,0,.2,1)'
         }
     },
     ping: {
@@ -57,3 +59,7 @@ export const keyframes = {
         to: { transform: 'none' }
     }
 }
+
+export default animations
+
+export type Animations = Record<string, { [key in 'from' | 'to']?: CSSProperties } & { [key: string]: CSSProperties }>

@@ -1,1 +1,3 @@
-export const override = false
+const override = false
+
+export default override

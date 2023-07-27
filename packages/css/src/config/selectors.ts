@@ -1,4 +1,4 @@
-export const selectors = {
+const selectors: Selectors = {
     '::scrollbar': '::-webkit-scrollbar',
     '::scrollbar-button': '::-webkit-scrollbar-button',
     '::scrollbar-thumb': '::-webkit-scrollbar-thumb',
@@ -17,3 +17,7 @@ export const selectors = {
     ':nth(': ':nth-child(',
     ':only': ':only-child'
 }
+
+export default selectors
+
+export type Selectors = { [key: string]: string | string[] | Selectors }

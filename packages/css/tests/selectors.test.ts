@@ -28,8 +28,8 @@ test('selectors', () => {
     )
 })
 
-test('breakpoints', () => {
-    testCSS('hide@xs', '@media (min-width:600px){.hide\\@xs{display:none}}')
+test('viewports', () => {
+    testCSS('hide@xs', '@media (min-width:768px){.hide\\@xs{display:none}}')
 })
 
 test('shorthands', () => {

@@ -1,0 +1,1 @@
+export type Values = { [key: string]: string | number | Values }

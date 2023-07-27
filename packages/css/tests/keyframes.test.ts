@@ -12,13 +12,13 @@ let page: Page
 beforeAll(async () => {
     browser = await puppeteer.launch({ headless: 'new' })
     page = await browser.newPage()
-    await page.evaluate(() => window['masterCSSConfig'] = { keyframes: { fade: {} } })
+    await page.evaluate(() => window['masterCSSConfig'] = { animations: { fade: {} } })
     await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
     await page.waitForNetworkIdle()
 }, 30000)
 
-it('make sure not to extend keyframes deeply', async () => {
-    const fade = await page.evaluate(() => window.MasterCSS.root.config.keyframes?.fade)
+it('make sure not to extend animations deeply', async () => {
+    const fade = await page.evaluate(() => window.MasterCSS.root.config.animations?.fade)
     expect(fade).toEqual({})
 }, 30000)
 
@@ -70,11 +70,11 @@ it('expects the keyframe output', async () => {
     expect(cssText).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
 }, 30000)
 
-it('keyframes', async () => {
+it('animations', async () => {
     await page.evaluate((p) => p.className = 'block font:bold', p)
 
     const countByKeyframeName = {}
-    const configKeyframeNames = await page.evaluate(() => Object.keys(window.MasterCSS.root.keyframes || {}))
+    const configKeyframeNames = await page.evaluate(() => Object.keys(window.MasterCSS.root.animations || {}))
     const checkKeyframeCSSRule = async () => {
         const [ruleKeyframes, keyframeRuleNatives, hasKeyframeRule] = await page.evaluate(() => [
             window.MasterCSS.root.keyframesMap,
@@ -104,14 +104,14 @@ it('keyframes', async () => {
         const animationClassNames = className.startsWith('{')
             ? className.slice(1, className.length - 1).split(';')
             : [className]
-        const keyframeNames = animationClassNames
+        const animationNames = animationClassNames
             .flatMap(eachAnimationClassName => (eachAnimationClassName.includes(':')
                 ? eachAnimationClassName.split(':')[1]
                 : eachAnimationClassName.slice(1)).split('|').filter(eachValue => configKeyframeNames.includes(eachValue)))
-        const [ruleKeyframeNames, keyframes] = await page.evaluate((className) => [window.MasterCSS.root.ruleBy[className].keyframeNames, window.MasterCSS.root.keyframesMap] as const, className)
+        const [ruleKeyframeNames, keyframesMap] = await page.evaluate((className) => [window.MasterCSS.root.ruleBy[className].animationNames, window.MasterCSS.root.keyframesMap] as const, className)
 
-        expect(ruleKeyframeNames.length).toEqual(keyframeNames.length)
-        expect(ruleKeyframeNames.every(eachKeyframeName => keyframeNames.includes(eachKeyframeName))).toBeTruthy()
+        expect(ruleKeyframeNames.length).toEqual(animationNames.length)
+        expect(ruleKeyframeNames.every(eachKeyframeName => animationNames.includes(eachKeyframeName))).toBeTruthy()
 
         for (const eachKeyframeName of ruleKeyframeNames) {
             if (eachKeyframeName in countByKeyframeName) {
@@ -120,32 +120,32 @@ it('keyframes', async () => {
                 countByKeyframeName[eachKeyframeName] = 1
             }
 
-            expect(eachKeyframeName in keyframes).toBeTruthy()
-            expect(keyframes[eachKeyframeName].count).toEqual(countByKeyframeName[eachKeyframeName])
+            expect(eachKeyframeName in keyframesMap).toBeTruthy()
+            expect(keyframesMap[eachKeyframeName].count).toEqual(countByKeyframeName[eachKeyframeName])
         }
 
         await checkKeyframeCSSRule()
     }
     const deleteAnimation = async (className: string) => {
-        const keyframeNames = await page.evaluate(
+        const animationNames = await page.evaluate(
             (className, p) => {
-                const keyframeNames = window.MasterCSS.root.ruleBy[className].keyframeNames
+                const animationNames = window.MasterCSS.root.ruleBy[className].animationNames
                 p?.classList.remove(className)
-                return keyframeNames
+                return animationNames
             },
             className,
             p
         )
 
-        const keyframes = await page.evaluate(() => window.MasterCSS.root.keyframesMap)
+        const keyframesMap = await page.evaluate(() => window.MasterCSS.root.keyframesMap)
 
-        for (const eachKeyframeName of keyframeNames) {
+        for (const eachKeyframeName of animationNames) {
             countByKeyframeName[eachKeyframeName]--
 
             const count = countByKeyframeName[eachKeyframeName]
-            expect(eachKeyframeName in keyframes).toEqual(!!count)
+            expect(eachKeyframeName in keyframesMap).toEqual(!!count)
             if (count) {
-                expect(keyframes[eachKeyframeName].count).toEqual(count)
+                expect(keyframesMap[eachKeyframeName].count).toEqual(count)
             }
         }
 
