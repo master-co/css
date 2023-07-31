@@ -18,17 +18,20 @@ module.exports = async function action(filePatterns: Pattern | Pattern[], option
             ? exploreConfig(options.config)
             : undefined
         const renderStart = process.hrtime()
-        const col1Width = sourcePaths
-            .reduce((max: any, current: any) => {
+        const col1Width = Math.max(
+            sourcePaths.reduce((max: any, current: any) => {
                 if (current.length > max.length) {
                     return current
                 } else {
                     return max
                 }
             })
-            .length
+            .length + 10,
+            20
+        )
+        const col2Width = 8
         log``
-        log`  Source Files${' '.repeat(col1Width - 10)}CSS Size`
+        log`${'  Source Files'.padEnd(col1Width)}${'CSS Size'.padStart(col2Width)}`
         await Promise.all(sourcePaths
             .map(async (eachSourcePath) => {
                 const content = fs.readFileSync(eachSourcePath, { encoding: 'utf-8' })
@@ -49,18 +52,17 @@ module.exports = async function action(filePatterns: Pattern | Pattern[], option
                         fs.writeFileSync(eachSourcePath, renderedContent)
                     }
                 }
-                const c1Gap = ' '.repeat(col1Width - eachSourcePath.length + 10 - prettifiedCSSSize.length)
-                log.ok`**${eachSourcePath}**${c1Gap}${prettifiedCSSSize}`
+                log.ok`**${eachSourcePath}**${' '.repeat(col1Width - eachSourcePath.length - 2)}${prettifiedCSSSize.padStart(col2Width)}`
             }))
         const renderTime = process.hrtime(renderStart)
         if (options.analyze) {
-            log`  ${' '.repeat(col1Width + 2)}(Brotli)`
+            log`${' '.repeat(col1Width)}${'(Brotli)'.padStart(col2Width)}`
             log``
             log.success`**${sourcePaths.length}** files analyzed in ${prettyHartime(renderTime).replace(' ', '')}`
             log``
             log.i`The CSS output will be smaller because it doesn't yet consider the bytes shared with HTML.`
         } else {
-            log`  ${' '.repeat(col1Width + 5)}(Raw)`
+            log`${' '.repeat(col1Width)}${'(Raw)'.padStart(col2Width)}`
             log``
             log.success`**${sourcePaths.length}** files rendered in ${prettyHartime(renderTime).replace(' ', '')}`
         }
