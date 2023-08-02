@@ -13,6 +13,7 @@
         "node": "*"
     },
     "dependencies": {
+        "@babel/parser": "^7.22.7",
         "@master/css": "",
         "js-beautify": "^1.14.7"
     },
