@@ -19,7 +19,7 @@ import { minimatch } from 'minimatch'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { settings as defaultSettings, doHover, positionCheck, getConfigFileColorRender, getColorPresentation, getDocumentColors, getLastInstance, getCompletionItem, getConfigColorsCompletionItem, checkConfigColorsBlock } from '@master/css-language-service'
+import { settings as defaultSettings, doHover, positionCheck, getColorPresentation, getDocumentColors, getLastInstance, getCompletionItem, getConfigColorsCompletionItem, checkConfigColorsBlock } from '@master/css-language-service'
 const connection = createConnection(ProposedFeatures.all)
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument)
 import exploreConfig from 'explore-config'
@@ -223,9 +223,7 @@ connection.onDocumentColor(
                     return []
                 }
 
-                let colorIndexs = (await getDocumentColors(text, css))
-
-                colorIndexs = colorIndexs.concat(await getConfigFileColorRender(text, css))
+                const colorIndexs = (await getDocumentColors(text, css))
 
                 const colorIndexSet = new Set()
                 const colorInformations = colorIndexs
