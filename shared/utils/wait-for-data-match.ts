@@ -1,4 +1,4 @@
-import { SpawndChildProcess, spawnd } from 'spawnd'
+import { SpawndChildProcess } from 'spawnd'
 import stripAnsi from 'strip-ansi'
 
 export default function (child: SpawndChildProcess, doesDataMatch: (data: string) => any, onReady?: () => void): Promise<string> {

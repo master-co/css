@@ -6,33 +6,6 @@ import { rgbToHsl } from '../utils/rgb-to-hsl'
 import { hslToRgb } from '../utils/hsl-to-rgb'
 import { toTwoDigitHex } from '../utils/to-two-digit-hex'
 
-export async function getConfigFileColorRender(text: string, css: MasterCSS = new MasterCSS()): Promise<any[]> {
-
-    const colors: any[] = []
-
-    let classMatch: RegExpExecArray | null
-    const colorNamePattern = /(:\s*)['"`]([^'"`]+)['"`]/g
-    let colorMatch: RegExpExecArray | null
-
-    const classPattern = /(?<=colors:\s*{\s*.*)([^}]*)}/g
-    while ((classMatch = classPattern.exec(text)) !== null) {
-        while ((colorMatch = colorNamePattern.exec(classMatch[0]))) {
-            const colorValue = parseColorString(colorMatch[2], '', css)
-            if (colorValue) {
-                const colorIndex: any = {
-                    index: {
-                        start: classMatch.index + colorMatch.index + colorMatch[1].length,
-                        end: classMatch.index + colorMatch.index + colorMatch[0].length - 1
-                    },
-                    color: colorValue
-                }
-                colors.push(colorIndex)
-            }
-        }
-    }
-    return colors
-}
-
 export async function getDocumentColors(text: string, css: MasterCSS = new MasterCSS()
 ): Promise<any[]> {
     const colors: any[] = []
@@ -42,7 +15,7 @@ export async function getDocumentColors(text: string, css: MasterCSS = new Maste
         const instanceStartIndex = instanceMatch.index
         const theme = css.themeNames.find(x => instanceMatch?.[0]?.endsWith(`@${x}`)) ?? ''
 
-        const colorPattern = /(?<=[:;|])(?:#?\w+(?:-[\d]{1,2})?(?:\/.?[\d]*)?(?:\([^\s)]+\))?)/g
+        const colorPattern = /(?<=[|:\s"'`]|^)(?:#?\w+(?:-[\d]{1,2})?(?:\/.?[\d]*)?(?:\([^\s)]+\))?(?![:]))/g
         let colorMatch: RegExpExecArray | null
 
         //check color
@@ -66,8 +39,8 @@ export async function getDocumentColors(text: string, css: MasterCSS = new Maste
 }
 
 function parseColorString(colorString: string, theme: string, css: MasterCSS = new MasterCSS()) {
-    const rgbaColorPattern = /rgba?\(([\d.]+),([\d.]+),([\d.]+)(?:,([\d.]+))?\)/g
-    const hslaColorPattern = /hsla?\(([\d.]+),([\d.]+)%,([\d.]+)%(?:,([\d.]+))?\)/g
+    const rgbaColorPattern = /rgb(?:a?)\(([\d.]+)[,|]([\d.]+)[,|]([\d.]+)(?:[,/]([\d.]+))?\)/g
+    const hslaColorPattern = /hsla?\(([\d.]+)[,|]([\d.]+)%[,|]([\d.]+)%(?:[,/]([\d.]+))?\)/g
     const hexColorPattern = /#([0-9a-fA-F]{6,8})/g
 
     let colorMatch2: RegExpExecArray | null

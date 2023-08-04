@@ -160,7 +160,7 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
                 originalCssValues
                     .filter((cssValue, index) => cssValue.description || (!cssValue.description && originalCssValues.indexOf(cssValue) === index))
                     .map(cssValue => ({
-                        label: cssValue.name,
+                        label: cssValue.name.replace(/,\s/g, ',').replace(/\s/g, '|').replace(/["']/g, ''),
                         kind: 10,
                         documentation: cssValue?.description ?? ''
                     } as CompletionItem))
