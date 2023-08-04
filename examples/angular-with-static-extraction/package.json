@@ -24,7 +24,7 @@
         "zone.js": "~0.13.0"
     },
     "devDependencies": {
-        "@master/css-extractor.webpack": "",
+        "@master/css-extractor.webpack": "workspace:*",
         "@angular-devkit/build-angular": "^16.0.4",
         "@angular/cli": "~16.0.4",
         "@angular/compiler-cli": "^16.0.0",

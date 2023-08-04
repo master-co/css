@@ -13,7 +13,7 @@
         "debug": "node --inspect-brk server"
     },
     "dependencies": {
-        "@master/css.react": "",
+        "@master/css.react": "workspace:*",
         "react": "^18.2.0",
         "react-dom": "^18.2.0"
     },

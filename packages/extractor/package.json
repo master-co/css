@@ -65,8 +65,8 @@
         "access": "public"
     },
     "dependencies": {
-        "@master/css": "",
-        "@master/css-validator": "",
+        "@master/css": "workspace:*",
+        "@master/css-validator": "workspace:*",
         "@techor/extend": "^2.4.1",
         "@techor/glob": "^2.4.1",
         "@techor/log": "^2.4.1",

@@ -40,7 +40,7 @@
         "access": "public"
     },
     "dependencies": {
-        "@master/css": "",
+        "@master/css": "workspace:*",
         "@techor/log": "^2.4.1",
         "@techor/glob": "^2.4.1",
         "explore-config": "^2.4.1"
@@ -48,7 +48,7 @@
     "devDependencies": {
         "pretty-bytes": "^6.1.0",
         "pretty-hrtime": "^1.0.3",
-        "shared": "",
+        "shared": "workspace:*",
         "ts-jest": "^29.0.5"
     }
 }

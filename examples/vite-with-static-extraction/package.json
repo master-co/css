@@ -9,7 +9,7 @@
         "preview": "vite preview"
     },
     "devDependencies": {
-        "@master/css-extractor.vite": "",
+        "@master/css-extractor.vite": "workspace:*",
         "typescript": "^4.9.3",
         "vite": "^4.3.9"
     }

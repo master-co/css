@@ -82,9 +82,9 @@
         "react": ">= 16.8.0"
     },
     "dependencies": {
-        "@master/css": "",
-        "class-variant": "",
-        "theme-service": "",
+        "@master/css": "workspace:*",
+        "class-variant": "workspace:*",
+        "theme-service": "workspace:*",
         "@techor/one-liner": "^2.2.10"
     },
     "devDependencies": {

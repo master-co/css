@@ -1,7 +1,7 @@
 {
     "private": true,
     "scripts": {
-        "postinstall": "husky install && npm ls --link=true",
+        "postinstall": "husky install && pnpm ls --r --filter \"./packages/*\"",
         "build": "npm run build:packages && npm run build:examples",
         "build:packages": "turbo run build --filter=./packages/**/* && npm i",
         "build:examples": "turbo run build --filter=./examples/**/* --parallel --concurrency=30",
@@ -12,6 +12,10 @@
         "commit-check": "commitlint --from=HEAD~1 --verbose",
         "dev": "turbo run dev --filter=./packages/* --no-cache --force --concurrency=30",
         "clean": "rm -rf node_modules && rm -rf package-lock.json && rm -rf **/*package-lock.json && rm -rf **/*node_modules && rm -rf **/*dist && rm -rf **/*.turbo"
+    },
+    "packageManager": "pnpm@8.6.10",
+    "engines": {
+        "node": "^18.16.1"
     },
     "repository": {
         "type": "git",
@@ -39,7 +43,7 @@
         "nodemon": "^2.0.22",
         "pretty-ms": "^8.0.0",
         "puppeteer": "^20.8.0",
-        "shared": "",
+        "shared": "workspace:*",
         "shuffle-array": "^1.0.1",
         "spawnd": "^9.0.0",
         "strip-ansi": "^7.1.0",
@@ -47,8 +51,5 @@
         "ts-jest": "^29.1.1",
         "tsx": "^3.12.7",
         "turbo": "^1.10.7"
-    },
-    "engines": {
-        "node": "^18"
     }
 }

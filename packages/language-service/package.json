@@ -9,11 +9,8 @@
     "description": "Master CSS Language Service",
     "author": "Aoyue Design LLC.",
     "license": "MIT",
-    "engines": {
-        "node": "*"
-    },
     "dependencies": {
-        "@master/css": "",
+        "@master/css": "workspace:*",
         "js-beautify": "^1.14.7"
     },
     "devDependencies": {

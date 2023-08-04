@@ -9,7 +9,7 @@
         "postinstall": "nuxt prepare"
     },
     "dependencies": {
-        "@master/css.vue": ""
+        "@master/css.vue": "workspace:*"
     },
     "devDependencies": {
         "@types/node": "^18",

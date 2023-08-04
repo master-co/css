@@ -38,8 +38,8 @@
         "access": "public"
     },
     "dependencies": {
-        "@master/css": "",
-        "@master/css-extractor": "",
+        "@master/css": "workspace:*",
+        "@master/css-extractor": "workspace:*",
         "webpack-virtual-modules": "^0.5.0"
     }
 }
