@@ -37,11 +37,11 @@
         "access": "public"
     },
     "dependencies": {
-        "@master/css": "workspace:*",
+        "@master/css": "workspace:^",
         "csstree-validator": "^3.0.0"
     },
     "devDependencies": {
-        "shared": "workspace:*",
+        "shared": "workspace:^",
         "ts-jest": "^29.1.0"
     }
 }

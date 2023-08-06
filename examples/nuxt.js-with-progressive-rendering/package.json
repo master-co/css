@@ -9,8 +9,9 @@
         "postinstall": "nuxt prepare"
     },
     "dependencies": {
-        "@master/css-server.nitro": "workspace:*",
-        "@master/css.vue": "workspace:*"
+        "@master/css-server.nitro": "workspace:^",
+        "@master/css": "workspace:^",
+        "@master/css.vue": "workspace:^"
     },
     "devDependencies": {
         "@types/node": "^18",

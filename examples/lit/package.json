@@ -10,7 +10,7 @@
     },
     "dependencies": {
         "lit": "^2.7.5",
-        "@master/css": "workspace:*"
+        "@master/css": "workspace:^"
     },
     "devDependencies": {
         "typescript": "^5.0.2",

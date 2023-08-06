@@ -9,7 +9,8 @@
         "preview": "vite preview"
     },
     "devDependencies": {
-        "@master/css-extractor.vite": "workspace:*",
+        "@master/css": "workspace:^",
+        "@master/css-extractor.vite": "workspace:^",
         "typescript": "^4.9.3",
         "vite": "^4.3.9"
     }

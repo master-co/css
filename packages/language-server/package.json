@@ -11,8 +11,8 @@
     "author": "Aoyue Design LLC.",
     "license": "MIT",
     "dependencies": {
-        "@master/css": "workspace:*",
-        "@master/css-language-service": "workspace:*",
+        "@master/css": "workspace:^",
+        "@master/css-language-service": "workspace:^",
         "explore-config": "^2.2.10",
         "js-beautify": "^1.14.7",
         "minimatch": "^9.0.1",

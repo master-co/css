@@ -57,7 +57,7 @@
         "vue": ">= 3.0.0"
     },
     "dependencies": {
-        "@master/css": "workspace:*"
+        "@master/css": "workspace:^"
     },
     "devDependencies": {
         "@vue/compiler-sfc": "^3.3.4",

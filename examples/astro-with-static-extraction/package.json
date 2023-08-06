@@ -14,6 +14,7 @@
         "astro": "^2.8.3"
     },
     "devDependencies": {
-        "@master/css-extractor.vite": "workspace:*"
+        "@master/css": "workspace:^",
+        "@master/css-extractor.vite": "workspace:^"
     }
 }

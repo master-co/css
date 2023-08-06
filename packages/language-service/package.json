@@ -11,7 +11,7 @@
     "license": "MIT",
     "dependencies": {
         "@babel/parser": "^7.22.7",
-        "@master/css": "workspace:*",
+        "@master/css": "workspace:^",
         "js-beautify": "^1.14.7"
     },
     "devDependencies": {

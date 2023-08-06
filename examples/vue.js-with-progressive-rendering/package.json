@@ -15,7 +15,8 @@
         "debug": "node --inspect-brk server"
     },
     "dependencies": {
-        "@master/css.vue": "workspace:*",
+        "@master/css": "workspace:^",
+        "@master/css.vue": "workspace:^",
         "pinia": "^2.1.4",
         "server-static": "^2.0.5",
         "vue": "^3.3.4",

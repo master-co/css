@@ -14,7 +14,7 @@ jobs:
         steps:
             - uses: actions/checkout@v3
             - name: Sync dev branches
-              uses: 1aron/techor@v2.4.6
+              uses: 1aron/techor@v2.5.2
               with:
                   action: "sync-dev-branches"
               env:

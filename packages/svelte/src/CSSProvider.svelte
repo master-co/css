@@ -9,7 +9,7 @@
     const css = writable<MasterCSS>(
         MasterCSS.instances.find((eachCSS) => eachCSS.root === root)
     );
-    onMount(async () => {
+    onMount(() => {
         let newCSS: MasterCSS;
         if (!$css) {
             const init = (resolvedConfig?: Config) => {

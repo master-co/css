@@ -182,8 +182,11 @@
     "publishConfig": {
         "access": "public"
     },
+    "peerDependencies": {
+        "vscode": ""
+    },
     "devDependencies": {
-        "@master/css-language-server": "workspace:*",
+        "@master/css-language-server": "workspace:^",
         "@vscode/vsce": "^2.20.0",
         "@types/vscode": "^1.63.0",
         "@vscode/test-electron": "^2.3.4",

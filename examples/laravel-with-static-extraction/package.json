@@ -7,7 +7,7 @@
         "build": "vite build"
     },
     "devDependencies": {
-        "@master/css-extractor.vite": "workspace:*",
+        "@master/css-extractor.vite": "workspace:^",
         "axios": "^1.1.2",
         "laravel-vite-plugin": "^0.7.5",
         "vite": "^4.0.0"

@@ -9,7 +9,8 @@
         "preview": "npm run build && vite preview"
     },
     "dependencies": {
-        "@master/css.react": "workspace:*",
+        "@master/css": "workspace:^",
+        "@master/css.react": "workspace:^",
         "react": "^18.2.0",
         "react-dom": "^18.2.0"
     },

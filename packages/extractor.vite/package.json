@@ -44,8 +44,8 @@
         "vite": ">=3.0.0"
     },
     "dependencies": {
-        "@master/css": "workspace:*",
-        "@master/css-extractor": "workspace:*",
+        "@master/css": "workspace:^",
+        "@master/css-extractor": "workspace:^",
         "lodash.debounce": "^4.0.8"
     }
 }
