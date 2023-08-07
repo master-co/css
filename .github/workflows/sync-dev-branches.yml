@@ -10,11 +10,11 @@ jobs:
         runs-on: ubuntu-20.04
         strategy:
             matrix:
-                node-version: [18]
+                node-version: [18.17.0]
         steps:
             - uses: actions/checkout@v3
             - name: Sync dev branches
-              uses: 1aron/techor@v2.5.2
+              uses: 1aron/techor@v2.5.3
               with:
                   action: "sync-dev-branches"
               env:
