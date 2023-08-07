@@ -46,7 +46,6 @@
         "nanoid": "^4.0.2",
         "nodemon": "^2.0.22",
         "pretty-ms": "^8.0.0",
-        "puppeteer": "^20.8.0",
         "shared": "workspace:^",
         "shuffle-array": "^1.0.1",
         "spawnd": "^9.0.0",
