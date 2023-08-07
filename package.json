@@ -4,7 +4,7 @@
         "postinstall": "husky install && pnpm ls --r --filter \"./packages/*\"",
         "build": "pnpm run build:packages && pnpm run build:examples",
         "build:packages": "turbo run build --filter=./packages/**/* && pnpm i",
-        "build:examples": "turbo run build --filter=./examples/**/*",
+        "build:examples": "turbo run build --filter=./examples/**/* --parallel --concurrency=30",
         "check": "pnpm run commit-check && pnpm run build && turbo run test lint type-check --parallel --filter=./packages/**/*",
         "test": "turbo run test --parallel --filter=./packages/**/*",
         "lint": "turbo run lint --parallel --filter=./packages/**/*",

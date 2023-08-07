@@ -93,8 +93,8 @@ export default class CSSExtractor extends EventEmitter {
 
     /**
      * @description Filter based on relative file paths and extract content
-     * @param source 
-     * @param content 
+     * @param source
+     * @param content
      * @returns string[] Latent classes
      */
     extract(source: string, content: string): string[] {
@@ -115,8 +115,8 @@ export default class CSSExtractor extends EventEmitter {
 
     /**
      * @description Filter based on relative file paths, extract content, and insert
-     * @param source 
-     * @param content 
+     * @param source
+     * @param content
      * @returns string[] Latent classes
      */
     async insert(source: string, content: string): Promise<boolean> {
@@ -319,13 +319,13 @@ export default class CSSExtractor extends EventEmitter {
         }
         const { include, exclude, sources } = this.options
         for (const eachSource of sources) {
-            if (minimatch(source, eachSource)) return true
+            if (minimatch(source, eachSource, { dot: true })) return true
         }
         for (const eachIncludePattern of include) {
-            if (!minimatch(source, eachIncludePattern)) return false
+            if (!minimatch(source, eachIncludePattern, { dot: true })) return false
         }
         for (const eachExcludePattern of exclude) {
-            if (minimatch(source, eachExcludePattern)) return false
+            if (minimatch(source, eachExcludePattern, { dot: true })) return false
         }
         return true
     }
