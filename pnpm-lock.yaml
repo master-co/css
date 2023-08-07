@@ -1048,21 +1048,21 @@ importers:
         specifier: workspace:^
         version: link:../normal.css
       '@techor/fs':
-        specifier: ^2.5.3
-        version: 2.5.3
+        specifier: ^2.5.4
+        version: 2.5.4
       '@techor/log':
-        specifier: ^2.5.3
-        version: 2.5.3
+        specifier: ^2.5.4
+        version: 2.5.4
       commander:
         specifier: ^11.0.0
         version: 11.0.0
     devDependencies:
       '@techor/extend':
-        specifier: ^2.5.3
-        version: 2.5.3
+        specifier: ^2.5.4
+        version: 2.5.4
       '@techor/pack':
-        specifier: ^2.5.3
-        version: 2.5.3
+        specifier: ^2.5.4
+        version: 2.5.4
       csstype:
         specifier: ^3.1.2
         version: 3.1.2
@@ -1085,20 +1085,20 @@ importers:
         specifier: workspace:^
         version: link:../validator
       '@techor/extend':
-        specifier: ^2.5.3
-        version: 2.5.3
+        specifier: ^2.5.4
+        version: 2.5.4
       '@techor/glob':
-        specifier: ^2.5.3
-        version: 2.5.3
+        specifier: ^2.5.4
+        version: 2.5.4
       '@techor/log':
-        specifier: ^2.5.3
-        version: 2.5.3
+        specifier: ^2.5.4
+        version: 2.5.4
       chokidar:
         specifier: ^3.5.3
         version: 3.5.3
       explore-config:
-        specifier: ^2.5.3
-        version: 2.5.3
+        specifier: ^2.5.4
+        version: 2.5.4
       minimatch:
         specifier: ^9.0.1
         version: 9.0.1
@@ -1210,14 +1210,14 @@ importers:
         specifier: workspace:^
         version: link:../css
       '@techor/glob':
-        specifier: ^2.5.3
-        version: 2.5.3
+        specifier: ^2.5.4
+        version: 2.5.4
       '@techor/log':
-        specifier: ^2.5.3
-        version: 2.5.3
+        specifier: ^2.5.4
+        version: 2.5.4
       explore-config:
-        specifier: ^2.5.3
-        version: 2.5.3
+        specifier: ^2.5.4
+        version: 2.5.4
     devDependencies:
       pretty-bytes:
         specifier: ^6.1.0
@@ -1257,8 +1257,8 @@ importers:
   packages/theme-service:
     devDependencies:
       '@techor/extend':
-        specifier: ^2.5.3
-        version: 2.5.3
+        specifier: ^2.5.4
+        version: 2.5.4
 
   packages/validator:
     dependencies:
@@ -7124,14 +7124,25 @@ packages:
       defer-to-connect: 2.0.1
     dev: true
 
-  /@techor/extend@2.5.3:
-    resolution: {integrity: sha512-OLDUo5Ncpiu9+OR741yk4DSMNaE43WD+J/bdjWNo0INX21lKszGkt7WMVRfWFqDYeb0e16seSWtpgqXstI7rEA==}
+  /@techor/extend@2.5.4:
+    resolution: {integrity: sha512-6pfqaAbKvDbuVC4Ejft2zYeCYY5O/5j6UllifjOqePhewbUpyk65bDwABJ0P/N7CC/3DgPSBbJaJZa4QGziDoQ==}
 
   /@techor/fs@2.5.3:
     resolution: {integrity: sha512-WI/dSOsFdfZBmWgARIvKl24eXqTyHW0aYVno1soecqwZCLwpk/e5FvDhAYhR6SKjUpFuNkgiIpcpwdMNGfRNng==}
+    dev: true
+
+  /@techor/fs@2.5.4:
+    resolution: {integrity: sha512-0zwTBmeAMxx98yxbxBOldi/JDtS+K3jWE2tZlgSAeOURG1UT4WlsBuqkyKx/d/BIhf1tEfsBj/a7akNKM0U7Lw==}
 
   /@techor/glob@2.5.3:
     resolution: {integrity: sha512-jq9A5CRAwCV4IPloAMEhNlrqDkQb0mKiA4lFMhOSCWEY2/XTmrcCTDUkM9YbRrUcKbVwkL0vCw79K8Uufc3lYA==}
+    dependencies:
+      fast-glob: 3.3.1
+      upath: 2.0.1
+    dev: true
+
+  /@techor/glob@2.5.4:
+    resolution: {integrity: sha512-zcfbRyXqRzcjOWaUoCMd4iWrLBUVZzpEwXwqSfWUee15Xy33Zyvxk01gmp49iuK62s/IHHvCOyfwndYbXPhR4w==}
     dependencies:
       fast-glob: 3.3.1
       upath: 2.0.1
@@ -7166,16 +7177,16 @@ packages:
       jest: 29.6.1(@types/node@20.4.0)(ts-node@10.9.1)
     dev: true
 
-  /@techor/log@2.5.3:
-    resolution: {integrity: sha512-2+nSjKgwdxrGOtLjZ80K/kEuzP6GkzMJvuGtE52RO1JfcstD4cDdfrtRWGvMkmhmM4NnCsrOYWoswNKmwng+jw==}
+  /@techor/log@2.5.4:
+    resolution: {integrity: sha512-22/iz3P21A2Qc0SE0uEyD+JYBQDs7mkB79Pvrjug5UabRIKL0QyP9JKfqNnCzR7AHzuxSQEeiw4EP7wWIQSyPA==}
 
   /@techor/npm@2.5.3:
     resolution: {integrity: sha512-b7PPbp+NeZ7s9i9lk+IbeL7FUuSrSjlJNNxtqUaqqCQpnBCMXgEIdvVNU7dPf8Zygs5Meor+31Yc1Wd/yM18xg==}
     dependencies:
-      '@techor/extend': 2.5.3
-      '@techor/fs': 2.5.3
-      '@techor/glob': 2.5.3
-      '@techor/log': 2.5.3
+      '@techor/extend': 2.5.4
+      '@techor/fs': 2.5.4
+      '@techor/glob': 2.5.4
+      '@techor/log': 2.5.4
       js-yaml: 4.1.0
     dev: true
 
@@ -7187,20 +7198,41 @@ packages:
     resolution: {integrity: sha512-6ADzrAyx74gTzf+qphNjgF1aEKoTUk3VobERYc8OIhCZ8b/tnGidlyXIbnb7CNxaUXcfKlKx/h7LkS6atExqfg==}
     dev: true
 
+  /@techor/one-liner@2.5.4:
+    resolution: {integrity: sha512-EeirvqRjA2BXsAWK0UpD2KUuU+1Hrjcba5OS4YjOtl2aCFyNLcalrEOWr91P1tLcfn3JiXCacU6O4kW0LqHh6A==}
+    dev: true
+
   /@techor/pack@2.5.3:
     resolution: {integrity: sha512-cwir94P3e7CFLtSnbHaF7f5MnFTgf33UPIBYyE/z3bvWYa3BlzTjnNIovU7R5T9qwW0iyQStvvn7xFBR1gNVaw==}
     dependencies:
-      '@techor/extend': 2.5.3
-      '@techor/fs': 2.5.3
-      '@techor/glob': 2.5.3
-      '@techor/log': 2.5.3
+      '@techor/extend': 2.5.4
+      '@techor/fs': 2.5.4
+      '@techor/glob': 2.5.4
+      '@techor/log': 2.5.4
       '@techor/one-liner': 2.5.3
       cross-import: 2.5.3
       esbuild: 0.18.19
-      explore-config: 2.5.3
+      explore-config: 2.5.4
       lodash.isequal: 4.5.0
       npm: 9.8.1
       techor: 2.5.3
+      upath: 2.0.1
+    dev: true
+
+  /@techor/pack@2.5.4:
+    resolution: {integrity: sha512-S8OqyzVnDgMcPxGW0/KiD6652T0DjMz1N0IBdims1wBho6XofxeO0SWBosjOAriTmcc644lb2ilAqylC9/B3jg==}
+    dependencies:
+      '@techor/extend': 2.5.4
+      '@techor/fs': 2.5.4
+      '@techor/glob': 2.5.4
+      '@techor/log': 2.5.4
+      '@techor/one-liner': 2.5.4
+      cross-import: 2.5.4
+      esbuild: 0.18.19
+      explore-config: 2.5.4
+      lodash.isequal: 4.5.0
+      npm: 9.8.1
+      techor: 2.5.4
       upath: 2.0.1
     dev: true
 
@@ -7212,7 +7244,7 @@ packages:
       typescript: ''
     dependencies:
       '@techor/jest': 2.5.3(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(jest@29.6.1)
-      '@techor/pack': 2.5.3
+      '@techor/pack': 2.5.4
       '@techor/version': 2.5.3
       '@types/node': 20.4.0
       commitlint-config-techor: 2.5.3(@swc/core@1.3.74)
@@ -7238,9 +7270,9 @@ packages:
   /@techor/version@2.5.3:
     resolution: {integrity: sha512-BZqe/hXV1ASrddXM/R+A9aZOh+6bCXcUff0zrmUWcFLcoAPYpwNs1nxvF/7W9PdWZfPXE9nuj0nro5RMSKDn0w==}
     dependencies:
-      '@techor/fs': 2.5.3
-      '@techor/glob': 2.5.3
-      '@techor/log': 2.5.3
+      '@techor/fs': 2.5.4
+      '@techor/glob': 2.5.4
+      '@techor/log': 2.5.4
       '@techor/npm': 2.5.3
       techor: 2.5.3
     dev: true
@@ -10865,6 +10897,9 @@ packages:
   /cross-import@2.5.3:
     resolution: {integrity: sha512-z5vKJxhU2ZMYKZZSL2dMAk6vPfHoTM+rVPqjcK2L19jX5JDP10kQdCqAAu3o/k+/HWpJQ44YLjlQogpmA7iP2A==}
 
+  /cross-import@2.5.4:
+    resolution: {integrity: sha512-Udy1gS1nHm2+RYPWE06b4iaAaDNI0IDjDjPp7HREJg7P2WTXPO+7XrkSmA+HP/uoBFINYzkEkXs3n2rh6J8swg==}
+
   /cross-spawn@6.0.5:
     resolution: {integrity: sha512-eTVLrBSt7fjbDygz805pMnstIs2VTBNkRm0qxZd+M7A5XDdxVRWO5MxGBXZhjY4cqLYLdtrGqRf8mBPmzwSpWQ==}
     engines: {node: '>=4.8'}
@@ -13017,10 +13052,19 @@ packages:
   /explore-config@2.5.3:
     resolution: {integrity: sha512-3mBkX3DqN857Coa+mj2ZUM7NORZSGGczRsuUj1LLH9KFM6aR4AQv+3QDQW32UwjAuxdmGj+CkOujPWUj7zf8Xg==}
     dependencies:
-      '@techor/extend': 2.5.3
-      '@techor/glob': 2.5.3
-      '@techor/log': 2.5.3
+      '@techor/extend': 2.5.4
+      '@techor/glob': 2.5.4
+      '@techor/log': 2.5.4
       cross-import: 2.5.3
+    dev: false
+
+  /explore-config@2.5.4:
+    resolution: {integrity: sha512-bH/36kjly6gLKmAXXDZwnX3Xyz4j/yRPms+w+D/Fuv9Qn7RJGZnCSah1R4NE9fQHTL8fXMjCGiBEbV4v41NQpw==}
+    dependencies:
+      '@techor/extend': 2.5.4
+      '@techor/glob': 2.5.4
+      '@techor/log': 2.5.4
+      cross-import: 2.5.4
 
   /exponential-backoff@3.1.1:
     resolution: {integrity: sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==}
@@ -21267,7 +21311,7 @@ packages:
       semantic-release: ^19.0.5
     dependencies:
       '@semantic-release/exec': 6.0.3(semantic-release@19.0.5)
-      '@techor/extend': 2.5.3
+      '@techor/extend': 2.5.4
       '@techor/npm': 2.5.3
       conventional-changelog-techor: 2.5.3
       semantic-release: 19.0.5
@@ -22575,8 +22619,17 @@ packages:
     resolution: {integrity: sha512-dCExX5suheVNtZdGyqrIW9Rm4UlVyyCuIpSRH5VXTWgcdAI2kA9YYkmH8xtn2dlKhppPXULAdREXVSGl0F0ZMw==}
     hasBin: true
     dependencies:
-      '@techor/fs': 2.5.3
-      '@techor/log': 2.5.3
+      '@techor/fs': 2.5.4
+      '@techor/log': 2.5.4
+      commander: 11.0.0
+    dev: true
+
+  /techor@2.5.4:
+    resolution: {integrity: sha512-lR0fGFqQl3pSNIzGTqaEEW7KcoE+28CE0iWZa+QpW9fAxZu+5aQf+xbpcTNdLr7iiAGFgUG7qFMwIkBhlpPaIA==}
+    hasBin: true
+    dependencies:
+      '@techor/fs': 2.5.4
+      '@techor/log': 2.5.4
       commander: 11.0.0
     dev: true
 
