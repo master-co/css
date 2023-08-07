@@ -10,7 +10,7 @@
         "lint": "turbo run lint --parallel --filter=./packages/**/*",
         "type-check": "turbo run type-check --parallel --filter=./packages/**/*",
         "commit-check": "commitlint --from=HEAD~1 --verbose",
-        "dev": "turbo run dev --filter=./packages/* --no-cache --force --concurrency=30",
+        "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8192 turbo run dev --filter=./packages/* --no-cache --force --concurrency=30",
         "clean": "rm -rf node_modules && rm -rf package-lock.json && rm -rf **/*package-lock.json && rm -rf **/*node_modules && rm -rf **/*dist && rm -rf **/*.turbo"
     },
     "packageManager": "pnpm@8.6.10",
@@ -27,15 +27,18 @@
         "shared/"
     ],
     "devDependencies": {
+        "@master/css-extractor": "workspace:^",
+        "@master/css-extractor.vite": "workspace:^",
         "@master/css-renderer": "workspace:^",
         "@techor/fs": "^2.5.2",
         "@techor/glob": "^2.5.2",
         "@techor/jest": "^2.5.2",
         "@techor/jest-dom": "^2.5.2",
+        "@techor/pack": "^2.5.2",
         "@techor/repo": "^2.5.2",
         "@types/jest": "^29.5.2",
         "@types/node": "^20.4.0",
-        "concurrently": "^8.2.0",
+        "cross-env": "^7.0.3",
         "eslint-plugin-react-hooks": "^4.6.0",
         "fast-glob": "^3.2.12",
         "jest": "^29.6.1",

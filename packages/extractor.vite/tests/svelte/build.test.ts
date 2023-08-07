@@ -9,7 +9,7 @@ const tmpDir = path.join(__dirname, 'tmp/build')
 
 it('build', () => {
     copy(examplePath, tmpDir)
-    execSync('npm run build', { cwd: tmpDir, stdio: 'inherit' })
+    execSync('pnpm run build', { cwd: tmpDir, stdio: 'inherit' })
     expect(fs.readFileSync(explorePathSync(path.resolve(tmpDir, '.svelte-kit/output/server/_app/immutable/assets/_layout.*.css'))).toString()).toContain('.mt\\:-2vw{margin-top:-2vw}')
     rm(tmpDir)
 })

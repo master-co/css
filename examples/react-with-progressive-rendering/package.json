@@ -5,10 +5,10 @@
     "type": "module",
     "scripts": {
         "dev": "node server",
-        "build": "npm run build:client && npm run build:server",
+        "build": "pnpm run build:client && pnpm run build:server",
         "build:client": "vite build --outDir dist/client",
         "build:server": "vite build --ssr src/entry-server.jsx --outDir dist/server",
-        "generate": "vite build --outDir dist/static && npm run build:server && node prerender",
+        "generate": "vite build --outDir dist/static && pnpm run build:server && node prerender",
         "serve": "NODE_ENV=production node server",
         "debug": "node --inspect-brk server"
     },

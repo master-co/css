@@ -2,7 +2,7 @@
     "name": "@master/css",
     "scripts": {
         "build": "techor pack --external @master/css-renderer @master/css-extractor",
-        "dev": "npm run build -- --watch",
+        "dev": "pnpm run build --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
@@ -76,6 +76,7 @@
     },
     "devDependencies": {
         "@techor/extend": "^2.4.1",
+        "@techor/pack": "^2.5.2",
         "csstype": "^3.1.2",
         "shared": "workspace:^",
         "vite": "^4.2.1"

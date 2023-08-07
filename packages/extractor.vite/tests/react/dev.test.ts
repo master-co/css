@@ -23,7 +23,7 @@ beforeAll(async () => {
     templatePath = path.join(tmpDir, 'src/App.tsx')
     templateContent = fs.readFileSync(templatePath).toString()
     masterCSSConfigPath = path.join(tmpDir, 'master.css.ts')
-    devProcess = spawnd('npm run dev', { shell: true, cwd: tmpDir })
+    devProcess = spawnd('pnpm dev', { shell: true, cwd: tmpDir })
     const urlPattern = /(http:\/\/localhost:).*?([0-9]+)/
     const data = await waitForDataMatch(devProcess, (data) => urlPattern.exec(data)?.length)
     const result = urlPattern.exec(data)

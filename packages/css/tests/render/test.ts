@@ -1,23 +1,19 @@
 import stripAnsi from 'strip-ansi'
-import { spawnd, SpawndChildProcess } from 'spawnd'
+import fs from 'fs'
+import path from 'path'
+import { execSync } from 'child_process'
 
-let child: SpawndChildProcess
-
-it('render cli', async () => {
-    child = spawnd('tsx ../../src/bin render ../cli/a.test.html --config ../config/extends/master-css.js', { shell: true, cwd: __dirname })
-
-    const messages: string[] = []
-    child.stdout.on('data', (data) => messages.push(stripAnsi(data.toString())))
-
-    await new Promise<void>(resolve => {
-        child.on('close', () => {
-            resolve()
-        })
-    })
-
-    expect(messages.join(' ')).toContain('../config/extends/master-css.js config file found')
+it('checks config file', async () => {
+    fs.writeFileSync(path.join(__dirname, 'test.html'), `
+        <html>
+            <head>
+                <link rel="styleSheet">
+            </head>
+            <body>
+                <h1 class="text:center ml:0&gt;:is(a,button):first font:32">Hello World</h1>
+            </body>
+        </html>
+    `)
+    const message = stripAnsi(execSync('tsx ../../src/bin render test.html --config ../config/extends/master-css.js', { cwd: __dirname }).toString())
+    expect(message).toContain('✓ ../config/extends/master-css.js config file found')
 }, 15000)
-
-// afterAll(async () => {
-//     await child.destroy()
-// }, 30000)
