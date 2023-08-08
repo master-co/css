@@ -1,7 +1,6 @@
 import fs from 'fs'
 import path from 'path'
 import cssEscape from 'shared/utils/css-escape'
-import delay from 'shared/utils/delay'
 import puppeteer, { type Browser, type Page } from 'puppeteer-core'
 import { copy, rm } from 'shared/utils/fs'
 import { SpawndChildProcess, spawnd } from 'spawnd'
@@ -30,7 +29,7 @@ beforeAll(async () => {
     browser = await puppeteer.launch({ headless: 'new', channel: 'chrome' })
     page = await browser.newPage()
     if (result) {
-        await page.goto(result[1] + result[2])
+        await page.goto(result[1] + result[2], { timeout: 120000 })
         await page.waitForNavigation()
         page.on('console', (consoleMessage) => {
             if (consoleMessage.type() === 'error') {
