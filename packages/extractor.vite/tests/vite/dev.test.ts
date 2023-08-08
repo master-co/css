@@ -27,7 +27,7 @@ beforeAll(async () => {
     const urlPattern = /(http:\/\/localhost:).*?([0-9]+)/
     const data = await waitForDataMatch(devProcess, (data) => urlPattern.exec(data)?.length)
     const result = urlPattern.exec(data)
-    browser = await puppeteer.launch({ headless: 'new' })
+    browser = await puppeteer.launch({ headless: 'new', channel: 'chrome' })
     page = await browser.newPage()
     page.on('console', (consoleMessage) => {
         if (consoleMessage.type() === 'error') {

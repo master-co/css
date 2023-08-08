@@ -10,7 +10,7 @@ let browser: Browser
 let page: Page
 
 beforeAll(async () => {
-    browser = await puppeteer.launch({ headless: 'new' })
+    browser = await puppeteer.launch({ headless: 'new', channel: 'chrome' })
     page = await browser.newPage()
     await page.evaluate(() => window['masterCSSConfig'] = { animations: { fade: {} } })
     await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
