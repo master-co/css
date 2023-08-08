@@ -1,7 +1,7 @@
 {
     "name": "master-css",
     "scopeName": "source.master-css.injection-react",
-    "injectionSelector": "L:meta.tag",
+    "injectionSelector": "L:meta.tag,L:source.mdx",
     "patterns": [
         {
             "include": "#highlight-class-quoted-double"

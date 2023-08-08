@@ -69,6 +69,7 @@
                 "injectTo": [
                     "source.js.jsx",
                     "source.ts.tsx",
+                    "source.mdx",
                     "source.jsx",
                     "source.tsx"
                 ]
@@ -86,6 +87,7 @@
                 "injectTo": [
                     "source.js.jsx",
                     "source.ts.tsx",
+                    "source.mdx",
                     "source.jsx",
                     "source.tsx",
                     "source.js",
@@ -102,6 +104,7 @@
                 "injectTo": [
                     "source.js.jsx",
                     "source.ts.tsx",
+                    "source.mdx",
                     "source.jsx",
                     "source.tsx",
                     "source.js",
@@ -126,6 +129,7 @@
                         "typescript",
                         "javascriptreact",
                         "typescriptreact",
+                        "mdx",
                         "vue",
                         "svelte",
                         "rust"
