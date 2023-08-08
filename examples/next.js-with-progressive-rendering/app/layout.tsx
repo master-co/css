@@ -1,7 +1,5 @@
-import dynamic from 'next/dynamic'
 import './globals.css'
-
-const CSSProvider = dynamic(() => import('@master/css.react/CSSProvider'))
+import Client from './client'
 
 export const metadata = {
     title: 'Create Next App',
@@ -16,9 +14,9 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
-                <CSSProvider config={import('../master.css')}>
+                <Client>
                     {children}
-                </CSSProvider>
+                </Client>
             </body>
         </html>
     )
