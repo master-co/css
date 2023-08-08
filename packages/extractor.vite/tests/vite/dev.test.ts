@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import cssEscape from 'shared/utils/css-escape'
-import puppeteer, { type Browser, type Page } from 'puppeteer'
+import puppeteer, { type Browser, type Page } from 'puppeteer-core'
 import { copy, rm } from 'shared/utils/fs'
 import { SpawndChildProcess, spawnd } from 'spawnd'
 import waitForDataMatch from 'shared/utils/wait-for-data-match'

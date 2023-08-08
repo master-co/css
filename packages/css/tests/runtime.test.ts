@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import puppeteer, { Browser, Page } from 'puppeteer'
+import puppeteer, { Browser, Page } from 'puppeteer-core'
 import path from 'path'
 import { complexHTML } from './complex-html'
 

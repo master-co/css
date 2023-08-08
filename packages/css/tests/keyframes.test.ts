@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import puppeteer, { Browser, ElementHandle, Page } from 'puppeteer'
+import puppeteer, { Browser, ElementHandle, Page } from 'puppeteer-core'
 import path from 'path'
 import type { MasterCSS } from '../src'
 
