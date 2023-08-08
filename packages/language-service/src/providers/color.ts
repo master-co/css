@@ -2,9 +2,10 @@ import type { Color, ColorPresentation } from 'vscode-languageserver-types'
 import { MasterCSS } from '@master/css'
 import { hexToRgb } from '../utils/hex-to-rgb'
 import { instancePattern } from '../utils/regex'
-import { rgbToHsl } from '../utils/rgb-to-hsl'
-import { hslToRgb } from '../utils/hsl-to-rgb'
 import { toTwoDigitHex } from '../utils/to-two-digit-hex'
+import { rgb, hsl, hwb, lch, lab, cmyk } from 'color-convert'
+import { oklabToRgb } from '../utils/oklab-to-rgb'
+import { oklchToOklab } from '../utils/oklch-to-oklab'
 
 export async function getDocumentColors(text: string, css: MasterCSS = new MasterCSS()
 ): Promise<any[]> {
@@ -15,7 +16,7 @@ export async function getDocumentColors(text: string, css: MasterCSS = new Maste
         const instanceStartIndex = instanceMatch.index
         const theme = css.themeNames.find(x => instanceMatch?.[0]?.endsWith(`@${x}`)) ?? ''
 
-        const colorPattern = /(?<=[|:\s"'`]|^)(?:#?\w+(?:-[\d]{1,2})?(?:\/.?[\d]*)?(?:\([^\s)]+\))?(?![:]))/g
+        const colorPattern = /(?<=[|:\s"'`]|^)(?:#?[\w-]+(?:-[\d]{1,2})?(?:\/.?[\d]*)?(?:\([^\s)]+\))?(?![:]))/g
         let colorMatch: RegExpExecArray | null
 
         //check color
@@ -38,21 +39,90 @@ export async function getDocumentColors(text: string, css: MasterCSS = new Maste
     return colors
 }
 
+function percentageConverter (value: string, max = 1) {
+    if (value === 'none'){
+        return 0
+    }
+    else if (value.endsWith('%')) {
+        return max * Number(value.replace('%', '')) / 100
+    }
+    else {
+        return Number(value)
+    }
+}
+
+function degConverter(value: string) {
+    if (value === 'none') {
+        return 0
+    }
+    else if (value.endsWith('turn')) {
+        return Number(value.replace('turn', '')) * 360
+    }
+    else if (value.endsWith('grad')) {
+        return Number(value.replace('grad', '')) * 0.9
+    }
+    else if (value.endsWith('rad')) {
+        return Number(value.replace('rad', '')) * 57.2957795
+    }
+    else if (value.endsWith('deg')) {
+        return Number(value.replace('deg', ''))
+    }
+    else {
+        return Number(value)
+    }
+}
+
 function parseColorString(colorString: string, theme: string, css: MasterCSS = new MasterCSS()) {
-    const rgbaColorPattern = /rgb(?:a?)\(([\d.]+)[,|]([\d.]+)[,|]([\d.]+)(?:[,/]([\d.]+))?\)/g
-    const hslaColorPattern = /hsla?\(([\d.]+)[,|]([\d.]+)%[,|]([\d.]+)%(?:[,/]([\d.]+))?\)/g
+    const rgbaColorPattern = /rgb(?:a)?\(([\d.]+)[,|]([\d.]+)[,|]([\d.]+)(?:[,/]([\d.]+(?:%)?))?\)/g
+    const hslaColorPattern = /hsl(?:a)?\(([\d.]+(?:deg|turn|grad|rad)?|none)[,|]([\d.]+%|none)[,|]([\d.]+%|none)(?:[,/]([\d.]+(?:%)?))?\)/g
+    const hwbColorPattern = /hwb\(([\d.]+(?:deg|turn|grad|rad)?|none)[|]([\d.]+%|none)[|]([\d.]+%|none)(?:[/]([\d.]+(?:%)?))?\)/g
+    const oklchColorPattern = /oklch\(([\d.]+(?:%)?|none)[|]([\d.]+(?:%)?|none)[|]([\d.]+(?:deg|turn|grad|rad)?|none)(?:[/]([\d.]+(?:%)?))?\)/g
+    const lchColorPattern = /lch\(([\d.]+(?:%)?|none)[|]([\d.]+(?:%)?|none)[|]([\d.]+(?:deg|turn|grad|rad)?|none)(?:[/]([\d.]+(?:%)?))?\)/g
+    const oklabColorPattern = /oklab\(([\d.]+(?:%)?|none)[|](-?[\d.]+(?:%)?|none)[|](-?[\d.]+(?:%)?|none)(?:[/]([\d.]+(?:%)?))?\)/g
+    const labColorPattern = /lab\(([\d.]+(?:%)?|none)[|](-?[\d.]+(?:%)?|none)[|](-?[\d.]+(?:%)?|none)(?:[/]([\d.]+(?:%)?))?\)/g
+    const cmykColorPattern = /device-cmyk\(([\d.]+(?:%)?|none)[|]([\d.]+(?:%)?|none)[|]([\d.]+(?:%)?|none)[|]([\d.]+(?:%)?|none)(?:[/]([\d.]+(?:%)?))?(?:,\w+\(.*\))?\)/g
     const hexColorPattern = /#([0-9a-fA-F]{6,8})/g
+    const colorFunctionPattern = /color?\((?:srgb|srgb-linear|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz|xyz-d50|xyz-d65)[|]([\d.]+)[|]([\d.]+)[|]([\d.]+)(?:[/]([\d.]+(?:%)?))?\)/g
 
     let colorMatch2: RegExpExecArray | null
     //#region  for rgb、hls
     if ((colorMatch2 = rgbaColorPattern.exec(colorString))) {
-        return getColorValue({ red: Number(colorMatch2[1]), green: Number(colorMatch2[2]), blue: Number(colorMatch2[3]), alpha: colorMatch2[4] == undefined ? 1 : Number(colorMatch2[4]) })
+        return getColorValue({ red: Number(colorMatch2[1]), green: Number(colorMatch2[2]), blue: Number(colorMatch2[3]), alpha: colorMatch2[4] == undefined ? 1 : percentageConverter(colorMatch2[4]) })
     }
     else if ((colorMatch2 = hslaColorPattern.exec(colorString))) {
-        return getColorValue(hslToRgb(Number(colorMatch2[1]), Number(colorMatch2[2]), Number(colorMatch2[3]), colorMatch2[4] == undefined ? 1 : Number(colorMatch2[4])))
+        const rgb = hsl.rgb([degConverter(colorMatch2[1]), percentageConverter(colorMatch2[2], 100), percentageConverter(colorMatch2[3], 100)])
+        return getColorValue({ red: rgb[0], green: rgb[1], blue: rgb[2], alpha: colorMatch2[4] == undefined ? 1 : percentageConverter(colorMatch2[4]) })
+    }
+    else if ((colorMatch2 = hwbColorPattern.exec(colorString))) {
+        const rgb = hwb.rgb([degConverter(colorMatch2[1]), percentageConverter(colorMatch2[2], 100), percentageConverter(colorMatch2[3], 100)])
+        return getColorValue({ red: rgb[0], green: rgb[1], blue: rgb[2], alpha: colorMatch2[4] == undefined ? 1 : percentageConverter(colorMatch2[4]) })
+    }
+    else if ((colorMatch2 = oklchColorPattern.exec(colorString))) {
+        const oklab = oklchToOklab([percentageConverter(colorMatch2[1]), percentageConverter(colorMatch2[2], 0.4), degConverter(colorMatch2[3])])
+        const rgb = oklabToRgb(oklab)
+        return getColorValue({ red: rgb[0], green: rgb[1], blue: rgb[2], alpha: colorMatch2[4] == undefined ? 1 : percentageConverter(colorMatch2[4]) })
+    }
+    else if ((colorMatch2 = lchColorPattern.exec(colorString))) {
+        const rgb = lch.rgb([percentageConverter(colorMatch2[1], 100), percentageConverter(colorMatch2[2], 150), degConverter(colorMatch2[3])])
+        return getColorValue({ red: rgb[0], green: rgb[1], blue: rgb[2], alpha: colorMatch2[4] == undefined ? 1 : percentageConverter(colorMatch2[4]) })
+    }
+    else if ((colorMatch2 = oklabColorPattern.exec(colorString))) {
+        const rgb = oklabToRgb([percentageConverter(colorMatch2[1]), percentageConverter(colorMatch2[2], 0.4), percentageConverter(colorMatch2[3], 0.4)])
+        return getColorValue({ red: rgb[0], green: rgb[1], blue: rgb[2], alpha: colorMatch2[4] == undefined ? 1 : percentageConverter(colorMatch2[4]) })
+    }
+    else if ((colorMatch2 = labColorPattern.exec(colorString))) {
+        const rgb = lab.rgb([percentageConverter(colorMatch2[1], 100), percentageConverter(colorMatch2[2], 125), percentageConverter(colorMatch2[3], 125)])
+        return getColorValue({ red: rgb[0], green: rgb[1], blue: rgb[2], alpha: colorMatch2[4] == undefined ? 1 : percentageConverter(colorMatch2[4]) })
+    }
+    else if ((colorMatch2 = cmykColorPattern.exec(colorString))) {
+        const rgb = cmyk.rgb([percentageConverter(colorMatch2[1], 100), percentageConverter(colorMatch2[2], 100), percentageConverter(colorMatch2[3], 100), percentageConverter(colorMatch2[4], 100)])
+        return getColorValue({ red: rgb[0], green: rgb[1], blue: rgb[2], alpha: colorMatch2[5] == undefined ? 1 : percentageConverter(colorMatch2[5]) })
     }
     else if ((colorMatch2 = hexColorPattern.exec(colorString))) {
         return getColorValue(hexToRgb(colorMatch2[1]))
+    }
+    else if ((colorMatch2 = colorFunctionPattern.exec(colorString))) {
+        return getColorValue({ red: Number(colorMatch2[1]) * 255, green: Number(colorMatch2[2]) * 255, blue: Number(colorMatch2[3]) * 255, alpha: colorMatch2[4] == undefined ? 1 : percentageConverter(colorMatch2[4]) })
     }
     //#endregion for rgb、hls
 
@@ -125,13 +195,45 @@ export function getColorPresentation(params: any, isColorRender = false) {
     }
     result.push({ label: label, textEdit: { range: range, newText: label } })
 
-    const hsl = rgbToHsl(color)
-    if (hsl.a === 1) {
-        label = `hsl(${hsl.h},${Math.round(hsl.s * 100)}%,${Math.round(hsl.l * 100)}%)`
+    const hsl = rgb.hsl(red256, green256, blue256)
+    if (color.alpha === 1) {
+        label = `hsl(${hsl[0]},${Math.round(hsl[1])}%,${Math.round(hsl[2])}%)`
     } else {
-        label = `hsla(${hsl.h},${Math.round(hsl.s * 100)}%,${Math.round(hsl.l * 100)}%,${hsl.a})`
+        label = `hsla(${hsl[0]},${Math.round(hsl[1])}%,${Math.round(hsl[2])}%,${color.alpha})`
     }
     result.push({ label: label, textEdit: { range: range, newText: label } })
+
+    // const hwb = rgb.hwb(red256, green256, blue256)
+    // if (color.alpha === 1) {
+    //     label = `hwb(${hwb[0]}|${hwb[1]}%|${hwb[2]}%)`
+    // } else {
+    //     label = `hwb(${hwb[0]}|${hwb[1]}%|${hwb[2]}%/${color.alpha})`
+    // }
+    // result.push({ label: label, textEdit: { range: range, newText: label } })
+
+    // const lab = rgb.lab(red256, green256, blue256)
+    // if (color.alpha === 1) {
+    //     label = `lab(${lab[0]}%|${lab[1]}|${lab[2]})`
+    // } else {
+    //     label = `lab(${lab[0]}%|${lab[1]}|${lab[2]}/${color.alpha})`
+    // }
+    // result.push({ label: label, textEdit: { range: range, newText: label } })
+
+    // const lch = rgb.lch(red256, green256, blue256)
+    // if (color.alpha === 1) {
+    //     label = `lch(${lch[0]}%|${lch[1]}|${lch[2]})`
+    // } else {
+    //     label = `lch(${lch[0]}%|${lch[1]}|${lch[2]}/${color.alpha})`
+    // }
+    // result.push({ label: label, textEdit: { range: range, newText: label } })
+
+    // const cmyk = rgb.cmyk(red256, green256, blue256)
+    // if (color.alpha === 1) {
+    //     label = `device-cmyk(${cmyk[0]}%|${cmyk[1]}%|${cmyk[2]}%|${cmyk[3]}%)`
+    // } else {
+    //     label = `device-cmyk(${cmyk[0]}%|${cmyk[1]}%|${cmyk[2]}%|${cmyk[3]}%/${color.alpha})`
+    // }
+    // result.push({ label: label, textEdit: { range: range, newText: label } })
 
     return result
 }

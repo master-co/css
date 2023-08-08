@@ -12,9 +12,11 @@
     "dependencies": {
         "@babel/parser": "^7.22.7",
         "@master/css": "workspace:^",
+        "color-convert": "^2.0.1",
         "js-beautify": "^1.14.7"
     },
     "devDependencies": {
+        "@types/color-convert": "^2.0.0",
         "vscode-css-languageservice": "^6.2.5",
         "vscode-languageserver-types": "^3.17.3"
     },
