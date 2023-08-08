@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import cssEscape from 'shared/utils/css-escape'
-import puppeteer, { type Browser, type Page } from 'puppeteer'
+import puppeteer, { type Browser, type Page } from 'puppeteer-core'
 import { copy, rm } from 'shared/utils/fs'
 import { SpawndChildProcess, spawnd } from 'spawnd'
 import waitForDataMatch from 'shared/utils/wait-for-data-match'
@@ -27,7 +27,7 @@ beforeAll(async () => {
     const urlPattern = /(http:\/\/localhost:).*?([0-9]+)/
     const data = await waitForDataMatch(devProcess, (data) => urlPattern.exec(data)?.length)
     const result = urlPattern.exec(data)
-    browser = await puppeteer.launch({ headless: 'new' })
+    browser = await puppeteer.launch({ headless: 'new', channel: 'chrome' })
     page = await browser.newPage()
     page.on('console', (consoleMessage) => {
         if (consoleMessage.type() === 'error') {
