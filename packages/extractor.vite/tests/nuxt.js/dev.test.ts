@@ -30,7 +30,7 @@ beforeAll(async () => {
     page = await browser.newPage()
     if (result) {
         await page.goto(result[1] + result[2], { timeout: 120000 })
-        await page.waitForNavigation()
+        await page.waitForNavigation({ timeout: 120000 })
         page.on('console', (consoleMessage) => {
             if (consoleMessage.type() === 'error') {
                 error = new Error(consoleMessage.text())
