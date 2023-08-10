@@ -1,7 +1,7 @@
 {
     "name": "@master/css.react",
     "scripts": {
-        "build": "techor pack --bundle",
+        "build": "techor pack",
         "dev": "pnpm run build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
@@ -36,26 +36,31 @@
         "solidjs"
     ],
     "sideEffects": false,
-    "main": "./dist/index.bundle.js",
-    "jsnext:main": "./dist/index.bundle.mjs",
-    "esnext": "./dist/index.bundle.mjs",
-    "module": "./dist/index.bundle.mjs",
+    "main": "./dist/index.js",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/index.bundle.js",
-            "import": "./dist/index.bundle.mjs",
+            "require": "./dist/index.js",
+            "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
         },
         "./CSSProvider": {
-            "require": "./dist/CSSProvider.bundle.js",
-            "import": "./dist/CSSProvider.bundle.mjs",
+            "require": "./dist/CSSProvider.js",
+            "import": "./dist/CSSProvider.mjs",
             "types": "./dist/CSSProvider.d.ts"
         },
         "./ThemeServiceProvider": {
-            "require": "./dist/ThemeServiceProvider.bundle.js",
-            "import": "./dist/ThemeServiceProvider.bundle.mjs",
+            "require": "./dist/ThemeServiceProvider.js",
+            "import": "./dist/ThemeServiceProvider.mjs",
             "types": "./dist/ThemeServiceProvider.d.ts"
+        },
+        "./styled": {
+            "require": "./dist/styled.js",
+            "import": "./dist/styled.mjs",
+            "types": "./dist/styled.d.ts"
         }
     },
     "typesVersions": {
