@@ -13,7 +13,7 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <html lang="en" style={{ display: 'none' }}>
+        <html lang="en" style={process.env.NODE_ENV === 'development' ? { display: 'none' } : undefined}>
             <body>
                 <CSSProvider config={config}>
                     {children}
