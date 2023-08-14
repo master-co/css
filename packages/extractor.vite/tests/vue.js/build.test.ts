@@ -9,7 +9,7 @@ const tmpDir = path.join(__dirname, 'tmp/build')
 
 it('build', () => {
     copy(examplePath, tmpDir)
-    execSync('npm run build', { cwd: tmpDir, stdio: 'inherit' })
+    execSync('pnpm run build', { cwd: tmpDir, stdio: 'inherit' })
     expect(fs.readFileSync(explorePathSync(path.resolve(tmpDir, 'dist/assets/index-*.css'))).toString()).toContain('font\\:heavy')
     rm(tmpDir)
 })

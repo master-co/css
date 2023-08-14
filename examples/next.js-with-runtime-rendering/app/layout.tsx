@@ -1,5 +1,6 @@
 import './globals.css'
-import Client from './client'
+import { CSSProvider } from '@master/css.react'
+import config from '../master.css'
 
 export const metadata = {
     title: 'Create Next App',
@@ -14,9 +15,9 @@ export default function RootLayout({
     return (
         <html lang="en" style={{ display: 'none' }}>
             <body>
-                <Client>
+                <CSSProvider config={config}>
                     {children}
-                </Client>
+                </CSSProvider>
             </body>
         </html>
     )
