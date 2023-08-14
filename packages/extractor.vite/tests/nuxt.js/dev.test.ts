@@ -22,7 +22,7 @@ beforeAll(async () => {
     templatePath = path.join(tmpDir, 'app.vue')
     templateContent = fs.readFileSync(templatePath).toString()
     masterCSSConfigPath = path.join(tmpDir, 'master.css.ts')
-    devProcess = spawnd('npm run dev', { shell: true, cwd: tmpDir, env: { ...process.env, NODE_ENV: 'development' } })
+    devProcess = spawnd('pnpm dev', { shell: true, cwd: tmpDir, env: { ...process.env, NODE_ENV: 'development' } })
     const urlPattern = /(http:\/\/localhost:).*?([0-9]+)/
     const data = await waitForDataMatch(devProcess, (data) => urlPattern.exec(data)?.length)
     const result = urlPattern.exec(data)
