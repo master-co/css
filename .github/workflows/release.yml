@@ -6,7 +6,7 @@ on:
             - beta
 
 jobs:
-    version:
+    release:
         timeout-minutes: 40
         runs-on: ubuntu-20.04
         steps:
@@ -24,7 +24,7 @@ jobs:
               with:
                   ref: ${{ github.ref }}
                   running-workflow-name: wait-for-check-regexp
-                  check-regexp: (test|type-check|commit-check|lint)
+                  check-regexp: lint|test|commit-check|type-check
                   repo-token: ${{ secrets.GITHUB_TOKEN }}
                   wait-interval: 10
             - run: pnpm exec semantic-release
