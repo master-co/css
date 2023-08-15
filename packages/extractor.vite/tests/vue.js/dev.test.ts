@@ -53,6 +53,7 @@ it('change class names and check result in the browser during HMR', async () => 
     const newClassName = 'font:' + new Date().getTime()
     const newClassNameSelector = '.' + cssEscape(newClassName)
     fs.writeFileSync(templatePath, templateContent.replace('class="card"', `class="${newClassName}"`))
+    await page.waitForNetworkIdle()
     const newClassNameElementHandle = await page.waitForSelector(newClassNameSelector)
     expect(newClassNameElementHandle).not.toBeNull()
     const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
