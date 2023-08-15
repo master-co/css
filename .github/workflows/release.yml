@@ -17,7 +17,6 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: 18.17.0
-                  registry-url: "https://registry.npmjs.org"
                   cache: "pnpm"
             - run: pnpm install
             - run: pnpm run build
@@ -30,7 +29,5 @@ jobs:
             - run: pnpm exec semantic-release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  # Fix: Please make sure to set the `NPM_TOKEN` environment variable in your CI with the exact value of the npm token.
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
                   VSCE_PAT: ${{ secrets.VSCE_PAT }}
