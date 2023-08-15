@@ -18,23 +18,23 @@ importers:
         specifier: workspace:^
         version: link:packages/renderer
       '@techor/fs':
-        specifier: ^2.5.9
-        version: 2.5.9
+        specifier: ^2.5.13
+        version: 2.5.13
       '@techor/glob':
-        specifier: ^2.5.9
-        version: 2.5.9
+        specifier: ^2.5.13
+        version: 2.5.13
       '@techor/jest':
-        specifier: ^2.5.9
-        version: 2.5.9(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(jest@29.6.1)
+        specifier: ^2.5.13
+        version: 2.5.13(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(jest@29.6.1)
       '@techor/jest-dom':
-        specifier: ^2.5.9
-        version: 2.5.9(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(jest@29.6.1)
+        specifier: ^2.5.13
+        version: 2.5.13(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(jest@29.6.1)
       '@techor/pack':
-        specifier: ^2.5.9
-        version: 2.5.9
+        specifier: ^2.5.13
+        version: 2.5.13
       '@techor/repo':
-        specifier: ^2.5.9
-        version: 2.5.9(@semantic-release/exec@6.0.3)(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(@types/node@20.4.0)(jest@29.6.1)(semantic-release@21.0.7)(turbo@1.10.12)(typescript@5.1.6)
+        specifier: ^2.5.13
+        version: 2.5.13(@semantic-release/exec@6.0.3)(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(@types/node@20.4.0)(jest@29.6.1)(semantic-release@21.0.7)(turbo@1.10.12)(typescript@5.1.6)
       '@types/jest':
         specifier: ^29.5.2
         version: 29.5.2
@@ -7132,18 +7132,25 @@ packages:
       defer-to-connect: 2.0.1
     dev: true
 
+  /@techor/extend@2.5.13:
+    resolution: {integrity: sha512-onj3/7eO5P156zPJ3NWL/M8r/iQv9dgHaS1lqvqCI+oVNrxjR+aAD+uU+4XnWETb+rvf9+s6UrgItLU+PKO9tg==}
+    dev: true
+
   /@techor/extend@2.5.4:
     resolution: {integrity: sha512-6pfqaAbKvDbuVC4Ejft2zYeCYY5O/5j6UllifjOqePhewbUpyk65bDwABJ0P/N7CC/3DgPSBbJaJZa4QGziDoQ==}
 
-  /@techor/extend@2.5.9:
-    resolution: {integrity: sha512-HMf7d0uolAdX7HTOz+Ia6/2R3j7oP+LT+6MrIN38bDtyKihE6KUzCg+GDy3JYA59K7PzobFQMGJWJS0qT0b9ZA==}
+  /@techor/fs@2.5.13:
+    resolution: {integrity: sha512-5MrT8lCO+qT9pXvLfcoZoGjIZgHmEC7l8hdAmTD4ABF5Jtpzsh6aM8W+0L7dwLcmO7NR8iMhneqHdteEG/oq3A==}
     dev: true
 
   /@techor/fs@2.5.4:
     resolution: {integrity: sha512-0zwTBmeAMxx98yxbxBOldi/JDtS+K3jWE2tZlgSAeOURG1UT4WlsBuqkyKx/d/BIhf1tEfsBj/a7akNKM0U7Lw==}
 
-  /@techor/fs@2.5.9:
-    resolution: {integrity: sha512-sT4n6uC18LLuCNXUGhibEVDfRYfdgkYjhtixxCHVO4tZMh7zan4ipAY7yGnc+GgzzD7UJeM3fXUyB8hm41qWvg==}
+  /@techor/glob@2.5.13:
+    resolution: {integrity: sha512-p541m/BSi9Xb76+W0O03C9ZuN27eSBAlsabjQERW33YxxPlog7fZYX9+0V/XhKZdECnije2id3j99a9C0zYVHw==}
+    dependencies:
+      fast-glob: 3.3.1
+      upath: 2.0.1
     dev: true
 
   /@techor/glob@2.5.4:
@@ -7152,17 +7159,10 @@ packages:
       fast-glob: 3.3.1
       upath: 2.0.1
 
-  /@techor/glob@2.5.9:
-    resolution: {integrity: sha512-a8SPo9KPIzIdX2W8VWLJ/2oG/tZmxQTeuV+GTpiz/6VFh31OD59LSMY1N0Qkl5VBl9OVpvDdt3/NJbSwAnYtMw==}
+  /@techor/jest-dom@2.5.13(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(jest@29.6.1):
+    resolution: {integrity: sha512-UO5wcrelRnBCsVQdF3Ga/jDJesozU1fHWaz1+bRR1PutEHNNAP/tLzwN/GBFobVPerxavUk6Fcc9Mh6+tpmukQ==}
     dependencies:
-      fast-glob: 3.3.1
-      upath: 2.0.1
-    dev: true
-
-  /@techor/jest-dom@2.5.9(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(jest@29.6.1):
-    resolution: {integrity: sha512-lTccXTZNVtXnruoPVRtatu87ZM0iFkQ7ee4xA2bfl0MOiqO0i00Hk8rYGPXT2C71apWLsH3k9U/8oLhBfLB0NQ==}
-    dependencies:
-      '@techor/jest': 2.5.9(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(jest@29.6.1)
+      '@techor/jest': 2.5.13(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(jest@29.6.1)
       jest-environment-jsdom: 29.6.2
     transitivePeerDependencies:
       - '@swc/core'
@@ -7175,8 +7175,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@techor/jest@2.5.9(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(jest@29.6.1):
-    resolution: {integrity: sha512-y0SDzrpEktq9FJZvI/kPdJa0Yij9TL/DDN/yMmyDyTam90XdJmWzykBrcy1hghSk+N6YkRJ1wiKXmrETFFKTSQ==}
+  /@techor/jest@2.5.13(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(jest@29.6.1):
+    resolution: {integrity: sha512-IpehNq4hXIkZf/SE+NMcYui0/IR7Rs/sJTTGVha9/tzxz+xRyDPeLX3iIyQz0Tq/b7DhSgd6w3KUukqV/nQJvA==}
     peerDependencies:
       '@swc/core': ^1.3.30
       '@swc/jest': ^0.2.24
@@ -7189,20 +7189,20 @@ packages:
       jest: 29.6.1(@types/node@20.4.0)(ts-node@10.9.1)
     dev: true
 
+  /@techor/log@2.5.13:
+    resolution: {integrity: sha512-/u5zd1frAfvoEYgeZjPT5+TZdngrwnf/XAeYCN1fXh9g0IRynBWJZscV63zr4lp/obv1fVqSEgFVSjCx81Ur1w==}
+    dev: true
+
   /@techor/log@2.5.4:
     resolution: {integrity: sha512-22/iz3P21A2Qc0SE0uEyD+JYBQDs7mkB79Pvrjug5UabRIKL0QyP9JKfqNnCzR7AHzuxSQEeiw4EP7wWIQSyPA==}
 
-  /@techor/log@2.5.9:
-    resolution: {integrity: sha512-qxHzCcqi2jC/s2RTDWRw2vVwbm3j1nclrAlQJso/tcevVlR8u0RhICguyxc+DVHr3iJvOllNoWAPdGxgx6rVLQ==}
-    dev: true
-
-  /@techor/npm@2.5.9:
-    resolution: {integrity: sha512-FYlejaGmnAujkGoitHZdZCT/uPIzRwRtbgdW5umlqdbCqGmHuKqPEXVteE5Sp7AI0XxIX7AXgfk1ILPz+bP3rQ==}
+  /@techor/npm@2.5.13:
+    resolution: {integrity: sha512-KADYhigoZsDEKFeEE1haCKM7TixRY8KIYQaGUZuLYO7Qp9je3NvYMWQxJ4zkrRmUUP1xHyySyDATeay7lNmMcA==}
     dependencies:
-      '@techor/extend': 2.5.9
-      '@techor/fs': 2.5.9
-      '@techor/glob': 2.5.9
-      '@techor/log': 2.5.9
+      '@techor/extend': 2.5.13
+      '@techor/fs': 2.5.13
+      '@techor/glob': 2.5.13
+      '@techor/log': 2.5.13
       js-yaml: 4.1.0
     dev: true
 
@@ -7210,12 +7210,29 @@ packages:
     resolution: {integrity: sha512-RLLfeIK/wbejHwDUOy7xG3jF27ZXjn4CjNM4k+5E/vYL9eIIJF+gfkxIzxL/09493RPe503X+Sx8dJYICawvSg==}
     dev: false
 
+  /@techor/one-liner@2.5.13:
+    resolution: {integrity: sha512-iCC6ykWK5dOzepp7iBJTrD/BkXqyiobs7AFvqqztrdlo0EsBk9uVnZvPQo5fQFr6Bw6tzMh17/esAuv5nC0/ug==}
+    dev: true
+
   /@techor/one-liner@2.5.4:
     resolution: {integrity: sha512-EeirvqRjA2BXsAWK0UpD2KUuU+1Hrjcba5OS4YjOtl2aCFyNLcalrEOWr91P1tLcfn3JiXCacU6O4kW0LqHh6A==}
     dev: true
 
-  /@techor/one-liner@2.5.9:
-    resolution: {integrity: sha512-j4wEGIpazr3qkugFh4GwfAjYC26JQk/EOaOPsI3AZDbAPHNBek++6mUGC/zrWgZaN3GXS0GEcXgH1hrrbFMEKw==}
+  /@techor/pack@2.5.13:
+    resolution: {integrity: sha512-kLBQ5Iq7hp2Bf4B60GPcVG9ea/+IgMFG7UrCEdxyMg8tPfDtIP3+K7oAvXCLtMXvHXTRqXms9M5K2+CNFz7i2w==}
+    dependencies:
+      '@techor/extend': 2.5.13
+      '@techor/fs': 2.5.13
+      '@techor/glob': 2.5.13
+      '@techor/log': 2.5.13
+      '@techor/one-liner': 2.5.13
+      cross-import: 2.5.13
+      esbuild: 0.18.19
+      explore-config: 2.5.13
+      lodash.isequal: 4.5.0
+      npm: 9.8.1
+      techor: 2.5.13
+      upath: 2.0.1
     dev: true
 
   /@techor/pack@2.5.4:
@@ -7235,38 +7252,21 @@ packages:
       upath: 2.0.1
     dev: true
 
-  /@techor/pack@2.5.9:
-    resolution: {integrity: sha512-6D7x+lw5iw/GkydQjLilvmZiWUGivQsPVJkf7nFiMwm13sGdhh1oIQNYF5tnqvCjvDrZeKs8hIQhw4IFIjMChQ==}
-    dependencies:
-      '@techor/extend': 2.5.9
-      '@techor/fs': 2.5.9
-      '@techor/glob': 2.5.9
-      '@techor/log': 2.5.9
-      '@techor/one-liner': 2.5.9
-      cross-import: 2.5.9
-      esbuild: 0.18.19
-      explore-config: 2.5.9
-      lodash.isequal: 4.5.0
-      npm: 9.8.1
-      techor: 2.5.9
-      upath: 2.0.1
-    dev: true
-
-  /@techor/repo@2.5.9(@semantic-release/exec@6.0.3)(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(@types/node@20.4.0)(jest@29.6.1)(semantic-release@21.0.7)(turbo@1.10.12)(typescript@5.1.6):
-    resolution: {integrity: sha512-7QpmOwW/LwTG+2FE/u3tA/4mXn1SBh7soXSsUwiqoCgGJdHRMJI7T80dDobcaMP1HZyEfhcRmWd6OYPHo8+4eA==}
+  /@techor/repo@2.5.13(@semantic-release/exec@6.0.3)(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(@types/node@20.4.0)(jest@29.6.1)(semantic-release@21.0.7)(turbo@1.10.12)(typescript@5.1.6):
+    resolution: {integrity: sha512-wRA/WfvLwuYkz2dlb0bGwPGuVnc/HwXG3gpOgwZgw29RXh9NL0LqvYCtInc9aO9Yqknd99LavNWJ88KdjgUBqw==}
     peerDependencies:
       '@types/node': ''
       turbo: ''
       typescript: ''
     dependencies:
-      '@techor/jest': 2.5.9(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(jest@29.6.1)
-      '@techor/pack': 2.5.9
-      '@techor/version': 2.5.9
+      '@techor/jest': 2.5.13(@swc/core@1.3.74)(@swc/jest@0.2.28)(@types/jest@29.5.2)(jest@29.6.1)
+      '@techor/pack': 2.5.13
+      '@techor/version': 2.5.13
       '@types/node': 20.4.0
-      commitlint-config-techor: 2.5.9(@swc/core@1.3.74)
-      conventional-changelog-techor: 2.5.9
-      eslint-config-techor: 2.5.9(typescript@5.1.6)
-      semantic-release-config-techor: 2.5.9(@semantic-release/exec@6.0.3)(semantic-release@21.0.7)
+      commitlint-config-techor: 2.5.13(@swc/core@1.3.74)
+      conventional-changelog-techor: 2.5.13
+      eslint-config-techor: 2.5.13(typescript@5.1.6)
+      semantic-release-config-techor: 2.5.13(@semantic-release/exec@6.0.3)(semantic-release@21.0.7)
       turbo: 1.10.12
       typescript: 5.1.6
     transitivePeerDependencies:
@@ -7283,14 +7283,14 @@ packages:
       - typescript
     dev: true
 
-  /@techor/version@2.5.9:
-    resolution: {integrity: sha512-wYC0jZBwO4f9kAGVePFPrABcG9BvS7/lJ7vPU+woHWKTHAJcg++uAlKV2Jd9uvfNfE2n/TYghg9LN0FVEoF9hw==}
+  /@techor/version@2.5.13:
+    resolution: {integrity: sha512-bUng6eUDEUBZVp812yHIwZIEpiW1WwL4y2DGNfoQuwFNGTwQIg4UUCh4e+62Z7xsj4VmA/hnuLtTDzV2sTVNAw==}
     dependencies:
-      '@techor/fs': 2.5.9
-      '@techor/glob': 2.5.9
-      '@techor/log': 2.5.9
-      '@techor/npm': 2.5.9
-      techor: 2.5.9
+      '@techor/fs': 2.5.13
+      '@techor/glob': 2.5.13
+      '@techor/log': 2.5.13
+      '@techor/npm': 2.5.13
+      techor: 2.5.13
     dev: true
 
   /@testing-library/dom@8.20.1:
@@ -10547,13 +10547,13 @@ packages:
     engines: {node: '>= 12'}
     dev: true
 
-  /commitlint-config-techor@2.5.9(@swc/core@1.3.74):
-    resolution: {integrity: sha512-g1r4CYSNwir6/sZuLz4wsoW8CQR0b74yHAi1QO4lQqX3OflYgnnBUphQZc718kzKP8grMIMZXON2lVFQZ8IyFA==}
+  /commitlint-config-techor@2.5.13(@swc/core@1.3.74):
+    resolution: {integrity: sha512-sGrV2ebVrqGgGeIqtejymfeHFws9LzJXmTOu9dy09e1i6mLLw01R2kqMYVaoAJGHuuZq7NFTQhhiBRK+tVML2g==}
     dependencies:
       '@commitlint/cli': 17.7.1(@swc/core@1.3.74)
-      conventional-changelog-techor: 2.5.9
+      conventional-changelog-techor: 2.5.13
       husky: 8.0.3
-      techor-conventional-commits: 2.5.9
+      techor-conventional-commits: 2.5.13
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -10702,12 +10702,12 @@ packages:
       compare-func: 2.0.0
     dev: true
 
-  /conventional-changelog-techor@2.5.9:
-    resolution: {integrity: sha512-z2HIBVBhuMwEmnIlHLioj86gECzDMJcCdFtFWcUSYd89xNK8yYswHcjzfob1iZ/TS30U7+xH4iLIgyj0yLZJfw==}
+  /conventional-changelog-techor@2.5.13:
+    resolution: {integrity: sha512-vR+Ndlx3eDhOsdbiY6AvlwSX5Px7aSDU1uiO1BKn3MLo+Uk18eIbbPXze4Qe9/6MJNoaUA7+jZUMUWcSIa2wHw==}
     dependencies:
       compare-func: 2.0.0
       dedent: 0.7.0
-      techor-conventional-commits: 2.5.9
+      techor-conventional-commits: 2.5.13
     dev: true
 
   /conventional-changelog-writer@6.0.1:
@@ -10908,16 +10908,16 @@ packages:
       - encoding
     dev: true
 
+  /cross-import@2.5.13:
+    resolution: {integrity: sha512-sv/bHANhU8CYI2U3qAlONl3j9h/d2T3y46xW9t7RNvtMtkMomsY3ED1ZihQvFKPQxKbROThqqisWf4dHnUaqGg==}
+    dev: true
+
   /cross-import@2.5.3:
     resolution: {integrity: sha512-z5vKJxhU2ZMYKZZSL2dMAk6vPfHoTM+rVPqjcK2L19jX5JDP10kQdCqAAu3o/k+/HWpJQ44YLjlQogpmA7iP2A==}
     dev: false
 
   /cross-import@2.5.4:
     resolution: {integrity: sha512-Udy1gS1nHm2+RYPWE06b4iaAaDNI0IDjDjPp7HREJg7P2WTXPO+7XrkSmA+HP/uoBFINYzkEkXs3n2rh6J8swg==}
-
-  /cross-import@2.5.9:
-    resolution: {integrity: sha512-U8zgc3QJrAVRNwMDZ6xoYoikyWb+jCSEWYtBEsVXjif4rv+NqiwDT/bYC8tS1U4MXbvHWZzGvODgXbuetjHA8w==}
-    dev: true
 
   /cross-spawn@6.0.5:
     resolution: {integrity: sha512-eTVLrBSt7fjbDygz805pMnstIs2VTBNkRm0qxZd+M7A5XDdxVRWO5MxGBXZhjY4cqLYLdtrGqRf8mBPmzwSpWQ==}
@@ -12300,8 +12300,8 @@ packages:
       - supports-color
     dev: false
 
-  /eslint-config-techor@2.5.9(typescript@5.1.6):
-    resolution: {integrity: sha512-yMu17jqFtZrTpMqfzv4z+VJdTycBS1A1qYVr19zHeqVQhYYyYah0IZmU/UfHDLO7gCDqpeIWm3WVGabMauklPA==}
+  /eslint-config-techor@2.5.13(typescript@5.1.6):
+    resolution: {integrity: sha512-NCaoSPcMC2a50ds0NsJCsCwRrsZIiBZ6RC44xkrwF8NbakVKqEfdqJxCXqolh9aEKSGeydHyZDo/9qT3o1b8+w==}
     dependencies:
       '@typescript-eslint/eslint-plugin': 6.4.0(@typescript-eslint/parser@6.4.0)(eslint@8.47.0)(typescript@5.1.6)
       '@typescript-eslint/parser': 6.4.0(eslint@8.47.0)(typescript@5.1.6)
@@ -13069,6 +13069,15 @@ packages:
       jest-message-util: 29.6.2
       jest-util: 29.6.2
 
+  /explore-config@2.5.13:
+    resolution: {integrity: sha512-TqKEioVfI4Gi0QuH5M3+lQPiTgTXEAMRhaHdPhQk77mUycxKl+QURabpMav3UvGqMDJjJSbwwVDueoBkFLsqBg==}
+    dependencies:
+      '@techor/extend': 2.5.13
+      '@techor/glob': 2.5.13
+      '@techor/log': 2.5.13
+      cross-import: 2.5.13
+    dev: true
+
   /explore-config@2.5.3:
     resolution: {integrity: sha512-3mBkX3DqN857Coa+mj2ZUM7NORZSGGczRsuUj1LLH9KFM6aR4AQv+3QDQW32UwjAuxdmGj+CkOujPWUj7zf8Xg==}
     dependencies:
@@ -13085,15 +13094,6 @@ packages:
       '@techor/glob': 2.5.4
       '@techor/log': 2.5.4
       cross-import: 2.5.4
-
-  /explore-config@2.5.9:
-    resolution: {integrity: sha512-ENRffwU0gYMa4irv/FJ6raxXQYbcpqGo0fsyXKH/YcjUYaUkZCHOWqAUlmuSk7QPqkO3xbSaCKlsJXT11raqsw==}
-    dependencies:
-      '@techor/extend': 2.5.9
-      '@techor/glob': 2.5.9
-      '@techor/log': 2.5.9
-      cross-import: 2.5.9
-    dev: true
 
   /exponential-backoff@3.1.1:
     resolution: {integrity: sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==}
@@ -21315,18 +21315,20 @@ packages:
     dependencies:
       node-forge: 1.3.1
 
-  /semantic-release-config-techor@2.5.9(@semantic-release/exec@6.0.3)(semantic-release@21.0.7):
-    resolution: {integrity: sha512-T/SeT7jD2V7FoMpEqKKEWMPKmC8m78Ig7QSxVzc0YmbkoV+bJdIFvtGArqpIvWZQ4u7YucJZjrFF+wLptrBPRw==}
+  /semantic-release-config-techor@2.5.13(@semantic-release/exec@6.0.3)(semantic-release@21.0.7):
+    resolution: {integrity: sha512-JvjUiGqD9L/3lQnUfaU0je8HqAdjuNntLn2e3nt381oNQgbamcFFsF0qqAcKK785dWB4DR/Q2pIZR8fwSETKNA==}
     peerDependencies:
       '@semantic-release/exec': ^6.0.3
       semantic-release: ^21.0.7
     dependencies:
       '@semantic-release/exec': 6.0.3(semantic-release@21.0.7)
-      '@techor/extend': 2.5.9
-      '@techor/npm': 2.5.9
-      conventional-changelog-techor: 2.5.9
+      '@techor/extend': 2.5.13
+      '@techor/fs': 2.5.13
+      '@techor/log': 2.5.13
+      '@techor/npm': 2.5.13
+      conventional-changelog-techor: 2.5.13
       semantic-release: 21.0.7
-      techor-conventional-commits: 2.5.9
+      techor-conventional-commits: 2.5.13
     dev: true
 
   /semantic-release@21.0.7:
@@ -22613,25 +22615,25 @@ packages:
       mkdirp: 1.0.4
       yallist: 4.0.0
 
-  /techor-conventional-commits@2.5.9:
-    resolution: {integrity: sha512-0F5PO2Qke5/Xu3WcFhIQXPmUtkKPvdqLKvC/l4LZHlOIQTQiecJI8hxCukMzkvuAnCqLFF8fk0G4bRTWjj9E0g==}
+  /techor-conventional-commits@2.5.13:
+    resolution: {integrity: sha512-lG9tWZBXHyZqYxti8nx+C8tRa4sxEcseng0JfZMIJAxKVAuGphSSm5rUvJHP601DcxICjS6dwHGPH7WSsN1eog==}
+    dev: true
+
+  /techor@2.5.13:
+    resolution: {integrity: sha512-6Yn42855woatXUtPspVIEfUIQbc6wo2R/Zh20zHj7eHEKgQ4Wgt0sklA+1QbUT+FuC39FRQp+kpRGAF5tD7Gjw==}
+    hasBin: true
+    dependencies:
+      '@techor/fs': 2.5.13
+      '@techor/log': 2.5.13
+      commander: 11.0.0
     dev: true
 
   /techor@2.5.4:
     resolution: {integrity: sha512-lR0fGFqQl3pSNIzGTqaEEW7KcoE+28CE0iWZa+QpW9fAxZu+5aQf+xbpcTNdLr7iiAGFgUG7qFMwIkBhlpPaIA==}
     hasBin: true
     dependencies:
-      '@techor/fs': 2.5.9
+      '@techor/fs': 2.5.13
       '@techor/log': 2.5.4
-      commander: 11.0.0
-    dev: true
-
-  /techor@2.5.9:
-    resolution: {integrity: sha512-AuVTOdD84Y9TrBP7ufiKdCabFgapEIynQUZudZ3ZAfpSAgiaWiyX9ZSC+6kLYkh/C/9+jBN7rp+sFPoFBpe6lA==}
-    hasBin: true
-    dependencies:
-      '@techor/fs': 2.5.9
-      '@techor/log': 2.5.9
       commander: 11.0.0
     dev: true
 
