@@ -35,6 +35,7 @@
         "@techor/jest": "^2.5.13",
         "@techor/jest-dom": "^2.5.13",
         "@techor/pack": "^2.5.13",
+        "@techor/version": "^2.5.13",
         "@techor/repo": "^2.5.13",
         "@types/jest": "^29.5.2",
         "@types/node": "^20.4.0",
