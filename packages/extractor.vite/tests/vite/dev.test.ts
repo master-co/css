@@ -62,7 +62,6 @@ if (!process.env.GITHUB_ACTIONS) {
         expect(styleHandle).not.toBeNull()
         const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
         expect(cssText).toContain(newClassNameSelector)
-        console.log()
     }, 60000)
 
     it('change master.css.ts and check result in the browser during HMR', async () => {
