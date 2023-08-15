@@ -23,7 +23,8 @@ jobs:
             - uses: lewagon/wait-on-check-action@v1.3.1
               with:
                   ref: ${{ github.ref }}
-                  check-regexp: test.*|check.*|commit-check.*|lint.*
+                  running-workflow-name: wait-for-check-regexp
+                  check-regexp: (test|type-check|commit-check|lint)
                   repo-token: ${{ secrets.GITHUB_TOKEN }}
                   wait-interval: 10
             - run: pnpm exec semantic-release
