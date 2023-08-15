@@ -55,8 +55,8 @@ if (!process.env.GITHUB_ACTIONS) {
         const newClassName = 'font:' + new Date().getTime()
         const newClassNameSelector = '.' + cssEscape(newClassName)
         fs.writeFileSync(templatePath, templateContent.replace(/class="([^"]+)"/, `class="${newClassName}"`))
-        await page.waitForNetworkIdle()
         const newClassNameElementHandle = await page.waitForSelector(newClassNameSelector, { timeout: 5000 })
+        await page.waitForNetworkIdle()
         expect(newClassNameElementHandle).not.toBeNull()
         const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
         expect(styleHandle).not.toBeNull()
@@ -68,8 +68,8 @@ if (!process.env.GITHUB_ACTIONS) {
         const newBtnClassName = 'btn' + new Date().getTime()
         const newBtnClassNameSelector = '.' + cssEscape(newBtnClassName)
         fs.writeFileSync(templatePath, templateContent.replace(/class="([^"]+)"/, `class="${newBtnClassName}"`))
-        await page.waitForNetworkIdle()
         const newClassNameElementHandle = await page.waitForSelector(newBtnClassNameSelector)
+        await page.waitForNetworkIdle()
         expect(newClassNameElementHandle).not.toBeNull()
         // -> classes: { btn43848384: 'xxx' }
         fs.writeFileSync(masterCSSConfigPath, `
