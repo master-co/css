@@ -1,11 +1,6 @@
 const configure = require('semantic-release-config-techor/configure')
 
 module.exports = configure({
-    plugins: {
-        '@semantic-release/exec': {
-            prepareCmd: 'techor version ${nextRelease.version}'
-        }
-    },
     assets: [
         {
             path: 'packages/css/dist/index.browser.bundle.js',

@@ -55,6 +55,7 @@ if (!process.env.GITHUB_ACTIONS) {
         const newClassName = 'font:' + new Date().getTime()
         const newClassNameSelector = '.' + cssEscape(newClassName)
         fs.writeFileSync(templatePath, templateContent.replace(/class="([^"]+)"/, `class="${newClassName}"`))
+        await page.waitForNetworkIdle()
         const newClassNameElementHandle = await page.waitForSelector(newClassNameSelector, { timeout: 5000 })
         expect(newClassNameElementHandle).not.toBeNull()
         const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
