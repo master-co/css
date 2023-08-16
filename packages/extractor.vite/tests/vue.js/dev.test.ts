@@ -54,9 +54,7 @@ it('change class names and check result in the browser during HMR', async () => 
     const newClassNameSelector = '.' + cssEscape(newClassName)
     fs.writeFileSync(templatePath, templateContent.replace('class="card"', `class="${newClassName}"`))
     await page.waitForNetworkIdle()
-    const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
-    expect(styleHandle).not.toBeNull()
-    const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
+    const cssText = await page.evaluate(() => document.querySelector('[data-vite-dev-id$=".virtual/master.css"]')?.textContent)
     expect(cssText).toContain(newClassNameSelector)
 }, 60000)
 
@@ -68,8 +66,7 @@ it('change master.css.ts and check result in the browser during HMR', async () =
         export default { classes: { '${newBtnClassName}': 'bg:pink' } }
     `)
     await page.waitForNetworkIdle()
-    const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
-    const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
+    const cssText = await page.evaluate(() => document.querySelector('[data-vite-dev-id$=".virtual/master.css"]')?.textContent)
     expect(cssText).toContain(newBtnClassNameSelector)
 }, 60000)
 
