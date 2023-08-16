@@ -1,10 +1,10 @@
 {
     "name": "@master/css.vue",
     "scripts": {
-        "build:esm": "techor pack './src/**/*.{ts,vue}' --bundle --format esm --esm-ext .js --entry-names [dir]/[name] --no-declare",
+        "build:main": "vite build",
         "build:type": "vue-tsc --declaration --emitDeclarationOnly",
-        "build": "pnpm run build:esm && pnpm run build:type",
-        "dev": "pnpm run \"/^build:.*/\" --watch",
+        "build": "pnpm run \"/^build:.*/\"",
+        "dev": "pnpm run build:main --watch",
         "type-check": "vue-tsc --noEmit",
         "lint": "eslint src"
     },
@@ -43,8 +43,14 @@
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "import": "./dist/index.js",
+            "require": "./dist/index.js",
+            "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
+        },
+        "./CSSProvider": {
+            "require": "./dist/CSSProvider.js",
+            "import": "./dist/CSSProvider.mjs",
+            "types": "./dist/CSSProvider.d.ts"
         }
     },
     "files": [
@@ -60,9 +66,10 @@
         "@master/css": "workspace:^"
     },
     "devDependencies": {
-        "@vue/compiler-sfc": "^3.3.4",
+        "@vitejs/plugin-vue": "^4.2.3",
         "@vue/tsconfig": "^0.4.0",
         "typescript": "^5.1.6",
+        "vite": "^4.4.9",
         "vue-tsc": "^1.8.4"
     }
 }
