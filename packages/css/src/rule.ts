@@ -243,45 +243,110 @@ export class Rule {
         }
 
         // 3. prefix selector
-        const transformSelectorToken = (selectorText: string) => {
-            const transformedSelectorText =
-                selectorText.split(/(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/)
-                    .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/(^|[^_])_(?!_)/g, '$1 '))
-                    .join('')
-            const selectors = []
-
-            let currentSelector = ''
-            let symbolCount = 0
-            for (let i = 0; i < transformedSelectorText.length; i++) {
-                const char = transformedSelectorText[i]
-                if (char === '\\') {
-                    currentSelector += char + transformedSelectorText[++i]
-                    continue
-                }
-
-                if (!symbolCount && char === ',') {
-                    selectors.push(currentSelector)
-                    currentSelector = ''
-                } else {
-                    currentSelector += char
-
-                    if (symbolCount && char === ')') {
-                        symbolCount--
-                    } else if (char === '(') {
-                        symbolCount++
+        const generateVendorSelectors = (selectorText: string, vendorSelectors: Record<string, string[]>) => {
+            const transformSelector = (selectorText: string, selectorValues: [RegExp, string[]][], selectors: string[], matched: boolean) => {
+                for (const [regexp, newSelectorTexts] of selectorValues) {
+                    if (regexp.test(selectorText)) {
+                        for (const eachNewSelectorText of newSelectorTexts) {
+                            transformSelector(selectorText.replace(regexp, eachNewSelectorText), selectorValues, selectors, true)
+                        }
+                        return
                     }
                 }
+    
+                if (matched) {
+                    selectors.push(selectorText)
+                }
             }
-            if (currentSelector) {
-                selectors.push(currentSelector)
+            const spacedSelectorToken = (selectorText: string) => {
+                // 1. \'123\'
+                // 2. [href='http://localhost']
+                const transformedSelectorText =
+                    selectorText.split(/(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/)
+                        .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/(^|[^_])_(?!_)/g, '$1 '))
+                        .join('')
+                const selectors: string[] = []
+    
+                let currentSelector = ''
+                let symbolCount = 0
+                for (let i = 0; i < transformedSelectorText.length; i++) {
+                    const char = transformedSelectorText[i]
+                    if (char === '\\') {
+                        currentSelector += char + transformedSelectorText[++i]
+                        continue
+                    }
+    
+                    if (!symbolCount && char === ',') {
+                        selectors.push(currentSelector)
+                        currentSelector = ''
+                    } else {
+                        currentSelector += char
+    
+                        if (symbolCount && char === ')') {
+                            symbolCount--
+                        } else if (char === '(') {
+                            symbolCount++
+                        }
+                    }
+                }
+                if (currentSelector) {
+                    selectors.push(currentSelector)
+                }
+    
+                return selectors
             }
 
-            return selectors
+            const transformedSelectors: string[] = []
+            if ('' in selectors) {
+                transformSelector(selectorText, selectors[''], transformedSelectors, true)
+            } else {
+                transformedSelectors.push(selectorText)
+            }
+
+            const unspacedVendorSelectors: Record<string, string[]> = {}
+            for (const [vendor, selectorValues] of Object.entries(selectors)) {
+                if (!vendor)
+                    continue
+
+                const newUnspacedVendorSelectors = []
+                for (const eachTransformedSelector of transformedSelectors) {
+                    transformSelector(eachTransformedSelector, selectorValues, newUnspacedVendorSelectors, false)
+                }
+
+                if (newUnspacedVendorSelectors.length) {
+                    unspacedVendorSelectors[vendor] = newUnspacedVendorSelectors
+                }
+            }
+
+            const insertVendorSelectors = (vendor: string, selectorTexts: string[]) => {
+                const groupedSelectorTexts = selectorTexts.reduce((arr, eachSuffixSelector) => {
+                    arr.push(...spacedSelectorToken(eachSuffixSelector))
+                    return arr
+                }, [])
+
+                if (vendor in vendorSelectors) {
+                    vendorSelectors[vendor].push(...groupedSelectorTexts)
+                } else {
+                    vendorSelectors[vendor] = groupedSelectorTexts
+                }
+            }
+
+            const vendors = Object.keys(unspacedVendorSelectors)
+            if (vendors.length) {
+                for (const eachVendor of vendors) {
+                    insertVendorSelectors(eachVendor, unspacedVendorSelectors[eachVendor])
+                }
+            } else {
+                insertVendorSelectors('', transformedSelectors)
+            }
         }
 
-        this.prefixSelectors = prefixToken
-            ? transformSelectorToken(prefixToken)
-            : ['']
+        if (prefixToken) {
+            this.vendorPrefixSelectors = {}
+            generateVendorSelectors(prefixToken, this.vendorPrefixSelectors)
+        } else {
+            this.vendorPrefixSelectors = { '': [''] }
+        }
 
         // 4. suffix selector
         const suffixTokens = suffixToken.split('@')
@@ -289,64 +354,7 @@ export class Rule {
         if (suffixSelector) {
             this.vendorSuffixSelectors = {}
 
-            const transformSuffixSelector = (selectorText: string, selectorValues: [RegExp, string[]][], selectors: string[], matched: boolean) => {
-                for (const [regexp, newSelectorTexts] of selectorValues) {
-                    if (regexp.test(selectorText)) {
-                        for (const eachNewSelectorText of newSelectorTexts) {
-                            transformSuffixSelector(selectorText.replace(regexp, eachNewSelectorText), selectorValues, selectors, true)
-                        }
-                        return
-                    }
-                }
-
-                if (matched) {
-                    selectors.push(selectorText)
-                }
-            }
-
-            const suffixSelectors: string[] = []
-            if ('' in selectors) {
-                transformSuffixSelector(suffixSelector, selectors[''], suffixSelectors, true)
-            } else {
-                suffixSelectors.push(suffixSelector)
-            }
-
-            const vendorSelectors: Record<string, string[]> = {}
-            for (const [vendor, selectorValues] of Object.entries(selectors)) {
-                if (!vendor)
-                    continue
-
-                const newVendorSelectors = []
-                for (const eachSuffixSelector of suffixSelectors) {
-                    transformSuffixSelector(eachSuffixSelector, selectorValues, newVendorSelectors, false)
-                }
-
-                if (newVendorSelectors.length) {
-                    vendorSelectors[vendor] = newVendorSelectors
-                }
-            }
-
-            const insertVendorSuffixSelectors = (vendor: string, selectorTexts: string[]) => {
-                const groupedSelectorTexts = selectorTexts.reduce((arr, eachSuffixSelector) => {
-                    arr.push(...transformSelectorToken(eachSuffixSelector))
-                    return arr
-                }, [])
-
-                if (vendor in this.vendorSuffixSelectors) {
-                    this.vendorSuffixSelectors[vendor].push(...groupedSelectorTexts)
-                } else {
-                    this.vendorSuffixSelectors[vendor] = groupedSelectorTexts
-                }
-            }
-
-            const vendors = Object.keys(vendorSelectors)
-            if (vendors.length) {
-                for (const eachVendor of vendors) {
-                    insertVendorSuffixSelectors(eachVendor, vendorSelectors[eachVendor])
-                }
-            } else {
-                insertVendorSuffixSelectors('', suffixSelectors)
-            }
+            generateVendorSelectors(suffixSelector, this.vendorSuffixSelectors)
 
             for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
                 for (const eachSuffixSelector of suffixSelectors) {
@@ -366,6 +374,33 @@ export class Rule {
             }
         } else {
             this.vendorSuffixSelectors = { '': [''] }
+        }
+
+        // selector combinations
+        const suffixSelectorVendorsByPrefixSelectorVendor: Record<string, string[]> = {}
+        const isPrefixSelectorWithoutVendor = Object.prototype.hasOwnProperty.call(this.vendorPrefixSelectors, '')
+        const isSuffixSelectorWithoutVendor = Object.prototype.hasOwnProperty.call(this.vendorSuffixSelectors, '')
+        if (isPrefixSelectorWithoutVendor) {
+            suffixSelectorVendorsByPrefixSelectorVendor[''] = isSuffixSelectorWithoutVendor
+                ? ['']
+                : Object.keys(this.vendorSuffixSelectors)
+        } else {
+            if (isSuffixSelectorWithoutVendor) {
+                for (const vendor in this.vendorPrefixSelectors) {
+                    suffixSelectorVendorsByPrefixSelectorVendor[vendor] = ['']
+                }
+            } else {
+                for (const prefixSelectorVendor in this.vendorPrefixSelectors) {
+                    const suffixSelectorVendors = suffixSelectorVendorsByPrefixSelectorVendor[prefixSelectorVendor] = []
+                    if (Object.prototype.hasOwnProperty.call(this.vendorSuffixSelectors, prefixSelectorVendor)) {
+                        suffixSelectorVendors.push(prefixSelectorVendor)
+                    } else {
+                        for (const suffixVendor in this.vendorSuffixSelectors) {
+                            suffixSelectorVendors.push(suffixVendor)
+                        }
+                    }
+                }
+            }
         }
 
         // 5. atTokens
@@ -500,6 +535,7 @@ export class Rule {
             const generateCssText = (
                 propertiesText: string,
                 theme: string,
+                prefixSelectors: string[],
                 suffixSelectors: string[]
             ) => {
                 let prefixText = ''
@@ -507,7 +543,7 @@ export class Rule {
                     prefixText += '[dir=' + this.direction + '] '
                 }
 
-                const prefixTexts = this.prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText)
+                const prefixTexts = prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText)
                 const getCssText = (theme: string, name: string) =>
                     prefixTexts
                         .map(eachPrefixText => ((theme && themeDriver !== 'media')
@@ -546,6 +582,7 @@ export class Rule {
                     cssText = `@media(prefers-color-scheme:${theme}){` + cssText + '}'
                 }
 
+                console.log(className, cssText)
                 return cssText
             }
 
@@ -697,16 +734,19 @@ export class Rule {
             }
 
             // 創建 Natives
-            for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
-                for (const theme in propertiesTextByTheme) {
-                    this.natives.push({
-                        text: generateCssText(
-                            propertiesTextByTheme[theme].join(';'),
-                            theme,
-                            suffixSelectors
-                        ),
-                        theme
-                    })
+            for (const prefixSelectorVendor in suffixSelectorVendorsByPrefixSelectorVendor) {
+                for (const eachSuffixSelectorVendor of suffixSelectorVendorsByPrefixSelectorVendor[prefixSelectorVendor]) {
+                    for (const theme in propertiesTextByTheme) {
+                        this.natives.push({
+                            text: generateCssText(
+                                propertiesTextByTheme[theme].join(';'),
+                                theme,
+                                this.vendorPrefixSelectors[prefixSelectorVendor],
+                                this.vendorSuffixSelectors[eachSuffixSelectorVendor]
+                            ),
+                            theme
+                        })
+                    }
                 }
             }
         }
@@ -772,7 +812,7 @@ export class Rule {
 export interface Rule {
     prefix?: string
     token?: string
-    prefixSelectors?: string[]
+    vendorPrefixSelectors?: Record<string, string[]>
     vendorSuffixSelectors?: Record<string, string[]>
     important?: boolean
     media?: MediaQuery
