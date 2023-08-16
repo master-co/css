@@ -21,11 +21,6 @@
         "type": "git",
         "url": "https://github.com/master-co/css.git"
     },
-    "workspaces": [
-        "packages/*",
-        "examples/*",
-        "shared/"
-    ],
     "devDependencies": {
         "@master/css-extractor": "workspace:^",
         "@master/css-extractor.vite": "workspace:^",
