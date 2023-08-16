@@ -6,12 +6,9 @@ on:
             - beta
 
 jobs:
-    version:
+    release:
         timeout-minutes: 40
         runs-on: ubuntu-20.04
-        strategy:
-            matrix:
-                node-version: [18.17.0]
         steps:
             - uses: actions/checkout@v3
             - uses: pnpm/action-setup@v2
@@ -19,19 +16,18 @@ jobs:
                   version: 8
             - uses: actions/setup-node@v3
               with:
-                  node-version: ${{ matrix.node-version }}
-                  registry-url: "https://registry.npmjs.org"
+                  node-version: 18.17.0
                   cache: "pnpm"
             - run: pnpm install
             - run: pnpm run build
-
             - uses: lewagon/wait-on-check-action@v1.3.1
               with:
                   ref: ${{ github.ref }}
-                  check-regexp: test.*|check.*|commit-check.*|lint.*
+                  running-workflow-name: wait-for-check-regexp
+                  check-regexp: lint|test|commit-check|type-check
                   repo-token: ${{ secrets.GITHUB_TOKEN }}
                   wait-interval: 10
-            - run: pnpm dlx semantic-release
+            - run: pnpm exec semantic-release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

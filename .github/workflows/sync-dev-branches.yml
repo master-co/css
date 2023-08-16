@@ -5,13 +5,13 @@ on:
             - "*"
 
 jobs:
-    check:
+    sync:
         timeout-minutes: 15
         runs-on: ubuntu-20.04
         steps:
             - uses: actions/checkout@v3
             - name: Techor Actions
-              uses: 1aron/techor@v2.5.8
+              uses: 1aron/techor@v2.5.16
               with:
                   action: "sync-dev-branches"
               env:

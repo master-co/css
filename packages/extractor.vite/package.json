@@ -5,7 +5,7 @@
         "dev": "pnpm run build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
-        "test": "jest"
+        "test": "jest --workerThreads"
     },
     "license": "MIT",
     "description": "Integrate Master CSS Static Extraction in Vite way",

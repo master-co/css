@@ -18,7 +18,6 @@ let templateContent: string
 let masterCSSConfigPath: string
 
 test.todo('nuxt.js dev tests timeout in CI')
-
 if (!process.env.GITHUB_ACTIONS) {
     beforeAll(async () => {
         copy(examplePath, tmpDir)
@@ -48,9 +47,6 @@ if (!process.env.GITHUB_ACTIONS) {
         expect(() => { if (error) throw error }).not.toThrowError()
     }, 60000)
 
-    // test.todo('nuxt.js dev tests timeout in CI')
-
-    // if (!process.env.GITHUB_ACTIONS) {
     it('check if the page contains [data-vite-dev-id=".virtual/master.css"]', async () => {
         expect(await page.$('[data-vite-dev-id$=".virtual/master.css"]')).toBeTruthy()
     }, 60000)
@@ -60,20 +56,20 @@ if (!process.env.GITHUB_ACTIONS) {
         const newClassNameSelector = '.' + cssEscape(newClassName)
         fs.writeFileSync(templatePath, templateContent.replace(/class="([^"]+)"/, `class="${newClassName}"`))
         const newClassNameElementHandle = await page.waitForSelector(newClassNameSelector, { timeout: 5000 })
+        await page.waitForNetworkIdle()
         expect(newClassNameElementHandle).not.toBeNull()
         const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
         expect(styleHandle).not.toBeNull()
         const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
         expect(cssText).toContain(newClassNameSelector)
-        console.log()
     }, 60000)
 
     it('change master.css.ts and check result in the browser during HMR', async () => {
         const newBtnClassName = 'btn' + new Date().getTime()
         const newBtnClassNameSelector = '.' + cssEscape(newBtnClassName)
         fs.writeFileSync(templatePath, templateContent.replace(/class="([^"]+)"/, `class="${newBtnClassName}"`))
-        await page.waitForNetworkIdle()
         const newClassNameElementHandle = await page.waitForSelector(newBtnClassNameSelector)
+        await page.waitForNetworkIdle()
         expect(newClassNameElementHandle).not.toBeNull()
         // -> classes: { btn43848384: 'xxx' }
         fs.writeFileSync(masterCSSConfigPath, `
