@@ -14,17 +14,17 @@ const Button = styled.button<{ $color: string }>`
 
 test('Basic', () => {
     expect(renderToStaticMarkup(<Button $color="red">Basic</Button>))
-        .toBe('<button class="inline-flex center-content font:14 font:semibold test test3 fg:white px:18 h:40 r:4 bg:red">Basic</button>')
+        .toBe('<button class="test test3 inline-flex center-content font:14 font:semibold fg:white px:18 h:40 r:4 bg:red">Basic</button>')
 })
 
 test('Extend', () => {
     const ExtendButton = styled(Button)`bg:${({ $color }) => $color}-54:hover`
     expect(renderToStaticMarkup(<ExtendButton $color="blue">Extend</ExtendButton>))
-        .toBe('<button class="inline-flex center-content font:14 font:semibold test test3 fg:white px:18 h:40 r:4 bg:blue bg:blue-54:hover">Extend</button>')
+        .toBe('<button class="test test3 inline-flex center-content font:14 font:semibold fg:white px:18 h:40 r:4 bg:blue bg:blue-54:hover">Extend</button>')
 
     const AButton = styled.a(Button)``
     expect(renderToStaticMarkup(<AButton $color="purple">Tag Extend</AButton>))
-        .toBe('<a class="inline-flex center-content font:14 font:semibold test test3 fg:white px:18 h:40 r:4 bg:purple">Tag Extend</a>')
+        .toBe('<a class="test test3 inline-flex center-content font:14 font:semibold fg:white px:18 h:40 r:4 bg:purple">Tag Extend</a>')
 
     const CustomComponent = forwardRef((props: { $type: string }, ref: any) => <a ref={ref} {...props}></a>)
     const ExtendCustomComponent = styled<typeof CustomComponent, { $newType: string }>(CustomComponent)`inline-flex center-content font:14 font:semibold ${(props) => props.$type} ${(props) => props.$newType}`
@@ -47,14 +47,14 @@ test('Prop composition', () => {
             disabled: 'opacity:.5'
         }}
         ${['uppercase', { $intent: 'primary', $size: 'md' }]}
-        ${({ $intent, $size }) => $intent && $size && 'font:italic'}
+        ${({ $intent, $size }) => ({ 'font:italic': !!$intent && !!$size })}
     `
     Button.defaultProps = {
         $intent: 'primary'
     }
 
     expect(renderToStaticMarkup(<Button $size="md" />))
-        .toBe('<button class="font:semibold rounded font:italic uppercase bg:blue-50 fg:white bg:blue-60:hover font:16 py:2 px:4"></button>')
+        .toBe('<button class="font:italic font:semibold rounded uppercase bg:blue-50 fg:white bg:blue-60:hover font:16 py:2 px:4"></button>')
     expect(renderToStaticMarkup(<Button disabled $intent="secondary" />))
         .toBe('<button disabled="" class="font:semibold rounded bg:white fg:gray-80 b:gray-40 bg:gray-50:hover opacity:.5"></button>')
 
@@ -71,13 +71,13 @@ test('Prop composition', () => {
         ${['uppercase', { $intent: 'primary', $size: 'md' }]}
     `
     expect(renderToStaticMarkup(<ExtendButton $intent="primary" $size="md" />))
-        .toBe('<button class="font:semibold rounded font:italic uppercase bg:blue-70 fg:black bg:blue-80:hover font:16 py:2 px:4"></button>')
+        .toBe('<button class="font:italic font:semibold rounded uppercase bg:blue-70 fg:black bg:blue-80:hover font:16 py:2 px:4"></button>')
 
     expect(renderToStaticMarkup(<ExtendButton $intent="secondary" />))
         .toBe('<button class="font:semibold rounded bg:white fg:gray-80 b:gray-40 bg:gray-50:hover"></button>')
 
     expect(renderToStaticMarkup(<ExtendButton disabled $intent="secondary" $size="lg" />))
-        .toBe('<button disabled="" class="font:semibold rounded font:italic bg:white fg:gray-80 b:gray-40 bg:gray-50:hover font:32 py:5 px:7 opacity:.6"></button>')
+        .toBe('<button disabled="" class="font:italic font:semibold rounded bg:white fg:gray-80 b:gray-40 bg:gray-50:hover font:32 py:5 px:7 opacity:.6"></button>')
 })
 
 test('Alternative syntax', () => {

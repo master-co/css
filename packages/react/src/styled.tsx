@@ -64,6 +64,7 @@ function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
         const generateFunctionComponent = (defaultClassNames: TemplateStringsArray, ...params: any[]) => {
             const newTagParams: TagParams = [...(tagParams || []), [defaultClassNames, params]]
             const component = forwardRef<K, MasterComponentProps<K, E>>((props, ref) => {
+                const classNames: string[] = []
                 const classesConditions: [string, Record<string, string | number | boolean>][] = []
                 let valuesByProp: Record<string, string | Record<string, string>>
                 const unhandledTagParams: TagParams = []
@@ -118,6 +119,13 @@ function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
                                                 valuesByProp = param
                                             }
                                             break
+                                        case 'boolean':
+                                            for (const eachProp of keys) {
+                                                if (param[eachProp]) {
+                                                    classNames.push(eachProp)
+                                                }
+                                            }
+                                            return true
                                     }
                                 }
                             }
@@ -141,8 +149,7 @@ function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
                     }
                     unhandledTagParams.push([eachNewTagParam[0], newParams])
                 }
-
-                const classNames: string[] = []
+                
                 for (let i = unhandledTagParams.length - 1; i >= 0; i--) {
                     const eachHandledTagParam = unhandledTagParams[i]
                     classNames.push(cv(eachHandledTagParam[0], ...eachHandledTagParam[1])(props))
