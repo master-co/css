@@ -68,7 +68,6 @@ it('change master.css.ts and check result in the browser during HMR', async () =
     const newBtnClassNameSelector = '.' + cssEscape(newBtnClassName)
     fs.writeFileSync(templatePath, templateContent.replace('className="card"', `className="${newBtnClassName}"`))
     const newClassNameElementHandle = await page.waitForSelector(newBtnClassNameSelector)
-    await page.waitForNetworkIdle()
     expect(newClassNameElementHandle).not.toBeNull()
     // -> classes: { btn43848384: 'xxx' }
     fs.writeFileSync(masterCSSConfigPath, `
