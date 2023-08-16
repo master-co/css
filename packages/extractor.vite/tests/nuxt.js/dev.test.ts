@@ -57,8 +57,7 @@ if (!process.env.GITHUB_ACTIONS) {
         const newClassNameSelector = '.' + cssEscape(newClassName)
         fs.writeFileSync(templatePath, templateContent.replace(/class="([^"]+)"/, `class="${newClassName}"`))
         await page.waitForNetworkIdle()
-        const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
-        const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
+        const cssText = await page.evaluate(() => document.querySelector('[data-vite-dev-id$=".virtual/master.css"]')?.textContent)
         expect(cssText).toContain(newClassNameSelector)
     }, 60000)
 
@@ -70,8 +69,7 @@ if (!process.env.GITHUB_ACTIONS) {
             export default { classes: { '${newBtnClassName}': 'bg:pink' } }
         `)
         await page.waitForNetworkIdle()
-        const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
-        const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
+        const cssText = await page.evaluate(() => document.querySelector('[data-vite-dev-id$=".virtual/master.css"]')?.textContent)
         expect(cssText).toContain(newBtnClassNameSelector)
     }, 60000)
 
