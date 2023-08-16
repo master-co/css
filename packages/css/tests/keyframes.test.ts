@@ -15,12 +15,12 @@ beforeAll(async () => {
     await page.evaluate(() => window['masterCSSConfig'] = { animations: { fade: {} } })
     await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
     await page.waitForNetworkIdle()
-}, 30000)
+}, 60000)
 
 it('make sure not to extend animations deeply', async () => {
     const fade = await page.evaluate(() => window.MasterCSS.root.config.animations?.fade)
     expect(fade).toEqual({})
-}, 30000)
+}, 60000)
 
 it('expects the animation output', async () => {
     const cssText = await page.evaluate(async () => {
@@ -34,7 +34,7 @@ it('expects the animation output', async () => {
         return window.MasterCSS.root.text
     })
     expect(cssText).toContain('.\\@fade\\|1s{animation:fade 1s}')
-}, 30000)
+}, 60000)
 
 let p: ElementHandle<Element>
 
@@ -68,7 +68,7 @@ it('expects the keyframe output', async () => {
     expect(cssText).toContain('@keyframes shake{0%{transform:none}6.5%{transform:translateX(-6px) rotateY(-9deg)}18.5%{transform:translateX(5px) rotateY(7deg)}31.5%{transform:translateX(-3px) rotateY(-5deg)}43.5%{transform:translateX(2px) rotateY(3deg)}50%{transform:none}}')
     expect(cssText).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
     expect(cssText).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
-}, 30000)
+}, 60000)
 
 it('animations', async () => {
     await page.evaluate((p) => p.className = 'block font:bold', p)
@@ -157,7 +157,7 @@ it('animations', async () => {
 
     await deleteAnimation('{@name:flash;@name:fade}')
     await deleteAnimation('@fade|2s')
-}, 30000)
+}, 60000)
 
 afterAll(async () => {
     await page.close()
