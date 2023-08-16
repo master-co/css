@@ -5,6 +5,7 @@ import puppeteer, { type Browser, type Page } from 'puppeteer-core'
 import { copy, rm } from 'shared/utils/fs'
 import { SpawndChildProcess, spawnd } from 'spawnd'
 import waitForDataMatch from 'shared/utils/wait-for-data-match'
+import delay from 'shared/utils/delay'
 
 const examplePath = path.join(__dirname, '../../../../examples/vue.js-with-static-extraction')
 const tmpDir = path.join(__dirname, 'tmp/dev')
@@ -53,6 +54,7 @@ it('change class names and check result in the browser during HMR', async () => 
     const newClassNameSelector = '.' + cssEscape(newClassName)
     fs.writeFileSync(templatePath, templateContent.replace('class="card"', `class="${newClassName}"`))
     await page.waitForNetworkIdle()
+    await delay(3000)
     const newClassNameElementHandle = await page.$(newClassNameSelector)
     expect(newClassNameElementHandle).not.toBeNull()
     const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
@@ -66,6 +68,7 @@ it('change master.css.ts and check result in the browser during HMR', async () =
     const newBtnClassNameSelector = '.' + cssEscape(newBtnClassName)
     fs.writeFileSync(templatePath, templateContent.replace('class="card"', `class="${newBtnClassName}"`))
     await page.waitForNetworkIdle()
+    await delay(3000)
     const newClassNameElementHandle = await page.$(newBtnClassNameSelector)
     expect(newClassNameElementHandle).not.toBeNull()
     // -> classes: { btn43848384: 'xxx' }
@@ -73,6 +76,7 @@ it('change master.css.ts and check result in the browser during HMR', async () =
         export default { classes: { '${newBtnClassName}': 'bg:pink' } }
     `)
     await page.waitForNetworkIdle()
+    await delay(3000)
     const styleHandle = await page.$('[data-vite-dev-id$=".virtual/master.css"]')
     expect(styleHandle).not.toBeNull()
     const cssText = await page.evaluate((style: any) => (style as HTMLStyleElement)?.textContent, styleHandle)
