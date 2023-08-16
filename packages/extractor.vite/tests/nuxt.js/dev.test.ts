@@ -43,7 +43,8 @@ if (!process.env.GITHUB_ACTIONS) {
         }
     }, 120000)
 
-    it('run dev without errors', () => {
+    it('run dev without errors', async () => {
+        await page.waitForNetworkIdle()
         expect(() => { if (error) throw error }).not.toThrowError()
     }, 60000)
 

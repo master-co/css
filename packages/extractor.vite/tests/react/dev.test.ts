@@ -29,7 +29,6 @@ beforeAll(async () => {
     const result = urlPattern.exec(data)
     browser = await puppeteer.launch({ headless: 'new', channel: 'chrome' })
     page = await browser.newPage()
-    await page.waitForNetworkIdle()
     page.on('console', (consoleMessage) => {
         if (consoleMessage.type() === 'error') {
             error = new Error(consoleMessage.text())
@@ -47,6 +46,7 @@ it('run dev without errors', () => {
 }, 60000)
 
 it('check if the page contains [data-vite-dev-id=".virtual/master.css"]', async () => {
+    await page.waitForNetworkIdle()
     expect(await page.$('[data-vite-dev-id$=".virtual/master.css"]')).toBeTruthy()
 }, 60000)
 
