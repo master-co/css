@@ -3,7 +3,7 @@
     "scripts": {
         "build:main": "vite build",
         "build:type": "vue-tsc --declaration --emitDeclarationOnly",
-        "build": "pnpm run \"/^build:.*/\"",
+        "build": "pnpm run build:main && pnpm run build:type",
         "dev": "pnpm run build:main --watch",
         "type-check": "vue-tsc --noEmit",
         "lint": "eslint src"
