@@ -253,7 +253,7 @@ export class Rule {
                         return
                     }
                 }
-    
+
                 if (matched) {
                     selectors.push(selectorText)
                 }
@@ -266,7 +266,7 @@ export class Rule {
                         .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/(^|[^_])_(?!_)/g, '$1 '))
                         .join('')
                 const selectors: string[] = []
-    
+
                 let currentSelector = ''
                 let symbolCount = 0
                 for (let i = 0; i < transformedSelectorText.length; i++) {
@@ -275,13 +275,13 @@ export class Rule {
                         currentSelector += char + transformedSelectorText[++i]
                         continue
                     }
-    
+
                     if (!symbolCount && char === ',') {
                         selectors.push(currentSelector)
                         currentSelector = ''
                     } else {
                         currentSelector += char
-    
+
                         if (symbolCount && char === ')') {
                             symbolCount--
                         } else if (char === '(') {
@@ -292,7 +292,7 @@ export class Rule {
                 if (currentSelector) {
                     selectors.push(currentSelector)
                 }
-    
+
                 return selectors
             }
 
@@ -581,8 +581,6 @@ export class Rule {
                 if (theme && themeDriver === 'media') {
                     cssText = `@media(prefers-color-scheme:${theme}){` + cssText + '}'
                 }
-
-                console.log(className, cssText)
                 return cssText
             }
 
