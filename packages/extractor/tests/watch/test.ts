@@ -81,7 +81,6 @@ it('change options file `fixed` and reset process', async () => {
     await waitForDataMatch(child, (data) => data.includes('Restart watching source changes'), async () => {
         fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
     })
-    console.log('A')
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
     expect(fileCSSText).toContain(cssEscape('fg:red'))
 }, 30000)
