@@ -1,0 +1,12 @@
+```js name=master.css.js
+export default {
+    selectors: {
+        _headings: '_:where(h1,h2,h3,h4,h5,h6)'
+    }
+}
+```
+Simplify your existing markup in HTML:
+```html
+- <article class="font:bold_:where(h1,h2,h3,h4,h5,h6)">…</article>
++ <article class="font:bold_headings">…</article>
+```

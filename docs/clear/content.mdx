@@ -1,0 +1,69 @@
+## Overview [sr-only]
+<Overview/>
+
+---
+
+## Basic usage
+### Clearing both left and right floats
+Use `both:clear` to move the element below all floated elements.
+<Demo>
+    <div>
+        <div className="box w:150 h:200 float:left">Left</div>
+        <div className="box w:150 h:120 float:right">Right</div>
+        <div className="box w:300 h:80 clear:both">Clear</div>
+    </div>
+</Demo>
+```html
+<div>
+    <div class="float:left">Left</div>
+    <div class="float:right">Right</div>
+    <div class="**clear:both**">Clear</div>
+</div>
+```
+
+### Clearing left floats
+Use `both:left` to move the element below all left floated elements.
+<Demo>
+    <div>
+        <div className="box w:150 h:200 float:right">Right</div>
+        <div className="box w:150 h:200 float:right">Right</div>
+        <div className="box w:150 h:120 float:left">Left</div>
+        <div className="box w:150 h:120 clear:left">Clear</div>
+    </div>
+</Demo>
+```html
+<div>
+    <div class="float:right">Right</div>
+    <div class="float:right">Right</div>
+    <div class="float:left">Left</div>
+    <div class="**clear:left**">Clear</div>
+</div>
+```
+
+### Clearing right floats
+Use `both:right` to move the element below all right floated elements.
+<Demo>
+    <div>
+        <div className="box w:150 h:200 float:left">Left</div>
+        <div className="box w:150 h:200 float:left">Left</div>
+        <div className="box w:150 h:120 float:right">Right</div>
+        <div className="box w:150 h:120 clear:right">Clear</div>
+    </div>
+</Demo>
+```html
+<div>
+    <div class="float:left">Left</div>
+    <div class="float:left">Left</div>
+    <div class="float:right">Right</div>
+    <div class="**clear:left**">Clear</div>
+</div>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="clear:both**:hover** clear:both**@sm** clear:both**@dark** clear:both**@print**">…</div>
+```
+

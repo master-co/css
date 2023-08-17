@@ -1,0 +1,25 @@
+const syntaxes = [
+    ['border-radius:`radius`', 'r:`radius`'],
+    ['border-radius:`radius`|`radius`', 'r:`radius`|`radius`'],
+    ['border-radius:`radius`|`radius`|`radius`|`radius`', 'r:`radius`|`radius`|`radius`|`radius`'],
+    ['rt:`radius`'],
+    ['rt:`radius`|`radius`'],
+    ['rb:`radius`'],
+    ['rb:`radius`|`radius`'],
+    ['rl:`radius`'],
+    ['rl:`radius`|`radius`'],
+    ['rr:`radius`'],
+    ['rr:`radius`|`radius`'],
+    ['rtl:`radius`', 'rlt:`radius`'],
+    ['rtl:`radius`|`radius`', 'rlt:`radius`|`radius`'],
+    ['rtr:`radius`', 'rrt:`radius`'],
+    ['rtr:`radius`|`radius`', 'rrt:`radius`|`radius`'],
+    ['rbl:`radius`', 'rlb:`radius`'],
+    ['rbl:`radius`|`radius`', 'rlb:`radius`|`radius`'],
+    ['rbr:`radius`', 'rrb:`radius`'],
+    ['rbr:`radius`|`radius`', 'rrb:`radius`|`radius`'],
+    ['rounded'],
+    ['round'],
+]
+
+export default syntaxes

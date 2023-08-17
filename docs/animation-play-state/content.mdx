@@ -1,0 +1,28 @@
+## Overview [sr-only]
+<Overview/>
+
+Simplify the native syntax using the derived symbol.
+```html
+-<div class="animation-play-state:paused">
++<div class="@play:paused">
+```
+
+---
+
+## Basic usage
+### Play animation
+Set it to run when the animation is paused.
+<Basic className="@play:running" />
+
+### Pause animation
+Pauses the running animation.
+<Basic className="@play:paused" />
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="@play:paused**:hover** @play:paused**@sm** @play:paused**@dark** @play:paused**@print**">…</div>
+```
+

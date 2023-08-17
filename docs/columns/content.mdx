@@ -1,0 +1,91 @@
+## Overview [sr-only]
+<Overview/>
+
+## Basic usage
+### Set column count
+Use `cols:value` to set the number of columns when creating a multi-column layout. The column width will automatically adjust to the column count.
+<Demo className="py:0!">
+    <div className="gap:30 cols:3@sm cols:1 w:full break-inside:avoid_:where(div)">
+        <div className="bg-stripe-pink pt:32">
+            <Image src="/images/mountain4.jpeg" width={300} height={200} alt="mountain" className="raspect:3/2 :4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:16">
+            <Image src="/images/mountain7.jpeg" width={200} height={200} alt="mountain" className="raspect:1/1 :4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:16 pb:32">
+            <Image src="/images/mountain19.jpg" width={300} height={200} alt="mountain" className="aspect:3/2 r:4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:32">
+            <Image src="/images/mountain14.jpg" width={200} height={200} alt="mountain" className="aspect:1/1 r:4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:16">
+            <Image src="/images/mountain15.jpg" width={300} height={200} alt="mountain" className="aspect:3/2 r:4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:16 pb:32">
+            <Image src="/images/mountain16.jpg" width={300} height={200} alt="mountain" className="aspect:3/2 r:4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:32">
+            <Image src="/images/mountain17.jpg" width={300} height={200} alt="mountain" className="aspect:3/2 r:4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:16">
+            <Image src="/images/mountain18.jpg" width={300} height={200} alt="mountain" className="aspect:3/2 r:4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:16 pb:32">
+            <Image src="/images/mountain20.jpg" width={200} height={200} alt="mountain" className="aspect:1/1 r:4 b:1px|solid|black/.08" />
+        </div>
+    </div>
+</Demo>
+```html
+<div class="**cols:3**">
+    <img class="w:full aspect:1/1" src="…" />
+    <img class="w:full aspect:3/2" src="…" />
+    …
+</div>
+```
+
+### Flexible multi-column layout
+Use `cols:count|width` to set minimum width of each column to `width` and maximum number of columns to `count` columns when creating a flexible multi-column layout.
+<Demo className="py:0!">
+    <div className="gap:30 cols:4|100px@sm cols:1 w:full break-inside:avoid_:where(div)">
+        <div className="bg-stripe-pink pt:32">
+            <Image src="/images/mountain20.jpg" width={300} height={200} alt="mountain" className="aspect:3/2 r:4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:16 pb:32">
+            <Image src="/images/mountain14.jpg" width={200} height={200} alt="mountain" className="aspect:1/1 r:4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:32">
+            <Image src="/images/mountain15.jpg" width={200} height={200} alt="mountain" className="aspect:1/1 r:4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:16 pb:32">
+            <Image src="/images/mountain16.jpg" width={300} height={200} alt="mountain" className="aspect:3/2 r:4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:32">
+            <Image src="/images/mountain18.jpg" width={300} height={200} alt="mountain" className="aspect:3/2 r:4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:16 pb:32">
+            <Image src="/images/mountain17.jpg" width={200} height={200} alt="mountain" className="aspect:1/1 r:4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:32">
+            <Image src="/images/mountain19.jpg" width={200} height={200} alt="mountain" className="aspect:1/1 r:4 b:1px|solid|black/.08" />
+        </div>
+        <div className="bg-stripe-pink pt:16 pb:32">
+            <Image src="/images/mountain7.jpeg"width={300} height={200} alt="mountain" className="aspect:3/2 r:4 b:1px|solid|black/.08" />
+        </div>
+    </div>
+</Demo>
+```html
+<div class="**cols:4|100px**">
+    <img class="w:full aspect:1/1" src="…" />
+    <img class="w:full aspect:3/2" src="…" />
+    …
+</div>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="columns:5**:hover** columns:5**@sm** columns:5**@dark** columns:5**@print**">…</div>
+```
+

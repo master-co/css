@@ -1,0 +1,48 @@
+## Overview [sr-only]
+<Overview/>
+
+## Basic usage
+### Color tokens
+Change the text color of an element using the preset [color tokens](/docs/colors).
+<Demo>
+    <div className="fg:code-blue font:56 font:heavy">Aa</div>
+</Demo>
+```html
+<div class="**fg:blue-55**">Aa</div>
+```
+
+### HEX
+Change the text color of an element using HEX color code.
+<Demo>
+    <div className="fg:code-blue font:56 font:heavy">Aa</div>
+</Demo>
+```html
+<p class="**fg:#175fe9**">Aa</p>
+```
+
+### RGB
+Change the text color of an element using RGB color code.
+<Demo>
+    <div className="fg:code-blue font:56 font:heavy">Aa</div>
+</Demo>
+```html
+<p class="**fg:rgb(23,95,233)**">Aa</p>
+```
+
+### HSL
+Change the text color of an element using HSL color code.
+<Demo>
+    <div className="fg:code-blue font:56 font:heavy">Aa</div>
+</Demo>
+```html
+<p class="**fg:hsl(219|83%|50%)**">Aa</p>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="fg:slate-10**:hover** fg:slate-10**@sm** fg:slate-10**@dark** fg:slate-10**@print**">…</div>
+```
+

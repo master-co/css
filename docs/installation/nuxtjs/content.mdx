@@ -1,0 +1,132 @@
+<ProgressiveRenderingIntro img={{
+    href: "https://nuxtjs.pr.beta.css.master.co",
+    src: "/images/nuxtjs-dev.png",
+    alt: 'Nuxt.js and Master CSS',
+    width: 665, height: 400, hasDark: true }} />
+
+---
+
+## Quick start
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Clone the example
+            Copy-paste the following commands to quickly start using the [nuxtjs.pr.beta.css.master.co](https://nuxtjs.pr.beta.css.master.co).
+
+            You can skip all [installation](#installation) steps.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx degit master-co/css/examples/nuxt.js-with-progressive-rendering __my-project__
+            cd __my-project__
+            npm install @master/css.vue@beta @master/css-server.nitro@beta
+            npm install
+            npm run dev
+            ```
+        </StepR>
+        <StepEnd/>
+    </Step>
+</StepSection>
+
+---
+
+## Installation
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have a Nuxt.js project, create one first. It's recommended to refer to [Get started with Nuxt.js](https://nuxt.com/docs/getting-started/installation).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx nuxi@latest init __project__
+            cd __project__
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS Vue and Server Nitro into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css.vue@beta** **@master/css-server.nitro@beta**
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Initialize configuration file
+            Run `npx mcss init` to create a configuration file [master.css.ts](/docs/configuration).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx mcss init
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS runtime engine
+            1. Dynamic `js import('@master/css.vue')`
+            2. Dynamic `js import('../master.css')`
+
+            `@master/css.vue` and `master.css.ts` will not be included in the page's initial JavaScript bundle.
+        </StepL>
+        <StepR>
+            ```html name=app.vue
+            <script setup lang="ts">
+            +import { defineAsyncComponent } from 'vue'
+            +const CSSProvider = defineAsyncComponent(async () => (await import('@master/css.vue')).CSSProvider)
+            </script>
+
+            <template>
+            +    <CSSProvider :config="import('./master.css')">
+                    …
+            +    </CSSProvider>
+            </template>
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS pre-rendering
+            All CSS rules are pre-rendered and injected into HTML on the server side or at build time.
+            - Create `server/plugins/css-server.ts` file
+            - Create a Master CSS Server Nitro plugin
+        </StepL>
+        <StepR>
+            ```ts name=server/plugins/css-server.ts
+            +import { createCSSServerPlugin } from '@master/css-server.nitro'
+            +// @ts-expect-error allowImportingTsExtensions
+            +import config from '../../master.css.ts'
+
+            +export default createCSSServerPlugin({ config })
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Launch server
+            Run `npm run dev` to start your Nuxt.js development server
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm run dev
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first element using Master CSS syntax!
+        ```html name=app.vue
+        <template>
+            <h1 class="**font:40** **font:heavy** **italic** **m:50** **text:center**">Hello World</h1>
+        </template>
+        ```
+        <p className="mt:50">Open your browser to watch the changes.</p>
+        <HelloWorld url="localhost:3000" />
+    </Step>
+</StepSection>

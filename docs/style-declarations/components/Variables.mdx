@@ -1,0 +1,13 @@
+(x) You can't declare CSS variables with the state through inline styles.
+```html
+<div style="--color: red; --size: 5rem">
+```
+
+(o) Declare CSS variables based on any state.
+```html
+<div class="**$color:red:hover** **$size:5rem@sm**">
+```
+Generated CSS:
+<Class2CSS>
+    {['$color:red:hover', '$size:5rem@sm']}
+</Class2CSS>

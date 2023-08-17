@@ -1,0 +1,145 @@
+## Overview [sr-only]
+
+<RuntimeRenderingIntro />
+
+---
+
+## Setup
+The Master CSS runtime engine is tiny JavaScript package —— import the script and enable it immediately on the browser.
+
+Take the most convenient [CDN](/docs/installtion/cdn) as an example:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
++    <script src="https://cdn.master.co/css@beta"></script>
+    …
+</head>
+<body>
+    <h1 class="font:40 font:heavy italic m:50 text:center">Hello World</h1>
+</body>
+</html>
+```
+If you haven't done the installation yet, please see the complete [Installation Guide](/docs/installation).
+
+---
+
+## How it works
+
+### Observing DOM changes
+The Master CSS runtime engine uses the standard [Web APIs - Mutation Observer](https://developer.mozilla.org/zh-TW/docs/Web/API/MutationObserver) to observe the DOM changes in class names at runtime and generate/remove its corresponding CSS rules on the fly.
+
+The following continuous DOM manipulation takes you to understand the behavior of the runtime when the browser is running:
+
+<StepSection>
+    <Step>
+        #### <StepNum />Insert an element with a Master CSS class name into the DOM
+        ```js
+            const h1 = document.createElement('h1')
+            h1.className = '**text:center**'
+        ```
+        A new node `html <h1>` is inserted into the DOM tree:
+        ```html
+        +<h1 class="text:center">Hello World</h1>
+        ```
+        The runtime engine observes a new node with the class `text:center` and generates the corresponding CSS rule:
+        ```css
+        +.text\:center {
+        +    text-align: center
+        +}
+        ```
+    </Step>
+    <Step>
+        #### <StepNum />Added Master CSS class names to elements in links
+        ```js
+        h1.classList.add('**font:48**')
+        ```
+        Add class name `font:48` to `html <h1>`
+        ```html
+        <h1 class="text:center **font:48**">Hello World</h1>
+        ```
+        The runtime engine observes that `html <h1>` adds the new class name `font:48` and generates the corresponding CSS rules:
+        ```css
+        +.font\:48 {
+        +    font-size: 3rem
+        +}
+
+        .text\:center {
+            text-align: center
+        }
+        ```
+    </Step>
+    <Step>
+        #### <StepNum />Remove the Master CSS class name from the connected element
+        ```js
+        h1.classList.remove('**text:center**')
+        ```
+        Remove class name `text:center` from `html <h1>`
+        ```html
+        <h1 class="˟˟text:center˟˟ font:48">Hello World</h1>
+        ```
+        The runtime engine observes that the class name `text:center` is removed from `html <h1>` and removes the corresponding CSS rule:
+        ```css
+        .font\:48 {
+            font-size: 3rem
+        }
+
+        -.text\:center {
+        -    text-align: center
+        -}
+        ```
+    </Step>
+    <Step>
+        #### <StepNum />Removes an element with a Master CSS class from the DOM
+        ```js
+        h1.remove()
+        ```
+        Remove the `html <h1>` with class `font:48`
+        ```html
+        +<h1 class="font:48">Hello World</h1>
+        ```
+        The runtime engine observes that the `html <h1>` element with the class name `font:48` is removed and removes the corresponding CSS rule:
+        ```css
+        -.font\:48 {
+        -    font-size: 3rem
+        -}
+        ```
+    </Step>
+    <Step>
+        #### <StepNum />All CSS rules related to Master CSS have been removed
+    </Step>
+</StepSection>
+
+The Master CSS Runtime Rendering relies on the lifecycle of individual elements. Only the Master CSS class names connected to the DOM tree will generate corresponding CSS rules so **browsers can calculate with minimal and precise CSS rules**.
+
+Due to its runtime execution nature, you can modify the class name directly in the browser by inspecting the element and seeing its changes.
+
+### Running style sheet
+Where are the generated CSS rules inserted?
+
+The runtime engine appends `html <style id="master">` in `html <head>` during initialization:
+```html
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.master.co/css@2"></script>
++    <style id="master"></style>
+</head>
+```
+
+It uses the `.insertRule()` and `.deleteRule()` of [Web APIs - CSSStyleSheet](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet) to manipulate memory locally CSS rules, so any changes made to the CSS text of `html <style id="master">` cannot be observed by inspecting elements.
+
+Still, you can detect the CSS rules in the current style sheet like this:
+```js
+const sheet = document.querySelector('style[id="master"]').sheet
+console.log(sheet.cssRules)
+```
+
+---
+
+## Further Reading
+
+- [Avoid flash of unstyled content](/docs/flash-of-unstyled-content)
+- [Preload critical resources](/docs/preload-critical-resources)

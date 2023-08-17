@@ -1,0 +1,79 @@
+## Issue [sr-only]
+
+Upon accessing the page, the browser starts rendering the document. However, the page styles may not be loaded yet, causing a [FOUC (flash of unstyled content)](https://en.wikipedia.org/wiki/Flash_of_unstyled_content).
+<figure>
+    <Image src="/images/fouc.avif" alt="flash of unstyled content" width="500" height="468" />
+    <figcaption>A simulated example of FOUC. At left is the front page without styles. At right is the same page with styles applied. ( [web.dev](https://web.dev/preload-scanner) )</figcaption>
+</figure>
+
+The unstyled state can occur in a flash if the browser doesn't block rendering while a stylesheet is downloaded and processed.
+
+---
+
+## Solutions
+### Prevent premature rendering
+When you [pre-render](/docs/rendering-modes/progressive-rendering) the page, the required styles will be included during the page load. FOUC occurs when using only [runtime rendering](/docs/rendering-modes/runtime-rendering).
+
+(o) Include `css display: none` in the `html <html>` to avoid FOUC.
+```html
+<html style="**display: none**">…</html>
+```
+Once the style is injected, the engine will remove the above and notify the browser that the page can be displayed.
+
+The initialization is typically completed within milliseconds, and you don't need to worry about the impact of `css display: none` as it's instantaneous.
+
+By [preloading critical resources](/docs/preload-critical-resources), there will be a bonus effect.
+
+### Initialize style theme early
+Initializers for the [theme service](/docs/theme-service) is usually bundled in the main JavaScript resource by build tools and defer to load.
+
+(o) Pre-apply the theme and inline the script in `html <head>` to fix the style flickering issue:
+```html
+<html>
+    <script>
+        /* default value */
+        let value = 'system';
+        /* sync with local storage */
+        const storage = localStorage.getItem('theme');
+        if (storage) {
+            value = storage;
+        }
+        let current = value;
+        /* sync with the user's system preference */
+        if (value === 'system') {
+            current = matchMedia('(prefers-color-scheme:dark)')
+                .matches ? 'dark' : 'light';
+        };
+        const host = document.documentElement;
+        host.classList.add(current);
+        if (current === 'dark' || current === 'light') {
+            host.style.colorScheme = current;
+        }
+    </script>
+</html>
+```
+If you're using a template language, you can use the exported script:
+```js
+import { getPreInitScript } from 'theme-service'
+
+const html = `
+    <html>
+        <script>
+            ${getPreInitScript({ default: 'system' })}
+        </script>
+    </html>
+`
+```
+
+---
+
+## Benefits
+By avoiding rendering unstyled content, the browser enhances performance and improves related metrics:
+
+1. **Time to Interactive (TTI)**: TTI refers to the time at which users can interact with the web page. When FOUC is resolved and the web content is styled quickly, it accelerates the interactivity of the web page, thus improving TTI.
+2. **First Input Delay (FID)**: FID measures the delay in user interaction with the web page for the first time. When FOUC is resolved, users can start interacting with the web page more quickly, reducing FID.
+3. **Bounce Rate**: Bounce Rate represents the percentage of users who leave the website after viewing only one page. When a web page experiences FOUC, users may quickly leave due to a poor experience. Resolving FOUC can reduce the bounce rate and improve user retention.
+4. **User Engagement**: Resolving FOUC allows users to browse and read web page content more quickly, increasing user engagement and involvement.
+5. **Conversion Rate**: Conversion Rate refers to the percentage of users who complete desired actions such as making a purchase, subscribing, filling out a form, etc. When FOUC issues are resolved and user experience is improved, it can enhance the conversion rate.
+
+In summary, resolving FOUC issues promotes better user interaction with the website, improves user engagement and experience, and positively impacts website performance and business metrics.

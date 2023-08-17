@@ -1,0 +1,23 @@
+## Overview [sr-only]
+<Overview/>
+
+## Basic usage
+### Set the cursor color
+Use the `caret-color:color` to change the cursor color in text input.
+<InteractingIndicator>Focus on input to see the cursor color</InteractingIndicator>
+
+<Demo class="py:0">
+    <input type="text" className="p:5|10 caret-color:pink-70 ~caret-color|.3s outline:none bg:white b:2px|solid|gray-83 b:2px|solid|pink-70:focus r:8" />
+</Demo>
+```html
+<input type="text" class="**caret-color:pink-70**">
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="caret-color:blue-46**:hover** caret-color:blue-46**@sm** caret-color:blue-46**@dark** caret-color:blue-46**@print**">…</div>
+```
+

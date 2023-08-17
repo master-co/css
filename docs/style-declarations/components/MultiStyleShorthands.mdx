@@ -1,0 +1,34 @@
+export const code1 = `<p class="**padding-top:1rem** **padding-bottom:1rem** **padding-left:2rem** **padding-right:2rem** **border-width:.0625rem** **border-color:red** **border-style:solid**">`
+export const code2 = `<p class="**padding:16|32** **border:1|solid|red**">`
+export const code3 = `<p class="**p:16|32** **b:1|solid|red**">`
+
+Syntax: <code><span className="token value mcss language-mcss"><span className="token Mroot"><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">|</span><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">|</span><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">…</span></span></span></span></span></code>
+
+Inherit native CSS shorthands to reduce the frequency of duplication of style names in classes.
+<Code lang="html">
+    {code1}
+</Code>
+
+(o) Use the CSS shorthand and rely on smart unit conversions. <Dropped p1={code1} p2={code2} target="class" />
+<Code lang="html">
+    {code2}
+</Code>
+
+(o) Even with abbreviations. <Dropped p1={code1} p2={code3} target="class" />
+<Code lang="html">
+    {code3}
+</Code>
+
+You can't use CSS whitespace in class attributes because it's used to separate different class names, use instead:
+
+(o) Use `|` delimiters instead of whitespaces between CSS parameter values.
+```html
+<div class="m:10**|**20**|**30**|**40"></div>
+```
+Review native CSS:
+```css
+div {
+    margin: 0.625rem** **1.25rem** **1.875rem** **2.5rem
+}
+```
+[Master CSS Syntax Highlighting](/docs/language-service) uses light gray to reduce the contrast of the `|` delimiter, making it visually smoother and closer to the native CSS whitespace delimiter ` `.

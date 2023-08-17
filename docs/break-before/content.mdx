@@ -1,0 +1,35 @@
+## Overview [sr-only]
+<Overview/>
+
+## Basic usage
+### Set the break before behavior
+Use `break-before:value` to set how breaks should behave before a generated box.
+<Demo className="py:0!">
+    <div className="bg:white@light bg:gray-20@dark p:30">
+        <div className="gap:30 cols:2">
+            <div className="f:28 f:bold">Briefs</div>
+            <p>A content brief is a document that outlines the key details of a piece of content. It should include an overview of the project, a well as any specific instructions or requirements. </p>
+            <hr className="border:2px|solid|gray-80 break-before:column" />
+            <div className="f:28 f:bold">Animals</div>
+            <p>There are a wide variety of animals in the world, and each one has its own unique set of characteristics and habits.</p>
+        </div>
+    </div>
+</Demo>
+```html
+<div class="cols:2">
+    <h3>Briefs</h3>
+    <p>A content brief is a document …</p>
+    <hr class="**break-before:column**" />
+    <h3>Animals</h3>
+    <p>There are a wide variety of animals in the world …</p>
+</div>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="break-before:auto**:hover** break-before:auto**@sm** break-before:auto**@dark** break-before:auto**@print**">…</div>
+```
+

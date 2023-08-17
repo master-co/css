@@ -1,0 +1,108 @@
+## Default Reference [sr-only]
+<Default />
+
+---
+
+## Design tokens
+We've created a useful set of terminology references to help you tokenize your design system from a great starting point.
+
+| Term            | Description                                                                                        | Keywords                                 |
+|-----------------|----------------------------------------------------------------------------------------------------|------------------------------------------|
+| **brand**       | The brand color.                                                                                   |                                          |
+| **primary**     | The primary color.                                                                                 |                                          |
+| **secondary**   | The secondary color.                                                                               |                                          |
+| **base**        | The background color used for the overall webpage.                                                 |                                          |
+| **object**      | The background color used for cards and block elements.                                            |                                          |
+| **accent**      | Accent color, used to emphasize active links and states, creating a strong contrast with the background. |                                          |
+| **major**       | Major color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background. |                                          |
+| **neutral**     | Neutral color, a foreground color that harmonizes with the background.                             | text, navigation, subtitle, article, description |
+| **dim**         | Dim color, a foreground color that has shallow contrast with the background.                        | disabled, placeholder, silence, inactive, offline |
+   
+## Customization
+### Add your colors
+Add your color tokens using `HEX` color codes and extend the defaults.
+```js name=master.css.js
+export default {
+    colors: {
++        primary: '#0e61fe',
++        secondary: '#8a3ffc'
+    }
+}
+```
+Apply them using syntax like [`fg:`](/docs/color).
+```html
+<div class="**fg:primary** …">
+<div class="**fg:secondary** …">
+<div class="**fg:accent** …">
+<div class="**fg:major** …">
+<div class="**fg:neutral** …">
+```
+            
+### Add color shades
+Sets multiple shades for a single color.
+```js name=master.css.js
+export default {
+    colors: {
++        primary: { 
++            '': '#1192e8', // primary
++            10: '#e5f6ff', // primary-10
++            20: '#bae6ff', // primary-20
++        }
+    }
+}
+```
+(i) Default shade `''` will automatically inherit shade `50` if not specified.
+
+Apply them using syntax like [`fill:`](/docs/fill).
+```html
+<svg class="**fill:primary** …">…</svg>
+<svg class="**fill:primary-20** …">…</svg>
+```
+You can fill unspecified shades like `1`, `2`, ... `99` with adjacent averages via the [`js fillColorScale(manualShades)`](/docs/core#fillcolorscale) function.
+```js name=master.css.js
+export default {
+    colors: {
++        primary: fillColorScale({ 
++            '': '#1192e8', // primary
++            10: '#e5f6ff', // primary-10
++            20: '#bae6ff'  // primary-20
++        })
+    }
+}
+```
+Filled colors are useful in some situations. For example, a color with alpha, blends easily with the background color, so you can choose a similar color from the fill shade to solve the problem.
+
+Of course, pre-setting the precise shades `5`, `10`, `20`, ... `90`, `95` can fill in better color rendering.
+            
+### Override default colors
+Access the same key as the preset to override the default color.
+```js name=master.css.js
+export default {
+    colors: {
++        blue: '#4589ff'
+    }
+}
+```
+(o) Use `brand-*` to avoid conflicts with presets and make Master CSS colors always consistent.
+```js name=master.css.js
+export default {
+    colors: {
++        brand: {
++            blue: '#4589ff' // brand-blue
++        }
+    }
+}
+```
+
+### Access existing colors
+With existing color tokens, access and aliases already set colors.
+```js name=master.css.js
+export default {
+    colors: {
++        primary: 'blue', // primary
++        fade: 'gray-80'  // fade
+    }
+}
+```
+If you're looking to pick colors of your design system from the default colors, this will come in handy.
+

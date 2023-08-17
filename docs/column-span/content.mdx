@@ -1,0 +1,32 @@
+## Overview [sr-only]
+<Overview/>
+
+---
+
+## Basic usage
+### Span across all columns
+Use `col-span:value` to make elements span across all columns.
+<Demo className="py:0!">
+    <div className="bg:white@light bg:gray-20@dark p:30">
+        <div className="gap:30 cols:3">
+            <div className="t:28 f:bold col-span:all mb:30">Introduction to animals</div>
+            <p className="m:0">There are many different types of animals in the world, and each has its own unique set of characteristics. No matter what type of animal you&#39;re interested in, you&#39;re sure to find something interesting and informative here. From spiders to whales, take a look at some of the most amazing creatures on earth!</p>
+        </div>
+    </div>
+</Demo>
+```html
+    <div class="cols:3">
+        
+### Introduction to animals
+        <p>There are many different types of animals in the world …</p>
+    </div>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="column-span:all**:hover** column-span:all**@sm** column-span:all**@dark** column-span:all**@print**">…</div>
+```
+

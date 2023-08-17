@@ -1,0 +1,91 @@
+## Overview [sr-only]
+<Overview/>
+
+<Demo $py={0}>
+    <DemoPanel className="flex flex:col gap:30">
+        <div className="w:full">
+            <code className="fg:fade font:12 mb:5 block">capitalize</code>
+            <DemoP><b className="bg-stripe-pink">H</b>eavy <b className="bg-stripe-pink">B</b>oxes <b className="bg-stripe-pink">P</b>erform <b className="bg-stripe-pink">Q</b>uick <b className="bg-stripe-pink">W</b>altzes <b className="bg-stripe-pink">A</b>nd <b className="bg-stripe-pink">J</b>igs.</DemoP>
+        </div>
+        <div className="w:full">
+            <code className="fg:fade font:12 mb:5 block">lowercase</code>
+            <DemoP><b className="bg-stripe-pink">heavy boxes perform quick waltzes and jigs.</b></DemoP>
+        </div>
+        <div className="w:full">
+            <code className="fg:fade font:12 mb:5 block">uppercase</code>
+            <DemoP><b className="bg-stripe-pink">HEAVY BOXES PERFORM QUICK WALTZES AND JIGS.</b></DemoP>
+        </div>
+        <div className="w:full">
+            <code className="fg:fade font:12 mb:5 block">uppercase::first-letter</code>
+            <DemoP><b className="bg-stripe-pink">H</b>eavy boxes perform quick waltzes and jigs.</DemoP>
+        </div>
+        <div className="w:full">
+            <code className="fg:fade font:12 mb:5 block">text-transform:none</code>
+            <DemoP>heavy boxes perform quick waltzes and jigs.</DemoP>
+        </div>
+    </DemoPanel>
+</Demo>
+
+---
+
+## Basic usage
+### Capitalized text
+Convert the first letter of each word to uppercase.
+<Demo $py={0}>
+    <DemoPanel>
+        <DemoP><b className="bg-stripe-pink">H</b>eavy <b className="bg-stripe-pink">B</b>oxes <b className="bg-stripe-pink">P</b>erform <b className="bg-stripe-pink">Q</b>uick <b className="bg-stripe-pink">W</b>altzes <b className="bg-stripe-pink">A</b>nd <b className="bg-stripe-pink">J</b>igs.</DemoP>
+    </DemoPanel>
+</Demo>
+```html
+<p class="**capitalize**">
+    **h**eavy **b**oxes **p**erform **q**uick **w**altzes **a**nd **j**igs.
+</p>
+```
+
+### Lowercase text
+Convert all characters to lowercase.
+<Demo $py={0}>
+    <DemoPanel>
+        <DemoP><b className="bg-stripe-pink">heavy boxes perform quick waltzes and jigs.</b></DemoP>
+    </DemoPanel>
+</Demo>
+```html
+<p class="**lowercase**">
+    **HEAVY BOXES PERFORM QUICK WALTZES AND JIGS.**
+</p>
+```
+
+### Uppercase text
+Convert all characters to uppercase.
+<Demo $py={0}>
+    <DemoPanel>
+        <DemoP><b className="bg-stripe-pink">HEAVY BOXES PERFORM QUICK WALTZES AND JIGS.</b></DemoP>
+    </DemoPanel>
+</Demo>
+```html
+<p class="**uppercase**">
+    **heavy boxes perform quick waltzes and jigs.**
+</p>
+```
+
+### Sentence
+Capitalize the first letter of a sentence.
+<Demo $py={0}>
+    <DemoPanel>
+        <DemoP><b className="bg-stripe-pink">H</b>eavy boxes perform quick waltzes and jigs.</DemoP>
+    </DemoPanel>
+</Demo>
+```html
+<p class="**uppercase::first-letter**">
+    **h**eavy boxes perform quick waltzes and jigs.
+</p>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="uppercase**:hover** uppercase**@sm** uppercase**@dark** uppercase**@print**">…</div>
+```
+

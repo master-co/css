@@ -1,0 +1,37 @@
+## Overview [sr-only]
+<Overview/>
+
+### Stylize a shadow DOM
+Let&#39;s say this&#39;s your custom element and its tree:
+```html
+<test-element>
+    ▼ #shadow-root (open)
+        <button part="button"></button>
+</test-element>
+```
+and the element contains an encapsulated style like this:
+```css
+:host {
+    --button-bg: red;
+}
+
+[part=button] {
+    background: var(--button-bg);
+}
+```
+Elements in the shadow DOM cannot be selected via descendant selectors, but you can:
+```html
+<test-element class="**$button-bg**:red **$button-bg**:pink@sm">
+    ▼ #shadow-root (open)
+        <button part="button"></button>
+</test-element>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="$size:2.5rem**:hover** $size:2.5rem**@sm** $size:2.5rem**@dark** $size:2.5rem**@print**">…</div>
+```
+

@@ -1,0 +1,44 @@
+## Overview [sr-only]
+<Overview/>
+
+---
+
+## Basic usage
+### LTR
+Use `direction:ltr` to set the text direction to left-to-right.
+<Demo className="py:0!">
+    <div className="direction:ltr w:full bg:white@light bg:gray-20@dark p:30">
+        <div className="f:28 f:bold">Animals</div>
+        <p>There are a wide variety of animals in the world, and each one has its own unique set of characteristics and habits.</p>
+    </div>
+</Demo>
+```html
+<div class="direction:ltr">
+    <h3>Animals</h3>
+    <p>There are a wide variety of animals in the world …</p>
+</div>
+```
+
+### RTL
+Use `direction:rtl` to set the text direction to right-to-left.
+<Demo className="py:0!">
+    <div className="direction:rtl w:full bg:white@light bg:gray-20@dark p:30">
+        <div className="f:28 f:bold">Animals</div>
+        <p>There are a wide variety of animals in the world, and each one has its own unique set of characteristics and habits.</p>
+    </div>
+</Demo>
+```html
+<div class="direction:ltr">
+    <h3>Animals</h3>
+    <p>There are a wide variety of animals in the world …</p>
+</div>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="direction:ltr**:hover** direction:ltr**@sm** direction:ltr**@dark** direction:ltr**@print**">…</div>
+```
+

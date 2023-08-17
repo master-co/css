@@ -1,0 +1,18 @@
+```js name=master.css.js
+export default {
+    functions: {
+        $: {
+            name: 'var',
+            transform(value) {
+                return '--' + value
+            }
+        },
+        translate: { unit: 'rem' }
+    }
+}
+```
+Use them in HTML:
+```html
+- <div class="width:var(--sidebar-width) translate(2rem)">…</div>
++ <div class="width:$(sidebar-width) translate(32)">…</div>
+```

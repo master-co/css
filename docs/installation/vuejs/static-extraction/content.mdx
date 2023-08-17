@@ -1,0 +1,126 @@
+<StaticExtractionIntro img={{
+    href: "https://vuejs.se.beta.css.master.co",
+    src: "/images/vuejs-dev.png",
+    alt: 'Vue.js and Master CSS',
+    width: 665, height: 400, hasDark: true }} />
+
+---
+
+## Quick start
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Clone the example
+            Copy-paste the following commands to quickly start using the [vuejs.se.beta.css.master.co](https://vuejs.se.beta.css.master.co).
+
+            You can skip all [installation](#installation) steps.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx degit master-co/css/examples/vue.js-with-static-extraction __my-project__
+            cd __my-project__
+            npm install @master/css-extractor.vite@beta
+            npm install
+            npm run dev
+            ```
+        </StepR>
+        <StepEnd/>
+    </Step>
+</StepSection>
+
+---
+
+## Installation
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have a Vue.js project, create one first. It's recommended to refer to [Quick Start - Vue.js](https://vuejs.org/guide/quick-start.html).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm init vue@latest
+            cd __project__
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install the Master CSS extractor into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css-extractor.vite@beta**
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Initialize configuration file
+            Run `npx mcss init` to create a configuration file [master.css.ts](/docs/configuration).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx mcss init
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS extractor
+            - Create a `vite.config.ts` file
+            - Add a `CSSExtractorPlugin` to the vite `plugins`
+        </StepL>
+        <StepR>
+            ```ts name=vite.config.ts
+            +import { defineConfig } from 'vite'
+            +import { CSSExtractorPlugin } from '@master/css-extractor.vite'
+
+            +export default defineConfig({
+            +    plugins: [
+            +        CSSExtractorPlugin()
+            +    ]
+            +})
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Import virtual CSS module
+            Import the virtual CSS module `.virtual/master.css` into the `main.ts`.
+        </StepL>
+        <StepR>
+            ```ts name=main.ts
+            …
+            +import '.virtual/master.css';
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Launch server
+            Run `npm run dev` to start your Vite development server
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm run dev
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first element using Master CSS syntax!
+        ```html name=src/App.vue
+        …
+        <template>
+            <CSSProvider :config="config">
+                <h1 class="**font:40** **font:heavy** **italic** **m:50** **text:center**">Hello World</h1>
+            </CSSProvider>
+        </template>
+        ```
+        <p className="mt:50">Open your browser to watch the changes.</p>
+        <HelloWorld url="localhost:3000" />
+    </Step>
+</StepSection>

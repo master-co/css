@@ -1,0 +1,17 @@
+## Overview [sr-only]
+<Overview/>
+
+Simplify the native syntax using the derived symbol.
+```html
+-<div class="animation-fill-mode:both">
++<div class="@fill:both">
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="@fill-mode:none**:hover** @fill-mode:none**@sm** @fill-mode:none**@dark** @fill-mode:none**@print**">…</div>
+```
+

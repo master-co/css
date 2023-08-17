@@ -1,0 +1,72 @@
+export const code1 = `
+    <section class="home-section">…</section>
+`
+
+export const code2 = `
+    .home-section {
+        background-color: blue;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .home-section:hover {
+        background-color: red;
+    }
+
+    @media (min-width: 1024px) {
+        .home-section {
+            padding: 3rem;
+        }
+    }
+`
+
+export const code3 = `
+    <section class="bg:blue bg:red:hover p:32 p:48@md text:center">…</section>
+`
+
+What! Style without writing CSS rules?
+
+"Let's create a section with background, interactive effects, and increase its padding when width `>=1024`."
+
+(!) A few moments later... Ok, Let's "name" it `home-section`.
+<Code name="home.html" lang="html">
+    {code1}
+</Code>
+
+(!) Create the home.css and start "writing the CSS rules".
+<Code name="home.css" lang="css">
+    {code2}
+</Code>
+
+"What's wrong with this process? It's quite typical." Yes, the result is great, but productivity optimization is a core tenet of Master CSS.
+
+(o) It's a one-liner code using Master CSS. <Dropped p1={code1 + code2} p2={code3} target="class" />
+<Code name="home.html" lang="html">
+    {code3}
+</Code>
+
+Generated CSS:
+```css
+/* Actual output would be minified. */
+.p\:32 {
+    padding: 2rem
+}
+
+.text\:center {
+    text-align: center
+}
+
+.bg\:blue {
+    background-color: #175fe9
+}
+
+.bg\:red\:hover:hover {
+    background-color: #d11a1e
+}
+
+@media (min-width:1024px) {
+    .p\:48\@md {
+        padding: 3rem
+    }
+}
+```

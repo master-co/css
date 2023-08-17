@@ -1,0 +1,86 @@
+export const code1 = `
+    <div class="card">
+        <img class="card-image" … />
+        <div class="card-content">
+            <div class="card-title">Mountain</div>
+            <div class="card-text">A mountain is an elevated portion of the Earth's crust, generally with steep sides that show significant exposed bedrock.</div>
+        </div>
+    </div>
+`
+export const code2 = `
+    .card {
+        display: flex;
+        background-color: rgba(255, 255, 255);
+        transition: transform 0.2s ease 0s;
+        overflow: hidden;
+        border-radius: 0.625rem;
+    }
+
+    .card:hover {
+        transform: translateY(-0.3125rem);
+    }
+
+    .card-image {
+        object-fit: cover;
+        width: 8.75rem;
+        aspect-ratio: 16 / 9;
+    }
+
+    .card-content {
+        padding: 1.5625rem;
+    }
+
+    .card-title {
+        font-weight: 600;
+        font-size: 1.125rem;
+        line-height: calc(1.125rem + 0.875em);
+    }
+
+    .card-text {
+        font-size: 0.875rem;
+        line-height: calc(0.875rem + 0.875em);
+        overflow: hidden;
+        display: -webkit-box;
+        overflow-wrap: break-word;
+        text-overflow: ellipsis;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+`
+
+export const code3 = `
+    <div class="flex translateY(-5):hover ~transform|.2s overflow:hidden bg:white r:10">
+        <img class="object:cover w:140 aspect:16/9" … />
+        <div class="p:25">
+            <div class="font:semibold text:18">Mountain</div>
+            <div class="text:14 lines:2">A mountain is an elevated portion of the Earth's crust, generally with steep sides that show significant exposed bedrock.</div>
+        </div>
+    </div>
+`
+
+import mountainImage from '~/public/images/mountain.jpg'
+
+<Demo>
+    <div className="mx:auto max-w:480">
+        <div className="flex translateY(-5):hover ~transform|.2s overflow:hidden bg:panel r:10 shadow:panel center-content">
+            <Image className="object:cover aspect:1/1 flex:0|0|auto" {...mountainImage} placeholder="blur" width={140} height={140} priority={true} alt="Markup-driven CSS Overview" />
+            <div className="p:25">
+                <div className="fg:major font:semibold text:18">Mountain</div>
+                <div className="text:14 lines:2">A mountain is an elevated portion of the Earth's crust, generally with steep sides that show significant exposed bedrock.</div>
+            </div>
+        </div>
+    </div>
+</Demo>
+(!) You always abstract your style, even when unsure about its reusability.
+<Code name="card.html" lang="html">
+    {code1}
+</Code>
+<Code name="card.css" lang="css">
+    {code2}
+</Code>
+(o) Quickly build styles in markup without naming baggage. <Dropped p1={code1 + code2} p2={code3} target="class" />
+<Code name="card.html" lang="html">
+    {code3}
+</Code>
+
+Yes, writing abstract classes seems standard, but doing it too early brings a lot of pain.

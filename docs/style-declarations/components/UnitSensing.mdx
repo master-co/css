@@ -1,0 +1,16 @@
+export const code1 =`<p class="rotate(**30deg**) @duration:**200ms**">`
+export const code2 =`<p class="rotate(**30**) @duration:**200**">`
+
+Writing CSS units in a class seems a little weird.
+<Code lang="html">
+    {code1}
+</Code>
+
+(o) Omits the unit mark. <Dropped p1={code1} p2={code2} target="class" />
+<Code lang="html">
+    {code2}
+</Code>
+
+When rotation transform is applied without specified units, it will be interpreted as `deg` rather than invalid `px` based on consensus. 
+
+Similarly, time properties without units are translated to `ms`, and you can also use decimal values like `.2s`.

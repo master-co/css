@@ -1,0 +1,342 @@
+export const metadata = {
+    title: 'Integrated comparison',
+    description: 'Comparing the compilation mode, syntax differences, advantages in usage and functional positioning of mainstream frameworks.',
+    category: 'Introduction'
+}
+
+export default function Why({ t }: any) {
+    return (
+        <>
+            {t(meta.description)}
+            <DocTable className="font:14_p overflow-x:auto {px:30;mx:-30}@<sm" noScroll>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th className="w:1/4">
+                            <MasterSvg width="80" height="80" className="mx:auto" />
+                            <div className="text:center my:10">Master CSS</div>
+                        </th>
+                        <th className="w:1/4">
+                            <TailwindCSSSvg width="80" height="80" className="mx:auto" />
+                            <div className="text:center my:10">Tailwind CSS</div>
+                        </th>
+                        <th className="w:1/4">
+                            <BootstrapSvg width="80" height="80" className="mx:auto scale(.9)" />
+                            <div className="text:center my:10">Bootstrap</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="text:center">
+                    <tr>
+                        <th>
+                            <p>Type</p>
+                        </th>
+                        <td>
+                            <p>CSS Language</p>
+                        </td>
+                        <td>
+                            <p>CSS Utility</p>
+                        </td>
+                        <td>
+                            <p>CSS Library/Utility</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p>Setup</p>
+                        </th>
+                        <td>
+                            <p>🟢 Zero-configuration</p>
+                        </td>
+                        <td>
+                            <p>🔴 PostCSS, Autoprefixer, Build Tools</p>
+                        </td>
+                        <td>
+                            <p>🟢 Zero-configuration</p>
+                        </td>
+                    </tr>
+                </tbody>
+                <thead>
+                    <tr>
+                        <th colSpan={4} className="pt:50 font:22">
+                            Compile Mode
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="text:center">
+                    <tr>
+                        <th>
+                            <p>Static Extraction production</p>
+                        </th>
+                        <td>
+                            <p>🟢</p>
+                        </td>
+                        <td>
+                            <p>🟢</p>
+                        </td>
+                        <td>
+                            <p>🟢</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p>Runtime Rendering production</p>
+                        </th>
+                        <td>
+                            <p>🟢</p>
+                        </td>
+                        <td>
+                            <p>🔴</p>
+                        </td>
+                        <td>
+                            <p>🔴</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p>Server-side rendering</p>
+                        </th>
+                        <td>
+                            <p>🟢</p>
+                        </td>
+                        <td>
+                            <p>🔴</p>
+                        </td>
+                        <td>
+                            <p>🔴</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p>CSS Hydration</p>
+                        </th>
+                        <td>
+                            <p>🟢</p>
+                        </td>
+                        <td>
+                            <p>🔴</p>
+                        </td>
+                        <td>
+                            <p>🔴</p>
+                        </td>
+                    </tr>
+                </tbody>
+                <thead>
+                    <tr>
+                        <th colSpan={4} className="pt:50 font:22">
+                            Output Size
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="text:center">
+                    <tr>
+                        <th>
+                            <p>Fixed cost of runtime</p>
+                        </th>
+                        <td>
+                            <p>~15KB</p>
+                        </td>
+                        <td>
+                            <p>-</p>
+                        </td>
+                        <td>
+                            <p>-</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p>Fixed cost of static output</p>
+                        </th>
+                        <td>
+                            <p>🟢 0KB</p>
+                        </td>
+                        <td>
+                            <p>🟢 0KB</p>
+                        </td>
+                        <td>
+                            <p>🔴 ~24KB</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p>Source</p>
+                        </th>
+                        <td>
+                            <p>🟢 Current page</p>
+                        </td>
+                        <td>
+                            <p>🟠 All files</p>
+                        </td>
+                        <td>
+                            <p>🔴 Whole lib</p>
+                        </td>
+                    </tr>
+                </tbody>
+                <thead>
+                    <tr>
+                        <th colSpan={4} className="pt:50 font:22">
+                            Rendering
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="text:center">
+                    <tr>
+                        <th>
+                            <p>Render-blocking resources</p>
+                        </th>
+                        <td>
+                            <p>🟢 Internal CSS</p>
+                        </td>
+                        <td>
+                            <p>🔴 External CSS</p>
+                        </td>
+                        <td>
+                            <p>🔴 External CSS</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p>First contentful paint</p>
+                        </th>
+                        <td>
+                            <p>🟢 Fastest</p>
+                        </td>
+                        <td>
+                            <p>Fast</p>
+                        </td>
+                        <td>
+                            <p>🟠 Normal</p>
+                        </td>
+                    </tr>
+                </tbody>
+                <thead>
+                    <tr>
+                        <th colSpan={4} className="pt:50 font:22">
+                            Loading
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="text:center">
+                    <tr>
+                        <th>
+                            <p>Page-loaded CSS size</p>
+                        </th>
+                        <td>
+                            <p>🟢 Smallest</p>
+                        </td>
+                        <td>
+                            <p>🟠 Large</p>
+                        </td>
+                        <td>
+                            <p>🔴 Largest</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p>Cache target</p>
+                        </th>
+                        <td>
+                            <p>HTML file</p>
+                        </td>
+                        <td>
+                            <p>CSS file</p>
+                        </td>
+                        <td>
+                            <p>CSS file</p>
+                        </td>
+                    </tr>
+                </tbody>
+                <thead>
+                    <tr>
+                        <th colSpan={4} className="pt:50 font:22">
+                            Developer Tools
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="text:center">
+                    <tr>
+                        <th>
+                            <p>Code-completion</p>
+                        </th>
+                        <td>
+                            <p>🟢</p>
+                        </td>
+                        <td>
+                            <p>🟢</p>
+                        </td>
+                        <td>
+                            <p>🔴</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p>Syntax highlighting for class names</p>
+                        </th>
+                        <td>
+                            <p>🟢</p>
+                        </td>
+                        <td>
+                            <p>🔴</p>
+                        </td>
+                        <td>
+                            <p>🔴</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p>CSS generate preview</p>
+                        </th>
+                        <td>
+                            <p>🟢</p>
+                        </td>
+                        <td>
+                            <p>🟢</p>
+                        </td>
+                        <td>
+                            <p>🔴</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p>Linting</p>
+                        </th>
+                        <td>
+                            <p>🚧</p>
+                        </td>
+                        <td>
+                            <p>🟢</p>
+                        </td>
+                        <td>
+                            <p>🔴</p>
+                        </td>
+                    </tr>
+                </tbody>
+                <thead>
+                    <tr>
+                        <th colSpan={4} className="pt:50 font:22">
+                            Syntax
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="text:center">
+                    <tr>
+                        <th>
+                            <p>AST 抽象語法樹</p>
+                        </th>
+                        <td>
+                            <p>🟢 無</p>
+                        </td>
+                        <td>
+                            <p>🟠 有</p>
+                        </td>
+                        <td>
+                            <p>🟠 有</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </DocTable>
+            <p>More to come... 🚧</p>
+        </>
+    )
+}
+

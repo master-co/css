@@ -1,0 +1,257 @@
+<RuntimeRenderingIntro img={{
+    href: "https://blazor.rr.beta.css.master.co",
+    src: "/images/blazor-dev.png",
+    alt: 'Blazor and Master CSS',
+    width: 665, height: 400, hasDark: true }} />
+
+---
+
+## Quick start
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Clone the example
+            Copy-paste the following commands to quickly start using the [blazor.rr.beta.css.master.co](https://blazor.rr.beta.css.master.co).
+
+            You can skip all [installation](#installation) steps.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx degit master-co/css/examples/blazor-with-runtime-rendering __my-project__
+            cd __my-project__
+            npm install @master/css@beta
+            npm install
+            npm run dev
+            ```
+        </StepR>
+        <StepEnd/>
+    </Step>
+</StepSection>
+
+---
+
+## Installation
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have a Blazor project, create one first. It's recommended to refer to [Build your first Blazor app](https://dotnet.microsoft.com/en-us/learn/aspnet/blazor-tutorial/create)
+        </StepL>
+        <StepR>
+            <CodeTabs>
+                {[
+                    {
+                        name: 'Terminal',
+                        lang: 'bash',
+                        code: `
+                            dotnet new blazorserver -o project --no-https -f net6.0
+                            cd project
+                        `
+                    }
+                ]}
+            </CodeTabs>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a New Folder
+            Add a new folder named npm_packages to root directory.
+        </StepL>
+        <StepR>
+            <CodeTabs>
+                {[
+                    {
+                        name: 'Terminal',
+                        lang: 'bash',
+                        code: `
+                            mkdir npm_packages
+                            cd npm_packages
+                        `
+                    }
+                ]}
+            </CodeTabs>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up NPM
+            Set up NPM and install the required webpack dependencies.
+        </StepL>
+        <StepR>
+            <CodeTabs>
+                {[
+                    {
+                        name: 'Terminal',
+                        lang: 'bash',
+                        code: `
+                            npm init -y
+                            npm install webpack webpack-cli --save-dev
+                        `
+                    }
+                ]}
+            </CodeTabs>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css@beta**
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Initialize configuration file
+            Run `npx mcss init` to create a configuration file [master.css.ts](/docs/configuration).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx mcss init
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS runtime engine
+            Create a new file `npm_packages/src/index.js` and import the `master.css.js` to enable the runtime engine.
+        </StepL>
+        <StepR>
+            ```js name=npm_packages/src/index.js
+            …
+            +   import { initRuntime } from '@master/css';
+            +   import config from 'master.css';
+            
+            +   initRuntime(config)
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Add an NPM build script
+            Add an NPM build script on script section of the `package.json` file.
+        </StepL>
+        <StepR>
+            <CodeTabs>
+                {[
+                    {
+                        name: 'package.json',
+                        lang: 'js',
+                        code: `
+                            {
+                                ...
+                                scripts: {
+                                    ...
+                            +        "build": "webpack ./src/index.js --output-path ../wwwroot/js --output-filename index.bundle.js --mode=development"
+                                }
+                            }
+                        `
+                    }
+                ]}
+            </CodeTabs>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Add prebuild step
+            Add a prebuild step that will run `npm install` and `npm run build` whenever compile or build the application to the `project.csproj` file.
+        </StepL>
+        <StepR>
+            <CodeTabs>
+                {[
+                    {
+                        name: 'project.csproj',
+                        lang: 'html',
+                        code: `
+                            <Project>
+                                ...
+                            +    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+                            +        <Exec Command="npm install" WorkingDirectory="npm_packages" />
+                            +        <Exec Command="npm run build" WorkingDirectory="npm_packages" />
+                            +    </Target>
+                                ...
+                            </Project>
+                        `
+                    }
+                ]}
+            </CodeTabs>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Import bundles JavaScript file
+            Webpack will create a `index.bundle.js` file in the `wwwroot/js`, and import the file to entry file `Pages/_Layout.cshtml`
+        </StepL>
+        <StepR>
+            <CodeTabs>
+                {[
+                    {
+                        name: 'Pages/_Layout.cshtml',
+                        lang: 'html',
+                        code: `
+                            <html>
+                                ...
+                                <body>
+                                    ...
+                                    <script src="_framework/blazor.server.js"></script>
+                            +        <script src="js/index.bundle.js"></script>
+                                </body>
+                            </html>
+                        `
+                    }
+                ]}
+            </CodeTabs>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Build and start the app
+            Navigate to project directory, and build and start your app with `dotnet watch`
+        </StepL>
+        <StepR>
+            <CodeTabs>
+                {[
+                    {
+                        name: 'Terminal',
+                        lang: 'bash',
+                        code: `
+                            cd project
+                            dotnet watch
+                        `
+                    }
+                ]}
+            </CodeTabs>
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Hello world!
+        Now style your first element using Master CSS syntax!
+        <CodeTabs>
+            {[
+                {
+                    name: 'Pages/_Layout.cshtml',
+                    lang: 'html',
+                    code: `
+                        @page "/"
+
+                        <PageTitle>Index</PageTitle>
+
+                        +<h1 class="font:40 font:heavy italic m:50 text:center">
+                        +    Hello World
+                        +</h1>
+
+                        Welcome to your new app.
+
+                        <SurveyPrompt Title="How is Blazor working for you?" />
+                    `
+                }
+            ]}
+        </CodeTabs>
+        <p className="mt:50">Open your browser to watch the changes.</p>
+        <HelloWorld url="localhost:3000" />
+    </Step>
+</StepSection>

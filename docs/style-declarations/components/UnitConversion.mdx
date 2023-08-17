@@ -1,0 +1,18 @@
+export const code1 = `<p class="font:**3rem**">`
+export const code2 = `<p class="**font:48**">`
+
+Do you frequently check the reference table for `rem` to `px` when writing CSS?
+<Code lang="html">
+    {code1}
+</Code>
+
+(o) Measure in pixels and rely on conversion behavior to `rem`. <Dropped p1={code1} p2={code2} target="class" />
+<Code lang="html">
+    {code2}
+</Code>
+
+The `48` without specified units is translated to pixels and is converted to a browser-friendly `2rem` when generating CSS rules.
+
+We've predefined [practical units and conversion behavior](/docs/rules#default-reference) based on the characteristics of different style properties, and most of them involve converting from `px` to `rem`.
+
+You can easily associate the default behavior with the property's characteristics.

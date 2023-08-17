@@ -1,0 +1,360 @@
+<DocTable className="{text:14;white-space:pre-wrap;font:regular}_p  overflow-x:auto {px:30;mx:-30}@<sm table-layout:fixed_table" noScroll>
+    <thead>
+        <tr>
+            <th className="w:calc(50vw-1.5rem) w:1/4@sm">
+                <DocBadge color="primary" size="sm" className="mb:15">Recommended</DocBadge>
+                <div className="font:22@sm font:bold">Progressive Rendering</div>
+                <p className="fg:neutral mt:8! hide@<sm">Renders HTML statically or server-side for class names, generates CSS rules, and loads the runtime engine asynchronously.</p>
+                <LearnMore href="/docs/rendering-modes/progressive-rendering">Learn more</LearnMore>
+            </th>
+            <th className="w:calc(50vw-1.5rem) w:1/4@sm">
+                <DocBadge color="fade" size="sm" className="mb:15">Easiest</DocBadge>
+                <div className="font:22@sm font:bold">Runtime Rendering</div>
+                <p className="fg:neutral mt:8! hide@<sm">Observe for changes to class names in the DOM tree to manipulate CSS rules and sync to the runtime stylesheet.</p>
+                <LearnMore href="/docs/rendering-modes/runtime-rendering">Learn more</LearnMore>
+            </th>
+            <th className="w:calc(50vw-1.5rem) w:1/4@sm">
+                <DocBadge color="fade" size="sm" className="mb:15 invisible">Zero Runtime</DocBadge>
+                <div className="font:22@sm font:bold">Static Extraction</div>
+                <p className="fg:neutral mt:8! hide@<sm">Extract class names from various files at build time, generate a virtual CSS module or file, and import it into the entry file.</p>
+                <LearnMore href="/docs/rendering-modes/static-extraction">Learn more</LearnMore>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                Hybrid
+            </td>
+            <td>
+                Runtime
+            </td>
+            <td>
+                Zero-runtime
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colSpan={3} className="pt:30">
+                <div className="text:18">Applicable technologies</div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <InlineGood />**SSG**, **SSR**
+            </td>
+            <td rowSpan={2}>
+                <InlineGood />**CSR**, **SPA**
+            </td>
+            <td>
+                *-*
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colSpan={3} className="pt:30">
+                <div className="text:18">Generated source</div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <InlineGood />HTML string
+            </td>
+            <td>
+                <InlineGood />Runtime DOM Tree
+            </td>
+            <td>
+                `.html`, `.js`, `.jsx`, `.svelte`, ...
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colSpan={3} className="pt:30">
+                <div className="text:18">Application scenarios</div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <InlineGood />**SaaS** Software as a Service
+            </td>
+            <td>
+                **SaaS** Software as a Service
+            </td>
+            <td>
+                *-*
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <InlineGood />Highly dynamic applications
+            </td>
+            <td>
+                <InlineGood />Highly dynamic applications
+            </td>
+            <td>
+                <InlineWarn />Semi-dynamic applications
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <InlineGood />Dashboard
+            </td>
+            <td>
+                <InlineGood />Dashboard
+            </td>
+            <td>
+                <InlineWarn />Semi-dynamic dashboard
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <InlineGood />Static site
+            </td>
+            <td>
+                Static site
+            </td>
+            <td>
+                <InlineGood />Static site
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colSpan={3} className="pt:30">
+                <div className="text:18">Page load</div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <InlineGood />**Lazy loading runtime engine**
+            </td>
+            <td>
+                ~16KB runtime engine
+            </td>
+            <td>
+                <InlineGood />**No runtime engine**
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <InlineGood />**Page-used CSS**
+            </td>
+            <td>
+                <InlineGood />**Generate CSS at runtime**
+            </td>
+            <td>
+                <InlineWarn />Load all pages CSS
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <InlineGood />**Internal CSS**
+            </td>
+            <td>
+                <InlineWarn />Render-blocking JS resources
+            </td>
+            <td>
+                <InlineWarn />Render-blocking CSS resources
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <InlineGood />**Fastest**
+            </td>
+            <td>
+                *-*
+            </td>
+            <td>
+                *-*
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colSpan={3} className="pt:30">
+                <div className="text:18">SEO metrics evaluation</div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <InlineGood />**FCP** (First Contentful Paint)
+            </td>
+            <td>
+                *-*
+            </td>
+            <td>
+                *-*
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colSpan={3} className="pt:30">
+                <div className="text:18">The cost of browser-calculating CSS</div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <InlineGood />**Minimal**, CSS generated on demand
+            </td>
+            <td>
+                <InlineGood />**Minimal**, CSS generated on demand
+            </td>
+            <td>
+                <InlineWarn />Including page-unused CSS
+            </td>
+        </tr>
+    </tbody>
+    <tbody>
+        <tr>
+            <td>
+                ~0.01ms/class generation cycle
+            </td>
+            <td>
+                ~0.01ms/class generation cycle
+            </td>
+            <td>
+                <InlineGood />**None**, pre-generated CSS
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colSpan={3} className="pt:30">
+                <div className="text:18">Browser caching</div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <InlineGood />**Internal CSS in HTML**
+            </td>
+            <td>
+                <InlineGood />**External JS file**
+            </td>
+            <td>
+                <InlineGood />**External CSS file**
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colSpan={3} className="pt:30">
+                <div className="text:18">Dynamic and conditoinal class names</div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <InlineGood />**Fully dynamic**
+            </td>
+            <td>
+                <InlineGood />**Fully dynamic**
+            </td>
+            <td>
+                <InlineWarn />Semi-dynamic
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <InlineGood />**Fully dynamic**
+            </td>
+            <td>
+                <InlineGood />**Fully dynamic**
+            </td>
+            <td>
+                <InlineWarn />Semi-dynamic
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colSpan={3} className="pt:30">
+                <div className="text:18">The reliability of CSS rules</div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <InlineGood />**<code>class</code> attributes** in markup
+            </td>
+            <td>
+                <InlineGood />**<code>class</code> attributes** in markup
+            </td>
+            <td>
+                <InlineWarn />Scan all source files
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <InlineGood />**100% reliability**
+            </td>
+            <td>
+                <InlineGood />**100% reliability**
+            </td>
+            <td>
+                <InlineWarn />Irregular sources
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colSpan={3} className="pt:30">
+                <div className="text:18">Setup difficulty</div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <InlineGood />**transform HTML method**
+            </td>
+            <td>
+                <InlineGood />**Import engine into the entry file**
+            </td>
+            <td>
+                <InlineGood />**Import CSS into the entry file**
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <InlineGood />**Guide**
+            </td>
+            <td>
+                <InlineGood />**Guide**
+            </td>
+            <td>
+                <InlineGood />**Guide**
+            </td>
+        </tr>
+    </tbody>
+</DocTable>
+
+<div className='mt:40 flex flex:wrap gap:10|20 text:12'>
+    <div className='flex:0|0|auto'>**SSG** Static Site Generation</div>
+    <div className='flex:0|0|auto'>**SSR** Server-side Rendering</div>
+    <div className='flex:0|0|auto'>**CSR** Client-side Rendering</div>
+    <div className='flex:0|0|auto'>**SPA** Single-page Application</div>
+    <div className='flex:0|0|auto'>**RR** Runtime Rendering</div>
+    <div className='flex:0|0|auto'>**SE** Static Extraction</div>
+    <div className='flex:0|0|auto'>**PR** Progressive Rendering</div>
+    <div className='flex:0|0|auto'>**SaaS** Software as a Service</div>
+</div>

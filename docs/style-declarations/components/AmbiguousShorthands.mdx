@@ -1,0 +1,25 @@
+export const code1 = `<p class="**text-align:center** **font-size:1rem** **font-weight:bold** **border-style:solid**">`
+export const code2 = `<p class="**text:center** **font:16** **font:bold** **border:solid**">`
+
+Syntax: <code><span className="token value mcss language-mcss"><span className="token Mroot"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> → <code><span className="token value mcss language-mcss"><span className="token Mroot"><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
+
+Native CSS shorthands combine multiple properties for quick declaration, and there is no shorthand for a single property.
+<Code lang="html">
+    {code1}
+</Code>
+
+(o) Use ambiguous shorthand and rely on smart unit conversions. <Dropped p1={code1} p2={code2} target="class" />
+<Code lang="html">
+    {code2}
+</Code>
+
+From the example above:
+
+- By recognizing the keywords `text` and `center`, the expression `mcss text:center` can be disambiguated as `mcss text-align:center`.
+- By recognizing the keywords `font` and `16`, the expression `mcss font:16` can be disambiguated as `mcss font-size:1rem`.
+- By recognizing the keywords `font` and `bold`, the expression `mcss font:bold` can be disambiguated as `mcss font-weight:bold`.
+- By recognizing the keywords `border` and `solid`, the expression `mcss border:solid` can be disambiguated as `mcss border-style:solid`.
+
+The ambiguity shorthand of Master CSS allows style declarations to be trimmed to shorten classes and even disambiguate to explicit properties instead of shorthand, preventing the [overriding behavior of shorthand](https://developer.mozilla.org/en-US/docs/Web/CSS/Shorthand_properties#omitting_properties).
+
+For example, the font size `font:16` is not translated to the native font shorthand `font:`.

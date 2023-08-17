@@ -1,0 +1,111 @@
+import ThemeButton from 'shared/components/ThemeButton'
+
+We provide a complete solution and package and guide you to integrate the theme service in React in a standard way.
+
+See the [main documentation](/docs/theme-service) for related options, APIs, and introductions.
+
+## Getting started
+Install the `@master/css.react` package via package managers.
+```install
+@master/css.react
+```
+Register the theme service with the `ThemeServiceProvider` in your React entry like `main.jsx`.
+```jsx
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
++import { ThemeServiceProvider } from '@master/css.react'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
++        <ThemeServiceProvider options={{ default: 'system' }}>
+            <App />
++        </ThemeServiceProvider>
+    </React.StrictMode>,
+)
+```
+
+---
+
+## Basic usage
+
+### Default theme
+Set the default theme via the `options.default`.
+```jsx
+<ThemeServiceProvider options={{ default: 'dark' }}>
+    …
+</ThemeServiceProvider>
+```
+
+### Access context
+Use `useThemeService` to access the registered theme service.
+```jsx
+import { useThemeService } from '@master/css.react'
+
+export default function Component() {
+    const themeService = useThemeService()
+    return (
+        <>
+            <div>Value: {themeService.value}</div>
+            <div>Current: {themeService.current}</div>
+        </>
+    )
+})
+```
+
+### Create a theme-switching select
+This created a button with a transparent menu; the screen will only show the theme applied by the user, and the `system` preference will not be included.
+```jsx
+import { useThemeService } from '@master/css.react'
+
+export default function ThemeSwitchingButton({ className }: any) {
+    const themeService = useThemeService()
+    return (
+        <button className="rel">
+            <div className="block@dark hide">☀️</div>
+            <div className="block@light hide">🌜</div>
+            <select 
+                className="abs full opacity:0 cursor:pointer"
+                value={themeService?.value}
+                onChange={(event) => themeService.switch(event.target.value)}>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="system">System</option>
+            </select>
+        </button>
+    )
+}
+```
+Now, try it out:
+<Demo>
+    <ThemeButton />
+</Demo>
+
+---
+
+## Optimization
+
+### Pre-initialize the theme in Next.js
+Pre-apply the theme and inline the script in `html <head>` to fix the style flickering issue:
+```tsx name=app/layout.tsx
+import '../globals.css'
+import { getPreInitScript } from 'theme-service'
+
+export default async function RootLayout({
+    children,
+    params
+}: {
+    children: JSX.Element
+}) {
+    return (
+        <html>
+            <head>
++                <script dangerouslySetInnerHTML={{ __html: getPreInitScript({ default: 'system' }) }}></script>
+            </head>
+            <bod>
+                {children}
+            </bod>
+        </html>
+    )
+}
+```

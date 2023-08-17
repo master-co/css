@@ -1,0 +1,41 @@
+## Issue [sr-only]
+
+(!|) The browser loads the runtime engine only after downloading and parsing the stylesheet.
+<Image src="/images/no-preload-network.png" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
+
+It may experience defers in downloading and initializing until the first contentful paint if the [runtime engine](/docs/rendering-modes/runtime-rendering) hasn't been preloaded.
+
+---
+
+## Solutions
+### Preload critical engine
+(o) Use `html <link rel="preload" …>` to preload the runtime engine.
+
+```html
+<!DOCTYPE html>
+<html lang="en" style="display: none">
+<head>
++    <link rel="preload" as="script" href="https://cdn.master.co/css@beta">
+    <link rel="preload" as="style" href="https://cdn.master.co/normal.css@beta">
+    <link rel="stylesheet" href="https://cdn.master.co/normal.css@beta">
+    <script src="https://cdn.master.co/css@beta"></script>
+</head>
+</html>
+```
+<small>For build tools, it requires implementing code splitting and preloading the JavaScript module with the runtime engine.</small>
+
+Now the runtime engine is preloaded, so the download happens in parallel with the stylesheet:
+<Image src="/images/preload-network.png" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
+
+You are telling the browser that you would like to fetch it sooner than the browser would otherwise discover it.
+
+---
+
+## Benefits
+Preloading critical assets can improve the following metrics:
+
+1. **First Contentful Paint (FCP)**: Preloading critical assets helps accelerate the loading of essential scripts, such as JavaScript, resulting in faster FCP. This means that the main content of the webpage can be displayed more quickly in the user's browser, enhancing their perception and experience.
+2. **First Meaningful Paint (FMP)**: By preloading critical scripts, the browser can start parsing and rendering the script earlier, leading to faster FMP. This allows users to see meaningful content more rapidly, improving the visual presentation of the page.
+3. **Time to Interactive (TTI)**: Preloading critical scripts reduces waiting time for users, resulting in a faster Time to Interactive. When the critical script has been preloaded and is ready, users can interact with the webpage more quickly, providing a better user experience.
+
+Preloading critical scripts enhances the download and execution speed of the scripts, thereby improving metrics such as First Contentful Paint, First Meaningful Paint, and Time to Interactive.

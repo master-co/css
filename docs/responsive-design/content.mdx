@@ -1,0 +1,157 @@
+import Default from '../viewports/components/Default'
+
+## Overview [sr-only]
+<ResizeZone width="100%" originX="center" showRuler>
+    <IFrame src="/examples/responsive-gallery" height={360} />
+</ResizeZone>
+```html
+<div class="grid-cols:2 grid-cols:3**@xs** grid-cols:4**@sm** grid-cols:5**@md** …">…</div>
+```
+The syntax in Master CSS allows for the conditional application of styles at different viewports, with up to [11 predefined viewport widths](/docs/viewports) available.
+
+This comprehensive coverage caters to the modern web layout scenario.
+<Default />
+
+## Development strategies
+When it comes to designing and developing responsive web pages, [Mobile-first](#mobile-first) and [Desktop-first](#desktop-first) are two common development strategies. The decision between these two strategies depends on your project requirements, target audience, and operational decisions.
+
+However, thanks to the flexible syntax of Master CSS, we propose another flexible strategy － [Syntax-first](#syntax-first).
+
+### Mobile-first
+The Mobile-first development strategy is a design and development approach that initially focuses on designing and optimizing for smaller screen sizes, such as mobile phones and tablets, and then gradually expanding to larger screen sizes, including desktop computers.
+
+For example, your company is launching a game primarily targeting mobile users with potential future releases for desktop users based on market response; adopting a mobile-first strategy would be ideal at this stage.
+
+(i) In mobile-first, **styles not bound by viewports are considered to define the mobile UI.**
+```html
+<p class="font:24">
+```
+Gradually adjust the UI for larger viewports.
+
+(wand) Increase the font size to `32/16rem` when the viewport width is larger than `1024px`.
+```html
+<p class="font:24 **font:32@md** …">
+<!-- equals to -->
+<p class="font:24 **font:32@>=md** …">
+```
+Generated CSS:
+<Class2CSS>
+    {['font:24', 'font:32@md']}
+</Class2CSS>
+- Paragraph font size is `24/16rem` in viewport `<1024px`
+- Paragraph font size is `32/16rem` in viewport `>=1024px`
+
+This relies on CSS precedence behavior to override mobile styles with new styles on larger viewports.
+
+### Desktop-first
+On the other hand, the Desktop-first development strategy initially prioritizes designing and optimizing for larger screen sizes, such as desktop computers, and then gradually scaling down to smaller screen sizes, like mobile phones and tablets. 
+
+For example, your company is launching a web drawing software primarily targeting designers with potential future releases for mobile users based on market response; adopting a desktop-first strategy would be ideal at this stage.
+
+(i) In desktop-first, **styles not bound by viewports are considered to define the desktop UI.**
+```html
+<p class="font:32">
+```
+Gradually adjust the UI for smaller viewports.
+
+(wand) Decrease the font size to `24/16rem` when the viewport width is less than `1024px`.
+```html
+<p class="font:32 **font:24@<md** …">
+```
+Generated CSS:
+<Class2CSS>
+    {['font:32', 'font:24@<md']}
+</Class2CSS>
+- Paragraph font size is `24/16rem` in viewport `<1024px`
+- Paragraph font size is `32/16rem` in viewport `>=1024px`
+
+This relies on CSS precedence behavior to override mobile styles with new styles on larger viewports.
+
+### Syntax-first
+Thanks to the syntactic flexibility of Master CSS, free yourself from the constraints of mobile-first or desktop-first, which not only gives you a better development experience but also makes you have less markup and less CSS output.
+
+For example, set the background to white only on mobile.
+
+(!) With mobile-first, it's necessary to revert to the original background on larger viewports.
+```html
+<div class="bg:white bg:transparent@md …">
+```
+(o) Add `mcss @<md` directly to restrict to small viewports.
+```html
+<div class="bg:white@<md …">
+```
+
+For example, set the background to white only on desktop.
+
+(!) With desktop-first, it's necessary to revert to the original background on smaller viewports.
+```html
+<div class="bg:white bg:transparent@<md …">
+```
+(o) Add `mcss @md` directly to restrict to large viewports.
+```html
+<div class="bg:white@md …">
+```
+
+You don't need to waste energy sticking to a specific development strategy; use the most direct way to solve the current responsive layout.
+
+---
+
+## Basic syntax
+### Viewport width is at least N
+To apply styles above a certain viewport width, you can either use the `@N` or `@>=N` operators.
+```html
+<div class="hide**@>=sm**">
+```
+Generated CSS:
+<Class2CSS>
+    {['hide@>=sm']}
+</Class2CSS>
+(o) Alternative and recommended:
+```html
+<div class="hide**@sm**">
+```
+Generated CSS:
+<Class2CSS>
+    {['hide@sm']}
+</Class2CSS>
+
+### Viewport width exceeds N
+To apply styles when a certain viewport width is exceeded, you can use the `>` operator.
+```html
+<div class="hide**@>sm**">
+```
+Generated CSS:
+<Class2CSS>
+    {['hide@>sm']}
+</Class2CSS>
+
+### Viewport width is at most N
+To apply styles when less than or equal to a certain viewport width, use the `<=` operator.
+```html
+<div class="hide**@<=sm**">
+```
+Generated CSS:
+<Class2CSS>
+    {['hide@<=sm']}
+</Class2CSS>
+
+### Viewport width is less than N
+To apply styles when less than a certain viewport width, use the `<` operator.
+```html
+<div class="hide**@<sm**">
+```
+Generated CSS:
+<Class2CSS>
+    {['hide@<sm']}
+</Class2CSS>
+
+### Within the viewport width range
+To apply styles more flexibly, you can use the `&` logical operator along with the comparison operators `>`, `<`, `=`, `>=`, `<=`>.
+```html
+<div class="hide**@sm&<md**">
+```
+Generated CSS:
+<Class2CSS>
+    {['hide@sm&<md']}
+</Class2CSS>
+Occasionally, addressing glitches or layouts within a certain range of viewports can be helpful.
