@@ -1,0 +1,22 @@
+```js name=master.css.js
+export default {
+    colors: {
+        primary: '#ff0000 #dca000@light #fbe09d@dark',
+        tiffany: '#0abab5',
+        purple: {
+            50: '#a56eff',
+            60: '#8a3ffc',
+            70: '#6929c4',
+        }
+    }
+}
+```
+Use them in HTML and with dark mode:
+```html
+<html class="**dark**">
+    <body>
+        <div class="bg:**primary**">Result: #fbe09d</div>
+        <p class="fg:**tiffany-blue** bg:**purple-60**"></p>
+    </body>
+</html>
+```

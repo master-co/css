@@ -1,0 +1,37 @@
+## Overview [sr-only]
+<Overview/>
+
+---
+
+## Basic usage
+### Ordering flex or grid items
+Use `order:value` to order items of flex or grid container. Value is an integer that can be positive, negative or zero.
+<Demo className="py:0">
+    <div className="bg:white@light bg:gray-20@dark p:30">
+        <div className="flex gap:10">
+            <div className="o:-3 box">2</div>
+            <div className="o:1 box">4</div>
+            <div className="o:first box bg:blue-58! fg:white">1</div>
+            <div className="o:0 box">3</div>
+            <div className="o:3 box">5</div>
+        </div>
+    </div>
+</Demo>
+```html
+<div class="flex gap:10">
+    <div class="o:-3">2</div>
+    <div class="o:1">4</div>
+    <div class="**o:first**">1</div>
+    <div class="o:0">3</div>
+    <div class="o:3">5</div>
+</div>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="order:1**:hover** order:1**@sm** order:1**@dark** order:1**@print**">…</div>
+```
+

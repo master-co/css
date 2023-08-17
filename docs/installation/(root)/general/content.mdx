@@ -1,0 +1,63 @@
+The easiest way to use Master CSS from scratch is to initialize the [runtime engine](/docs/rendering-modes/runtime-rendering) directly in the application's entry file.
+
+## Installation [sr-only]
+
+<StepSection className="mt:50">
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css@beta**
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Initialize configuration file
+            Run `npx mcss init` to create a configuration file [master.css.js](/docs/configuration).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx mcss init
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS runtime engine
+            Import and initialize the runtime engine in the entry file, such as `main.js`:
+        </StepL>
+        <StepR>
+            ```js name=main.js
+            + import { initRuntime } from '@master/css'
+            + import config from './master.css'
+            
+            + initRuntime(config)
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first element using Master CSS syntax!
+        ```html name=index.html
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+        +    <script src="/main.js"></script>
+        </head>
+        <body>
+            <h1 class="**font:40** **font:heavy** **italic** **m:50** **text:center**">Hello World</h1>
+        </body>
+        </html>
+        ```
+        <p className="mt:50">Open your browser to watch the changes.</p>
+        <HelloWorld />
+    </Step>
+</StepSection>
+
+Get stuck? Check out our [web framework](/docs/installation#web-frameworks) or [build tool](/docs/installation#build-tools) guides for better starting points and recommendations.

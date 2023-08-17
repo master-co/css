@@ -1,0 +1,12 @@
+Syntax: <code><span className="token value mcss language-mcss"><span className="token Mroot"><span className="token Mgroup"><span className="token Mbracket">{'{'}</span><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit">value</span></span></span></span><span className="token Mbracket">{'}'}</span></span></span></code>
+
+Master CSS allows you to use non-standard or unsupported CSS properties, using `{}` curly braces like native CSS declarations.
+```html
+<div class="**{block-size:5rem}**">
+```
+Generated CSS:
+```css
+.\{block-size\:5rem\} {
+    block-size: 5rem;
+}
+```

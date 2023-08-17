@@ -1,0 +1,120 @@
+## Overview [sr-only]
+<Overview />
+
+Simplify the native syntax using the derived symbol and multi-style shorthand.
+```html
+-<div class="animation:fade|1s">
++<div class="@fade|1s">
+```
+
+---
+
+## Basic usage
+### Ping indicator
+Use the `ping` animation to indicate that the shop is open.
+<Demo $py={0}>
+    <div className="app-panel rel">
+        <Image src="/images/vegetable-salad-in-bowls.jpg" width="400" height="250" className="aspect:400/250 untouchable" alt="vegetable salad in bowls" />
+        <div className="fg:major abs bottom:0 w:full p:50|35|30|35 gradient(0deg,base|0%,base/0|100%)">
+            <svg className="inline-block fill:green-75 8x8 overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
+                <circle className="@ping|1s|infinite transform:center" cx="4" cy="4" r="4" />
+                <circle cx="4" cy="4" r="4" />
+            </svg>
+            <span className="ml:10 font:12 font:semibold">Open</span>
+            <div className="font:bold mt:10 font:20 ls:-.025em">Master Food</div>
+        </div>
+    </div>
+</Demo>
+```html
+<svg class="inline-block fill:green-75 8x8 overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
+    <circle class="**@ping|1s|infinite** transform:center" cx="4" cy="4" r="4" />
+    <circle cx="4" cy="4" r="4" />
+</svg>
+```
+
+### Rotate indicator
+Use the counterclockwise `rotate` animation to indicate that data is being restored.
+<Demo>
+    <div className="app-float">
+        <svg className="@rotate|1s|linear|reverse|infinite" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path d="M15 4.55a8 8 0 0 0 -6 14.9m0 -4.45v5h-5"></path>
+            <path d="M18.37 7.16l0 .01"></path>
+            <path d="M13 19.94l0 .01"></path>
+            <path d="M16.84 18.37l0 .01"></path>
+            <path d="M19.37 15.1l0 .01"></path>
+            <path d="M19.94 11l0 .01"></path>
+        </svg>
+        <div className="ml:10 font:14 font:medium fg:major">Restoring ...</div>
+    </div>
+</Demo>
+```html
+<svg class="**@rotate|1s|linear|reverse|infinite**" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+    <path d="M15 4.55a8 8 0 0 0 -6 14.9m0 -4.45v5h-5"></path>
+    <path d="M18.37 7.16l0 .01"></path>
+    <path d="M13 19.94l0 .01"></path>
+    <path d="M16.84 18.37l0 .01"></path>
+    <path d="M19.37 15.1l0 .01"></path>
+    <path d="M19.94 11l0 .01"></path>
+</svg>
+```
+
+---
+
+## Advanced usage
+### Loading spinner
+Use the `fade` animation on SVG paths with regular delays to create a loading spinner.
+<Demo>
+    <div className="app-float">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path className="@fade|1s|ease-out|reverse|infinite|0s" d="M7.75 7.75l-2.15 -2.15"></path>
+            <path className="@fade|1s|ease-out|reverse|infinite|.125s" d="M12 6l0 -3"></path>
+            <path className="@fade|1s|ease-out|reverse|infinite|.25s" d="M16.25 7.75l2.15 -2.15"></path>
+            <path className="@fade|1s|ease-out|reverse|infinite|.375s" d="M18 12l3 0"></path>
+            <path className="@fade|1s|ease-out|reverse|infinite|.5s" d="M16.25 16.25l2.15 2.15"></path>
+            <path className="@fade|1s|ease-out|reverse|infinite|.625s" d="M12 18l0 3"></path>
+            <path className="@fade|1s|ease-out|reverse|infinite|.75s" d="M7.75 16.25l-2.15 2.15"></path>
+            <path className="@fade|1s|ease-out|reverse|infinite|.875s" d="M6 12l-3 0"></path>
+        </svg>
+        <div className="ml:10 font:14 font:medium fg:major">Loading ...</div>
+    </div>
+</Demo>
+```html
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+    <path class="**@fade|1s|ease-out|reverse|infinite|0s**" d="M7.75 7.75l-2.15 -2.15"></path>
+    <path class="**@fade|1s|ease-out|reverse|infinite|.125s**" d="M12 6l0 -3"></path>
+    <path class="**@fade|1s|ease-out|reverse|infinite|.25s**" d="M16.25 7.75l2.15 -2.15"></path>
+    <path class="**@fade|1s|ease-out|reverse|infinite|.375s**" d="M18 12l3 0"></path>
+    <path class="**@fade|1s|ease-out|reverse|infinite|.5s**" d="M16.25 16.25l2.15 2.15"></path>
+    <path class="**@fade|1s|ease-out|reverse|infinite|.625s**" d="M12 18l0 3"></path>
+    <path class="**@fade|1s|ease-out|reverse|infinite|.75s**" d="M7.75 16.25l-2.15 2.15"></path>
+    <path class="**@fade|1s|ease-out|reverse|infinite|.875s**" d="M6 12l-3 0"></path>
+</svg>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="@fade|1s**:hover** @fade|1s**@sm** @fade|1s**@dark** @fade|1s**@print**">…</div>
+```
+
+### Based on motion preferences
+Use `@motion` or `@reduced-motion` to style an element based on user specific motion preferences.
+```html
+<svg class="@fade|.5s**@motion**">…</svg>
+```
+
+---
+
+## Customization
+
+import CustomKeyframesOverview from '../animations/components/Overview.mdx'
+
+### Extend your animations
+Customize your CSS animations using the [animations](/docs/animations) configuration.
+<CustomKeyframesOverview />

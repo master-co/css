@@ -1,0 +1,30 @@
+## Overview [sr-only]
+<Overview/>
+
+---
+
+## Basic usage
+
+### Resolve whitespaces
+Whitespace is used in the class attribute of the template markup to separate different class names. To replace whitespaces ` ` with non-breaking spaces `\\00a0` encoded in hexadecimal.
+```html
+<!-- Make all window-openable <a> elements under <article> uniformly suffixed with ` ↗` -->
+<article class="content:'**\\00a0**↗'_a[target=_blank]:after">
+    <a href="…" target="_blank">…</a>
+</article>
+```
+Review native CSS:
+```css
+article a[target=blank]:after {
+    content: ' ↗'
+}
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="content:normal**:hover** content:normal**@sm** content:normal**@dark** content:normal**@print**">…</div>
+```
+

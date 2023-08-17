@@ -1,0 +1,25 @@
+## Overview [sr-only]
+<Overview />
+
+---
+
+## Basic usage
+### Float elements to the left
+Use `mcss float:left` to place an element to the left of its container.
+<Basic className="float:left" />
+
+### Float elements to the right
+Use `mcss float:right` to place an element to the right of its container.
+<Basic className="float:right" />
+
+### Not float
+Use `mcss float:none` to reset floats that are applied to an element.
+<Basic className="float:none" />
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="float:left**:hover** float:left**@sm** float:left**@dark** float:left**@print**">…</div>
+```

@@ -1,0 +1,44 @@
+import VSCodeSvg from 'shared/icons/visualstudiocode.svg'
+
+The official Master CSS Language Service for Visual Studio Code extension.
+
+## Installation [sr-only]
+
+<StepSection className="mt:50">
+    <Step $row>
+        <StepL>
+            ### <StepNum />Installation
+            Get it now in VSCode Extension.
+        </StepL>
+        <StepR>
+            <a className="app-object app-object-interactive flex:col px:25 h:48 font:14 font:semibold r:4 lh:1 flex:row!" href="vscode:extension/masterco.master-css-language-service">
+                <VSCodeSvg className="ml:-4 mr:10" width="20" height="20" />
+                <span>Install to Visual Studio Code now</span>
+            </a>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up your workspace
+            Create a `.vscode/settings.json` in your project root, or set it in [user settings](https://code.visualstudio.com/docs/getstarted/settings).
+        </StepL>
+        <StepR>
+            ```js name=.vscode/settings.json
+            { 
+                "editor.quickSuggestions": {
+                    "strings": true
+                }
+            }
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now your IDE is more professional and readable than ever!
+        ```html
+        <h1 class="font:40 font:56@sm font:heavy italic m:50 text:center fg:red:hover">
+            Hello World
+        </h1>
+        ```
+    </Step>
+</StepSection>

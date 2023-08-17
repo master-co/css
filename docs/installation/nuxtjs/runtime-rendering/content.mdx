@@ -1,0 +1,132 @@
+<RuntimeRenderingIntro img={{
+    href: "https://nuxtjs.rr.beta.css.master.co",
+    src: "/images/nuxtjs-dev.png",
+    alt: 'Nuxt.js and Master CSS',
+    width: 665, height: 400, hasDark: true }} />
+
+---
+
+## Quick start
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Clone the example
+            Copy-paste the following commands to quickly start using the [nuxtjs.rr.beta.css.master.co](https://nuxtjs.rr.beta.css.master.co).
+
+            You can skip all [installation](#installation) steps.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx degit master-co/css/examples/nuxt.js-with-runtime-rendering __my-project__
+            cd __my-project__
+            npm install @master/css.vue@beta
+            npm install
+            npm run dev
+            ```
+        </StepR>
+        <StepEnd/>
+    </Step>
+</StepSection>
+
+---
+
+## Installation
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have a Nuxt.js project, create one first. It's recommended to refer to [Get started with Nuxt.js](https://nuxt.com/docs/getting-started/installation).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx nuxi@latest init __project__
+            cd __project__
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS Vue into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css.vue@beta**
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Initialize configuration file
+            Run `npx mcss init` to create a configuration file [master.css.ts](/docs/configuration).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx mcss init
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS runtime engine
+            - Import your custom configuration `master.css.ts`
+            - Initialize the runtime engine using `CSSProvider`
+        </StepL>
+        <StepR>
+            ```html name=app.vue
+            <script setup lang="ts">
+            +import { CSSProvider } from '@master/css.vue'
+            +import config from './master.css'
+            </script>
+
+            <template>
+            +    <CSSProvider :config="config">
+                    …
+            +    </CSSProvider>
+            </template>
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Avoid flash of unstyled content
+            Configure `nuxt.config.js` and add `css display: 'none'` in `html <html>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) caused by the runtime engine not yet injecting CSS rules.
+        </StepL>
+        <StepR>
+            ```js name=nuxt.config.js
+            export default defineNuxtConfig({
+            +    app: {
+            +        head: {
+            +            script: [
+            +                { innerHTML: 'document.documentElement.style.display = "none"' }
+            +            ]
+            +        }
+            +    }
+            })
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Launch server
+            Run `npm run dev` to start your Nuxt.js development server
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm run dev
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first element using Master CSS syntax!
+        ```html name=app.vue
+        <template>
+            <h1 class="**font:40** **font:heavy** **italic** **m:50** **text:center**">Hello World</h1>
+        </template>
+        ```
+        <p className="mt:50">Open your browser to watch the changes.</p>
+        <HelloWorld url="localhost:3000" />
+    </Step>
+</StepSection>

@@ -1,0 +1,24 @@
+## Overview [sr-only]
+<Overview/>
+
+---
+
+## Basic usage
+### Set the cursor style
+Use the `cursor:value` to change the mouse cursor when hovering an element.
+<InteractingIndicator>Hovering the button to see the cursor style</InteractingIndicator>
+<Demo className="gap:40">
+    <button className="fg:white bg:indigo px:20 h:42 font:14 font:semibold r:5 cursor:pointer">submit</button>
+</Demo>
+```html
+<button class="**cursor:pointer**">submit</button>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="cursor:pointer**:hover** cursor:pointer**@sm** cursor:pointer**@dark** cursor:pointer**@print**">…</div>
+```
+

@@ -1,0 +1,36 @@
+## Overview [sr-only]
+<Overview/>
+
+## Basic usage
+### Set the accent color
+Use the `accent-color:color` to set a custom accent color of user interface elements or controls.
+<Demo className="gap:40">
+    <label className="flex">
+        <input type="checkbox" defaultChecked
+            className="w:16 h:16 r:2 inline-block v:middle mr:6" />
+        <span className="inline-block f:black f:white@dark f:14">Default</span>
+    </label>
+    <label className="flex">
+        <input type="checkbox" defaultChecked
+            className="w:16 h:16 r:2 inline-block v:middle mr:6 accent-color:red-46 ~accent-color|.3s" />
+        <span className="inline-block f:black f:white@dark f:14">Customized</span>
+    </label>
+</Demo>
+```html
+<label>
+    <input type="checkbox" />
+    <span>default color</span>
+</label>
+<label>
+    <input type="checkbox" class="**accent-color:red-46**">
+    <span>Customized</span>
+</label>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="accent-color:red-46**:hover** accent-color:red-46**@sm** accent-color:red-46**@dark** accent-color:red-46**@print**">…</div>
+```

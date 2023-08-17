@@ -1,0 +1,282 @@
+## Premature abstraction [sr-only]
+<PrematureAbstraction />
+
+### Management and naming hell
+
+However, it involved writing a substantial amount of code in card.css, and it required making numerous decisions along the way:
+
+- What do we call this card?
+- `.card` has this class name been used?
+- Is there a convention being used that arrives at the name `.card-text`? Has it been accepted by everyone?
+- Do other cards use the same style? Is code-sharing working for `.card`?
+- If we need to make small adjustments to this card, would we need to create another name?
+- The styling of this card might not be reusable.
+- What do we call the card on the homepage? How about on other pages?
+- Do we adjust `.card` itself for those cards mentioned previously?
+- There are other elements that look like `.card`, but they aren't cards!
+- `.card` may need to be extended; its style is used in many places.
+- Switching back and forth between HTML and CSS
+- Is this following best practices?
+- ...
+
+The aforementioned challenges were solely focused on styling one card; now, envisage the entire application's styling undergoing the same arduous process...
+
+Traditional approaches often result in imprecise code due to uncertainties and incomplete information.
+
+"You must have a complete design system and pixel-level design guidelines to suitably abstract styles."
+
+### Runaway maintainability
+
+Wait, what would the rest of the team go through when maintaining this code?
+
+- Where is the CSS file for this card?
+- Is there another CSS file with rules that affect this card?
+- Are there media queries or selectors for this card that I don't know about?
+- How does the computed styles of this card look? Do I need to use `!important`?
+- If I modify this `.card`, would the modifications leak？
+- This card needs to be extended. It looks like we need to create another class name.
+- We don't need this card anymore. It should have been removed, so why is it still here?
+- Whoever named this card did a poor job...
+- ...
+
+The complexities and unpredictability arising from CSS priorities/specificity can make the process even more convoluted. As the project expands, it can quickly become unmanageable, severely impacting productivity.
+
+In contrast, Master CSS offers a "flat" approach to applying styles on elements, avoiding entanglement in complex CSS. This enables team members to onboard more efficiently and reduces the learning curve.
+
+### Syntax-first strategy
+It seems that Master CSS is against the traditional abstract coding style?
+
+No, we advocate a mixed development strategy - **syntax first, semantic second**.
+
+Syntax first:
+- Styles with no reuse potential.
+- Highly specific styles, such as hero landing, home page.
+- There is no precise design specification.
+
+Semantic secondary:
+- Highly reusable styles like buttons, controls.
+- Styles that need to be visually consistent, such as primary color, secondary color.
+- Has a standard design system.
+
+Design token is a core methodology for practicing design systems, so appropriately abstracting styles and markup can help you create visually consistent user interfaces more effectively, and Master CSS [configuration](/docs/configuration) is born for this.
+
+Assuming the card can be reused, you can abstract it using [classes](/docs/classes) with a concise syntax:
+```js name=master.css.js
+export default {
+    classes: {
+        card: {
+            '': 'flex translateY(-5):hover ~transform|.2s overflow:hidden bg:white r:10',
+            image: 'object:cover w:140 aspect:16/9',
+            content: 'p:25',
+            title: 'font:semibold text:18',
+            text: 'text:14 lines:2'
+        }
+    }
+}
+```
+Then, use the abstract class as before:
+```html name=card.html
+<div class="card">
+    <img class="card-image" … />
+    <div class="card-content">
+        <div class="card-title">Mountain</div>
+        <div class="card-text">A mountain is an elevated portion of the Earth's crust, generally with steep sides that show significant exposed bedrock.</div>
+    </div>
+</div>
+```
+
+---
+
+## Generate CSS based on markup
+<GeneratedCSSBasedOnMarkup />
+
+### Smart rule sorting
+How is CSS rule order and priority handled?
+
+"Center-align the homepage headline when the viewport width `>=1280px`, and align right when `>=1024px`."
+
+(x) Incorrect responsive media rules.
+```css
+@media (min-width:1280px) {
+    h1 {
+        text-align: center;
+    }
+}
+
+@media (min-width:1024px) {
+    h1 {
+        text-align: right;
+    }
+}
+```
+Since the order in which CSS rules are placed affects priority, when the screen width is `>=1024px` or `>=1280px`, `css @media (min-width:1024px) {}` will be applied, but `css @media (min-width:1280px) {}` will never be applied.
+
+You always keep your mind alert to prevent making mistakes, as the more similar rules you have, the harder it becomes to debug.
+
+(o) Let Master CSS handle the prioritization automatically for you.
+```html
+<h1 class="**text:right@md** **text:center@lg**">
+```
+No matter how you write the Master CSS syntax, the correct CSS rules will be generated:
+```css
+@media (min-width:1024px) {
+    .text\:right\@md {
+        text-align: right
+    }
+}
+
+@media (min-width:1280px) {
+    .text\:center\@lg {
+        text-align: center
+    }
+}
+```
+Not only that, but we also align rules with your expectations when using selectors like `:disabled`, `:active`, `:focus`, `:hover`, `:where()`, and breakpoints such as `@lg`, `@sm&<lg`, etc. As a result, you would rarely, if ever, need to use `!important`.
+
+### Unit-sensed conversions
+In web development, UI design is typically measured using pixels (px). However, to ensure a browser-friendly website, you must convert pixels to REM (Root Em) units to scale website elements across different devices and screen sizes, providing a consistent appearance and excellent user experience.
+
+(!) Look up the `rem` value corresponding to `24px` from the table.
+| px  | 12    | 14    | 16    | 18p   | 20    | 22    | 24    | 26    | 28    |
+| --- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
+| rem | 0.75  | 0.875 | 1     | 1.125 | 1.25  | 1.375 | 1.5   | 1.625 | 1.75  |
+
+```html
+<h1 class="**font:1.5rem**">
+```
+
+(o) Omit the text size unit and rely on the default conversion.
+```html
+<h1 class="**font:24**">
+```
+Generated CSS
+```css
+.font\:24 {
+    font-size: 1.5rem
+}
+```
+This not only improves productivity but also simplifies syntax markup in class attributes.
+
+### Why not just inline styles?
+(x) Inline styles cannot apply selectors, media queries, or CSS features.
+```html
+<button style="font-size: 0.875rem" disabled>Oops!</button>
+```
+
+(o) You can now easily control style states in markup.
+```html
+<button class="font:14 font:20**@md** opacity:.5**[disabled]**" disabled>Bravo!</button>
+```
+
+(o) Build a visually consistent UI with [design tokens](/docs/configuration).
+```html
+<h1 class="font:lg fg:primary">Hello World</h1>
+```
+
+
+---
+
+## Humanize
+"I'd need to learn a new language to use Master CSS."
+
+Rest assured, the Master CSS syntax is based on native CSS, positioned very similarly to [SASS](https://sass-lang.com). You can begin by writing familiar native-ish CSS and gradually incorporate our enhancements and syntactic sugar over time.
+
+### Structured syntax
+Writing the same syntax as `style=""` within `class=""` serves no purpose. We aim to provide a logically simplified CSS declaration with an elegant syntax.
+
+It can be reducible:
+```html
+<!-- Same as native CSS -->
+<div class="text-align:center">
+
+<!-- Ambiguous shorthand -->
+<div class="text:center">
+
+<!-- Abbreviation -->
+<div class="t:center">
+```
+It can be elegant:
+```html
+<!-- Set the background to blue-60 with an opacity of .5 -->
+<div class="bg:blue-60/.5">
+
+<!-- Magnify to 1.5x -->
+<div class="scale(1.5)">
+
+<!-- Transition with a delay of 0.3s and timing-function "ease" -->
+<div class="~transform|.3s|ease">
+
+<!-- Use a semantic class that translates to "display: block" -->
+<div class="block">
+```
+It can be [stateful and selectable](/docs/selectors):
+```html
+<!-- Set a pink background on hover -->
+<div class="bg:pink:hover">
+
+<!-- Set a pink background for all subsequent sibling elements -->
+<div class="bg:pink~*">
+
+<!-- All subsequent div siblings -->
+<div class="bg:pink+div">
+
+<!-- All descendant p elements -->
+<div class="bg:pink_:where(p)">
+
+<!-- Use simplified :first instead of :nth-child to set pink background -->
+<div class="bg:pink:first">
+```
+It can be [responsive](/docs/viewports) and [conditional](/docs/media-queries):
+```html
+<!-- Set width to 50rem, when screen width >=1024 -->
+<div class="width:800@>=1024">
+
+<!-- Similar to previous example, using a built-in breakpoint -->
+<div class="width:800@sm">
+
+<!-- Screen width >= 600px & < 1279.98px top at 0.0625rem -->
+<div class="top:1@xs&<lg">
+
+<!-- Set background to gray-20 when in dark mode -->
+<div class="bg:gray-20@dark">
+
+<!-- Hide element for print -->
+<div class="hide@print">
+
+<!-- Fade with a 0.2s delay when low motion is not specified by the client -->
+<div class="@fade|.2s@motion">
+```
+These examples are only the tip of the iceberg.
+
+### Readable markup
+A factual study by [PPIG](https://en.wikipedia.org/wiki/Psychology_of_programming) finds that syntax highlighting helps comprehension and reduces time to internalize a language.
+
+(!) This is a template markup written by a utility-first library, and it's not human-readable.
+```jsx
+<div class="mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300">
+<div class="mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300">
+<div class="mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300">
+```
+(o) Improve readability with syntax highlighting.
+```html
+<div class="mt:36 r:8 flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm">
+<div class="mt:36 r:8 flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm">
+<div class="mt:36 r:8 flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm">
+```
+We take pride in the experience improvement of syntax highlighting in template markup. This feature effectively reduces discomfort caused by "long class names" and facilitates a quick understanding of the overall style.
+
+Thanks to the [structured syntax](#structured-syntax) of Master CSS, you can now grasp the prettier markup.
+
+Master CSS also features autocompletion, generated CSS preview, and more. Check out our [Language Service](/docs/language-service) for more information.
+
+---
+
+## Separation of concerns
+
+Many folks believe that HTML and CSS should conform to the design principle of separation of concerns (SoC). We believe that applying SoC to HTML & CSS, is more a matter of cultural momentum, and over-interpretation of SoC.
+
+JavaScript aside, web UI consists of HTML structure, and CSS for styling. CSS takes up a significant portion of time spent working on HTML and its related business logic. This implies that HTML and CSS are highly integrated and almost always used together.
+
+Separating the two introduces a layer of abstraction where the cost usually outweigh the benefit, leading to [premature abstraction](#premature-abstraction).
+
+> **You should focus on the separation/componentization of business responsibilities, not language separation.**

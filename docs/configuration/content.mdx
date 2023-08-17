@@ -1,0 +1,250 @@
+import RulesOverview from '../rules/components/Overview.mdx'
+import ValuesOverview from '../values/components/Overview.mdx'
+import SemanticsOverview from '../semantics/components/Overview.mdx'
+import BreakpointsOverview from '../viewports/components/Overview.mdx'
+import KeyframesOverview from '../animations/components/Overview.mdx'
+import MediaQueriesOverview from '../media-queries/components/Overview.mdx'
+import SelectorsOverview from '../media-queries/components/Overview.mdx'
+import FunctionsOverview from '../functions/components/Overview.mdx'
+import ColorsOverview from '../colors/components/Overview.mdx'
+
+## master.css.js [sr-only]
+```js name=master.css.js
+/** @type {import('@master/css').Config} */
+export default { 
+    colors: {
+        primary: '#ff0000 #dca000@light #fbe09d@dark', // class="bg:primary"
+        warn: '#ffbf00' // class="fg:warn outline:warn"
+    },
+    classes: {
+        btn: 'font:14 text:center h:40 p:10|15', // class="btn"
+        card: {
+            '': 'bg:white r:8',            // class="card"
+            header: 'object:cover w:full', // class="card-header"
+            content: 'p:15'                // class="card-content"
+        }
+    },
+    values: {
+        '2x': 32 // class="w:2x mt:2x"
+    },
+    rules: {
+        fontSize: { 
+            values: {
+                sm: 14 // class="font:sm"
+            }
+        }
+    },
+    semantics: {
+        'hide-text': { // class="hide-text"
+            'font-size': '0px'
+        }
+    },
+    viewports: {
+        desktop: 1280 // class="hide@desktop"
+    },
+    selectors: {
+        _headings: '_:where(h1,h2,h3,h4,h5,h6)' // class="font:bold_headings"
+    },
+    mediaQueries: {
+        // class="font:24@watch"
+        watch: '(max-device-width:42mm) and (min-device-width:38mm)'
+    },
+    animations: {
+        fade: {
+            from: { opacity: 0 },
+            to: { opacity: 0 }
+        },
+        ping: {
+            '75%,100%' {
+                transform: 'scale(2)',
+                opacity: 0;
+            }
+        }
+    }
+    …
+}
+```
+Configuration fields that are not specified will fall back to Master CSS's [default configuration](https://github.com/master-co/css/tree/beta/packages/css/src/config).
+
+import CustomClassesOverview from '../classes/components/Overview.mdx'
+
+### `.viewports`
+Customizing responsive [viewports](/docs/viewports) for your design system.
+<BreakpointsOverview />
+
+### `.classes`
+Customizing abstract [classes](/docs/classes) for your design system.
+<CustomClassesOverview />
+
+### `.colors`
+Customize [colors](/docs/colors) for your design system.
+<ColorsOverview />
+
+### `.functions`
+Customizing [functions](/docs/functions) for your design system.
+<FunctionsOverview />
+
+### `.animations`
+Customizing animation [animations](/docs/animations) for your design system.
+<KeyframesOverview />
+
+### `.mediaQueries`
+Customizing [media queries](/docs/media-queries) for your design system.
+<MediaQueriesOverview />
+
+### `.rules`
+Customizing syntax [rules](/docs/rules) for your design system.
+<RulesOverview />
+
+### `.values`
+Customizing substitute [values](/docs/values) for your design system.
+<ValuesOverview />
+
+### `.selectors`
+Customizing [selectors](/docs/selectors) for your design system.
+<SelectorsOverview />
+
+### `.semantics`
+Customizing [semantic](/docs/semantic) classes for your design system.
+<SemanticsOverview />
+
+### `.important`
+Make all generated CSS declarations `!important`.
+
+<DocProp defaultValue="false" types={['boolean']} />
+
+(!|) Using `js important: true` should be considered as a last option, as it's a compromise.
+```js name=master.css.js
+export default {
++    important: true
+}
+```
+
+Generated CSS:
+```css
+.hide {
+    display: none **!important**;
+}
+
+.full {
+    width: 100% **!important**;
+    height: 100% **!important**;
+}
+```
+
+### `.scope`
+Limit the generated CSS rules to a specific scope with CSS selectors.
+<DocProp defaultValue="''" types={['string']} />
+
+(!|) Don't make it part of your coding style, but as a last resort to solve problems.
+```js name=master.css.js
+export default {
++    scope: '#app'
+}
+```
+All Master CSS syntax will only be applied if the `<body id="app">`.
+```html
+<html>
+<body id="**app**">
+    <div class="**mt:1** **text:center**"></div>
+</body>
+</html>
+```
+Generated CSS:
+```css
+**#app** .mt\:1 {
+    margin-top: 0.0625rem
+}
+
+**#app** .text\:center {
+    text-align: center
+}
+```
+
+### `.rootSize`
+Specify the conversion factor for `rem` and `em`.
+
+<DocProp defaultValue="16" types={['number']} />
+
+Here's a common use case with `rootSize: 10`:
+```js name=master.css.js
+export default {
++    rootSize: 10
+}
+```
+
+Generated CSS rules:
+```css
+.font\:16 { 
+-    font-size: 1rem; /* rootSize: 16 */
++    font-size: 1.6rem;  /* rootSize: 10 */
+}
+```
+
+And you will set the font size of the root to `62.5%`:
+```html
+<html class="font:62.5%">
+```
+
+### `.override`
+Customize your configuration to override all [default configuration](https://github.com/master-co/css/tree/beta/packages/css/src/config), default `false` to extend.
+<DocProp defaultValue="false" types={['boolean']} />
+```js name=master.css.js
+export default {
++    override: true
+}
+```
+We've carefully preset some [configurations](https://github.com/master-co/css/tree/beta/packages/css/src/config") to enhance the syntax; usually, you'll extend it.
+
+### `.themeDriver`
+Sets how the theme should drive and generate CSS rules.
+<DocProp defaultValue="'class'" types={["'class'", "'media'", "'host'"]} />
+```html
+<div class="bg:black@dark">
+```
+
+#### Drive theme styles through classes
+```js name=master.css.js
+export default {
++    themeDriver: 'class'
+}
+```
+Generated CSS:
+```css
+.dark .bg\:#000000 { background-color: #000000 }
+```
+
+#### Drive theme styles through media queries
+```js name=master.css.js
+export default {
++    themeDriver: 'media'
+}
+```
+Generated CSS:
+```css
+@media (prefers-color-scheme: dark) { .bg\:#000000 { background-color: #000000 } }
+```
+
+#### Drive theme styles through shadow DOM's host
+```js name=master.css.js
+export default {
++    themeDriver: 'host'
+}
+```
+Generated CSS:
+```css
+:host(.dark) .bg\:#000000 { background-color: #000000 }
+```
+
+### `.extends`
+Extend custom or external configuration.
+<DocProp defaultValue="undefined" types={["any[]"]} />
+```js name=master.css.js
+export default {
+    extends: [
++        require('@master/animate.css'),
++        require('./styles/btn.css'),
+        …
+    ]
+}
+```

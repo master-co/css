@@ -1,0 +1,97 @@
+import { CONFIG_TEXT, CONFIG_ESM_TEXT } from '@master/css'
+
+## Initialization [sr-only]
+Following the Getting Started guide, you should have a Master CSS [configuration](/docs/configuration) file at your project's root. If you haven't created one yet, you can use the [CLI](#cli) to generate it.
+```bash name=Terminal
+npx mcss init
+```
+
+---
+
+## Management
+### Split configuration into files
+Typically, frameworks or standard directory structures come with a `styles/` folder for CSS files, and we recommend placing your custom styles there.
+
+(i) Whether to split into multiple files depends on how many abstract styles you have.
+```treeview
+styles/
+|-- btn.css.js
+|-- card.css.js
+master.css.js
+```
+Create a `styles/btn.js` file and export the class names in the following standard format to enjoy [language service](/docs/language-service) highlighting and auto-suggestion.
+```js name=styles/btn.css.js
+/** @type {import('@master/css').Config} */
+export default {
+    classes: {
+        btn: {
+            '': 'font:14 text:center h:40 p:10|15',
+            primary: 'bg:primary fg:white',
+            outline: 'b:1|solid|slate-90'
+        }
+    }
+}
+```
+
+Extend `styles/btn.js` in `master.css.js`.
+
+```js name=master.css.js
+/** @type {import('@master/css').Config} */
+export default {
+    extends: [
+        require('./styles/btn.css')
+    ]
+}
+```
+
+---
+
+## CLI
+This will create a config file `master.css.{js,mjs,ts}`, using one of the extensions according to the characteristics of your project.
+```bash name=Terminal
+npx mcss **init** …
+```
+Requires `@master/css` to be installed.
+
+### `--esm`
+Specify creating a `master.css.mjs` file in ECMAScript Modules format. If `package.json` is set `"type": "module"` will be enabled automatically.
+<DocProp defaultValue="false" types={['boolean']} />
+```bash name=Terminal
+npx mcss init **--esm**
+```
+Output:
+<Code lang="js" name="master.css.js">
+    {CONFIG_ESM_TEXT}
+</Code>
+
+### `--cjs`
+Specify creating a `master.css.js` file in CommonJS format.
+<DocProp defaultValue="false" types={['boolean']} />
+```bash name=Terminal
+npx mcss init **--cjs**
+```
+Output:
+<Code lang="js" name="master.css.js">
+    {CONFIG_TEXT}
+</Code>
+
+### `--ts`
+Specify creating a `master.css.ts` file in TypeScript format. Automatically enabled if `tsconfig.json` exists.
+<DocProp defaultValue="false" types={['boolean']} />
+```bash name=Terminal
+npx mcss init **--ts**
+```
+Output:
+<Code lang="js" name="master.css.ts">
+    {CONFIG_ESM_TEXT}
+</Code>
+
+### `-o, --override`
+Override the existing Master CSS config file.
+<DocProp defaultValue="false" types={['boolean']} />
+```bash name=Terminal
+npx mcss init **--override**
+```
+```html
+✓ master.css.js config file is overridden
+```

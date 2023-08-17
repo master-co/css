@@ -1,0 +1,26 @@
+const syntaxes = [
+    ['display:`type`', 'd:`type`'],
+    ['hidden', 'hide'],
+    ['flex'],
+    ['grid'],
+    ['inline'],
+    ['block'],
+    ['table'],
+    ['contents'],
+    ['flow-root'],
+    ['list-item'],
+    ['inline-block'],
+    ['inline-flex'],
+    ['inline-grid'],
+    ['inline-table'],
+    ['table-cell'],
+    ['table-caption'],
+    ['table-row'],
+    ['table-column'],
+    ['table-row-group'],
+    ['table-column-group'],
+    ['table-header-group'],
+    ['table-footer-group'],
+]
+
+export default syntaxes

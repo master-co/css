@@ -1,0 +1,171 @@
+## Usage [sr-only]
+
+```js
+import CSSExtractor from '@master/css-extractor'
+```
+Create an instance of the Master CSS extractor:
+```js
+const extractor = new CSSExtractor(options, cwd)
+```
+
+`cwd` is used to change the directory where [`.config`](#config), [`.include`](#include), [`.exclude`](#exclude) and [`.sources`](#sources) are currently running.
+
+`CSSExtractor` is the business logic encapsulation of Master CSS Static Extraction, which is usually used by build tools or third-party package authors.
+
+This package is specific to the **Node.js** environment.
+
+To start using Master CSS static extraction, check out the [guide](http://localhost:3000/docs/installation) first.
+
+
+---
+
+import options from '@master/css-extractor/options'
+
+## Options
+<OptionsCodes cli vite webpack>
+    {JSON.stringify(options, null, 4)}
+</OptionsCodes>
+The above are the default compilation options, you can also introduce these default values to expand your options:
+```js
+import { options } from '@master/css-extractor'
+// or in a side-effect-free way
+import options from '@master/css-extractor/options'
+```
+
+### `.module`
+Custom Master CSS virtual module ID, this option does not support Master CSS CLI.
+<DocProp defaultValue={`'${options.module}'`} types={['string']} />
+Set the virtual CSS module of Master CSS to `virtual:master.css`:
+<OptionsCodes vite webpack addLines={[1]} number>
+    {`
+        module: '.virtual/master.css'
+    `}
+</OptionsCodes>
+Then you can import with a custom virtual module ID in the entry file like `main.js`:
+```js name=main.js
+import '.virtual/master.css'
+```
+
+### `.config`
+Customize your Master CSS [configuration](/docs/configuration) or the path to the configuration file, the default configuration file is read with [.cwd](#cwd) in the root directory of the project.
+<DocProp defaultValue={`'${options.config}'`} types={['string', 'Config']} />
+            
+### `.include`
+Broadly specify source files/directories to be scanned by Master CSS.
+<DocProp defaultValue={options.include} types={['FastGlobPattern[]']} />
+
+### `.exclude`
+Broadly exclude source files/directories from scanning by Master CSS.
+<DocProp defaultValue={options.exclude} types={['FastGlobPattern[]']} />
+
+### `.sources`
+Mandatory source files/directories are to be scanned by Master CSS.
+<DocProp defaultValue={options.sources} types={['FastGlobPattern[]']} />
+This option is similar to [`.include`](#include) but not excluded by [`.exclude`](#exclude). Usually, you will use it to specify what is accidentally excluded by [`.exclude`](#exclude) file/directory.
+
+### `.classes.fixed`
+Generate fixed CSS rules based on the specified class name, regardless of source.
+<DocProp defaultValue={options.fixed} types={['string[]']} />
+Typically you would use it with the following limitations:
+- Class names that do not exist in the source code.
+- Irregular class names.
+- Class names from asynchronous data.
+
+### `.classes.ignored`
+Exclude class names accidentally extracted by the scanning process.
+<DocProp defaultValue={options.ignored} types={['string[]', 'RegExp[]']} />
+
+---
+
+## Functions
+
+### `extractLatentClasses()`
+Extract latent classes from string content.
+<DocFn>
+    {[
+        { name: 'content', type: 'string', defaultValue: 'undefined' },
+        { name: 'return', type: 'string' },
+    ]}
+</DocFn>
+```ts
+import { extractLatentClasses } from '@master/css-extractor'
+
+const content: string = `
+    import { setupCounter } from './counter'
+
+    **const** **counterElement** = document.querySelector<HTMLButtonElement>('#counter')
+    **const** **syntax** = '**block**'
+    counterElement?.classList.add('**~transform|.3s**', '**translateY(-5):hover**', **syntax**)
+
+    **setupCounter(counterElement!)**
+`
+const result = extractLatentClasses(content)
+```
+Result:
+```js
+[
+    'const',
+    'counterElement',
+    'syntax',
+    'block',
+    '~transform|.3s',
+    'translateY(-5):hover',
+    'setupCounter(counterElement!)'
+]
+```
+
+---
+
+## Properties
+🚧 Please refer to the [source code](https://github.com/master-co/css/blob/dev/beta/packages/extractor/src/core.ts) temporarily.
+
+---
+
+## CLI
+Scan source files, extract syntax classes, generate CSS rules, and output as a CSS file.
+```bash name=Terminal
+npx mcss **extract** …
+```
+Requires `@master/css-extractor` to be installed.
+
+The command runs according to the preset [extractor options](#options).
+
+### `[source paths]`
+Explicitly specify sources to scan, ignoring [`options.include`](/docs/extractor#include) and [`options.exclude`](/docs/extractor#exclude) restrictions.
+<DocProp defaultValue="undefined" types={['FastGlobPattern[]']} />
+```bash name=Terminal
+npx mcss extract **index.html** **main.js**
+```
+If no sources are specified, by default, all directories of your current project will be scanned according to [`options.include`](/docs/extractor#include) and [`options.exclude`](/docs/extractor#exclude).
+```bash name=Terminal
+npx mcss extract
+```
+
+### `-o, --output <path>`
+Watch for file changes and build continuously.
+<DocProp defaultValue="'master.css'" types={['string']} />
+```bash name=Terminal
+npx mcss extract **--output master.css**
+```
+
+### `--options <path>`
+Specifies the source of the extractor options.
+<DocProp defaultValue="'master.css-extractor.*'" types={['string']} />
+```bash name=Terminal
+npx mcss extract **--option dir/master.css-extractor.js**
+```
+
+### `-v, --verbose`
+Verbose logging.
+<DocProp defaultValue="1" types={['number']} />
+Set to `0` to silence the terminal.
+```bash name=Terminal
+npx mcss extract **--verbose 0**
+```
+
+### `-w, --watch`
+Watch for file changes and build continuously.
+<DocProp defaultValue="false" types={['boolean']} />
+```bash name=Terminal
+npx mcss extract **--watch**
+```

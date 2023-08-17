@@ -1,0 +1,30 @@
+## Overview [sr-only]
+<Overview/>
+
+Simplify the native syntax using the derived symbol.
+```html
+-<div class="animation-iteration-count:infinite">
++<div class="@iteration:infinite">
+```
+
+---
+
+## Basic usage
+### Loop animation
+Play the animation in an infinite loop.
+<Basic className="@iteration:infinite @rotate|1s|linear"/>
+
+### Specify N iterations
+Specifies the number of times the animation iterates, even decimals.
+
+(hover) Hover over the icon to see animation iterations
+<Basic className="@iteration:2.5:hover @rotate|1s|linear|forwards:hover"/>
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="@iteration:infinite**:hover** @iteration:infinite**@sm** @iteration:infinite**@dark** @iteration:infinite**@print**">…</div>
+```
+

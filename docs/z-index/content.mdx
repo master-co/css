@@ -1,0 +1,29 @@
+## Overview [sr-only]
+<Overview/>
+
+Use `z-index:value` to order of overlapping eleemnts. Value is an integer that can be positive, negative or zero.
+<Demo className="py:0">
+    <div className="flex ml:-8>div p:30">
+        <div className="z:9 box bg:blue-58! fg:white b:2">1</div>
+        <div className="z:3 box bg:blue-58! fg:white b:2">2</div>
+        <div className="z:1 box bg:blue-58! fg:white b:2">3</div>
+        <div className="z:-1 box bg:blue-58! fg:white b:2">4</div>
+        <div className="z:-9 box bg:blue-58! fg:white b:2">5</div>
+    </div>
+</Demo>
+```html
+<div class="z:9">1</div>
+<div class="z:3">2</div>
+<div class="**z:1**">3</div>
+<div class="z:-1">4</div>
+<div class="z:-9">5</div>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="z-index:1**:hover** z-index:1**@sm** z-index:1**@dark** z-index:1**@print**">…</div>
+```
+

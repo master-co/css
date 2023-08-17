@@ -1,0 +1,39 @@
+## Overview [sr-only]
+<Overview/>
+
+### Remove default styling
+Use the `appearance:none` to remove default appearance of element. It is usually used to customize UI controls element.
+<Demo>
+    <select className="appearance:none background:revert">
+        <option>Yes</option>
+        <option>No</option>
+    </select>
+</Demo>
+```html
+<select class="appearance:none">
+    <option>Yes</option>
+    <option>No</option>
+</select>
+```
+Before removing the default appearance, it looks like this:
+<Demo>
+    <select className="background:revert">
+        <option>Yes</option>
+        <option>No</option>
+    </select>
+</Demo>
+```html
+<select>
+    <option>Yes</option>
+    <option>No</option>
+</select>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="appearance:none**:hover** appearance:none**@sm** appearance:none**@dark** appearance:none**@print**">…</div>
+```
+

@@ -1,0 +1,174 @@
+Set your brand's font, foreground color, etc., add syntax in `html <body class="…">` and rely on native inheritance behavior or use CSS selectors to preset global styles.
+
+### Weakly apply styles
+We recommend using `css :where()` to select elements and preset styles, it has zero [specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity), otherwise you risk falling into `css !important` hell with `css :is()` and `css _` descendant selectors.
+
+For example, add a blue underline to all links:
+<Demo>
+    <a href="#weakly-apply-styles" className="text:underline|blue|1.5!">Weakly apply styles</a>
+</Demo>
+```html
+<article class="**text:underline|blue|1.5_:where(a)**">
+    <a href="#weakly-apply-styles">Weakly apply styles</a>
+</article>
+```
+Henceforth you don't need to declare `css !important` to remove the underline for a specific link.
+```html
+<a class="**text-decoration:none**">…</a>
+```
+
+### Custom typeface
+Unify the font style of the whole site, including titles, texts, and codes, through CSS inherited behavior and the `css _:where()` selector:
+```html
+<body class="**font:sans** **font:mono_:where(code,pre)**">
+```
+Configure rules to [customize fonts](/docs/font-family#customization) and use default font families as fallbacks:
+```js name=master.css.js
+/** @type {import('@master/css').Config} */
+export default {
+    rules: {
++        fontFamily: {
++            values: {
++                sans: 'Inter var, Noto Sans TC,' + rules.fontFamily.values.sans,
++                mono: 'Fira Code VF,' + rules.fontFamily.values.mono
++            }
++        }
+    }
+}
+```
+Take importing [Google Fonts](https://fonts.google.com/) as an example:
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
++    <link rel="preconnect" href="https://fonts.googleapis.com">
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    …
+…
+```
+
+---
+
+## Official normalize plugin
+You're probably using a CSS package like [modern-normalize](https://github.com/sindresorhus/modern-normalize) or [normalize.css](https://github.com/necolas/normalize.css).
+
+Nevertheless, based on our own experience and style, we've created an only **~704B** CSS package `@master/normal.css` to help you quickly preset the global style, to eliminate the problem of inconsistent initial styles of browsers, and to use more pure styles as your starting point.
+
+### Installation
+Copy and paste the CDN to quickly preset your global styles.
+```html name=index.html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
++        <link href="https://cdn.master.co/normal.css@beta" rel="stylesheet">
+    </head>
+    </html>
+```
+Or install `@master/normal.css@beta` into your project:
+```install
+**@master/normal.css@beta**
+```
+
+Import into your global CSS file:
+
+```css name=main.css
+@import '@master/normal.css';
+```
+
+### Features and behavior
+Here are some optimizations and presets made by `@master/normal.css`, the complete code is [here](https://github.com/master-co/css/tree/beta/packages/normal.css)
+
+If you want to stay lazy, you can use it without even knowing the behavior behind it!
+
+### Geometric precision rendering for prettier text
+```css
+* {
+    text-rendering: geometricPrecision;
+}
+```
+            
+### Antialiased font smoothing looks great
+```css
+body {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}
+```
+            
+### Remove margins and padding from certain elements
+```css
+body, blockquote, dl, dd, h1, h2, h3, h4, h5, h6, hr, figure, p, button, optgroup, select, textarea, pre {
+    margin: 0;
+}
+
+td, legend, textarea, input, fieldset {
+    padding: 0;
+}
+
+ul, ol {
+    margin: 0;
+    padding: 0;
+}
+```
+            
+### Uniform box sizing calculation
+```css
+*, ::before, ::after {
+    box-sizing: border-box;
+}
+```
+            
+### Neutral typography and formatting
+```css
+body {
+    line-height: 1.2;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -moz-tab-size: 4;
+    tab-size: 4;
+}
+
+b, strong {
+    font-weight: bolder;
+}
+
+small {
+    font-size: 80%;
+}
+
+sub, sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+sup {
+    top: -0.5em;
+}
+
+ul {
+    list-style: none;
+}
+
+hr {
+    height: 0;
+    color: inherit;
+}
+```
+            
+### Preset some elements
+```css
+img, svg, video, canvas, audio, iframe, embed, object {
+    display: block;
+}
+```

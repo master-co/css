@@ -1,0 +1,25 @@
+## Overview [sr-only]
+<Overview/>
+
+## Basic usage
+### Inset
+Use `inset:offset` to set the distance between the element and its parent element.
+<Demo>
+    <div className="bg-stripe-pink">
+        <div className="box w:180 aspect-ratio:1/1 inset:20 rel">`inset:20`</div>
+    </div>
+</Demo>
+```html
+<div>
+    <div class="rel inset:20">inset:20</div>
+</div>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="inset:10**:hover** inset:10**@sm** inset:10**@dark** inset:10**@print**">…</div>
+```
+

@@ -1,0 +1,181 @@
+<StaticExtractionIntro img={{
+    src: "/images/laravel-dev.png",
+    alt: 'Laravel and Master CSS',
+    width: 665, height: 400, hasDark: true }} />
+
+---
+
+## Quick start
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Clone the example
+            Copy-paste the following commands to quickly start using the [example](https://github.com/master-co/css/tree/beta/examples/laravel-with-static-extraction).
+
+            You can skip all [installation](#installation) steps.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx degit master-co/css/examples/laravel-with-static-extraction __my-project__
+            cd __my-project__
+            npm install @master/css-extractor.vite@beta
+            npm install
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Launch server
+            Run Laravel and Vite development servers by splitting two terminals.
+        </StepL>
+        <StepR>
+            <CodeTabs>
+                {[
+                    {
+                        name: 'PHP',
+                        lang: 'bash',
+                        code: `php artisan serve`
+                    },
+                    {
+                        name: 'Vite',
+                        lang: 'bash',
+                        code: `npm run dev`
+                    }
+                ]}
+            </CodeTabs>
+        </StepR>
+        <StepEnd/>
+    </Step>
+</StepSection>
+
+---
+
+## Installation
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have a Laravel project, create one first. It's recommended to refer to [Installation - Laravel](https://laravel.com/docs/10.x)
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            composer create-project laravel/laravel __example-app__
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS Extractor into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css-extractor.vite@beta**
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Initialize configuration file
+            Run `npx mcss init` to create a configuration file [master.css.js](/docs/configuration).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx mcss init
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS extractor
+            Add a `CSSExtractorPlugin` to the `vite.config.js` and include view sources.
+        </StepL>
+        <StepR>
+            ```js name=vite.config.js
+            import { defineConfig } from 'vite'
+            import laravel from 'laravel-vite-plugin'
+            +import { CSSExtractorPlugin } from '@master/css-extractor.vite'
+
+            export default defineConfig({
+                plugins: [
+                    laravel({
+                        input: ['resources/css/app.css', 'resources/js/app.js'],
+                        refresh: true,
+                    }),
+            +        CSSExtractorPlugin({
+            +            sources: ['resources/views/**/*.php']
+            +        })
+                ],
+            })
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Import virtual CSS module
+            Import the virtual CSS module `.virtual/master.css` into the `resources/js/app.js`.
+        </StepL>
+        <StepR>
+            ```js name=resources/js/app.js
+            import './bootstrap'
+            +import '.virtual/master.css'
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up your view layout
+            Import the entry by adding `@vite('resources/js/app.js')` in your `resources/views/layouts/welcome.blade.php`
+        </StepL>
+        <StepR>
+            ```html name=resources/views/layouts/welcome.blade.php
+            <!DOCTYPE html>
+            <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+                <head>
+                    …
+            +        @vite('resources/js/app.js')
+                </head>
+                …
+            </html>
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Launch server
+            Run Laravel and Vite development servers by splitting two terminals.
+        </StepL>
+        <StepR>
+            <CodeTabs>
+                {[
+                    {
+                        name: 'PHP',
+                        lang: 'bash',
+                        code: `php artisan serve`
+                    },
+                    {
+                        name: 'Vite',
+                        lang: 'bash',
+                        code: `npm run dev`
+                    }
+                ]}
+            </CodeTabs>
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Hello world!
+        Now style your first element using Master CSS syntax!
+        ```html name=resources/views/layouts/welcome.blade.php
+        …
+        <body>
+            <h1 class="**font:40** **font:heavy** **italic** **m:50** **text:center**"> 
+                Hello World 
+            </h1>
+        </body>
+        …
+        ```
+        <p className="mt:50">Open your browser to watch the changes.</p>
+        <HelloWorld url="127.0.0.1:8000" />
+    </Step>
+</StepSection>

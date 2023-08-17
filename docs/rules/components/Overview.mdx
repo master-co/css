@@ -1,0 +1,20 @@
+```js name=master.css.js
+export default {
+    rules: {
+        fontSize: { 
+            values: {
+                sm: 14
+            }
+        },
+        maxWidth: {
+            values: {
+                md: 1024
+            }
+        }
+    }
+}
+```
+Apply it using Master CSS syntax:
+```html
+<div class="font:**sm** max-w:**md**"></div>
+```

@@ -1,0 +1,169 @@
+<StaticExtractionIntro img={{
+    href: "https://nextjs.se.beta.css.master.co",
+    src: "/images/nextjs-dev.png",
+    alt: 'Next.js and Master CSS',
+    width: 665, height: 400, hasDark: true }} />
+
+---
+
+## Quick start
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Clone the example
+            Copy-paste the following commands to quickly start using the [nextjs.se.beta.css.master.co](https://nextjs.se.beta.css.master.co).
+
+            You can skip all [installation](#installation) steps.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx degit master-co/css/examples/next.js-with-static-extraction __my-project__
+            cd __my-project__
+            npm install @master/css.react@beta
+            npm install
+            npm run dev
+            ```
+        </StepR>
+        <StepEnd/>
+    </Step>
+</StepSection>
+
+---
+
+## Installation
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a Next.js project
+            If you don't have a Next.js project, create one first. It's recommended to refer to [Create Next App](https://nextjs.org/docs/api-reference/create-next-app).
+        </StepL>
+        <StepR>
+            <CodeTabs>
+                {[
+                    {
+                        name: 'Terminal',
+                        lang: 'bash',
+                        code: `
+                            npx create-next-app@latest --experimental-app --ts
+                            cd __project__
+                        `
+                    },
+                    {
+                        name: 'Terminal (pages/)',
+                        lang: 'bash',
+                        code: `
+                            npx create-next-app@latest --ts
+                            cd __project__
+                        `
+                    }
+                ]}
+            </CodeTabs>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install the Master CSS extractor into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css-extractor.webpack@beta**
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Initialize configuration file
+            Run `npx mcss init` to create a configuration file [master.css.ts](/docs/configuration).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx mcss init
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS extractor
+            - Define a `webpackConfig` and add a `CSSExtractorPlugin` in `next.config.js`
+            - Concat the `webpackConfig.plugins`
+
+            (!) `CSSExtractorPlugin` cannot be created directly in `nextConfig`, this will result in multiple instances.
+        </StepL>
+        <StepR>
+            ```js name=next.config.js
+            +const { CSSExtractorPlugin } = require('@master/css-extractor.webpack')
+
+            +/** @type {import('webpack').Configuration} */
+            +const webpackConfig = {
+            +    plugins: [
+            +        new CSSExtractorPlugin()
+            +    ]
+            +}
+
+            /** @type {import('next').NextConfig} */
+            const nextConfig = {
+            +    webpack: (config) => {
+            +        config.plugins.concat(webpackConfig.plugins)
+            +        return config
+            +    }
+            }
+
+            module.exports = nextConfig
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Import virtual CSS module
+            Import the virtual CSS module `.virtual/master.css` into the `app/globals.css`.
+        </StepL>
+        <StepR>
+            <CodeTabs>
+                {[
+                    {
+                        name: 'app/globals.css',
+                        lang: 'css',
+                        code: `
+                            +@import '.virtual/master.css';
+                            …
+                        `
+                    },
+                    {
+                        name: 'styles/globals.css',
+                        lang: 'css',
+                        code: `
+                            +@import '.virtual/master.css';
+                            …
+                        `
+                    }
+                ]}
+            </CodeTabs>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Launch server
+            Run `npm run dev` to start your Next.js development server
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm run dev
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first element using Master CSS syntax!
+        ```tsx name=app/page.tsx
+        export default function Home() {
+            return (
+                <h1 className="**font:40** **font:heavy** **italic** **m:50** **text:center**">Hello World</h1>
+            )
+        }
+        ```
+        <p className="mt:50">Open your browser to watch the changes.</p>
+        <HelloWorld url="localhost:3000" />
+    </Step>
+</StepSection>

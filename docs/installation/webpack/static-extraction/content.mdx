@@ -1,0 +1,182 @@
+<StaticExtractionIntro img={{
+    href: "https://webpack.se.beta.css.master.co",
+    src: "/images/webpack-dev.png",
+    alt: 'Webpack and Master CSS',
+    width: 665, height: 400, hasDark: true }} />
+
+---
+
+## Quick start
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Clone the example
+            Copy-paste the following commands to quickly start using the [webpack.se.beta.css.master.co](https://webpack.se.beta.css.master.co).
+
+            You can skip all [installation](#installation) steps.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx degit master-co/css/examples/webpack-with-static-extraction __my-project__
+            cd __my-project__
+            npm install @master/css@beta
+            npm install
+            npm run dev
+            ```
+        </StepR>
+        <StepEnd/>
+    </Step>
+</StepSection>
+
+---
+
+## Installation
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have a Webpack project, create one first. It's recommended to refer to [Getting Started - Webpack](https://webpack.js.org/guides/getting-started)
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            mkdir project
+            cd project
+            npm init -y
+            npm install webpack webpack-cli webpack-dev-server html-webpack-plugin css-loader style-loader ts-loader --save-dev
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS Extractor
+            Install the Master CSS extractor into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css-extractor.webpack@beta**
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Initialize configuration file
+            Run `npx mcss init` to create a configuration file [master.css.ts](/docs/configuration).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx mcss init
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a Webpack config file
+            Create and configure the `webpack.config.js` file.
+        </StepL>
+        <StepR>
+            ```js name=webpack.config.js
+            + const path = require('path')
+            + const HtmlWebpackPlugin = require('html-webpack-plugin')
+            + const { CSSExtractorPlugin } = require('@master/css-extractor.webpack')
+
+            + module.exports = {
+            +     entry: './src/index.js',
+            +     output: {
+            +         filename: 'bundle.js',
+            +         path: path.join(__dirname, 'dist')
+            +     },
+            +     plugins: [
+            +         new HtmlWebpackPlugin({
+            +             template: path.join(__dirname, 'src/index.html')
+            +         }),
+            +         new CSSExtractorPlugin({ sources: ['./src/index.html'] })
+            +     ],
+            +     devServer: {
+            +         watchFiles: ['src/**/*']
+            +     },
+            +     module: {
+            +         rules: [
+            +             { test: /\.css$/, use: ['style-loader', 'css-loader'] }
+            +         ]
+            +     }
+            + }
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Configure a HTML file
+            Create and configure the `src/index.html` file.
+        </StepL>
+        <StepR>
+            ```html name=src/index.html
+            +<!doctype html>
+            +<html lang="en">
+            +<head>
+            +    <meta charset="utf-8" />
+            +</head>
+            +<body>
+            +    <h1>Hello World</h1>
+            +</body>
+            +</html>
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Import virtual CSS module
+            Import the virtual CSS module `.virtual/master.css` into the `src/index.js`.
+        </StepL>
+        <StepR>
+            ```js name=src/index.js
+            + import '.virtual/master.css';
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Add scripts to `package.json`
+            Add `start` and `build` scripts to standardize the development process.
+        </StepL>
+        <StepR>
+            ```js name=package.json
+            {
+                "scripts": {
+            +        "dev": "webpack serve --mode development",
+            +        "build": "webpack --mode production"
+                }
+            }
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Launch server
+            Run the development server.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm run dev
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Hello world!
+        Now style your first element using Master CSS syntax!
+        ```html name=src/index.html
+        <!doctype html>
+        <html lang="en">
+        <head>
+            <meta charset="utf-8" />
+            <script src="./index.js"></script>
+        </head>
+        <body>
+            <h1 class="**font:40** **font:heavy** **italic** **m:50** **text:center**">Hello World</h1>
+        </body>
+        </html>
+        ```
+        <p className="mt:50">Open your browser to watch the changes.</p>
+        <HelloWorld url="localhost:3000" />
+    </Step>
+</StepSection>

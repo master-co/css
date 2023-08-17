@@ -1,0 +1,18 @@
+```js name=master.css.js
+export default {
+    animations: {
+        'slide-in-up': {
+            from: {
+                transform: 'translateY(100%)'
+            },
+            to: {
+                transform: 'translateY(0)'
+            }
+        }
+    }
+}
+```
+Apply the custom animation using [animation syntax](/docs/animation):
+```html
+<div class="**@slide-in-up|.5s**"></div>
+```

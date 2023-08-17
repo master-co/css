@@ -1,0 +1,48 @@
+## Overview [sr-only]
+<Overview/>
+
+## Basic usage
+### Set the break inside behavior
+Use `break-inside:value` to set how breaks should behave inside a generated box.
+<Demo>
+    <ul className="cols:2 w:200_:where(li) m:0!_:where(li:first-child) p:0">
+        <li className="box h:90">1</li>
+        <li className="box h:70 break-inside:avoid">2</li>
+        <li className="box h:90">3</li>
+        <li className="box h:40">4</li>
+    </ul>
+</Demo>
+```html
+<ul class="cols:2">
+    <li class="h:90">1</li>
+    <li class="h:70 **break-inside:avoid**">2</li>
+    <li class="h:90">3</li>
+    <li class="h:40">4</li>
+</ul>
+```
+Before setting the `break-inside:avoid`, the item is break within the list. It looks like this:
+<Demo>
+    <ul className="cols:2 w:200_:where(li) m:0!_:where(li:first-child) p:0">
+        <li className="box h:90">1</li>
+        <li className="box h:70">2</li>
+        <li className="box h:90">3</li>
+        <li className="box h:40">4</li>
+    </ul>
+</Demo>
+```html
+<ul class="cols:2">
+    <li class="h:90">1</li>
+    <li class="h:70">2</li>
+    <li class="h:90">3</li>
+    <li class="h:40">4</li>
+</ul>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="break-inside:avoid**:hover** break-inside:avoid**@sm** break-inside:avoid**@dark** break-inside:avoid**@print**">…</div>
+```
+

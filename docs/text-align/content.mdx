@@ -1,0 +1,39 @@
+## Overview [sr-only]
+<Overview/>
+
+### Align contents to the left
+Use `text:left` to align contents to the left.
+<Basic className="text:left" />
+```html
+<p class="**text:left**">Lorem ipsum dolor sit amet …</p>
+```
+
+### Align contents to the right
+Use `text:right` to align contents to the right.
+<Basic className="text:right" />
+```html
+<p class="**text:right**">Lorem ipsum dolor sit amet …</p>
+```
+
+### Center contents
+Use `text:center` to center contents.
+<Basic className="text:center" />
+```html
+<p class="**text:center**">Lorem ipsum dolor sit amet …</p>
+```
+
+### Align contents to the left and right
+Use `text:justify` to align contents to the left and right.
+<Basic className="text:justify" />
+```html
+<p class="**text:justify**">Lorem ipsum dolor sit amet …</p>
+```
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="text:left**:hover** text:left**@sm** text:left**@dark** text:left**@print**">…</div>
+```
+

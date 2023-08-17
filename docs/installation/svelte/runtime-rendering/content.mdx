@@ -1,0 +1,123 @@
+<RuntimeRenderingIntro img={{
+    href: "https://svelte.rr.beta.css.master.co",
+    src: "/images/svelte-dev.png",
+    alt: 'Svelte and Master CSS',
+    width: 665, height: 400, hasDark: true }} />
+
+---
+
+## Quick start
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Clone the example
+            Copy-paste the following commands to quickly start using the [svelte.rr.beta.css.master.co](https://svelte.rr.beta.css.master.co).
+
+            You can skip all [installation](#installation) steps.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx degit master-co/css/examples/svelte-with-runtime-rendering __my-project__
+            cd __my-project__
+            npm install @master/css.svelte@beta
+            npm install
+            npm run dev -- --open
+            ```
+        </StepR>
+        <StepEnd/>
+    </Step>
+</StepSection>
+
+---
+
+## Installation
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have a Svelte project, create one first. It's recommended to refer to [Svelte Kit](https://kit.svelte.dev/).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create svelte@latest __project__
+            cd __project__
+            npm install
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS Svelte into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css.svelte@beta**
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Initialize configuration file
+            Run `npx mcss init` to create a configuration file [master.css.ts](/docs/configuration).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx mcss init
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS runtime engine
+            Register the `html <CSSProvider>` in `src/routes/+layout.svelte`.
+        </StepL>
+        <StepR>
+            ```svelte name=src/routes/+layout.svelte
+                <script>
+                +    import { CSSProvider } from "@master/css.svelte";
+                +    import config from '../master.css';
+                    import Header from "./Header.svelte";
+                    import "./styles.css";
+                </script>
+                +<CSSProvider config={config}>
+                    <div class="app">…</div>
+                +</CSSProvider>
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Avoid flash of unstyled content
+            Add `css display: 'none'` in `html <html>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) caused by the runtime engine not yet injecting CSS rules.
+        </StepL>
+        <StepR>
+            ```html name=src/app.html
+                <!DOCTYPE html>
+                <html lang="en" style="**display:none**">
+                …
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Launch server
+            Run `npm run dev -- --open` to start your Svelte development server
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm run dev -- --open
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first element using Master CSS syntax!
+        ```svelte name=src/routes/+page.svelte
+        +<h1 class="font:40 fg:blue font:heavy italic m:50 text:center">Hello World</h1>
+        ```
+        <p className="mt:50">Open your browser to watch the changes.</p>
+        <HelloWorld url="localhost:5173" />
+    </Step>
+</StepSection>

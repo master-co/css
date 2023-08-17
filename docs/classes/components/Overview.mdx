@@ -1,0 +1,18 @@
+```js name=master.css.js
+export default {
+    classes: {
+        card: {
+            '': 'bg:white r:8',
+            header: 'object:cover w:full',
+            content: 'p:15'
+        }
+    }
+}
+```
+Use them in HTML:
+```html
+<div class="card">
+    <img class="card-header" src="…" />
+    <div class="card-content"></div>
+</div>
+```

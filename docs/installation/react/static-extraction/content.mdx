@@ -1,0 +1,126 @@
+<StaticExtractionIntro img={{
+    href: "https://react.se.beta.css.master.co",
+    src: "/images/react-dev.png",
+    alt: 'Vite and Master CSS',
+    width: 665, height: 400, hasDark: true }} />
+
+---
+
+## Quick start
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Clone the example
+            Copy-paste the following commands to quickly start using the [react.se.beta.css.master.co](https://react.se.beta.css.master.co).
+
+            You can skip all [installation](#installation) steps.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx degit master-co/css/examples/react-with-static-extraction __my-project__
+            cd __my-project__
+            npm install @master/css-extractor.vite@beta
+            npm install
+            npm run dev
+            ```
+        </StepR>
+        <StepEnd/>
+    </Step>
+</StepSection>
+
+---
+
+## Installation
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have a React project, create one first. It's recommended to refer to [Start a New React Project](https://react.dev/learn/start-a-new-react-project).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create vite@latest __project__ -- --template react-ts
+            cd __project__
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS Extractor
+            Install the Master CSS extractor into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css-extractor.vite@beta**
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Initialize configuration file
+            Run `npx mcss init` to create a configuration file [master.css.ts](/docs/configuration).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npx mcss init
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS extractor
+            - Add a `CSSExtractorPlugin` to the vite `plugins`
+        </StepL>
+        <StepR>
+            ```ts name=vite.config.ts
+            import { defineConfig } from 'vite'
+            import react from '@vitejs/plugin-react'
+            +import { CSSExtractorPlugin } from '@master/css-extractor.vite'
+
+            export default defineConfig({
+                plugins: [
+                    react(),
+            +        CSSExtractorPlugin()
+                ],
+            })
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Import virtual CSS module
+            Import the virtual CSS module `.virtual/master.css` into the `main.tsx`.
+        </StepL>
+        <StepR>
+            ```tsx name=main.tsx
+            …
+            +import '.virtual/master.css';
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Launch server
+            Run the Vite development server.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm run dev -- --open
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Hello world!
+        Now style your first element using Master CSS syntax!
+        ```tsx name=src/App.tsx
+        export default function App() {
+            return (
+                <h1 className="**font:40** **font:heavy** **italic** **m:50** **text:center**">Hello World</h1>
+            )
+        }
+        ```
+        <p className="mt:50">Open your browser to watch the changes.</p>
+        <HelloWorld url="localhost:5173" />
+    </Step>
+</StepSection>

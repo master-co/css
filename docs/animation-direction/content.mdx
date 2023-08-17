@@ -1,0 +1,51 @@
+import { IconCircle } from '@tabler/icons-react'
+
+## Overview [sr-only]
+<Overview/>
+
+Simplify the native syntax using the derived symbol.
+```html
+-<div class="animation-direction:reverse">
++<div class="@direction:reverse">
+```
+
+---
+
+## Basic usage
+### Play forward
+The animation plays forward in each cycle.
+<Basic className="@direction:normal"/>
+
+### Play backward
+The animation plays backward in each cycle. For example, rotate counterclockwise.
+<Basic className="@direction:reverse"/>
+
+### Play alternately
+The animation **reverses direction each cycle** and **the first iteration plays forward**.
+<Basic className="@direction:alt"/>
+
+### Play alternately and reverse first
+The animation **reverses direction each cycle** and **the first iteration plays backward**.
+<Basic className="@direction:alt-reverse"/>
+
+### Fade out
+Reverse the [`@fade`](/docs/animation) animation so that you don't need to define a new keyframe for `fade-out`.
+<Demo>
+    <IconCircle className="app-icon-primary stroke:.5 @fade|1s|reverse|infinite" width="48" height="48" />
+</Demo>
+```html
+<svg class="**@fade|1s|reverse|infinite**">…</svg>
+```
+For one-shot animations, remove `infinite`.
+
+---
+
+## Conditionally apply
+Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+```html
+<div class="@direction:normal**:hover**">…</div>
+<div class="@direction:normal**@sm**">…</div>
+<div class="@direction:normal**@dark**">…</div>
+<div class="@direction:normal**@print**">…</div>
+```
+

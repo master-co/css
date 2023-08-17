@@ -1,0 +1,186 @@
+import ThemeButton from 'shared/components/ThemeButton'
+
+## Overview [sr-only]
+```html name=index.html
+<html class="**dark**" style="**color-scheme: dark**">
+    <body>
+        <h1 class="bg:black@dark ˟˟bg:white@light˟˟">Hello World</h1>
+    </body>
+</html>
+```
+
+In addition to helping you set the proper settings for theme switching, this service also provides:
+
+- **Set your theme as standard**
+- **Synchronize themes based on user system preferences**
+- **Store the theme switched by the user locally**
+
+Here's a practical demonstration of the current documentation theme switching:
+<Demo>
+    <ThemeButton />
+</Demo>
+
+---
+
+## Getting started
+Install the `theme-service` package via package managers.
+```install
+theme-service
+```
+Create a theme service in your application's entry or `./theme-service.js`.
+```js name=./theme-service.js
+import { init } from 'theme-service'
+
+export const themeService = init()
+```
+You can also choose when to initialize:
+```js name=./theme-service.js
+const themeService = new ThemeService()
+
+…
+
+themeService.init()
+```
+
+---
+
+## Basic usage
+
+### Default to the `dark` theme
+Set the default theme to standard dark mode.
+```js
+init({ default: 'dark' })
+```
+It adds `dark` class and `color-scheme: dark` style on `html <html>`:
+```html
+<html class="**dark**" style="**color-scheme: dark**">…</html>
+```
+
+### Default to the `light` theme
+Set the default theme to standard light mode.
+```js
+init({ default: 'light' })
+```
+It adds `light` class and `color-scheme: light` style on `html <html>`:
+```html
+<html class="**light**" style="**color-scheme: light**">…</html>
+```
+
+### Default to your custom theme
+Set the default theme to a custom theme that is not a CSS standard.
+```js
+init({ default: 'christmas' })
+```
+It adds `christmas` class on `html <html>`:
+```html
+<html class="**christmas**">…</html>
+```
+
+### Synchronize with the `system` by default
+Set the default theme with the user's system preference.
+```js
+init({ default: 'system' })
+```
+Assuming the user's system currently prefers a dark theme:
+```html
+<html class="**dark**" style="**color-scheme: dark**">…</html>
+```
+
+### Store the theme in `localStorage`
+By default, the user-switched theme is stored in `localStorage` via the key `theme`.
+```js
+init({ store: 'theme' })
+```
+To disable it by setting `false`.
+
+### Apply styles based on the current theme
+You can access the currently applied theme `themeService.current` to display UI.
+
+However, we recommend that you rely on CSS to avoid JavaScript dynamics that cause the page to flicker when it first loads.
+```html
+<div class="block@dark" hidden>Dark</div>
+<div class="block@light" hidden>Light</div>
+<div class="block@christmas" hidden>Christmas</div>
+```
+
+### Create a theme-switching select
+Typically, you provide a select for the user to choose according to their preference.
+```html
+<select id="theme-select">
+    <option value="dark">Dark</option>
+    <option value="light">Light</option>
+    <option value="system">System</option>
+</select>
+```
+Switch the theme on select value changes:
+```js
+import { init } from 'theme-service'
+
+const themeService = init()
+const themeSelect = document.getElementById('theme-select')
+
+themeSelect.value = themeService.value
+themeSelect.addEventListener('change', (event) => {
+    themeService.switch(event.target.value)
+})
+```
+The switching `themeService.value` is usually `light`, `dark`, or `system`.
+
+---
+
+## Options
+
+### `.default`
+Specify the default theme upon initialization.
+<DocProp defaultValue="undefined" types={["'dark'", "'light'", "'system'", "string"]} />
+
+### `.store`
+Enable and specify the key stored in `localStorage`.
+<DocProp defaultValue="'theme'" types={["string", "false"]} />
+When enabled, user-switched themes will be stored in `localStorage` and automatically synced when revisiting the page.
+
+---
+
+## Properties
+
+### `.current`
+Get the currently applied theme without `system`.
+<DocProp defaultValue="undefined" types={["string"]} />
+Typically you would display this value to the user.
+
+### `.value`
+Get the theme value.
+<DocProp defaultValue="undefined" types={["'dark'", "'light'", "'system'", "string"]} />
+
+### `.storage`
+Get the locally stored theme.
+<DocProp defaultValue="undefined" types={["string"]} />
+
+### `.systemCurrent`
+Get the theme applied by the current user's system preferences.
+<DocProp defaultValue="undefined" types={["string"]} />
+
+### `.switch()`
+Switch to the specified theme value.
+<DocFn>
+    {[
+        { name: 'value', type: ["'dark'", "'light'", "'system'", "string"], defaultValue: 'undefined' },
+        { name: 'return', type: 'string' },
+    ]}
+</DocFn>
+
+### `.init()`
+Create a `ThemeService` instance and initialize it.
+<DocFn>
+    {[
+        { name: 'return', type: 'this' },
+    ]}
+</DocFn>
+
+### `.destroy()`
+Destroy the theme service.
+<DocFn>
+    {[
+        { name: 'return', type: 'void' },
+    ]}
+</DocFn>
