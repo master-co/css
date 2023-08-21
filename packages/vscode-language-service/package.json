@@ -2,7 +2,7 @@
     "name": "master-css-vscode-language-service",
     "scripts": {
         "build": "techor pack --platform node",
-        "dev": "pnpm run build --watch",
+        "dev": "pnpm run build --watch --no-declare",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
         "deploy": "mv ../../package.json ../../_package.json && npm i vsce -D && vsce publish && mv ../../_package.json ../../package.json"

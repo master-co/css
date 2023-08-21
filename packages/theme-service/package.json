@@ -2,7 +2,7 @@
     "name": "theme-service",
     "scripts": {
         "build": "techor pack",
-        "dev": "pnpm run build --watch",
+        "dev": "pnpm run build --watch --no-declare",
         "test": "jest",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"

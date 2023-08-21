@@ -3,7 +3,7 @@
     "type": "module",
     "scripts": {
         "build": "techor pack './src/**/*.{ts,svelte}' --bundle --format esm --esm-ext .js --entry-names [dir]/[name]",
-        "dev": "pnpm run build --watch",
+        "dev": "pnpm run build --watch --no-declare",
         "type-check": "tsc --noEmit"
     },
     "license": "MIT",
