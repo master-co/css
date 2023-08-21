@@ -2,7 +2,7 @@
     "name": "@master/css-extractor.webpack",
     "scripts": {
         "build": "techor pack --platform node",
-        "dev": "pnpm run build --watch",
+        "dev": "pnpm run build --watch --no-declare",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
     },

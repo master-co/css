@@ -2,7 +2,7 @@
     "name": "@master/css-extractor",
     "scripts": {
         "build": "techor pack --platform node",
-        "dev": "pnpm run build --watch",
+        "dev": "pnpm run build --watch --no-declare",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
         "test": "jest"
