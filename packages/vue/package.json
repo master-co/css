@@ -51,6 +51,11 @@
             "require": "./dist/CSSProvider.js",
             "import": "./dist/CSSProvider.mjs",
             "types": "./dist/CSSProvider.d.ts"
+        },
+        "./ThemeServiceProvider": {
+            "require": "./dist/ThemeServiceProvider.js",
+            "import": "./dist/ThemeServiceProvider.mjs",
+            "types": "./dist/ThemeServiceProvider.d.ts"
         }
     },
     "files": [
@@ -63,7 +68,8 @@
         "vue": ">= 3.0.0"
     },
     "dependencies": {
-        "@master/css": "workspace:^"
+        "@master/css": "workspace:^",
+        "theme-service": "workspace:^"
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^4.2.3",
