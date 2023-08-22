@@ -26,7 +26,7 @@ function App() {
                     count is {count}
                 </button>
                 <button className="h:40 bg:gray-20@dark bg:slate-90@light ml:10 rel">
-                    {themeService?.current === 'dark' ? '🌜' : '☀️'} {themeService?.current}
+                    {themeService?.current === 'dark' ? '🌜' : '☀️'} {themeService?.value}
                     <select className="abs full inset:0 r:inherit opacity:0 font:inherit" value={themeService?.value} onChange={(event) => themeService?.switch(event.target.value)}>
                         <option value="light">☀️ Light</option>
                         <option value="dark">🌜 Dark</option>

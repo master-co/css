@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { type Options, type ThemeValue, ThemeService } from 'theme-service'
-import { onMounted, onBeforeUnmount, ref, provide } from 'vue'
+import { onMounted, onBeforeUnmount, ref, provide, readonly } from 'vue'
 
 const props = defineProps<{
     host?: HTMLElement,
@@ -9,21 +9,13 @@ const props = defineProps<{
 }>()
 
 const themeService = ref<ThemeService>()
-const content = ref<Partial<ThemeService> & { current?: string, value?: ThemeValue, switch: (value: ThemeValue, options?: { store?: boolean, emit?: boolean }) => void }>({ 
-    switch: (
-        value, 
-        // options
-    ) => {
-        if (themeService.value) {
-            themeService.value.switch(value)
-            content.value = { ...content.value, current: themeService.value.current, value: themeService.value.value }
-        }
-    }  
-})
+const current = ref<string>()
+const value = ref<ThemeValue>()
 
 const onThemeChange = () => {
     if (themeService.value) {
-        content.value = { ...content.value, current: themeService.value.current, value: themeService.value.value }
+        current.value = themeService.value.current
+        value.value = themeService.value.value
     }
 }
 
@@ -34,7 +26,8 @@ onMounted(() => {
     if (!themeService.value) {
         themeService.value = new ThemeService(props.options, props.host)
         themeService.value.init()
-        content.value = { ...content.value, ...themeService.value, current: themeService.value.current, value: themeService.value.value }
+        current.value = themeService.value.current
+        value.value = themeService.value.value
         themeService.value.host.addEventListener('themeChange', onThemeChange)
     }
 })
@@ -46,7 +39,20 @@ onBeforeUnmount(() => {
     }
 })
 
-provide('themeService', content)
+provide('theme-service', {
+    current: readonly(current),
+    value: readonly(value),
+    switch: readonly((
+        _value: ThemeValue, 
+        // options?: { store?: boolean, emit?: boolean }
+    ) => {
+        if (themeService.value) {
+            themeService.value.switch(_value)
+            current.value = themeService.value.current
+            value.value = themeService.value.value
+        }
+    })
+})
 
 </script>
 
