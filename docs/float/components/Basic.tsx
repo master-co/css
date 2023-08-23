@@ -20,7 +20,7 @@ export default ({ className }: any) => {
             </Demo>
             <Code lang="html">{`
                 <img class="**${className}**" … />
-                Lorem ipsum dolor sit amet …
+                <p>Lorem ipsum dolor sit amet …</p>
             `}</Code>
         </>
     )
