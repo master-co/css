@@ -6,7 +6,7 @@ export default () => (
     <Demo $py={0}>
         <div className="scale(1.1):hover ~transform|.2s">
             <Image
-                {...mobileImage}
+                src={mobileImage}
                 className="untouchable"
                 width="480"
                 height="319"
