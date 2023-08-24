@@ -1,7 +1,7 @@
 import { Metadata } from 'shared/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Configuration Setup',
+    title: 'Setup Configuration',
     description: 'An opinionated guide to Master CSS syntax, conventions, and file structure.',
     category: 'Design System',
     order: 1,
