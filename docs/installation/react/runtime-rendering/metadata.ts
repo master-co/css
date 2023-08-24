@@ -1,10 +1,9 @@
 import { Metadata } from 'shared/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Runtime Rendering in Vite',
-    description: 'Guide to setting up Master CSS Runtime Rendering in your Vite project.',
+    title: 'Runtime Rendering in React',
+    description: 'Guide to setting up Master CSS runtime rendering in your React project.',
     category: 'Guides',
-    unfinished: true,
     ogImageTitle: 'Runtime Rendering',
     ogImageIcon: 'shared/images/frameworks/react.svg',
     ogImageIconWidth: 192

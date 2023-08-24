@@ -4,7 +4,6 @@ const metadata: Metadata = {
     title: 'Runtime Rendering in Svelte',
     description: 'Guide to setting up Master CSS runtime rendering in your Svelte project.',
     category: 'Guides',
-    unfinished: true,
     ogImageTitle: 'Runtime Rendering',
     ogImageIcon: 'shared/images/frameworks/svelte.svg',
     ogImageIconWidth: 192

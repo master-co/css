@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'A guide to fully authoring your configuration package.',
     category: 'Design System',
     order: 1,
-    unfinished: true
+    disabled: true
 }
 
 export default metadata
