@@ -13,7 +13,9 @@ export default ({ className }: any) => {
                 {className === '@direction:normal' && <IconRotateClockwise className={iconClassName} />}
                 {className === '@direction:reverse' && <IconRotate className={iconClassName} />}
                 {className === '@direction:alternate' && <IconRefresh className={iconClassName} />}
+                {className === '@direction:alt' && <IconRefresh className={iconClassName} />}
                 {className === '@direction:alternate-reverse' && <IconRefresh className={iconClassName} />}
+                {className === '@direction:alt-reverse' && <IconRefresh className={iconClassName} />}
             </Demo>
             <Code lang="html">{`
                 <svg class="**${className}** @rotate|1s|linear|infinite">…</svg>

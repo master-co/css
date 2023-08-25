@@ -1,11 +1,10 @@
 import { Metadata } from 'shared/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Authoring',
+    title: 'Authoring Configuration',
     description: 'A guide to fully authoring your configuration package.',
     category: 'Design System',
-    order: 1,
-    unfinished: true
+    disabled: true
 }
 
 export default metadata

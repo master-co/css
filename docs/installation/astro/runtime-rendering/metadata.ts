@@ -1,10 +1,9 @@
 import { Metadata } from 'shared/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Runtime Rendering in Next.js',
-    description: 'Guide to setting up Master CSS Runtime Rendering in your Next.js project.',
+    title: 'Runtime Rendering in Astro',
+    description: 'Guide to setting up Master CSS runtime rendering in your Astro project.',
     category: 'Guides',
-    unfinished: true,
     ogImageTitle: 'Runtime Rendering',
     ogImageIcon: 'shared/images/frameworks/astro.svg',
     ogImageIconWidth: 256

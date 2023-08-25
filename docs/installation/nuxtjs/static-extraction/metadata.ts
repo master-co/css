@@ -1,10 +1,9 @@
 import { Metadata } from 'shared/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Static Extraction in Next.js',
-    description: 'Guide to setting up Master CSS Static Extraction in your Next.js project.',
+    title: 'Static Extraction in Nuxt.js',
+    description: 'Guide to setting up Master CSS static extraction in your Nuxt.js project.',
     category: 'Guides',
-    unfinished: true,
     ogImageTitle: 'Static Extraction',
     ogImageIcon: 'shared/images/frameworks/nuxtjs.svg',
     ogImageIconWidth: 256
