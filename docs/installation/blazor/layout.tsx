@@ -11,7 +11,7 @@ export default async function Layout(props: any) {
             metadata={{
                 title: 'Set up Master CSS in Blazor',
                 description: 'Guide to setting up Master CSS in your Blazor project.',
-                category: 'Guides'
+                category: 'Installation'
             }}
             backOnClickCategory='/docs/installation'
             icon={{

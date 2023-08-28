@@ -11,7 +11,7 @@ export default async function Layout(props: any) {
             metadata={{
                 title: 'Set up Master CSS in Angular',
                 description: 'Guide to setting up Master CSS in your Angular project.',
-                category: 'Guides'
+                category: 'Installation'
             }}
             backOnClickCategory='/docs/installation'
             icon={{

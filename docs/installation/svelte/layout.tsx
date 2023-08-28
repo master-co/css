@@ -6,7 +6,7 @@ import SvelteSvg from 'shared/images/frameworks/svelte.svg'
 export const metadata = {
     title: 'Set up Master CSS in Svelte',
     description: 'Guide to setting up Master CSS in your Svelte project.',
-    category: 'Guides'
+    category: 'Installation'
 }
 
 export default async function Layout(props: any) {

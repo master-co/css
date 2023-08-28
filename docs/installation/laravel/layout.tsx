@@ -11,7 +11,7 @@ export default async function Layout(props: any) {
             metadata={{
                 title: 'Set up Master CSS in Laravel',
                 description: 'Guide to setting up Master CSS in your Laravel project.',
-                category: 'Guides'
+                category: 'Installation'
             }}
             backOnClickCategory='/docs/installation'
             icon={{
