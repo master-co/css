@@ -1,10 +1,10 @@
 import { Metadata } from 'shared/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Progressive Rendering in Astro',
-    description: 'Guide to setting up Master CSS progressive rendering in your Astro project.',
+    title: 'Runtime Rendering in Astro',
+    description: 'Guide to setting up Master CSS runtime rendering in your Astro project.',
     category: 'Installation',
-    ogImageTitle: 'Progressive Rendering',
+    ogImageTitle: 'Runtime Rendering',
     ogImageIcon: 'shared/images/frameworks/astro.svg',
     ogImageIconWidth: 256
 }

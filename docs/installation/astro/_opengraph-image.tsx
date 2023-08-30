@@ -10,6 +10,6 @@ export const runtime = 'nodejs'
 export default (props: Props) => create({
     props,
     metadata,
-    title: 'Progressive Rendering',
+    title: 'Runtime Rendering',
     icon: <Icon width="256" />
 })
