@@ -20,8 +20,8 @@ export default async function Layout(props: any) {
             }}
         >
             <Tabs className="mb:30">
-                <Tab href='/docs/installation/astro'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>
-                <Tab href='/docs/installation/astro/runtime-rendering'>{$('Runtime Rendering')}</Tab>
+                {/* <Tab href='/docs/installation/astro'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab> */}
+                <Tab href='/docs/installation/astro'>{$('Runtime Rendering')}</Tab>
                 <Tab href='/docs/installation/astro/static-extraction'>{$('Static Extraction')}</Tab>
             </Tabs>
             {props.children}

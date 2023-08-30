@@ -1,5 +1,5 @@
-<ProgressiveRenderingIntro img={{
-    href: "https://astro.pr.beta.css.master.co",
+<RuntimeRenderingIntro img={{
+    href: "https://astro.rr.beta.css.master.co",
     src: "/images/astro-dev.png",
     alt: 'Astro and Master CSS',
     width: 665, height: 400 }} />
@@ -11,15 +11,15 @@
     <Step $row>
         <StepL>
             ### <StepNum />Clone the example
-            Copy-paste the following commands to quickly start using the [astro.pr.beta.css.master.co](https://astro.pr.beta.css.master.co).
+            Copy-paste the following commands to quickly start using the [astro.rr.beta.css.master.co](https://astro.rr.beta.css.master.co).
 
             You can skip all [installation](#installation) steps.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npx degit master-co/css/examples/astro-with-progressive-rendering __my-project__
+            npx degit master-co/css/examples/astro-with-runtime-rendering __my-project__
             cd __my-project__
-            npm install @master/css.vue@beta @master/css-server.nitro@beta
+            npm install @master/css@beta
             npm install
             npm run dev
             ```
@@ -36,11 +36,11 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a project
-            If you don't have a Astro project, create one first. It's recommended to refer to [Get started with Astro](https://nuxt.com/docs/getting-started/installation).
+            If you don't have a Astro project, create one first. It's recommended to refer to [Getting Started - Astro](https://docs.astro.build/en/getting-started).
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npx nuxi@latest init __project__
+            npm create astro@latest __project__
             cd __project__
             ```
         </StepR>
@@ -48,11 +48,11 @@
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install Master CSS Vue and Server Nitro into your project via package managers.
+            Install Master CSS into your project via package managers.
         </StepL>
         <StepR>
             ```install
-            **@master/css.vue@beta** **@master/css-server.nitro@beta**
+            **@master/css@beta**
             ```
         </StepR>
     </Step>
@@ -70,40 +70,25 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS runtime engine
-            1. Dynamic `js import('@master/css.vue')`
-            2. Dynamic `js import('../master.css')`
-
-            `@master/css.vue` and `master.css.ts` will not be included in the page's initial JavaScript bundle.
+            Modify `src/layouts/Layout.astro`:
+            - Import your custom configuration `master.css.ts`
+            - Initialize the runtime engine
+            - Add `css display: none` to `html <html>` to [avoid FOUC](/docs/flash-of-unstyled-content)
         </StepL>
         <StepR>
-            ```html name=app.vue
-            <script setup lang="ts">
-            +import { defineAsyncComponent } from 'vue'
-            +const CSSProvider = defineAsyncComponent(async () => (await import('@master/css.vue')).CSSProvider)
-            </script>
-
-            <template>
-            +    <CSSProvider :config="import('./master.css')">
+            ```html name=src/layouts/Layout.astro
+            <html style="**display: none**">
+                <head>
                     …
-            +    </CSSProvider>
-            </template>
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up CSS pre-rendering
-            All CSS rules are pre-rendered and injected into HTML on the server side or at build time.
-            - Create `server/plugins/css-server.ts` file
-            - Create a Master CSS Server Nitro plugin
-        </StepL>
-        <StepR>
-            ```ts name=server/plugins/css-server.ts
-            +import { createCSSServerPlugin } from '@master/css-server.nitro'
-            +// @ts-expect-error allowImportingTsExtensions
-            +import config from '../../master.css.ts'
+            +        <script>
+            +            import { initRuntime } from "@master/css";
+            +            import config from "../../master.css";
 
-            +export default createCSSServerPlugin({ config })
+            +            initRuntime(config);
+            +        </script>
+                </head>
+                …
+            <html>
             ```
         </StepR>
     </Step>
@@ -121,10 +106,15 @@
     <Step>
         ### <StepNum />Start using Master CSS
         Now style your first element using Master CSS syntax!
-        ```html name=app.vue
-        <template>
-            <h1 class="**font:40** **font:heavy** **italic** **m:50** **text:center**">Hello World</h1>
-        </template>
+        ```html name=src/pages/index.astro
+        ---
+        import Layout from '../layouts/Layout.astro';
+        ---
+        <Layout title="Welcome to Astro.">
+            <main>
+                <h1 class="**font:40** **font:heavy** **italic** **m:50** **text:center**">Hello World</h1>
+            </main>
+        </Layout>
         ```
         <p className="mt:50">Open your browser to watch the changes.</p>
         <HelloWorld url="localhost:3000" />
