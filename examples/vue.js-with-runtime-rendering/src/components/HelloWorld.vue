@@ -4,7 +4,7 @@ import { ref, inject } from 'vue'
 const count = ref<number>(0)
 const themeService = inject<any>('theme-service')
 
-function changeTheme(event) {
+function changeTheme(event: any) {
     themeService.switch(event.target.value)
 }
 
