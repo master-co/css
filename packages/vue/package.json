@@ -6,10 +6,11 @@
         "build": "pnpm run build:main && pnpm run build:type",
         "dev": "pnpm run build:main --watch",
         "type-check": "vue-tsc --noEmit",
-        "lint": "eslint src"
+        "lint": "eslint src",
+        "test": "jest"
     },
     "license": "MIT",
-    "description": "Integrate Master CSS in React way",
+    "description": "Integrate Master CSS in Vue way",
     "author": "Aoyue Design LLC.",
     "funding": "https://docs.master.co/css/donate",
     "homepage": "https://css.master.co",
@@ -37,9 +38,9 @@
     ],
     "sideEffects": false,
     "main": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "module": "./dist/index.js",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
@@ -56,6 +57,24 @@
             "require": "./dist/ThemeServiceProvider.js",
             "import": "./dist/ThemeServiceProvider.mjs",
             "types": "./dist/ThemeServiceProvider.d.ts"
+        },
+        "./styled": {
+            "require": "./dist/styled.js",
+            "import": "./dist/styled.mjs",
+            "types": "./dist/styled.d.ts"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            ".": [
+                "./dist/index.d.ts"
+            ],
+            "CSSProvider": [
+                "./dist/CSSProvider.d.ts"
+            ],
+            "ThemeServiceProvider": [
+                "./dist/ThemeServiceProvider.d.ts"
+            ]
         }
     },
     "files": [
@@ -69,10 +88,15 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "theme-service": "workspace:^"
+        "@techor/one-liner": "^2.2.10",
+        "class-variant": "workspace:^",
+        "theme-service": "workspace:^",
+        "@techor/extend": "^2.5.4"
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^4.2.3",
+        "@vue/server-renderer": "^3.3.4",
+        "@vue/test-utils": "^2.4.1",
         "@vue/tsconfig": "^0.4.0",
         "typescript": "^5.1.6",
         "vite": "^4.4.9",
