@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ref, inject } from 'vue'
+import { styled } from '@master/css.vue'
 
 const count = ref<number>(0)
 const themeService = inject<any>('theme-service')
-
-function changeTheme(event: any) {
-    themeService.switch(event.target.value)
-}
+const Select = styled.select`abs full inset:0 r:inherit opacity:0 font:inherit`
 
 </script>
 
@@ -29,11 +27,11 @@ function changeTheme(event: any) {
         <button type="button" @click="count++">count is {{ count }}</button>
         <button className="h:40 bg:gray-20@dark bg:slate-90@light ml:10 rel">
             {{ themeService.current.value === 'dark' ? '🌜' : '☀️' }} {{ themeService.value.value }}
-            <select className="abs full inset:0 r:inherit opacity:0 font:inherit" v-bind="themeService.value" @change="changeTheme($event)">
+            <Select v-bind="themeService.value" @change="themeService.switch($event.target.value)">
                 <option value="light">☀️ Light</option>
                 <option value="dark">🌜 Dark</option>
                 <option value="system">System</option>
-            </select>
+            </Select>
         </button>
         <p>
             Edit

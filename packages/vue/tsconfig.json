@@ -37,7 +37,7 @@
         // <https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/#verbatimmodulesyntax>
         // Any imports or exports without a type modifier are left around. This is important for `<script setup>`.
         // Anything that uses the type modifier is dropped entirely.
-        "verbatimModuleSyntax": true,
+        // "verbatimModuleSyntax": true,
         // A few notes:
         // - Vue 3 supports ES2016+
         // - For Vite, the actual compilation target is determined by the
