@@ -93,9 +93,9 @@
             +    });
             </script>
 
-            +<CSSProvider config={import("../master.css")}>
-                …
-            +</CSSProvider>
+            +<svelte:component this={CSSProvider} config={import('../master.css')}>
+                    <div class="app"><slot /></div>
+            +</svelte:component>
             ```
         </StepR>
     </Step>
