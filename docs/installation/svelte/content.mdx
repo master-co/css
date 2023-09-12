@@ -79,7 +79,7 @@
             `@master/css.svelte` and `master.css.ts` will not be included in the page's initial JavaScript bundle.
         </StepL>
         <StepR>
-            ```svelte name=src/routes/+layout.svelte
+            ```svelte name=src/routes/%2Blayout.svelte
             <script lang="ts">
             +    import { onMount, type ComponentType } from "svelte";
             +    import { Fragment } from "@master/css.svelte";
@@ -132,7 +132,7 @@
     <Step>
         ### <StepNum />Start using Master CSS
         Now style your first element using Master CSS syntax!
-        ```svelte name=src/routes/+page.svelte
+        ```svelte name=src/routes/%2Bpage.svelte
         +<h1 class="font:40 fg:blue font:heavy italic m:50 text:center">Hello World</h1>
         ```
         <p className="mt:50">Open your browser to watch the changes.</p>
