@@ -16,7 +16,7 @@ jobs:
                 node-version: [18.17.0]
         steps:
             - name: Aron Actions
-              uses: 1aron/techor@v2.5.2
+              uses: 1aron/techor@v2.5.17
               with:
                   action: "check-pull-request-title"
               env:
