@@ -12,7 +12,7 @@
     });
 </script>
 
-<CSSProvider config={import("../master.css")}>
+<svelte:component this={CSSProvider} config={import("../master.css")}>
     <div class="app">
         <Header />
 
@@ -27,7 +27,7 @@
             </p>
         </footer>
     </div>
-</CSSProvider>
+</svelte:component>
 
 <style>
     .app {
