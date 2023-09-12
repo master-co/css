@@ -81,9 +81,9 @@
                     import Header from "./Header.svelte";
                     import "./styles.css";
                 </script>
-                +<CSSProvider config={config}>
-                    <div class="app">…</div>
-                +</CSSProvider>
+                +<svelte:component this={CSSProvider} config={import('../master.css')}>
+                    <slot />
+                +</svelte:component>
             ```
         </StepR>
     </Step>
