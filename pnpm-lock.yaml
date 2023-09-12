@@ -5959,7 +5959,7 @@ packages:
       '@angular/core': 16.0.0(rxjs@7.8.0)(zone.js@0.13.0)
       critters: 0.0.16
       jsdom: 22.0.0
-      tslib: 2.4.1
+      tslib: 2.6.1
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -8807,7 +8807,7 @@ packages:
       chalk: 4.1.2
       jsdom: 16.7.0
       object-path: 0.11.8
-      tslib: 2.4.1
+      tslib: 2.6.1
       typescript: 5.0.2
     transitivePeerDependencies:
       - bufferutil
@@ -16508,7 +16508,7 @@ packages:
     dependencies:
       copy-anything: 2.0.6
       parse-node-version: 1.0.1
-      tslib: 2.4.1
+      tslib: 2.6.1
     optionalDependencies:
       errno: 0.1.8
       graceful-fs: 4.2.11
@@ -21251,7 +21251,7 @@ packages:
   /rxjs@7.8.1:
     resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
     dependencies:
-      tslib: 2.4.1
+      tslib: 2.6.1
 
   /s.color@0.0.15:
     resolution: {integrity: sha512-AUNrbEUHeKY8XsYr/DYpl+qk5+aM+DChopnWOPEzn8YKzOhv4l2zH6LzZms3tOZP3wwdOyc0RmTciyi46HLIuA==}
@@ -24137,7 +24137,7 @@ packages:
         optional: true
     dependencies:
       '@types/node': 14.17.0
-      esbuild: 0.17.18
+      esbuild: 0.17.19
       less: 4.1.3
       postcss: 8.4.27
       rollup: 3.27.2
@@ -24172,7 +24172,7 @@ packages:
         optional: true
     dependencies:
       '@types/node': 20.4.8
-      esbuild: 0.17.18
+      esbuild: 0.17.19
       less: 4.1.3
       postcss: 8.4.27
       rollup: 3.27.2

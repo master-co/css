@@ -434,6 +434,9 @@ export class MasterCSS {
 
                         index += rule.natives.length - 1
 
+                        // animations
+                        this.handleRuleWithAnimationNames(rule)
+
                         rule.config.insert?.call(rule)
                     }
                 }
@@ -1170,67 +1173,7 @@ export class MasterCSS {
             }
 
             // animations
-            if (rule.animationNames) {
-                const sheet = this.style?.sheet
-                for (const eachKeyframeName of rule.animationNames) {
-                    if (Object.prototype.hasOwnProperty.call(this.keyframesMap, eachKeyframeName)) {
-                        this.keyframesMap[eachKeyframeName].count++
-                    } else {
-                        const native: RuleNative = {
-                            text: `@keyframes ${eachKeyframeName}{`
-                                + Object
-                                    .entries(this.animations[eachKeyframeName])
-                                    .map(([key, values]) => `${key}{${Object.entries(values).map(([name, value]) => name + ':' + value).join(';')}}`)
-                                    .join('')
-                                + '}',
-                            theme: ''
-                        }
-
-                        let keyframeRule: Rule
-                        if (Object.keys(this.keyframesMap).length) {
-                            (keyframeRule = this.rules[0]).natives.push(native)
-                        } else {
-                            this.rules.splice(
-                                0,
-                                0,
-                                keyframeRule = {
-                                    natives: [native],
-                                    get text() {
-                                        return this.natives.map((eachNative) => eachNative.text).join('')
-                                    }
-                                } as Rule
-                            )
-                        }
-
-                        if (sheet) {
-                            let nativeCssRule: CSSRule
-                            for (let i = 0; i < sheet.cssRules.length; i++) {
-                                const cssRule = sheet.cssRules[i]
-                                if (cssRule.constructor.name !== 'CSSKeyframesRule')
-                                    break
-
-                                if ((cssRule as CSSKeyframesRule).name === eachKeyframeName) {
-                                    nativeCssRule = cssRule
-                                    break
-                                }
-                            }
-
-                            if (nativeCssRule) {
-                                native.cssRule = nativeCssRule
-                            } else {
-                                const cssRuleIndex = keyframeRule.natives.length - 1
-                                sheet.insertRule(native.text, cssRuleIndex)
-                                native.cssRule = sheet.cssRules[cssRuleIndex]
-                            }
-                        }
-
-                        this.keyframesMap[eachKeyframeName] = {
-                            native,
-                            count: 1
-                        }
-                    }
-                }
-            }
+            this.handleRuleWithAnimationNames(rule)
 
             rule.config.insert?.call(rule)
         }
@@ -1399,6 +1342,70 @@ export class MasterCSS {
         }
 
         return extendedConfig
+    }
+
+    private handleRuleWithAnimationNames(rule: Rule) {
+        if (rule.animationNames) {
+            const sheet = this.style?.sheet
+            for (const eachKeyframeName of rule.animationNames) {
+                if (Object.prototype.hasOwnProperty.call(this.keyframesMap, eachKeyframeName)) {
+                    this.keyframesMap[eachKeyframeName].count++
+                } else {
+                    const native: RuleNative = {
+                        text: `@keyframes ${eachKeyframeName}{`
+                            + Object
+                                .entries(this.animations[eachKeyframeName])
+                                .map(([key, values]) => `${key}{${Object.entries(values).map(([name, value]) => name + ':' + value).join(';')}}`)
+                                .join('')
+                            + '}',
+                        theme: ''
+                    }
+
+                    let keyframeRule: Rule
+                    if (Object.keys(this.keyframesMap).length) {
+                        (keyframeRule = this.rules[0]).natives.push(native)
+                    } else {
+                        this.rules.splice(
+                            0,
+                            0,
+                            keyframeRule = {
+                                natives: [native],
+                                get text() {
+                                    return this.natives.map((eachNative) => eachNative.text).join('')
+                                }
+                            } as Rule
+                        )
+                    }
+
+                    if (sheet) {
+                        let nativeCssRule: CSSRule
+                        for (let i = 0; i < sheet.cssRules.length; i++) {
+                            const cssRule = sheet.cssRules[i]
+                            if (cssRule.constructor.name !== 'CSSKeyframesRule')
+                                break
+
+                            if ((cssRule as CSSKeyframesRule).name === eachKeyframeName) {
+                                nativeCssRule = cssRule
+                                break
+                            }
+                        }
+
+                        if (nativeCssRule) {
+                            native.cssRule = nativeCssRule
+                        } else {
+                            const cssRuleIndex = keyframeRule.natives.length - 1
+                            sheet.insertRule(native.text, cssRuleIndex)
+                            native.cssRule = sheet.cssRules[cssRuleIndex]
+                        }
+                    }
+
+                    this.keyframesMap[eachKeyframeName] = {
+                        native,
+                        count: 1
+                    }
+                }
+            }
+        }
     }
 }
 
