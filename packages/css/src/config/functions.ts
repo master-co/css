@@ -61,7 +61,7 @@ const functions: Functions = {
                                     + (functionConfig.name ?? newFunctionName)
                                     + '('
                                     // @ts-ignore
-                                    + (functionConfig.transform?.(functionValue) ?? functionValue)
+                                    + (functionConfig.transform?.call(instance, functionValue) ?? functionValue)
                                     + ')'
                             }
                         }
