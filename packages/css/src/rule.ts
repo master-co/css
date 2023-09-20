@@ -3,6 +3,7 @@ import type { MasterCSS } from './core'
 import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'shared/utils/css-escape'
 import { extend } from '@techor/extend'
+import { transformColorWithOpacity } from './functions/transform-color-with-opacity'
 
 const defaultConfig: RuleConfig = {
     unit: '',
@@ -620,20 +621,9 @@ export class Rule {
                                                 anyColorMatched = anyMatched
                                             }
 
-                                            let newValue = color
-                                            if (opacityStr) {
-                                                let opacity = opacityStr.endsWith('%')
-                                                    ? parseFloat(opacityStr) / 100.0
-                                                    : +opacityStr
-
-                                                opacity = isNaN(opacity)
-                                                    ? 1
-                                                    : Math.min(Math.max(opacity, 0), 1)
-
-                                                newValue += Math.round(opacity * 255).toString(16).toUpperCase().padStart(2, '0')
-                                            }
-
-                                            return prefix + newValue
+                                            return prefix + (opacityStr
+                                                ? transformColorWithOpacity(color, opacityStr)
+                                                : color)
                                         } else {
                                             anyColorMismatched = true
                                         }
