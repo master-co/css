@@ -1,6 +1,6 @@
 import { extend } from '@techor/extend'
 import { Rule, RuleMeta, RuleNative } from './rule'
-import type { Colors, Config, Animations } from './config'
+import type { Colors, Config, Animations, Values } from './config'
 import { config as defaultConfig } from './config'
 import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
@@ -19,6 +19,7 @@ export interface MasterCSS {
     themeNames: string[]
     classesBy: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>
+    fonts: Record<string, string>
     values: Record<string, Record<string, string | number>>
     globalValues: Record<string, string | number>
     viewports: Record<string, number>
@@ -58,11 +59,11 @@ export class MasterCSS {
         } else {
             this.config = this.getExtendedConfig(this.config)
         }
-        this.cache()
+        this.resolve()
         MasterCSS.instances.push(this)
     }
 
-    cache() {
+    resolve() {
         this.semantics = []
         this.classes = {}
         this.colorThemesMap = {}
@@ -70,6 +71,7 @@ export class MasterCSS {
         this.themeNames = ['']
         this.selectors = {}
         this.values = {}
+        this.fonts = {}
         this.globalValues = {}
         this.viewports = {}
         this.mediaQueries = {}
@@ -77,7 +79,7 @@ export class MasterCSS {
         this.keyframesMap = {}
         this.animations = {}
 
-        const { semantics, classes, selectors, colors, values, viewports, mediaQueries, rules, animations } = this.config
+        const { semantics, classes, selectors, colors, values, viewports, mediaQueries, rules, animations, fonts } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -111,15 +113,19 @@ export class MasterCSS {
 
             return newData
         }
-        function addNegativeValues(values: Record<string, string | number>) {
-            for (const [name, value] of Object.entries(values)) {
-                if (/^[0-9]+x$/.test(name) && typeof value === 'number') {
-                    values['-' + name] = value * -1
+        const resolveValues = (values: Values) => {
+            if (typeof values === 'function') {
+                return getFlatData(values(this), false)
+            } else {
+                values = getFlatData(values, false)
+                for (const [name, value] of Object.entries(values)) {
+                    if (typeof value === 'number' && /^[0-9]+x$/.test(name)) {
+                        values['-' + name] = value * -1
+                    }
                 }
+                return values as Record<string, string | number>
             }
-            return values
         }
-
         if (semantics) {
             for (const [semanticName, semanticValue] of Object.entries(getFlatData(semantics, true))) {
                 const newSemanticValue = {}
@@ -152,10 +158,18 @@ export class MasterCSS {
             }
         }
         if (values) {
-            this.globalValues = addNegativeValues(getFlatData(values, false))
+            this.globalValues = resolveValues(values)
         }
         if (viewports) {
             this.viewports = getFlatData(viewports, false)
+        }
+        if (fonts) {
+            for (const fontName in fonts) {
+                const fontValue = fonts[fontName]
+                this.fonts[fontName] = Array.isArray(fontValue)
+                    ? fontValue.join(',')
+                    : fontValue as string
+            }
         }
         if (mediaQueries) {
             this.mediaQueries = getFlatData(mediaQueries, false)
@@ -308,7 +322,7 @@ export class MasterCSS {
                 eachRuleConfig.id = id
                 eachRuleConfig.native = native === true ? id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase() : undefined
                 if (values) {
-                    this.values[id] = addNegativeValues(getFlatData(values, false))
+                    this.values[id] = resolveValues(values)
                 }
                 if (match) {
                     const valueNames = Object.keys(this.values[id] ?? {})
@@ -739,7 +753,7 @@ export class MasterCSS {
         } else {
             this.config = this.getExtendedConfig(config)
         }
-        this.cache()
+        this.resolve()
         if (!this.style) {
             return
         }

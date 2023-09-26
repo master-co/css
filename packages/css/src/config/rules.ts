@@ -189,11 +189,7 @@ const defaultRules = {
     fontFamily: {
         match: '^f(?:ont)?:(?:$values)(?!\\|)',
         native: true,
-        values: {
-            mono: 'ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace',
-            sans: 'ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
-            serif: 'ui-serif,Georgia,Cambria,Times New Roman,Times,serif'
-        }
+        values: ({ fonts }) => fonts
     } as RuleConfig,
     fontSmoothing: {
         match: '^f(?:ont)?:(?:antialiased|subpixel-antialiased|$values)(?!\\|)',
@@ -228,7 +224,16 @@ const defaultRules = {
     font: {
         match: '^f:.',
         native: true,
-        order: -1
+        order: -1,
+        values: ({ fonts, config }) => {
+            return {
+                ...config.rules.fontSize.values,
+                ...config.rules.fontStyle.values,
+                ...config.rules.fontWeight.values,
+                ...config.rules.lineHeight.values,
+                ...fonts
+            }
+        }
     } as RuleConfig,
     color: {
         match: '^(?:color|fg|foreground):.',
@@ -351,7 +356,7 @@ const defaultRules = {
             '2xl': 1600,
             '3xl': 1920,
             '4xl': 2560
-        } as RuleConfig,
+        },
         unit: 'rem',
         native: true,
     } as RuleConfig,
@@ -1260,7 +1265,7 @@ const defaultRules = {
         colored: true,
         values: {
             current: 'currentColor'
-        } as RuleConfig,
+        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1275,7 +1280,7 @@ const defaultRules = {
         colored: true,
         values: {
             current: 'currentColor'
-        } as RuleConfig,
+        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1290,7 +1295,7 @@ const defaultRules = {
         colored: true,
         values: {
             current: 'currentColor'
-        } as RuleConfig,
+        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1305,7 +1310,7 @@ const defaultRules = {
         colored: true,
         values: {
             current: 'currentColor'
-        } as RuleConfig,
+        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1362,7 +1367,7 @@ const defaultRules = {
         colored: true,
         values: {
             current: 'currentColor'
-        } as RuleConfig,
+        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1595,7 +1600,7 @@ const defaultRules = {
         values: {
             min: 'min-content',
             max: 'max-content'
-        } as RuleConfig,
+        },
         native: true
     } as RuleConfig,
     gridTemplateAreas: {
@@ -1760,7 +1765,7 @@ const defaultRules = {
         colored: true,
         values: {
             current: 'currentColor'
-        } as RuleConfig,
+        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1953,7 +1958,7 @@ const defaultRules = {
                 '-webkit-mask-image': value + unit
             }
         }
-    }
+    } as RuleConfig
 } as const
 
 const rules = defaultRules as Rules

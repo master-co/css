@@ -8,11 +8,13 @@ import functions, { type Functions } from './functions'
 import rootSize from './root-size'
 import scope from './scope'
 import override from './override'
+import fonts from './fonts'
 import important from './important'
 import themeDriver, { type ThemeDriver } from './theme-driver'
 import type { MediaQueries } from './media-queries'
 import type { Values } from './values'
 import type { Classes } from './classes'
+import type { Fonts } from './fonts'
 
 const config: Config = {
     viewports,
@@ -22,6 +24,7 @@ const config: Config = {
     selectors,
     semantics,
     rules,
+    fonts,
     override,
     important,
     functions,
@@ -38,6 +41,7 @@ export {
     selectors,
     semantics,
     rules,
+    fonts,
     override,
     important,
     functions,
@@ -51,6 +55,7 @@ export {
     Selectors,
     Semantics,
     Rules,
+    Fonts,
     Functions,
     Animations,
     ThemeDriver
@@ -65,6 +70,7 @@ export interface Config {
     selectors?: Selectors
     semantics?: Semantics
     values?: Values
+    fonts?: Fonts
     rules?: Rules
     rootSize?: number
     scope?: string
