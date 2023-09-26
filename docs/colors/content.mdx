@@ -3,24 +3,9 @@
 
 ---
 
-## Design tokens
-We've created a useful set of terminology references to help you tokenize your design system from a great starting point.
-
-| Term            | Description                                                                                        | Keywords                                 |
-|-----------------|----------------------------------------------------------------------------------------------------|------------------------------------------|
-| **brand**       | The brand color.                                                                                   |                                          |
-| **primary**     | The primary color.                                                                                 |                                          |
-| **secondary**   | The secondary color.                                                                               |                                          |
-| **base**        | The background color used for the overall webpage.                                                 |                                          |
-| **object**      | The background color used for cards and block elements.                                            |                                          |
-| **accent**      | Accent color, used to emphasize active links and states, creating a strong contrast with the background. |                                          |
-| **major**       | Major color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background. |                                          |
-| **neutral**     | Neutral color, a foreground color that harmonizes with the background.                             | text, navigation, subtitle, article, description |
-| **dim**         | Dim color, a foreground color that has shallow contrast with the background.                        | disabled, placeholder, silence, inactive, offline |
-   
-## Customization
-### Add your colors
-Add your color tokens using `HEX` color codes and extend the defaults.
+## Basic usage
+### Add a color
+Add your color tokens using hex codes and extend the defaults.
 ```js name=master.css.js
 export default {
     colors: {
@@ -29,7 +14,7 @@ export default {
     }
 }
 ```
-Apply them using syntax like [`fg:`](/docs/color).
+Apply them using color-related syntax like [`fg:`](/docs/color).
 ```html
 <div class="**fg:primary** …">
 <div class="**fg:secondary** …">
@@ -37,7 +22,20 @@ Apply them using syntax like [`fg:`](/docs/color).
 <div class="**fg:major** …">
 <div class="**fg:neutral** …">
 ```
-            
+
+### Add an alias
+Create an alias for a color to link its value to an existing color. This allows you to implement [design tokens](/docs/design-tokens) and makes managing design updates more efficient.
+```js name=master.css.js
+export default {
+    colors: {
++        primary: 'blue-60'
+    }
+}
+```
+For example, say you have multiple color tokens referencing the same color token. If that color needs updating, you would only need to update the source instead of manually updating every instance of the color.
+
+This is similar to [Figma's variables](https://help.figma.com/hc/en-us/articles/15145852043927-Create-and-manage-variables).
+
 ### Add color shades
 Sets multiple shades for a single color.
 ```js name=master.css.js
@@ -51,29 +49,15 @@ export default {
     }
 }
 ```
-(i) Default shade `''` will automatically inherit shade `50` if not specified.
-
-Apply them using syntax like [`fill:`](/docs/fill).
+Apply them using color-related syntax like [`fill:`](/docs/fill).
 ```html
-<svg class="**fill:primary** …">…</svg>
-<svg class="**fill:primary-20** …">…</svg>
+<svg class="**fill:primary-20** …">20</svg>
 ```
-You can fill unspecified shades like `1`, `2`, ... `99` with adjacent averages via the [`js fillColorScale(manualShades)`](/docs/core#fillcolorscale) function.
-```js name=master.css.js
-export default {
-    colors: {
-+        primary: fillColorScale({ 
-+            '': '#1192e8', // primary
-+            10: '#e5f6ff', // primary-10
-+            20: '#bae6ff'  // primary-20
-+        })
-    }
-}
+(i) Default shade `''` will automatically inherit shade `50` if not specified.
+```html
+<svg class="**fill:primary** …">50</svg>
 ```
-Filled colors are useful in some situations. For example, a color with alpha, blends easily with the background color, so you can choose a similar color from the fill shade to solve the problem.
 
-Of course, pre-setting the precise shades `5`, `10`, `20`, ... `90`, `95` can fill in better color rendering.
-            
 ### Override default colors
 Access the same key as the preset to override the default color.
 ```js name=master.css.js
@@ -94,15 +78,59 @@ export default {
 }
 ```
 
-### Access existing colors
-With existing color tokens, access and aliases already set colors.
+---
+
+## Design tokens
+### Create background colors
+Create color tokens for backgrounds in apps, panels, cards, and more.
 ```js name=master.css.js
 export default {
     colors: {
-+        primary: 'blue', // primary
-+        fade: 'gray-80'  // fade
++       neutral: 'white',
++       fade: 'slate-5'
     }
 }
 ```
-If you're looking to pick colors of your design system from the default colors, this will come in handy.
+Use [background-color](/docs/background-color) syntax to set the app background color:
+```html
+<body class="**bg:neutral**">…</body>
+```
+| Token             | Description                                                                                                                       |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `neutral`         | The background color for apps...                                                                                                  |
+| `fade`            | The background color for panels...                                                                                                |
 
+### Create text colors
+Create accessible color tokens for titles, descriptions, icons, and other body text.
+```js name=master.css.js
+export default {
+    colors: {
++        text: {
++            netural: 'slate-70',
++            strong: 'slate-95',
++            dim: 'slate-30'
++        }
+    }
+}
+```
+Use [color](/docs/color) syntax to give the title text a strong color:
+```html
+<h1 class="**fg:text-strong**">page title</h1>
+```
+Use [color](/docs/color) syntax to give the paragraph text a netural color:
+```html
+<p class="**fg:text-netural**">paragraph text</p>
+```
+Use [stroke](/docs/stroke) syntax to set the icon stroke to a netural color:
+```html
+<svg class="**stroke:text-netural**">icon</svg>
+```
+You can apply them using any color-related syntax.
+
+| Token             | Description                                                                                                                       |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `text-accent`     | Accent color emphasizes active links and states, strongly contrasting the background.                                             |
+| `text-neutral`    | Soft color, a foreground color harmonizing with the background.                                                                   |
+| `text-strong`     | Strong color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background.     |
+| `text-dim`        | Dim color, a foreground color that contrasts slightly with the background.                                                        |
+| `text-{color}`    | Other accessible text foreground colors.                                                                                          |
