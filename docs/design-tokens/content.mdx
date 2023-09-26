@@ -1,0 +1,58 @@
+## Introduction [sr-only]
+One of the most significant ways of managing sources of truth is through design tokens. In Master CSS, you can implement your design tokens through [configuration](/docs/configuration).
+
+---
+
+## Custom guide
+
+### Fonts
+Unify the font style of the entire website, including title, body text, and code, by [customizing `font-family`](/docs/font-family#customization) rules and using the default as a fallback.
+```js name=master.css.js
+import { rules } from '@master/css'
+
+/** @type {import('@master/css').Config} */
+export default {
+    rules: {
+        fontFamily: {
+            values: {
+                sans: 'Inter,' + rules.fontFamily.values.sans,
+                mono: 'Roboto Mono,' + rules.fontFamily.values.mono
+            }
+        }
+    }
+}
+```
+Apply the [font family](/docs/font-family) to the entire website:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
++    <link rel="preconnect" href="https://fonts.googleapis.com">
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="**font:sans** **font:mono_:where(code,pre)**">…</body>
+</html>
+```
+
+---
+
+## Benefits
+Design tokens are a fundamental part of design systems and are crucial for maintaining design consistency and efficiency in projects, especially in larger organizations or projects with complex design requirements. They help bridge the gap between design and development, promoting collaboration and ensuring a cohesive user experience.
+
+1. **Abstraction**: Design tokens abstract design decisions into a format that can be easily applied and reused. For example, instead of specifying a color as "red," a design token might represent it as "primary-red."
+
+2. **Consistency**: They help maintain design consistency across various applications, platforms, and teams by providing a single source of truth for design attributes.
+
+3. **Maintainability**: Design tokens make it easier to update and manage design properties. When a design change is required, it can be made in one central place, and it will automatically propagate to all instances where that token is used.
+
+4. **Cross-platform**: Design tokens can be used in different design tools, development environments, and platforms, ensuring a unified design language.
+
+5. **Automation**: Developers can use design tokens to automate the generation of styles, making it more efficient to implement designs in code.
+
+6. **Scalability**: They allow design systems to scale and evolve as new design decisions are made without disrupting existing implementations.
+
+---
+
+## Future
+- A plugin to convert Figma's variables to [Master CSS's configuration](/docs/configuration).

@@ -1,6 +1,10 @@
-Set your brand's font, foreground color, etc., add syntax in `html <body class="…">` and rely on native inheritance behavior or use CSS selectors to preset global styles.
+## Overview [sr-only]
 
-### Weakly apply styles
+Set your [brand's typeface](/docs/design-tokens#custom-typeface), foreground color, etc., add syntax in `html <body class="…">` and rely on native inheritance behavior or use CSS selectors to preset global styles.
+```html
+<body class="**font:sans** **font:mono_:where(code,pre)**">…</body>
+```
+
 We recommend using `css :where()` to select elements and preset styles, it has zero [specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity), otherwise you risk falling into `css !important` hell with `css :is()` and `css _` descendant selectors.
 
 For example, add a blue underline to all links:
@@ -15,37 +19,6 @@ For example, add a blue underline to all links:
 Henceforth you don't need to declare `css !important` to remove the underline for a specific link.
 ```html
 <a class="**text-decoration:none**">…</a>
-```
-
-### Custom typeface
-Unify the font style of the whole site, including titles, texts, and codes, through CSS inherited behavior and the `css _:where()` selector:
-```html
-<body class="**font:sans** **font:mono_:where(code,pre)**">
-```
-Configure rules to [customize fonts](/docs/font-family#customization) and use default font families as fallbacks:
-```js name=master.css.js
-/** @type {import('@master/css').Config} */
-export default {
-    rules: {
-+        fontFamily: {
-+            values: {
-+                sans: 'Inter var, Noto Sans TC,' + rules.fontFamily.values.sans,
-+                mono: 'Fira Code VF,' + rules.fontFamily.values.mono
-+            }
-+        }
-    }
-}
-```
-Take importing [Google Fonts](https://fonts.google.com/) as an example:
-```html name=index.html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-+    <link rel="preconnect" href="https://fonts.googleapis.com">
-+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    …
-…
 ```
 
 ---

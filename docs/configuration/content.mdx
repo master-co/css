@@ -8,7 +8,7 @@ import SelectorsOverview from '../media-queries/components/Overview.mdx'
 import FunctionsOverview from '../functions/components/Overview.mdx'
 import ColorsOverview from '../colors/components/Overview.mdx'
 
-## master.css.js [sr-only]
+## Overview [sr-only]
 ```js name=master.css.js
 /** @type {import('@master/css').Config} */
 export default { 
@@ -66,11 +66,15 @@ export default {
 ```
 Configuration fields that are not specified will fall back to Master CSS's [default configuration](https://github.com/master-co/css/tree/beta/packages/css/src/config).
 
+---
+
+## Syntax
+
 import CustomClassesOverview from '../classes/components/Overview.mdx'
 
-### `.viewports`
-Customizing responsive [viewports](/docs/viewports) for your design system.
-<BreakpointsOverview />
+### `.animations`
+Customizing animation [animations](/docs/animations) for your design system.
+<KeyframesOverview />
 
 ### `.classes`
 Customizing abstract [classes](/docs/classes) for your design system.
@@ -84,10 +88,6 @@ Customize [colors](/docs/colors) for your design system.
 Customizing [functions](/docs/functions) for your design system.
 <FunctionsOverview />
 
-### `.animations`
-Customizing animation [animations](/docs/animations) for your design system.
-<KeyframesOverview />
-
 ### `.mediaQueries`
 Customizing [media queries](/docs/media-queries) for your design system.
 <MediaQueriesOverview />
@@ -96,10 +96,6 @@ Customizing [media queries](/docs/media-queries) for your design system.
 Customizing syntax [rules](/docs/rules) for your design system.
 <RulesOverview />
 
-### `.values`
-Customizing substitute [values](/docs/values) for your design system.
-<ValuesOverview />
-
 ### `.selectors`
 Customizing [selectors](/docs/selectors) for your design system.
 <SelectorsOverview />
@@ -107,6 +103,31 @@ Customizing [selectors](/docs/selectors) for your design system.
 ### `.semantics`
 Customizing [semantic](/docs/semantic) classes for your design system.
 <SemanticsOverview />
+
+### `.values`
+Customizing substitute [values](/docs/values) for your design system.
+<ValuesOverview />
+
+### `.viewports`
+Customizing responsive [viewports](/docs/viewports) for your design system.
+<BreakpointsOverview />
+
+---
+
+## Settings
+
+### `.extends`
+Extend custom or external configuration.
+<DocProp defaultValue="undefined" types={["any[]"]} />
+```js name=master.css.js
+export default {
+    extends: [
++        require('@master/animate.css'),
++        require('./styles/btn.css'),
+        …
+    ]
+}
+```
 
 ### `.important`
 Make all generated CSS declarations `!important`.
@@ -130,6 +151,41 @@ Generated CSS:
     width: 100% **!important**;
     height: 100% **!important**;
 }
+```
+
+### `.override`
+Customize your configuration to override all [default configuration](https://github.com/master-co/css/tree/beta/packages/css/src/config), default `false` to extend.
+<DocProp defaultValue="false" types={['boolean']} />
+```js name=master.css.js
+export default {
++    override: true
+}
+```
+We've carefully preset some [configurations](https://github.com/master-co/css/tree/beta/packages/css/src/config") to enhance the syntax; usually, you'll extend it.
+
+### `.rootSize`
+Specify the conversion factor for `rem` and `em`.
+
+<DocProp defaultValue="16" types={['number']} />
+
+Here's a common use case with `rootSize: 10`:
+```js name=master.css.js
+export default {
++    rootSize: 10
+}
+```
+
+Generated CSS rules:
+```css
+.font\:16 { 
+-    font-size: 1rem; /* rootSize: 16 */
++    font-size: 1.6rem;  /* rootSize: 10 */
+}
+```
+
+And you will set the font size of the root to `62.5%`:
+```html
+<html class="font:62.5%">
 ```
 
 ### `.scope`
@@ -160,41 +216,6 @@ Generated CSS:
     text-align: center
 }
 ```
-
-### `.rootSize`
-Specify the conversion factor for `rem` and `em`.
-
-<DocProp defaultValue="16" types={['number']} />
-
-Here's a common use case with `rootSize: 10`:
-```js name=master.css.js
-export default {
-+    rootSize: 10
-}
-```
-
-Generated CSS rules:
-```css
-.font\:16 { 
--    font-size: 1rem; /* rootSize: 16 */
-+    font-size: 1.6rem;  /* rootSize: 10 */
-}
-```
-
-And you will set the font size of the root to `62.5%`:
-```html
-<html class="font:62.5%">
-```
-
-### `.override`
-Customize your configuration to override all [default configuration](https://github.com/master-co/css/tree/beta/packages/css/src/config), default `false` to extend.
-<DocProp defaultValue="false" types={['boolean']} />
-```js name=master.css.js
-export default {
-+    override: true
-}
-```
-We've carefully preset some [configurations](https://github.com/master-co/css/tree/beta/packages/css/src/config") to enhance the syntax; usually, you'll extend it.
 
 ### `.themeDriver`
 Sets how the theme should drive and generate CSS rules.
@@ -234,17 +255,4 @@ export default {
 Generated CSS:
 ```css
 :host(.dark) .bg\:#000000 { background-color: #000000 }
-```
-
-### `.extends`
-Extend custom or external configuration.
-<DocProp defaultValue="undefined" types={["any[]"]} />
-```js name=master.css.js
-export default {
-    extends: [
-+        require('@master/animate.css'),
-+        require('./styles/btn.css'),
-        …
-    ]
-}
 ```
