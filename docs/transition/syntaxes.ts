@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['transition:`name`|`duration`,`…`', '~`name`|`duration`'],
+    ['transition:`name`|`duration`,`…`', '~`name`|`duration`']
 ]
 
 export default syntaxes

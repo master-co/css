@@ -1,6 +1,7 @@
 import cssEscape from 'shared/utils/css-escape'
 import { START_SYMBOLS } from '../constants/start-symbol'
 import { Declarations, Rule, RuleConfig } from '../rule'
+import { transformColorWithOpacity } from '../functions/transform-color-with-opacity'
 
 const defaultRules = {
     group: {
@@ -145,6 +146,20 @@ const defaultRules = {
     } as RuleConfig,
     variable: {
         match: '^\\$[^ (){}A-Z]+:[^ ]', // don't use 'rem' as default, because css variable is common API
+        transform(value) {
+            const regexp = new RegExp(`^((?:${this.css.colorNames.join('|')})(?:-(?:[0-9A-Za-z-]+))?)(?:\\/(\\.?[0-9]+%?))?(?:@(.*?))?$`, 'm')
+            const result = regexp.exec(value)
+            if (result) {
+                const [, colorName, opacityStr, themeName] = result
+                const color = this.css.colorThemesMap[colorName]?.[themeName || '']
+                if (color)
+                    return (opacityStr
+                        ? transformColorWithOpacity(color, opacityStr)
+                        : color)
+            }
+
+            return value
+        },
         declare(value) {
             return {
                 ['--' + this.prefix.slice(1, -1)]: value
