@@ -20,4 +20,9 @@ test('functions', () => {
     testCSS('mt:calc($(g-y)*(-.1))', '.mt\\:calc\\(\\$\\(g-y\\)\\*\\(-\\.1\\)\\){margin-top:calc(var(--g-y) * (-0.00625rem))}')
     testCSS('mt:calc($(g-y)--.1)', '.mt\\:calc\\(\\$\\(g-y\\)--\\.1\\){margin-top:calc(var(--g-y) - -0.00625rem)}')
     testCSS('mr:calc($(g-x)/(-2px))', '.mr\\:calc\\(\\$\\(g-x\\)\\/\\(-2px\\)\\){margin-right:calc(var(--g-x) / (-2px))}')
+
+    testCSS('$primary:red', '.\\$primary\\:red{--primary:#d11a1e}')
+    testCSS('$primary:red-80', '.\\$primary\\:red-80{--primary:#fdcfcf}')
+    testCSS('$primary:red/.5', '.\\$primary\\:red\\/\\.5{--primary:#d11a1e80}')
+    testCSS('$primary:red-80/.5', '.\\$primary\\:red-80\\/\\.5{--primary:#fdcfcf80}')
 })
