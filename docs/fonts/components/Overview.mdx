@@ -1,0 +1,22 @@
+```js name=master.css.js
+import { fonts } from '@master/css'
+
+export default {
+    fonts: {
+        sans: ['Inter', ...fonts.sans],
+        mono: ['Fira Code', ...fonts.mono]
+    }
+}
+```
+Apply custom fonts globally using [font family](/docs/font-family) syntax and [Google Fonts](https://fonts.google.com/):
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
++    <link rel="preconnect" href="https://fonts.googleapis.com">
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="**font:sans** **font:mono_:where(code,pre)** font-feature:'salt'">…</body>
+</html>
+```

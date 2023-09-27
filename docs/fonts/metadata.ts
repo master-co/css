@@ -1,8 +1,8 @@
 import { Metadata } from 'shared/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Animations',
-    description: 'Customizing animation keyframes for your design system.',
+    title: 'Fonts',
+    description: 'Customizing fonts for your design system.',
     category: 'Customization'
 }
 
