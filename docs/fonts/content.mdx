@@ -1,0 +1,83 @@
+## Overview [sr-only]
+<Overview />
+
+---
+
+## Basic usage
+### Add a font
+Add your font and use the [default font](#default) as a fallback. For example, to add a font named `Inter` from [Google Fonts](#google-fonts):
+```js name=master.css.js
+import { fonts } from '@master/css'
+
+export default {
+    fonts: {
++        sans: ['Inter', ...fonts.sans]
+    }
+}
+```
+Or simply add as a string:
+```js
+export default {
+    fonts: {
++        sans: 'Inter,sans-serif'
+    }
+}
+```
+
+### Apply custom fonts globally
+Relying on the [font family](/docs/font-family) inherited behavior, you can set the entire page font in `html <body>`.
+```html
+<body class="**font:sans**">…</body>
+```
+
+### Apply custom fonts to specific
+Use the `mcss _:where(code,pre)` to select specified elements and apply the font.
+```html
+<body class="**font:mono_:where(code,pre)**">…</body>
+```
+
+---
+
+## Font hosting
+### Google Fonts
+The fastest way to declare custom font faces is through [Google Fonts](https://fonts.google.com/).
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+</head>
+</html>
+```
+
+### Self-hosted fonts
+You can also self-host the fonts via native CSS, as usual.
+```css name=styles/fonts.css
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/Inter-Regular.woff2") format("woff2"),
+        url("/fonts/Inter-Regular.woff") format("woff");
+}
+```
+
+---
+
+## Default
+```js
+import { fonts } from '@master/css'
+```
+<Default />
+View the full [source code](https://github.com/master-co/css/blob/beta/packages/css/src/config/fonts.ts)
+
+---
+
+## See also
+- [Font](/docs/font)
+- [Font Family](/docs/font-family)
+- [Font Feature Settings](/docs/font-feature-settings)
+- [Font Variant Numeric](/docs/font-variant-numeric)
