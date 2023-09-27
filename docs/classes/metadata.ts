@@ -3,7 +3,7 @@ import { Metadata } from 'shared/types/Metadata'
 const metadata: Metadata = {
     title: 'Classes',
     description: 'Customizing abstract classes for your design system.',
-    category: 'Design System',
+    category: 'Customization',
     unfinished: true
 }
 

@@ -7,70 +7,16 @@ import MediaQueriesOverview from '../media-queries/components/Overview.mdx'
 import SelectorsOverview from '../media-queries/components/Overview.mdx'
 import FunctionsOverview from '../functions/components/Overview.mdx'
 import ColorsOverview from '../colors/components/Overview.mdx'
+import FontsOverview from '../fonts/components/Overview.mdx'
+import ClassesOverview from '../classes/components/Overview.mdx'
 
-## Overview [sr-only]
 ```js name=master.css.js
 /** @type {import('@master/css').Config} */
-export default { 
-    colors: {
-        primary: '#ff0000 #dca000@light #fbe09d@dark', // class="bg:primary"
-        warn: '#ffbf00' // class="fg:warn outline:warn"
-    },
-    classes: {
-        btn: 'font:14 text:center h:40 p:10|15', // class="btn"
-        card: {
-            '': 'bg:white r:8',            // class="card"
-            header: 'object:cover w:full', // class="card-header"
-            content: 'p:15'                // class="card-content"
-        }
-    },
-    values: {
-        '2x': 32 // class="w:2x mt:2x"
-    },
-    rules: {
-        fontSize: { 
-            values: {
-                sm: 14 // class="font:sm"
-            }
-        }
-    },
-    semantics: {
-        'hide-text': { // class="hide-text"
-            'font-size': '0px'
-        }
-    },
-    viewports: {
-        desktop: 1280 // class="hide@desktop"
-    },
-    selectors: {
-        _headings: '_:where(h1,h2,h3,h4,h5,h6)' // class="font:bold_headings"
-    },
-    mediaQueries: {
-        // class="font:24@watch"
-        watch: '(max-device-width:42mm) and (min-device-width:38mm)'
-    },
-    animations: {
-        fade: {
-            from: { opacity: 0 },
-            to: { opacity: 0 }
-        },
-        ping: {
-            '75%,100%' {
-                transform: 'scale(2)',
-                opacity: 0;
-            }
-        }
-    }
+export default {
     …
 }
 ```
-Configuration fields that are not specified will fall back to Master CSS's [default configuration](https://github.com/master-co/css/tree/beta/packages/css/src/config).
-
----
-
-## Syntax
-
-import CustomClassesOverview from '../classes/components/Overview.mdx'
+Configuration fields that are not specified will fall back to [default configuration](https://github.com/master-co/css/tree/beta/packages/css/src/config).
 
 ### `.animations`
 Customizing animation [animations](/docs/animations) for your design system.
@@ -78,11 +24,15 @@ Customizing animation [animations](/docs/animations) for your design system.
 
 ### `.classes`
 Customizing abstract [classes](/docs/classes) for your design system.
-<CustomClassesOverview />
+<ClassesOverview />
 
 ### `.colors`
-Customize [colors](/docs/colors) for your design system.
+Customizing [colors](/docs/colors) for your design system.
 <ColorsOverview />
+
+### `.fonts`
+Customizing [fonts](/docs/colors) for your design system.
+<FontsOverview />
 
 ### `.functions`
 Customizing [functions](/docs/functions) for your design system.

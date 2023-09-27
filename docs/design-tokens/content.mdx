@@ -3,40 +3,6 @@ One of the most significant ways of managing sources of truth is through design 
 
 ---
 
-## Custom guide
-
-### Fonts
-Unify the font style of the entire website, including title, body text, and code, by [customizing `font-family`](/docs/font-family#customization) rules and using the default as a fallback.
-```js name=master.css.js
-import { rules } from '@master/css'
-
-/** @type {import('@master/css').Config} */
-export default {
-    rules: {
-        fontFamily: {
-            values: {
-                sans: 'Inter,' + rules.fontFamily.values.sans,
-                mono: 'Roboto Mono,' + rules.fontFamily.values.mono
-            }
-        }
-    }
-}
-```
-Apply the [font family](/docs/font-family) to the entire website:
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-+    <link rel="preconnect" href="https://fonts.googleapis.com">
-+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="**font:sans** **font:mono_:where(code,pre)**">…</body>
-</html>
-```
-
----
-
 ## Benefits
 Design tokens are a fundamental part of design systems and are crucial for maintaining design consistency and efficiency in projects, especially in larger organizations or projects with complex design requirements. They help bridge the gap between design and development, promoting collaboration and ensuring a cohesive user experience.
 
