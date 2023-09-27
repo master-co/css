@@ -3,7 +3,7 @@ import { expectOrderOfRules, testProp } from './css'
 it('checks scroll-margin order', () => {
     expectOrderOfRules(
         ['scroll-mx:0', 'scroll-ml:0', 'scroll-mr:0', 'scroll-m:0', 'scroll-mt:0', 'scroll-mb:0', 'scroll-my:0'],
-        ['scroll-m:0', 'scroll-my:0', 'scroll-mx:0', 'scroll-mb:0', 'scroll-mt:0', 'scroll-mr:0', 'scroll-ml:0']
+        ['scroll-m:0', 'scroll-mx:0', 'scroll-my:0', 'scroll-mb:0', 'scroll-ml:0', 'scroll-mr:0', 'scroll-mt:0']
     )
 })
 

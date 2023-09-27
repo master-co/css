@@ -140,4 +140,4 @@ export default {
         }
     },
     rootSize: 16
-}
+} as any

@@ -3,7 +3,7 @@ import { expectOrderOfRules, testProp } from './css'
 it('checks margin order', () => {
     expectOrderOfRules(
         ['mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0'],
-        ['m:0', 'my:0', 'mx:0', 'mb:0', 'mt:0', 'mr:0', 'ml:0']
+        ['m:0', 'mx:0', 'my:0', 'mb:0', 'ml:0', 'mr:0', 'mt:0']
     )
 })
 

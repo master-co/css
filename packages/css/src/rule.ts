@@ -2,14 +2,7 @@ import type { Values } from './config'
 import type { MasterCSS } from './core'
 import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'shared/utils/css-escape'
-import { extend } from '@techor/extend'
 import { transformColorWithOpacity } from './functions/transform-color-with-opacity'
-
-const defaultConfig: RuleConfig = {
-    unit: '',
-    order: 0,
-    separators: [',']
-}
 
 const atRuleRegExp = /^(media|supports|page|font-face|keyframes|counter-style|font-feature-values|property|layer)(?=\||{|\(|$)/
 
@@ -18,6 +11,7 @@ export class Rule {
     readonly at: Record<string, string> = {}
     readonly priority: number = -1
     readonly natives: RuleNative[] = []
+    readonly order: number = 0
 
     animationNames: string[]
     config: RuleConfig
@@ -27,8 +21,11 @@ export class Rule {
         public readonly meta: RuleMeta = {},
         public css: MasterCSS
     ) {
-        this.config = extend(defaultConfig, meta.config)
-        const { unit, order, colored, native, analyze, transform, declare, create } = this.config
+        this.config = meta.config || {}
+        this.order = meta.order
+        if (!this.config.unit) this.config.unit = ''
+        if (!this.config.separators) this.config.separators = [',']
+        const { unit, colored, native, analyze, transform, declare, create } = this.config
         const { scope, important, functions, themeDriver } = css.config
         const { themeNames, colorNames, colorThemesMap, selectors, viewports, mediaQueries, classesBy, globalValues, animations } = css
         const classNames = classesBy[className]
@@ -232,10 +229,6 @@ export class Rule {
 
             suffixToken = valueToken.slice(i)
         }
-
-        this.order = typeof order === 'function'
-            ? order.call(this, this.prefix)
-            : order
 
         // 2. !important
         if (suffixToken[0] === '!') {
@@ -808,7 +801,6 @@ export interface Rule {
     theme?: string
     unitToken?: string
     hasWhere?: boolean
-    order?: number
     constructor: {
         match?(
             name: string,
@@ -848,6 +840,7 @@ export interface RuleMeta {
     origin?: 'match' | 'semantics'
     value?: [string, string | Record<string, string>]
     config?: RuleConfig
+    order?: number
 }
 
 export interface RuleConfig {

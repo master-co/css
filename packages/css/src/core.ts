@@ -25,6 +25,7 @@ export interface MasterCSS {
     viewports: Record<string, number>
     mediaQueries: Record<string, string>
     matches: Record<string, RegExp>
+    orders: Record<string, number>
     keyframesMap: Record<string, {
         native: RuleNative
         count: number
@@ -37,9 +38,9 @@ export class MasterCSS {
     static root: MasterCSS
     static config: Config = defaultConfig
     static instances: MasterCSS[] = []
-    static refresh = (config: Config) => {
+    static refresh = (customConfig: Config) => {
         for (const eachInstance of this.instances) {
-            eachInstance.refresh(config)
+            eachInstance.refresh(customConfig)
         }
     }
 
@@ -47,15 +48,16 @@ export class MasterCSS {
     readonly ruleBy: Record<string, Rule> = {}
     readonly countBy = {}
     readonly observing = false
+    readonly config: Config
 
     observer: MutationObserver
     private colorByThemeByColorName: Record<string, Record<string, string>>
 
     constructor(
-        public config: Config = defaultConfig
+        public customConfig: Config = defaultConfig
     ) {
-        if (!config?.override) {
-            this.config = this.getExtendedConfig(defaultConfig, config)
+        if (!customConfig?.override) {
+            this.config = this.getExtendedConfig(defaultConfig, customConfig)
         } else {
             this.config = this.getExtendedConfig(this.config)
         }
@@ -76,6 +78,7 @@ export class MasterCSS {
         this.viewports = {}
         this.mediaQueries = {}
         this.matches = {}
+        this.orders = {}
         this.keyframesMap = {}
         this.animations = {}
 
@@ -315,14 +318,26 @@ export class MasterCSS {
         }
 
         if (rules) {
+            const rulesEntries = Object.entries(rules)
+            const rulesEntriesLength = rulesEntries.length
             Object.entries(rules)
-                .sort((a: any, b: any) => (b[1].order || 0) - (a[1].order || 0))
-                .forEach(([id, eachRuleConfig]: [string, RuleConfig]) => {
+                .sort((a: any, b: any) => {
+                    if (a[1].order !== b[1].order) {
+                        return  (b[1].order || 0) - (a[1].order || 0)
+                    }
+                    return b[0].localeCompare(a[0])
+                })
+                .forEach(([id, eachRuleConfig]: [string, RuleConfig], index: number) => {
+                    this.orders[id] = rulesEntriesLength - 1 - index
                     const { native, values, colored } = eachRuleConfig
                     let match = eachRuleConfig.match
                     eachRuleConfig.id = id
                     eachRuleConfig.native = native === true ? id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase() : undefined
                     if (values) {
+                        /**
+                         * rule.order 越大該 rule.values 將優先被解析
+                         * 例如 rules.fontWeight.values 應先被解析才能把結果 values.fontWeight 傳遞給 rules.font.values 訪問
+                         */
                         this.values[id] = resolveValues(values)
                     }
                     if (match) {
@@ -698,13 +713,21 @@ export class MasterCSS {
              * STEP 1. matches
              */
             if (match && match.test(syntax)) {
-                return { origin: 'match', config: eachRuleConfig }
+                return {
+                    origin: 'match',
+                    config: eachRuleConfig,
+                    order: this.orders[id]
+                }
             }
             /**
              * STEP 2. key full syntax
              */
             if (native && syntax.startsWith(native + ':')) {
-                return { origin: 'match', config: eachRuleConfig }
+                return {
+                    origin: 'match',
+                    config: eachRuleConfig,
+                    order: this.orders[id]
+                }
             }
         }
 
@@ -712,7 +735,8 @@ export class MasterCSS {
             if (syntax.match(eachSemanticEntry[0])) {
                 return {
                     origin: 'semantics',
-                    value: eachSemanticEntry[1]
+                    value: eachSemanticEntry[1],
+                    order: -2
                 }
             }
         }
@@ -749,11 +773,13 @@ export class MasterCSS {
     /**
      * 根據蒐集到的所有 DOM class 重新 create
      */
-    refresh(config: Config) {
-        if (!config?.override) {
-            this.config = this.getExtendedConfig(defaultConfig, config)
+    refresh(customConfig: Config = this.customConfig) {
+        if (!customConfig?.override) {
+            // @ts-ignore
+            this.config = this.getExtendedConfig(defaultConfig, customConfig)
         } else {
-            this.config = this.getExtendedConfig(config)
+            // @ts-ignore
+            this.config = this.getExtendedConfig(customConfig)
         }
         this.resolve()
         if (!this.style) {
