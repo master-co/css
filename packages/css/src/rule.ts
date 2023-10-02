@@ -22,8 +22,8 @@ export class Rule {
         public readonly config: RuleConfig = {},
         public css: MasterCSS
     ) {
-        const { unit, colored, _propName, _semantic, analyze, transform, native, declare, _declarations, create, _resolvedOrder, match, id } = this.config
-        this.order = _resolvedOrder
+        const { unit, colored, _propName, _semantic, analyze, transform, native, declare, _declarations, create, order, match, id } = this.config
+        this.order = order
         if (!this.config.unit) this.config.unit = ''
         if (!this.config.separators) this.config.separators = [',']
         const { scope, important, functions, themeDriver } = css.config

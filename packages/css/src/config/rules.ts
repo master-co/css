@@ -4,6 +4,7 @@ import type { Rule } from '../rule'
 import { transformColorWithOpacity } from '../functions/transform-color-with-opacity'
 import { CSSDeclarations } from 'src/types/css-declarations'
 import type { Values } from './values'
+import { Layer } from '../layer'
 
 const defaultRules = {
     group: {
@@ -228,7 +229,7 @@ const defaultRules = {
     font: {
         match: '^f:.',
         native: true,
-        order: -1,
+        layer: Layer.CoreNativeShorthand,
         values({ fontSize, fontStyle, fontWeight, lineHeight }) {
             return {
                 ...fontSize,
@@ -267,7 +268,7 @@ const defaultRules = {
     marginX: {
         match: '^(?:mx|margin-x):.',
         unit: 'rem',
-        order: -0.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'margin-left': value + unit,
@@ -278,7 +279,7 @@ const defaultRules = {
     marginY: {
         match: '^(?:my|margin-y):.',
         unit: 'rem',
-        order: -0.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'margin-top': value + unit,
@@ -290,7 +291,7 @@ const defaultRules = {
         match: '^m:.',
         native: true,
         unit: 'rem',
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     paddingLeft: {
         match: '^pl:.',
@@ -315,7 +316,7 @@ const defaultRules = {
     paddingX: {
         match: '^(?:px|padding-x):.',
         unit: 'rem',
-        order: -0.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'padding-left': value + unit,
@@ -326,7 +327,7 @@ const defaultRules = {
     paddingY: {
         match: '^(?:py|padding-y):.',
         unit: 'rem',
-        order: -0.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'padding-top': value + unit,
@@ -338,7 +339,7 @@ const defaultRules = {
         match: '^p:.',
         native: true,
         unit: 'rem',
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     flexBasis: {
         values: {
@@ -381,7 +382,7 @@ const defaultRules = {
     } as RuleConfig,
     flex: {
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     display: {
         match: '^d:.',
@@ -576,7 +577,7 @@ const defaultRules = {
         unit: 'rem',
         native: true,
         colored: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     textUnderlineOffset: {
         unit: 'rem',
@@ -609,7 +610,7 @@ const defaultRules = {
     columns: {
         match: '^(?:columns|cols):.',
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     whiteSpace: {
         native: true
@@ -633,7 +634,7 @@ const defaultRules = {
     inset: {
         native: true,
         unit: 'rem',
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     lines: {
         match: '^lines:.',
@@ -733,7 +734,7 @@ const defaultRules = {
     } as RuleConfig,
     overflow: {
         native: true,
-        order: -1,
+        layer: Layer.CoreNativeShorthand,
         declare(value, unit) {
             return value === 'overlay'
                 ? { overflow: ['auto', value] }
@@ -748,7 +749,7 @@ const defaultRules = {
     } as RuleConfig,
     overscrollBehavior: {
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     zIndex: {
         match: '^z:.',
@@ -921,7 +922,7 @@ const defaultRules = {
                 return [className.slice(indexOfColon + 1)]
             }
         },
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     animationDelay: {
         match: '^@delay:.',
@@ -964,7 +965,7 @@ const defaultRules = {
     animation: {
         match: '^@[^!*>+~:[@_]+\\|',
         native: true,
-        order: -1,
+        layer: Layer.CoreNativeShorthand,
         analyze(className: string) {
             if (className.startsWith('@')) {
                 return [className.slice(1)]
@@ -1006,7 +1007,7 @@ const defaultRules = {
     } as RuleConfig,
     borderXColor: {
         match: '^b(?:x|order-x(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
-        order: -.5,
+        layer: Layer.CoreShorthand,
         colored: true,
         declare(value, unit) {
             return {
@@ -1017,7 +1018,7 @@ const defaultRules = {
     } as RuleConfig,
     borderYColor: {
         match: '^b(?:y|order-y(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
-        order: -.5,
+        layer: Layer.CoreShorthand,
         colored: true,
         declare(value, unit) {
             return {
@@ -1029,7 +1030,7 @@ const defaultRules = {
     borderColor: {
         match: '^b(?:order)?(?:-color)?:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         native: true,
-        order: -1,
+        layer: Layer.CoreNativeShorthand,
         colored: true
     } as RuleConfig,
     // border radius
@@ -1056,7 +1057,7 @@ const defaultRules = {
     borderTopRadius: {
         match: '^rt:.',
         unit: 'rem',
-        order: -.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'border-top-left-radius': value + unit,
@@ -1067,7 +1068,7 @@ const defaultRules = {
     borderBottomRadius: {
         match: '^rb:.',
         unit: 'rem',
-        order: -.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'border-bottom-left-radius': value + unit,
@@ -1078,7 +1079,7 @@ const defaultRules = {
     borderLeftRadius: {
         match: '^rl:.',
         unit: 'rem',
-        order: -.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'border-top-left-radius': value + unit,
@@ -1089,7 +1090,7 @@ const defaultRules = {
     borderRightRadius: {
         match: '^rr:.',
         unit: 'rem',
-        order: -.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'border-top-right-radius': value + unit,
@@ -1101,7 +1102,7 @@ const defaultRules = {
         match: '^r:.',
         unit: 'rem',
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     // border style
     borderTopStyle: {
@@ -1122,7 +1123,7 @@ const defaultRules = {
     } as RuleConfig,
     borderXStyle: {
         match: '^b(?:x|order-x(?:-style)?):(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|)',
-        order: -.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'border-left-style': value + unit,
@@ -1132,7 +1133,7 @@ const defaultRules = {
     } as RuleConfig,
     borderYStyle: {
         match: '^b(?:y|order-y(?:-style)?):(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|)',
-        order: -.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'border-top-style': value + unit,
@@ -1143,7 +1144,7 @@ const defaultRules = {
     borderStyle: {
         match: '^b(?:order)?(?:-style)?:(?:none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset|$values)(?!\\|)',
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     // border width
     borderTopWidth: {
@@ -1169,7 +1170,7 @@ const defaultRules = {
     borderXWidth: {
         match: '^b(?:x|order-x(?:-width)?):(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
         unit: 'rem',
-        order: -.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'border-left-width': value + unit,
@@ -1180,7 +1181,7 @@ const defaultRules = {
     borderYWidth: {
         match: '^b(?:y|order-y(?:-width)?):(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
         unit: 'rem',
-        order: -.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'border-top-width': value + unit,
@@ -1192,7 +1193,7 @@ const defaultRules = {
         match: '^b(?:order)?(?:-width)?:(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
         unit: 'rem',
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     // border image
     borderImageOutset: {
@@ -1217,7 +1218,7 @@ const defaultRules = {
     } as RuleConfig,
     borderImage: {
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     // border
     borderTop: {
@@ -1272,7 +1273,7 @@ const defaultRules = {
         match: '^(?:bx|border-x):.',
         unit: 'rem',
         colored: true,
-        order: -.5,
+        layer: Layer.CoreShorthand,
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1290,7 +1291,7 @@ const defaultRules = {
         match: '^(?:by|border-y):.',
         unit: 'rem',
         colored: true,
-        order: -.5,
+        layer: Layer.CoreShorthand,
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1315,7 +1316,7 @@ const defaultRules = {
             }
             return value
         },
-        order: -2
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     backgroundAttachment: {
         match: '^(?:bg|background):(?:fixed|local|scroll|$values)(?!\\|)',
@@ -1383,7 +1384,7 @@ const defaultRules = {
         match: '^bg:.',
         native: true,
         colored: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     mixBlendMode: {
         match: '^blend:.',
@@ -1453,7 +1454,7 @@ const defaultRules = {
     gridColumn: {
         match: '^grid-col(?:umn)?(?:-span)?:.',
         native: true,
-        order: -1,
+        layer: Layer.CoreNativeShorthand,
         transform(value) {
             return this.prefix.slice(-5, -1) === 'span' && value !== 'auto'
                 ? 'span' + ' ' + value + '/' + 'span' + ' ' + value
@@ -1482,7 +1483,7 @@ const defaultRules = {
     gridRow: {
         match: '^grid-row-span:.',
         native: true,
-        order: -1,
+        layer: Layer.CoreNativeShorthand,
         transform(value) {
             return this.prefix.slice(-5, -1) === 'span' && value !== 'auto'
                 ? 'span' + ' ' + value + '/' + 'span' + ' ' + value
@@ -1544,15 +1545,15 @@ const defaultRules = {
     } as RuleConfig,
     gridTemplate: {
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     gridArea: {
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     grid: {
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     columnGap: {
         match: '^gap-x:.',
@@ -1567,9 +1568,9 @@ const defaultRules = {
     gap: {
         unit: 'rem',
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
-    order: {
+    layer: {
         match: '^o:.',
         native: true,
         values: {
@@ -1630,15 +1631,15 @@ const defaultRules = {
     } as RuleConfig,
     placeContent: {
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     placeItems: {
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     placeSelf: {
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     listStylePosition: {
         match: '^list-style:(?:inside|outside|$values)(?!\\|)',
@@ -1654,7 +1655,7 @@ const defaultRules = {
     } as RuleConfig,
     listStyle: {
         native: true,
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     outlineColor: {
         match: '^outline:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
@@ -1677,7 +1678,7 @@ const defaultRules = {
     outline: {
         native: true,
         unit: 'rem',
-        order: -1,
+        layer: Layer.CoreNativeShorthand,
         colored: true,
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
@@ -1726,7 +1727,7 @@ const defaultRules = {
     scrollMarginX: {
         match: '^(?:scroll-margin-x|scroll-mx):.',
         unit: 'rem',
-        order: -0.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'scroll-margin-left': value + unit,
@@ -1737,7 +1738,7 @@ const defaultRules = {
     scrollMarginY: {
         match: '^(?:scroll-margin-y|scroll-my):.',
         unit: 'rem',
-        order: -0.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'scroll-margin-top': value + unit,
@@ -1749,7 +1750,7 @@ const defaultRules = {
         match: '^scroll-m:.',
         native: true,
         unit: 'rem',
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     // scroll padding
     scrollPaddingLeft: {
@@ -1775,7 +1776,7 @@ const defaultRules = {
     scrollPaddingX: {
         match: '^(?:scroll-padding-x|scroll-px):.',
         unit: 'rem',
-        order: -0.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'scroll-padding-left': value + unit,
@@ -1786,7 +1787,7 @@ const defaultRules = {
     scrollPaddingY: {
         match: '^(?:scroll-padding-y|scroll-py):.',
         unit: 'rem',
-        order: -0.5,
+        layer: Layer.CoreShorthand,
         declare(value, unit) {
             return {
                 'scroll-padding-top': value + unit,
@@ -1798,7 +1799,7 @@ const defaultRules = {
         match: '^scroll-p:.',
         native: true,
         unit: 'rem',
-        order: -1
+        layer: Layer.CoreNativeShorthand
     } as RuleConfig,
     // scroll snap
     scrollSnapAlign: {
@@ -1872,7 +1873,7 @@ export interface RuleConfig {
     id?: string
     match?: string
     _resolvedMatch?: RegExp
-    _resolvedOrder?: number
+    order?: number
     separators?: string[]
     colored?: boolean
     unit?: any
@@ -1880,7 +1881,7 @@ export interface RuleConfig {
     _semantic?: boolean
     _declarations?: CSSDeclarations
     _propName?: string
-    order?: number | ((this: Rule, prefix: string) => number),
+    layer?: Layer,
     values?: Values,
     analyze?(this: Rule, className: string): [valueToken: string, prefixToken?: string]
     transform?(this: Rule, value: string): string

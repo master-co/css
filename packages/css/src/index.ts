@@ -1,11 +1,13 @@
 // core
 export { MasterCSS, MasterCSS as default } from './core'
-export { Rule, RuleConfig, RuleMeta, RuleNative, MediaFeatureRule, MediaQuery } from './rule'
+export { Rule, RuleMeta, RuleNative, MediaFeatureRule, MediaQuery } from './rule'
+export { RuleConfig } from './config/rules'
 
 // constants
 export { CONFIG_TEXT } from './constants/config-text'
 export { CONFIG_ESM_TEXT } from './constants/config-esm-text'
 export { CONFIG_TS_TEXT } from './constants/config-ts-text'
+export { Layer } from './layer'
 
 // functions
 export { default as extend } from '@techor/extend'

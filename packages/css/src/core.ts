@@ -7,6 +7,7 @@ import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { camel2Kebab } from './utils/camel-2-kebab'
 import { CSSDeclarations } from './types/css-declarations'
 import { RuleConfig } from './config/rules'
+import { Layer } from './layer'
 
 const COLOR_NAME_OBJECT_PREFIX = '_CNO_'
 
@@ -317,18 +318,18 @@ export class MasterCSS {
                     this._semanticRuleConfigs.push({
                         id: '.' + id,
                         _resolvedMatch: new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'),
-                        _resolvedOrder: index,
+                        order: index,
                         _semantic: true,
                         _declarations: eachSemantic,
-                        order: -2
+                        layer: Layer.Semantic
                     })
                 })
         }
 
         const rulesEntries = Object.entries(rules)
             .sort((a: any, b: any) => {
-                if (a[1].order !== b[1].order) {
-                    return (b[1].order || 0) - (a[1].order || 0)
+                if (a[1].layer !== b[1].layer) {
+                    return (b[1].layer || 0) - (a[1].layer || 0)
                 }
                 return b[0].localeCompare(a[0])
             })
@@ -337,7 +338,7 @@ export class MasterCSS {
         rulesEntries
             .forEach(([id, eachRuleConfig]: [string, RuleConfig], index: number) => {
                 this._orderedRuleConfigs.push(eachRuleConfig)
-                eachRuleConfig._resolvedOrder = this._semanticRuleConfigs.length + rulesEntriesLength - 1 - index
+                eachRuleConfig.order = this._semanticRuleConfigs.length + rulesEntriesLength - 1 - index
                 const { values, colored } = eachRuleConfig
                 let match = eachRuleConfig.match
                 eachRuleConfig.id = id
