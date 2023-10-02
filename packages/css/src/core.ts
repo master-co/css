@@ -1,10 +1,12 @@
 import { extend } from '@techor/extend'
-import { Rule, RuleConfig, RuleMeta, RuleNative } from './rule'
-import type { Colors, Config, Animations, Values } from './config'
+import { Rule, RuleNative } from './rule'
+import type { Colors, Config, Animations, Values, Rules } from './config'
 import { config as defaultConfig } from './config'
 import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { camel2Kebab } from './utils/camel-2-kebab'
+import { CSSDeclarations } from './types/css-declarations'
+import { RuleConfig } from './config/rules'
 
 const COLOR_NAME_OBJECT_PREFIX = '_CNO_'
 
@@ -12,7 +14,6 @@ export interface MasterCSS {
     readonly style: HTMLStyleElement
     readonly host: Element
     readonly root: Document | ShadowRoot
-    semantics: [RegExp, [string, string | Record<string, string>]][]
     classes: Record<string, string[]>
     colorThemesMap: Record<string, Record<string, string>>
     colorNames: string[]
@@ -24,8 +25,6 @@ export interface MasterCSS {
     globalValues: Record<string, string | number>
     viewports: Record<string, number>
     mediaQueries: Record<string, string>
-    matches: Record<string, RegExp>
-    orders: Record<string, number>
     keyframesMap: Record<string, {
         native: RuleNative
         count: number
@@ -49,6 +48,8 @@ export class MasterCSS {
     readonly countBy = {}
     readonly observing = false
     readonly config: Config
+    private readonly _semanticRuleConfigs: RuleConfig[] = []
+    private readonly _orderedRuleConfigs: RuleConfig[] = []
 
     observer: MutationObserver
     private colorByThemeByColorName: Record<string, Record<string, string>>
@@ -66,7 +67,6 @@ export class MasterCSS {
     }
 
     resolve() {
-        this.semantics = []
         this.classes = {}
         this.colorThemesMap = {}
         this.classesBy = {}
@@ -77,12 +77,12 @@ export class MasterCSS {
         this.globalValues = {}
         this.viewports = {}
         this.mediaQueries = {}
-        this.matches = {}
-        this.orders = {}
         this.keyframesMap = {}
         this.animations = {}
+        this._orderedRuleConfigs.length = 0
+        this._semanticRuleConfigs.length = 0
 
-        const { semantics, classes, selectors, colors, values, viewports, mediaQueries, rules, animations, fonts } = this.config
+        const { classes, selectors, colors, values, semantics, viewports, mediaQueries, rules, animations, fonts } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -127,16 +127,6 @@ export class MasterCSS {
                     }
                 }
                 return values as Record<string, string | number>
-            }
-        }
-        if (semantics) {
-            for (const [semanticName, semanticValue] of Object.entries(getFlatData(semantics, true))) {
-                const newSemanticValue = {}
-                for (const propertyName of Object.keys(semanticValue)) {
-                    newSemanticValue[camel2Kebab(propertyName)] = semanticValue[propertyName]
-                }
-
-                this.semantics.push([new RegExp('^' + escapeString(semanticName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'), [semanticName, newSemanticValue]])
             }
         }
         if (selectors) {
@@ -258,7 +248,9 @@ export class MasterCSS {
                             const colorWithAlpha = atIndex !== -1 ? eachColorWithAlphaTheme.slice(0, atIndex) : eachColorWithAlphaTheme
                             const theme = atIndex !== -1 ? eachColorWithAlphaTheme.slice(atIndex + 1) : ''
                             const currentTheme = themeKey.slice(1) || theme
-                            if (eachColorWithAlphaTheme.startsWith('#')) {
+                            if (eachColorWithAlphaTheme.startsWith(COLOR_NAME_OBJECT_PREFIX + 'current')) {
+                                hexColorByTheme[currentTheme] = 'currentColor'
+                            } else if (eachColorWithAlphaTheme.startsWith('#')) {
                                 hexColorByTheme[currentTheme] = colorWithAlpha
                             } else if (eachColorWithAlphaTheme.startsWith(COLOR_NAME_OBJECT_PREFIX)) {
                                 const [replaceColorName, alpha] = colorWithAlpha.slice(COLOR_NAME_OBJECT_PREFIX.length).split('/')
@@ -313,50 +305,62 @@ export class MasterCSS {
                 }
                 return newUnhandledActionByColorName
             }, {})
+
         for (const eachColorName of Object.keys(unhandledActionByColorName)) {
             unhandledActionByColorName[eachColorName]?.()
         }
 
-        if (rules) {
-            const rulesEntries = Object.entries(rules)
-            const rulesEntriesLength = rulesEntries.length
-            Object.entries(rules)
-                .sort((a: any, b: any) => {
-                    if (a[1].order !== b[1].order) {
-                        return  (b[1].order || 0) - (a[1].order || 0)
-                    }
-                    return b[0].localeCompare(a[0])
+        if (semantics) {
+            Object.entries(semantics)
+                .sort((a: any, b: any) => a[0].localeCompare(b[0]))
+                .forEach(([id, eachSemantic]: [string, CSSDeclarations], index: number) => {
+                    this._semanticRuleConfigs.push({
+                        id: '.' + id,
+                        _resolvedMatch: new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'),
+                        _resolvedOrder: index,
+                        _semantic: true,
+                        _declarations: eachSemantic,
+                        order: -2
+                    })
                 })
-                .forEach(([id, eachRuleConfig]: [string, RuleConfig], index: number) => {
-                    this.orders[id] = rulesEntriesLength - 1 - index
-                    const { native, values, colored } = eachRuleConfig
-                    let match = eachRuleConfig.match
-                    eachRuleConfig.id = id
-                    eachRuleConfig.native = native === true ? id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase() : undefined
-                    if (values) {
-                        /**
-                         * rule.order 越大該 rule.values 將優先被解析
-                         * 例如 rules.fontWeight.values 應先被解析才能把結果 values.fontWeight 傳遞給 rules.font.values 訪問
-                         */
-                        this.values[id] = resolveValues(values)
-                    }
-                    if (match) {
-                        const valueNames = Object.keys(this.values[id] ?? {})
-                        if (match.includes('$values')) {
-                            match = valueNames.length
-                                ? match.replace(/\$values/, valueNames.join('|'))
-                                : match.replace(/(?:\|)?\$values/, '')
-                        }
-                        if (colored && match.includes('$colors')) {
-                            match = this.colorNames.length
-                                ? match.replace(/\$colors/, '(?:' + this.colorNames.join('|') + ')' + '(?![0-9A-Za-z])')
-                                : match.replace(/(?:\|)?\$colors/, '')
-                        }
-                        this.matches[id] = new RegExp(match)
-                    }
-                })
-
         }
+
+        const rulesEntries = Object.entries(rules)
+            .sort((a: any, b: any) => {
+                if (a[1].order !== b[1].order) {
+                    return (b[1].order || 0) - (a[1].order || 0)
+                }
+                return b[0].localeCompare(a[0])
+            })
+        const rulesEntriesLength = rulesEntries.length
+
+        rulesEntries
+            .forEach(([id, eachRuleConfig]: [string, RuleConfig], index: number) => {
+                this._orderedRuleConfigs.push(eachRuleConfig)
+                eachRuleConfig._resolvedOrder = this._semanticRuleConfigs.length + rulesEntriesLength - 1 - index
+                const { values, colored } = eachRuleConfig
+                let match = eachRuleConfig.match
+                eachRuleConfig.id = id
+                if (eachRuleConfig.native)
+                    eachRuleConfig._propName = id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
+                if (values) {
+                    this.values[id] = resolveValues(values)
+                }
+                if (match) {
+                    const valueNames = Object.keys(this.values[id] ?? {})
+                    if (match.includes('$values')) {
+                        match = valueNames.length
+                            ? match.replace(/\$values/, valueNames.join('|'))
+                            : match.replace(/(?:\|)?\$values/, '')
+                    }
+                    if (colored && match.includes('$colors')) {
+                        match = this.colorNames.length
+                            ? match.replace(/\$colors/, '(?:' + this.colorNames.join('|') + ')' + '(?![0-9A-Za-z])')
+                            : match.replace(/(?:\|)?\$colors/, '')
+                    }
+                    eachRuleConfig._resolvedMatch = new RegExp(match)
+                }
+            })
     }
 
     /**
@@ -704,40 +708,20 @@ export class MasterCSS {
      * @param syntax class syntax
      * @returns css text
      */
-    match(syntax: string): RuleMeta {
-        for (const id in this.config.rules) {
-            const eachRuleConfig = this.config.rules[id]
-            const match = this.matches[id]
-            const { native } = eachRuleConfig
-            /**
-             * STEP 1. matches
-             */
-            if (match && match.test(syntax)) {
-                return {
-                    origin: 'match',
-                    config: eachRuleConfig,
-                    order: this.orders[id]
-                }
-            }
-            /**
-             * STEP 2. key full syntax
-             */
-            if (native && syntax.startsWith(native + ':')) {
-                return {
-                    origin: 'match',
-                    config: eachRuleConfig,
-                    order: this.orders[id]
-                }
+    match(syntax: string): RuleConfig {
+        // 1. rules
+        for (const eachRuleConfig of this._orderedRuleConfigs) {
+            if (
+                eachRuleConfig._resolvedMatch && eachRuleConfig._resolvedMatch.test(syntax) ||
+                eachRuleConfig.native && syntax.startsWith(eachRuleConfig._propName + ':')
+            ) {
+                return eachRuleConfig
             }
         }
-
-        for (const eachSemanticEntry of this.semantics) {
-            if (syntax.match(eachSemanticEntry[0])) {
-                return {
-                    origin: 'semantics',
-                    value: eachSemanticEntry[1],
-                    order: -2
-                }
+        // 2. semantic rules
+        for (const eachSemanticRuleConfig of this._semanticRuleConfigs) {
+            if (eachSemanticRuleConfig._resolvedMatch.test(syntax)) {
+                return eachSemanticRuleConfig
             }
         }
     }
@@ -752,11 +736,11 @@ export class MasterCSS {
             if (Object.prototype.hasOwnProperty.call(this.ruleBy, eachSyntax))
                 return this.ruleBy[eachSyntax]
 
-            const meta = this.match(eachSyntax)
-            if (meta) {
+            const ruleConfig = this.match(eachSyntax)
+            if (ruleConfig) {
                 return new Rule(
                     eachSyntax,
-                    meta,
+                    ruleConfig,
                     this
                 )
             }

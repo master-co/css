@@ -1,4 +1,4 @@
-import type { CSSProperties } from '../types/css-properties'
+import type { CSSProperties } from '../types/css-declarations'
 
 const animations: Animations = {
     fade: {

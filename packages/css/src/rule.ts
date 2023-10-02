@@ -3,6 +3,8 @@ import type { MasterCSS } from './core'
 import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'shared/utils/css-escape'
 import { transformColorWithOpacity } from './functions/transform-color-with-opacity'
+import { CSSDeclarations } from './types/css-declarations'
+import { RuleConfig } from './config/rules'
 
 const atRuleRegExp = /^(media|supports|page|font-face|keyframes|counter-style|font-feature-values|property|layer)(?=\||{|\(|$)/
 
@@ -14,18 +16,16 @@ export class Rule {
     readonly order: number = 0
 
     animationNames: string[]
-    config: RuleConfig
 
     constructor(
         public readonly className: string,
-        public readonly meta: RuleMeta = {},
+        public readonly config: RuleConfig = {},
         public css: MasterCSS
     ) {
-        this.config = meta.config || {}
-        this.order = meta.order
+        const { unit, colored, _propName, _semantic, analyze, transform, native, declare, _declarations, create, _resolvedOrder, match, id } = this.config
+        this.order = _resolvedOrder
         if (!this.config.unit) this.config.unit = ''
         if (!this.config.separators) this.config.separators = [',']
-        const { unit, colored, native, analyze, transform, declare, create } = this.config
         const { scope, important, functions, themeDriver } = css.config
         const { themeNames, colorNames, colorThemesMap, selectors, viewports, mediaQueries, classesBy, globalValues, animations } = css
         const classNames = classesBy[className]
@@ -33,16 +33,15 @@ export class Rule {
         if (create) create.call(this, className)
 
         // 1. value / selectorToken
-        let declarations: Declarations
+        let declarations: CSSDeclarations
         let hasMultipleThemes: boolean
         let prefixToken: string
         let suffixToken: string
         let valueSplits: (string | { value: string, unit?: string })[]
 
-        if (meta.origin === 'semantics') {
-            const [semanticName, semanticValue] = meta.value
-            suffixToken = className.slice(semanticName.length)
-            declarations = semanticValue as Declarations
+        if (_semantic) {
+            suffixToken = className.slice(id.length - 1)
+            declarations = _declarations
         } else {
             let valueToken: string
             if (analyze) {
@@ -639,15 +638,9 @@ export class Rule {
                     newValue = transform.call(this, newValue, this.css.config)
                 }
 
-                // 9. force transform value
-                if (colored && newValue === 'current') {
-                    newValue = 'currentColor'
-                }
-
                 if (declare) {
                     let value: string
                     let unit: string
-
                     if (valueSplits.length === 1) {
                         const firstValueSplit = valueSplits[0]
                         if (typeof firstValueSplit === 'object') {
@@ -655,17 +648,16 @@ export class Rule {
                             unit = firstValueSplit.unit
                         }
                     }
-
                     declarations = declare.call(this, unit ? value : newValue, unit || '')
                 } else {
                     declarations = {
-                        [native as string]: newValue
+                        [_propName as string]: newValue
                     }
                 }
             }
 
             const propertiesTextByTheme: Record<string, string[]> = {}
-            for (const native in declarations) {
+            for (const eachPropName in declarations) {
                 const push = (theme: string, propertyText: string) => {
                     // animations
                     if (
@@ -695,8 +687,8 @@ export class Rule {
                     }
                 }
 
-                const prefix = native + ':'
-                const declation = declarations[native]
+                const prefix = eachPropName + ':'
+                const declation = declarations[eachPropName]
                 if (typeof declation === 'object') {
                     if (Array.isArray(declation)) {
                         for (const value of declation) {
@@ -833,29 +825,7 @@ export interface MediaQuery {
     type?: string;
 }
 
-export declare type PropValue = string | number
-export declare type Declarations = Record<string, PropValue | PropValue[] | Record<string, PropValue>>
-
 export interface RuleMeta {
-    origin?: 'match' | 'semantics'
     value?: [string, string | Record<string, string>]
     config?: RuleConfig
-    order?: number
-}
-
-export interface RuleConfig {
-    id?: string
-    match?: string
-    separators?: string[]
-    colored?: boolean
-    unit?: any
-    native?: string | true
-    order?: number | ((this: Rule, prefix: string) => number),
-    values?: Values,
-    analyze?(this: Rule, className: string): [valueToken: string, prefixToken?: string]
-    transform?(this: Rule, value: string): string
-    declare?(this: Rule, value: string, unit: string): Record<string, any>
-    delete?(this: Rule, className: string): void
-    create?(this: Rule, className: string): void
-    insert?(this: Rule): void
 }

@@ -8,16 +8,16 @@ it('checks that different input sources should have the same output', () => {
         'font:12',
         'font:semibold',
         'text:center',
-        // 'fixed',
-        // 'block',
-        // 'round',
+        'fixed',
+        'block',
+        'round',
         'b:0'
     ]
     const output = [
         // semantics
-        // 'block',
-        // 'fixed',
-        // 'round',
+        'block',
+        'fixed',
+        'round',
         // native shorthand
         'b:0',
         'm:0',

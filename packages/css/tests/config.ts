@@ -111,9 +111,6 @@ export default {
             'font-size': '0px'
         },
         zero: {
-            h: {
-                'height': 0
-            },
             'font-size': '0px',
             height: '0px'
         }

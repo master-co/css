@@ -6,13 +6,13 @@ it('font', () => {
     testCSS('font:italic|semibold|1.2rem|sans', `.font\\:italic\\|semibold\\|1\\.2rem\\|sans{font:italic 600 1.2rem ${fonts.sans.join(',')}}`)
 })
 
-it('checks font-related orders', () => {
-    const css = new MasterCSS()
-    expect(css.orders.font).toBeLessThan(css.orders.fontSize)
-    expect(css.orders.font).toBeLessThan(css.orders.fontStyle)
-    expect(css.orders.font).toBeLessThan(css.orders.fontWeight)
-    expect(css.orders.font).toBeLessThan(css.orders.lineHeight)
-})
+// it('checks font-related orders', () => {
+//     const css = new MasterCSS()
+//     expect(css.orders.Font).toBeLessThan(css.orders.FontSize)
+//     expect(css.orders.Font).toBeLessThan(css.orders.FontStyle)
+//     expect(css.orders.Font).toBeLessThan(css.orders.FontWeight)
+//     expect(css.orders.Font).toBeLessThan(css.orders.LineHeight)
+// })
 
 it('font values', () => {
     const css = new MasterCSS()

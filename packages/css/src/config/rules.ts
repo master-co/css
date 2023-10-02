@@ -1,7 +1,9 @@
 import cssEscape from 'shared/utils/css-escape'
 import { START_SYMBOLS } from '../constants/start-symbol'
-import { Declarations, Rule, RuleConfig } from '../rule'
+import type { Rule } from '../rule'
 import { transformColorWithOpacity } from '../functions/transform-color-with-opacity'
+import { CSSDeclarations } from 'src/types/css-declarations'
+import type { Values } from './values'
 
 const defaultRules = {
     group: {
@@ -128,7 +130,7 @@ const defaultRules = {
                 }
             }
 
-            const declarations: Declarations = {}
+            const declarations: CSSDeclarations = {}
             for (const theme in propsByTheme) {
                 for (const [eachName, eachValue] of Object.entries(propsByTheme[theme])) {
                     if (eachName in declarations) {
@@ -240,10 +242,7 @@ const defaultRules = {
     color: {
         match: '^(?:color|fg|foreground):.',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     marginLeft: {
         match: '^ml:.',
@@ -410,7 +409,7 @@ const defaultRules = {
             '4xl': 2560
         }
     } as RuleConfig,
-    height: {
+    Height: {
         match: '^h:.',
         unit: 'rem',
         native: true,
@@ -555,12 +554,9 @@ const defaultRules = {
         native: true,
     } as RuleConfig,
     textDecorationColor: {
-        match: '^text-decoration:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^text-decoration:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     textDecorationStyle: {
         match: '^t(?:ext)?:(?:solid|double|dotted|dashed|wavy|$values)(?!\\|)',
@@ -580,9 +576,6 @@ const defaultRules = {
         unit: 'rem',
         native: true,
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         order: -1
     } as RuleConfig,
     textUnderlineOffset: {
@@ -808,10 +801,7 @@ const defaultRules = {
     textShadow: {
         unit: 'rem',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     textSize: {
         match: '^t(?:ext)?:(?:\\.?[0-9]|(?:max|min|calc|clamp)\\(.*\\)|$values)[^|]*$',
@@ -828,11 +818,8 @@ const defaultRules = {
     } as RuleConfig,
     textFillColor: {
         native: true,
-        match: '^(?:text-fill|text|t):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^(?:text-fill|text|t):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         declare(value, unit) {
             return {
                 '-webkit-text-fill-color': value + unit
@@ -849,12 +836,9 @@ const defaultRules = {
         }
     } as RuleConfig,
     textStrokeColor: {
-        match: '^text-stroke:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^text-stroke:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         native: true,
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         declare(value, unit) {
             return {
                 '-webkit-text-stroke-color': value + unit
@@ -874,10 +858,7 @@ const defaultRules = {
         match: '^s(?:hadow)?:.',
         unit: 'rem',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     tableLayout: {
         native: true
@@ -1004,44 +985,29 @@ const defaultRules = {
     } as RuleConfig,
     // border color
     borderTopColor: {
-        match: '^b(?:t|order-top(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^b(?:t|order-top(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     borderBottomColor: {
-        match: '^b(?:b|order-bottom(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^b(?:b|order-bottom(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     borderLeftColor: {
-        match: '^b(?:l|order-left(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^b(?:l|order-left(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     borderRightColor: {
-        match: '^b(?:r|order-right(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^b(?:r|order-right(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     borderXColor: {
-        match: '^b(?:x|order-x(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^b(?:x|order-x(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         order: -.5,
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         declare(value, unit) {
             return {
                 'border-left-color': value + unit,
@@ -1050,12 +1016,9 @@ const defaultRules = {
         }
     } as RuleConfig,
     borderYColor: {
-        match: '^b(?:y|order-y(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^b(?:y|order-y(?:-color)?):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         order: -.5,
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         declare(value, unit) {
             return {
                 'border-top-color': value + unit,
@@ -1064,13 +1027,10 @@ const defaultRules = {
         }
     } as RuleConfig,
     borderColor: {
-        match: '^b(?:order)?(?:-color)?:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^b(?:order)?(?:-color)?:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         native: true,
         order: -1,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     // border radius
     borderTopLeftRadius: {
@@ -1265,9 +1225,6 @@ const defaultRules = {
         native: true,
         unit: 'rem',
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1280,9 +1237,6 @@ const defaultRules = {
         native: true,
         unit: 'rem',
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1295,9 +1249,6 @@ const defaultRules = {
         native: true,
         unit: 'rem',
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1310,9 +1261,6 @@ const defaultRules = {
         native: true,
         unit: 'rem',
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1325,9 +1273,6 @@ const defaultRules = {
         unit: 'rem',
         colored: true,
         order: -.5,
-        values: {
-            current: 'currentColor'
-        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1346,9 +1291,6 @@ const defaultRules = {
         unit: 'rem',
         colored: true,
         order: -.5,
-        values: {
-            current: 'currentColor'
-        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1367,9 +1309,6 @@ const defaultRules = {
         native: true,
         unit: 'rem',
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1386,12 +1325,9 @@ const defaultRules = {
         native: true
     } as RuleConfig,
     backgroundColor: {
-        match: '^(?:bg|background):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^(?:bg|background):(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     backgroundClip: {
         match: '^(?:bg|background):(?:text|$values)(?!\\|)',
@@ -1432,16 +1368,12 @@ const defaultRules = {
         native: true
     } as RuleConfig,
     backgroundImage: {
-        match: '^(?:(?:bg|background):(?:(?:url|linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient)\\(.*\\)|$values)|gradient\\(.*\\))(?!\\|)',
+        match: '^(?:(?:bg|background):(?:(?:url|linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient))|gradient|background-image:$values)\\(.*\\)(?!\\|)',
         native: true,
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         analyze(className: string) {
             if (className.startsWith('gradient'))
                 return ['linear-' + className]
-
             const indexOfColon = className.indexOf(':')
             this.prefix = className.slice(0, indexOfColon + 1)
             return [className.slice(indexOfColon + 1)]
@@ -1451,9 +1383,6 @@ const defaultRules = {
         match: '^bg:.',
         native: true,
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         order: -1
     } as RuleConfig,
     mixBlendMode: {
@@ -1464,9 +1393,6 @@ const defaultRules = {
         match: '^bd:.',
         native: true,
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         declare(value, unit) {
             return {
                 'backdrop-filter': value + unit,
@@ -1477,18 +1403,12 @@ const defaultRules = {
     filter: {
         match: '^(?:blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)\\(',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     fill: {
-        match: '^fill:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^fill:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     strokeDasharray: {
         native: true
@@ -1502,10 +1422,7 @@ const defaultRules = {
     } as RuleConfig,
     stroke: {
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     x: {
         native: true
@@ -1740,12 +1657,9 @@ const defaultRules = {
         order: -1
     } as RuleConfig,
     outlineColor: {
-        match: '^outline:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^outline:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     outlineOffset: {
         unit: 'rem',
@@ -1765,9 +1679,6 @@ const defaultRules = {
         unit: 'rem',
         order: -1,
         colored: true,
-        values: {
-            current: 'currentColor'
-        },
         transform(value) {
             if (!/none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1776,23 +1687,17 @@ const defaultRules = {
         }
     } as RuleConfig,
     accentColor: {
-        match: '^accent:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^accent:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     appearance: {
         native: true
     } as RuleConfig,
     caretColor: {
-        match: '^caret:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|currentColor|inherit|$values|$colors)[^|]*$',
+        match: '^caret:(?:#|(?:rgb|hsl)\\(.*\\)|transparent|inherit|$values|$colors)[^|]*$',
         native: true,
-        colored: true,
-        values: {
-            current: 'currentColor'
-        }
+        colored: true
     } as RuleConfig,
     scrollBehavior: {
         native: true
@@ -1963,8 +1868,29 @@ const defaultRules = {
     } as RuleConfig
 } as const
 
-const rules = defaultRules as Rules
+export interface RuleConfig {
+    id?: string
+    match?: string
+    _resolvedMatch?: RegExp
+    _resolvedOrder?: number
+    separators?: string[]
+    colored?: boolean
+    unit?: any
+    native?: boolean
+    _semantic?: boolean
+    _declarations?: CSSDeclarations
+    _propName?: string
+    order?: number | ((this: Rule, prefix: string) => number),
+    values?: Values,
+    analyze?(this: Rule, className: string): [valueToken: string, prefixToken?: string]
+    transform?(this: Rule, value: string): string
+    declare?(this: Rule, value: string, unit: string): CSSDeclarations
+    delete?(this: Rule, className: string): void
+    create?(this: Rule, className: string): void
+    insert?(this: Rule): void
+}
 
-export default rules
-
-export type Rules = { [key in keyof typeof defaultRules]?: RuleConfig } & { [key: string]: RuleConfig }
+type ExtendedRules = { [key: string]: RuleConfig };
+export type DefaultRules = typeof defaultRules
+export type Rules = ExtendedRules & DefaultRules
+export default defaultRules as Rules

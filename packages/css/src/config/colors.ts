@@ -3,6 +3,7 @@ import fillColorScale from '../functions/fill-color-scale'
 const colors: Colors = {
     black: '#000000',
     white: '#ffffff',
+    current: 'currentColor',
     slate: fillColorScale({
         5: '#141e2b',
         10: '#19212d',

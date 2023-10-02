@@ -1,3 +1,5 @@
+import type { Config } from '.'
 import type { MasterCSS } from '../core'
 
-export type Values = { [key: string]: string | number | Values } | ((this: MasterCSS, resolvedValues: Record<string, Record<string, string | number>>) => Values)
+type ExtendedValues = { [key: string]: string | number | Values }
+export type Values = ExtendedValues | ((this: MasterCSS, resolvedValues: Record<string, Record<string, string | number>>) => ExtendedValues)
