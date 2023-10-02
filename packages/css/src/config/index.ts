@@ -6,7 +6,7 @@ import animations from './animations'
 import rules, { type Rules } from './rules'
 import functions from './functions'
 import fonts from './fonts'
-import { CSSDeclarations } from 'src/types/css-declarations'
+import { CSSDeclarations } from '../types/css-declarations'
 import type { Rule } from '../rule'
 import type { MasterCSS } from '../core'
 

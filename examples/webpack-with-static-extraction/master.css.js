@@ -2,7 +2,6 @@
 module.exports = {
     classes: {},
     colors: {},
-    themes: {},
     rules: {},
     values: {},
     semantics: {},

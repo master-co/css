@@ -2,7 +2,6 @@
 export default {
     classes: {},
     colors: {},
-    themes: {},
     rules: {},
     values: {},
     semantics: {},
