@@ -1,6 +1,4 @@
-import type { CSSDeclarations } from '../types/css-declarations'
-
-const defaultSemantics = {
+const semantics = {
     square: {
         'aspect-ratio': '1/1'
     },
@@ -191,7 +189,4 @@ const defaultSemantics = {
     }
 } as const
 
-const semantics = defaultSemantics as Semantics
-
 export default semantics
-export type Semantics = { [key in keyof typeof defaultSemantics]?: CSSDeclarations } & { [key: string]: CSSDeclarations }

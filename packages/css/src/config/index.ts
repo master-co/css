@@ -1,82 +1,66 @@
-import viewports, { type Viewports } from './viewports'
-import colors, { type Colors } from './colors'
-import selectors, { type Selectors } from './selectors'
-import semantics, { type Semantics } from './semantics'
-import animations, { type Animations } from './animations'
+import viewports from './viewports'
+import colors from './colors'
+import selectors from './selectors'
+import semantics from './semantics'
+import animations from './animations'
 import rules, { type Rules } from './rules'
-import functions, { type Functions } from './functions'
-import rootSize from './root-size'
-import scope from './scope'
-import override from './override'
+import functions from './functions'
 import fonts from './fonts'
-import important from './important'
-import themeDriver, { type ThemeDriver } from './theme-driver'
-import type { MediaQueries } from './media-queries'
-import type { Values } from './values'
-import type { Classes } from './classes'
-import type { Fonts } from './fonts'
+import { CSSDeclarations } from 'src/types/css-declarations'
+import type { Rule } from '../rule'
+import type { MasterCSS } from '../core'
 
 const config: Config = {
     viewports,
     colors,
-    rootSize,
-    scope,
     selectors,
     semantics,
     rules,
     fonts,
-    override,
-    important,
     functions,
     animations,
-    themeDriver
+    scope: '',
+    rootSize: 16,
+    override: false,
+    important: false,
+    themeDriver: 'class'
 }
 
 export {
     config,
     viewports,
     colors,
-    rootSize,
-    scope,
     selectors,
     semantics,
     rules,
     fonts,
-    override,
-    important,
     functions,
     animations,
-    themeDriver,
-    Viewports,
-    Colors,
-    MediaQueries,
-    Values,
-    Classes,
-    Selectors,
-    Semantics,
-    Rules,
-    Fonts,
-    Functions,
-    Animations,
-    ThemeDriver
+    Rules
 }
+
+type ExtendedValues = { [key: string]: string | number | ExtendedValues }
 
 export interface Config {
     extends?: (Config | { config: Config })[]
-    classes?: Classes
-    colors?: Colors
-    viewports?: Viewports
-    mediaQueries?: MediaQueries
-    selectors?: Selectors
-    semantics?: Semantics
-    values?: Values
-    fonts?: Fonts
+    classes?: { [key: string]: string | Config['classes'] }
+    colors?: { [key: string]: string | Config['colors'] }
+    viewports?: { [key: string]: number | Config['viewports'] }
+    mediaQueries?: { [key: string]: string | Config['mediaQueries'] }
+    selectors?: { [key: string]: string | string[] | Config['selectors'] }
+    semantics?: { [key in keyof typeof semantics]?: CSSDeclarations } & { [key: string]: CSSDeclarations }
+    values?: ExtendedValues | ((this: MasterCSS, resolvedValues: Record<string, Record<string, string | number>>) => ExtendedValues)
+    fonts?: { [key: string]: string | string[] } | ((css: MasterCSS) => Config['fonts'])
     rules?: Rules
     rootSize?: number
     scope?: string
     important?: boolean
     override?: boolean
-    functions?: Functions
-    animations?: Animations
-    themeDriver?: ThemeDriver
+    functions?: Record<string, {
+        unit?: string
+        name?: string
+        transform?(this: Rule, value: string): string
+    }>,
+    animations?: Record<string, { [key in 'from' | 'to']?: CSSDeclarations } & { [key: string]: CSSDeclarations }>
+    themeDriver?: 'class' | 'media' | 'host'
 }

@@ -1,10 +1,9 @@
 import { extend } from '@techor/extend'
 import { Rule, RuleNative } from './rule'
-import type { Colors, Config, Animations, Values, Rules } from './config'
+import type { Config } from './config'
 import { config as defaultConfig } from './config'
 import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
-import { camel2Kebab } from './utils/camel-2-kebab'
 import { CSSDeclarations } from './types/css-declarations'
 import { RuleConfig } from './config/rules'
 import { Layer } from './layer'
@@ -30,7 +29,7 @@ export interface MasterCSS {
         native: RuleNative
         count: number
     }>
-    animations: Animations
+    animations: Config['animations']
 }
 
 export class MasterCSS {
@@ -117,7 +116,7 @@ export class MasterCSS {
 
             return newData
         }
-        const resolveValues = (values: Values) => {
+        const resolveValues = (values: Config['values']) => {
             if (typeof values === 'function') {
                 return getFlatData(values.call(this, this.values), false)
             } else {
@@ -176,7 +175,7 @@ export class MasterCSS {
                     const newValueByPropertyName = newValueByPropertyNameByKeyframeName[animationName] = {}
                     const valueByPropertyName = valueByPropertyNameByKeyframeName[animationName]
                     for (const propertyName in valueByPropertyName) {
-                        newValueByPropertyName[camel2Kebab(propertyName)] = valueByPropertyName[propertyName]
+                        newValueByPropertyName[propertyName] = valueByPropertyName[propertyName]
                     }
                 }
             }
@@ -342,8 +341,9 @@ export class MasterCSS {
                 const { values, colored } = eachRuleConfig
                 let match = eachRuleConfig.match
                 eachRuleConfig.id = id
-                if (eachRuleConfig.native)
+                if (eachRuleConfig.layer === Layer.CoreNative || eachRuleConfig.layer === Layer.CoreNativeShorthand) {
                     eachRuleConfig._propName = id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
+                }
                 if (values) {
                     this.values[id] = resolveValues(values)
                 }
@@ -714,7 +714,7 @@ export class MasterCSS {
         for (const eachRuleConfig of this._orderedRuleConfigs) {
             if (
                 eachRuleConfig._resolvedMatch && eachRuleConfig._resolvedMatch.test(syntax) ||
-                eachRuleConfig.native && syntax.startsWith(eachRuleConfig._propName + ':')
+                (eachRuleConfig.layer === Layer.CoreNative || eachRuleConfig.layer === Layer.CoreNativeShorthand) && syntax.startsWith(eachRuleConfig._propName + ':')
             ) {
                 return eachRuleConfig
             }
@@ -1254,7 +1254,7 @@ export class MasterCSS {
 
             // colors
             if (clonedConfig.colors) {
-                const handleDeeply = (colors: Colors, parentColorName: string) => {
+                const handleDeeply = (colors: Config['colors'], parentColorName: string) => {
                     const handle = (colorName: string, entries: [string, string][], single: boolean) => {
                         if (!Object.prototype.hasOwnProperty.call(this.colorByThemeByColorName, colorName)) {
                             this.colorByThemeByColorName[colorName] = {}

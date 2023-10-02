@@ -1,6 +1,6 @@
-import type { CSSProperties } from '../types/css-declarations'
+import type { Config } from '.'
 
-const animations: Animations = {
+const animations: Config['animations'] = {
     fade: {
         '0%': { opacity: 0 },
         to: { opacity: 1 }
@@ -24,11 +24,11 @@ const animations: Animations = {
     jump: {
         '0%,to': {
             transform: 'translateY(-25%)',
-            animationTimingFunction: 'cubic-bezier(.8,0,1,1)'
+            'animation-timing-function': 'cubic-bezier(.8,0,1,1)'
         },
         '50%': {
             transform: 'translateY(0)',
-            animationTimingFunction: 'cubic-bezier(0,0,.2,1)'
+            'animation-timing-function': 'cubic-bezier(0,0,.2,1)'
         }
     },
     ping: {
@@ -61,5 +61,3 @@ const animations: Animations = {
 }
 
 export default animations
-
-export type Animations = Record<string, { [key in 'from' | 'to']?: CSSProperties } & { [key: string]: CSSProperties }>

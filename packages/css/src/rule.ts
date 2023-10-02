@@ -1,4 +1,3 @@
-import type { Values } from './config'
 import type { MasterCSS } from './core'
 import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'shared/utils/css-escape'
@@ -22,7 +21,7 @@ export class Rule {
         public readonly config: RuleConfig = {},
         public css: MasterCSS
     ) {
-        const { unit, colored, _propName, _semantic, analyze, transform, native, declare, _declarations, create, order, match, id } = this.config
+        const { unit, colored, _propName, _semantic, analyze, transform, declare, _declarations, create, order, id } = this.config
         this.order = order
         if (!this.config.unit) this.config.unit = ''
         if (!this.config.separators) this.config.separators = [',']

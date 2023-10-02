@@ -1,4 +1,6 @@
-const selectors: Selectors = {
+import type { Config } from '.'
+
+const selectors: Config['selectors'] = {
     '::scrollbar': '::-webkit-scrollbar',
     '::scrollbar-button': '::-webkit-scrollbar-button',
     '::scrollbar-thumb': '::-webkit-scrollbar-thumb',
@@ -19,5 +21,3 @@ const selectors: Selectors = {
 }
 
 export default selectors
-
-export type Selectors = { [key: string]: string | string[] | Selectors }

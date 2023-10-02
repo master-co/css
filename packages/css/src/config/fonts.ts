@@ -1,6 +1,6 @@
-import type { MasterCSS } from '../core'
+import type { Config } from '.'
 
-const fonts = {
+const fonts: Config['fonts'] = {
     mono: [
         'ui-monospace',
         'SFMono-Regular',
@@ -38,5 +38,3 @@ const fonts = {
 }
 
 export default fonts
-
-export type Fonts = { [key: string]: string | string[] } | ((css: MasterCSS) => Fonts)
