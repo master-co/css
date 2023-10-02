@@ -1,17 +1,17 @@
-import type { CSSProperties } from '../types/css-properties'
+import type { CSSDeclarations } from '../types/css-declarations'
 
-const semantics: Semantics = {
+const defaultSemantics = {
     square: {
-        aspectRatio: '1/1'
+        'aspect-ratio': '1/1'
     },
     video: {
-        aspectRatio: '16/9'
+        'aspect-ratio': '16/9'
     },
     rounded: {
-        borderRadius: '1e9em'
+        'border-radius': '1e9em'
     },
     round: {
-        borderRadius: '50%'
+        'border-radius': '50%'
     },
     hidden: {
         display: 'none'
@@ -80,10 +80,10 @@ const semantics: Semantics = {
         display: 'table-footer-group'
     },
     italic: {
-        fontStyle: 'italic'
+        'font-style': 'italic'
     },
     oblique: {
-        fontStyle: 'oblique'
+        'font-style': 'oblique'
     },
     isolate: {
         isolation: 'isolate'
@@ -92,7 +92,7 @@ const semantics: Semantics = {
         overflow: 'visible'
     },
     untouchable: {
-        pointerEvents: 'none'
+        'pointer-events': 'none'
     },
     static: {
         position: 'static'
@@ -110,13 +110,13 @@ const semantics: Semantics = {
         position: 'sticky'
     },
     uppercase: {
-        textTransform: 'uppercase'
+        'text-transform': 'uppercase'
     },
     lowercase: {
-        textTransform: 'lowercase'
+        'text-transform': 'lowercase'
     },
     capitalize: {
-        textTransform: 'capitalize'
+        'text-transform': 'capitalize'
     },
     visible: {
         visibility: 'visible'
@@ -131,20 +131,20 @@ const semantics: Semantics = {
         height: '100vh'
     },
     'max-vw': {
-        maxWidth: '100vw'
+        'max-width': '100vw'
     },
     'max-vh': {
-        maxHeight: '100vh'
+        'max-height': '100vh'
     },
     'min-vw': {
-        minWidth: '100vw'
+        'min-width': '100vw'
     },
     'min-vh': {
-        minHeight: '100vh'
+        'min-height': '100vh'
     },
     'center-content': {
-        justifyContent: 'center',
-        alignItems: 'center',
+        'justify-content': 'center',
+        'align-items': 'center',
     },
     'sr-only': {
         position: 'absolute',
@@ -154,8 +154,8 @@ const semantics: Semantics = {
         margin: '-1px',
         overflow: 'hidden',
         clip: 'rect(0,0,0,0)',
-        whiteSpace: 'nowrap',
-        borderWidth: '0'
+        'white-space': 'nowrap',
+        'border-width': '0'
     },
     full: {
         width: '100%',
@@ -164,34 +164,34 @@ const semantics: Semantics = {
     center: {
         left: 0,
         right: 0,
-        marginLeft: 'auto',
-        marginRight: 'auto'
+        'margin-left': 'auto',
+        'margin-right': 'auto'
     },
     middle: {
         top: 0,
         bottom: 0,
-        marginTop: 'auto',
-        marginBottom: 'auto'
+        'margin-top': 'auto',
+        'margin-bottom': 'auto'
     },
     'break-spaces': {
-        whiteSpace: 'break-spaces'
+        'white-space': 'break-spaces'
     },
     'break-word': {
-        overflowWrap: 'break-word',
+        'overflow-wrap': 'break-word',
         overflow: 'hidden'
     },
     'gradient-text': {
-        WebkitTextFillColor: 'transparent',
-        WebkitBackgroundClip: 'text',
-        backgroundClip: 'text'
+        '-webkit-text-fill-color': 'transparent',
+        '-webkit-background-clip': 'text',
+        'background-clip': 'text'
     },
     fit: {
         width: 'fit-content',
         height: 'fit-content'
     }
-}
+} as const
+
+const semantics = defaultSemantics as Semantics
 
 export default semantics
-
-type SemanticsBase = CSSProperties | { [key: string]: SemanticsBase }
-export type Semantics = { [key: string]: SemanticsBase }
+export type Semantics = { [key in keyof typeof defaultSemantics]?: CSSDeclarations } & { [key: string]: CSSDeclarations }
