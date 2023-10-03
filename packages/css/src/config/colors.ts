@@ -1,8 +1,10 @@
 import fillColorScale from '../functions/fill-color-scale'
+import type { Config } from '.'
 
-const colors: Colors = {
+const colors: Config['colors']  = {
     black: '#000000',
     white: '#ffffff',
+    current: 'currentColor',
     slate: fillColorScale({
         5: '#141e2b',
         10: '#19212d',
@@ -265,5 +267,3 @@ const colors: Colors = {
 }
 
 export default colors
-
-export type Colors = { [key: string]: string | Colors }

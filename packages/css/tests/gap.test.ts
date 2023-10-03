@@ -9,6 +9,6 @@ it('validates gap rules', () => {
 it('checks gap order', () => {
     expectOrderOfRules(
         ['gap-x:0', 'gap:0', 'gap-y:0'],
-        ['gap:0', 'gap-y:0', 'gap-x:0']
+        ['gap:0', 'gap-x:0', 'gap-y:0']
     )
 })

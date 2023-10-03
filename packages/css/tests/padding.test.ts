@@ -3,7 +3,7 @@ import { expectOrderOfRules, testProp } from './css'
 it('checks padding order', () => {
     expectOrderOfRules(
         ['px:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'py:0'],
-        ['p:0', 'py:0', 'px:0', 'pb:0', 'pt:0', 'pr:0', 'pl:0']
+        ['p:0', 'px:0', 'py:0', 'pb:0', 'pl:0', 'pr:0', 'pt:0']
     )
 })
 

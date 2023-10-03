@@ -3,7 +3,7 @@ import { expectOrderOfRules, testProp } from './css'
 it('checks scroll-padding order', () => {
     expectOrderOfRules(
         ['scroll-px:0', 'scroll-pl:0', 'scroll-pr:0', 'scroll-p:0', 'scroll-pt:0', 'scroll-pb:0', 'scroll-py:0'],
-        ['scroll-p:0', 'scroll-py:0', 'scroll-px:0', 'scroll-pb:0', 'scroll-pt:0', 'scroll-pr:0', 'scroll-pl:0']
+        ['scroll-p:0', 'scroll-px:0', 'scroll-py:0', 'scroll-pb:0', 'scroll-pl:0', 'scroll-pr:0', 'scroll-pt:0']
     )
 })
 

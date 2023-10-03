@@ -1,6 +1,6 @@
-import { Rule } from '../rule'
+import type { Config } from '.'
 
-const functions: Functions = {
+const functions: Config['functions'] = {
     $: {
         name: 'var',
         transform(value) {
@@ -137,11 +137,3 @@ const functions: Functions = {
 }
 
 export default functions
-
-export interface FunctionConfig {
-    unit?: string
-    name?: string
-    transform?(this: Rule, value: string): string
-}
-
-export type Functions = Record<string, FunctionConfig>
