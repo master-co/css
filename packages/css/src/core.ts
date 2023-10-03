@@ -6,7 +6,7 @@ import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { CSSDeclarations } from './types/css-declarations'
 import { RuleConfig } from './config/rules'
-import { Layer } from './layer'
+import { CoreLayer, Layer } from './layer'
 
 const COLOR_NAME_OBJECT_PREFIX = '_CNO_'
 
@@ -320,7 +320,7 @@ export class MasterCSS {
                         order: index,
                         _semantic: true,
                         _declarations: eachSemantic,
-                        layer: Layer.Semantic
+                        layer: CoreLayer.Semantic
                     })
                 })
         }
@@ -341,7 +341,12 @@ export class MasterCSS {
                 const { values, colored } = eachRuleConfig
                 let match = eachRuleConfig.match
                 eachRuleConfig.id = id
-                if (eachRuleConfig.layer === Layer.CoreNative || eachRuleConfig.layer === Layer.CoreNativeShorthand) {
+                if (
+                    eachRuleConfig.layer === Layer.Native ||
+                    eachRuleConfig.layer === Layer.NativeShorthand ||
+                    eachRuleConfig.layer === CoreLayer.Native ||
+                    eachRuleConfig.layer === CoreLayer.NativeShorthand
+                ) {
                     eachRuleConfig._propName = id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
                 }
                 if (values) {
@@ -714,7 +719,7 @@ export class MasterCSS {
         for (const eachRuleConfig of this._orderedRuleConfigs) {
             if (
                 eachRuleConfig._resolvedMatch && eachRuleConfig._resolvedMatch.test(syntax) ||
-                (eachRuleConfig.layer === Layer.CoreNative || eachRuleConfig.layer === Layer.CoreNativeShorthand) && syntax.startsWith(eachRuleConfig._propName + ':')
+                (eachRuleConfig.layer === CoreLayer.Native || eachRuleConfig.layer === CoreLayer.NativeShorthand) && syntax.startsWith(eachRuleConfig._propName + ':')
             ) {
                 return eachRuleConfig
             }
