@@ -149,20 +149,7 @@ const rules = {
     } as RuleConfig,
     variable: {
         match: /^\$[^ (){}A-Z]+:[^ ]/, // don't use 'rem' as default, because css variable is common API
-        transform(value) {
-            const regexp = new RegExp(`^((?:${this.css.colorNames.join('|')})(?:-(?:[0-9A-Za-z-]+))?)(?:\\/(\\.?[0-9]+%?))?(?:@(.*?))?$`, 'm')
-            const result = regexp.exec(value)
-            if (result) {
-                const [, colorName, opacityStr, themeName] = result
-                const color = this.css.colors[colorName]?.[themeName || '']
-                if (color)
-                    return (opacityStr
-                        ? transformColorWithOpacity(color, opacityStr)
-                        : color)
-            }
-
-            return value
-        },
+        colored: true,
         declare(value) {
             return {
                 ['--' + this.prefix.slice(1, -1)]: value
