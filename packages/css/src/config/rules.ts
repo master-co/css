@@ -171,7 +171,7 @@ const rules = {
     } as RuleConfig,
     fontSize: {
         match: ['f(?:ont)?'],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         layer: CoreLayer.Native
     } as RuleConfig,
@@ -244,7 +244,7 @@ const rules = {
     color: {
         match: /^(?:color|fg|foreground):./,
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     marginLeft: {
         match: /^ml:./,
@@ -576,7 +576,7 @@ const rules = {
     textDecorationColor: {
         match: ['text-decoration'],
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     textDecorationStyle: {
         match: ['t(?:ext)?', ['solid', 'double', 'dotted', 'dashed', 'wavy']],
@@ -584,7 +584,7 @@ const rules = {
     } as RuleConfig,
     textDecorationThickness: {
         match: ['text-decoration', ['from-font']],
-        type: 'numeric',
+        numeric: true,
         layer: CoreLayer.Native,
         unit: 'em'
     } as RuleConfig,
@@ -595,7 +595,7 @@ const rules = {
     textDecoration: {
         match: ['t(?:ext)?', ['underline', 'overline', 'line-through']],
         unit: 'rem',
-        type: 'color',
+        colored: true,
         layer: CoreLayer.NativeShorthand
     } as RuleConfig,
     textUnderlineOffset: {
@@ -809,11 +809,11 @@ const rules = {
     textShadow: {
         unit: 'rem',
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     textSize: {
         match: ['t(?:ext)?'],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         declare(value, unit) {
             const diff = .875
@@ -828,7 +828,7 @@ const rules = {
     textFillColor: {
         match: ['(?:text-fill|text|t)'],
         layer: CoreLayer.Native,
-        type: 'color',
+        colored: true,
         declare(value, unit) {
             return {
                 '-webkit-text-fill-color': value + unit
@@ -837,7 +837,7 @@ const rules = {
     } as RuleConfig,
     textStrokeWidth: {
         match: ['text-stroke', ['thin', 'medium', 'thick']],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         layer: CoreLayer.Native,
         declare(value, unit) {
@@ -849,7 +849,7 @@ const rules = {
     textStrokeColor: {
         match: ['text-stroke'],
         layer: CoreLayer.Native,
-        type: 'color',
+        colored: true,
         declare(value, unit) {
             return {
                 '-webkit-text-stroke-color': value + unit
@@ -869,7 +869,7 @@ const rules = {
         match: /^s(?:hadow)?:./,
         unit: 'rem',
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     tableLayout: {
         layer: CoreLayer.Native
@@ -892,7 +892,7 @@ const rules = {
     } as RuleConfig,
     transformOrigin: {
         match: ['transform', ['top', 'bottom', 'right', 'left', 'center']],
-        type: 'numeric',
+        numeric: true,
         unit: 'px',
         layer: CoreLayer.Native
     } as RuleConfig,
@@ -997,27 +997,27 @@ const rules = {
     borderTopColor: {
         match: ['b(?:t|order-top(?:-color)?)'],
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     borderBottomColor: {
         match: ['b(?:b|order-bottom(?:-color)?)'],
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     borderLeftColor: {
         match: ['b(?:l|order-left(?:-color)?)'],
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     borderRightColor: {
         match: ['b(?:r|order-right(?:-color)?)'],
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     borderXColor: {
         match: ['b(?:x|order-x(?:-color)?)'],
         layer: CoreLayer.Shorthand,
-        type: 'color',
+        colored: true,
         declare(value, unit) {
             return {
                 'border-left-color': value + unit,
@@ -1028,7 +1028,7 @@ const rules = {
     borderYColor: {
         match: ['b(?:y|order-y(?:-color)?)'],
         layer: CoreLayer.Shorthand,
-        type: 'color',
+        colored: true,
         declare(value, unit) {
             return {
                 'border-top-color': value + unit,
@@ -1039,7 +1039,7 @@ const rules = {
     borderColor: {
         match: ['b(?:order)?(?:-color)?'],
         layer: CoreLayer.NativeShorthand,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     // border radius
     borderTopLeftRadius: {
@@ -1155,31 +1155,31 @@ const rules = {
     // border width
     borderTopWidth: {
         match: ['b(?:t|order-top(?:-width)?)'],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         layer: CoreLayer.Native,
     } as RuleConfig,
     borderBottomWidth: {
         match: ['b(?:b|order-bottom(?:-width)?)'],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         layer: CoreLayer.Native,
     } as RuleConfig,
     borderLeftWidth: {
         match: ['b(?:l|order-left(?:-width)?)'],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         layer: CoreLayer.Native,
     } as RuleConfig,
     borderRightWidth: {
         match: ['b(?:r|order-right(?:-width)?)'],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         layer: CoreLayer.Native,
     } as RuleConfig,
     borderXWidth: {
         match: ['b(?:x|order-x(?:-width)?)'],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -1191,7 +1191,7 @@ const rules = {
     } as RuleConfig,
     borderYWidth: {
         match: ['b(?:y|order-y(?:-width)?)'],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -1203,7 +1203,7 @@ const rules = {
     } as RuleConfig,
     borderWidth: {
         match: ['b(?:order)?(?:-width)?'],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         layer: CoreLayer.NativeShorthand
     } as RuleConfig,
@@ -1225,7 +1225,7 @@ const rules = {
     } as RuleConfig,
     borderImageWidth: {
         match: ['border-image', ['auto']],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         layer: CoreLayer.Native
     } as RuleConfig,
@@ -1237,7 +1237,7 @@ const rules = {
         match: /^bt:./,
         layer: CoreLayer.Native,
         unit: 'rem',
-        type: 'color',
+        colored: true,
         transform(value) {
             if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1249,7 +1249,7 @@ const rules = {
         match: /^bb:./,
         layer: CoreLayer.Native,
         unit: 'rem',
-        type: 'color',
+        colored: true,
         transform(value) {
             if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1261,7 +1261,7 @@ const rules = {
         match: /^bl:./,
         layer: CoreLayer.Native,
         unit: 'rem',
-        type: 'color',
+        colored: true,
         transform(value) {
             if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1273,7 +1273,7 @@ const rules = {
         match: /^br:./,
         layer: CoreLayer.Native,
         unit: 'rem',
-        type: 'color',
+        colored: true,
         transform(value) {
             if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1284,7 +1284,7 @@ const rules = {
     borderX: {
         match: /^(?:bx|border-x):./,
         unit: 'rem',
-        type: 'color',
+        colored: true,
         layer: CoreLayer.Shorthand,
         transform(value) {
             if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
@@ -1302,7 +1302,7 @@ const rules = {
     borderY: {
         match: /^(?:by|border-y):./,
         unit: 'rem',
-        type: 'color',
+        colored: true,
         layer: CoreLayer.Shorthand,
         transform(value) {
             if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
@@ -1320,7 +1320,7 @@ const rules = {
     border: {
         match: /^b:./,
         unit: 'rem',
-        type: 'color',
+        colored: true,
         transform(value) {
             if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1339,7 +1339,7 @@ const rules = {
     backgroundColor: {
         match: ['(?:bg|background)'],
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     backgroundClip: {
         match: ['(?:bg|background)', ['text']],
@@ -1376,7 +1376,7 @@ const rules = {
     } as RuleConfig,
     backgroundSize: {
         match: ['(?:bg|background)', ['auto', 'cover', 'contain']],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         layer: CoreLayer.Native
     } as RuleConfig,
@@ -1386,13 +1386,13 @@ const rules = {
     } as RuleConfig,
     background: {
         match: /^bg:./,
-        type: 'color',
+        colored: true,
         layer: CoreLayer.NativeShorthand
     } as RuleConfig,
     gradient: {
         match: /^gradient\(/,
         layer: CoreLayer.Native,
-        type: 'color',
+        colored: true,
         declare(value) {
             console.log(value)
             return {
@@ -1407,7 +1407,7 @@ const rules = {
     backdropFilter: {
         match: /^bd:./,
         layer: CoreLayer.Native,
-        type: 'color',
+        colored: true,
         declare(value, unit) {
             return {
                 'backdrop-filter': value + unit,
@@ -1418,12 +1418,12 @@ const rules = {
     filter: {
         match: /^(?:blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)\(/,
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     fill: {
         match: /^fill:./,
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     strokeDasharray: {
         layer: CoreLayer.Native
@@ -1433,12 +1433,12 @@ const rules = {
     } as RuleConfig,
     strokeWidth: {
         stroke: ['stroke-width'],
-        type: 'numeric',
+        numeric: true,
         layer: CoreLayer.Native
     } as RuleConfig,
     stroke: {
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     x: {
         layer: CoreLayer.Native
@@ -1655,7 +1655,7 @@ const rules = {
     outlineColor: {
         match: ['outline'],
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     outlineOffset: {
         unit: 'rem',
@@ -1667,14 +1667,14 @@ const rules = {
     } as RuleConfig,
     outlineWidth: {
         match: ['outline', ['medium', 'thick', 'thin']],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         layer: CoreLayer.Native
     } as RuleConfig,
     outline: {
         unit: 'rem',
         layer: CoreLayer.NativeShorthand,
-        type: 'color',
+        colored: true,
         transform(value) {
             if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
                 value += ' solid'
@@ -1685,7 +1685,7 @@ const rules = {
     accentColor: {
         match: /^accent:./,
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     appearance: {
         layer: CoreLayer.Native
@@ -1693,7 +1693,7 @@ const rules = {
     caretColor: {
         match: /^caret:./,
         layer: CoreLayer.Native,
-        type: 'color'
+        colored: true
     } as RuleConfig,
     scrollBehavior: {
         layer: CoreLayer.Native
@@ -1829,7 +1829,7 @@ const rules = {
     } as RuleConfig,
     shapeMargin: {
         match: ['shape'],
-        type: 'numeric',
+        numeric: true,
         unit: 'rem',
         layer: CoreLayer.Native
     } as RuleConfig,

@@ -21,7 +21,7 @@ export class Rule {
         public readonly config: RuleConfig = {},
         public css: MasterCSS
     ) {
-        const { unit, type, _propName, _semantic, analyze, transform, declare, _declarations, create, order, id } = this.config
+        const { unit, colored, numeric, _propName, _semantic, analyze, transform, declare, _declarations, create, order, id } = this.config
         this.order = order
         if (!this.config.unit) this.config.unit = ''
         if (!this.config.separators) this.config.separators = [',']
@@ -560,7 +560,7 @@ export class Rule {
 
                 let cssText = getCssText(theme, className)
                     + (classNames
-                        ? classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? ((type === 'color' || hasMultipleThemes) ? theme : ''), className), '')
+                        ? classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? ((colored || hasMultipleThemes) ? theme : ''), className), '')
                         : '')
                     + '{'
                     + propertiesText
@@ -589,7 +589,7 @@ export class Rule {
                         let token = eachValueToken.value
                         if (eachValueToken.unit) {
                             token += eachValueToken.unit
-                        } else if (type === 'color' && colors && colorNames) {
+                        } else if (colored && colors && colorNames) {
                             let anyMatched = false
                             token = token.replace(
                                 css.colorTokenRegExp,
@@ -724,7 +724,7 @@ export class Rule {
 
         if (this.theme) {
             insertNewNative(this.theme, false)
-        } else if (type === 'color') {
+        } else if (colored) {
             for (const eachThemeName of themeNames) {
                 insertNewNative(eachThemeName, true)
             }

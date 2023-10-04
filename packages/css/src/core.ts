@@ -339,7 +339,7 @@ export class MasterCSS {
             .forEach(([id, eachRuleConfig]: [string, RuleConfig], index: number) => {
                 this._orderedRuleConfigs.push(eachRuleConfig)
                 eachRuleConfig.order = this._semanticRuleConfigs.length + rulesEntriesLength - 1 - index
-                const { values, type } = eachRuleConfig
+                const { values } = eachRuleConfig
                 const match = eachRuleConfig.match
                 eachRuleConfig.id = id
                 if (
@@ -363,16 +363,14 @@ export class MasterCSS {
                         if (this.values[id]) {
                             valueMatches.push(`(?:${Object.keys(this.values[id]).join('|')})\\b`)
                         }
-                        switch (eachRuleConfig.type) {
-                            case 'color':
-                                valueMatches.push('#', '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)')
-                                if (this.colorNames.length) {
-                                    valueMatches.push(`(?:${this.colorNames.join('|')})\\b`)
-                                }
-                                break
-                            case 'numeric':
-                                valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
-                                break
+                        if (eachRuleConfig.colored) {
+                            valueMatches.push('#', '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)')
+                            if (this.colorNames.length) {
+                                valueMatches.push(`(?:${this.colorNames.join('|')})\\b`)
+                            }
+                        }
+                        if (eachRuleConfig.numeric) {
+                            valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
                         }
                         eachRuleConfig._resolvedMatch = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
                     } else {

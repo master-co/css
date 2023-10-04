@@ -47,7 +47,8 @@ export interface RuleConfig {
     _resolvedMatch?: RegExp
     order?: number
     separators?: string[]
-    type?: 'color' | 'numeric',
+    colored?: boolean
+    numeric?: boolean
     unit?: any
     native?: boolean
     _semantic?: boolean
