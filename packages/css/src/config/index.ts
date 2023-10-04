@@ -3,12 +3,13 @@ import colors from './colors'
 import selectors from './selectors'
 import semantics from './semantics'
 import animations from './animations'
-import rules, { RuleConfig, type Rules } from './rules'
+import rules from './rules'
 import functions from './functions'
 import fonts from './fonts'
 import { CSSDeclarations } from '../types/css-declarations'
 import type { Rule } from '../rule'
 import type { MasterCSS } from '../core'
+import { CoreLayer, Layer } from '../layer'
 
 const config: Config = {
     viewports,
@@ -35,11 +36,32 @@ export {
     rules,
     fonts,
     functions,
-    animations,
-    Rules
+    animations
 }
 
 type ExtendedValues = { [key: string]: string | number | ExtendedValues }
+
+export interface RuleConfig {
+    id?: string
+    match?: RegExp | [string, string[]?]
+    _resolvedMatch?: RegExp
+    order?: number
+    separators?: string[]
+    type?: 'color' | 'numeric',
+    unit?: any
+    native?: boolean
+    _semantic?: boolean
+    _declarations?: CSSDeclarations
+    _propName?: string
+    layer?: Layer | CoreLayer,
+    values?: Config['values'],
+    analyze?(this: Rule, className: string): [valueToken: string, prefixToken?: string]
+    transform?(this: Rule, value: string): string
+    declare?(this: Rule, value: string, unit: string): CSSDeclarations
+    delete?(this: Rule, className: string): void
+    create?(this: Rule, className: string): void
+    insert?(this: Rule): void
+}
 
 export interface Config {
     extends?: (Config | { config: Config })[]

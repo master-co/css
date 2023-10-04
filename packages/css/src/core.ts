@@ -5,7 +5,7 @@ import { config as defaultConfig } from './config'
 import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { CSSDeclarations } from './types/css-declarations'
-import { RuleConfig } from './config/rules'
+import { RuleConfig } from './config'
 import { CoreLayer, Layer } from './layer'
 
 const COLOR_NAME_OBJECT_PREFIX = '_CNO_'
@@ -354,7 +354,6 @@ export class MasterCSS {
                     this.values[id] = resolveValues(values)
                 }
                 if (match) {
-                    let matchPattern = match
                     if (Array.isArray(match)) {
                         const [key, values = []] = match
                         let valueMatches = []
@@ -376,19 +375,6 @@ export class MasterCSS {
                                 break
                         }
                         eachRuleConfig._resolvedMatch = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
-                    } else if (typeof matchPattern === 'string') {
-                        const valueNames = Object.keys(this.values[id] ?? {})
-                        if (matchPattern.includes('$values')) {
-                            matchPattern = valueNames.length
-                                ? matchPattern.replace(/\$values/, valueNames.join('|'))
-                                : matchPattern.replace(/(?:\|)?\$values/, '')
-                        }
-                        if (type === 'color' && matchPattern.includes('$colors')) {
-                            matchPattern = this.colorNames.length
-                                ? matchPattern.replace(/\$colors/, '(?:' + this.colorNames.join('|') + ')' + '(?!\\w)')
-                                : matchPattern.replace(/(?:\|)?\$colors/, '')
-                        }
-                        eachRuleConfig._resolvedMatch = new RegExp(matchPattern)
                     } else {
                         eachRuleConfig._resolvedMatch = match as RegExp
                     }

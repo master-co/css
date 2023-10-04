@@ -3,7 +3,7 @@ import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'shared/utils/css-escape'
 import { transformColorWithOpacity } from './functions/transform-color-with-opacity'
 import { CSSDeclarations } from './types/css-declarations'
-import { RuleConfig } from './config/rules'
+import { RuleConfig } from './config'
 
 const atRuleRegExp = /^(media|supports|page|font-face|keyframes|counter-style|font-feature-values|property|layer)(?=\||{|\(|$)/
 
