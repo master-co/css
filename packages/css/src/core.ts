@@ -247,11 +247,7 @@ export class MasterCSS {
                             const colorWithAlpha = atIndex !== -1 ? eachColorWithAlphaTheme.slice(0, atIndex) : eachColorWithAlphaTheme
                             const theme = atIndex !== -1 ? eachColorWithAlphaTheme.slice(atIndex + 1) : ''
                             const currentTheme = themeKey.slice(1) || theme
-                            if (eachColorWithAlphaTheme.startsWith(COLOR_NAME_OBJECT_PREFIX + 'current')) {
-                                hexColorByTheme[currentTheme] = 'currentColor'
-                            } else if (eachColorWithAlphaTheme.startsWith(COLOR_NAME_OBJECT_PREFIX + 'transparent')) {
-                                hexColorByTheme[currentTheme] = 'transparent'
-                            } else if (eachColorWithAlphaTheme.startsWith('#')) {
+                            if (eachColorWithAlphaTheme.startsWith('#')) {
                                 hexColorByTheme[currentTheme] = colorWithAlpha
                             } else if (eachColorWithAlphaTheme.startsWith(COLOR_NAME_OBJECT_PREFIX)) {
                                 const [replaceColorName, alpha] = colorWithAlpha.slice(COLOR_NAME_OBJECT_PREFIX.length).split('/')
@@ -269,7 +265,8 @@ export class MasterCSS {
                                         hexColorByTheme[theme] = getAlphaHexColor(hexColor, alpha)
                                     }
                                 } else {
-                                    console.error(`"${colorName}${themeKey}: ${eachColorWithAlphaTheme}" is an invalid ".colors" config`)
+                                    hexColorByTheme[currentTheme] = replaceColorName
+                                    // console.error(`"${colorName}${themeKey}: ${eachColorWithAlphaTheme}" is an invalid ".colors" config`)
                                 }
                             } else {
                                 const [colorNameWithAlpha, colorNameTheme] = colorWithAlpha.split('@')
@@ -343,7 +340,7 @@ export class MasterCSS {
                 this._orderedRuleConfigs.push(eachRuleConfig)
                 eachRuleConfig.order = this._semanticRuleConfigs.length + rulesEntriesLength - 1 - index
                 const { values, type } = eachRuleConfig
-                let match = eachRuleConfig.match
+                const match = eachRuleConfig.match
                 eachRuleConfig.id = id
                 if (
                     eachRuleConfig.layer === Layer.Native ||
