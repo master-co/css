@@ -92,7 +92,7 @@ export class Rule {
                             i = originalIndex
 
                             if (!root) {
-                                currentValueToken = currentValueToken.slice(0, lastPushIndex) + currentValueToken
+                                currentValueToken = originalCurrentValueToken.slice(0, lastPushIndex) + currentValueToken
                             }
                         } else if (globalValues && value in globalValues && !usedGlobalValues.includes(value)) {
                             const originalIndex = i
@@ -101,7 +101,7 @@ export class Rule {
                             i = originalIndex
 
                             if (!root) {
-                                currentValueToken = currentValueToken.slice(0, lastPushIndex) + currentValueToken
+                                currentValueToken = originalCurrentValueToken.slice(0, lastPushIndex) + currentValueToken
                             }
                         } else if (root) {
                             const uv = !bypassAnalyzeUnitValue && instance.analyzeUnitValue(value, unit)
