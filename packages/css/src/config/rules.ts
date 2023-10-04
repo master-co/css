@@ -148,7 +148,7 @@ const rules = {
         }
     } as RuleConfig,
     variable: {
-        match: /^\$[^ (){}A-Z]+:[^ ]/, // don't use 'rem' as default, because css variable is common API
+        match: /^\$[\w-]+:./, // don't use 'rem' as default, because css variable is common API
         colored: true,
         declare(value) {
             return {
