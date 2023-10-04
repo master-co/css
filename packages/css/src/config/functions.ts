@@ -1,4 +1,4 @@
-import type { Config } from '.'
+import type { Config } from './'
 
 const functions: Config['functions'] = {
     $: {
@@ -133,6 +133,15 @@ const functions: Config['functions'] = {
     rgba: { unit: '' },
     hsl: { unit: '' },
     hsla: { unit: '' },
+    color: { unit: '' },
+    'color-contrast': { unit: '' },
+    'color-mix': { unit: '' },
+    hwb: { unit: '' },
+    lab: { unit: '' },
+    lch: { unit: '' },
+    oklab: { unit: '' },
+    oklch: { unit: '' },
+    clamp: { unit: '' },
     repeat: { unit: '' }
 }
 

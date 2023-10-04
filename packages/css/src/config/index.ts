@@ -3,7 +3,7 @@ import colors from './colors'
 import selectors from './selectors'
 import semantics from './semantics'
 import animations from './animations'
-import rules, { type Rules } from './rules'
+import rules, { RuleConfig, type Rules } from './rules'
 import functions from './functions'
 import fonts from './fonts'
 import { CSSDeclarations } from '../types/css-declarations'
@@ -51,7 +51,7 @@ export interface Config {
     semantics?: { [key in keyof typeof semantics]?: CSSDeclarations } & { [key: string]: CSSDeclarations }
     values?: ExtendedValues | ((this: MasterCSS, resolvedValues: Record<string, Record<string, string | number>>) => ExtendedValues)
     fonts?: { [key: string]: string | string[] } | ((css: MasterCSS) => Config['fonts'])
-    rules?: Rules
+    rules?: { [key in keyof typeof rules]?: RuleConfig } & { [key: string]: RuleConfig }
     rootSize?: number
     scope?: string
     important?: boolean

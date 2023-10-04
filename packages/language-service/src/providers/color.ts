@@ -129,12 +129,12 @@ function parseColorString(colorString: string, theme: string, css: MasterCSS = n
     //#region for mastercss color
     let colorAlpha = 1
     let colorName = colorString
-    const allMasterCssColorKeys = Object.keys(css.colorThemesMap)
+    const allMasterCssColorKeys = Object.keys(css.colors)
     if (colorString.split('/').length == 2) {
         colorAlpha = Number('0' + colorString.split('/')[1])
     }
 
-    if (colorString.split('-').length == 1) { //:black  black/.5 
+    if (colorString.split('-').length == 1) { //:black  black/.5
         colorName = colorString.split('/')[0]
         colorName = colorName.endsWith('_') ? colorName.replace('_', '') : colorName
     }
@@ -147,7 +147,7 @@ function parseColorString(colorString: string, theme: string, css: MasterCSS = n
 
 function getColorsRGBA(colorName: string, colorAlpha = 1, theme = '', css: MasterCSS = new MasterCSS()): Color {
     try {
-        const colorNumberMap = css.colorThemesMap[colorName]
+        const colorNumberMap = css.colors[colorName]
         const levelRgb = hexToRgb(colorNumberMap[theme] ?? colorNumberMap[''] ?? Object.values(colorNumberMap)[0])
 
         return { red: levelRgb.red / 255, green: levelRgb.green / 255, blue: levelRgb.blue / 255, alpha: colorAlpha }

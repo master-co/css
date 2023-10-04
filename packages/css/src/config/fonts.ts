@@ -1,6 +1,4 @@
-import type { Config } from '.'
-
-const fonts: Config['fonts'] = {
+const fonts = {
     mono: [
         'ui-monospace',
         'SFMono-Regular',

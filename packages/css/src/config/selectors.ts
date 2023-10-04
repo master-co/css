@@ -1,4 +1,4 @@
-import type { Config } from '.'
+import type { Config } from './'
 
 const selectors: Config['selectors'] = {
     '::scrollbar': '::-webkit-scrollbar',

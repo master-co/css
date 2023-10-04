@@ -21,12 +21,12 @@ export class Rule {
         public readonly config: RuleConfig = {},
         public css: MasterCSS
     ) {
-        const { unit, colored, _propName, _semantic, analyze, transform, declare, _declarations, create, order, id } = this.config
+        const { unit, type, _propName, _semantic, analyze, transform, declare, _declarations, create, order, id } = this.config
         this.order = order
         if (!this.config.unit) this.config.unit = ''
         if (!this.config.separators) this.config.separators = [',']
         const { scope, important, functions, themeDriver } = css.config
-        const { themeNames, colorNames, colorThemesMap, selectors, viewports, mediaQueries, classesBy, globalValues, animations } = css
+        const { themeNames, colorNames, colors, selectors, viewports, mediaQueries, classesBy, globalValues, animations } = css
         const classNames = classesBy[className]
 
         if (create) create.call(this, className)
@@ -560,7 +560,7 @@ export class Rule {
 
                 let cssText = getCssText(theme, className)
                     + (classNames
-                        ? classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? ((colored || hasMultipleThemes) ? theme : ''), className), '')
+                        ? classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? ((type === 'color' || hasMultipleThemes) ? theme : ''), className), '')
                         : '')
                     + '{'
                     + propertiesText
@@ -589,13 +589,12 @@ export class Rule {
                         let token = eachValueToken.value
                         if (eachValueToken.unit) {
                             token += eachValueToken.unit
-                        } else if (colored && colorThemesMap && colorNames) {
+                        } else if (type === 'color' && colors && colorNames) {
                             let anyMatched = false
-
                             token = token.replace(
-                                new RegExp(`(^|,| |\\()((?:${colorNames.join('|')})(?:-(?:[0-9A-Za-z-]+))?)(?:\\/(\\.?[0-9]+%?))?(?=(\\)|\\}|,| |$))`, 'gm'),
+                                css.colorTokenRegExp,
                                 (origin, prefix, colorName, opacityStr) => {
-                                    const themeColorMap = colorThemesMap[colorName]
+                                    const themeColorMap = colors[colorName]
                                     if (themeColorMap) {
                                         let color: string
                                         let appliedTheme: string
@@ -725,7 +724,7 @@ export class Rule {
 
         if (this.theme) {
             insertNewNative(this.theme, false)
-        } else if (colored) {
+        } else if (type === 'color') {
             for (const eachThemeName of themeNames) {
                 insertNewNative(eachThemeName, true)
             }
@@ -796,7 +795,7 @@ export interface Rule {
         match?(
             name: string,
             matches: RegExp,
-            colorThemesMap: Record<string, Record<string, string>>,
+            colors: Record<string, Record<string, string>>,
             colorNames: string[]
         ): RuleMeta
     }
