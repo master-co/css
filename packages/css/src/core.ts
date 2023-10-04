@@ -357,26 +357,25 @@ export class MasterCSS {
                     let matchPattern = match
                     if (Array.isArray(match)) {
                         const [key, values = []] = match
-                        // word boundary \b
-                        const valueWords = []
+                        let valueMatches = []
+                        if (values.length) {
+                            valueMatches.push(`(?:${values.join('|')})\\b`)
+                        }
                         if (this.values[id]) {
-                            valueWords.push(...Object.keys(this.values[id]))
+                            valueMatches.push(`(?:${Object.keys(this.values[id]).join('|')})\\b`)
                         }
                         switch (eachRuleConfig.type) {
                             case 'color':
-                                values.push('#', '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)')
+                                valueMatches.push('#', '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)')
                                 if (this.colorNames.length) {
-                                    valueWords.push(...this.colorNames)
+                                    valueMatches.push(`(?:${this.colorNames.join('|')})\\b`)
                                 }
                                 break
                             case 'numeric':
-                                values.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
+                                valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
                                 break
                         }
-                        if (valueWords.length) {
-                            values.push('\\b(?:' + valueWords.join('|') + ')\\b')
-                        }
-                        eachRuleConfig._resolvedMatch = new RegExp(`^${key}:(?:${values.join('|')})[^|]*?(?:@|$)`)
+                        eachRuleConfig._resolvedMatch = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
                     } else if (typeof matchPattern === 'string') {
                         const valueNames = Object.keys(this.values[id] ?? {})
                         if (matchPattern.includes('$values')) {

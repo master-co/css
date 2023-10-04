@@ -1382,9 +1382,7 @@ const defaultRules = {
     } as RuleConfig,
     backgroundImage: {
         match: ['(?:bg|background)', ['(?:url|linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient)\\(.*\\)']],
-        layer: CoreLayer.Native,
-        // todo: add support for multiple background images
-        type: 'color',
+        layer: CoreLayer.Native
     } as RuleConfig,
     background: {
         match: '^bg:.',
