@@ -82,6 +82,7 @@ export interface Config {
     functions?: Record<string, {
         unit?: string
         name?: string
+        colored?: boolean
         transform?(this: Rule, value: string): string
     }>,
     animations?: Record<string, { [key in 'from' | 'to']?: CSSDeclarations } & { [key: string]: CSSDeclarations }>

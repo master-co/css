@@ -21,7 +21,7 @@ export class Rule {
         public readonly config: RuleConfig = {},
         public css: MasterCSS
     ) {
-        const { unit, colored, numeric, _propName, _semantic, analyze, transform, declare, _declarations, create, order, id } = this.config
+        const { unit, colored: configColored, _propName, _semantic, analyze, transform, declare, _declarations, create, order, id } = this.config
         this.order = order
         if (!this.config.unit) this.config.unit = ''
         if (!this.config.separators) this.config.separators = [',']
@@ -37,6 +37,7 @@ export class Rule {
         let prefixToken: string
         let suffixToken: string
         let valueSplits: (string | { value: string, unit?: string })[]
+        let colored = configColored
 
         if (_semantic) {
             suffixToken = className.slice(id.length - 1)
@@ -149,6 +150,9 @@ export class Rule {
                         if (functionConfig?.name) {
                             currentValueToken = currentValueToken.slice(0, currentValueToken.length - functionName.length) + functionConfig.name
                             functionName = functionConfig.name
+                        }
+                        if (!colored && functionConfig?.colored) {
+                            colored = true
                         }
 
                         currentValueToken += val

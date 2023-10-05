@@ -133,16 +133,22 @@ const functions: Config['functions'] = {
     rgba: { unit: '' },
     hsl: { unit: '' },
     hsla: { unit: '' },
-    color: { unit: '' },
-    'color-contrast': { unit: '' },
-    'color-mix': { unit: '' },
+    color: { unit: '', colored: true },
+    'color-contrast': { unit: '', colored: true  },
+    'color-mix': { unit: '', colored: true },
     hwb: { unit: '' },
     lab: { unit: '' },
     lch: { unit: '' },
     oklab: { unit: '' },
     oklch: { unit: '' },
     clamp: { unit: '' },
-    repeat: { unit: '' }
+    repeat: { unit: '' },
+    'linear-gradient': { colored: true },
+    'radial-gradient': { colored: true },
+    'conic-gradient': { colored: true },
+    'repeating-linear-gradient': { colored: true },
+    'repeating-radial-gradient': { colored: true },
+    'repeating-conic-gradient': { colored: true }
 }
 
 export default functions

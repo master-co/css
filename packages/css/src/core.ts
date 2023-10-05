@@ -356,9 +356,9 @@ export class MasterCSS {
                 if (match) {
                     if (Array.isArray(match)) {
                         const [key, values = []] = match
-                        let valueMatches = []
+                        const valueMatches = []
                         if (values.length) {
-                            valueMatches.push(`(?:${values.join('|')})\\b`)
+                            valueMatches.push(`(?:${values.join('|')})(?:\\b|$)`)
                         }
                         if (this.values[id]) {
                             valueMatches.push(`(?:${Object.keys(this.values[id]).join('|')})\\b`)
@@ -366,7 +366,7 @@ export class MasterCSS {
                         if (eachRuleConfig.colored) {
                             valueMatches.push('#', '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)')
                             if (this.colorNames.length) {
-                                valueMatches.push(`(?:${this.colorNames.join('|')})\\b`)
+                                valueMatches.push(`(?:${this.colorNames.join('|')})(?:\\b|$)`)
                             }
                         }
                         if (eachRuleConfig.numeric) {
