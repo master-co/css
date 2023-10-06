@@ -70,6 +70,7 @@
     },
     "dependencies": {
         "@master/normal.css": "workspace:^",
+        "@master/eslint-plugin-config": "workspace:^",
         "@techor/fs": "^2.5.4",
         "@techor/log": "^2.5.4",
         "commander": "^11.0.0"
