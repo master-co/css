@@ -11,7 +11,7 @@
     "license": "MIT",
     "description": "Master CSS ESLint Plugin",
     "author": "Aoyue Design LLC.",
-    "funding": "https://docs.master.co/css/donate",
+    "funding": "https://css.master.co/docs/donate",
     "homepage": "https://css.master.co",
     "bugs": {
         "url": "https://github.com/master-co/css/issues"
