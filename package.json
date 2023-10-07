@@ -30,8 +30,8 @@
         "@techor/jest": "^2.5.17",
         "@techor/jest-dom": "^2.5.17",
         "@techor/pack": "^2.5.17",
-        "@techor/version": "^2.5.17",
         "@techor/repo": "^2.5.17",
+        "@techor/version": "^2.5.17",
         "@types/jest": "^29.5.2",
         "@types/node": "^20.4.0",
         "cross-env": "^7.0.3",
@@ -49,6 +49,6 @@
         "ts-dedent": "^2.2.0",
         "ts-jest": "^29.1.1",
         "tsx": "^3.12.7",
-        "turbo": "^1.10.12"
+        "turbo": "^1.10.15"
     }
 }
