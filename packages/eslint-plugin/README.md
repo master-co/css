@@ -54,3 +54,6 @@
 
 ## Documentation
 Check out the official [documentation](https://beta.css.master.co/docs/code-linting).
+
+## Credits
+This plugin is heavily inspired by the awesome [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss). We want to thank for their initial work, which served as the foundation for this project. While significant modifications have been made, the core ideas and concepts from A Plugin have been instrumental in developing this plugin.
