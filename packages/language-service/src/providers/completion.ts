@@ -297,9 +297,9 @@ export function getReturnItem(items: Array<string | CompletionItem>, kind: Compl
 function getColorsItem(css: MasterCSS = new MasterCSS()): CompletionItem[] {
 
     const masterStyleCompletionItem: CompletionItem[] = []
-    Object.keys(css.colorThemesMap)
+    Object.keys(css.colors)
         .forEach((colorName: string) => {
-            const colorValue: any = css.colorThemesMap[colorName]
+            const colorValue: any = css.colors[colorName]
             masterStyleCompletionItem.push({
                 label: colorName,
                 documentation: Object.values<string>(colorValue)[0],

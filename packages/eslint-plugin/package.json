@@ -1,0 +1,43 @@
+{
+    "name": "@master/eslint-plugin-css",
+    "scripts": {
+        "test": "mocha tests --recursive"
+    },
+    "keywords": [
+        "mastercss",
+        "eslint",
+        "eslintplugin"
+    ],
+    "license": "MIT",
+    "description": "Master CSS ESLint Plugin",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://css.master.co/docs/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/eslint-plugin"
+    },
+    "sideEffects": false,
+    "main": "./lib/index.js",
+    "exports": "./lib/index.js",
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@master/css": "workspace:^",
+        "requireindex": "^1.2.0",
+        "explore-config": "^2.2.10"
+    },
+    "devDependencies": {
+        "@angular-eslint/template-parser": "^16.2.0",
+        "@typescript-eslint/parser": "^5.50.0",
+        "@types/node": "^20.6.0",
+        "mocha": "^10.2.0",
+        "eslint": "^7.1.0",
+        "vue-eslint-parser": "^9.3.1"
+    }
+}

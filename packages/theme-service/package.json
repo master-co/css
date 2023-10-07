@@ -10,7 +10,7 @@
     "license": "MIT",
     "description": "A CSS theme-switching service for Master CSS",
     "author": "Aoyue Design LLC.",
-    "funding": "https://docs.master.co/css/donate",
+    "funding": "https://css.master.co/docs/donate",
     "homepage": "https://beta.css.master.co/docs/theme-service",
     "bugs": {
         "url": "https://github.com/master-co/css/issues"

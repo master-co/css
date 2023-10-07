@@ -1,10 +1,12 @@
 import { extend } from '@techor/extend'
-import { Rule, RuleConfig, RuleMeta, RuleNative } from './rule'
-import type { Colors, Config, Animations, Values } from './config'
+import { Rule, RuleNative } from './rule'
+import type { Config } from './config'
 import { config as defaultConfig } from './config'
 import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
-import { camel2Kebab } from './utils/camel-2-kebab'
+import { CSSDeclarations } from './types/css-declarations'
+import { RuleConfig } from './config'
+import { CoreLayer, Layer } from './layer'
 
 const COLOR_NAME_OBJECT_PREFIX = '_CNO_'
 
@@ -12,9 +14,8 @@ export interface MasterCSS {
     readonly style: HTMLStyleElement
     readonly host: Element
     readonly root: Document | ShadowRoot
-    semantics: [RegExp, [string, string | Record<string, string>]][]
     classes: Record<string, string[]>
-    colorThemesMap: Record<string, Record<string, string>>
+    colors: Record<string, Record<string, string>>
     colorNames: string[]
     themeNames: string[]
     classesBy: Record<string, string[]>
@@ -24,12 +25,11 @@ export interface MasterCSS {
     globalValues: Record<string, string | number>
     viewports: Record<string, number>
     mediaQueries: Record<string, string>
-    matches: Record<string, RegExp>
     keyframesMap: Record<string, {
         native: RuleNative
         count: number
     }>
-    animations: Animations
+    animations: Config['animations']
 }
 
 export class MasterCSS {
@@ -37,9 +37,9 @@ export class MasterCSS {
     static root: MasterCSS
     static config: Config = defaultConfig
     static instances: MasterCSS[] = []
-    static refresh = (config: Config) => {
+    static refresh = (customConfig: Config) => {
         for (const eachInstance of this.instances) {
-            eachInstance.refresh(config)
+            eachInstance.refresh(customConfig)
         }
     }
 
@@ -47,15 +47,19 @@ export class MasterCSS {
     readonly ruleBy: Record<string, Rule> = {}
     readonly countBy = {}
     readonly observing = false
+    readonly config: Config
+    private readonly _semanticRuleConfigs: RuleConfig[] = []
+    private readonly _orderedRuleConfigs: RuleConfig[] = []
 
+    colorTokenRegExp: RegExp
     observer: MutationObserver
     private colorByThemeByColorName: Record<string, Record<string, string>>
 
     constructor(
-        public config: Config = defaultConfig
+        public customConfig: Config = defaultConfig
     ) {
-        if (!config?.override) {
-            this.config = this.getExtendedConfig(defaultConfig, config)
+        if (!customConfig?.override) {
+            this.config = this.getExtendedConfig(defaultConfig, customConfig)
         } else {
             this.config = this.getExtendedConfig(this.config)
         }
@@ -64,9 +68,8 @@ export class MasterCSS {
     }
 
     resolve() {
-        this.semantics = []
         this.classes = {}
-        this.colorThemesMap = {}
+        this.colors = {}
         this.classesBy = {}
         this.themeNames = ['']
         this.selectors = {}
@@ -75,11 +78,13 @@ export class MasterCSS {
         this.globalValues = {}
         this.viewports = {}
         this.mediaQueries = {}
-        this.matches = {}
         this.keyframesMap = {}
         this.animations = {}
+        this.colorTokenRegExp = null
+        this._orderedRuleConfigs.length = 0
+        this._semanticRuleConfigs.length = 0
 
-        const { semantics, classes, selectors, colors, values, viewports, mediaQueries, rules, animations, fonts } = this.config
+        const { classes, selectors, values, semantics, viewports, mediaQueries, rules, animations, fonts } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -113,7 +118,7 @@ export class MasterCSS {
 
             return newData
         }
-        const resolveValues = (values: Values) => {
+        const resolveValues = (values: Config['values']) => {
             if (typeof values === 'function') {
                 return getFlatData(values.call(this, this.values), false)
             } else {
@@ -124,16 +129,6 @@ export class MasterCSS {
                     }
                 }
                 return values as Record<string, string | number>
-            }
-        }
-        if (semantics) {
-            for (const [semanticName, semanticValue] of Object.entries(getFlatData(semantics, true))) {
-                const newSemanticValue = {}
-                for (const propertyName of Object.keys(semanticValue)) {
-                    newSemanticValue[camel2Kebab(propertyName)] = semanticValue[propertyName]
-                }
-
-                this.semantics.push([new RegExp('^' + escapeString(semanticName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'), [semanticName, newSemanticValue]])
             }
         }
         if (selectors) {
@@ -182,7 +177,7 @@ export class MasterCSS {
                     const newValueByPropertyName = newValueByPropertyNameByKeyframeName[animationName] = {}
                     const valueByPropertyName = valueByPropertyNameByKeyframeName[animationName]
                     for (const propertyName in valueByPropertyName) {
-                        newValueByPropertyName[camel2Kebab(propertyName)] = valueByPropertyName[propertyName]
+                        newValueByPropertyName[propertyName] = valueByPropertyName[propertyName]
                     }
                 }
             }
@@ -235,13 +230,10 @@ export class MasterCSS {
             handleSemanticName(eachSemanticName)
         }
 
-        // colors
-        this.colorNames = Object.keys(colors)
-
-        const unhandledActionByColorName: Record<string, () => void> = Object
+        const _unexecutedColors: Record<string, () => void> = Object
             .entries(this.colorByThemeByColorName)
-            .reduce((newUnhandledActionByColorName, [colorName, colorByTheme]) => {
-                newUnhandledActionByColorName[colorName] = () => {
+            .reduce((newunexecutedColors, [colorName, colorByTheme]) => {
+                newunexecutedColors[colorName] = () => {
                     const getAlphaHexColor = (hexColor: string, alpha: string) => alpha
                         ? hexColor.slice(0, 7) + Math.round(255 * +alpha).toString(16)
                         : hexColor
@@ -260,32 +252,33 @@ export class MasterCSS {
                             } else if (eachColorWithAlphaTheme.startsWith(COLOR_NAME_OBJECT_PREFIX)) {
                                 const [replaceColorName, alpha] = colorWithAlpha.slice(COLOR_NAME_OBJECT_PREFIX.length).split('/')
 
-                                if (Object.prototype.hasOwnProperty.call(unhandledActionByColorName, replaceColorName)) {
-                                    const unhandledAction = unhandledActionByColorName[replaceColorName]
-                                    delete unhandledActionByColorName[replaceColorName]
+                                if (Object.prototype.hasOwnProperty.call(_unexecutedColors, replaceColorName)) {
+                                    const unhandledAction = _unexecutedColors[replaceColorName]
+                                    delete _unexecutedColors[replaceColorName]
                                     unhandledAction()
                                 }
 
-                                const targetHexColorByTheme = Object.prototype.hasOwnProperty.call(this.colorThemesMap, replaceColorName) && this.colorThemesMap[replaceColorName]
+                                const targetHexColorByTheme = Object.prototype.hasOwnProperty.call(this.colors, replaceColorName) && this.colors[replaceColorName]
                                 if (targetHexColorByTheme) {
                                     for (const theme in targetHexColorByTheme) {
                                         const hexColor = targetHexColorByTheme[theme]
                                         hexColorByTheme[theme] = getAlphaHexColor(hexColor, alpha)
                                     }
                                 } else {
-                                    console.error(`"${colorName}${themeKey}: ${eachColorWithAlphaTheme}" is an invalid ".colors" config`)
+                                    hexColorByTheme[currentTheme] = replaceColorName
+                                    // console.error(`"${colorName}${themeKey}: ${eachColorWithAlphaTheme}" is an invalid ".colors" config`)
                                 }
                             } else {
                                 const [colorNameWithAlpha, colorNameTheme] = colorWithAlpha.split('@')
                                 const [replaceColorName, alpha] = colorNameWithAlpha.split('/')
 
-                                if (Object.prototype.hasOwnProperty.call(unhandledActionByColorName, replaceColorName)) {
-                                    const unhandledAction = unhandledActionByColorName[replaceColorName]
-                                    delete unhandledActionByColorName[replaceColorName]
+                                if (Object.prototype.hasOwnProperty.call(_unexecutedColors, replaceColorName)) {
+                                    const unhandledAction = _unexecutedColors[replaceColorName]
+                                    delete _unexecutedColors[replaceColorName]
                                     unhandledAction()
                                 }
 
-                                const hexColor = Object.prototype.hasOwnProperty.call(this.colorThemesMap, replaceColorName) && this.colorThemesMap[replaceColorName][(themeKey ? theme : colorNameTheme) || '']
+                                const hexColor = Object.prototype.hasOwnProperty.call(this.colors, replaceColorName) && this.colors[replaceColorName][(themeKey ? theme : colorNameTheme) || '']
                                 if (hexColor) {
                                     hexColorByTheme[currentTheme] = getAlphaHexColor(hexColor, alpha)
                                 } else {
@@ -297,8 +290,7 @@ export class MasterCSS {
 
                     const themes = Object.keys(hexColorByTheme)
                     if (themes.length) {
-                        this.colorThemesMap[colorName] = hexColorByTheme
-
+                        this.colors[colorName] = hexColorByTheme
                         for (const eachTheme of themes) {
                             if (eachTheme && !this.themeNames.includes(eachTheme)) {
                                 this.themeNames.push(eachTheme)
@@ -306,42 +298,86 @@ export class MasterCSS {
                         }
                     }
 
-                    delete unhandledActionByColorName[colorName]
+                    delete _unexecutedColors[colorName]
                 }
-                return newUnhandledActionByColorName
+                return newunexecutedColors
             }, {})
-        for (const eachColorName of Object.keys(unhandledActionByColorName)) {
-            unhandledActionByColorName[eachColorName]?.()
+
+        for (const eachColorName of Object.keys(_unexecutedColors)) {
+            _unexecutedColors[eachColorName]?.()
         }
 
-        if (rules) {
-            Object.entries(rules)
-                .sort((a: any, b: any) => (b[1].order || 0) - (a[1].order || 0))
-                .forEach(([id, eachRuleConfig]: [string, RuleConfig]) => {
-                    const { native, values, colored } = eachRuleConfig
-                    let match = eachRuleConfig.match
-                    eachRuleConfig.id = id
-                    eachRuleConfig.native = native === true ? id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase() : undefined
-                    if (values) {
-                        this.values[id] = resolveValues(values)
-                    }
-                    if (match) {
-                        const valueNames = Object.keys(this.values[id] ?? {})
-                        if (match.includes('$values')) {
-                            match = valueNames.length
-                                ? match.replace(/\$values/, valueNames.join('|'))
-                                : match.replace(/(?:\|)?\$values/, '')
-                        }
-                        if (colored && match.includes('$colors')) {
-                            match = this.colorNames.length
-                                ? match.replace(/\$colors/, '(?:' + this.colorNames.join('|') + ')' + '(?![0-9A-Za-z])')
-                                : match.replace(/(?:\|)?\$colors/, '')
-                        }
-                        this.matches[id] = new RegExp(match)
-                    }
+        // colors
+        this.colorNames = Object.keys(this.colors)
+        this.colorTokenRegExp = new RegExp(`(^|,| |\\()(${this.colorNames.join('|')})(?:\\/(\\.?[0-9]+%?))?(?=(\\)|\\}|,| |$))`, 'g')
+
+        if (semantics) {
+            Object.entries(semantics)
+                .sort((a: any, b: any) => a[0].localeCompare(b[0]))
+                .forEach(([id, eachSemantic]: [string, CSSDeclarations], index: number) => {
+                    this._semanticRuleConfigs.push({
+                        id: '.' + id,
+                        _resolvedMatch: new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'),
+                        order: index,
+                        _semantic: true,
+                        _declarations: eachSemantic,
+                        layer: CoreLayer.Semantic
+                    })
                 })
-
         }
+
+        const rulesEntries = Object.entries(rules)
+            .sort((a: any, b: any) => {
+                if (a[1].layer !== b[1].layer) {
+                    return (b[1].layer || 0) - (a[1].layer || 0)
+                }
+                return b[0].localeCompare(a[0])
+            })
+        const rulesEntriesLength = rulesEntries.length
+
+        rulesEntries
+            .forEach(([id, eachRuleConfig]: [string, RuleConfig], index: number) => {
+                this._orderedRuleConfigs.push(eachRuleConfig)
+                eachRuleConfig.order = this._semanticRuleConfigs.length + rulesEntriesLength - 1 - index
+                const { values } = eachRuleConfig
+                const match = eachRuleConfig.match
+                eachRuleConfig.id = id
+                if (
+                    eachRuleConfig.layer === Layer.Native ||
+                    eachRuleConfig.layer === Layer.NativeShorthand ||
+                    eachRuleConfig.layer === CoreLayer.Native ||
+                    eachRuleConfig.layer === CoreLayer.NativeShorthand
+                ) {
+                    eachRuleConfig._propName = id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
+                }
+                if (values) {
+                    this.values[id] = resolveValues(values)
+                }
+                if (match) {
+                    if (Array.isArray(match)) {
+                        const [key, values = []] = match
+                        const valueMatches = []
+                        if (values.length) {
+                            valueMatches.push(`(?:${values.join('|')})(?:\\b|$)`)
+                        }
+                        if (this.values[id]) {
+                            valueMatches.push(`(?:${Object.keys(this.values[id]).join('|')})\\b`)
+                        }
+                        if (eachRuleConfig.colored) {
+                            valueMatches.push('#', '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)')
+                            if (this.colorNames.length) {
+                                valueMatches.push(`(?:${this.colorNames.join('|')})(?:\\b|$)`)
+                            }
+                        }
+                        if (eachRuleConfig.numeric) {
+                            valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
+                        }
+                        eachRuleConfig._resolvedMatch = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
+                    } else {
+                        eachRuleConfig._resolvedMatch = match as RegExp
+                    }
+                }
+            })
     }
 
     /**
@@ -689,31 +725,25 @@ export class MasterCSS {
      * @param syntax class syntax
      * @returns css text
      */
-    match(syntax: string): RuleMeta {
-        for (const id in this.config.rules) {
-            const eachRuleConfig = this.config.rules[id]
-            const match = this.matches[id]
-            const { native } = eachRuleConfig
-            /**
-             * STEP 1. matches
-             */
-            if (match && match.test(syntax)) {
-                return { origin: 'match', config: eachRuleConfig }
-            }
-            /**
-             * STEP 2. key full syntax
-             */
-            if (native && syntax.startsWith(native + ':')) {
-                return { origin: 'match', config: eachRuleConfig }
+    match(syntax: string): RuleConfig {
+        // 1. rules
+        for (const eachRuleConfig of this._orderedRuleConfigs) {
+            if (
+                eachRuleConfig._resolvedMatch && eachRuleConfig._resolvedMatch.test(syntax) ||
+                (
+                    eachRuleConfig.layer === Layer.Native ||
+                    eachRuleConfig.layer === Layer.NativeShorthand ||
+                    eachRuleConfig.layer === CoreLayer.Native ||
+                    eachRuleConfig.layer === CoreLayer.NativeShorthand
+                ) && syntax.startsWith(eachRuleConfig._propName + ':')
+            ) {
+                return eachRuleConfig
             }
         }
-
-        for (const eachSemanticEntry of this.semantics) {
-            if (syntax.match(eachSemanticEntry[0])) {
-                return {
-                    origin: 'semantics',
-                    value: eachSemanticEntry[1]
-                }
+        // 2. semantic rules
+        for (const eachSemanticRuleConfig of this._semanticRuleConfigs) {
+            if (eachSemanticRuleConfig._resolvedMatch.test(syntax)) {
+                return eachSemanticRuleConfig
             }
         }
     }
@@ -728,11 +758,11 @@ export class MasterCSS {
             if (Object.prototype.hasOwnProperty.call(this.ruleBy, eachSyntax))
                 return this.ruleBy[eachSyntax]
 
-            const meta = this.match(eachSyntax)
-            if (meta) {
+            const ruleConfig = this.match(eachSyntax)
+            if (ruleConfig) {
                 return new Rule(
                     eachSyntax,
-                    meta,
+                    ruleConfig,
                     this
                 )
             }
@@ -749,11 +779,13 @@ export class MasterCSS {
     /**
      * 根據蒐集到的所有 DOM class 重新 create
      */
-    refresh(config: Config) {
-        if (!config?.override) {
-            this.config = this.getExtendedConfig(defaultConfig, config)
+    refresh(customConfig: Config = this.customConfig) {
+        if (!customConfig?.override) {
+            // @ts-ignore
+            this.config = this.getExtendedConfig(defaultConfig, customConfig)
         } else {
-            this.config = this.getExtendedConfig(config)
+            // @ts-ignore
+            this.config = this.getExtendedConfig(customConfig)
         }
         this.resolve()
         if (!this.style) {
@@ -1243,7 +1275,7 @@ export class MasterCSS {
 
             // colors
             if (clonedConfig.colors) {
-                const handleDeeply = (colors: Colors, parentColorName: string) => {
+                const handleDeeply = (colors: Config['colors'], parentColorName: string) => {
                     const handle = (colorName: string, entries: [string, string][], single: boolean) => {
                         if (!Object.prototype.hasOwnProperty.call(this.colorByThemeByColorName, colorName)) {
                             this.colorByThemeByColorName[colorName] = {}

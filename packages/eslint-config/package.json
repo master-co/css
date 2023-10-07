@@ -1,0 +1,28 @@
+{
+    "name": "@master/eslint-config-css",
+    "keywords": [
+        "mastercss",
+        "eslint",
+        "eslintconfig"
+    ],
+    "license": "MIT",
+    "description": "Master CSS ESLint Plugin Config",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://css.master.co/docs/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/eslint-config"
+    },
+    "main": "index.js",
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@master/eslint-plugin-css": "workspace:^"
+    }
+}

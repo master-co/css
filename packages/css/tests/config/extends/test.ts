@@ -19,23 +19,23 @@ it('config extends', () => {
             '': 'font:200'
         },
     })
-    expect(css.colorThemesMap.first).toEqual({
+    expect(css.colors.first).toEqual({
         '': '#111111',
         'dark': '#c6dbfe',
         'light': '#000000'
     })
-    expect(css.colorThemesMap.second).toEqual({
+    expect(css.colors.second).toEqual({
         'dark': '#0e3496',
         'light': '#00000080'
     })
-    expect(css.colorThemesMap.third).toEqual({
+    expect(css.colors.third).toEqual({
         '': '#0e3496',
         'dark': '#175fe9'
     })
-    expect(css.colorThemesMap['third-2']).toEqual({
+    expect(css.colors['third-2']).toEqual({
         'dark': '#6b9ef1'
     })
-    expect(css.colorThemesMap.fourth).toEqual({
+    expect(css.colors.fourth).toEqual({
         '': '#111111',
         'dark': '#175fe9',
         'light': '#000000'

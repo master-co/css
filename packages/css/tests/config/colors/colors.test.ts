@@ -230,3 +230,20 @@ test('colors', () => {
         config
     )
 })
+
+it('checks if similar color names collide.', () => {
+    testCSS(
+        'fg:a-1',
+        '.fg\\:a-1{color:#000000}',
+        {
+            colors: {
+                a: {
+                    1: '#000000'
+                },
+                aa: {
+                    1: '#ff0000'
+                }
+            }
+        }
+    )
+})

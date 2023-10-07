@@ -1,6 +1,6 @@
-import { Rule } from '../rule'
+import type { Config } from './'
 
-const functions: Functions = {
+const functions: Config['functions'] = {
     $: {
         name: 'var',
         transform(value) {
@@ -133,15 +133,22 @@ const functions: Functions = {
     rgba: { unit: '' },
     hsl: { unit: '' },
     hsla: { unit: '' },
-    repeat: { unit: '' }
+    color: { unit: '', colored: true },
+    'color-contrast': { unit: '', colored: true  },
+    'color-mix': { unit: '', colored: true },
+    hwb: { unit: '' },
+    lab: { unit: '' },
+    lch: { unit: '' },
+    oklab: { unit: '' },
+    oklch: { unit: '' },
+    clamp: { unit: '' },
+    repeat: { unit: '' },
+    'linear-gradient': { colored: true },
+    'radial-gradient': { colored: true },
+    'conic-gradient': { colored: true },
+    'repeating-linear-gradient': { colored: true },
+    'repeating-radial-gradient': { colored: true },
+    'repeating-conic-gradient': { colored: true }
 }
 
 export default functions
-
-export interface FunctionConfig {
-    unit?: string
-    name?: string
-    transform?(this: Rule, value: string): string
-}
-
-export type Functions = Record<string, FunctionConfig>

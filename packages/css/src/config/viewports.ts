@@ -1,4 +1,6 @@
-const viewports: Viewports = {
+import type { Config } from './'
+
+const viewports: Config['viewports'] = {
     '4xs': 360,
     '3xs': 480,
     '2xs': 600,
@@ -13,5 +15,3 @@ const viewports: Viewports = {
 }
 
 export default viewports
-
-export type Viewports = { [key: string]: number | Viewports }

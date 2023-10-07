@@ -1,5 +1,3 @@
-import type { MasterCSS } from '../core'
-
 const fonts = {
     mono: [
         'ui-monospace',
@@ -38,5 +36,3 @@ const fonts = {
 }
 
 export default fonts
-
-export type Fonts = { [key: string]: string | string[] } | ((css: MasterCSS) => Fonts)

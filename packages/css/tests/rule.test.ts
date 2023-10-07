@@ -3,7 +3,7 @@ import { testCSS } from './css'
 test('classes', () => {
     testCSS(
         '?',
-        '.px\\:20,.\\?{padding-left:1.25rem;padding-right:1.25rem}.h\\:40,.\\?{height:2.5rem}.text\\:center,.\\?{text-align:center}.font\\:14,.\\?{font-size:0.875rem}.fg\\:\\#fff\\:hover:hover,.\\?:hover{color:#fff}',
+        '.px\\:20,.\\?{padding-left:1.25rem;padding-right:1.25rem}.font\\:14,.\\?{font-size:0.875rem}.h\\:40,.\\?{height:2.5rem}.text\\:center,.\\?{text-align:center}.fg\\:\\#fff\\:hover:hover,.\\?:hover{color:#fff}',
         {
             'classes': {
                 '?': 'font:14 text:center h:40 px:20 fg:#fff:hover'
