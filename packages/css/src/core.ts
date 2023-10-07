@@ -358,21 +358,25 @@ export class MasterCSS {
                         const [key, values = []] = match
                         const valueMatches = []
                         if (values.length) {
-                            valueMatches.push(`(?:${values.join('|')})(?:\\b|$)`)
+                            valueMatches.push(`(?:${values.join('|')})(?![a-zA-Z0-9-])`)
                         }
                         if (this.values[id]) {
-                            valueMatches.push(`(?:${Object.keys(this.values[id]).join('|')})\\b`)
+                            valueMatches.push(`(?:${Object.keys(this.values[id]).join('|')})(?![a-zA-Z0-9-])`)
                         }
                         if (eachRuleConfig.colored) {
                             valueMatches.push('#', '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)')
                             if (this.colorNames.length) {
-                                valueMatches.push(`(?:${this.colorNames.join('|')})(?:\\b|$)`)
+                                valueMatches.push(`(?:${this.colorNames.join('|')})(?![a-zA-Z0-9-])`)
                             }
                         }
                         if (eachRuleConfig.numeric) {
                             valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
                         }
                         eachRuleConfig._resolvedMatch = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
+                        if (id === 'borderStyle') {
+                            console.log(id, eachRuleConfig._resolvedMatch)
+
+                        }
                     } else {
                         eachRuleConfig._resolvedMatch = match as RegExp
                     }
