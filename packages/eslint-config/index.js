@@ -6,6 +6,6 @@ module.exports = {
         },
     },
     rules: {
-        '@master/css/classnames-order': 'warn'
+        '@master/css/class-order': 'warn'
     }
 }

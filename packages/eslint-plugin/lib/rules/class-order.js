@@ -29,7 +29,7 @@ module.exports = {
             description: 'Enforce a consistent and logical order of the Master CSS classnames',
             category: 'Stylistic Issues',
             recommended: false,
-            url: docsUrl('classnames-order'),
+            url: docsUrl('class-order'),
         },
         messages: {
             invalidOrder: INVALID_CLASSNAMES_ORDER_MSG,
