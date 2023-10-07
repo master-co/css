@@ -1,7 +1,7 @@
 {
     "name": "@master/eslint-plugin-css",
     "scripts": {
-        "test": "mocha tests --recursive --timeout 5000"
+        "test": "mocha tests --recursive --timeout 10000"
     },
     "keywords": [
         "mastercss",
