@@ -1,0 +1,38 @@
+## Visual Studio Code
+
+import VSCodeSvg from 'shared/icons/visualstudiocode.svg'
+
+Typical setup for Visual Studio Code users.
+
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install extension
+            Install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) in the Visual Studio Marketplace.
+        </StepL>
+        <StepR>
+            <a className="app-object app-object-interactive flex:col px:25 h:48 font:14 font:semibold r:4 lh:1 flex:row!" href="vscode:extension/dbaeumer.vscode-eslint">
+                <VSCodeSvg className="ml:-4 mr:10" width="20" height="20" />
+                <span>Install to Visual Studio Code</span>
+            </a>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Configure your settings
+            Create a `.vscode/settings.json` or set it in [user settings](https://code.visualstudio.com/docs/getstarted/settings).
+
+            - Add `@master/css/class-order` to the `eslint.codeActionsOnSave.rules` section.
+        </StepL>
+        <StepR>
+            ```json name=.vscode/settings.json
+            { 
+                "eslint.codeActionsOnSave.rules": [
+                    "@master/css/class-order"
+                ]
+            }
+            ```
+        </StepR>
+        <StepEnd/>
+    </Step>
+</StepSection>
