@@ -25,8 +25,7 @@ var parserOptions = {
 //------------------------------------------------------------------------------
 
 describe('class-order', function () {
-    this.timeout(10000)
-    it('basic', function (done) {
+    it('basic', () => {
         var ruleTester = new RuleTester({ parserOptions })
         const generateErrors = (count) => {
             const errors = []
@@ -131,7 +130,5 @@ describe('class-order', function () {
                 }
             ],
         })
-
-        done()
-    })
+    }, 15000)
 })
