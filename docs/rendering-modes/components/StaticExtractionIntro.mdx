@@ -1,10 +1,11 @@
 import { IconAdjustments, IconDatabaseExport, IconFileExport } from '@tabler/icons-react'
 import ImageCallToPreview from 'shared/components/ImageCallToPreview'
 import Features, { Feature } from 'shared/components/Features'
+import { l } from 'to-line'
 
 Master CSS [Static Extraction](/docs/rendering-modes/static-extraction) integrates build tools to **scan** project source code, **extract** class names, **generate** CSS rules, and write them into a **virtual CSS module**.
 <div className="flex flex:wrap@<sm gap:50 mt:50">
-    <Features className="grid-cols:1 w:35%@sm">
+    <Features className={l('grid-cols:1', props.img ? 'w:35%@sm' : 'grid-cols:3@sm')}>
         <Feature>
             <IconFileExport className="app-icon-primary" />
             <div>
