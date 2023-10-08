@@ -1,0 +1,152 @@
+import { latestMasterCSSVersion } from 'shared/utils/latestMasterCSSVersion'
+
+###### On this page
+<ArticleTOC data={toc}/>
+
+---
+
+## Release states
+Master CSS is currently **in the Beta stage** and is **progressing toward the RC release**.
+
+1. <del>Alpha － 2.0.0-alpha.80</del>
+2. **Beta － [{latestMasterCSSVersion}](https://github.com/master-co/css/releases)** <svg className="ml:5 inline-block v:middle fill:green-75 8x8 overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><circle className="@ping|1s|infinite transform:center" cx="4" cy="4" r="4" /><circle cx="4" cy="4" r="4" /></svg>
+3. Release Candidate － 2.0.0-rc.1
+4. Stable － 2.0.0
+
+---
+
+## Beta ( Current )
+This phase will encompass completing all [core features and breaking changes](https://github.com/master-co/css/milestone/4), providing a solid foundation for v2.
+
+### 🟠 Core documentation
+With over **200 documents in Master CSS 2.0**, we've organized relevant documents affecting core functions as prerequisites for the [stable release](#release-candidate).
+
+Finalizing these documents allows us to verify the rationality, ease of use, and scalability of core features for further improvement.
+<table>
+    <Documents category='Getting Started' first />
+    <Documents category='Installation' />
+    <Documents category='Core Syntax' />
+    <Documents category='Fundamentals' />
+    <Documents category='Production Optimization' />
+    <Documents category='Customization' />
+    <Documents category='Enhanced Service' />
+    <Documents category='JavaScript API' />
+</table>
+<p className="flex gap:10 text:12">
+    <b>🟢 Completed</b>
+    <b>🚧 Unfinished</b>
+    <b>⚪️ Planning</b>
+</p>
+
+### 🟠 Color palette
+See the issue [#171](https://github.com/master-co/css/issues/171).
+
+Humans perceive different lightness for different color shades in the current color palette, which can lead to visual inconsistencies in the UI.
+
+We'll refactor on a visually consistent general palette based on intuition.
+
+It's expected to be the **final breaking change** during the beta stage.
+
+### 🟢 Fonts API
+Resolved [#275](https://github.com/master-co/css/issues/275). Check out the latest [documentation](/docs/fonts).
+
+### 🟠 Other APIs
+We may check whether each property, parameter, and external API needs to be improved when writing configuration-related documents.
+
+This work is critical to the popularity of third-party plugin authoring for Master CSS, and breaking configuration changes will not be made in the future unless necessary.
+
+---
+
+## Release Candidate
+At this stage, **Master CSS is stable**, which means there will be no further breaking changes. We'll refine the documentation and complete tasks for the upcoming v2.
+
+### 🟠 Syntax documentation
+Initially, the v1 docs were rushed into release, making its content rather rudimentary and potentially challenging to comprehend.
+
+Our goal for our upcoming v2 docs is to present a comprehensive and elegantly crafted syntax document. This enables developers to grasp the intricacies of CSS effortlessly, thus enhancing CSS understanding through our meticulous documentation.
+
+At the same time, we hope to get in touch with actual examples by writing syntax-related documents to obtain new improvements, such as simplifying syntax, adding utilities, etc.
+<table>
+    <Documents category='Accessibility' first />
+    <Documents category='Animation' />
+    <Documents category='Appearance' />
+    <Documents category='Background' />
+    <Documents category='Border' />
+    <Documents category='Effect' />
+    <Documents category='Flex' />
+    <Documents category='Font' />
+    <Documents category='Grid' />
+    <Documents category='Grid And Flexbox' />
+    <Documents category='Interactivity' />
+    <Documents category='Layout' />
+    <Documents category='List Style' />
+    <Documents category='Media' />
+    <Documents category='Outline' />
+    <Documents category='Performance' />
+    <Documents category='Scroll' />
+    <Documents category='Shape' />
+    <Documents category='Sizing' />
+    <Documents category='Spacing' />
+    <Documents category='Svg' />
+    <Documents category='Tables' />
+    <Documents category='Text' />
+    <Documents category='Transform' />
+    <Documents category='Transition' />
+    <Documents category='Typography' />
+    <Documents category='Variable' />
+    <Documents category='Visibility' />
+</table>
+<p className="flex gap:10 text:12">
+    <b>🟢 Completed</b>
+    <b>🚧 Unfinished</b>
+    <b>⚪️ Planning</b>
+</p>
+
+### ⚪️ Master CSS Language Service
+{/* See the related [issues](https://github.com/master-co/css/issues?q=is%3Aopen+label%3A%22language+service%22+milestone%3A%222.0+%28+RC+%29%22). */}
+🚧 The detailed content is under planning.
+
+### 🟢 Master CSS ESLint
+Released in [v2.0.0-beta.175](https://github.com/master-co/css/releases/tag/v2.0.0-beta.175). Check out the new [documentation](/docs/code-linting).
+
+It now implements a partial feature, with the rest scheduled for batch release after the v2 is launched.
+
+### ⚪️ Homepage redesign
+Redesign the homepage according to the features of v2.
+
+---
+
+## FAQs
+
+### When is v2 expected to arrive?
+Throughout the Beta phase, Master CSS v2.0 introduced many essential functions, services, and framework compatibility enhancements. Many of these underwent refactoring as part of the development journey or were fine-tuned in response to valuable input from the community.
+
+Since the syntax and API of Master CSS are expected to be in use for many years, even though v2 is nearing completion, it will take us some time to validate its market acceptance and solidify its foundation.
+
+Now that we're **at the end of beta**, we can more accurately estimate arrival times based on the task at hand:
+
+- **Master CSS v2.0**
+    - Release Candidate － December 2023
+    - Stable － February 2024
+- **Master UI v1.0**
+    - Alpha － April 2024
+    - Beta － May 2024
+    - Release Candidate － June 2024
+    - Stable － August 2024
+- **Master UI Pro v1.0** － December 2024
+
+### Is it stable enough for now?
+Only one breaking change remains during the beta, [Color Palette](#-color-palette). If you don't mind or are not affected by it, you can start using Master CSS in production!
+
+### How to keep track of the latest updates?
+- [GitHub Releases](https://github.com/master-co/css/releases) － We've beautified the release changelog, which notes any version and package detailed changes.
+- [Docs - Discord Channel](https://discord.com/channels/917780624314613760/1144544204979175626) － We'll post the latest documentation updates in the #docs channel in the Master discord server.
+
+### How to prevent version change conflicts?
+When using a CDN in production, pining the current version to avoid potential conflicts due to version changes is strongly recommended, like so:
+```html
+<script src="https://cdn.master.co/css@2.0.0-beta.174"></script>
+```
+
+### Where is the source code of the documentation?
+The official [documentation is now open source](https://github.com/master-co/css/tree/beta/docs); welcome to contribute your expertise.
