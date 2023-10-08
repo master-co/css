@@ -1381,7 +1381,6 @@ const rules = {
         layer: CoreLayer.Native,
         colored: true,
         declare(value) {
-            console.log(value)
             return {
                 'background-image': 'linear-' + value
             }
@@ -1419,12 +1418,12 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleConfig,
     strokeWidth: {
-        stroke: ['stroke-width'],
+        match: ['stroke(?:-width)?'],
         numeric: true,
         layer: CoreLayer.Native
     } as RuleConfig,
     stroke: {
-        layer: CoreLayer.Native,
+        layer: CoreLayer.Native - 0.1,
         colored: true
     } as RuleConfig,
     x: {

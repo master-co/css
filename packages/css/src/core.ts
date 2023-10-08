@@ -373,10 +373,6 @@ export class MasterCSS {
                             valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
                         }
                         eachRuleConfig._resolvedMatch = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
-                        if (id === 'borderStyle') {
-                            console.log(id, eachRuleConfig._resolvedMatch)
-
-                        }
                     } else {
                         eachRuleConfig._resolvedMatch = match as RegExp
                     }

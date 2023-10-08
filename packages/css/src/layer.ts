@@ -17,5 +17,7 @@ export const enum CoreLayer {
     // shorthand
     Shorthand = -201,
     // native
-    Native = -101
+    Native = -101,
+    // normal
+    Normal = -1
 }
