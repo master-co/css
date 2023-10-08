@@ -1423,7 +1423,8 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleConfig,
     stroke: {
-        layer: CoreLayer.Native - 0.1,
+        match: ['stroke'],
+        layer: CoreLayer.Native,
         colored: true
     } as RuleConfig,
     x: {
