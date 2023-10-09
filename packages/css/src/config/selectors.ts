@@ -1,6 +1,6 @@
 import type { Config } from './'
 
-const selectors: Config['selectors'] = {
+const selectors = {
     '::scrollbar': '::-webkit-scrollbar',
     '::scrollbar-button': '::-webkit-scrollbar-button',
     '::scrollbar-thumb': '::-webkit-scrollbar-thumb',

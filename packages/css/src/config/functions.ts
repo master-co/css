@@ -1,6 +1,4 @@
-import type { Config } from './'
-
-const functions: Config['functions'] = {
+const functions = {
     $: {
         name: 'var',
         transform(value) {

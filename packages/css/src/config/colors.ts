@@ -1,7 +1,6 @@
 import fillColorScale from '../functions/fill-color-scale'
-import type { Config } from './'
 
-const colors: Config['colors']  = {
+const colors = {
     black: '#000000',
     white: '#ffffff',
     current: 'currentColor',

@@ -1,6 +1,4 @@
-import type { Config } from './'
-
-const animations: Config['animations'] = {
+const animations = {
     fade: {
         '0%': { opacity: 0 },
         to: { opacity: 1 }

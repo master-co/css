@@ -1,7 +1,6 @@
 import cssEscape from 'shared/utils/css-escape'
 import { START_SYMBOLS } from '../constants/start-symbol'
 import type { Rule } from '../rule'
-import { transformColorWithOpacity } from '../functions/transform-color-with-opacity'
 import { CSSDeclarations } from '../types/css-declarations'
 import { CoreLayer } from '../layer'
 import { RuleConfig } from './'
