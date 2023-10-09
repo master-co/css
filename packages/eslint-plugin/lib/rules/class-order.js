@@ -7,7 +7,6 @@
 
 // Modified from https://github.com/francoismassart/eslint-plugin-tailwindcss
 
-const docsUrl = require('../util/docsUrl')
 const astUtil = require('../util/ast')
 const removeDuplicatesFromClassnamesAndWhitespaces = require('../util/removeDuplicatesFromClassnamesAndWhitespaces')
 const getOption = require('../util/settings')
