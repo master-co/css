@@ -1,0 +1,99 @@
+import { IconStatusChange, IconTextSpellcheck, IconArrowMerge, IconSettingsExclamation, IconScriptPlus } from '@tabler/icons-react'
+import Features, { Feature } from 'shared/components/Features'
+import frameworks from 'shared/data/frameworks'
+import editors from 'shared/data/editors'
+
+<Features className="grid-cols:3@sm my:50">
+    <Feature>
+        <IconStatusChange className="app-icon-primary" />
+        <div>
+            **[Consistent class order](#enforce-a-consistent-and-logical-order-of-classes)**
+            
+            Enforce a consistent and logical order of classes
+        </div>
+    </Feature>
+    <Feature>
+        <IconTextSpellcheck className="app-icon" />
+        <div>
+            **Conflicting class checks 🚧**
+            
+            Avoid declaring the identical CSS property repeatedly
+        </div>
+    </Feature>
+    <Feature>
+        <IconSettingsExclamation className="app-icon" />
+        <div>
+            **Illegal class checks 🚧**
+            
+            Check the validity of classes with your configuration
+        </div>
+    </Feature>
+    <Feature>
+        <IconArrowMerge className="app-icon" />
+        <div>
+            **Enforce shorthand 🚧**
+            
+            Combine multiple classes into a shorthand If possible
+        </div>
+    </Feature>
+    <Feature>
+        <IconScriptPlus className="app-icon" />
+        <div>
+            **No external class 🚧**
+            
+            Avoid using custom classes from traditional CSS
+        </div>
+    </Feature>
+</Features>
+
+See more feature [details ↓](#features)
+
+---
+
+## Installation guides
+<IconButtons url="/docs/code-linting">
+    {[
+        ...frameworks.filter(({ name }) => ['React', 'Vue.js', 'Angular'].includes(name)),
+        ...editors.filter(({ name }) => ['Visual Studio Code'].includes(name)),
+    ]}
+</IconButtons>
+
+---
+
+## Features
+### Enforce a consistent and logical order of classes
+In the development process, you typically don't pay much attention to the order of classes, and as the number of classes increases, the template markup becomes less readable.
+
+<figure className="max-w:sm">
+    <video className="aspect:4.972/3 r:5" autoPlay loop muted playsInline>
+        <source src="/videos/consistent-class-order.webm" type="video/webm" />
+    </video>
+    <figcaption>Correct the order of the Master CSS class in Visual Studio Code.</figcaption>
+</figure>
+
+Using Master CSS ESLint ensures that classes on any element are consistently organized according to predefined rules.
+
+(!) <span className="text:warning">No consistent class order followed</span>
+```html
+<div class="font:12 font:32@md font:24@sm m:32 block px:16 bg:blue:hover round mb:48">
+```
+(o) Fixes order based on resulting CSS rule precedence
+```html
+<div class="block round m:32 px:16 font:12 mb:48 bg:blue:hover font:24@sm font:32@md">
+```
+
+### Conflicting class checks 🚧
+### Illegal class checks 🚧
+### Enforce shorthand 🚧
+### No external class 🚧
+
+---
+
+## Rules
+| Name                     | Description                                              |
+| ----------------------- | --------------------------------------------------------- |
+| `class-order`           | Enforce a consistent and logical order of classes        |
+| `class-collision` 🚧    | Check the validity of classes with your configuration    |
+| `class-validation` 🚧   | Avoid declaring the identical CSS property repeatedly    |
+| `enforces-class-shorthand` 🚧 | Combine multiple classes into a shorthand if possible |
+| `no-external-class` 🚧  | Avoid using custom classes from traditional CSS          |

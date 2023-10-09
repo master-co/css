@@ -1,7 +1,7 @@
 import Tabs, { Tab, TabBadge } from 'shared/components/Tabs'
 import { queryDictionary } from 'shared/dictionaries';
 import DocLayout from '~/layouts/doc'
-import NuxtjsSvg from 'shared/images/frameworks/vuejs.svg'
+import LogoSvg from 'shared/images/frameworks/vuejs.svg'
 
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)
@@ -15,7 +15,7 @@ export default async function Layout(props: any) {
             }}
             backOnClickCategory='/docs/installation'
             icon={{
-                Element: NuxtjsSvg,
+                Element: LogoSvg,
                 class: 'w:64'
             }}
         >

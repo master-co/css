@@ -10,7 +10,7 @@ import copy from 'copy-to-clipboard'
 
 export default () => <div className="grid-cols:6 grid-cols:13@sm my:40 gap:25|10">
     {Object.keys(colors)
-        .filter((colorName) => colorName !== 'black' && colorName !== 'white')
+        .filter((colorName) => !['black', 'white', 'current', 'transparent'].includes(colorName))
         .map((colorName: string) => {
             const eachColors = (colors as any)[colorName]
             return (

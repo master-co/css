@@ -1,8 +1,13 @@
-import Tabs, { Tab } from 'shared/components/Tabs'
+import metadata from './metadata'
+import Content from './content.mdx'
+import { generate } from '~/utils/metadata'
 import { queryDictionary } from 'shared/dictionaries';
 import DocLayout from '~/layouts/doc'
-import metadata from './metadata';
 import ESLintSvg from 'shared/icons/eslint.svg'
+
+export async function generateMetadata(props: any, parent: any) {
+    return generate(metadata, props, parent)
+}
 
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)
@@ -12,12 +17,7 @@ export default async function Layout(props: any) {
             Element: ESLintSvg,
             class: 'w:90'
         }}>
-            <Tabs className="mb:30">
-                <Tab href='/docs/code-linting/react'>React</Tab>
-                <Tab href='/docs/code-linting/vuejs'>Vue.js</Tab>
-                <Tab href='/docs/code-linting/html'>HTML</Tab>
-            </Tabs>
-            {props.children}
+            <Content />
         </DocLayout >
     )
 }

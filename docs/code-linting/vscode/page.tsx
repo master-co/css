@@ -2,7 +2,7 @@ import Layout from '~/layouts/doc'
 import metadata from './metadata'
 import Content from './content.mdx'
 import { generate } from '~/utils/metadata'
-import LogoSvg from 'shared/images/frameworks/vuejs.svg'
+import LogoSvg from 'shared/icons/visualstudiocode.svg'
 import { queryDictionary } from 'shared/dictionaries'
 
 export async function generateMetadata(props: any, parent: any) {
@@ -16,7 +16,7 @@ export default async function Page(props: any) {
         <Layout {...props}
             metadata={metadata}
             backOnClickCategory='/docs/code-linting'
-            icon={{ Element: LogoSvg, class: 'w:64' }}
+            icon={{ Element: LogoSvg, class: 'w:70' }}
         >
             <Content />
         </Layout >
