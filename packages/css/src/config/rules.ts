@@ -8,6 +8,7 @@ import { RuleConfig } from './'
 const rules = {
     group: {
         match: /^(?:.+?[*_>~+])?\{.+?\}/,
+        layer: CoreLayer.Normal,
         analyze(className: string) {
             let i = 0
             for (; i < className.length; i++) {
@@ -149,6 +150,7 @@ const rules = {
     variable: {
         match: /^\$[\w-]+:./, // don't use 'rem' as default, because css variable is common API
         colored: true,
+        layer: CoreLayer.Normal,
         declare(value) {
             return {
                 ['--' + this.prefix.slice(1, -1)]: value
@@ -1476,7 +1478,8 @@ const rules = {
                     + 'minmax'
                     + '(' + 0 + ',' + 1 + 'fr' + '))',
             }
-        }
+        },
+        layer: CoreLayer.Normal
     } as RuleConfig,
     gridRowStart: {
         layer: CoreLayer.Native
@@ -1505,7 +1508,8 @@ const rules = {
                     + 'minmax'
                     + '(' + 0 + ',' + 1 + 'fr' + '))',
             }
-        }
+        },
+        layer: CoreLayer.Normal
     } as RuleConfig,
     gridAutoColumns: {
         match: /^grid-auto-cols:./,
