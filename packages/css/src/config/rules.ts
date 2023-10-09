@@ -327,6 +327,10 @@ const rules = {
         unit: 'rem',
         layer: CoreLayer.NativeShorthand
     } as RuleConfig,
+    order: {
+        match: /^o:./,
+        layer: CoreLayer.Native
+    } as RuleConfig,
     flexBasis: {
         values: {
             full: '100%',
