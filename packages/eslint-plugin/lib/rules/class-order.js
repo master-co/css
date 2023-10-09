@@ -21,15 +21,15 @@ const MasterCSS = require('@master/css').MasterCSS
 
 // Predefine message for use in context.report conditional.
 // messageId will still be usable in tests.
-const INVALID_CLASSNAMES_ORDER_MSG = 'Invalid Master CSS classnames order'
+const INVALID_CLASSNAMES_ORDER_MSG = 'No consistent class order followed.'
 
 module.exports = {
     meta: {
         docs: {
-            description: 'Enforce a consistent and logical order of the Master CSS classnames',
+            description: 'Enforce a consistent and logical order of classes',
             category: 'Stylistic Issues',
             recommended: false,
-            url: docsUrl('class-order'),
+            url: 'https://beta.css.master.co/docs/code-linting#enforce-a-consistent-and-logical-order-of-classes',
         },
         messages: {
             invalidOrder: INVALID_CLASSNAMES_ORDER_MSG,
