@@ -9,9 +9,11 @@ const LayerReference = () => <table>
     </thead>
     <tbody>
         {
+            // @ts-ignore
             Object.keys(Layer)
                 .filter((eachName) => Number.isNaN(+eachName))
                 .map((eachName) => {
+                    // @ts-ignore
                     const each = Layer[eachName]
                     return (
                         <tr key={eachName}>
