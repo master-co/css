@@ -16,6 +16,7 @@ export { default as generateFromClasses } from './functions/generate-from-classe
 export { default as generateFromHTML } from './functions/generate-from-html'
 export { default as initRuntime } from './functions/init-runtime'
 export { default as renderHTML } from './functions/render-html'
+export { default as reorderForReadableClasses } from './functions/reorder-for-readable-classes'
 
 // config
 export * from './config'
