@@ -73,8 +73,6 @@ module.exports = {
         const masterCssConfig = getOption(context, 'config')
         const classRegex = getOption(context, 'classRegex')
 
-        const masterCss = new MasterCSS(masterCssConfig)
-
         //----------------------------------------------------------------------
         // Helpers
         //----------------------------------------------------------------------
@@ -166,6 +164,8 @@ module.exports = {
                 // Don't run sorting for a single or empty className
                 return
             }
+
+            const masterCss = new MasterCSS(masterCssConfig)
 
             for (const className of classNames) {
                 masterCss.insert(className)
