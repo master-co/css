@@ -44,10 +44,10 @@ describe('class-order', function () {
         ruleTester.run('class-order', rule, {
             valid: [
                 {
-                    code: `<div class="m:8 p:8 bg:black fg:white f:24">Simple, basic</div>`,
+                    code: `<div class="bg:black fg:white f:24 m:8 p:8">Simple, basic</div>`,
                 },
                 {
-                    code: `<div test="m:8 p:8 bg:black fg:white f:24">Simple, using 'test' prop</div>`,
+                    code: `<div test="bg:black fg:white f:24 m:8 p:8">Simple, using 'test' prop</div>`,
                     options: [
                         {
                             classRegex: '^test$',
@@ -82,7 +82,7 @@ describe('class-order', function () {
                         }: FakeProps) {
                             return (
                             <>
-                                <h1 className={"m:8 p:8 bg:black fg:white f:24"}>Welcome {name}</h1>
+                                <h1 className={"bg:black fg:white f:24 m:8 p:8"}>Welcome {name}</h1>
                                 <p>Bye {name}</p>
                             </>
                             );
@@ -94,12 +94,12 @@ describe('class-order', function () {
                 },
                 {
                     code: `<div class="fg:white f:24 m:8 p:8 bg:black">Classnames will be ordered</div>`,
-                    output: `<div class="m:8 p:8 bg:black fg:white f:24">Classnames will be ordered</div>`,
+                    output: `<div class="bg:black fg:white f:24 m:8 p:8">Classnames will be ordered</div>`,
                     errors: errors,
                 },
                 {
                     code: `<template><div class="m:8 bg:black p:8 fg:white f:24">Enhancing readability</div></template>`,
-                    output: `<template><div class="m:8 p:8 bg:black fg:white f:24">Enhancing readability</div></template>`,
+                    output: `<template><div class="bg:black fg:white f:24 m:8 p:8">Enhancing readability</div></template>`,
                     errors: errors,
                     filename: 'test.vue',
                     parser: require.resolve('vue-eslint-parser'),
@@ -117,11 +117,11 @@ describe('class-order', function () {
                         </div>`,
                     output: `
                         <div class="
-                            m:8
-                            p:8
                             bg:black
                             fg:white
                             f:24
+                            m:8
+                            p:8
                         ">
                             :)
                         </div>`,

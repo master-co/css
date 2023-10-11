@@ -8,7 +8,7 @@ import editors from 'shared/data/editors'
         <IconStatusChange className="app-icon-primary" />
         <div>
             **[Consistent class order](#enforce-a-consistent-and-logical-order-of-classes)**
-            
+
             Enforce a consistent and logical order of classes
         </div>
     </Feature>
@@ -16,7 +16,7 @@ import editors from 'shared/data/editors'
         <IconTextSpellcheck className="app-icon" />
         <div>
             **Conflicting class checks 🚧**
-            
+
             Avoid declaring the identical CSS property repeatedly
         </div>
     </Feature>
@@ -24,7 +24,7 @@ import editors from 'shared/data/editors'
         <IconSettingsExclamation className="app-icon" />
         <div>
             **Illegal class checks 🚧**
-            
+
             Check the validity of classes with your configuration
         </div>
     </Feature>
@@ -32,7 +32,7 @@ import editors from 'shared/data/editors'
         <IconArrowMerge className="app-icon" />
         <div>
             **Enforce shorthand 🚧**
-            
+
             Combine multiple classes into a shorthand If possible
         </div>
     </Feature>
@@ -40,7 +40,7 @@ import editors from 'shared/data/editors'
         <IconScriptPlus className="app-icon" />
         <div>
             **No external class 🚧**
-            
+
             Avoid using custom classes from traditional CSS
         </div>
     </Feature>
@@ -79,7 +79,7 @@ Using Master CSS ESLint ensures that classes on any element are consistently org
 ```
 (o) Fixes order based on resulting CSS rule precedence
 ```html
-<div class="block round m:32 px:16 font:12 mb:48 bg:blue:hover font:24@sm font:32@md">
+<div class="block round bg:blue:hover font:12 font:24@sm font:32@md m:32 mb:48 px:16">
 ```
 
 ### Conflicting class checks 🚧

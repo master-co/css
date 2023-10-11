@@ -9,6 +9,14 @@ test('mixed', () => {
             'block round bg:red bg:blue:hover bg:purple:focus font:12 font:32@sm font:48@lg m:32 mb:48 my:16 my:32@lg px:16'.split(' ')
         )
     }
+
+    for (let i = 0; i < 10; i++) {
+        expect(reorderForReadableClasses(shuffle(
+            'font:12 font:32@md font:24@sm m:32 block px:16 bg:blue:hover round mb:48'.split(' ')
+        ))).toEqual(
+            'block round bg:blue:hover font:12 font:24@sm font:32@md m:32 mb:48 px:16'.split(' ')
+        )
+    }
 })
 
 test('selectors', () => {

@@ -12,7 +12,7 @@ const removeDuplicatesFromClassnamesAndWhitespaces = require('../util/removeDupl
 const getOption = require('../util/settings')
 const parserUtil = require('../util/parser')
 
-const MasterCSS = require('@master/css').MasterCSS
+const { reorderForReadableClasses } = require('@master/css')
 
 //------------------------------------------------------------------------------
 // Rule Definition
@@ -165,15 +165,8 @@ module.exports = {
                 return
             }
 
-            const masterCss = new MasterCSS(masterCssConfig)
-
-            for (const className of classNames) {
-                masterCss.insert(className)
-            }
-
-            let orderedClassNames = masterCss.rules
-                .filter(x => classNames.includes(x.className))
-                .map(x => x.className)
+            let orderedClassNames = reorderForReadableClasses(classNames, masterCssConfig)
+                .filter(eachOrderedClassName => classNames.includes(eachOrderedClassName))
 
             orderedClassNames = orderedClassNames.concat(classNames.filter(x => !orderedClassNames.includes(x)))
 
