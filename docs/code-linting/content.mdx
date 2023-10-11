@@ -58,6 +58,8 @@ See more feature [details ↓](#features)
     ]}
 </IconButtons>
 
+<p><small>If you use `.html` or a related framework, please see the Angular guide.</small></p>
+
 ---
 
 ## Features
@@ -65,7 +67,7 @@ See more feature [details ↓](#features)
 In the development process, you typically don't pay much attention to the order of classes, and as the number of classes increases, the template markup becomes less readable.
 
 <figure className="max-w:sm">
-    <video className="aspect:4.972/3 r:5" autoPlay loop muted playsInline>
+    <video className="aspect:1510/750 r:5" autoPlay loop muted playsInline>
         <source src="/videos/consistent-class-order.webm" type="video/webm" />
     </video>
     <figcaption>Correct the order of the Master CSS class in Visual Studio Code.</figcaption>
@@ -75,7 +77,7 @@ Using Master CSS ESLint ensures that classes on any element are consistently org
 
 (!) <span className="text:warning">No consistent class order followed</span>
 ```html
-<div class="font:12 font:32@md font:24@sm m:32 block px:16 bg:blue:hover round mb:48">
+<div class="font:12 font:24@sm m:32 block px:16 font:32@md bg:blue:hover round mb:48">
 ```
 (o) Fixes order based on resulting CSS rule precedence
 ```html
