@@ -14,11 +14,11 @@ export interface MasterCSS {
     readonly style: HTMLStyleElement
     readonly host: Element
     readonly root: Document | ShadowRoot
-    classes: Record<string, string[]>
+    styles: Record<string, string[]>
     colors: Record<string, Record<string, string>>
     colorNames: string[]
     themeNames: string[]
-    classesBy: Record<string, string[]>
+    stylesBy: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>
     fonts: Record<string, string>
     values: Record<string, Record<string, string | number>>
@@ -68,9 +68,9 @@ export class MasterCSS {
     }
 
     resolve() {
-        this.classes = {}
+        this.styles = {}
         this.colors = {}
-        this.classesBy = {}
+        this.stylesBy = {}
         this.themeNames = ['']
         this.selectors = {}
         this.values = {}
@@ -84,7 +84,7 @@ export class MasterCSS {
         this._orderedRuleConfigs.length = 0
         this._semanticRuleConfigs.length = 0
 
-        const { classes, selectors, values, semantics, viewports, mediaQueries, rules, animations, fonts } = this.config
+        const { styles, selectors, values, semantics, viewports, mediaQueries, rules, animations, fonts } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -183,15 +183,15 @@ export class MasterCSS {
             }
         }
 
-        const flattedClasses: Record<string, string> = classes ? getFlatData(classes, false) : {}
-        const semanticNames = Object.keys(flattedClasses)
+        const flattedStyles: Record<string, string> = styles ? getFlatData(styles, false) : {}
+        const semanticNames = Object.keys(flattedStyles)
         const handleSemanticName = (semanticName: string) => {
-            if (Object.prototype.hasOwnProperty.call(this.classes, semanticName))
+            if (Object.prototype.hasOwnProperty.call(this.styles, semanticName))
                 return
 
-            const currentClass = this.classes[semanticName] = []
+            const currentClass = this.styles[semanticName] = []
 
-            const className = flattedClasses[semanticName]
+            const className = flattedStyles[semanticName]
             if (!className)
                 return
 
@@ -201,13 +201,13 @@ export class MasterCSS {
                 .split(' ')
             for (const eachClassName of classNames) {
                 const handle = (className: string) => {
-                    if (Object.prototype.hasOwnProperty.call(this.classesBy, className)) {
-                        const currentRelation = this.classesBy[className]
+                    if (Object.prototype.hasOwnProperty.call(this.stylesBy, className)) {
+                        const currentRelation = this.stylesBy[className]
                         if (!currentRelation.includes(semanticName)) {
                             currentRelation.push(semanticName)
                         }
                     } else {
-                        this.classesBy[className] = [semanticName]
+                        this.stylesBy[className] = [semanticName]
                     }
 
                     if (!currentClass.includes(className)) {
@@ -218,7 +218,7 @@ export class MasterCSS {
                 if (semanticNames.includes(eachClassName)) {
                     handleSemanticName(eachClassName)
 
-                    for (const parentClassName of this.classes[eachClassName]) {
+                    for (const parentClassName of this.styles[eachClassName]) {
                         handle(parentClassName)
                     }
                 } else {
@@ -459,7 +459,7 @@ export class MasterCSS {
 
                                     if (
                                         !(Object.prototype.hasOwnProperty.call(this.ruleBy, className))
-                                        && !(Object.prototype.hasOwnProperty.call(this.classes, className))
+                                        && !(Object.prototype.hasOwnProperty.call(this.styles, className))
                                     ) {
                                         const currentRule = this.create(className)[0]
                                         if (currentRule)
@@ -769,8 +769,8 @@ export class MasterCSS {
         }
         return (
             // `in` cannot be used
-            Object.prototype.hasOwnProperty.call(this.classes, syntax)
-                ? this.classes[syntax].map((eachSyntax) => create(eachSyntax))
+            Object.prototype.hasOwnProperty.call(this.styles, syntax)
+                ? this.styles[syntax].map((eachSyntax) => create(eachSyntax))
                 : [create(syntax)]
         )
             .filter(eachRule => eachRule && eachRule.text)
@@ -828,7 +828,7 @@ export class MasterCSS {
             const rule = this.ruleBy[name]
             if (
                 !rule
-                || Object.prototype.hasOwnProperty.call(this.classesBy, name) && this.classesBy[name].some(eachClassName => Object.prototype.hasOwnProperty.call(this.countBy, eachClassName))
+                || Object.prototype.hasOwnProperty.call(this.stylesBy, name) && this.stylesBy[name].some(eachClassName => Object.prototype.hasOwnProperty.call(this.countBy, eachClassName))
             )
                 return
 
@@ -869,8 +869,8 @@ export class MasterCSS {
             rule.config.delete?.call(rule, name)
         }
 
-        if (Object.prototype.hasOwnProperty.call(this.classes, className)) {
-            for (const eachClassName of this.classes[className]) {
+        if (Object.prototype.hasOwnProperty.call(this.styles, className)) {
+            for (const eachClassName of this.styles[className]) {
                 if (!Object.prototype.hasOwnProperty.call(this.countBy, eachClassName)) {
                     deleteRule(eachClassName)
                 }
@@ -1247,10 +1247,10 @@ export class MasterCSS {
                     }
                 }
             }
-            if (clonedConfig.classes) {
-                formatDeeply(clonedConfig.classes)
+            if (clonedConfig.styles) {
+                formatDeeply(clonedConfig.styles)
             } else {
-                clonedConfig.classes = {}
+                clonedConfig.styles = {}
             }
             if (clonedConfig.viewports) {
                 formatDeeply(clonedConfig.viewports)

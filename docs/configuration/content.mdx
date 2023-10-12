@@ -8,7 +8,7 @@ import SelectorsOverview from '../media-queries/components/Overview.mdx'
 import FunctionsOverview from '../functions/components/Overview.mdx'
 import ColorsOverview from '../colors/components/Overview.mdx'
 import FontsOverview from '../fonts/components/Overview.mdx'
-import ClassesOverview from '../classes/components/Overview.mdx'
+import StylesOverview from '../styles/components/Overview.mdx'
 
 ```js name=master.css.js
 /** @type {import('@master/css').Config} */
@@ -22,9 +22,9 @@ Configuration fields that are not specified will fall back to [default configura
 Customizing animation [animations](/docs/animations) for your design system.
 <KeyframesOverview />
 
-### `.classes`
-Customizing abstract [classes](/docs/classes) for your design system.
-<ClassesOverview />
+### `.styles`
+Customizing abstract [styles](/docs/styles) for your design system.
+<StylesOverview />
 
 ### `.functions`
 Customizing [functions](/docs/functions) for your design system.
@@ -132,7 +132,7 @@ export default {
 
 Generated CSS rules:
 ```css
-.font\:16 { 
+.font\:16 {
 -    font-size: 1rem; /* rootSize: 16 */
 +    font-size: 1.6rem;  /* rootSize: 10 */
 }
@@ -179,7 +179,7 @@ Sets how the theme should drive and generate CSS rules.
 <div class="bg:black@dark">
 ```
 
-#### Drive theme styles through classes
+#### Drive theme styles through CSS classes
 ```js name=master.css.js
 export default {
 +    themeDriver: 'class'

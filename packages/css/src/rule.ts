@@ -26,8 +26,8 @@ export class Rule {
         if (!this.config.unit) this.config.unit = ''
         if (!this.config.separators) this.config.separators = [',']
         const { scope, important, functions, themeDriver } = css.config
-        const { themeNames, colorNames, colors, selectors, viewports, mediaQueries, classesBy, globalValues, animations } = css
-        const classNames = classesBy[className]
+        const { themeNames, colorNames, colors, selectors, viewports, mediaQueries, stylesBy, globalValues, animations } = css
+        const classNames = stylesBy[className]
 
         if (create) create.call(this, className)
 

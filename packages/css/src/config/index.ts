@@ -66,7 +66,7 @@ export interface RuleConfig {
 
 export interface Config {
     extends?: (Config | { config: Config })[]
-    classes?: { [key: string]: string | Config['classes'] }
+    styles?: { [key: string]: string | Config['styles'] }
     colors?: { [key: string]: string | Config['colors'] }
     viewports?: { [key: string]: number | Config['viewports'] }
     mediaQueries?: { [key: string]: string | Config['mediaQueries'] }

@@ -3,7 +3,7 @@ import { config } from './master-css'
 
 it('config extends', () => {
     const css = new MasterCSS(config)
-    expect(css.config.classes).toEqual({
+    expect(css.config.styles).toEqual({
         'blue': {
             'btn': {
                 '': 'btn bg:blue',

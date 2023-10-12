@@ -32,7 +32,7 @@ export const buttonConfig: Config = {
         [buttonTokens.primaryDisabled]: colorTokens.blue200,
         [buttonTokens.disabled]: colorTokens.gray200
     },
-    classes: {
+    styles: {
         'btn-primary': [
             `t:${textTokens.onColor}`,
             `t:${textTokens.disabled}:disabled`,

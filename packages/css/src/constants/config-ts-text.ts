@@ -1,7 +1,7 @@
 export const CONFIG_TS_TEXT = `import type { Config } from '@master/css'
 
 export default {
-    classes: {},
+    styles: {},
     colors: {},
     rules: {},
     values: {},

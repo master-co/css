@@ -173,7 +173,7 @@ test('colors', () => {
                     }
                 }
             },
-            classes: {
+            styles: {
                 btn: 'bg:primary-filled'
             }
         }
@@ -191,7 +191,7 @@ test('colors', () => {
                     }
                 }
             },
-            classes: {
+            styles: {
                 btn: 'bg:primary-filled'
             }
         }
@@ -209,7 +209,7 @@ test('colors', () => {
                     }
                 }
             },
-            classes: {
+            styles: {
                 btn: 'bg:primary-filled'
             }
         }

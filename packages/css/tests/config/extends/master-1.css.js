@@ -14,7 +14,7 @@ const config = {
             }
         }
     },
-    classes: {
+    styles: {
         btn: 'font:14 h:40 text:center',
         blue: {
             btn: {

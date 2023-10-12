@@ -1,8 +1,8 @@
-import { testCSS } from './css'
-import config from './config'
+import { testCSS } from '../css'
+import config from '../config'
 import { extend } from '@techor/extend'
 
-test('classes', () => {
+test('styles', () => {
     testCSS(
         'btn',
         '.font\\:14,.btn,.blue-btn{font-size:0.875rem}.h\\:40,.btn,.blue-btn{height:2.5rem}.text\\:center,.btn,.blue-btn{text-align:center}.dark .bg\\:white\\@dark,.dark .btn,.dark .blue-btn{background-color:#ffffff}.light .bg\\:primary\\@light,.light .btn,.light .blue-btn{background-color:#ebbb40}.dark .fg\\:primary\\@dark,.dark .btn,.dark .blue-btn{color:#fbe09d}.light .fg\\:white\\@light,.light .btn,.light .blue-btn{color:#ffffff}.dark .font\\:medium\\@dark,.dark .btn,.dark .blue-btn{font-weight:500}.light .font\\:semibold\\@light,.light .btn,.light .blue-btn{font-weight:600}',
@@ -28,7 +28,7 @@ test('classes', () => {
                     '@dark': 'gray-50'
                 }
             },
-            classes: {
+            styles: {
                 'highlight-numbers': '{content:counter(lineNumber);inline-block;counter-increment:lineNumber;pr:16;text:right;ml:-5;fg:fader;w:30;font:80%}_.highlight-line:before'
             }
         }
