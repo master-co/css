@@ -127,7 +127,12 @@ describe('class-order', function () {
                         </div>`,
                     errors: errors,
                     parser: require.resolve('@angular-eslint/template-parser'),
-                }
+                },
+                {
+                    code: `<div class="flex uppercase m:0 m:0>li text-decoration:none>li>a px:4>li align-items:baseline fg:gray-30>li>a gap-x:28 font:12 font:semibold pb:6>li pt:20 pt:10>li {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a fg:gray-10>li>a:hover box-shadow:none>li>a:focus">Group</div>`,
+                    output: `<div class="flex uppercase align-items:baseline box-shadow:none>li>a:focus fg:gray-30>li>a fg:gray-10>li>a:hover gap-x:28 font:12 font:semibold {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a m:0 m:0>li pb:6>li pt:20 pt:10>li px:4>li text-decoration:none>li>a">Group</div>`,
+                    errors: errors,
+                },
             ],
         })
     })
