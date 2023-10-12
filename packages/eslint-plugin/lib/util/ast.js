@@ -131,8 +131,7 @@ function isLiteralAttributeValue(node) {
   if (node.value) {
     switch (node.value.type) {
       case 'Literal':
-        // No support for dynamic or conditional...
-        return !/\{|\?|\}/.test(node.value.value)
+        return true
       case 'JSXExpressionContainer':
         // className={"..."}
         return node.value.expression.type === 'Literal'
