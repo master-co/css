@@ -1,7 +1,8 @@
 {
     "name": "@master/eslint-plugin-css",
     "scripts": {
-        "test": "mocha tests --recursive --timeout 10000"
+        "test": "mocha tests --recursive --timeout 10000",
+        "test:file": "mocha tests"
     },
     "keywords": [
         "mastercss",
@@ -29,15 +30,16 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "requireindex": "^1.2.0",
-        "explore-config": "^2.2.10"
+        "explore-config": "^2.2.10",
+        "requireindex": "^1.2.0"
     },
     "devDependencies": {
         "@angular-eslint/template-parser": "^16.2.0",
-        "@typescript-eslint/parser": "^5.50.0",
         "@types/node": "^20.6.0",
-        "mocha": "^10.2.0",
+        "@typescript-eslint/parser": "^5.50.0",
         "eslint": "^7.1.0",
+        "mocha": "^10.2.0",
+        "svelte-eslint-parser": "^0.33.1",
         "vue-eslint-parser": "^9.3.1"
     }
 }

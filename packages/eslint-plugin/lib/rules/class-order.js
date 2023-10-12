@@ -138,6 +138,14 @@ module.exports = {
                         start = arg.range[0] + 1
                         end = arg.range[1] - 1
                         break
+                    case 'SvelteLiteral':
+                        originalClassNamesValue = arg.value
+                        if (originalClassNamesValue === '') {
+                            return
+                        }
+                        start = arg.range[0]
+                        end = arg.range[1]
+                        break;
                     case 'TemplateElement':
                         originalClassNamesValue = arg.value.raw
                         if (originalClassNamesValue === '') {
@@ -223,6 +231,15 @@ module.exports = {
 
         const scriptVisitor = {
             JSXAttribute: attributeVisitor,
+            SvelteAttribute: function (node) {
+                if (!node.key?.name) return
+                if (!new RegExp(classRegex).test(node.key.name) || skipClassAttribute) {
+                    return
+                }
+                for (const eachValue of node.value) {
+                    sortNodeArgumentValue(node, eachValue)
+                }
+            },
             TextAttribute: attributeVisitor,
             CallExpression: callExpressionVisitor,
             TaggedTemplateExpression: function (node) {
