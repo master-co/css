@@ -1,5 +1,3 @@
-import type { Config } from './'
-
 const selectors = {
     '::scrollbar': '::-webkit-scrollbar',
     '::scrollbar-button': '::-webkit-scrollbar-button',

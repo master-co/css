@@ -6,20 +6,20 @@ Applying certain property values ​​is often not so concise in class attribut
     {code1}
 </Code>
 
-(o) Use substitute values to simplify primitive values and [ambiguous shorthands](#ambiguous-shorthands). <Dropped p1={code1} p2={code2} target="class" />
+(o) Use variables to simplify primitive values and [ambiguous shorthands](#ambiguous-shorthands). <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
     {code2}
 </Code>
 
-By default, Master CSS uses token values to [simplify native CSS property values](/docs/rules#default-reference).
-
-In addition, you can customize [global values](/docs/values) and [rules](/docs/rules) to implement your design system, for example:
+By default, Master CSS uses predefined variables to simplify native values. You can customize [variables](/docs/variables) to implement your design system, for example:
 ```js name=master.css.js
 export default {
-    values: {
-        sm: 16,
-        md: 32,
-        …
+    variables: {
+        width: {
+            sm: 16,
+            md: 32,
+            …
+        }
     }
 }
 ```

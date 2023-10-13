@@ -44,7 +44,7 @@ const config: Config = {
         primary: 'blue'
     },
     rules: {},
-    values: {},
+    variables: {},
     semantics: {},
     viewports: {},
     mediaQueries: {},

@@ -57,51 +57,33 @@ export default {
         }
     },
     rules: {
-        width: {
-            values: {
-                x: {
-                    '1': {
-                        '1': '25rem',
-                        '2': '50rem',
-                        '3': '75rem'
-                    },
-                    '2': '100rem'
-                }
-            }
-        },
         fontSize: {
-            values: {
+            variables: {
                 sm: 16,
                 md: 20
             }
         },
         letterSpacing: {
-            values: {
+            variables: {
                 wide: .4
             }
         },
         border: {
-            values: {
+            variables: {
                 'inputborder': '2|solid|red'
             }
         },
         boxShadow: {
-            values: {
+            variables: {
                 '2x': '0 25px 50px -12px rgb(0 0 0 / 25%)'
             }
         },
         inset: {
-            values: {
+            variables: {
                 sm: 10,
                 md: 20
             }
         }
-    },
-    values: {
-        '2': {
-            x: '32'
-        },
-        '3x': '3rem'
     },
     semantics: {
         show: {

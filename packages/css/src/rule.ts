@@ -26,7 +26,7 @@ export class Rule {
         if (!this.config.unit) this.config.unit = ''
         if (!this.config.separators) this.config.separators = [',']
         const { scope, important, functions, themeDriver } = css.config
-        const { themeNames, colorNames, colors, selectors, viewports, mediaQueries, stylesBy, globalValues, animations } = css
+        const { themeNames, colorNames, colors, selectors, viewports, mediaQueries, stylesBy, animations } = css
         const classNames = stylesBy[className]
 
         if (create) create.call(this, className)
@@ -55,7 +55,7 @@ export class Rule {
 
             // eslint-disable-next-line @typescript-eslint/no-this-alias
             const instance = this
-            const values = this.values
+            const variables = this.config._variables
             const separators = [',']
             if (this.config.separators.length) {
                 separators.push(...this.config.separators)
@@ -86,29 +86,20 @@ export class Rule {
                         currentValueToken = ''
                         functionName = ''
 
-                        if (values && value in values && !usedValues.includes(value)) {
+                        if (variables && value in variables && !usedValues.includes(value)) {
                             const originalIndex = i
                             i = 0
-                            analyze(values[value].toString(), unit, undefined, parentFunctionName, [...usedValues, value], usedGlobalValues, bypassAnalyzeUnitValue)
-                            i = originalIndex
-
-                            if (!root) {
-                                currentValueToken = originalCurrentValueToken.slice(0, lastPushIndex) + currentValueToken
-                            }
-                        } else if (globalValues && value in globalValues && !usedGlobalValues.includes(value)) {
-                            const originalIndex = i
-                            i = 0
-                            analyze(globalValues[value].toString(), unit, undefined, parentFunctionName, usedValues, [...usedGlobalValues, value], bypassAnalyzeUnitValue)
+                            analyze(variables[value].toString(), unit, undefined, parentFunctionName, [...usedValues, value], usedGlobalValues, bypassAnalyzeUnitValue)
                             i = originalIndex
 
                             if (!root) {
                                 currentValueToken = originalCurrentValueToken.slice(0, lastPushIndex) + currentValueToken
                             }
                         } else if (root) {
-                            const uv = !bypassAnalyzeUnitValue && instance.analyzeUnitValue(value, unit)
+                            const uv = !bypassAnalyzeUnitValue && instance.resolveUnitValue(value, unit)
                             valueSplits.push({ value: uv?.value ?? value, unit: uv?.unit })
                         } else {
-                            const uv = !bypassAnalyzeUnitValue && instance.analyzeUnitValue(value, unit)
+                            const uv = !bypassAnalyzeUnitValue && instance.resolveUnitValue(value, unit)
                             currentValueToken = uv
                                 ? originalCurrentValueToken.slice(0, lastPushIndex) + uv.value + uv.unit
                                 : originalCurrentValueToken
@@ -147,10 +138,6 @@ export class Rule {
                         return
                     } else if (!isString && val in START_SYMBOLS) {
                         const functionConfig = val === '(' && functionName && functions?.[functionName]
-                        if (functionConfig?.name) {
-                            currentValueToken = currentValueToken.slice(0, currentValueToken.length - functionName.length) + functionConfig.name
-                            functionName = functionConfig.name
-                        }
                         if (!colored && functionConfig?.colored) {
                             colored = true
                         }
@@ -168,9 +155,11 @@ export class Rule {
                             bypassAnalyzeUnitValue || !!functionConfig?.transform)
 
                         if (functionConfig?.transform) {
-                            currentValueToken = currentValueToken.slice(0, lastPushIndex + functionName.length + 1)
-                                + functionConfig.transform.call(instance, currentValueToken.slice(lastPushIndex + functionName.length + 1, -1))
-                                + currentValueToken.slice(-1)
+                            currentValueToken = functionConfig.transform.call(instance,
+                                currentValueToken.slice(0, lastPushIndex + functionName.length + 1),
+                                currentValueToken.slice(lastPushIndex + functionName.length + 1, -1),
+                                currentValueToken.slice(-1)
+                            )
                         }
 
                         if (root) {
@@ -473,9 +462,9 @@ export class Rule {
                                         case 'max-width':
                                         case 'min-width':
                                             if (viewport) {
-                                                Object.assign(feature, this.analyzeUnitValue(viewport.toString(), 'px'))
+                                                Object.assign(feature, this.resolveUnitValue(viewport.toString(), 'px'))
                                             } else {
-                                                Object.assign(feature, this.analyzeUnitValue(conditionUnitValueToken, 'px'))
+                                                Object.assign(feature, this.resolveUnitValue(conditionUnitValueToken, 'px'))
                                             }
                                             if (feature.unit === 'px') {
                                                 feature.value += correction
@@ -737,10 +726,6 @@ export class Rule {
         }
     }
 
-    get values(): Record<string, string | number> {
-        return this.css.values[this.config.id]
-    }
-
     get text(): string {
         return this.natives.map((eachNative) => eachNative.text).join('')
     }
@@ -752,12 +737,26 @@ export class Rule {
             + unit
     }
 
-    analyzeUnitValue(token: string, unit?: string): { value: string, unit: string } {
+    resolveUnitValue(token: string | number, unit?: string): { value: string, unit: string } {
         const defaultUnit = unit ?? this.config.unit
-        if (defaultUnit) {
-            let newUnit = ''
-
-            const matches = token.match(/^([+-.]?\d+(\.?\d+)?)(.*)?/)
+        let newUnit = ''
+        let value: any
+        if (typeof token === 'number') {
+            /**
+             * 當無單位值且 defaultUnit === 'rem'，
+             * 將 pxValue / 16 轉為 remValue
+             */
+            if (defaultUnit && !newUnit) {
+                if (defaultUnit === 'rem' || defaultUnit === 'em') {
+                    value = token / this.css.config.rootSize
+                }
+                newUnit = defaultUnit || ''
+            } else {
+                value = token
+            }
+            return { value, unit: newUnit }
+        } else if (defaultUnit) {
+            const matches = token.match(/^([+-.]?\d+(\.?\d+)?)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x|fr|db|st)?$/)
             // ['0.5deg', '0.5', 'deg', index: 0, input: '0.5deg', groups: undefined]
             if (matches) {
                 if (token.includes('/')) {

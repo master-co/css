@@ -10,6 +10,5 @@ test('color', () => {
     testProp('fg:transparent', 'color:transparent')
     testProp('foreground:transparent', 'color:transparent')
     testProp('fg:inherit', 'color:inherit')
-    testProp('fg:$(color)', 'color:var(--color)')
     testProp('foreground:var(--color)', 'color:var(--color)')
 })

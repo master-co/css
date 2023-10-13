@@ -165,25 +165,11 @@ const rules = {
     } as RuleConfig,
     fontWeight: {
         match: ['f(?:ont)?', ['bolder']],
-        layer: CoreLayer.Native,
-        values: {
-            thin: 100,
-            extralight: 200,
-            light: 300,
-            regular: 400,
-            medium: 500,
-            semibold: 600,
-            bold: 700,
-            extrabold: 800,
-            heavy: 900
-        }
+        layer: CoreLayer.Native
     } as RuleConfig,
     fontFamily: {
         match: ['f(?:ont)?'],
-        layer: CoreLayer.Native,
-        values() {
-            return this.fonts
-        }
+        layer: CoreLayer.Native
     } as RuleConfig,
     fontSmoothing: {
         match: ['f(?:ont)?', ['antialiased', 'subpixel-antialiased']],
@@ -219,15 +205,7 @@ const rules = {
     font: {
         match: /^f:./,
         layer: CoreLayer.NativeShorthand,
-        values({ fontSize, fontStyle, fontWeight, lineHeight }) {
-            return {
-                ...fontSize,
-                ...fontStyle,
-                ...fontWeight,
-                ...lineHeight,
-                ...this.fonts
-            }
-        }
+        variables: ['fontSize', 'fontStyle', 'fontFamily', 'fontWeight', 'lineHeight']
     } as RuleConfig,
     color: {
         match: /^(?:color|fg|foreground):./,
@@ -328,28 +306,16 @@ const rules = {
         unit: 'rem',
         layer: CoreLayer.NativeShorthand
     } as RuleConfig,
-    order: {
-        match: /^o:./,
-        layer: CoreLayer.Native
-    } as RuleConfig,
     flexBasis: {
-        values: {
-            full: '100%',
-            fit: 'fit-content',
-            max: 'max-content',
-            min: 'min-content',
-            '4xs': 360,
-            '3xs': 480,
-            '2xs': 600,
-            'xs': 768,
-            'sm': 834,
-            'md': 1024,
-            'lg': 1280,
-            'xl': 1440,
-            '2xl': 1600,
-            '3xl': 1920,
-            '4xl': 2560
-        },
+        variables: [
+            {
+                full: '100%',
+                fit: 'fit-content',
+                max: 'max-content',
+                min: 'min-content'
+            },
+            'viewport'
+        ],
         unit: 'rem',
         layer: CoreLayer.Native,
     } as RuleConfig,
@@ -366,7 +332,7 @@ const rules = {
     flexDirection: {
         match: ['flex', ['row', 'row-reverse', 'column', 'column-reverse']],
         layer: CoreLayer.Native,
-        values: {
+        variables: {
             col: 'column',
             'col-reverse': 'column-reverse'
         }
@@ -382,89 +348,57 @@ const rules = {
         match: /^w:./,
         unit: 'rem',
         layer: CoreLayer.Native,
-        values: {
-            full: '100%',
-            fit: 'fit-content',
-            max: 'max-content',
-            min: 'min-content',
-            '4xs': 360,
-            '3xs': 480,
-            '2xs': 600,
-            'xs': 768,
-            'sm': 834,
-            'md': 1024,
-            'lg': 1280,
-            'xl': 1440,
-            '2xl': 1600,
-            '3xl': 1920,
-            '4xl': 2560
-        }
+        variables: [
+            {
+                full: '100%',
+                fit: 'fit-content',
+                max: 'max-content',
+                min: 'min-content'
+            },
+            'viewport'
+        ]
     } as RuleConfig,
     Height: {
         match: /^h:./,
         unit: 'rem',
         layer: CoreLayer.Native,
-        values: {
-            full: '100%',
-            fit: 'fit-content',
-            max: 'max-content',
-            min: 'min-content',
-            '4xs': 360,
-            '3xs': 480,
-            '2xs': 600,
-            'xs': 768,
-            'sm': 834,
-            'md': 1024,
-            'lg': 1280,
-            'xl': 1440,
-            '2xl': 1600,
-            '3xl': 1920,
-            '4xl': 2560
-        }
+        variables: [
+            {
+                full: '100%',
+                fit: 'fit-content',
+                max: 'max-content',
+                min: 'min-content'
+            },
+            'viewport'
+        ]
     } as RuleConfig,
     minWidth: {
         match: /^min-w:./,
         unit: 'rem',
         layer: CoreLayer.Native,
-        values: {
-            full: '100%',
-            fit: 'fit-content',
-            max: 'max-content',
-            min: 'min-content',
-            '4xs': 360,
-            '3xs': 480,
-            '2xs': 600,
-            'xs': 768,
-            'sm': 834,
-            'md': 1024,
-            'lg': 1280,
-            'xl': 1440,
-            '2xl': 1600,
-            '3xl': 1920,
-            '4xl': 2560
-        }
+        variables: [
+            {
+                full: '100%',
+                fit: 'fit-content',
+                max: 'max-content',
+                min: 'min-content'
+            },
+            'viewport'
+        ]
     } as RuleConfig,
     minHeight: {
         match: /^min-h:./,
         unit: 'rem',
         layer: CoreLayer.Native,
-        values: {
-            full: '100%',
-            fit: 'fit-content',
-            max: 'max-content',
-            min: 'min-content',
-            '4xs': 360,
-            '3xs': 480,
-            '2xs': 600,
-            'xs': 768,
-            'sm': 834,
-            'md': 1024,
-            'lg': 1280,
-            'xl': 1440,
-            '2xl': 1600,
-            '3xl': 1920,
-            '4xl': 2560
-        }
+        variables: [
+            {
+                full: '100%',
+                fit: 'fit-content',
+                max: 'max-content',
+                min: 'min-content'
+            },
+            'viewport'
+        ]
     } as RuleConfig,
     box: {
         match: /^(?:(?:max|min|clamp|calc)\(.+\)|[0-9]+[a-z]*?)x(?:(?:max|min|clamp|calc)\(.+\)|[0-9]+[a-z]*?)/,
@@ -517,7 +451,7 @@ const rules = {
     boxSizing: {
         match: /^box:./,
         layer: CoreLayer.Native,
-        values: {
+        variables: {
             content: 'content-box',
             border: 'border-box',
         }
@@ -662,45 +596,29 @@ const rules = {
         match: /^max-h:./,
         unit: 'rem',
         layer: CoreLayer.Native,
-        values: {
-            full: '100%',
-            fit: 'fit-content',
-            max: 'max-content',
-            min: 'min-content',
-            '4xs': 360,
-            '3xs': 480,
-            '2xs': 600,
-            'xs': 768,
-            'sm': 834,
-            'md': 1024,
-            'lg': 1280,
-            'xl': 1440,
-            '2xl': 1600,
-            '3xl': 1920,
-            '4xl': 2560
-        }
+        variables: [
+            {
+                full: '100%',
+                fit: 'fit-content',
+                max: 'max-content',
+                min: 'min-content'
+            },
+            'viewport'
+        ]
     } as RuleConfig,
     maxWidth: {
         match: /^max-w:./,
         unit: 'rem',
         layer: CoreLayer.Native,
-        values: {
-            full: '100%',
-            fit: 'fit-content',
-            max: 'max-content',
-            min: 'min-content',
-            '4xs': 360,
-            '3xs': 480,
-            '2xs': 600,
-            'xs': 768,
-            'sm': 834,
-            'md': 1024,
-            'lg': 1280,
-            'xl': 1440,
-            '2xl': 1600,
-            '3xl': 1920,
-            '4xl': 2560
-        }
+        variables: [
+            {
+                full: '100%',
+                fit: 'fit-content',
+                max: 'max-content',
+                min: 'min-content'
+            },
+            'viewport'
+        ]
     } as RuleConfig,
     opacity: {
         layer: CoreLayer.Native,
@@ -756,7 +674,7 @@ const rules = {
     } as RuleConfig,
     position: {
         layer: CoreLayer.Native,
-        values: {
+        variables: {
             abs: 'absolute',
             rel: 'relative'
         }
@@ -869,7 +787,7 @@ const rules = {
     transformBox: {
         match: ['transform'],
         layer: CoreLayer.Native,
-        values: {
+        variables: {
             content: 'content-box',
             border: 'border-box',
             padding: 'padding-box',
@@ -934,7 +852,7 @@ const rules = {
     animationDirection: {
         match: /^@direction:./,
         layer: CoreLayer.Native,
-        values: {
+        variables: {
             alt: 'alternate',
             'alt-reverse': 'alternate-reverse'
         }
@@ -1342,7 +1260,7 @@ const rules = {
                 'background-clip': value + unit
             }
         },
-        values: {
+        variables: {
             content: 'content-box',
             border: 'border-box',
             padding: 'padding-box'
@@ -1351,7 +1269,7 @@ const rules = {
     backgroundOrigin: {
         match: ['(?:bg|background)'],
         layer: CoreLayer.Native,
-        values: {
+        variables: {
             content: 'content-box',
             border: 'border-box',
             padding: 'padding-box'
@@ -1514,7 +1432,7 @@ const rules = {
     gridAutoColumns: {
         match: /^grid-auto-cols:./,
         layer: CoreLayer.Native,
-        values: {
+        variables: {
             min: 'min-content',
             max: 'max-content'
         }
@@ -1524,7 +1442,7 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleConfig,
     gridAutoRows: {
-        values: {
+        variables: {
             min: 'min-content',
             max: 'max-content'
         },
@@ -1537,7 +1455,7 @@ const rules = {
         match: /^grid-template-cols:./,
         layer: CoreLayer.Native,
         unit: 'rem',
-        values: {
+        variables: {
             min: 'min-content',
             max: 'max-content'
         }
@@ -1545,7 +1463,7 @@ const rules = {
     gridTemplateRows: {
         layer: CoreLayer.Native,
         unit: 'rem',
-        values: {
+        variables: {
             min: 'min-content',
             max: 'max-content'
         }
@@ -1573,10 +1491,10 @@ const rules = {
         unit: 'rem',
         layer: CoreLayer.NativeShorthand
     } as RuleConfig,
-    layer: {
+    order: {
         match: /^o:./,
         layer: CoreLayer.Native,
-        values: {
+        variables: {
             first: -999999,
             last: 999999
         }
@@ -1814,7 +1732,7 @@ const rules = {
     shapeOutside: {
         match: ['shape', ['(?:inset|circle|ellipse|polygon|url|linear-gradient)\\(.*\\)']],
         layer: CoreLayer.Native,
-        values: {
+        variables: {
             content: 'content-box',
             border: 'border-box',
             padding: 'padding-box',
@@ -1833,7 +1751,7 @@ const rules = {
     clipPath: {
         match: /^clip:./,
         layer: CoreLayer.Native,
-        values: {
+        variables: {
             content: 'content-box',
             border: 'border-box',
             padding: 'padding-box',

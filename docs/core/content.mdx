@@ -22,7 +22,7 @@ The `.config` property is the result of extending the default config with the cu
 css.config
 ```
 
-            
+
 ### `.text`
 This `.text` getter returns the result of joining the text of all CSS rules.
 <DocProp defaultValue="''" types={['string']} />
@@ -50,7 +50,7 @@ Record the registered root `document` Master CSS instance, the field will be rec
 const rootCSS = MasterCSS.root
 ```
 
-            
+
 ### `MasterCSS.config`
 The default Master CSS [configuration](/docs/configuration).
 <DocProp defaultValue="{ … }" types={['Config']} />
@@ -58,7 +58,7 @@ The default Master CSS [configuration](/docs/configuration).
 MasterCSS.config
 ```
 
-            
+
 ### `MasterCSS.instances`
 All objects instantiated via `new MasterCSS()` will be recorded here.
 <DocProp defaultValue="[]" types={['MasterCSS[]']} />
@@ -137,7 +137,7 @@ export default {
     }
 }
 ```
-Now you have richer intermediate values to work with:
+Now you have richer intermediate color tokens to work with:
 ```html
 <div class="bg:**slate-98**"></div>
 ```

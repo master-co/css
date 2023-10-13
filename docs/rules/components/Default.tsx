@@ -26,10 +26,10 @@ const Default = () => <table>
                                 }
                             </td>
                             <td>
-                                {eachRule.values
+                                {eachRule.variables
                                     ? (
                                         <code className='fg:inherit'>
-                                            <DotJoin>{Object.keys(eachRule.values)}</DotJoin>
+                                            <DotJoin>{Object.keys(eachRule.variables)}</DotJoin>
                                         </code>
                                     )
                                     : <span className='fg:dim'>-</span>}

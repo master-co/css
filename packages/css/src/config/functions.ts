@@ -1,14 +1,12 @@
 const functions = {
     $: {
-        name: 'var',
-        transform(value) {
-            return '--' + value
+        transform(opening, value, closing) {
+            return this.css.variables[value] || ''
         }
     },
     calc: {
-        transform(value) {
-            const values = this.values
-            const globalValues = this.css.globalValues
+        transform(opening, value, closing) {
+            const variables = this.variables
             const functions = this.css.config.functions
 
             // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -18,15 +16,13 @@ const functions = {
                 let bypassHandlingUnit = false
                 const clear = (char: string, addPrefixSpace = false, addSuffixSpace = false) => {
                     if (char !== '(') {
-                        if (values && current in values) {
-                            current = values[current].toString()
-                        } else if (globalValues && current in globalValues) {
-                            current = globalValues[current].toString()
+                        if (variables && current in variables) {
+                            current = variables[current].toString()
                         }
                     }
 
                     if (current && !bypassHandlingUnit && !bypassHandlingUnitForcely) {
-                        const result = instance.analyzeUnitValue(current, functions.calc.unit)
+                        const result = instance.resolveUnitValue(current, functions.calc.unit)
                         if (result) {
                             current = result.value + result.unit
                         }
@@ -106,7 +102,7 @@ const functions = {
                 }
             })('', false)
 
-            return newValue
+            return opening + newValue + closing
         }
     },
     translate: { unit: 'rem' },

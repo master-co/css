@@ -3,7 +3,7 @@ module.exports = {
     styles: {},
     colors: {},
     rules: {},
-    values: {},
+    variables: {},
     semantics: {},
     viewports: {},
     mediaQueries: {},
