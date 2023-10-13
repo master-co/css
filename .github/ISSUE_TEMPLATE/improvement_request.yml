@@ -1,19 +1,27 @@
-name: "💖 Improvement"
+name: '💖 Improvement'
 description: Propose improvements to existing functionality or architecture.
 title: '💖 '
 labels: [improvement]
 
 body:
-  - type: markdown
-    attributes:
-      value: Tell us about anything that needs improvement or enhancement!
+    - type: markdown
+      attributes:
+          value: Tell us about anything that needs improvement or enhancement!
 
-  - type: textarea
-    id: description
-    attributes:
-      label: Description
-      description: |
-        Please tell us what you want to see in the next release and why you want to see it. 
-        If you are going to make a pull request, please let us know your scheduling.
-    validations:
-      required: true
+    - type: textarea
+      id: current
+      attributes:
+          label: Current
+          description: |
+              Please describe the current issues that need to be improved.
+      validations:
+          required: true
+
+    - type: textarea
+      id: expected
+      attributes:
+          label: Expected
+          description: |
+              Please describe what you expect the improvements to look like.
+      validations:
+          required: true
