@@ -1,7 +1,15 @@
 const functions = {
     $: {
         transform(opening, value, closing) {
-            return this.css.variables[value] || ''
+            const variableValue = this.css.variables[value]
+            if (variableValue) {
+                return variableValue
+            }
+            const colorValue = this.css.colors[value]
+            if (colorValue) {
+                return colorValue?.[''] || colorValue
+            }
+            return ''
         }
     },
     calc: {
@@ -133,7 +141,7 @@ const functions = {
     hsl: { unit: '' },
     hsla: { unit: '' },
     color: { unit: '', colored: true },
-    'color-contrast': { unit: '', colored: true  },
+    'color-contrast': { unit: '', colored: true },
     'color-mix': { unit: '', colored: true },
     hwb: { unit: '' },
     lab: { unit: '' },

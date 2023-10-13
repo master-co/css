@@ -76,7 +76,7 @@ export interface Config {
     mediaQueries?: { [key: string]: string | Config['mediaQueries'] }
     selectors?: { [key: string]: string | string[] | Config['selectors'] }
     semantics?: { [key in keyof typeof semantics]?: CSSDeclarations } & { [key: string]: CSSDeclarations }
-    variables?: { [key in keyof typeof rules]?: number | string } & { [key: string]: number | string }
+    variables?: { [key in keyof typeof rules]?: number | string | { [key: string]: number | string } } & { [key: string]: number | string | { [key: string]: number | string } }
     fonts?: { [key: string]: string | string[] } | ((css: MasterCSS) => Config['fonts'])
     rules?: { [key in keyof typeof rules]?: RuleConfig } & { [key: string]: RuleConfig }
     rootSize?: number
