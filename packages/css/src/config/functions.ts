@@ -1,15 +1,7 @@
 const functions = {
     $: {
         transform(opening, value, closing) {
-            const variableValue = this.css.variables[value]
-            if (variableValue) {
-                return variableValue
-            }
-            const colorValue = this.css.colors[value]
-            if (colorValue) {
-                return colorValue?.[''] || colorValue
-            }
-            return ''
+            return this.css.variables[value] || ''
         }
     },
     calc: {

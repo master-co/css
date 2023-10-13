@@ -7,7 +7,7 @@ import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { CSSDeclarations } from './types/css-declarations'
 import { RuleConfig } from './config'
 import { CoreLayer, Layer } from './layer'
-import { flattenObject } from './utils/flatten-obj'
+import { flattenObj } from './utils/flatten-obj'
 
 // TODO: 將 $(variable) 改為訪問 variables 而不是原生
 // TODO: 棄用 config.fonts
@@ -147,7 +147,7 @@ export class MasterCSS {
             this.viewports = getFlatData(viewports, false)
         }
         if (variables) {
-            this.variables = flattenObject(variables)
+            this.variables = flattenObj(variables, { joiner: '/' })
             for (const [name, value] of Object.entries(this.variables)) {
                 // negative value
                 if (typeof value === 'number') {
