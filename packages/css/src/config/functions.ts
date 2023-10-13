@@ -40,7 +40,8 @@ const functions = {
                 for (; i < value.length; i++) {
                     const char = value[i]
                     if (char === '(') {
-                        const newFunctionName = current
+                        const isStartsWithSymbol = /^[+-]/.test(current)
+                        const newFunctionName = isStartsWithSymbol ? current.slice(1) : current
                         const originalBypassHandlingUnit = bypassHandlingUnit
                         const originalNewValueLength = newValue.length
                         clear(char)
@@ -50,13 +51,17 @@ const functions = {
                         if (newFunctionName !== 'calc') {
                             const functionConfig = functions[newFunctionName]
                             if (functionConfig) {
-                                const functionValue = newValue.slice(originalNewValueLength + 2, newValue.length - 1)
-                                newValue = newValue.slice(0, originalNewValueLength - newFunctionName.length + 1)
-                                    + (functionConfig.name ?? newFunctionName)
-                                    + '('
-                                    // @ts-ignore
-                                    + (functionConfig.transform?.call(instance, functionValue) ?? functionValue)
-                                    + ')'
+                                const functionValue = newValue.slice(originalNewValueLength + 2 + (isStartsWithSymbol ? 1 : 0), newValue.length - 1)
+                                newValue = newValue.slice(0, originalNewValueLength - newFunctionName.length + 1 + (isStartsWithSymbol ? 1 : 0))
+                                if (functionConfig.transform) {
+                                    const transformedValue = functionConfig.transform.call(instance, '(', functionValue, ')')
+                                    const result = instance.resolveUnitValue(transformedValue, functions.calc.unit)
+                                    newValue += result
+                                        ? result.value + result.unit
+                                        : transformedValue
+                                } else {
+                                    newValue += (functionConfig.name ?? newFunctionName) + '(' + functionValue + ')'
+                                }
                             }
                         }
                     } else if (char === ')') {
