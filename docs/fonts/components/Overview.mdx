@@ -1,10 +1,12 @@
 ```js name=master.css.js
-import { fonts } from '@master/css'
+import { variables } from '@master/css'
 
 export default {
-    fonts: {
-        sans: ['Inter', ...fonts.sans],
-        mono: ['Fira Code', ...fonts.mono]
+    variables: {
+        fontFamily: {
+            sans: ['Inter', ...variables.fontFamily.sans],
+            mono: ['Fira Code', ...variables.fontFamily.mono]
+        }
     }
 }
 ```

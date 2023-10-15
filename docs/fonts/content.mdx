@@ -5,21 +5,25 @@
 
 ## Basic usage
 ### Add a font
-Add your font and use the [default font](#default) as a fallback. For example, to add a font named `Inter` from [Google Fonts](#google-fonts):
+Add your font variables and use the [default font](#default) as a fallback. For example, to add a font named `Inter` from [Google Fonts](#google-fonts):
 ```js name=master.css.js
-import { fonts } from '@master/css'
+import { variables } from '@master/css'
 
 export default {
-    fonts: {
-+        sans: ['Inter', ...fonts.sans]
+    variables: {
+        fontFamily: {
++            sans: ['Inter', ...variables.fontFamily.sans],
+        }
     }
 }
 ```
 Or simply add as a string:
 ```js
 export default {
-    fonts: {
-+        sans: 'Inter,sans-serif'
+    variables: {
+        fontFamily: {
++            sans: 'Inter,sans-serif'
+        }
     }
 }
 ```
