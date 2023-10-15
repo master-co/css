@@ -1,4 +1,5 @@
-export function flattenObj(obj, { joiner = '-', parentKey = '' }) {
+export function flattenObj(obj, options?: { joiner?: string, parentKey?: string }) {
+    const { joiner = '.', parentKey = '' } = options ?? {}
     return Object.keys(obj).reduce((acc, key) => {
         const newKey = parentKey ? `${parentKey}${key ? joiner + key : ''}` : key
         if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {

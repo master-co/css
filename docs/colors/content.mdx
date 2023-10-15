@@ -5,7 +5,7 @@
 
 ## Basic usage
 ### Add a color
-Add your color tokens using hex codes and extend the defaults.
+Add your color variables using hex codes and extend the defaults.
 ```js name=master.css.js
 export default {
     colors: {
@@ -32,7 +32,7 @@ export default {
     }
 }
 ```
-For example, say you have multiple color tokens referencing the same color token. If that color needs updating, you would only need to update the source instead of manually updating every instance of the color.
+For example, say you have multiple color variables referencing the same color token. If that color needs updating, you would only need to update the source instead of manually updating every instance of the color.
 
 This is similar to [Figma's variables](https://help.figma.com/hc/en-us/articles/15145852043927-Create-and-manage-variables).
 
@@ -41,7 +41,7 @@ Sets multiple shades for a single color.
 ```js name=master.css.js
 export default {
     colors: {
-+        primary: { 
++        primary: {
 +            '': '#1192e8', // primary
 +            10: '#e5f6ff', // primary-10
 +            20: '#bae6ff', // primary-20
@@ -82,7 +82,7 @@ export default {
 
 ## Style guide
 ### Create background colors
-Create color tokens for backgrounds in apps, panels, cards, and more.
+Create color variables for backgrounds in apps, panels, cards, and more.
 ```js name=master.css.js
 export default {
     colors: {
@@ -101,7 +101,7 @@ Use [background-color](/docs/background-color) syntax to set the app background 
 | `fade`            | The background color for panels...                                                                                                |
 
 ### Create text colors
-Create accessible color tokens for titles, descriptions, icons, and other body text.
+Create accessible color variables for titles, descriptions, icons, and other body text.
 ```js name=master.css.js
 export default {
     colors: {

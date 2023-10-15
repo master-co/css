@@ -3,7 +3,8 @@ import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'shared/utils/css-escape'
 import { transformColorWithOpacity } from './functions/transform-color-with-opacity'
 import { CSSDeclarations } from './types/css-declarations'
-import { RuleConfig } from './config'
+import { RuleOptions } from './config'
+import { CoreLayer } from './layer'
 
 const atRuleRegExp = /^(media|supports|page|font-face|keyframes|counter-style|font-feature-values|property|layer)(?=\||{|\(|$)/
 
@@ -18,13 +19,13 @@ export class Rule {
 
     constructor(
         public readonly className: string,
-        public readonly config: RuleConfig = {},
+        public readonly options: RuleOptions = {},
         public css: MasterCSS
     ) {
-        const { unit, colored: configColored, _propName, _semantic, analyze, transform, declare, _declarations, create, order, id } = this.config
+        const { layer, unit, colored: configColored, resolvedPropName, analyze, transform, declare, create, order, id } = this.options
         this.order = order
-        if (!this.config.unit) this.config.unit = ''
-        if (!this.config.separators) this.config.separators = [',']
+        if (!this.options.unit) this.options.unit = ''
+        if (!this.options.separators) this.options.separators = [',']
         const { scope, important, functions, themeDriver } = css.config
         const { themeNames, colorNames, colors, selectors, viewports, mediaQueries, stylesBy, animations } = css
         const classNames = stylesBy[className]
@@ -32,16 +33,15 @@ export class Rule {
         if (create) create.call(this, className)
 
         // 1. value / selectorToken
-        let declarations: CSSDeclarations
+        let declarations: CSSDeclarations = this.options.declarations
         let hasMultipleThemes: boolean
         let prefixToken: string
         let suffixToken: string
         let valueSplits: (string | { value: string, unit?: string })[]
         let colored = configColored
 
-        if (_semantic) {
+        if (layer === CoreLayer.Semantic) {
             suffixToken = className.slice(id.length - 1)
-            declarations = _declarations
         } else {
             let valueToken: string
             if (analyze) {
@@ -55,10 +55,10 @@ export class Rule {
 
             // eslint-disable-next-line @typescript-eslint/no-this-alias
             const instance = this
-            const variables = this.config._variables
+            const variables = this.options.resolvedVariables
             const separators = [',']
-            if (this.config.separators.length) {
-                separators.push(...this.config.separators)
+            if (this.options.separators.length) {
+                separators.push(...this.options.separators)
             }
             let currentValueToken = ''
             let i = 0;
@@ -183,7 +183,7 @@ export class Rule {
                         if (!isString) {
                             if (val === '.') {
                                 if (isNaN(+valueToken[i + 1])) {
-                                    break
+                                    if (root) break
                                 } else if (valueToken[i - 1] === '-') {
                                     currentValueToken += '0'
                                 }
@@ -640,9 +640,9 @@ export class Rule {
                         }
                     }
                     declarations = declare.call(this, unit ? value : newValue, unit || '')
-                } else {
+                } else if (resolvedPropName) {
                     declarations = {
-                        [_propName as string]: newValue
+                        [resolvedPropName as string]: newValue
                     }
                 }
             }
@@ -738,7 +738,7 @@ export class Rule {
     }
 
     resolveUnitValue(token: string | number, unit?: string): { value: string, unit: string } {
-        const defaultUnit = unit ?? this.config.unit
+        const defaultUnit = unit ?? this.options.unit
         let newUnit = ''
         let value: any
         if (typeof token === 'number') {
@@ -828,5 +828,5 @@ export interface MediaQuery {
 
 export interface RuleMeta {
     value?: [string, string | Record<string, string>]
-    config?: RuleConfig
+    config?: RuleOptions
 }

@@ -5,14 +5,9 @@ import { config as defaultConfig } from './config'
 import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { CSSDeclarations } from './types/css-declarations'
-import { RuleConfig } from './config'
+import { RuleOptions } from './config'
 import { CoreLayer, Layer } from './layer'
 import { flattenObj } from './utils/flatten-obj'
-
-// TODO: 將 $(variable) 改為訪問 variables 而不是原生
-// TODO: 棄用 config.fonts
-// TODO: config.rules[].variables 支援 [{ max: 'max-content' }, 'size'] 並移除 transformVariables
-// TODO: config.variables 只能支援一層，不支援多層
 
 const COLOR_NAME_OBJECT_PREFIX = '_CNO_'
 
@@ -53,8 +48,8 @@ export class MasterCSS {
     readonly countBy = {}
     readonly observing = false
     readonly config: Config
-    private readonly _semanticRuleConfigs: RuleConfig[] = []
-    private readonly _orderedRuleConfigs: RuleConfig[] = []
+    private readonly semanticRuleOptions: RuleOptions[] = []
+    private readonly ruleOptions: RuleOptions[] = []
 
     colorTokenRegExp: RegExp
     observer: MutationObserver
@@ -85,10 +80,10 @@ export class MasterCSS {
         this.keyframesMap = {}
         this.animations = {}
         this.colorTokenRegExp = null
-        this._orderedRuleConfigs.length = 0
-        this._semanticRuleConfigs.length = 0
+        this.ruleOptions.length = 0
+        this.semanticRuleOptions.length = 0
 
-        const { styles, selectors, variables, semantics, viewports, mediaQueries, rules, animations, fonts } = this.config
+        const { styles, selectors, variables, semantics, viewports, mediaQueries, rules, animations } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -147,7 +142,7 @@ export class MasterCSS {
             this.viewports = getFlatData(viewports, false)
         }
         if (variables) {
-            this.variables = flattenObj(variables, { joiner: '/' })
+            this.variables = flattenObj(variables)
             for (const [name, value] of Object.entries(this.variables)) {
                 // negative value
                 if (typeof value === 'number') {
@@ -157,14 +152,6 @@ export class MasterCSS {
                 } else {
                     this.variables[name] = value
                 }
-            }
-        }
-        if (fonts) {
-            for (const fontName in fonts) {
-                const fontValue = fonts[fontName]
-                this.fonts[fontName] = Array.isArray(fontValue)
-                    ? fontValue.join(',')
-                    : fontValue as string
             }
         }
         if (mediaQueries) {
@@ -315,13 +302,12 @@ export class MasterCSS {
         if (semantics) {
             Object.entries(semantics)
                 .sort((a: any, b: any) => a[0].localeCompare(b[0]))
-                .forEach(([id, eachSemantic]: [string, CSSDeclarations], index: number) => {
-                    this._semanticRuleConfigs.push({
+                .forEach(([id, declarations]: [string, CSSDeclarations], index: number) => {
+                    this.semanticRuleOptions.push({
                         id: '.' + id,
-                        _resolvedMatch: new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'),
+                        resolvedMatch: new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'),
                         order: index,
-                        _semantic: true,
-                        _declarations: eachSemantic,
+                        declarations,
                         layer: CoreLayer.Semantic
                     })
                 })
@@ -337,38 +323,43 @@ export class MasterCSS {
         const rulesEntriesLength = rulesEntries.length
 
         rulesEntries
-            .forEach(([id, eachRuleConfig]: [string, RuleConfig], index: number) => {
-                this._orderedRuleConfigs.push(eachRuleConfig)
-                eachRuleConfig.order = this._semanticRuleConfigs.length + rulesEntriesLength - 1 - index
-                const match = eachRuleConfig.match
-                eachRuleConfig.id = id
-                const idVariables = variables[id] || {}
+            .forEach(([id, eachRuleOptions]: [string, RuleOptions], index: number) => {
+                this.ruleOptions.push(eachRuleOptions)
+                eachRuleOptions.order = this.semanticRuleOptions.length + rulesEntriesLength - 1 - index
+                const match = eachRuleOptions.match
+                eachRuleOptions.id = id
                 if (
-                    eachRuleConfig.layer === Layer.Native ||
-                    eachRuleConfig.layer === Layer.NativeShorthand ||
-                    eachRuleConfig.layer === CoreLayer.Native ||
-                    eachRuleConfig.layer === CoreLayer.NativeShorthand
+                    eachRuleOptions.layer === Layer.Native ||
+                    eachRuleOptions.layer === Layer.NativeShorthand ||
+                    eachRuleOptions.layer === CoreLayer.Native ||
+                    eachRuleOptions.layer === CoreLayer.NativeShorthand
                 ) {
-                    eachRuleConfig._propName = id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
+                    eachRuleOptions.resolvedPropName = id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
                 }
-                eachRuleConfig._variables = Object.assign({}, idVariables)
-                if (eachRuleConfig.variables) {
-                    if (Array.isArray(eachRuleConfig.variables)) {
-                        for (const eachVariables of eachRuleConfig.variables) {
+                eachRuleOptions.resolvedVariables = {}
+                // 1. custom `config.variables`
+                const targetVariableGroup = variables[id]
+                if (typeof targetVariableGroup === 'object') {
+                    Object.assign(eachRuleOptions.resolvedVariables, targetVariableGroup)
+                }
+                // 2. custom `config.rules[id].variables`
+                if (eachRuleOptions.variables) {
+                    if (Array.isArray(eachRuleOptions.variables)) {
+                        for (const eachVariables of eachRuleOptions.variables) {
                             if (typeof eachVariables === 'object') {
-                                Object.assign(eachRuleConfig._variables, eachVariables)
+                                Object.assign(eachRuleOptions.resolvedVariables, eachVariables)
                             } else {
-                                Object.assign(eachRuleConfig._variables, variables[eachVariables] || {})
+                                Object.assign(eachRuleOptions.resolvedVariables, variables[eachVariables] || {})
                             }
                         }
                     } else {
-                        Object.assign(eachRuleConfig._variables, eachRuleConfig.variables)
+                        Object.assign(eachRuleOptions.resolvedVariables, eachRuleOptions.variables)
                     }
                 }
-                if (Object.keys(eachRuleConfig._variables).length) {
-                    for (const [key, value] of Object.entries(eachRuleConfig._variables)) {
+                if (Object.keys(eachRuleOptions.resolvedVariables).length) {
+                    for (const [key, value] of Object.entries(eachRuleOptions.resolvedVariables)) {
                         if (typeof value === 'number') {
-                            eachRuleConfig._variables['-' + key] = value * -1
+                            eachRuleOptions.resolvedVariables['-' + key] = value * -1
                         }
                     }
                 }
@@ -379,21 +370,21 @@ export class MasterCSS {
                         if (values.length) {
                             valueMatches.push(`(?:${values.join('|')})(?![a-zA-Z0-9-])`)
                         }
-                        if (Object.keys(eachRuleConfig._variables).length) {
-                            valueMatches.push(`(?:${Object.keys(eachRuleConfig._variables).join('|')})(?![a-zA-Z0-9-])`)
+                        if (Object.keys(eachRuleOptions.resolvedVariables).length) {
+                            valueMatches.push(`(?:${Object.keys(eachRuleOptions.resolvedVariables).join('|')})(?![a-zA-Z0-9-])`)
                         }
-                        if (eachRuleConfig.colored) {
+                        if (eachRuleOptions.colored) {
                             valueMatches.push('#', '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)')
                             if (this.colorNames.length) {
                                 valueMatches.push(`(?:${this.colorNames.join('|')})(?![a-zA-Z0-9-])`)
                             }
                         }
-                        if (eachRuleConfig.numeric) {
+                        if (eachRuleOptions.numeric) {
                             valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
                         }
-                        eachRuleConfig._resolvedMatch = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
+                        eachRuleOptions.resolvedMatch = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
                     } else {
-                        eachRuleConfig._resolvedMatch = match as RegExp
+                        eachRuleOptions.resolvedMatch = match as RegExp
                     }
                 }
             })
@@ -508,7 +499,7 @@ export class MasterCSS {
                         // animations
                         this.handleRuleWithAnimationNames(rule)
 
-                        rule.config.insert?.call(rule)
+                        rule.options.insert?.call(rule)
                     }
                 }
             } else {
@@ -744,25 +735,25 @@ export class MasterCSS {
      * @param syntax class syntax
      * @returns css text
      */
-    match(syntax: string): RuleConfig {
+    match(syntax: string): RuleOptions {
         // 1. rules
-        for (const eachRuleConfig of this._orderedRuleConfigs) {
+        for (const eachRuleOptions of this.ruleOptions) {
             if (
-                eachRuleConfig._resolvedMatch && eachRuleConfig._resolvedMatch.test(syntax) ||
+                eachRuleOptions.resolvedMatch && eachRuleOptions.resolvedMatch.test(syntax) ||
                 (
-                    eachRuleConfig.layer === Layer.Native ||
-                    eachRuleConfig.layer === Layer.NativeShorthand ||
-                    eachRuleConfig.layer === CoreLayer.Native ||
-                    eachRuleConfig.layer === CoreLayer.NativeShorthand
-                ) && syntax.startsWith(eachRuleConfig._propName + ':')
+                    eachRuleOptions.layer === Layer.Native ||
+                    eachRuleOptions.layer === Layer.NativeShorthand ||
+                    eachRuleOptions.layer === CoreLayer.Native ||
+                    eachRuleOptions.layer === CoreLayer.NativeShorthand
+                ) && syntax.startsWith(eachRuleOptions.resolvedPropName + ':')
             ) {
-                return eachRuleConfig
+                return eachRuleOptions
             }
         }
         // 2. semantic rules
-        for (const eachSemanticRuleConfig of this._semanticRuleConfigs) {
-            if (eachSemanticRuleConfig._resolvedMatch.test(syntax)) {
-                return eachSemanticRuleConfig
+        for (const eachSemanticRuleOptions of this.semanticRuleOptions) {
+            if (eachSemanticRuleOptions.resolvedMatch.test(syntax)) {
+                return eachSemanticRuleOptions
             }
         }
     }
@@ -885,7 +876,7 @@ export class MasterCSS {
                 }
             }
 
-            rule.config.delete?.call(rule, name)
+            rule.options.delete?.call(rule, name)
         }
 
         if (Object.prototype.hasOwnProperty.call(this.styles, className)) {
@@ -1242,7 +1233,7 @@ export class MasterCSS {
             // animations
             this.handleRuleWithAnimationNames(rule)
 
-            rule.config.insert?.call(rule)
+            rule.options.insert?.call(rule)
         }
     }
 

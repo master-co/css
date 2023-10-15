@@ -18,6 +18,6 @@ test('functions', () => {
     testCSS('$primary:red-80/.5', '.\\$primary\\:red-80\\/\\.5{--primary:#fdcfcf80}')
 })
 
-test('checks gradient-related functions with color tokens', () => {
+test('checks gradient-related functions with color variables', () => {
     testProp('bg:linear-gradient(0deg,gray-14|0%,gray-16|100%)', 'background-image:linear-gradient(0deg,#272628 0%,#29282a 100%)')
 })
