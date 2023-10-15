@@ -1,7 +1,10 @@
 const functions = {
     $: {
         transform(opening, value, closing) {
-            return this.css.variables[value] || ''
+            const foundValue = this.css.variables[value]
+            return foundValue
+                ? foundValue
+                : 'var(--' + value + ')'
         }
     },
     calc: {
