@@ -1,4 +1,4 @@
-const viewports = {
+const mediaQueries = {
     '4xs': 360,
     '3xs': 480,
     '2xs': 600,
@@ -12,4 +12,4 @@ const viewports = {
     '4xl': 2560
 }
 
-export default viewports
+export default mediaQueries

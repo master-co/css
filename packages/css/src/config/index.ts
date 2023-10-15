@@ -1,4 +1,4 @@
-import viewports from './viewports'
+import mediaQueries from './media-queries'
 import colors from './colors'
 import selectors from './selectors'
 import semantics from './semantics'
@@ -11,7 +11,7 @@ import type { Rule } from '../rule'
 import { CoreLayer, Layer } from '../layer'
 
 const config: Config = {
-    viewports,
+    mediaQueries,
     colors,
     selectors,
     semantics,
@@ -28,7 +28,7 @@ const config: Config = {
 
 export {
     config,
-    viewports,
+    mediaQueries,
     colors,
     selectors,
     semantics,
@@ -72,8 +72,7 @@ export interface Config {
     extends?: (Config | { config: Config })[]
     styles?: { [key: string]: string | Config['styles'] }
     colors?: { [key: string]: string | Config['colors'] }
-    viewports?: { [key: string]: number | Config['viewports'] }
-    mediaQueries?: { [key: string]: string | Config['mediaQueries'] }
+    mediaQueries?: { [key: string]: number | Config['mediaQueries'] }
     selectors?: { [key: string]: string | string[] | Config['selectors'] }
     semantics?: { [key in keyof typeof semantics]?: CSSDeclarations } & { [key: string]: CSSDeclarations }
     variables?: Variables

@@ -27,7 +27,7 @@ export class Rule {
         if (!this.options.unit) this.options.unit = ''
         if (!this.options.separators) this.options.separators = [',']
         const { scope, important, functions, themeDriver } = css.config
-        const { themeNames, colorNames, colors, selectors, viewports, mediaQueries, stylesBy, animations } = css
+        const { themeNames, colorNames, colors, selectors, mediaQueries, stylesBy, animations } = css
         const classNames = stylesBy[className]
 
         if (create) create.call(this, className)
@@ -429,49 +429,52 @@ export class Rule {
                                     queryTexts.push('(prefers-reduced-motion:'
                                         + (typeOrFeatureToken === 'motion' ? 'no-preference' : 'reduce')
                                         + ')')
-                                } else if (mediaQueries && typeOrFeatureToken in mediaQueries) {
-                                    queryTexts.push(mediaQueries[typeOrFeatureToken])
                                 } else {
-                                    const feature: MediaFeatureRule = {
-                                        token: typeOrFeatureToken
-                                    }
-                                    let featureName = ''
-                                    let extremumOperator = ''
-                                    let correction = 0
-                                    if (typeOrFeatureToken.startsWith('<=')) {
-                                        extremumOperator = '<='
-                                        featureName = 'max-width'
-                                    } else if (typeOrFeatureToken.startsWith('>=') || viewports[typeOrFeatureToken]) {
-                                        extremumOperator = '>='
-                                        featureName = 'min-width'
-                                    } else if (typeOrFeatureToken.startsWith('>')) {
-                                        extremumOperator = '>'
-                                        featureName = 'min-width'
-                                        correction = .02
-                                    } else if (typeOrFeatureToken.startsWith('<')) {
-                                        extremumOperator = '<'
-                                        featureName = 'max-width'
-                                        correction = -.02
-                                    }
-                                    const conditionUnitValueToken
-                                        = extremumOperator
-                                            ? typeOrFeatureToken.replace(extremumOperator, '')
-                                            : typeOrFeatureToken
-                                    const viewport = viewports[conditionUnitValueToken]
-                                    switch (featureName) {
-                                        case 'max-width':
-                                        case 'min-width':
-                                            if (viewport) {
-                                                Object.assign(feature, this.resolveUnitValue(viewport.toString(), 'px'))
-                                            } else {
-                                                Object.assign(feature, this.resolveUnitValue(conditionUnitValueToken, 'px'))
-                                            }
-                                            if (feature.unit === 'px') {
-                                                feature.value += correction
-                                            }
-                                            this.media.features[featureName] = feature
-                                            queryTexts.push('(' + featureName + ':' + (feature.value + feature.unit) + ')')
-                                            break
+                                    const targetMediaQuery = mediaQueries[typeOrFeatureToken]
+                                    if (targetMediaQuery && typeof targetMediaQuery === 'string') {
+                                        queryTexts.push(targetMediaQuery)
+                                    } else {
+                                        const feature: MediaFeatureRule = {
+                                            token: typeOrFeatureToken
+                                        }
+                                        let featureName = ''
+                                        let extremumOperator = ''
+                                        let correction = 0
+                                        if (typeOrFeatureToken.startsWith('<=')) {
+                                            extremumOperator = '<='
+                                            featureName = 'max-width'
+                                        } else if (typeOrFeatureToken.startsWith('>=') || targetMediaQuery) {
+                                            extremumOperator = '>='
+                                            featureName = 'min-width'
+                                        } else if (typeOrFeatureToken.startsWith('>')) {
+                                            extremumOperator = '>'
+                                            featureName = 'min-width'
+                                            correction = .02
+                                        } else if (typeOrFeatureToken.startsWith('<')) {
+                                            extremumOperator = '<'
+                                            featureName = 'max-width'
+                                            correction = -.02
+                                        }
+                                        const conditionUnitValueToken
+                                            = extremumOperator
+                                                ? typeOrFeatureToken.replace(extremumOperator, '')
+                                                : typeOrFeatureToken
+                                        const viewport = mediaQueries[conditionUnitValueToken]
+                                        switch (featureName) {
+                                            case 'max-width':
+                                            case 'min-width':
+                                                if (viewport) {
+                                                    Object.assign(feature, this.resolveUnitValue(viewport.toString(), 'px'))
+                                                } else {
+                                                    Object.assign(feature, this.resolveUnitValue(conditionUnitValueToken, 'px'))
+                                                }
+                                                if (feature.unit === 'px') {
+                                                    feature.value += correction
+                                                }
+                                                this.media.features[featureName] = feature
+                                                queryTexts.push('(' + featureName + ':' + (feature.value + feature.unit) + ')')
+                                                break
+                                        }
                                     }
                                 }
                             }

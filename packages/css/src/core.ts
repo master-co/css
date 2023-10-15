@@ -23,7 +23,6 @@ export interface MasterCSS {
     selectors: Record<string, [RegExp, string[]][]>
     fonts: Record<string, string>
     variables: Record<string, string | number>
-    viewports: Record<string, number>
     mediaQueries: Record<string, string>
     keyframesMap: Record<string, {
         native: RuleNative
@@ -75,7 +74,6 @@ export class MasterCSS {
         this.selectors = {}
         this.variables = {}
         this.fonts = {}
-        this.viewports = {}
         this.mediaQueries = {}
         this.keyframesMap = {}
         this.animations = {}
@@ -83,7 +81,7 @@ export class MasterCSS {
         this.ruleOptions.length = 0
         this.semanticRuleOptions.length = 0
 
-        const { styles, selectors, variables, semantics, viewports, mediaQueries, rules, animations } = this.config
+        const { styles, selectors, variables, semantics, mediaQueries, rules, animations } = this.config
 
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -137,9 +135,6 @@ export class MasterCSS {
                     currentSelectValue[1].push(eachNewSelectorText)
                 }
             }
-        }
-        if (viewports) {
-            this.viewports = getFlatData(viewports, false)
         }
         if (variables) {
             this.variables = flattenObj(variables)
@@ -811,7 +806,7 @@ export class MasterCSS {
         this.ruleBy = {}
 
         /**
-         * 拿當前所有的 classNames 按照最新的 colors, viewports, config.rules 匹配並生成新的 style
+         * 拿當前所有的 classNames 按照最新的 colors, config.rules 匹配並生成新的 style
          * 所以 refresh 過後 rules 可能會變多也可能會變少
          */
         for (const name in this.countBy) {
