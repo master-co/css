@@ -29,7 +29,7 @@ const Default = () => <table>
                                 {eachRule.variables
                                     ? (
                                         <code className='fg:inherit'>
-                                            <DotJoin>{Object.keys(eachRule.variables)}</DotJoin>
+                                            <DotJoin>{Object.keys(eachRule.variables).filter(x => Number.isNaN(+x))}</DotJoin>
                                         </code>
                                     )
                                     : <span className='fg:dim'>-</span>}

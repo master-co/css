@@ -1,13 +1,11 @@
 import RulesOverview from '../rules/components/Overview.mdx'
 import VariablesOverview from '../variables/components/Overview.mdx'
 import SemanticsOverview from '../semantics/components/Overview.mdx'
-import BreakpointsOverview from '../viewports/components/Overview.mdx'
 import KeyframesOverview from '../animations/components/Overview.mdx'
 import MediaQueriesOverview from '../media-queries/components/Overview.mdx'
-import SelectorsOverview from '../media-queries/components/Overview.mdx'
+import SelectorsOverview from '../selectors/components/Overview.mdx'
 import FunctionsOverview from '../functions/components/Overview.mdx'
 import ColorsOverview from '../colors/components/Overview.mdx'
-import FontsOverview from '../fonts/components/Overview.mdx'
 import StylesOverview from '../styles/components/Overview.mdx'
 
 ```js name=master.css.js
@@ -22,9 +20,9 @@ Configuration fields that are not specified will fall back to [default configura
 Customizing animation [animations](/docs/animations) for your design system.
 <KeyframesOverview />
 
-### `.styles`
-Customizing abstract [styles](/docs/styles) for your design system.
-<StylesOverview />
+### `.colors`
+Customizing [colors](/docs/colors) for your design system.
+<ColorsOverview />
 
 ### `.functions`
 Customizing [functions](/docs/functions) for your design system.
@@ -34,10 +32,6 @@ Customizing [functions](/docs/functions) for your design system.
 Customizing [media queries](/docs/media-queries) for your design system.
 <MediaQueriesOverview />
 
-### `.rules`
-Customizing syntax [rules](/docs/rules) for your design system.
-<RulesOverview />
-
 ### `.selectors`
 Customizing [selectors](/docs/selectors) for your design system.
 <SelectorsOverview />
@@ -46,31 +40,24 @@ Customizing [selectors](/docs/selectors) for your design system.
 Customizing [semantic](/docs/semantic) classes for your design system.
 <SemanticsOverview />
 
-### `.viewports`
-Customizing responsive [viewports](/docs/viewports) for your design system.
-<BreakpointsOverview />
-
-### `.colors`
-Customizing [colors](/docs/colors) for your design system.
-<ColorsOverview />
-
----
-
-## Design tokens and Variables
-### `.variables.fontFamily`
-Customizing [fonts](/docs/fonts) for your design system.
-<FontsOverview />
+### `.styles`
+Customizing abstract [styles](/docs/styles) for your design system.
+<StylesOverview />
 
 ### `.variables`
 Customizing [variables](/docs/variables) for your design tokens.
 <VariablesOverview />
 
-{/* ### `.variables` 🚧 */}
+---
+
+## Syntax
+### `.rules`
+Customizing syntax [rules](/docs/rules) for your design system.
+<RulesOverview />
 
 ---
 
-## Setting
-
+## Settings
 ### `.extends`
 Extend custom or external configuration.
 <DocProp defaultValue="undefined" types={["any[]"]} />
