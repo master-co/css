@@ -225,22 +225,26 @@ const rules = {
     marginLeft: {
         match: /^ml:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     marginRight: {
         match: /^mr:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     marginTop: {
         match: /^mt:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     marginBottom: {
         match: /^mb:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     marginX: {
         match: /^(?:mx|margin-x):./,
@@ -251,7 +255,8 @@ const rules = {
                 'margin-left': value + unit,
                 'margin-right': value + unit
             }
-        }
+        },
+        variables: ['spacing']
     } as RuleOptions,
     marginY: {
         match: /^(?:my|margin-y):./,
@@ -262,32 +267,38 @@ const rules = {
                 'margin-top': value + unit,
                 'margin-bottom': value + unit
             }
-        }
+        },
+        variables: ['spacing']
     } as RuleOptions,
     margin: {
         match: /^m:./,
         unit: 'rem',
-        layer: CoreLayer.NativeShorthand
+        layer: CoreLayer.NativeShorthand,
+        variables: ['spacing']
     } as RuleOptions,
     paddingLeft: {
         match: /^pl:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     paddingRight: {
         match: /^pr:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     paddingTop: {
         match: /^pt:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     paddingBottom: {
         match: /^pb:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     paddingX: {
         match: /^(?:px|padding-x):./,
@@ -298,7 +309,8 @@ const rules = {
                 'padding-left': value + unit,
                 'padding-right': value + unit
             }
-        }
+        },
+        variables: ['spacing']
     } as RuleOptions,
     paddingY: {
         match: /^(?:py|padding-y):./,
@@ -309,12 +321,14 @@ const rules = {
                 'padding-top': value + unit,
                 'padding-bottom': value + unit
             }
-        }
+        },
+        variables: ['spacing']
     } as RuleOptions,
     padding: {
         match: /^p:./,
         unit: 'rem',
-        layer: CoreLayer.NativeShorthand
+        layer: CoreLayer.NativeShorthand,
+        variables: ['spacing']
     } as RuleOptions,
     flexBasis: {
         variables: [
@@ -537,6 +551,7 @@ const rules = {
     textUnderlineOffset: {
         unit: 'rem',
         layer: CoreLayer.Native,
+        variables: ['spacing']
     } as RuleOptions,
     textOverflow: {
         match: ['t(?:ext)?', ['ellipsis', 'clip']],
@@ -571,23 +586,28 @@ const rules = {
     } as RuleOptions,
     top: {
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     bottom: {
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     left: {
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     right: {
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     inset: {
         unit: 'rem',
-        layer: CoreLayer.NativeShorthand
+        layer: CoreLayer.NativeShorthand,
+        variables: ['spacing']
     } as RuleOptions,
     lines: {
         match: /^lines:./,
@@ -821,7 +841,8 @@ const rules = {
         layer: CoreLayer.Native,
         analyze(className: string) {
             return [className.startsWith('transform') ? className.slice(10) : className]
-        }
+        },
+        variables: ['spacing']
     } as RuleOptions,
     transitionProperty: {
         match: /^~property:./,
@@ -1348,7 +1369,8 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleOptions,
     strokeDashoffset: {
-        layer: CoreLayer.Native
+        layer: CoreLayer.Native,
+        variables: ['spacing']
     } as RuleOptions,
     strokeWidth: {
         match: ['stroke(?:-width)?'],
@@ -1361,16 +1383,20 @@ const rules = {
         colored: true
     } as RuleOptions,
     x: {
-        layer: CoreLayer.Native
+        layer: CoreLayer.Native,
+        variables: ['spacing']
     } as RuleOptions,
     y: {
-        layer: CoreLayer.Native
+        layer: CoreLayer.Native,
+        variables: ['spacing']
     } as RuleOptions,
     cx: {
-        layer: CoreLayer.Native
+        layer: CoreLayer.Native,
+        variables: ['spacing']
     } as RuleOptions,
     cy: {
-        layer: CoreLayer.Native
+        layer: CoreLayer.Native,
+        variables: ['spacing']
     } as RuleOptions,
     rx: {
         layer: CoreLayer.Native
@@ -1490,16 +1516,19 @@ const rules = {
     columnGap: {
         match: /^gap-x:./,
         unit: 'rem',
-        layer: CoreLayer.Native
+        layer: CoreLayer.Native,
+        variables: ['spacing']
     } as RuleOptions,
     rowGap: {
         match: /^gap-y:./,
         unit: 'rem',
-        layer: CoreLayer.Native
+        layer: CoreLayer.Native,
+        variables: ['spacing']
     } as RuleOptions,
     gap: {
         unit: 'rem',
-        layer: CoreLayer.NativeShorthand
+        layer: CoreLayer.NativeShorthand,
+        variables: ['spacing']
     } as RuleOptions,
     order: {
         match: /^o:./,
@@ -1581,7 +1610,8 @@ const rules = {
     } as RuleOptions,
     outlineOffset: {
         unit: 'rem',
-        layer: CoreLayer.Native
+        layer: CoreLayer.Native,
+        variables: ['spacing']
     } as RuleOptions,
     outlineStyle: {
         match: ['outline', ['dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']],
@@ -1602,7 +1632,13 @@ const rules = {
                 value += ' solid'
             }
             return value
-        }
+        },
+        variables: [
+            'outlineWidth',
+            'outlineStyle',
+            'outlineOffset',
+            'outlineColor'
+        ]
     } as RuleOptions,
     accentColor: {
         match: /^accent:./,
@@ -1624,22 +1660,26 @@ const rules = {
     scrollMarginLeft: {
         match: /^scroll-ml:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     scrollMarginRight: {
         match: /^scroll-mr:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     scrollMarginTop: {
         match: /^scroll-mt:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     scrollMarginBottom: {
         match: /^scroll-mb:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     scrollMarginX: {
         match: /^(?:scroll-margin-x|scroll-mx):./,
@@ -1650,7 +1690,8 @@ const rules = {
                 'scroll-margin-left': value + unit,
                 'scroll-margin-right': value + unit
             }
-        }
+        },
+        variables: ['spacing']
     } as RuleOptions,
     scrollMarginY: {
         match: /^(?:scroll-margin-y|scroll-my):./,
@@ -1661,33 +1702,39 @@ const rules = {
                 'scroll-margin-top': value + unit,
                 'scroll-margin-bottom': value + unit
             }
-        }
+        },
+        variables: ['spacing']
     } as RuleOptions,
     scrollMargin: {
         match: /^scroll-m:./,
         unit: 'rem',
-        layer: CoreLayer.NativeShorthand
+        layer: CoreLayer.NativeShorthand,
+        variables: ['spacing']
     } as RuleOptions,
     // scroll padding
     scrollPaddingLeft: {
         match: /^scroll-pl:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     scrollPaddingRight: {
         match: /^scroll-pr:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     scrollPaddingTop: {
         match: /^scroll-pt:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     scrollPaddingBottom: {
         match: /^scroll-pb:./,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variables: ['spacing']
     } as RuleOptions,
     scrollPaddingX: {
         match: /^(?:scroll-padding-x|scroll-px):./,
@@ -1698,7 +1745,8 @@ const rules = {
                 'scroll-padding-left': value + unit,
                 'scroll-padding-right': value + unit
             }
-        }
+        },
+        variables: ['spacing']
     } as RuleOptions,
     scrollPaddingY: {
         match: /^(?:scroll-padding-y|scroll-py):./,
@@ -1709,12 +1757,14 @@ const rules = {
                 'scroll-padding-top': value + unit,
                 'scroll-padding-bottom': value + unit
             }
-        }
+        },
+        variables: ['spacing']
     } as RuleOptions,
     scrollPadding: {
         match: /^scroll-p:./,
         unit: 'rem',
-        layer: CoreLayer.NativeShorthand
+        layer: CoreLayer.NativeShorthand,
+        variables: ['spacing']
     } as RuleOptions,
     // scroll snap
     scrollSnapAlign: {
