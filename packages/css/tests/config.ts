@@ -97,14 +97,6 @@ export default {
             height: '0px'
         }
     },
-    viewports: {
-        tablet: 768,
-        laptop: 1024,
-        desktop: 1280,
-        custom: {
-            '1': 2500
-        }
-    },
     selectors: {
         '>custom': '>div>:first+button',
         '_custom': '::before,::after',
@@ -113,6 +105,12 @@ export default {
         }
     },
     mediaQueries: {
+        tablet: 768,
+        laptop: 1024,
+        desktop: 1280,
+        custom: {
+            '1': 2500
+        },
         watch: '(max-device-width:42mm) and (min-device-width:38mm)',
         device: {
             watch: '(max-device-width:42mm) and (min-device-width:38mm)'

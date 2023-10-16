@@ -1,4 +1,4 @@
-import viewports from './viewports'
+import mediaQueries from './media-queries'
 import colors from './colors'
 import selectors from './selectors'
 import semantics from './semantics'
@@ -6,22 +6,19 @@ import animations from './animations'
 import variables from './variables'
 import rules from './rules'
 import functions from './functions'
-import fonts from './fonts'
 import { CSSDeclarations } from '../types/css-declarations'
 import type { Rule } from '../rule'
-import type { MasterCSS } from '../core'
 import { CoreLayer, Layer } from '../layer'
 
 const config: Config = {
-    viewports,
+    mediaQueries,
     colors,
     selectors,
     semantics,
     rules,
-    fonts,
     functions,
     animations,
-    variables,
+    variables: variables as any,
     scope: '',
     rootSize: 16,
     override: false,
@@ -31,34 +28,31 @@ const config: Config = {
 
 export {
     config,
-    viewports,
+    mediaQueries,
     colors,
     selectors,
     semantics,
     rules,
-    fonts,
     functions,
     animations,
     variables
 }
 
-type ExtendedValues = { [key: string]: string | number | ExtendedValues }
-
-export interface RuleConfig {
+export interface RuleOptions {
     id?: string
     match?: RegExp | [string, string[]?]
-    _resolvedMatch?: RegExp
-    _variables?: any
+    resolvedMatch?: RegExp
+    resolvedVariables?: any
     variables?: Record<string, string | number> | Array<string | number | Record<string, string | number>>
     order?: number
     separators?: string[]
+    shorthand?: string
     colored?: boolean
     numeric?: boolean
     unit?: any
     native?: boolean
-    _semantic?: boolean
-    _declarations?: CSSDeclarations
-    _propName?: string
+    declarations?: CSSDeclarations
+    resolvedPropName?: string
     layer?: Layer | CoreLayer,
     analyze?(this: Rule, className: string): [valueToken: string, prefixToken?: string]
     transform?(this: Rule, value: string): string
@@ -68,17 +62,21 @@ export interface RuleConfig {
     insert?(this: Rule): void
 }
 
+type VariableValue = number | string | VariableGroup | (number | string)[]
+type VariableGroup = { [key: string]: VariableValue }
+type Variables =
+    { [key in keyof typeof rules]: VariableGroup } |
+    { [key in string]: VariableGroup | VariableValue }
+
 export interface Config {
     extends?: (Config | { config: Config })[]
     styles?: { [key: string]: string | Config['styles'] }
     colors?: { [key: string]: string | Config['colors'] }
-    viewports?: { [key: string]: number | Config['viewports'] }
-    mediaQueries?: { [key: string]: string | Config['mediaQueries'] }
+    mediaQueries?: { [key: string]: number | Config['mediaQueries'] }
     selectors?: { [key: string]: string | string[] | Config['selectors'] }
     semantics?: { [key in keyof typeof semantics]?: CSSDeclarations } & { [key: string]: CSSDeclarations }
-    variables?: { [key in keyof typeof rules]?: number | string | { [key: string]: number | string } } & { [key: string]: number | string | { [key: string]: number | string } }
-    fonts?: { [key: string]: string | string[] } | ((css: MasterCSS) => Config['fonts'])
-    rules?: { [key in keyof typeof rules]?: RuleConfig } & { [key: string]: RuleConfig }
+    variables?: Variables
+    rules?: { [key in keyof typeof rules | string]?: RuleOptions }
     rootSize?: number
     scope?: string
     important?: boolean

@@ -16,14 +16,14 @@ export default function reorderForReadableClasses(classes: string[], config?: Co
     }
     return css.rules
         .sort((a, b) => {
-            if (a.config.layer === CoreLayer.Semantic && b.config.layer !== CoreLayer.Semantic) {
+            if (a.options.layer === CoreLayer.Semantic && b.options.layer !== CoreLayer.Semantic) {
                 // 如果 a 是 CoreLayer.Semantic 而 b 不是，则 a 应该排在 b 前面
                 return -1
-            } else if (a.config.layer !== CoreLayer.Semantic && b.config.layer === CoreLayer.Semantic) {
+            } else if (a.options.layer !== CoreLayer.Semantic && b.options.layer === CoreLayer.Semantic) {
                 // 如果 b 是 CoreLayer.Semantic 而 a 不是，则 b 应该排在 a 前面
                 return 1
-            } else if (a.config.id !== b.config.id) {
-                return a.config.id.localeCompare(b.config.id)
+            } else if (a.options.id !== b.options.id) {
+                return a.options.id.localeCompare(b.options.id)
             } else {
                 // 檢查 vendorSuffixSelectors 是否存在
                 const aHasVendorSuffix = a.vendorSuffixSelectors?.['']?.[0]

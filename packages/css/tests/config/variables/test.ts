@@ -2,23 +2,19 @@ import { testCSS } from '../../css'
 import config from '../../config'
 
 it('uses with $ function', () => {
-    testCSS('font-weight:$(font-weight/thin)', '.font-weight\\:\\$\\(font-weight\\/thin\\){font-weight:100}')
-})
-
-it('access colors using $ function', () => {
-    testCSS('fg:$(blue-50)', '.fg\\:\\$\\(blue-50\\){color:#175fe9}')
+    testCSS('font-weight:$(font-weight.thin)', '.font-weight\\:\\$\\(font-weight\\.thin\\){font-weight:100}')
 })
 
 test('variables', () => {
-    testCSS('m:$(spacing/x1)', '.m\\:\\$\\(spacing\\/x1\\){margin:1rem}', {
+    testCSS('m:$(spacing.x1)', '.m\\:\\$\\(spacing\\.x1\\){margin:1rem}', {
         variables: {
-            spacing: { x1: 16, x2: 32 }
+            spacing: { x1: 16, x2: 32 },
         }
     })
 })
 
 test('negative variables', () => {
-    testCSS('m:$(-spacing/x1)', '.m\\:\\$\\(-spacing\\/x1\\){margin:-1rem}', {
+    testCSS('m:$(-spacing.x1)', '.m\\:\\$\\(-spacing\\.x1\\){margin:-1rem}', {
         variables: {
             spacing: { x1: 16, x2: 32 }
         }

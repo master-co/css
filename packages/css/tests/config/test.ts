@@ -17,7 +17,7 @@ test('viewports', () => {
         'hide@xss',
         '@media (min-width:500px){.hide\\@xss{display:none}}',
         {
-            'viewports': {
+            mediaQueries: {
                 'xss': 500
             }
         }
