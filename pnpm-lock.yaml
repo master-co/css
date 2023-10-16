@@ -1090,6 +1090,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../css
+      '@master/css-validator':
+        specifier: workspace:^
+        version: link:../validator
       explore-config:
         specifier: ^2.2.10
         version: 2.5.17

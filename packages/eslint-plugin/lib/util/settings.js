@@ -21,17 +21,7 @@ function getOption(context, name) {
             return '^class(Name)?$'
         case 'config':
             return exploreConfig('master.css.*', {})
-        case 'cssFiles':
-            return ['**/*.css', '!**/node_modules', '!**/.*', '!**/dist', '!**/build']
-        case 'cssFilesRefreshRate':
-            return 5_000
-        case 'removeDuplicates':
-            return true
-        case 'skipClassAttribute':
-            return false
         case 'tags':
-            return []
-        case 'whitelist':
             return []
     }
 }
