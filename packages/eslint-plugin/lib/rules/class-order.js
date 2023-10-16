@@ -35,11 +35,6 @@ module.exports = {
                         items: { type: 'string', minLength: 0 },
                         uniqueItems: true,
                     },
-                    ignoredKeys: {
-                        type: 'array',
-                        items: { type: 'string', minLength: 0 },
-                        uniqueItems: true,
-                    },
                     config: {
                         // returned from `loadConfig()` utility
                         type: ['string', 'object'],
