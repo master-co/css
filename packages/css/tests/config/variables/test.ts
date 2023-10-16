@@ -26,7 +26,7 @@ test('rule variables', () => {
     testCSS('font-size:sm', '.font-size\\:sm{font-size:1rem}', config)
     testCSS('ls:wide', '.ls\\:wide{letter-spacing:0.025em}', config)
     testCSS('letter-spacing:wide', '.letter-spacing\\:wide{letter-spacing:0.025em}', config)
-    testCSS('shadow:2x', '.shadow\\:2x{box-shadow:0rem 25px 50px -12px rgb(0 0 0 / 25%)}', config)
+    testCSS('shadow:x2', '.shadow\\:x2{box-shadow:0rem 25px 50px -12px rgb(0 0 0 / 25%)}', config)
     testCSS('inset:sm|md|md|sm', '.inset\\:sm\\|md\\|md\\|sm{inset:0.625rem 1.25rem 1.25rem 0.625rem}', config)
     testCSS('b:inputborder', '.b\\:inputborder{border:0.125rem solid #d11a1e}', config)
     testCSS('content:delimiter', '.content\\:delimiter{content:"123"}', {

@@ -75,7 +75,7 @@ export default {
         },
         boxShadow: {
             variables: {
-                '2x': '0 25px 50px -12px rgb(0 0 0 / 25%)'
+                x2: '0 25px 50px -12px rgb(0 0 0 / 25%)'
             }
         },
         inset: {

@@ -5,7 +5,6 @@ module.exports = {
     rules: {},
     variables: {},
     semantics: {},
-    viewports: {},
     mediaQueries: {},
     animations: {},
     selectors: {},

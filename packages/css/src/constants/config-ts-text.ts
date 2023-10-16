@@ -6,7 +6,6 @@ export default {
     rules: {},
     variables: {},
     semantics: {},
-    viewports: {},
     mediaQueries: {},
     animations: {},
     selectors: {},
