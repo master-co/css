@@ -1,16 +1,25 @@
 ```js name=master.css.js
 export default {
-    variables: {
-        fontSize: {
-            sm: 14
-        },
-        maxWidth: {
-            md: 1024
+    rules: {
+        foo: {
+            match: /^foo:./,
+            unit: 'rem',
+            declare(value, unit) {
+                return {
+                    width: value + unit
+                }
+            }
         }
     }
 }
 ```
-Apply it using Master CSS syntax:
+Use your custom syntax:
 ```html
-<div class="font:**sm** max-w:**md**"></div>
+<div class="**foo:32**"></div>
+```
+Generated CSS:
+```css
+.foo\:32 {
+    width: 2rem;
+}
 ```

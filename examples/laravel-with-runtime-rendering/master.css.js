@@ -3,7 +3,7 @@ export default {
     styles: {},
     colors: {},
     rules: {},
-    values: {},
+    variables: {},
     semantics: {},
     breakpoints: {},
     mediaQueries: {},

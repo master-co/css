@@ -1,10 +1,10 @@
-import { viewports } from '@master/css'
+import { mediaQueries } from '@master/css'
 import InlineCode from 'shared/components/InlineCode'
 
 export default () => <table>
     <thead>
         <tr>
-            <th>Viewport</th>
+            <th>Breakpoint</th>
             <th>Width</th>
             <th>Devices</th>
         </tr>
@@ -12,11 +12,10 @@ export default () => <table>
     <tbody>
         {
             [
-                // @*
-                ...Object.keys(viewports)
+                ...Object.keys(mediaQueries)
                     .map((eachBreakpointName) => {
                         // @ts-ignore
-                        const eachBreakpoint = viewports[eachBreakpointName]
+                        const eachBreakpoint = mediaQueries[eachBreakpointName]
                         return (
                             <tr key={eachBreakpointName}>
                                 <td>
