@@ -30,6 +30,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-validator": "workspace:^",
         "explore-config": "^2.2.10",
         "requireindex": "^1.2.0"
     },

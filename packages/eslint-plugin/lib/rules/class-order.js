@@ -8,18 +8,10 @@
 // Modified from https://github.com/francoismassart/eslint-plugin-tailwindcss
 
 const astUtil = require('../util/ast')
-const removeDuplicatesFromClassnamesAndWhitespaces = require('../util/removeDuplicatesFromClassnamesAndWhitespaces')
 const getOption = require('../util/settings')
-const parserUtil = require('../util/parser')
 
 const { reorderForReadableClasses } = require('@master/css')
 
-//------------------------------------------------------------------------------
-// Rule Definition
-//------------------------------------------------------------------------------
-
-// Predefine message for use in context.report conditional.
-// messageId will still be usable in tests.
 const INVALID_CLASSNAMES_ORDER_MSG = 'No consistent class order followed.'
 
 module.exports = {
@@ -52,10 +44,6 @@ module.exports = {
                         // returned from `loadConfig()` utility
                         type: ['string', 'object'],
                     },
-                    removeDuplicates: {
-                        // default: true,
-                        type: 'boolean',
-                    },
                     tags: {
                         type: 'array',
                         items: { type: 'string', minLength: 0 },
@@ -68,20 +56,10 @@ module.exports = {
 
     create: function (context) {
         const callees = getOption(context, 'callees')
-        const skipClassAttribute = getOption(context, 'skipClassAttribute')
         const tags = getOption(context, 'tags')
         const masterCssConfig = getOption(context, 'config')
         const classRegex = getOption(context, 'classRegex')
 
-        //----------------------------------------------------------------------
-        // Helpers
-        //----------------------------------------------------------------------
-        /**
-         * Recursive function crawling into child nodes
-         * @param {ASTNode} node The root node of the current parsing
-         * @param {ASTNode} arg The child node of node
-         * @returns {void}
-         */
         const sortNodeArgumentValue = (node, arg = null) => {
             let originalClassNamesValue = null
             let start = null
@@ -145,7 +123,7 @@ module.exports = {
                         }
                         start = arg.range[0]
                         end = arg.range[1]
-                        break;
+                        break
                     case 'TemplateElement':
                         originalClassNamesValue = arg.value.raw
                         if (originalClassNamesValue === '') {
@@ -176,9 +154,9 @@ module.exports = {
             let orderedClassNames = reorderForReadableClasses(classNames, masterCssConfig)
                 .filter(eachOrderedClassName => classNames.includes(eachOrderedClassName))
 
-            orderedClassNames = orderedClassNames.concat(classNames.filter(x => !orderedClassNames.includes(x)))
-
-            removeDuplicatesFromClassnamesAndWhitespaces(orderedClassNames, whitespaces, headSpace, tailSpace)
+            orderedClassNames = orderedClassNames
+                .concat(classNames.filter(x => !orderedClassNames.includes(x)))
+                .filter(x => x.trim() !== '')
 
             // Generates the validated/sorted attribute value
             let validatedClassNamesValue = ''
@@ -203,21 +181,6 @@ module.exports = {
             }
         }
 
-        //----------------------------------------------------------------------
-        // Public
-        //----------------------------------------------------------------------
-
-        const attributeVisitor = function (node) {
-            if (!astUtil.isClassAttribute(node, classRegex) || skipClassAttribute) {
-                return
-            }
-            if (astUtil.isLiteralAttributeValue(node)) {
-                sortNodeArgumentValue(node)
-            } else if (node.value && node.value.type === 'JSXExpressionContainer') {
-                sortNodeArgumentValue(node, node.value.expression)
-            }
-        }
-
         const callExpressionVisitor = function (node) {
             const calleeStr = astUtil.calleeToString(node.callee)
             if (callees.findIndex((name) => calleeStr === name) === -1) {
@@ -230,53 +193,51 @@ module.exports = {
         }
 
         const scriptVisitor = {
-            JSXAttribute: attributeVisitor,
-            SvelteAttribute: function (node) {
-                if (!node.key?.name) return
-                if (!new RegExp(classRegex).test(node.key.name) || skipClassAttribute) {
-                    return
+            CallExpression: callExpressionVisitor,
+            JSXAttribute: function (node) {
+                if (!node.name || !new RegExp(classRegex).test(node.name.name)) return
+                if (node.value && node.value.type === 'Literal') {
+                    sortNodeArgumentValue(node)
+                } else if (node.value && node.value.type === 'JSXExpressionContainer') {
+                    sortNodeArgumentValue(node, node.value.expression)
                 }
+            },
+            SvelteAttribute: function (node) {
+                if (!node.key?.name || !new RegExp(classRegex).test(node.key.name)) return
                 for (const eachValue of node.value) {
                     sortNodeArgumentValue(node, eachValue)
                 }
             },
-            TextAttribute: attributeVisitor,
-            CallExpression: callExpressionVisitor,
+            TextAttribute: function (node) {
+                if (!node.name || !new RegExp(classRegex).test(node.name)) return
+                sortNodeArgumentValue(node)
+            },
             TaggedTemplateExpression: function (node) {
                 if (!tags.includes(node.tag.name)) {
                     return
                 }
-
                 sortNodeArgumentValue(node, node.quasi)
             },
         }
-        const templateVisitor = {
+        const templateBodyVisitor = {
             CallExpression: callExpressionVisitor,
-            /*
-            Tagged templates inside data bindings
-            https://github.com/vuejs/vue/issues/9721
-            */
             VAttribute: function (node) {
-                switch (true) {
-                    case !astUtil.isValidVueAttribute(node, classRegex):
-                        return
-                    case astUtil.isVLiteralValue(node):
-                        sortNodeArgumentValue(node, null)
-                        break
-                    case astUtil.isArrayExpression(node):
-                        node.value.expression.elements.forEach((arg) => {
-                            sortNodeArgumentValue(node, arg)
-                        })
-                        break
-                    case astUtil.isObjectExpression(node):
-                        node.value.expression.properties.forEach((prop) => {
-                            sortNodeArgumentValue(node, prop)
-                        })
-                        break
+                if (node.value && node.value.type === 'VLiteral') {
+                    sortNodeArgumentValue(node)
+                } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression.type === 'ArrayExpression') {
+                    node.value.expression.elements.forEach((arg) => {
+                        sortNodeArgumentValue(node, arg)
+                    })
+                } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression.type === 'ObjectExpression') {
+                    sortNodeArgumentValue(node, prop)
                 }
             },
         }
 
-        return parserUtil.defineTemplateBodyVisitor(context, templateVisitor, scriptVisitor)
+        if (context.parserServices == null || context.parserServices.defineTemplateBodyVisitor == null) {
+            return scriptVisitor
+        } else {
+            return context.parserServices.defineTemplateBodyVisitor(templateBodyVisitor, scriptVisitor)
+        }
     },
 }
