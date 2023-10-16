@@ -222,6 +222,7 @@ const rules = {
         layer: CoreLayer.Native,
         colored: true
     } as RuleOptions,
+    // margin
     marginLeft: {
         match: /^ml:./,
         layer: CoreLayer.Native,
@@ -276,6 +277,38 @@ const rules = {
         layer: CoreLayer.NativeShorthand,
         variables: ['spacing']
     } as RuleOptions,
+    // margin inline
+    marginInlineLeft: {
+        match: /^mil:./,
+        layer: CoreLayer.Native,
+        unit: 'rem',
+        variables: ['spacing']
+    } as RuleOptions,
+    marginInlineRight: {
+        match: /^mir:./,
+        layer: CoreLayer.Native,
+        unit: 'rem',
+        variables: ['spacing']
+    } as RuleOptions,
+    marginInlineTop: {
+        match: /^mit:./,
+        layer: CoreLayer.Native,
+        unit: 'rem',
+        variables: ['spacing']
+    } as RuleOptions,
+    marginInlineBottom: {
+        match: /^mib:./,
+        layer: CoreLayer.Native,
+        unit: 'rem',
+        variables: ['spacing']
+    } as RuleOptions,
+    marginInline: {
+        match: /^mi:./,
+        unit: 'rem',
+        layer: CoreLayer.NativeShorthand,
+        variables: ['spacing']
+    } as RuleOptions,
+    // padding
     paddingLeft: {
         match: /^pl:./,
         layer: CoreLayer.Native,
@@ -1803,7 +1836,8 @@ const rules = {
         match: ['shape'],
         numeric: true,
         unit: 'rem',
-        layer: CoreLayer.Native
+        layer: CoreLayer.Native,
+        variables: ['spacing']
     } as RuleOptions,
     shapeImageThreshold: {
         layer: CoreLayer.Native
