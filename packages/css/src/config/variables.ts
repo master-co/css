@@ -46,7 +46,7 @@ const variables = {
         extrabold: 800,
         heavy: 900
     },
-    viewport: {
+    box: {
         '4xs': 360,
         '3xs': 480,
         '2xs': 600,

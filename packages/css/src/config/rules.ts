@@ -222,6 +222,7 @@ const rules = {
         layer: CoreLayer.Native,
         colored: true
     } as RuleOptions,
+    // margin
     marginLeft: {
         match: /^ml:./,
         layer: CoreLayer.Native,
@@ -276,6 +277,26 @@ const rules = {
         layer: CoreLayer.NativeShorthand,
         variables: ['spacing']
     } as RuleOptions,
+    // margin inline
+    marginInlineStart: {
+        match: /^mis:./,
+        layer: CoreLayer.Native,
+        unit: 'rem',
+        variables: ['spacing']
+    } as RuleOptions,
+    marginInlineEnd: {
+        match: /^mie:./,
+        layer: CoreLayer.Native,
+        unit: 'rem',
+        variables: ['spacing']
+    } as RuleOptions,
+    marginInline: {
+        match: /^mi:./,
+        unit: 'rem',
+        layer: CoreLayer.NativeShorthand,
+        variables: ['spacing']
+    } as RuleOptions,
+    // padding
     paddingLeft: {
         match: /^pl:./,
         layer: CoreLayer.Native,
@@ -330,6 +351,26 @@ const rules = {
         layer: CoreLayer.NativeShorthand,
         variables: ['spacing']
     } as RuleOptions,
+    // padding inline
+    paddingInlineStart: {
+        match: /^pis:./,
+        layer: CoreLayer.Native,
+        unit: 'rem',
+        variables: ['spacing']
+    } as RuleOptions,
+    paddingInlineEnd: {
+        match: /^pie:./,
+        layer: CoreLayer.Native,
+        unit: 'rem',
+        variables: ['spacing']
+    } as RuleOptions,
+    paddingInline: {
+        match: /^pi:./,
+        unit: 'rem',
+        layer: CoreLayer.NativeShorthand,
+        variables: ['spacing']
+    } as RuleOptions,
+    // flex
     flexBasis: {
         variables: [
             {
@@ -338,7 +379,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ],
         unit: 'rem',
         layer: CoreLayer.Native,
@@ -379,7 +420,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ]
     } as RuleOptions,
     Height: {
@@ -393,7 +434,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ]
     } as RuleOptions,
     minWidth: {
@@ -407,7 +448,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ]
     } as RuleOptions,
     minHeight: {
@@ -421,7 +462,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ]
     } as RuleOptions,
     box: {
@@ -633,7 +674,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ]
     } as RuleOptions,
     maxWidth: {
@@ -647,7 +688,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ]
     } as RuleOptions,
     opacity: {
@@ -1803,7 +1844,8 @@ const rules = {
         match: ['shape'],
         numeric: true,
         unit: 'rem',
-        layer: CoreLayer.Native
+        layer: CoreLayer.Native,
+        variables: ['spacing']
     } as RuleOptions,
     shapeImageThreshold: {
         layer: CoreLayer.Native
