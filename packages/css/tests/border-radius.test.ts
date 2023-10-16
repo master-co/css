@@ -2,7 +2,7 @@ import { expectOrderOfRules, testProp } from './css'
 
 it('validates border-radius rules', () => {
     testProp('r:16', 'border-radius:1rem')
-    testProp('border-radius:1rem')
+    testProp('border-radius:1rem', 'border-radius:1rem')
 
     testProp('rtl:16', 'border-top-left-radius:1rem')
     testProp('rlt:16', 'border-top-left-radius:1rem')

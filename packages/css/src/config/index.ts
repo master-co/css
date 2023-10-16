@@ -62,7 +62,7 @@ export interface RuleOptions {
     insert?(this: Rule): void
 }
 
-type VariableValue = number | string | (number | string)[]
+type VariableValue = number | string | VariableGroup | (number | string)[]
 type VariableGroup = { [key: string]: VariableValue }
 type Variables =
     { [key in keyof typeof rules]: VariableGroup } |
