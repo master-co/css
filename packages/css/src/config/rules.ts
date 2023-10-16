@@ -278,26 +278,14 @@ const rules = {
         variables: ['spacing']
     } as RuleOptions,
     // margin inline
-    marginInlineLeft: {
-        match: /^mil:./,
+    marginInlineStart: {
+        match: /^mis:./,
         layer: CoreLayer.Native,
         unit: 'rem',
         variables: ['spacing']
     } as RuleOptions,
-    marginInlineRight: {
-        match: /^mir:./,
-        layer: CoreLayer.Native,
-        unit: 'rem',
-        variables: ['spacing']
-    } as RuleOptions,
-    marginInlineTop: {
-        match: /^mit:./,
-        layer: CoreLayer.Native,
-        unit: 'rem',
-        variables: ['spacing']
-    } as RuleOptions,
-    marginInlineBottom: {
-        match: /^mib:./,
+    marginInlineEnd: {
+        match: /^mie:./,
         layer: CoreLayer.Native,
         unit: 'rem',
         variables: ['spacing']
@@ -363,6 +351,26 @@ const rules = {
         layer: CoreLayer.NativeShorthand,
         variables: ['spacing']
     } as RuleOptions,
+    // padding inline
+    paddingInlineStart: {
+        match: /^pis:./,
+        layer: CoreLayer.Native,
+        unit: 'rem',
+        variables: ['spacing']
+    } as RuleOptions,
+    paddingInlineEnd: {
+        match: /^pie:./,
+        layer: CoreLayer.Native,
+        unit: 'rem',
+        variables: ['spacing']
+    } as RuleOptions,
+    paddingInline: {
+        match: /^pi:./,
+        unit: 'rem',
+        layer: CoreLayer.NativeShorthand,
+        variables: ['spacing']
+    } as RuleOptions,
+    // flex
     flexBasis: {
         variables: [
             {

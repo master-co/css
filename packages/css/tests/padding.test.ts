@@ -18,3 +18,9 @@ it('validates padding rules', () => {
     testProp('padding-x:16', 'padding-left:1rem;padding-right:1rem')
     testProp('padding-y:16', 'padding-top:1rem;padding-bottom:1rem')
 })
+
+test('padding inline', () => {
+    testProp('pis:16', 'padding-inline-start:1rem')
+    testProp('pie:16', 'padding-inline-end:1rem')
+    testProp('pi:16', 'padding-inline:1rem')
+})
