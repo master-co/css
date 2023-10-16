@@ -379,7 +379,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ],
         unit: 'rem',
         layer: CoreLayer.Native,
@@ -420,7 +420,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ]
     } as RuleOptions,
     Height: {
@@ -434,7 +434,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ]
     } as RuleOptions,
     minWidth: {
@@ -448,7 +448,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ]
     } as RuleOptions,
     minHeight: {
@@ -462,7 +462,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ]
     } as RuleOptions,
     box: {
@@ -674,7 +674,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ]
     } as RuleOptions,
     maxWidth: {
@@ -688,7 +688,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'viewport'
+            'box'
         ]
     } as RuleOptions,
     opacity: {
