@@ -169,11 +169,10 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
                     )
             )
 
-            const pascalCaseFullKey = fullKey.split('-').map(x => x ? x[0].toUpperCase() + x.substring(1) : '').join('')
-            if (css.config?.values?.[pascalCaseFullKey]) {
-                const masterCustomValues = Object.keys(css.config?.values[pascalCaseFullKey])
+            if (css.config?.variables?.[fullKey]) {
+                const masterCustomVariables = Object.keys(css.config?.variables[fullKey])
                 masterCssValues = masterCssValues.concat(
-                    masterCustomValues
+                    masterCustomVariables
                         .filter(customValue =>
                             !masterCssValues.find(existedValue => (typeof existedValue === 'string' ? existedValue : existedValue.label) === customValue)
                         )
@@ -214,7 +213,6 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
 
     if (masterCssKeys.includes(key) && key !== null && isMedia === true) { //show media
         masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(masterCssMedia as any, 10))
-        masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(Object.keys(css.config?.viewports ?? {}), 10))
         masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(css.themeNames, 10))
         if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerKey !== '@' && triggerKey !== ':') {
             return HaveDash('@' + last, masterStyleCompletionItem)
