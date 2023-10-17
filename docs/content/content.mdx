@@ -1,23 +1,41 @@
 ## Overview [sr-only]
 <Overview/>
 
----
-
 ## Basic usage
-
-### Resolve whitespaces
-Whitespace is used in the class attribute of the template markup to separate different class names. To replace whitespaces ` ` with non-breaking spaces `\\00a0` encoded in hexadecimal.
+### Add indicators for external links
+The most typical example is using a pseudo-element to add an indicator ` ↗` after external links.
+<Demo $py={0}>
+    <DemoPanel>
+        <p class="my:0">Discover high-quality products at XYZ Corporation. Visit [our website](https://www.example.com) for exclusive deals and unbeatable prices.</p>
+    </DemoPanel>
+</Demo>
 ```html
-<!-- Make all window-openable <a> elements under <article> uniformly suffixed with ` ↗` -->
-<article class="content:'**\\00a0**↗'_a[target=_blank]:after">
-    <a href="…" target="_blank">…</a>
+<article class="**content:'\00a0↗'_:where(a[href^='http'])::after**">
+    …<a target="_blank" href="https://www.example.com">our website</a>…
 </article>
 ```
-Review native CSS:
-```css
-article a[target=blank]:after {
-    content: ' ↗'
+
+### Resolve whitespaces in the value
+Whitespace is used in the class attribute of the template to separate different classes. To replace whitespaces ` ` with non-breaking spaces `\00a0`.
+```html
+<a class="content:'\00a0↗'::after">…</a>
+```
+Is it not very kind to use `\00a0` in markup?
+
+(o) Predefine your content [variables](/docs/variables) without `\00a0`.
+```js name=master.css.js
+/** @type {import('@master/css').Config} */
+export default {
+    variables: {
+        content: {
++            external: ' ↗' 
+        }
+    }
 }
+```
+Apply your custom fonts:
+```html
+<a class="content:**external**::after">…</a>
 ```
 
 ---
