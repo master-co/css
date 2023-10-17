@@ -17,7 +17,7 @@
         </div>
     </DemoPanel>
 </Demo>
-Using the font ambiguous shorthand with predefined [variables](/docs/variables) to simplify the native syntax.
+Using shorthand with predefined [variables](/docs/variables) to simplify the native syntax.
 ```html
 <div class="font-family:sans">
 +<div class="font:sans">Recommanded
@@ -45,6 +45,29 @@ In practice, you wouldn't arbitrarily set the font family within the template; i
 Relying on the `font-family` inherited behavior, you can set the entire page font in `html <body>`.
 ```html
 <body class="**font:sans**">…</body>
+```
+
+### Resolve whitespaces in the value
+Whitespace is used in the class attribute of the template to separate different classes. To replace whitespaces ` ` with non-breaking spaces `\00a0`.
+```html
+<p class="font-family:'Open**\00a0**Sans'">…</p>
+```
+Is it not very kind to use `\00a0` in markup?
+
+(o) Predefine your [font](/docs/fonts) variables without `\00a0`.
+```js name=master.css.js
+/** @type {import('@master/css').Config} */
+export default {
+    variables: {
+        fontFamily: {
++            'open-sans': 'Open Sans' 
+        }
+    }
+}
+```
+Apply your custom fonts:
+```html
+<p class="font:**open-sans**">…</p>
 ```
 
 ---
