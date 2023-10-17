@@ -759,28 +759,27 @@ export class Rule {
             }
             return { value, unit: newUnit }
         } else if (defaultUnit) {
+            // w:1/2 -> width: 50%
+            if (/^\d+\/\d+/.test(token)) {
+                const [dividend, divisor] = token.split('/')
+                return { value: (+dividend / +divisor) * 100 + '%', unit: newUnit }
+            }
             const matches = token.match(/^([+-.]?\d+(\.?\d+)?)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x|fr|db|st)?$/)
             // ['0.5deg', '0.5', 'deg', index: 0, input: '0.5deg', groups: undefined]
             if (matches) {
-                if (token.includes('/')) {
-                    // w:1/2 -> width: 50%
-                    const [dividend, divisor] = token.split('/')
-                    return { value: (+dividend / +divisor) * 100 + '%', unit: newUnit }
-                } else {
-                    let value: any = +matches[1]
-                    newUnit = matches[3] || ''
-                    /**
-                     * 當無單位值且 defaultUnit === 'rem'，
-                     * 將 pxValue / 16 轉為 remValue
-                     */
-                    if (!newUnit) {
-                        if (defaultUnit === 'rem' || defaultUnit === 'em') {
-                            value = value / this.css.config.rootSize
-                        }
-                        newUnit = defaultUnit || ''
+                let value: any = +matches[1]
+                newUnit = matches[3] || ''
+                /**
+                 * 當無單位值且 defaultUnit === 'rem'，
+                 * 將 pxValue / 16 轉為 remValue
+                 */
+                if (!newUnit) {
+                    if (defaultUnit === 'rem' || defaultUnit === 'em') {
+                        value = value / this.css.config.rootSize
                     }
-                    return { value, unit: newUnit }
+                    newUnit = defaultUnit || ''
                 }
+                return { value, unit: newUnit }
             }
         }
     }
