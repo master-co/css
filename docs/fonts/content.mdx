@@ -1,0 +1,79 @@
+## Customization [sr-only]
+<Demo $py={0}>
+    <DemoPanel className="flex flex:col gap:30">
+        <div className="w:full">
+            <DemoLabel>sans</DemoLabel>
+            <DemoP className="font:sans">Heavy boxes perform quick waltzes and jigs.</DemoP>
+        </div>
+        <div className="w:full">
+            <DemoLabel>serif</DemoLabel>
+            <DemoP className="font:serif">Heavy boxes perform quick waltzes and jigs.</DemoP>
+        </div>
+        <div className="w:full">
+            <DemoLabel>mono</DemoLabel>
+            <DemoP className="font:mono">Heavy boxes perform quick waltzes and jigs.</DemoP>
+        </div>
+    </DemoPanel>
+</Demo>
+The default provides three neutral [font family](/docs/font-family) variables, `sans`, `serif`, and `mono`, to facilitate your use as fallbacks when adding custom fonts.
+
+For example, to add fonts, `Inter` and `Fira Code`:
+```js name=master.css.js
+import { variables } from '@master/css'
+
+export default {
+    variables: {
++        fontFamily: {
++            sans: ['Inter', ...variables.fontFamily.sans],
++            mono: ['Fira Code', ...variables.fontFamily.mono]
++        }
+    }
+}
+```
+
+Apply custom fonts globally using [font family](/docs/font-family) syntax and [Google Fonts](https://fonts.google.com/):
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
++    <link rel="preconnect" href="https://fonts.googleapis.com">
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="**font:sans** **font:mono_:where(code,pre)** font-feature:'salt'">…</body>
+</html>
+```
+
+### Use Google Fonts
+The fastest way to declare custom font faces is through [Google Fonts](https://fonts.google.com/).
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+</html>
+```
+
+### Use self-hosted fonts
+You can also self-host the fonts via native CSS, as usual.
+```css name=styles/fonts.css
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/Inter-Regular.woff2") format("woff2"),
+        url("/fonts/Inter-Regular.woff") format("woff");
+}
+```
+
+---
+
+## See also
+- [Font](/docs/font)
+- [Font Family](/docs/font-family)
+- [Font Feature Settings](/docs/font-feature-settings)
+- [Font Variant Numeric](/docs/font-variant-numeric)
