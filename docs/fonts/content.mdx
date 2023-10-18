@@ -17,7 +17,8 @@
 </Demo>
 The default provides three neutral [font family](/docs/font-family) variables, `sans`, `serif`, and `mono`, to facilitate your use as fallbacks when adding custom fonts.
 
-For example, to add fonts, `Inter` and `Fira Code`:
+### Add custom fonts
+Define [variables](/docs/variables) to use font tokens from a single source. For example, add `Inter` as the general font and `Fira Code` as the code font.
 ```js name=master.css.js
 import { variables } from '@master/css'
 
@@ -31,7 +32,8 @@ export default {
 }
 ```
 
-Apply custom fonts globally using [font family](/docs/font-family) syntax and [Google Fonts](https://fonts.google.com/):
+### Apply custom fonts
+Apply the defined font variables using [font family](/docs/font-family) syntax, with [Google Fonts](https://fonts.google.com/) as an example.
 ```html
 <!DOCTYPE html>
 <html lang="en">
