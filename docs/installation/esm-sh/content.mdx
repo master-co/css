@@ -1,0 +1,35 @@
+import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRenderingIntro.mdx'
+
+<RuntimeRenderingIntro className="mb:50" />
+
+<StepSection>
+    <Step>
+        ### <StepNum />Start in one step
+        Copy and paste to start styling your first element with Master CSS!
+        ```html name=index.html
+        <!DOCTYPE html>
+        <html lang="en" style="display: none">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel="preload" as="style" href="https://esm.sh/@master/normal.css@beta?css">
+            <link rel="stylesheet" href="https://esm.sh/@master/normal.css@beta?css">
+            <link rel="modulepreload" href="https://esm.sh/@master/css@beta">
+            <script type="module">
+        +        import { initRuntime } from 'https://esm.sh/@master/css@beta'
+                initRuntime({
+                    colors: {
+                        primary: '#ff0000'
+                    }
+                })
+            </script>
+        </head>
+        <body>
+            <h1 class="**fg:primary** **font:40** **font:heavy** **italic** **m:50** **text:center**">Hello World</h1>
+        </body>
+        </html>
+        ```
+        <p className="mt:50">Open your browser to watch the changes.</p>
+        <HelloWorld url="index.html" />
+    </Step>
+</StepSection>

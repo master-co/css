@@ -1,4 +1,4 @@
-import { IconStatusChange, IconTextSpellcheck, IconArrowMerge, IconSettingsExclamation, IconScriptPlus } from '@tabler/icons-react'
+import { IconStatusChange, IconTextSpellcheck, IconArrowMerge, IconShieldCheck, IconPencilOff } from '@tabler/icons-react'
 import Features, { Feature } from 'shared/components/Features'
 import frameworks from 'shared/data/frameworks'
 import editors from 'shared/data/editors'
@@ -13,6 +13,22 @@ import editors from 'shared/data/editors'
         </div>
     </Feature>
     <Feature>
+        <IconShieldCheck className="app-icon-primary" />
+        <div>
+            **[Syntax error checks](#syntax-error-checks)**
+
+            Check the validity of classes with your configuration
+        </div>
+    </Feature>
+    <Feature>
+        <IconPencilOff className="app-icon-primary" />
+        <div>
+            **[No traditional class](#no-traditional-class)**
+
+            Avoid using custom classes from traditional CSS
+        </div>
+    </Feature>
+    <Feature>
         <IconTextSpellcheck className="app-icon" />
         <div>
             **Conflicting class checks 🚧**
@@ -21,27 +37,11 @@ import editors from 'shared/data/editors'
         </div>
     </Feature>
     <Feature>
-        <IconSettingsExclamation className="app-icon" />
-        <div>
-            **Illegal class checks 🚧**
-
-            Check the validity of classes with your configuration
-        </div>
-    </Feature>
-    <Feature>
         <IconArrowMerge className="app-icon" />
         <div>
             **Enforce shorthand 🚧**
 
             Combine multiple classes into a shorthand If possible
-        </div>
-    </Feature>
-    <Feature>
-        <IconScriptPlus className="app-icon" />
-        <div>
-            **No external class 🚧**
-
-            Avoid using custom classes from traditional CSS
         </div>
     </Feature>
 </Features>
@@ -73,29 +73,28 @@ In the development process, you typically don't pay much attention to the order 
     <figcaption>Correct the order of the Master CSS class in Visual Studio Code.</figcaption>
 </figure>
 
-Using Master CSS ESLint ensures that classes on any element are consistently organized according to predefined rules.
+Enabling this check ensures that classes on any element are consistently organized according to predefined rules.
 
-(!) <span className="text:warning">No consistent class order followed</span>
-```html
-<div class="font:12 font:24@sm m:32 block px:16 font:32@md bg:blue:hover round mb:48">
+(!) <span className="text:warning">No consistent class order followed.</span>
+```mcss
+font:12 font:24@sm m:32 block px:16 font:32@md bg:blue:hover round mb:48
 ```
-(o) Fixes order based on resulting CSS rule precedence
-```html
-<div class="block round bg:blue:hover font:12 font:24@sm font:32@md m:32 mb:48 px:16">
+(o) Fixes order based on resulting CSS rule precedence.
+```mcss
+block round bg:blue:hover font:12 font:24@sm font:32@md m:32 mb:48 px:16
 ```
 
+### Syntax error checks
+### No traditional class
 ### Conflicting class checks 🚧
-### Illegal class checks 🚧
 ### Enforce shorthand 🚧
-### No external class 🚧
 
 ---
 
 ## Rules
 | Name                     | Description                                              |
 | ----------------------- | --------------------------------------------------------- |
-| `class-order`           | Enforce a consistent and logical order of classes        |
-| `class-collision` 🚧    | Check the validity of classes with your configuration    |
-| `class-validation` 🚧   | Avoid declaring the identical CSS property repeatedly    |
+| `class-order`           | Enforce a consistent and logical order of classes         |
+| `class-validation`      | Check the validity of classes with your configuration     |
+| `class-collision` 🚧    | Avoid declaring the identical CSS property repeatedly     |
 | `enforces-class-shorthand` 🚧 | Combine multiple classes into a shorthand if possible |
-| `no-external-class` 🚧  | Avoid using custom classes from traditional CSS          |
