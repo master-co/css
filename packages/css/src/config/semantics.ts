@@ -1,3 +1,5 @@
+import { CSSDeclarations } from 'src/types/css-declarations'
+
 const semantics = {
     square: {
         'aspect-ratio': '1/1'

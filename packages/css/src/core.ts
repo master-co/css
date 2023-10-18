@@ -5,7 +5,6 @@ import { config as defaultConfig } from './config'
 import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { CSSDeclarations } from './types/css-declarations'
-import { RuleOptions } from './config'
 import { CoreLayer, Layer } from './layer'
 import { flattenObj } from './utils/flatten-obj'
 
@@ -47,8 +46,8 @@ export class MasterCSS {
     readonly countBy = {}
     readonly observing = false
     readonly config: Config
-    private readonly semanticRuleOptions: RuleOptions[] = []
-    private readonly ruleOptions: RuleOptions[] = []
+    private readonly semanticRuleOptions: Rule['options'][] = []
+    private readonly ruleOptions: Rule['options'][] = []
 
     colorTokenRegExp: RegExp
     observer: MutationObserver
@@ -318,7 +317,7 @@ export class MasterCSS {
         const rulesEntriesLength = rulesEntries.length
 
         rulesEntries
-            .forEach(([id, eachRuleOptions]: [string, RuleOptions], index: number) => {
+            .forEach(([id, eachRuleOptions]: [string, Rule['options']], index: number) => {
                 this.ruleOptions.push(eachRuleOptions)
                 eachRuleOptions.order = this.semanticRuleOptions.length + rulesEntriesLength - 1 - index
                 const match = eachRuleOptions.match
@@ -730,7 +729,7 @@ export class MasterCSS {
      * @param syntax class syntax
      * @returns css text
      */
-    match(syntax: string): RuleOptions {
+    match(syntax: string): Rule['options'] {
         // 1. rules
         for (const eachRuleOptions of this.ruleOptions) {
             if (

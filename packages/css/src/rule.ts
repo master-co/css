@@ -3,8 +3,7 @@ import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'shared/utils/css-escape'
 import { transformColorWithOpacity } from './functions/transform-color-with-opacity'
 import { CSSDeclarations } from './types/css-declarations'
-import { RuleOptions } from './config'
-import { CoreLayer } from './layer'
+import { CoreLayer, Layer } from './layer'
 
 const atRuleRegExp = /^(media|supports|page|font-face|keyframes|counter-style|font-feature-values|property|layer)(?=\||{|\(|$)/
 
@@ -19,7 +18,29 @@ export class Rule {
 
     constructor(
         public readonly className: string,
-        public readonly options: RuleOptions = {},
+        public readonly options: {
+            id?: string
+            match?: RegExp | [string, string[]?]
+            resolvedMatch?: RegExp
+            resolvedVariables?: any
+            variables?: Record<string, string | number> | Array<string | number | Record<string, string | number>>
+            order?: number
+            separators?: string[]
+            shorthand?: string
+            colored?: boolean
+            numeric?: boolean
+            unit?: any
+            native?: boolean
+            declarations?: CSSDeclarations
+            resolvedPropName?: string
+            layer?: Layer | CoreLayer,
+            analyze?(this: Rule, className: string): [valueToken: string, prefixToken?: string]
+            transform?(this: Rule, value: string): string
+            declare?(this: Rule, value: string, unit: string): CSSDeclarations
+            delete?(this: Rule, className: string): void
+            create?(this: Rule, className: string): void
+            insert?(this: Rule): void
+        } = {},
         public css: MasterCSS
     ) {
         const { layer, unit, colored: configColored, resolvedPropName, analyze, transform, declare, create, order, id } = this.options
@@ -830,5 +851,5 @@ export interface MediaQuery {
 
 export interface RuleMeta {
     value?: [string, string | Record<string, string>]
-    config?: RuleOptions
+    config?: Rule['options']
 }

@@ -1,0 +1,1 @@
+export type ConfigStyles = { [key: string]: string | ConfigStyles }
