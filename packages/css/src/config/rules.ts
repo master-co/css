@@ -422,7 +422,7 @@ const rules = {
             'box'
         ]
     } as Rule['options'],
-    Height: {
+    height: {
         match: /^h:./,
         unit: 'rem',
         layer: CoreLayer.Native,
