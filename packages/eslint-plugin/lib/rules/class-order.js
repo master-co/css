@@ -1,7 +1,7 @@
 'use strict'
 
-const astUtil = require('../util/ast')
-const getOption = require('../util/settings')
+const astUtil = require('../utils/ast')
+const getOption = require('../utils/settings')
 const { reorderForReadableClasses } = require('@master/css')
 
 module.exports = {
@@ -15,28 +15,7 @@ module.exports = {
         messages: {
             invalidClassOrder: 'No consistent class order followed.',
         },
-        fixable: 'code',
-        schema: [
-            {
-                type: 'object',
-                properties: {
-                    callees: {
-                        type: 'array',
-                        items: { type: 'string', minLength: 0 },
-                        uniqueItems: true,
-                    },
-                    config: {
-                        // returned from `loadConfig()` utility
-                        type: ['string', 'object'],
-                    },
-                    tags: {
-                        type: 'array',
-                        items: { type: 'string', minLength: 0 },
-                        uniqueItems: true,
-                    },
-                },
-            },
-        ],
+        fixable: 'code'
     },
 
     create: function (context) {
