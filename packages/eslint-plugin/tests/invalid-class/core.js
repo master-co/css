@@ -1,6 +1,6 @@
 'use strict'
 
-var rule = require('../../lib/rules/invalid-class')
+var rule = require('../../lib/rules/class-validation')
 var RuleTester = require('eslint').RuleTester
 var parserOptions = {
     ecmaVersion: 2019,
