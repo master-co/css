@@ -7,7 +7,7 @@ export default () => <CodeTabs>
             lang: 'html',
             code: `
             <!DOCTYPE html>
-            <html lang="en">
+            <html lang="en" style="display: none">
             <head>
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,7 +34,7 @@ export default () => <CodeTabs>
             lang: 'html',
             code: `
             <!DOCTYPE html>
-            <html lang="en">
+            <html lang="en" style="display: none">
             <head>
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
