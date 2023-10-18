@@ -13,35 +13,10 @@ module.exports = {
             url: 'https://beta.css.master.co/docs/code-linting#check-the-validity-of-classes-with-your-configuration',
         },
         messages: {
-            invalidClass: 'Not a valid class.',
+            invalidClass: '{{message}}',
+            noTraditionalClass: '{{message}}',
         },
-        fixable: null,
-        schema: [
-            {
-                type: 'object',
-                properties: {
-                    callees: {
-                        type: 'array',
-                        items: { type: 'string', minLength: 0 },
-                        uniqueItems: true,
-                    },
-                    ignoredKeys: {
-                        type: 'array',
-                        items: { type: 'string', minLength: 0 },
-                        uniqueItems: true,
-                    },
-                    config: {
-                        // returned from `loadConfig()` utility
-                        type: ['string', 'object'],
-                    },
-                    tags: {
-                        type: 'array',
-                        items: { type: 'string', minLength: 0 },
-                        uniqueItems: true,
-                    },
-                },
-            },
-        ],
+        fixable: null
     },
 
     create: function (context) {
@@ -50,24 +25,39 @@ module.exports = {
         const masterCssConfig = getOption(context, 'config')
         const classRegex = getOption(context, 'classRegex')
         const ignoredKeys = getOption(context, 'ignoredKeys')
+        const noTraditionalClass = getOption(context, 'noTraditionalClass')
+
         const checkNodeArgumentValue = (node, arg = null) => {
             astUtil.parseNodeRecursive(
                 node,
                 arg,
                 (classNames, node) => {
                     for (const className of classNames) {
-                        const { errors } = validate(className, { config: masterCssConfig })
+                        const { isMasterCSS, errors } = validate(className, { config: masterCssConfig })
+
                         if (errors.length > 0) {
                             for (const error of errors) {
-                                context.report({
-                                    node,
-                                    messageId: 'invalidClass',
-                                    data: {
-                                        message: error.message,
-                                    }
-                                })
+                                if (isMasterCSS) {
+                                    context.report({
+                                        node,
+                                        messageId: 'invalidClass',
+                                        data: {
+                                            message: error.message,
+                                        }
+                                    })
+                                }
+                                else if (!isMasterCSS && noTraditionalClass) {
+                                    context.report({
+                                        node,
+                                        messageId: 'noTraditionalClass',
+                                        data: {
+                                            message: error.message,
+                                        }
+                                    })
+                                }
                             }
                         }
+
 
                     }
                 },

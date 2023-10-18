@@ -24,6 +24,8 @@ function getOption(context, name) {
             return exploreConfig('master.css.*', {})
         case 'tags':
             return []
+        case 'noTraditionalClass':
+            return true
     }
 }
 

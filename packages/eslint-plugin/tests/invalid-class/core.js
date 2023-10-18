@@ -23,8 +23,19 @@ ruleTester.run('invalid', rule, {
             code: `<div class="bg:black m:mistake rrr">Simple, basic</div>`,
             errors: [
                 { messageId: 'invalidClass' },
-                { messageId: 'invalidClass' }
+                { messageId: 'noTraditionalClass' }
             ],
+        },
+        {
+            code: `<div class="bg:black m:mistake rrr">Simple, basic</div>`,
+            errors: [
+                { messageId: 'invalidClass' },
+            ],
+            options: [
+                {
+                    noTraditionalClass: false
+                }
+            ]
         }
     ],
 })
