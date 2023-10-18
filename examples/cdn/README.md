@@ -78,7 +78,7 @@
     <script>
         window.masterCSSConfig = {
             colors: {
-                primary: '#ff0000'
+                primary: '#000000'
             }
         }
     </script>
