@@ -1,7 +1,3 @@
-/**
- * @fileoverview Utility functions for AST
- */
-
 'use strict'
 
 const separatorRegEx = /([\t\n\f\r ]+)/

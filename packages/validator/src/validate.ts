@@ -8,10 +8,13 @@ import { Config, MasterCSS } from '@master/css'
  * @argument options Options for creating a new Master CSS instance
  * @returns SyntaxError[]
  */
-export default function reportErrors(
+export default function validate(
     syntax: string,
     options?: { css?: MasterCSS, config?: Config }
-): SyntaxError[] {
+): {
+    isMasterCSS: boolean,
+    errors: SyntaxError[]
+} {
     let css: MasterCSS
     if (options?.css) {
         css = options?.css
@@ -28,12 +31,18 @@ export default function reportErrors(
                 errors.push(eachSyntaxError)
             }
         }
-        return errors
+        return {
+            isMasterCSS: true,
+            errors
+        }
     } else {
-        return [{
-            class: syntax,
-            message: `Invalid Master CSS class "${syntax}"`,
-            rawMessage: 'Mismatch'
-        }]
+        return {
+            isMasterCSS: false,
+            errors: [{
+                class: syntax,
+                message: `Invalid Master CSS class "${syntax}"`,
+                rawMessage: 'Mismatch'
+            }]
+        }
     }
 }

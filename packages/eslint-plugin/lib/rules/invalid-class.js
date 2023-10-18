@@ -1,18 +1,8 @@
-/* eslint-disable no-case-declarations */
-/**
- * @fileoverview Check the validity of classes with your configuration
- * @author Miles
- */
 'use strict'
 
-// Modified from https://github.com/francoismassart/eslint-plugin-tailwindcss
-
-const astUtil = require('../util/ast')
-const getOption = require('../util/settings')
-
-const { reportErrors } = require('@master/css-validator')
-
-const ILLEGAL_CLASSNAME_MSG = '{{message}}'
+const astUtil = require('../utils/ast')
+const getOption = require('../utils/settings')
+const { validate } = require('@master/css-validator')
 
 module.exports = {
     meta: {
@@ -23,7 +13,7 @@ module.exports = {
             url: 'https://beta.css.master.co/docs/code-linting#check-the-validity-of-classes-with-your-configuration',
         },
         messages: {
-            illegalClassname: ILLEGAL_CLASSNAME_MSG,
+            invalidClass: 'Not a valid class.',
         },
         fixable: null,
         schema: [
@@ -60,20 +50,18 @@ module.exports = {
         const masterCssConfig = getOption(context, 'config')
         const classRegex = getOption(context, 'classRegex')
         const ignoredKeys = getOption(context, 'ignoredKeys')
-
         const checkNodeArgumentValue = (node, arg = null) => {
             astUtil.parseNodeRecursive(
                 node,
                 arg,
                 (classNames, node) => {
                     for (const className of classNames) {
-                        const errors = reportErrors(className, {config: masterCssConfig})
+                        const { errors } = validate(className, { config: masterCssConfig })
                         if (errors.length > 0) {
-
                             for (const error of errors) {
                                 context.report({
                                     node,
-                                    messageId: 'illegalClassname',
+                                    messageId: 'invalidClass',
                                     data: {
                                         message: error.message,
                                     }
@@ -127,6 +115,7 @@ module.exports = {
                 checkNodeArgumentValue(node, node.quasi)
             },
         }
+
         const templateBodyVisitor = {
             CallExpression: callExpressionVisitor,
             VAttribute: function (node) {

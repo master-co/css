@@ -1,18 +1,8 @@
-/* eslint-disable no-case-declarations */
-/**
- * @fileoverview Use a consistent orders for the Master CSS classnames, based on property then on variants
- * @author Miles
- */
 'use strict'
-
-// Modified from https://github.com/francoismassart/eslint-plugin-tailwindcss
 
 const astUtil = require('../util/ast')
 const getOption = require('../util/settings')
-
 const { reorderForReadableClasses } = require('@master/css')
-
-const INVALID_CLASSNAMES_ORDER_MSG = 'No consistent class order followed.'
 
 module.exports = {
     meta: {
@@ -23,7 +13,7 @@ module.exports = {
             url: 'https://beta.css.master.co/docs/code-linting#enforce-a-consistent-and-logical-order-of-classes',
         },
         messages: {
-            invalidOrder: INVALID_CLASSNAMES_ORDER_MSG,
+            invalidClassOrder: 'No consistent class order followed.',
         },
         fixable: 'code',
         schema: [
@@ -168,7 +158,7 @@ module.exports = {
                 validatedClassNamesValue = prefix + validatedClassNamesValue + suffix
                 context.report({
                     node: node,
-                    messageId: 'invalidOrder',
+                    messageId: 'invalidClassOrder',
                     fix: function (fixer) {
                         return fixer.replaceTextRange([start, end], validatedClassNamesValue)
                     },

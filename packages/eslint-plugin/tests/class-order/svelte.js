@@ -17,7 +17,7 @@ ruleTester.run('svelte class order', rule, {
         {
             code: `<div class="m:8 bg:black p:8 fg:white f:24 {flipped ? 'flipped' : ''}">Enhancing readability</div>`,
             output: `<div class="bg:black fg:white f:24 m:8 p:8 {flipped ? 'flipped' : ''}">Enhancing readability</div>`,
-            errors: [{ messageId: 'invalidOrder' }],
+            errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.svelte',
             parser: require.resolve('svelte-eslint-parser'),
         },

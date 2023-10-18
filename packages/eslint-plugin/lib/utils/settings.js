@@ -1,4 +1,5 @@
 'use strict'
+
 const exploreConfig = require('explore-config').default
 
 function getOption(context, name) {

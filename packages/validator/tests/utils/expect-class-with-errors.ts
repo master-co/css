@@ -1,5 +1,5 @@
-import { reportErrors } from '../../src'
+import { validate } from '../../src'
 
 export default function expectClassWithErrors(syntax: string) {
-    expect(reportErrors(syntax).length).toBeDefined()
+    expect(validate(syntax).errors.length).toBeDefined()
 }
