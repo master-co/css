@@ -358,6 +358,21 @@ importers:
         specifier: workspace:^
         version: link:../../packages/extractor.vite
 
+  examples/eslint:
+    devDependencies:
+      '@angular-eslint/template-parser':
+        specifier: ^16.2.0
+        version: 16.2.0(eslint@8.51.0)(typescript@5.2.2)
+      '@master/eslint-config-css':
+        specifier: workspace:^
+        version: link:../../packages/eslint-config
+      '@master/eslint-plugin-css':
+        specifier: workspace:^
+        version: link:../../packages/eslint-plugin
+      eslint:
+        specifier: ^8.51.0
+        version: 8.51.0
+
   examples/laravel-with-runtime-rendering:
     dependencies:
       '@master/css':
@@ -1916,6 +1931,18 @@ packages:
     dependencies:
       '@angular-eslint/bundled-angular-compiler': 16.2.0
       eslint: 7.32.0
+      eslint-scope: 7.2.2
+      typescript: 5.2.2
+    dev: true
+
+  /@angular-eslint/template-parser@16.2.0(eslint@8.51.0)(typescript@5.2.2):
+    resolution: {integrity: sha512-v2jVKTy2wN7iM9nHpBkxLn2wfL8jSl4IlPrXThIqj8No2VHtpLQZPKuXbGPUXQX05VS2Mj5feScQ36ZVGS8Rbw==}
+    peerDependencies:
+      eslint: ^7.20.0 || ^8.0.0
+      typescript: '*'
+    dependencies:
+      '@angular-eslint/bundled-angular-compiler': 16.2.0
+      eslint: 8.51.0
       eslint-scope: 7.2.2
       typescript: 5.2.2
     dev: true

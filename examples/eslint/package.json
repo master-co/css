@@ -1,0 +1,9 @@
+{
+    "name": "master-css-eslint-example",
+    "devDependencies": {
+        "@angular-eslint/template-parser": "^16.2.0",
+        "@master/eslint-config-css": "workspace:^",
+        "@master/eslint-plugin-css": "workspace:^",
+        "eslint": "^8.51.0"
+    }
+}

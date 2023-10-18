@@ -6,6 +6,7 @@ module.exports = {
         },
     },
     rules: {
-        '@master/css/class-order': 'warn'
+        '@master/css/class-order': 'warn',
+        '@master/css/class-validation': 'warn'
     }
 }
