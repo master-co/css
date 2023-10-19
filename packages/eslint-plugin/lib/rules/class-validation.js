@@ -32,6 +32,12 @@ module.exports = {
                 node,
                 arg,
                 (classNames, node) => {
+
+                    const sourceCode = context.getSourceCode()
+                    const sourceCodeLines = sourceCode.lines
+                    const nodeStartLine = node.loc.start.line
+                    const nodeEndLine = node.loc.end.line
+
                     for (const className of classNames) {
                         const { isMasterCSS, errors } = validate(className, { config: masterCssConfig })
 
@@ -39,7 +45,7 @@ module.exports = {
                             for (const error of errors) {
                                 if (isMasterCSS) {
                                     context.report({
-                                        node,
+                                        loc: astUtil.findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
                                         messageId: 'invalidClass',
                                         data: {
                                             message: error.message,
@@ -48,7 +54,7 @@ module.exports = {
                                 }
                                 else if (!isMasterCSS && noTraditionalClass) {
                                     context.report({
-                                        node,
+                                        loc: astUtil.findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
                                         messageId: 'noTraditionalClass',
                                         data: {
                                             message: error.message,

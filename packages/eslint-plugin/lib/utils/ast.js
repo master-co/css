@@ -185,6 +185,26 @@ function getTemplateElementBody(text, prefix, suffix) {
     return arr.join(suffix)
 }
 
+function findLoc(text, lines, startLine, endLine) {
+    for (let i = startLine; i <= endLine; i++) {
+        const sourceCodeLine = lines[i - 1]
+        const index = sourceCodeLine.indexOf(text)
+        if (index !== -1) {
+            return {
+                start: {
+                    line: i,
+                    column: index
+                },
+                end: {
+                    line: i,
+                    column: index + text.length
+                }
+            }
+        }
+    }
+    return null
+}
+
 module.exports = {
     calleeToString,
     extractRangeFromNode,
@@ -193,5 +213,6 @@ module.exports = {
     getTemplateElementPrefix,
     getTemplateElementSuffix,
     getTemplateElementBody,
-    parseNodeRecursive
+    parseNodeRecursive,
+    findLoc
 }
