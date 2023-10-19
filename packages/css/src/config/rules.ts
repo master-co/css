@@ -378,7 +378,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'box'
+            'section'
         ],
         unit: 'rem',
         layer: CoreLayer.Native,
@@ -419,7 +419,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'box'
+            'section'
         ]
     } as Rule['options'],
     height: {
@@ -433,7 +433,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'box'
+            'section'
         ]
     } as Rule['options'],
     minWidth: {
@@ -447,7 +447,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'box'
+            'section'
         ]
     } as Rule['options'],
     minHeight: {
@@ -461,7 +461,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'box'
+            'section'
         ]
     } as Rule['options'],
     box: {
@@ -521,7 +521,7 @@ const rules = {
         }
     } as Rule['options'],
     boxDecorationBreak: {
-        match: ['box', ['slice', 'clone']],
+        match: ['section', ['slice', 'clone']],
         layer: CoreLayer.Native,
         declare(value, unit) {
             return {
@@ -673,7 +673,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'box'
+            'section'
         ]
     } as Rule['options'],
     maxWidth: {
@@ -687,7 +687,7 @@ const rules = {
                 max: 'max-content',
                 min: 'min-content'
             },
-            'box'
+            'section'
         ]
     } as Rule['options'],
     opacity: {
