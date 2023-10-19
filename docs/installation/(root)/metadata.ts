@@ -2,7 +2,7 @@ import { Metadata } from 'shared/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Get started with Master CSS',
-    description: 'Master CSS is a markup-driven CSS language with smart rules to write familiar CSS in HTML with an enhanced and concise syntax.',
+    description: 'Master CSS is a markup-driven CSS language with smart rules allowing you to write familiar CSS using concise syntax within HTML.',
     category: 'Getting Started',
     other: {
         subject: 'Installation'
