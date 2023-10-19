@@ -12,9 +12,9 @@ export default async function Layout(props: any) {
             metadata={{
                 title: 'Launch Master CSS using esm.sh',
                 description: metadata.description,
-                category: 'CDN'
+                category: metadata.category
             }}
-            backOnClickCategory='/docs/installation/cdn'
+            backOnClickCategory='/docs/installation'
             icon={{
                 Element: LogoSvg,
                 class: 'w:64'
