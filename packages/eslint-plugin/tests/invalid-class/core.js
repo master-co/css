@@ -25,16 +25,16 @@ ruleTester.run('invalid', rule, {
                 { messageId: 'invalidClass' },
                 { messageId: 'disallowTraditionalClass' }
             ],
+            options: [
+                {
+                    disallowTraditionalClass: true
+                }
+            ]
         },
         {
             code: `<div class="bg:black m:mistake rrr">Simple, basic</div>`,
             errors: [
                 { messageId: 'invalidClass' },
-            ],
-            options: [
-                {
-                    disallowTraditionalClass: false
-                }
             ]
         }
     ],
