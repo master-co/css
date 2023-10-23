@@ -2,17 +2,14 @@
 
 const rule = require('../lib/rules/class-validation')
 const RuleTester = require('eslint').RuleTester
-const ruleTester = new RuleTester({
+
+new RuleTester({
     parserOptions: {
-        ecmaVersion: 2019,
-        sourceType: 'module',
         ecmaFeatures: {
             jsx: true,
         },
     }
-})
-
-ruleTester.run('invalid', rule, {
+}).run('invalid', rule, {
     valid: [
         {
             code: `<div class="bg:black fg:white f:24 m:8 p:8">Simple, basic</div>`,
@@ -36,7 +33,26 @@ ruleTester.run('invalid', rule, {
             errors: [
                 { messageId: 'invalidClass' },
             ]
+        }
+    ]
+})
+
+new RuleTester({
+    parserOptions: {
+        ecmaFeatures: {
+            jsx: true,
         },
+    },
+    settings: {
+        '@master/css': {
+            config: {
+                styles: { btn: 'block' }
+            }
+        }
+    }
+}).run('invalid', rule, {
+    valid: [],
+    invalid: [
         {
             code: `<div class="bg:black m:mistake rrr btn">Simple, basic</div>`,
             errors: [
@@ -45,10 +61,7 @@ ruleTester.run('invalid', rule, {
             ],
             options: [
                 {
-                    disallowTraditionalClass: true,
-                    testConfig: {
-                        styles: { btn: 'block' }
-                    }
+                    disallowTraditionalClass: true
                 }
             ]
         },

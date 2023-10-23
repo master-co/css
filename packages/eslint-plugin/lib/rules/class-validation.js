@@ -38,7 +38,7 @@ module.exports = {
                                         loc: astUtil.findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
                                         messageId: 'invalidClass',
                                         data: {
-                                            message: error.message,
+                                            message: error.message + '.',
                                         }
                                     })
                                 } else if (!isMasterCSS && options.disallowTraditionalClass) {

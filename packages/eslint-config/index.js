@@ -3,7 +3,7 @@ module.exports = {
     parserOptions: {
         ecmaFeatures: {
             jsx: true,
-        },
+        }
     },
     rules: {
         '@master/css/class-order': 'warn',

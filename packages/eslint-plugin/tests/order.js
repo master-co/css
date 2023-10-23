@@ -4,8 +4,6 @@ const rule = require('../lib/rules/class-order')
 const RuleTester = require('eslint').RuleTester
 const ruleTester = new RuleTester({
     parserOptions: {
-        ecmaVersion: 2019,
-        sourceType: 'module',
         ecmaFeatures: {
             jsx: true,
         },
@@ -16,6 +14,9 @@ ruleTester.run('class order', rule, {
     valid: [
         {
             code: `<div class="bg:black fg:white f:24 m:8 p:8">Simple, basic</div>`,
+        },
+        {
+            code: `<div class="card mt:20">Traditional class + syntax</div>`,
         },
         {
             code: `<div test="bg:black fg:white f:24 m:8 p:8">Simple, using 'test' prop</div>`,

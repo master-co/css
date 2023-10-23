@@ -10,10 +10,11 @@ const resolveContext = function (context) {
         config: 'master.css.*',
         tags: []
     }, context.settings?.['@master/css'])
+    const config = settings?.config
     return {
         settings,
         options: context.options[0] || {},
-        config: context.options[0]?.testConfig ?? exploreConfig(settings?.config || '')
+        config: typeof config === 'object' ? config : exploreConfig(settings?.config || '')
     }
 }
 

@@ -4,8 +4,6 @@ const rule = require('../../lib/rules/class-order')
 const RuleTester = require('eslint').RuleTester
 const ruleTester = new RuleTester({
     parserOptions: {
-        ecmaVersion: 2019,
-        sourceType: 'module',
         ecmaFeatures: {
             jsx: true,
         },
