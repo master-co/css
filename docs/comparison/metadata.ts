@@ -7,7 +7,7 @@ const metadata: Metadata = {
     other: {
         subject: 'Comparison'
     },
-    order: 4,
+    order: 6,
     disabled: true
 }
 

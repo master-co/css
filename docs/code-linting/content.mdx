@@ -47,22 +47,20 @@ import editors from 'shared/data/editors'
 
 ## Features
 ### Enforce a consistent and logical order of classes
-In the development process, you typically don't pay much attention to the order of classes, and as the number of classes increases, the template markup becomes less readable.
+In practice, you pay less attention to the order of classes, and as the number of classes increases, the template markup becomes less readable.
 
 <figure className="max-w:sm">
     <video className="aspect:1510/750 r:5" autoPlay loop muted playsInline>
         <source src="/videos/consistent-class-order.webm" type="video/webm" />
     </video>
-    <figcaption>Correct the order of the Master CSS class in Visual Studio Code.</figcaption>
+    <figcaption>Correct the order of Master CSS classes in Visual Studio Code.</figcaption>
 </figure>
-
-Enabling this check ensures that classes on any element are consistently organized according to predefined rules.
 
 (!) <span className="text:warning">No consistent class order followed.</span>
 ```mcss
 font:12 font:24@sm m:32 block px:16 font:32@md bg:blue:hover round mb:48
 ```
-(o) Fixes order based on resulting CSS rule precedence.
+(o) Fixes order based on consistent rules.
 ```mcss
 block round bg:blue:hover font:12 font:24@sm font:32@md m:32 mb:48 px:16
 ```

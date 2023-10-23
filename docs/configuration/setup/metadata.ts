@@ -3,7 +3,7 @@ import { Metadata } from 'shared/types/Metadata'
 const metadata: Metadata = {
     title: 'Setup Configuration',
     description: 'An opinionated guide to Master CSS syntax, conventions, and file structure.',
-    category: 'Customization',
+    category: 'Custom Syntax',
     order: 1,
     unfinished: true
 }
