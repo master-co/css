@@ -113,8 +113,8 @@ module.exports = {
             let orderedClassNames = reorderForReadableClasses(classNames, config)
                 .filter(eachOrderedClassName => classNames.includes(eachOrderedClassName))
 
-            orderedClassNames = orderedClassNames
-                .concat(classNames.filter(x => !orderedClassNames.includes(x)))
+            orderedClassNames = classNames.filter(x => !orderedClassNames.includes(x))
+                .concat(orderedClassNames)
                 .filter(x => x.trim() !== '')
 
             // Generates the validated/sorted attribute value
