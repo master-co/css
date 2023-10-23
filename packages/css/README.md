@@ -65,12 +65,12 @@ Visit [beta.css.master.co](https://beta.css.master.co) to view the full document
 ## Getting Started
 Check out the [official guides](https://beta.css.master.co/docs) to get started with Master CSS, or walk through the [examples](https://github.com/master-co/css/tree/beta/examples) for a quick overview of integrating with your framework.
 
-## Compilation Modes
-Master CSS provides various [compilation modes](https://beta.css.master.co/docs/compilation), allowing you to choose according to the characteristics and needs of different projects.
+## Rendering Modes
+Master CSS provides various [rendering modes](https://beta.css.master.co/docs/rendering-modes), allowing you to choose according to the characteristics and needs of different projects.
 
-- [Progressive Rendering](https://beta.css.master.co/docs/compilation/progressive-rendering) - Scan the requested HTML on the server side, generate CSS rules, and enable runtime-rendering compilation on the browser side
-- [Runtime Rendering](https://beta.css.master.co/docs/compilation/runtime-rendering) - Observe the DOM tree, manipulate CSS rules according to the changed class name, and synchronize to the running style sheet at runtime
-- [Static Extraction](https://beta.css.master.co/docs/compilation/static-extraction) - Scan source files for class names at build time, extract class names, and generate CSS files/virtual modules, then import them in the entry file
+- [Progressive Rendering](https://beta.css.master.co/docs/rendering-modes/progressive-rendering) - Scan the requested HTML on the server side, generate CSS rules, and enable runtime engine on the browser side
+- [Runtime Rendering](https://beta.css.master.co/docs/rendering-modes/runtime-rendering) - Observe the DOM tree, manipulate CSS rules according to the changed class name, and synchronize to the running style sheet at runtime
+- [Static Extraction](https://beta.css.master.co/docs/rendering-modes/static-extraction) - Scan source files for class names at build time, extract class names, and generate CSS files/virtual modules, then import them in the entry file
 
 ## Ecosystem
 We've built various Master CSS core functionality/integration packages:
