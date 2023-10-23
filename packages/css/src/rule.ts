@@ -176,11 +176,12 @@ export class Rule {
                             bypassAnalyzeUnitValue || !!functionConfig?.transform)
 
                         if (functionConfig?.transform) {
-                            currentValueToken = functionConfig.transform.call(instance,
-                                currentValueToken.slice(0, lastPushIndex + functionName.length + 1),
-                                currentValueToken.slice(lastPushIndex + functionName.length + 1, -1),
-                                currentValueToken.slice(-1)
-                            )
+                            currentValueToken = currentValueToken.slice(0, lastPushIndex)
+                                + functionConfig.transform.call(instance,
+                                    functionName + '(',
+                                    currentValueToken.slice(lastPushIndex + (currentValueToken.slice(lastPushIndex).startsWith(functionName) ? functionName.length + 1 : 0), -1),
+                                    currentValueToken.slice(-1)
+                                )
                         }
 
                         if (root) {
