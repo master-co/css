@@ -13,7 +13,7 @@ const resolveContext = function (context) {
     return {
         settings,
         options: context.options[0] || {},
-        config: exploreConfig(settings?.config || '')
+        config: context.options[0]?.testConfig ?? exploreConfig(settings?.config || '')
     }
 }
 
