@@ -36,6 +36,21 @@ ruleTester.run('invalid', rule, {
             errors: [
                 { messageId: 'invalidClass' },
             ]
-        }
+        },
+        {
+            code: `<div class="bg:black m:mistake rrr btn">Simple, basic</div>`,
+            errors: [
+                { messageId: 'invalidClass' },
+                { messageId: 'disallowTraditionalClass' }
+            ],
+            options: [
+                {
+                    disallowTraditionalClass: true,
+                    testConfig: {
+                        styles: { btn: 'block' }
+                    }
+                }
+            ]
+        },
     ],
 })
