@@ -18,7 +18,7 @@ ruleTester.run('class order', rule, {
             code: `<div test="bg:black fg:white f:24 m:8 p:8">Simple, using 'test' prop</div>`,
             options: [
                 {
-                    classRegex: '^test$',
+                    classMatching: '^test$',
                 },
             ],
         },

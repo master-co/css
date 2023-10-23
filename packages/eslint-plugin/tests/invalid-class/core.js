@@ -23,7 +23,7 @@ ruleTester.run('invalid', rule, {
             code: `<div class="bg:black m:mistake rrr">Simple, basic</div>`,
             errors: [
                 { messageId: 'invalidClass' },
-                { messageId: 'noTraditionalClass' }
+                { messageId: 'disallowTraditionalClass' }
             ],
         },
         {
@@ -33,7 +33,7 @@ ruleTester.run('invalid', rule, {
             ],
             options: [
                 {
-                    noTraditionalClass: false
+                    disallowTraditionalClass: false
                 }
             ]
         }

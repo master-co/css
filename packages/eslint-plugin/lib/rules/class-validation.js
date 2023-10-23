@@ -1,7 +1,7 @@
 'use strict'
 
 const astUtil = require('../utils/ast')
-const getOption = require('../utils/settings')
+const resolveContext = require('../utils/resolve-context')
 const { validate } = require('@master/css-validator')
 
 module.exports = {
@@ -14,33 +14,23 @@ module.exports = {
         },
         messages: {
             invalidClass: '{{message}}',
-            noTraditionalClass: '{{message}}',
+            disallowTraditionalClass: '{{message}}',
         },
         fixable: null
     },
-
     create: function (context) {
-        const callees = getOption(context, 'callees')
-        const tags = getOption(context, 'tags')
-        const masterCssConfig = getOption(context, 'config')
-        const classRegex = getOption(context, 'classRegex')
-        const ignoredKeys = getOption(context, 'ignoredKeys')
-        const noTraditionalClass = getOption(context, 'noTraditionalClass')
-
+        const { options, settings, config } = resolveContext(context)
         const checkNodeArgumentValue = (node, arg = null) => {
             astUtil.parseNodeRecursive(
                 node,
                 arg,
                 (classNames, node) => {
-
                     const sourceCode = context.getSourceCode()
                     const sourceCodeLines = sourceCode.lines
                     const nodeStartLine = node.loc.start.line
                     const nodeEndLine = node.loc.end.line
-
                     for (const className of classNames) {
-                        const { isMasterCSS, errors } = validate(className, { config: masterCssConfig })
-
+                        const { isMasterCSS, errors } = validate(className, { config })
                         if (errors.length > 0) {
                             for (const error of errors) {
                                 if (isMasterCSS) {
@@ -51,31 +41,28 @@ module.exports = {
                                             message: error.message,
                                         }
                                     })
-                                }
-                                else if (!isMasterCSS && noTraditionalClass) {
+                                } else if (!isMasterCSS && options.disallowTraditionalClass) {
                                     context.report({
                                         loc: astUtil.findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
-                                        messageId: 'noTraditionalClass',
+                                        messageId: 'disallowTraditionalClass',
                                         data: {
-                                            message: error.message,
+                                            message: `Disallow a traditional class \`${className}\`.`,
                                         }
                                     })
                                 }
                             }
                         }
-
-
                     }
                 },
                 false,
                 false,
-                ignoredKeys
+                settings.ignoredKeys
             )
         }
 
         const callExpressionVisitor = function (node) {
             const calleeStr = astUtil.calleeToString(node.callee)
-            if (callees.findIndex((name) => calleeStr === name) === -1) {
+            if (settings.callees.findIndex((name) => calleeStr === name) === -1) {
                 return
             }
 
@@ -87,7 +74,7 @@ module.exports = {
         const scriptVisitor = {
             CallExpression: callExpressionVisitor,
             JSXAttribute: function (node) {
-                if (!node.name || !new RegExp(classRegex).test(node.name.name)) return
+                if (!node.name || !new RegExp(settings.classMatching).test(node.name.name)) return
                 if (node.value && node.value.type === 'Literal') {
                     checkNodeArgumentValue(node)
                 } else if (node.value && node.value.type === 'JSXExpressionContainer') {
@@ -95,17 +82,17 @@ module.exports = {
                 }
             },
             SvelteAttribute: function (node) {
-                if (!node.key?.name || !new RegExp(classRegex).test(node.key.name)) return
+                if (!node.key?.name || !new RegExp(settings.classMatching).test(node.key.name)) return
                 for (const eachValue of node.value) {
                     checkNodeArgumentValue(node, eachValue)
                 }
             },
             TextAttribute: function (node) {
-                if (!node.name || !new RegExp(classRegex).test(node.name)) return
+                if (!node.name || !new RegExp(settings.classMatching).test(node.name)) return
                 checkNodeArgumentValue(node)
             },
             TaggedTemplateExpression: function (node) {
-                if (!tags.includes(node.tag.name)) {
+                if (!settings.tags.includes(node.tag.name)) {
                     return
                 }
                 checkNodeArgumentValue(node, node.quasi)

@@ -5,5 +5,10 @@
             "files": ["*.html", "*.blade.php"],
             "parser": "@angular-eslint/template-parser"
         }
-    ]
+    ],
+    "rules": {
+        "@master/css/class-validation": ["error", {
+            "disallowTraditionalClass": true
+        }]
+    }
 }

@@ -1,7 +1,7 @@
 'use strict'
 
 const astUtil = require('../utils/ast')
-const getOption = require('../utils/settings')
+const resolveContext = require('../utils/resolve-context')
 const { reorderForReadableClasses } = require('@master/css')
 
 module.exports = {
@@ -17,13 +17,8 @@ module.exports = {
         },
         fixable: 'code'
     },
-
     create: function (context) {
-        const callees = getOption(context, 'callees')
-        const tags = getOption(context, 'tags')
-        const masterCssConfig = getOption(context, 'config')
-        const classRegex = getOption(context, 'classRegex')
-
+        const { options, settings, config } = resolveContext(context)
         const sortNodeArgumentValue = (node, arg = null) => {
             let originalClassNamesValue = null
             let start = null
@@ -115,7 +110,7 @@ module.exports = {
                 return
             }
 
-            let orderedClassNames = reorderForReadableClasses(classNames, masterCssConfig)
+            let orderedClassNames = reorderForReadableClasses(classNames, config)
                 .filter(eachOrderedClassName => classNames.includes(eachOrderedClassName))
 
             orderedClassNames = orderedClassNames
@@ -147,7 +142,7 @@ module.exports = {
 
         const callExpressionVisitor = function (node) {
             const calleeStr = astUtil.calleeToString(node.callee)
-            if (callees.findIndex((name) => calleeStr === name) === -1) {
+            if (settings.callees.findIndex((name) => calleeStr === name) === -1) {
                 return
             }
 
@@ -159,7 +154,7 @@ module.exports = {
         const scriptVisitor = {
             CallExpression: callExpressionVisitor,
             JSXAttribute: function (node) {
-                if (!node.name || !new RegExp(classRegex).test(node.name.name)) return
+                if (!node.name || !new RegExp(settings.classMatching).test(node.name.name)) return
                 if (node.value && node.value.type === 'Literal') {
                     sortNodeArgumentValue(node)
                 } else if (node.value && node.value.type === 'JSXExpressionContainer') {
@@ -167,17 +162,17 @@ module.exports = {
                 }
             },
             SvelteAttribute: function (node) {
-                if (!node.key?.name || !new RegExp(classRegex).test(node.key.name)) return
+                if (!node.key?.name || !new RegExp(settings.classMatching).test(node.key.name)) return
                 for (const eachValue of node.value) {
                     sortNodeArgumentValue(node, eachValue)
                 }
             },
             TextAttribute: function (node) {
-                if (!node.name || !new RegExp(classRegex).test(node.name)) return
+                if (!node.name || !new RegExp(settings.classMatching).test(node.name)) return
                 sortNodeArgumentValue(node)
             },
             TaggedTemplateExpression: function (node) {
-                if (!tags.includes(node.tag.name)) {
+                if (!settings.tags.includes(node.tag.name)) {
                     return
                 }
                 sortNodeArgumentValue(node, node.quasi)
