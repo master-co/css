@@ -151,7 +151,7 @@ function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, is
                 break
         }
         ({ classNames } = extractClassnamesFromValue(originalClassNamesValue))
-        classNames = removeDuplicatesFromArray(classNames)
+        classNames = [...new Set(classNames)]
         if (classNames.length === 0) {
             // Don't run for empty className
             return

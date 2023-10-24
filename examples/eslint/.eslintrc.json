@@ -1,14 +1,21 @@
 {
-    "extends": ["@master/css"],
+    "extends": [
+        "@master/css"
+    ],
     "overrides": [
         {
-            "files": ["*.html"],
+            "files": [
+                "*.html"
+            ],
             "parser": "@angular-eslint/template-parser"
+        },
+        {
+            "files": [
+                "*.ts",
+                "*.tsx",
+                "*.js"
+            ],
+            "parser": "@typescript-eslint/parser"
         }
-    ],
-    "rules": {
-        "@master/css/class-validation": ["error", {
-            "disallowTraditionalClass": true
-        }]
-    }
+    ]
 }

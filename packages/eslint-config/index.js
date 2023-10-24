@@ -1,14 +1,12 @@
 module.exports = {
     plugins: ['@master/css'],
-    parserOptions: {
-        ecmaFeatures: {
-            jsx: true,
-        }
-    },
     rules: {
         '@master/css/class-order': 'warn',
-        '@master/css/class-validation': ['error', {
-            disallowTraditionalClass: true
-        }]
+        '@master/css/class-validation': 'error'
+    },
+    parserOptions: {
+        ecmaFeatures: {
+            jsx: true
+        }
     }
 }
