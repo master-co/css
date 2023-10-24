@@ -2,7 +2,7 @@
     "extends": ["@master/css"],
     "overrides": [
         {
-            "files": ["*.html", "*.blade.php"],
+            "files": ["*.html"],
             "parser": "@angular-eslint/template-parser"
         }
     ],
