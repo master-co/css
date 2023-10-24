@@ -134,17 +134,12 @@ module.exports = {
                 const sourceCodeLines = sourceCode.lines
                 const nodeStartLine = node.loc.start.line
                 const nodeEndLine = node.loc.end.line
-                const foundLoc = astUtil.findLoc(originalClassNamesValue, sourceCodeLines, nodeStartLine, nodeEndLine)
                 const descriptor = {
+                    loc: astUtil.findLoc(originalClassNamesValue, sourceCodeLines, nodeStartLine, nodeEndLine),
                     messageId: 'invalidClassOrder',
                     fix: function (fixer) {
                         return fixer.replaceTextRange([start, end], validatedClassNamesValue)
                     }
-                }
-                if (foundLoc) {
-                    descriptor.loc = foundLoc
-                } else {
-                    descriptor.node = node
                 }
                 context.report(descriptor)
             }
