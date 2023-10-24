@@ -6,7 +6,8 @@ const metadata: Metadata = {
     category: 'Fundamentals',
     other: {
         subject: 'Global Styles'
-    }
+    },
+    order: 6
 }
 
 export default metadata

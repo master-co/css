@@ -6,7 +6,7 @@
         </StepL>
         <StepR>
             ```install
-            -D @master/eslint-config-css@beta @typescript-eslint/parser eslint
+            -D @master/eslint-config-css@beta @angular-eslint/template-parser eslint
             ```
         </StepR>
     </Step>
@@ -15,7 +15,7 @@
             ### <StepNum />Set up your config
             Create [`.eslintrc.json`](https://eslint.org/docs/latest/use/getting-started) if you don't have one.
             - Add `@master/css` to the `extends` section.
-            - Add `@typescript-eslint/parser` to the `overrides` section.
+            - Add `@angular-eslint/template-parser` to the `overrides` section.
         </StepL>
         <StepR>
             ```json name=.eslintrc.json
@@ -23,8 +23,8 @@
                 "extends": ["@master/css"],
                 "overrides": [
                     {
-                        "files": ["*.ts", "*.tsx", "*.js"],
-                        "parser": "@typescript-eslint/parser"
+                        "files": ["*.blade.php"],
+                        "parser": "@angular-eslint/template-parser"
                     }
                 ]
             }
@@ -34,7 +34,7 @@
     <Step>
         ### <StepNum />Start linting your code
         ```bash
-        npx eslint *.{ts,tsx,js}
+        npx eslint *.blade.php
         ```
     </Step>
 </StepSection>
