@@ -1,0 +1,46 @@
+import defaultConfigurationScript from '../../packages/eslint-config/index.js?text'
+
+## Usage [sr-only]
+
+```json name=.eslintrc.json
+{
+    "extends": ["@master/css"]
+}
+```
+The `@master/eslint-config-css` package default configuration:
+<Code lang="js">
+    {defaultConfigurationScript}
+</Code>
+
+---
+
+## Rules
+### `class-order`
+Enforce a consistent and logical order of classes.
+```json name=.eslintrc.json
+{
+    "rules": {
+        "@master/css/class-order": "warn"
+    }
+}
+```
+
+### `class-validation`
+Detect syntax errors early when writing classes.
+```json name=.eslintrc.json
+{
+    "rules": {
+        "@master/css/class-validation": "error"
+    }
+}
+```
+Set `disallowTraditionalClass: true` to disallow using traditional classes:
+```json name=.eslintrc.json
+{
+    "rules": {
+        "@master/css/class-validation": ["error", {
+            "disallowTraditionalClass": true
+        }]
+    }
+}
+```

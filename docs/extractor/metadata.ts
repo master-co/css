@@ -3,7 +3,7 @@ import { Metadata } from 'shared/types/Metadata'
 const metadata: Metadata = {
     title: 'Extractor',
     description: 'Master CSS static extractor for various raw text extraction.',
-    category: 'JavaScript API',
+    category: 'API Reference',
     unfinished: true,
     order: 2
 }

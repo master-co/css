@@ -1,11 +1,11 @@
-import { IconStatusChange, IconTextSpellcheck, IconArrowMerge, IconShieldCheck, IconPencilOff } from '@tabler/icons-react'
+import { IconStatusChange, IconTextSpellcheck, IconArrowMerge, IconShieldCheck, IconPencilOff, IconFunction } from '@tabler/icons-react'
 import Features, { Feature } from 'shared/components/Features'
 
 <Features className="grid-cols:3@sm my:50">
     <Feature>
         <IconStatusChange className="app-icon-primary" />
         <div>
-            **[Consistent class order](#enforce-a-consistent-and-logical-order-of-classes)**
+            **[Consistent class order](#consistent-class-order)**
 
             Enforce a consistent and logical order of classes
         </div>
@@ -15,13 +15,29 @@ import Features, { Feature } from 'shared/components/Features'
         <div>
             **[Syntax error checks](#syntax-error-checks)**
 
-            Early detection of syntax errors based on generated CSS
+            Detect syntax errors early when writing classes
+        </div>
+    </Feature>
+    <Feature>
+        <IconPencilOff className="app-icon-primary" />
+        <div>
+            **[Disallow traditional classes](#disallow-traditional-classes)**
+
+            Enforce styles to be created using the configuration
         </div>
     </Feature>
     <Feature>
         <IconTextSpellcheck className="app-icon" />
         <div>
             **Conflicting class checks 🚧**
+
+            Avoid declaring the identical CSS property repeatedly
+        </div>
+    </Feature>
+    <Feature>
+        <IconFunction className="app-icon-primary" />
+        <div>
+            **[Supports CSS-in-JS](#supports-css-in-js)**
 
             Avoid declaring the identical CSS property repeatedly
         </div>
@@ -46,33 +62,57 @@ import editors from 'shared/data/editors'
 ---
 
 ## Features
-### Enforce a consistent and logical order of classes
+### Consistent class order
 In practice, you pay less attention to the order of classes, and as the number of classes increases, the template markup becomes less readable.
 
-<figure className="max-w:sm">
-    <video className="aspect:1510/750 r:5" autoPlay loop muted playsInline>
-        <source src="/videos/consistent-class-order.webm" type="video/webm" />
-    </video>
-    <figcaption>Correct the order of Master CSS classes in Visual Studio Code.</figcaption>
-</figure>
+(i) The [class order rule](/docs/eslint#class-order) helps enforce a consistent and fixed order for classes.
+<video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
+    <source src="/videos/consistent-class-order.webm" type="video/webm" />
+</video>
 
 (!) <span className="text:warning">No consistent class order followed.</span>
 ```mcss
-font:12 font:24@sm m:32 block px:16 font:32@md bg:blue:hover round mb:48
+font:12 font:24@sm m:32 block font:32@md mb:48
 ```
-(o) Fixes order based on consistent rules.
+(o) Fix this @master/css/class-order problem.
 ```mcss
-block round bg:blue:hover font:12 font:24@sm font:32@md m:32 mb:48 px:16
+block font:12 font:24@sm font:32@md m:32 mb:48
 ```
 
 ### Syntax error checks
+In the past, you would add utility classes to your templates in an unsafe manner, without being able to check whether they were valid or legal in the source code.
+
+(i) The [class validation rule](/docs/eslint#class-order) helps you check the validity of classes early as you write them.
+<video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
+    <source src="/videos/syntax-error-checks.webm" type="video/webm" />
+</video>
+
+### Disallow traditional classes
+You can also restrict teams to using [configuration](/docs/configuration) to create [styles](/docs/styles) instead of defining classes through traditional `html <style>` or CSS files.
+
+(i) Based on syntax error checking, you can [disallow non-markup-driven traditional classes](/docs/eslint#class-validation).
+<video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
+    <source src="/videos/disallow-traditional-class.webm" type="video/webm" />
+</video>
+
+(x) <span className="text:error">Disallow a traditional class `card`.</span>
+```html
+<div class="btn">
+```
+(o) Use Master CSS syntax to fix this @master/css/class-validation problem.
+```html
+<div class="inline-flex">
+```
+(o) Or customize [styles](/docs/styles) to fix this problem.
+```js name=master.css.js
+export default {
+    styles: {
++        btn: 'inline-flex'
+    }
+}
+```
+
 ### Conflicting class checks 🚧
+Soon...
 
----
-
-## Rules
-| Name                     | Description                                              |
-| ----------------------- | --------------------------------------------------------- |
-| `class-order`           | Enforce a consistent and logical order of classes         |
-| `class-validation`      | Check the validity of classes with your configuration     |
-| `class-collision` 🚧    | Avoid declaring the identical CSS property repeatedly     |
+### Supports CSS-in-JS
