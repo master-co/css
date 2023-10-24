@@ -1,4 +1,3 @@
-'use strict'
 
 const astUtil = require('../utils/ast')
 const defineVisitors = require('../utils/define-visitors')
@@ -60,6 +59,6 @@ module.exports = {
                 settings.ignoredKeys
             )
         }
-        return defineVisitors(context, visitNode)
+        return defineVisitors({ context, options, settings, config }, visitNode)
     },
 }

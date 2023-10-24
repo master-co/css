@@ -1,4 +1,3 @@
-'use strict'
 
 const rule = require('../lib/rules/class-validation')
 const RuleTester = require('eslint').RuleTester

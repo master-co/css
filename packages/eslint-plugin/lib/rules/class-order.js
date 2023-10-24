@@ -1,4 +1,3 @@
-'use strict'
 
 const astUtil = require('../utils/ast')
 const defineVisitors = require('../utils/define-visitors')
@@ -19,7 +18,7 @@ module.exports = {
         fixable: 'code'
     },
     create: function (context) {
-        const { config } = resolveContext(context)
+        const { options, settings, config } = resolveContext(context)
         const visitNode = (node, arg = null) => {
             let originalClassNamesValue = null
             let start = null
@@ -145,6 +144,6 @@ module.exports = {
                 })
             }
         }
-        return defineVisitors(context, visitNode)
+        return defineVisitors({ context, options, settings, config }, visitNode)
     },
 }

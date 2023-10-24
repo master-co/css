@@ -1,4 +1,3 @@
-'use strict'
 
 const rule = require('../lib/rules/class-order')
 const RuleTester = require('eslint').RuleTester

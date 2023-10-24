@@ -1,4 +1,6 @@
-function defineVisitors({ settings }, visitNode) {
+const astUtil = require('./ast')
+
+function defineVisitors({ context, options, settings, config }, visitNode) {
     const CallExpression = function (node) {
         const calleeStr = astUtil.calleeToString(node.callee)
         if (settings.functions.findIndex((name) => calleeStr === name) === -1) {
