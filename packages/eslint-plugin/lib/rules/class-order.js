@@ -1,6 +1,7 @@
 'use strict'
 
 const astUtil = require('../utils/ast')
+const defineVisitors = require('../utils/define-visitors')
 const resolveContext = require('../utils/resolve-context')
 const { reorderForReadableClasses } = require('@master/css')
 
@@ -18,8 +19,8 @@ module.exports = {
         fixable: 'code'
     },
     create: function (context) {
-        const { options, settings, config } = resolveContext(context)
-        const sortNodeArgumentValue = (node, arg = null) => {
+        const { config } = resolveContext(context)
+        const visitNode = (node, arg = null) => {
             let originalClassNamesValue = null
             let start = null
             let end = null
@@ -41,22 +42,22 @@ module.exports = {
                         return
                     case 'TemplateLiteral':
                         arg.expressions.forEach((exp) => {
-                            sortNodeArgumentValue(node, exp)
+                            visitNode(node, exp)
                         })
                         arg.quasis.forEach((quasis) => {
-                            sortNodeArgumentValue(node, quasis)
+                            visitNode(node, quasis)
                         })
                         return
                     case 'ConditionalExpression':
-                        sortNodeArgumentValue(node, arg.consequent)
-                        sortNodeArgumentValue(node, arg.alternate)
+                        visitNode(node, arg.consequent)
+                        visitNode(node, arg.alternate)
                         return
                     case 'LogicalExpression':
-                        sortNodeArgumentValue(node, arg.right)
+                        visitNode(node, arg.right)
                         return
                     case 'ArrayExpression':
                         arg.elements.forEach((el) => {
-                            sortNodeArgumentValue(node, el)
+                            visitNode(node, el)
                         })
                         return
                     case 'ObjectExpression':
@@ -64,11 +65,11 @@ module.exports = {
                         const isVue = node.key && node.key.type === 'VDirectiveKey'
                         arg.properties.forEach((prop) => {
                             const propVal = isUsedByClassNamesPlugin || isVue ? prop.key : prop.value
-                            sortNodeArgumentValue(node, propVal)
+                            visitNode(node, propVal)
                         })
                         return
                     case 'Property':
-                        sortNodeArgumentValue(node, arg.key)
+                        visitNode(node, arg.key)
                         break
                     case 'Literal':
                         originalClassNamesValue = arg.value
@@ -144,64 +145,6 @@ module.exports = {
                 })
             }
         }
-
-        const callExpressionVisitor = function (node) {
-            const calleeStr = astUtil.calleeToString(node.callee)
-            if (settings.callees.findIndex((name) => calleeStr === name) === -1) {
-                return
-            }
-
-            node.arguments.forEach((arg) => {
-                sortNodeArgumentValue(node, arg)
-            })
-        }
-
-        const scriptVisitor = {
-            CallExpression: callExpressionVisitor,
-            JSXAttribute: function (node) {
-                if (!node.name || !new RegExp(settings.classMatching).test(node.name.name)) return
-                if (node.value && node.value.type === 'Literal') {
-                    sortNodeArgumentValue(node)
-                } else if (node.value && node.value.type === 'JSXExpressionContainer') {
-                    sortNodeArgumentValue(node, node.value.expression)
-                }
-            },
-            SvelteAttribute: function (node) {
-                if (!node.key?.name || !new RegExp(settings.classMatching).test(node.key.name)) return
-                for (const eachValue of node.value) {
-                    sortNodeArgumentValue(node, eachValue)
-                }
-            },
-            TextAttribute: function (node) {
-                if (!node.name || !new RegExp(settings.classMatching).test(node.name)) return
-                sortNodeArgumentValue(node)
-            },
-            TaggedTemplateExpression: function (node) {
-                if (!settings.tags.includes(node.tag.name)) {
-                    return
-                }
-                sortNodeArgumentValue(node, node.quasi)
-            },
-        }
-        const templateBodyVisitor = {
-            CallExpression: callExpressionVisitor,
-            VAttribute: function (node) {
-                if (node.value && node.value.type === 'VLiteral') {
-                    sortNodeArgumentValue(node)
-                } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression.type === 'ArrayExpression') {
-                    node.value.expression.elements.forEach((arg) => {
-                        sortNodeArgumentValue(node, arg)
-                    })
-                } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression.type === 'ObjectExpression') {
-                    sortNodeArgumentValue(node, prop)
-                }
-            },
-        }
-
-        if (context.parserServices == null || context.parserServices.defineTemplateBodyVisitor == null) {
-            return scriptVisitor
-        } else {
-            return context.parserServices.defineTemplateBodyVisitor(templateBodyVisitor, scriptVisitor)
-        }
+        return defineVisitors(context, visitNode)
     },
 }

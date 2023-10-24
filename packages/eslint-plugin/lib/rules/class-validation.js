@@ -1,6 +1,7 @@
 'use strict'
 
 const astUtil = require('../utils/ast')
+const defineVisitors = require('../utils/define-visitors')
 const resolveContext = require('../utils/resolve-context')
 const { validate } = require('@master/css-validator')
 
@@ -20,7 +21,7 @@ module.exports = {
     },
     create: function (context) {
         const { options, settings, config } = resolveContext(context)
-        const checkNodeArgumentValue = (node, arg = null) => {
+        const visitNode = (node, arg = null) => {
             astUtil.parseNodeRecursive(
                 node,
                 arg,
@@ -59,65 +60,6 @@ module.exports = {
                 settings.ignoredKeys
             )
         }
-
-        const callExpressionVisitor = function (node) {
-            const calleeStr = astUtil.calleeToString(node.callee)
-            if (settings.callees.findIndex((name) => calleeStr === name) === -1) {
-                return
-            }
-
-            node.arguments.forEach((arg) => {
-                checkNodeArgumentValue(node, arg)
-            })
-        }
-
-        const scriptVisitor = {
-            CallExpression: callExpressionVisitor,
-            JSXAttribute: function (node) {
-                if (!node.name || !new RegExp(settings.classMatching).test(node.name.name)) return
-                if (node.value && node.value.type === 'Literal') {
-                    checkNodeArgumentValue(node)
-                } else if (node.value && node.value.type === 'JSXExpressionContainer') {
-                    checkNodeArgumentValue(node, node.value.expression)
-                }
-            },
-            SvelteAttribute: function (node) {
-                if (!node.key?.name || !new RegExp(settings.classMatching).test(node.key.name)) return
-                for (const eachValue of node.value) {
-                    checkNodeArgumentValue(node, eachValue)
-                }
-            },
-            TextAttribute: function (node) {
-                if (!node.name || !new RegExp(settings.classMatching).test(node.name)) return
-                checkNodeArgumentValue(node)
-            },
-            TaggedTemplateExpression: function (node) {
-                if (!settings.tags.includes(node.tag.name)) {
-                    return
-                }
-                checkNodeArgumentValue(node, node.quasi)
-            },
-        }
-
-        const templateBodyVisitor = {
-            CallExpression: callExpressionVisitor,
-            VAttribute: function (node) {
-                if (node.value && node.value.type === 'VLiteral') {
-                    checkNodeArgumentValue(node)
-                } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression.type === 'ArrayExpression') {
-                    node.value.expression.elements.forEach((arg) => {
-                        checkNodeArgumentValue(node, arg)
-                    })
-                } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression.type === 'ObjectExpression') {
-                    checkNodeArgumentValue(node, prop)
-                }
-            },
-        }
-
-        if (context.parserServices == null || context.parserServices.defineTemplateBodyVisitor == null) {
-            return scriptVisitor
-        } else {
-            return context.parserServices.defineTemplateBodyVisitor(templateBodyVisitor, scriptVisitor)
-        }
+        return defineVisitors(context, visitNode)
     },
 }

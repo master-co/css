@@ -4,11 +4,10 @@ const exploreConfig = require('explore-config').default
 
 const resolveContext = function (context) {
     const settings = Object.assign({
-        callees: ['classnames', 'clsx', 'ctl', 'cva', 'cv', 'classVariant', 'styled'],
+        functions: ['classnames', 'clsx', 'ctl', 'cva', 'cv', 'classVariant', 'styled'],
         ignoredKeys: ['compoundVariants', 'defaultVariants'],
         classMatching: '^class(Name)?$',
-        config: 'master.css.*',
-        tags: []
+        config: 'master.css.*'
     }, context.settings?.['@master/css'])
     const config = settings?.config
     return {
