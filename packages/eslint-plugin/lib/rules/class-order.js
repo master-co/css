@@ -130,18 +130,23 @@ module.exports = {
 
             if (originalClassNamesValue !== validatedClassNamesValue) {
                 validatedClassNamesValue = prefix + validatedClassNamesValue + suffix
-
                 const sourceCode = context.getSourceCode()
                 const sourceCodeLines = sourceCode.lines
                 const nodeStartLine = node.loc.start.line
                 const nodeEndLine = node.loc.end.line
-                context.report({
-                    loc: astUtil.findLoc(originalClassNamesValue, sourceCodeLines, nodeStartLine, nodeEndLine),
+                const foundLoc = astUtil.findLoc(originalClassNamesValue, sourceCodeLines, nodeStartLine, nodeEndLine)
+                const descriptor = {
                     messageId: 'invalidClassOrder',
                     fix: function (fixer) {
                         return fixer.replaceTextRange([start, end], validatedClassNamesValue)
-                    },
-                })
+                    }
+                }
+                if (foundLoc) {
+                    descriptor.loc = foundLoc
+                } else {
+                    descriptor.node = node
+                }
+                context.report(descriptor)
             }
         }
         return defineVisitors({ context, options, settings, config }, visitNode)
