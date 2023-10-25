@@ -1,6 +1,6 @@
-import { validate as validateCSS } from 'csstree-validator'
 import { SyntaxError } from './interfaces/syntax-error'
 import { Config, MasterCSS } from '@master/css'
+import validateCSS from './validate-css'
 
 /**
  * @description Report errors for a given class. For pure validity, use the more performant `isClassValid()`.
@@ -15,6 +15,7 @@ export default function validate(
     isMasterCSS: boolean,
     errors: SyntaxError[]
 } {
+
     let css: MasterCSS
     if (options?.css) {
         css = options?.css
@@ -25,7 +26,7 @@ export default function validate(
     if (rules.length) {
         const errors = []
         for (const eachRule of rules) {
-            const syntaxErrors = validateCSS(eachRule.text, syntax)
+            const syntaxErrors = validateCSS(eachRule.text)
             for (const eachSyntaxError of syntaxErrors) {
                 eachSyntaxError.class = syntax
                 errors.push(eachSyntaxError)
@@ -40,7 +41,7 @@ export default function validate(
             isMasterCSS: false,
             errors: [{
                 class: syntax,
-                message: `Invalid Master CSS class "${syntax}"`,
+                message: `'${syntax}' is not a valid Master CSS class`,
                 rawMessage: 'Mismatch'
             }]
         }

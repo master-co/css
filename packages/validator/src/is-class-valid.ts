@@ -1,5 +1,5 @@
 import { Config, MasterCSS } from '@master/css'
-import { validate as validateCSS } from 'csstree-validator'
+import validateCSS from './validate-css'
 
 /**
  * Validates that the string is valid Master CSS class syntax.
@@ -20,7 +20,7 @@ export default function isClassValid(
     const rules = css.create(syntax)
     if (rules.length) {
         for (const eachRule of rules) {
-            if (validateCSS(eachRule.text, syntax).length) {
+            if (validateCSS(eachRule.text).length) {
                 return false
             }
         }

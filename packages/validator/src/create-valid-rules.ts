@@ -1,5 +1,5 @@
 import { Config, MasterCSS, Rule } from '@master/css'
-import { validate as validateCSS } from 'csstree-validator'
+import validateCSS from './validate-css'
 
 /**
  * @argument syntax A potential Master CSS syntactic class
@@ -19,7 +19,7 @@ export default function createValidRules(
     const rules = css.create(syntax)
     if (rules.length) {
         for (const eachRule of rules) {
-            if (validateCSS(eachRule.text, syntax).length) {
+            if (validateCSS(eachRule.text).length) {
                 return []
             } else {
                 continue

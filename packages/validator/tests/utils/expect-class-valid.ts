@@ -1,5 +1,6 @@
-import { isClassValid } from '../../src'
+import { isClassValid, validate } from '../../src'
 
 export default function expectClassValid(syntax: string) {
-    expect(isClassValid(syntax)).toBeTruthy()
+    const errors = validate(syntax).errors
+    expect(errors).toBeEmpty()
 }
