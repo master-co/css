@@ -108,6 +108,10 @@ new RuleTester({
         {
             code: `<div class="block my:1\u3000flex">Do not treat full width space as class separator</div>`,
         },
+        {
+            code: `<div class="m:10 m:20 m:30:hover m:40@dark">Collision class</div>`,
+        },
+
     ],
     invalid: [
         {

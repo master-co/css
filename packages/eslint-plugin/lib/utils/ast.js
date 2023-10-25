@@ -78,6 +78,12 @@ function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, is
     // TODO allow vue non litteral
     let originalClassNamesValue
     let classNames
+
+    let start = null
+    let end = null
+    let prefix = ''
+    let suffix = ''
+
     if (childNode === null) {
         originalClassNamesValue = extractValueFromNode(rootNode);
         ({ classNames } = extractClassnamesFromValue(originalClassNamesValue))
@@ -86,13 +92,22 @@ function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, is
             // Don't run for empty className
             return
         }
-        cb(classNames, rootNode)
+        const range = extractRangeFromNode(rootNode)
+        if (rootNode.type === 'TextAttribute') {
+            start = range[0]
+            end = range[1]
+        } else {
+            start = range[0] + 1
+            end = range[1] - 1
+        }
+        cb(classNames, rootNode, originalClassNamesValue, start, end, prefix, suffix)
     } else if (childNode === undefined) {
         // Ignore invalid child candidates (probably inside complex TemplateLiteral)
         return
     } else {
         const forceIsolation = skipConditional ? true : isolate
         let trim = false
+
         switch (childNode.type) {
             case 'TemplateLiteral':
                 childNode.expressions.forEach((exp) => {
@@ -144,9 +159,21 @@ function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, is
             case 'Literal':
                 trim = true
                 originalClassNamesValue = childNode.value
+                start = childNode.range[0] + 1
+                end = childNode.range[1] - 1
+                break
+            case 'SvelteLiteral':
+                originalClassNamesValue = childNode.value
+                start = childNode.range[0]
+                end = childNode.range[1]
                 break
             case 'TemplateElement':
                 originalClassNamesValue = childNode.value.raw
+                start = childNode.range[0]
+                end = childNode.range[1]
+                const txt = context.getSourceCode().getText(childNode)
+                prefix = astUtil.getTemplateElementPrefix(txt, originalClassNamesValue)
+                suffix = astUtil.getTemplateElementSuffix(txt, originalClassNamesValue)
                 break
         }
         ({ classNames } = extractClassnamesFromValue(originalClassNamesValue))
@@ -156,7 +183,7 @@ function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, is
             return
         }
         const targetNode = isolate ? null : rootNode
-        cb(classNames, targetNode)
+        cb(classNames, targetNode, originalClassNamesValue, start, end, prefix, suffix)
     }
 }
 
