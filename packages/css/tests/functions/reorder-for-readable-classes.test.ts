@@ -39,6 +39,16 @@ test('theme modes', () => {
     }
 })
 
+test('collision properties', () => {
+    for (let i = 0; i < 10; i++) {
+        expect(reorderForReadableClasses(shuffle(
+            'm:10 m:20 m:30:hover m:40@dark'.split(' ')
+        ))).toEqual(
+            'm:10 m:20 m:30:hover m:40@dark'.split(' ')
+        )
+    }
+})
+
 test('responsive breakpoints', () => {
     for (let i = 0; i < 10; i++) {
         expect(reorderForReadableClasses(shuffle(

@@ -57,6 +57,14 @@ export default function reorderForReadableClasses(classes: string[], config?: Co
                     }
                 }
 
+                // 如果 a 和 b 的 id 相同，則按照以下規則排序
+                if (
+                    a.options.id === b.options.id &&
+                    a.stateToken === b.stateToken
+                ) {
+                    return a.className.localeCompare(b.className)
+                }
+
                 // 再按照 rule.order 本身來升序排列
                 return a.order - b.order
             }

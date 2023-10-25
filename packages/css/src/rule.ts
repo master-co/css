@@ -13,6 +13,7 @@ export class Rule {
     readonly priority: number = -1
     readonly natives: RuleNative[] = []
     readonly order: number = 0
+    readonly stateToken: string
 
     animationNames: string[]
 
@@ -57,12 +58,12 @@ export class Rule {
         let declarations: CSSDeclarations = this.options.declarations
         let hasMultipleThemes: boolean
         let prefixToken: string
-        let suffixToken: string
+        let stateToken: string
         let valueSplits: (string | { value: string, unit?: string })[]
         let colored = configColored
 
         if (layer === CoreLayer.Semantic) {
-            suffixToken = className.slice(id.length - 1)
+            stateToken = className.slice(id.length - 1)
         } else {
             let valueToken: string
             if (analyze) {
@@ -240,14 +241,16 @@ export class Rule {
                 }
             })(valueToken, unit)
 
-            suffixToken = valueToken.slice(i)
+            stateToken = valueToken.slice(i)
         }
 
         // 2. !important
-        if (suffixToken[0] === '!') {
+        if (stateToken[0] === '!') {
             this.important = true
-            suffixToken = suffixToken.slice(1)
+            stateToken = stateToken.slice(1)
         }
+
+        this.stateToken = stateToken
 
         // 3. prefix selector
         const generateVendorSelectors = (selectorText: string, vendorSelectors: Record<string, string[]>) => {
@@ -356,8 +359,8 @@ export class Rule {
         }
 
         // 4. suffix selector
-        const suffixTokens = suffixToken.split('@')
-        const suffixSelector = suffixTokens[0]
+        const stateTokens = stateToken.split('@')
+        const suffixSelector = stateTokens[0]
         if (suffixSelector) {
             this.vendorSuffixSelectors = {}
 
@@ -411,8 +414,8 @@ export class Rule {
         }
 
         // 5. atTokens
-        for (let i = 1; i < suffixTokens.length; i++) {
-            const atToken = suffixTokens[i]
+        for (let i = 1; i < stateTokens.length; i++) {
+            const atToken = stateTokens[i]
             if (atToken) {
                 if (
                     atToken === 'rtl'
