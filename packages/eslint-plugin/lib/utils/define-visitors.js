@@ -1,10 +1,15 @@
-const astUtil = require('./ast')
-
 function defineVisitors({ context, settings }, visitNode) {
 
     const isFnNode = (node) => {
-        const calleeStr = astUtil.calleeToString(node.callee || node.tag)
-        return settings.functions.findIndex((eachFnPattern) => new RegExp('^' + eachFnPattern).test(calleeStr)) !== -1
+        let calleeName = ''
+        const calleeNode = node.callee || node.tag
+        if (calleeNode.type === 'Identifier') {
+            calleeName = calleeNode.name
+        }
+        if (calleeNode.type === 'MemberExpression') {
+            calleeName = `${calleeNode.object.name}.${calleeNode.property.name}`
+        }
+        return new RegExp(settings.calleeMatching).test(calleeName)
     }
 
     const CallExpression = function (node) {

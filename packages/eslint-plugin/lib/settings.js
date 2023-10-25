@@ -1,7 +1,7 @@
 const settings = {
-    functions: ['classnames', 'clsx', 'ctl', 'cva', 'cv', 'classVariant', 'styled(?:\\.\\w+)?'],
-    ignoredKeys: ['compoundVariants', 'defaultVariants'],
+    calleeMatching: '^(classnames|clsx|ctl|cva|cv|classVariant|styled(?:\\.\\w+)?)',
     classMatching: '^class(Name)?$',
+    ignoredKeys: ['compoundVariants', 'defaultVariants'],
     config: 'master.css.*'
 }
 

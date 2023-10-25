@@ -1,15 +1,6 @@
 
 const separatorRegEx = /([\t\n\f\r ]+)/
 
-function calleeToString(calleeNode) {
-    if (calleeNode.type === 'Identifier') {
-        return calleeNode.name
-    }
-    if (calleeNode.type === 'MemberExpression') {
-        return `${calleeNode.object.name}.${calleeNode.property.name}`
-    }
-}
-
 function extractRangeFromNode(node) {
     if (node.type === 'TextAttribute' && node.name === 'class') {
         return [node.valueSpan.fullStart.offset, node.valueSpan.end.offset]
@@ -225,7 +216,6 @@ function findLoc(text, lines, startLine, endLine) {
 }
 
 module.exports = {
-    calleeToString,
     extractRangeFromNode,
     extractValueFromNode,
     extractClassnamesFromValue,
