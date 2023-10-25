@@ -1,9 +1,14 @@
 const astUtil = require('./ast')
 
-function defineVisitors({ context, options, settings, config }, visitNode) {
+function defineVisitors({ context, settings }, visitNode) {
+
+    const isFnNode = (node) => {
+        const calleeStr = astUtil.calleeToString(node.callee || node.tag)
+        return settings.functions.findIndex((eachFnPattern) => new RegExp('^' + eachFnPattern).test(calleeStr)) !== -1
+    }
+
     const CallExpression = function (node) {
-        const calleeStr = astUtil.calleeToString(node.callee)
-        if (settings.functions.findIndex((name) => calleeStr.startsWith(name)) === -1) {
+        if (!isFnNode(node)) {
             return
         }
         node.arguments.forEach((arg) => {
@@ -32,10 +37,7 @@ function defineVisitors({ context, options, settings, config }, visitNode) {
             visitNode(node)
         },
         TaggedTemplateExpression: function (node) {
-            if (
-                settings.functions.includes(node.tag.name) ||
-                settings.functions.includes(node.tag?.object?.name) && node.tag?.type === 'MemberExpression'
-            ) {
+            if (isFnNode(node)) {
                 visitNode(node, node.quasi)
                 return
             }
