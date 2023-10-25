@@ -123,8 +123,13 @@ module.exports = {
                 const w = whitespaces[i] ?? ''
                 const cls = orderedClassNames[i]
                 validatedClassNamesValue += headSpace ? `${w}${cls}` : `${cls}${w}`
-                if (headSpace && tailSpace && i === orderedClassNames.length - 1) {
-                    validatedClassNamesValue += whitespaces[whitespaces.length - 1] ?? ''
+                if (cls) {
+                    if (!tailSpace && i === orderedClassNames.length - 1) {
+                        validatedClassNamesValue = validatedClassNamesValue.replace(/\s+$/, '')
+                    }
+                    if (headSpace && tailSpace && i === orderedClassNames.length - 1) {
+                        validatedClassNamesValue += whitespaces[whitespaces.length - 1] ?? ''
+                    }
                 }
             }
 
