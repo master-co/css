@@ -47,6 +47,9 @@ module.exports = {
                                         messageId: 'disallowTraditionalClass',
                                         data: {
                                             message: `Disallow a traditional class \`${className}\`.`,
+                                        },
+                                        fix: function (fixer) {
+                                            return fixer.replaceTextRange([start, end], '')
                                         }
                                     })
                                 }
