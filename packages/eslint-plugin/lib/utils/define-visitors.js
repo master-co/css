@@ -54,7 +54,9 @@ function defineVisitors({ context, settings }, visitNode) {
                     visitNode(node, arg)
                 })
             } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression.type === 'ObjectExpression') {
-                visitNode(node, prop)
+                node.value.expression.properties.forEach((prop) => {
+                    visitNode(node, prop)
+                })
             }
         },
     }
