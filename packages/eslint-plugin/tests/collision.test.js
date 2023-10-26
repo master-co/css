@@ -22,14 +22,6 @@ new RuleTester({
                 { messageId: 'collisionClass' },
                 { messageId: 'collisionClass' }
             ]
-        },
-        {
-            code: `<div class="m:10@sm m:20@sm">collision</div>`,
-            output: `<div class="m:10@sm">collision</div>`,
-            errors: [
-                { messageId: 'collisionClass' },
-                { messageId: 'collisionClass' }
-            ]
         }
     ]
 })

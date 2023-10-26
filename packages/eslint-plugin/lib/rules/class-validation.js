@@ -55,7 +55,8 @@ module.exports = {
                 },
                 false,
                 false,
-                settings.ignoredKeys
+                settings.ignoredKeys,
+                context
             )
         }
         return defineVisitors({ context, options, settings, config }, visitNode)

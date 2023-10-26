@@ -65,7 +65,7 @@ function extractClassnamesFromValue(classStr) {
  * @param {Array} ignoredKeys Optional, set object keys which should not be parsed e.g. for `cva`
  * @returns {void}
  */
-function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, isolate = false, ignoredKeys = []) {
+function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, isolate = false, ignoredKeys = [], context = null) {
     // TODO allow vue non litteral
     let originalClassNamesValue
     let classNames
@@ -162,9 +162,9 @@ function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, is
                 originalClassNamesValue = childNode.value.raw
                 start = childNode.range[0]
                 end = childNode.range[1]
-                const txt = context.getSourceCode().getText(childNode)
-                prefix = astUtil.getTemplateElementPrefix(txt, originalClassNamesValue)
-                suffix = astUtil.getTemplateElementSuffix(txt, originalClassNamesValue)
+                const txt = context?.getSourceCode()?.getText(childNode) ?? ''
+                prefix = getTemplateElementPrefix(txt, originalClassNamesValue)
+                suffix = getTemplateElementSuffix(txt, originalClassNamesValue)
                 break
         }
         ({ classNames } = extractClassnamesFromValue(originalClassNamesValue))
