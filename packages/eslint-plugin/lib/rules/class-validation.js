@@ -1,4 +1,3 @@
-
 const astUtil = require('../utils/ast')
 const defineVisitors = require('../utils/define-visitors')
 const resolveContext = require('../utils/resolve-context')
@@ -14,7 +13,7 @@ module.exports = {
         },
         messages: {
             invalidClass: '{{message}}',
-            disallowTraditionalClass: '{{message}}',
+            disallowUnknowClass: '{{message}}',
         },
         fixable: null
     },
@@ -41,12 +40,12 @@ module.exports = {
                                             message: error.message + '.',
                                         }
                                     })
-                                } else if (!isMasterCSS && options.disallowTraditionalClass) {
+                                } else if (options.disallowUnknowClass) {
                                     context.report({
                                         loc: astUtil.findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
-                                        messageId: 'disallowTraditionalClass',
+                                        messageId: 'disallowUnknowClass',
                                         data: {
-                                            message: `Disallow a traditional class \`${className}\`.`,
+                                            message: `"${className}" is not a valid or known class.`,
                                         }
                                     })
                                 }

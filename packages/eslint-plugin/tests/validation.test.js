@@ -1,4 +1,3 @@
-
 const rule = require('../lib/rules/class-validation')
 const RuleTester = require('eslint').RuleTester
 
@@ -19,11 +18,11 @@ new RuleTester({
             code: `<div class="bg:black m:mistake rrr">Simple, basic</div>`,
             errors: [
                 { messageId: 'invalidClass' },
-                { messageId: 'disallowTraditionalClass' }
+                { messageId: 'disallowUnknowClass' }
             ],
             options: [
                 {
-                    disallowTraditionalClass: true
+                    disallowUnknowClass: true
                 }
             ]
         },
@@ -53,14 +52,14 @@ new RuleTester({
     valid: [],
     invalid: [
         {
-            code: `<div class="bg:black m:mistake rrr btn">Simple, basic</div>`,
+            code: `<div class="btn rrr bg:black m:mistake">Simple, basic</div>`,
             errors: [
-                { messageId: 'invalidClass' },
-                { messageId: 'disallowTraditionalClass' }
+                { messageId: 'disallowUnknowClass' },
+                { messageId: 'invalidClass' }
             ],
             options: [
                 {
-                    disallowTraditionalClass: true
+                    disallowUnknowClass: true
                 }
             ]
         },

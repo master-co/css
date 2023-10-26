@@ -21,10 +21,12 @@ function defineVisitors({ context, settings }, visitNode) {
         })
     }
 
+    const classMatchingRegex = new RegExp(settings.classMatching)
+
     const scriptVisitor = {
         CallExpression,
         JSXAttribute: function (node) {
-            if (!node.name || !new RegExp(settings.classMatching).test(node.name.name)) return
+            if (!node.name || !classMatchingRegex.test(node.name.name)) return
             if (node.value && node.value.type === 'Literal') {
                 visitNode(node)
             } else if (node.value && node.value.type === 'JSXExpressionContainer') {
@@ -32,13 +34,13 @@ function defineVisitors({ context, settings }, visitNode) {
             }
         },
         SvelteAttribute: function (node) {
-            if (!node.key?.name || !new RegExp(settings.classMatching).test(node.key.name)) return
+            if (!node.key?.name || !classMatchingRegex.test(node.key.name)) return
             for (const eachValue of node.value) {
                 visitNode(node, eachValue)
             }
         },
         TextAttribute: function (node) {
-            if (!node.name || !new RegExp(settings.classMatching).test(node.name)) return
+            if (!node.name || !classMatchingRegex.test(node.name)) return
             visitNode(node)
         },
         TaggedTemplateExpression: function (node) {
