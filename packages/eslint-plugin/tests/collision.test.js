@@ -23,5 +23,15 @@ new RuleTester({
                 { messageId: 'collisionClass' }
             ]
         },
-    ],
+        {
+            code: `<div class="m:10@sm m:20@sm m:10@md m:20@md">collision</div>`,
+            output: `<div class="m:10@sm m:10@md">collision</div>`,
+            errors: [
+                { messageId: 'collisionClass' },
+                { messageId: 'collisionClass' },
+                { messageId: 'collisionClass' },
+                { messageId: 'collisionClass' }
+            ]
+        }
+    ]
 })

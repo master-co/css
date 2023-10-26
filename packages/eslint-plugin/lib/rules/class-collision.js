@@ -1,9 +1,8 @@
-
+const areDeclarationsEqual = require('../utils/are-declarations-equal')
 const astUtil = require('../utils/ast')
 const defineVisitors = require('../utils/define-visitors')
 const resolveContext = require('../utils/resolve-context')
 const { createValidRules } = require('@master/css-validator')
-const CssTree = require('css-tree')
 
 module.exports = {
     meta: {
@@ -18,7 +17,7 @@ module.exports = {
         },
         fixable: 'code'
     },
-    create: function (context) {
+    create(context) {
         const { options, settings, config } = resolveContext(context)
         const visitNode = (node, arg = null) => {
             astUtil.parseNodeRecursive(
@@ -29,69 +28,50 @@ module.exports = {
                     const sourceCodeLines = sourceCode.lines
                     const nodeStartLine = node.loc.start.line
                     const nodeEndLine = node.loc.end.line
+                    const ruleOfClass = {}
 
-                    const parsedRules = classNames
-                        .map(x => createValidRules(x, { config }))
-                        .map(rules => {
-                            if (rules.length) {
-                                const ruleAst = CssTree.parse(rules[0].text, { parseValue: false })
-                                const ruleStyles = []
-                                CssTree.walk(ruleAst, (cssNode) => {
-                                    if (cssNode.type === "Declaration") {
-                                        ruleStyles.push({
-                                            key: cssNode.property,
-                                            value: cssNode.value.value
-                                        })
-                                    }
-                                })
-
-                                return {
-                                    selector: Object.values(rules[0].vendorSuffixSelectors ?? {})?.[0]?.[0],
-                                    mediaToken: rules[0].media?.token,
-                                    styles: ruleStyles
-                                }
-                            }
-                            return null
+                    classNames
+                        .forEach(eachClassName => {
+                            ruleOfClass[eachClassName] = createValidRules(eachClassName, { config })[0]
                         })
 
-                    for (let i = 0; i < classNames.length ; i++) {
+                    for (let i = 0; i < classNames.length; i++) {
                         const className = classNames[i]
-                        const parsedRule = parsedRules[i]
+                        const rule = ruleOfClass[className]
                         const conflicts = []
 
-                        if (parsedRule && parsedRule.styles.length === 1) {                            
+                        if (rule) {
                             for (let j = 0; j < classNames.length; j++) {
                                 const compareClassName = classNames[j]
-                                const compareRule = parsedRules[j]
-                                if (i !== j && compareRule && compareRule.styles.length === 1
-                                    && parsedRule.selector == compareRule.selector
-                                    && parsedRule.mediaToken == compareRule.mediaToken
-                                    && parsedRule.styles[0].key == compareRule.styles[0].key
-                                    ) {
+                                const compareRule = ruleOfClass[compareClassName]
+                                if (i !== j && compareRule
+                                    // 比對兩個 rule 是否具有相同數量及相同屬性的 declarations
+                                    && areDeclarationsEqual(rule.declarations, compareRule.declarations)
+                                    && rule.stateToken === compareRule.stateToken
+                                ) {
                                     conflicts.push(compareClassName)
                                 }
                             }
+                        }
 
-                            if (conflicts.length > 0) {
-                                const conflictClassNamesMsg = conflicts.map(x => `\`${x}\``).join(' and ')
-                                let fixClassNames = originalClassNamesValue
-                                for (const conflictClassName of conflicts){
-                                    const regexSafe = conflictClassName.replace(/(\\|\.|\(|\)|\[|\]|\{|\}|\+|\*|\?|\^|\$|\||\/)/g, '\\$1')
-                                    fixClassNames = fixClassNames.replace(new RegExp(`\\s+${regexSafe}|${regexSafe}\\s+`), '')
-                                }
-
-                                context.report({
-                                    loc: astUtil.findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
-                                    messageId: 'collisionClass',
-                                    data: {
-                                        message: `\`${className}\` applies the same CSS declarations as ${conflictClassNamesMsg}.
-                                        `,
-                                    },
-                                    fix: function (fixer) {
-                                        return fixer.replaceTextRange([start, end], fixClassNames)
-                                    }
-                                })
+                        if (conflicts.length > 0) {
+                            const conflictClassNamesMsg = conflicts.map(x => `\`${x}\``).join(' and ')
+                            let fixClassNames = originalClassNamesValue
+                            for (const conflictClassName of conflicts) {
+                                const regexSafe = conflictClassName.replace(/(\\|\.|\(|\)|\[|\]|\{|\}|\+|\*|\?|\^|\$|\||\/)/g, '\\$1')
+                                fixClassNames = fixClassNames.replace(new RegExp(`\\s+${regexSafe}|${regexSafe}\\s+`), '')
                             }
+                            context.report({
+                                loc: astUtil.findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
+                                messageId: 'collisionClass',
+                                data: {
+                                    message: `\`${className}\` applies the same CSS declarations as ${conflictClassNamesMsg}.
+                                    `,
+                                },
+                                fix: function (fixer) {
+                                    return fixer.replaceTextRange([start, end], fixClassNames)
+                                }
+                            })
                         }
                     }
                 },

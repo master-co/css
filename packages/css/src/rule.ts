@@ -14,6 +14,7 @@ export class Rule {
     readonly natives: RuleNative[] = []
     readonly order: number = 0
     readonly stateToken: string
+    readonly declarations: CSSDeclarations
 
     animationNames: string[]
 
@@ -35,7 +36,7 @@ export class Rule {
             declarations?: CSSDeclarations
             resolvedPropName?: string
             layer?: Layer | CoreLayer,
-            analyze?(this: Rule, className: string): [valueToken: string, prefixToken?: string]
+            analyze?: (this: Rule, className: string) => [valueToken: string, prefixToken?: string]
             transform?(this: Rule, value: string): string
             declare?(this: Rule, value: string, unit: string): CSSDeclarations
             delete?(this: Rule, className: string): void
@@ -44,10 +45,10 @@ export class Rule {
         } = {},
         public css: MasterCSS
     ) {
-        const { layer, unit, colored: configColored, resolvedPropName, analyze, transform, declare, create, order, id } = this.options
+        const { layer, unit, colored: configColored, resolvedPropName, analyze, transform, declare, create, order, id } = options
         this.order = order
-        if (!this.options.unit) this.options.unit = ''
-        if (!this.options.separators) this.options.separators = [',']
+        if (!options.unit) options.unit = ''
+        if (!options.separators) options.separators = [',']
         const { scope, important, functions, themeDriver } = css.config
         const { themeNames, colorNames, colors, selectors, mediaQueries, stylesBy, animations } = css
         const classNames = stylesBy[className]
@@ -55,7 +56,8 @@ export class Rule {
         if (create) create.call(this, className)
 
         // 1. value / selectorToken
-        let declarations: CSSDeclarations = this.options.declarations
+        this.declarations = options.declarations
+
         let hasMultipleThemes: boolean
         let prefixToken: string
         let stateToken: string
@@ -77,10 +79,10 @@ export class Rule {
 
             // eslint-disable-next-line @typescript-eslint/no-this-alias
             const instance = this
-            const variables = this.options.resolvedVariables
+            const variables = options.resolvedVariables
             const separators = [',']
-            if (this.options.separators.length) {
-                separators.push(...this.options.separators)
+            if (options.separators.length) {
+                separators.push(...options.separators)
             }
             let currentValueToken = ''
             let i = 0;
@@ -667,16 +669,18 @@ export class Rule {
                             unit = firstValueSplit.unit
                         }
                     }
-                    declarations = declare.call(this, unit ? value : newValue, unit || '')
+                    // @ts-ignore
+                    this.declarations = declare.call(this, unit ? value : newValue, unit || '')
                 } else if (resolvedPropName) {
-                    declarations = {
+                    // @ts-ignore
+                    this.declarations = {
                         [resolvedPropName as string]: newValue
                     }
                 }
             }
 
             const propertiesTextByTheme: Record<string, string[]> = {}
-            for (const eachPropName in declarations) {
+            for (const eachPropName in this.declarations) {
                 const push = (theme: string, propertyText: string) => {
                     // animations
                     if (
@@ -707,7 +711,7 @@ export class Rule {
                 }
 
                 const prefix = eachPropName + ':'
-                const declation = declarations[eachPropName]
+                const declation = this.declarations[eachPropName]
                 if (typeof declation === 'object') {
                     if (Array.isArray(declation)) {
                         for (const value of declation) {
