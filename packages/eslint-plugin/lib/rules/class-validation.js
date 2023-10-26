@@ -47,9 +47,6 @@ module.exports = {
                                         messageId: 'disallowTraditionalClass',
                                         data: {
                                             message: `Disallow a traditional class \`${className}\`.`,
-                                        },
-                                        fix: function (fixer) {
-                                            return fixer.replaceTextRange([start, end], '')
                                         }
                                     })
                                 }
@@ -59,7 +56,8 @@ module.exports = {
                 },
                 false,
                 false,
-                settings.ignoredKeys
+                settings.ignoredKeys,
+                context
             )
         }
         return defineVisitors({ context, options, settings, config }, visitNode)
