@@ -1,6 +1,6 @@
+import rule from '../../src/rules/class-order'
+import { RuleTester } from 'eslint'
 
-const rule = require('../../lib/rules/class-order')
-const RuleTester = require('eslint').RuleTester
 const ruleTester = new RuleTester({
     parserOptions: {
         ecmaFeatures: {

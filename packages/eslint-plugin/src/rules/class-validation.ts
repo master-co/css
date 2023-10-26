@@ -1,9 +1,10 @@
-const astUtil = require('../utils/ast')
-const defineVisitors = require('../utils/define-visitors')
-const resolveContext = require('../utils/resolve-context')
-const { validate } = require('@master/css-validator')
+import * as astUtil from '../utils/ast'
+import defineVisitors from '../utils/define-visitors'
+import resolveContext from '../utils/resolve-context'
+import { validate } from '@master/css-validator'
+import { Rule } from 'eslint'
 
-module.exports = {
+export default {
     meta: {
         docs: {
             description: 'Check the validity of classes with your configuration',
@@ -61,4 +62,4 @@ module.exports = {
         }
         return defineVisitors({ context, options, settings, config }, visitNode)
     },
-}
+} as Rule.RuleModule

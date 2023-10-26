@@ -1,6 +1,5 @@
-
-const rule = require('../lib/rules/class-order')
-const RuleTester = require('eslint').RuleTester
+import rule from '../src/rules/class-order'
+import { RuleTester } from 'eslint'
 
 new RuleTester({
     parserOptions: {

@@ -1,6 +1,5 @@
-
-const rule = require('../lib/rules/class-collision')
-const RuleTester = require('eslint').RuleTester
+import rule from '../src/rules/class-collision'
+import { RuleTester } from 'eslint'
 
 new RuleTester({
     parserOptions: {

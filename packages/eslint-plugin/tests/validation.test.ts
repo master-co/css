@@ -1,5 +1,5 @@
-const rule = require('../lib/rules/class-validation')
-const RuleTester = require('eslint').RuleTester
+import rule from '../src/rules/class-validation'
+import { RuleTester } from 'eslint'
 
 new RuleTester({
     parserOptions: {

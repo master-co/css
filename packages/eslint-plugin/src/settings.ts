@@ -5,4 +5,4 @@ const settings = {
     config: 'master.css.*'
 }
 
-module.exports = settings
+export default settings

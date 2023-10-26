@@ -1,4 +1,6 @@
-function defineVisitors({ context, settings }, visitNode) {
+import type { RuleListener } from '@typescript-eslint/utils/ts-eslint'
+
+export default function defineVisitors({ context, settings }: any, visitNode) {
 
     const isFnNode = (node) => {
         let calleeName = ''
@@ -23,9 +25,9 @@ function defineVisitors({ context, settings }, visitNode) {
 
     const classMatchingRegex = new RegExp(settings.classMatching)
 
-    const scriptVisitor = {
+    const scriptVisitor: RuleListener = {
         CallExpression,
-        JSXAttribute: function (node) {
+        JSXAttribute: function (node: any) {
             if (!node.name || !classMatchingRegex.test(node.name.name)) return
             if (node.value && node.value.type === 'Literal') {
                 visitNode(node)
@@ -33,13 +35,13 @@ function defineVisitors({ context, settings }, visitNode) {
                 visitNode(node, node.value.expression)
             }
         },
-        SvelteAttribute: function (node) {
+        SvelteAttribute: function (node: any) {
             if (!node.key?.name || !classMatchingRegex.test(node.key.name)) return
             for (const eachValue of node.value) {
                 visitNode(node, eachValue)
             }
         },
-        TextAttribute: function (node) {
+        TextAttribute: function (node: any) {
             if (!node.name || !classMatchingRegex.test(node.name)) return
             visitNode(node)
         },
@@ -51,9 +53,9 @@ function defineVisitors({ context, settings }, visitNode) {
         },
     }
 
-    const templateBodyVisitor = {
+    const templateBodyVisitor: RuleListener = {
         CallExpression,
-        VAttribute: function (node) {
+        VAttribute: function (node: any) {
             if (node.value && node.value.type === 'VLiteral') {
                 visitNode(node)
             } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression.type === 'ArrayExpression') {
@@ -74,5 +76,3 @@ function defineVisitors({ context, settings }, visitNode) {
         return context.parserServices.defineTemplateBodyVisitor(templateBodyVisitor, scriptVisitor)
     }
 }
-
-module.exports = defineVisitors

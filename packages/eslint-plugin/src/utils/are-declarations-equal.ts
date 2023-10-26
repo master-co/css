@@ -1,4 +1,4 @@
-function areDeclarationsEqual(aDeclarations, bDeclarations) {
+export default function areDeclarationsEqual(aDeclarations, bDeclarations) {
     // 获取对象A和B的所有属性名
     const aKeys = Object.keys(aDeclarations);
     const bKeys = Object.keys(bDeclarations);
@@ -18,5 +18,3 @@ function areDeclarationsEqual(aDeclarations, bDeclarations) {
     // 如果所有属性都匹配，返回true
     return true;
 }
-
-module.exports = areDeclarationsEqual

@@ -1,10 +1,11 @@
-const areDeclarationsEqual = require('../utils/are-declarations-equal')
-const astUtil = require('../utils/ast')
-const defineVisitors = require('../utils/define-visitors')
-const resolveContext = require('../utils/resolve-context')
-const { createValidRules } = require('@master/css-validator')
+import * as astUtil from '../utils/ast'
+import areDeclarationsEqual from '../utils/are-declarations-equal'
+import defineVisitors from '../utils/define-visitors'
+import resolveContext from '../utils/resolve-context'
+import { createValidRules } from '@master/css-validator'
+import { Rule } from 'eslint'
 
-module.exports = {
+export default {
     meta: {
         docs: {
             description: 'Avoid declaring the identical CSS property repeatedly',
@@ -83,4 +84,4 @@ module.exports = {
         }
         return defineVisitors({ context, options, settings, config }, visitNode)
     },
-}
+} as Rule.RuleModule

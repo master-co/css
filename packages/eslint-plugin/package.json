@@ -1,7 +1,11 @@
 {
     "name": "@master/eslint-plugin-css",
     "scripts": {
-        "test": "jest"
+        "build": "techor pack 'src/**/*.ts' --format cjs",
+        "dev": "pnpm run build --watch --no-declare",
+        "test": "jest",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint src"
     },
     "keywords": [
         "mastercss",
@@ -22,21 +26,25 @@
         "directory": "packages/eslint-plugin"
     },
     "sideEffects": false,
-    "main": "./lib/index.js",
-    "exports": "./lib/index.js",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": "./dist/index.js",
+    "files": [
+        "dist"
+    ],
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "explore-config": "^2.2.10",
-        "requireindex": "^1.2.0"
+        "explore-config": "^2.2.10"
     },
     "devDependencies": {
         "@angular-eslint/template-parser": "^16.2.0",
         "@types/node": "^20.6.0",
         "@typescript-eslint/parser": "^5.50.0",
+        "@typescript-eslint/utils": "^6.9.0",
         "eslint": "^7.1.0",
         "svelte-eslint-parser": "^0.33.1",
         "vue-eslint-parser": "^9.3.1"

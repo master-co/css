@@ -1,7 +1,7 @@
-const settings = require('../settings')
-const exploreConfig = require('explore-config').default
+import settings from '../settings'
+import exploreConfig from 'explore-config'
 
-const resolveContext = function (context) {
+export default function resolveContext (context) {
     const resolvedSettings = Object.assign(settings, context.settings?.['@master/css'])
     const config = resolvedSettings?.config
     return {
@@ -10,5 +10,3 @@ const resolveContext = function (context) {
         config: typeof config === 'object' ? config : exploreConfig(resolvedSettings?.config || '')
     }
 }
-
-module.exports = resolveContext

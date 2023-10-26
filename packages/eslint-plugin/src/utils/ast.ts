@@ -1,7 +1,6 @@
-
 const separatorRegEx = /([\t\n\f\r ]+)/
 
-function extractRangeFromNode(node) {
+export function extractRangeFromNode(node) {
     if (node.type === 'TextAttribute' && node.name === 'class') {
         return [node.valueSpan.fullStart.offset, node.valueSpan.end.offset]
     }
@@ -13,7 +12,7 @@ function extractRangeFromNode(node) {
     }
 }
 
-function extractValueFromNode(node) {
+export function extractValueFromNode(node) {
     if (node.type === 'TextAttribute' && node.name === 'class') {
         return node.value
     }
@@ -33,7 +32,7 @@ function extractValueFromNode(node) {
     }
 }
 
-function extractClassnamesFromValue(classStr) {
+export function extractClassnamesFromValue(classStr) {
     if (typeof classStr !== 'string') {
         return { classNames: [], whitespaces: [], headSpace: false, tailSpace: false }
     }
@@ -65,7 +64,7 @@ function extractClassnamesFromValue(classStr) {
  * @param {Array} ignoredKeys Optional, set object keys which should not be parsed e.g. for `cva`
  * @returns {void}
  */
-function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, isolate = false, ignoredKeys = [], context = null) {
+export function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, isolate = false, ignoredKeys = [], context = null) {
     // TODO allow vue non litteral
     let originalClassNamesValue
     let classNames
@@ -178,7 +177,7 @@ function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, is
     }
 }
 
-function getTemplateElementPrefix(text, raw) {
+export function getTemplateElementPrefix(text, raw) {
     const idx = text.indexOf(raw)
     if (idx === 0) {
         return ''
@@ -186,14 +185,14 @@ function getTemplateElementPrefix(text, raw) {
     return text.split(raw).shift()
 }
 
-function getTemplateElementSuffix(text, raw) {
+export function getTemplateElementSuffix(text, raw) {
     if (text.indexOf(raw) === -1) {
         return ''
     }
     return text.split(raw).pop()
 }
 
-function getTemplateElementBody(text, prefix, suffix) {
+export function getTemplateElementBody(text, prefix, suffix) {
     let arr = text.split(prefix)
     arr.shift()
     let body = arr.join(prefix)
@@ -202,7 +201,7 @@ function getTemplateElementBody(text, prefix, suffix) {
     return arr.join(suffix)
 }
 
-function findLoc(text, lines, startLine, endLine) {
+export function findLoc(text, lines, startLine, endLine) {
     const targetLines = text.match(/.+(?:\r\n|\n)?/g)
 
     let checkingTargetLine = 0
@@ -240,15 +239,4 @@ function findLoc(text, lines, startLine, endLine) {
         }
     }
     return null
-}
-
-module.exports = {
-    extractRangeFromNode,
-    extractValueFromNode,
-    extractClassnamesFromValue,
-    getTemplateElementPrefix,
-    getTemplateElementSuffix,
-    getTemplateElementBody,
-    parseNodeRecursive,
-    findLoc
 }
