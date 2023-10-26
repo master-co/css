@@ -25,7 +25,7 @@ export default {
                 node,
                 arg,
                 (classNames, node, originalClassNamesValue, start, end) => {
-                    const sourceCode = context.getSourceCode()
+                    const sourceCode = context.sourceCode
                     const sourceCodeLines = sourceCode.lines
                     const nodeStartLine = node.loc.start.line
                     const nodeEndLine = node.loc.end.line
@@ -56,7 +56,7 @@ export default {
                         }
 
                         if (conflicts.length > 0) {
-                            const conflictClassNamesMsg = conflicts.map(x => `\`${x}\``).join(' and ')
+                            const conflictClassNamesMsg = conflicts.map(x => `"${x}"`).join(' and ')
                             let fixClassNames = originalClassNamesValue
                             for (const conflictClassName of conflicts) {
                                 const regexSafe = conflictClassName.replace(/(\\|\.|\(|\)|\[|\]|\{|\}|\+|\*|\?|\^|\$|\||\/)/g, '\\$1')
@@ -66,7 +66,7 @@ export default {
                                 loc: astUtil.findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
                                 messageId: 'collisionClass',
                                 data: {
-                                    message: `\`${className}\` applies the same CSS declarations as ${conflictClassNamesMsg}.
+                                    message: `"${className}" applies the same CSS declarations as ${conflictClassNamesMsg}.
                                     `,
                                 },
                                 fix: function (fixer) {

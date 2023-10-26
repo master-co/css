@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import * as astUtil from '../utils/ast'
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
@@ -94,7 +95,8 @@ export default {
                         // The problem is that range computation includes the backticks (`test`)
                         // but value.raw does not include them, so there is a mismatch.
                         // start/end does not include the backticks, therefore it matches value.raw.
-                        const txt = context.getSourceCode().getText(arg)
+                        const txt = context.sourceCode.getText(arg)
+
                         prefix = astUtil.getTemplateElementPrefix(txt, originalClassNamesValue)
                         suffix = astUtil.getTemplateElementSuffix(txt, originalClassNamesValue)
                         originalClassNamesValue = astUtil.getTemplateElementBody(txt, prefix, suffix)
@@ -102,7 +104,7 @@ export default {
                 }
             }
 
-            let { classNames, whitespaces, headSpace, tailSpace } =
+            const { classNames, whitespaces, headSpace, tailSpace } =
                 astUtil.extractClassnamesFromValue(originalClassNamesValue)
 
             if (classNames.length <= 1) {
@@ -135,7 +137,7 @@ export default {
 
             if (originalClassNamesValue !== validatedClassNamesValue) {
                 validatedClassNamesValue = prefix + validatedClassNamesValue + suffix
-                const sourceCode = context.getSourceCode()
+                const sourceCode = context.sourceCode
                 const sourceCodeLines = sourceCode.lines
                 const nodeStartLine = node.loc.start.line
                 const nodeEndLine = node.loc.end.line

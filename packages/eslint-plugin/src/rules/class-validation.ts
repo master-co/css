@@ -25,7 +25,7 @@ export default {
                 node,
                 arg,
                 (classNames, node) => {
-                    const sourceCode = context.getSourceCode()
+                    const sourceCode = context.sourceCode
                     const sourceCodeLines = sourceCode.lines
                     const nodeStartLine = node.loc.start.line
                     const nodeEndLine = node.loc.end.line

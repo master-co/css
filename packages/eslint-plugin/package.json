@@ -45,7 +45,7 @@
         "@types/node": "^20.6.0",
         "@typescript-eslint/parser": "^5.50.0",
         "@typescript-eslint/utils": "^6.9.0",
-        "eslint": "^7.1.0",
+        "eslint": "^8.0.0",
         "svelte-eslint-parser": "^0.33.1",
         "vue-eslint-parser": "^9.3.1"
     }
