@@ -21,9 +21,9 @@ import Features, { Feature } from 'shared/components/Features'
     <Feature>
         <IconPencilOff className="app-icon-primary" />
         <div>
-            **[Disallow traditional classes](#disallow-traditional-classes)**
+            **[Disallow unknown classes](#disallow-unknown-classes)**
 
-            Enforce styles to be created using the configuration
+            Enforce the use of Master CSS syntax to apply styles
         </div>
     </Feature>
     <Feature>
@@ -87,15 +87,15 @@ In the past, you would add utility classes to your templates in an unsafe manner
     <source src="/videos/syntax-error-checks.webm" type="video/webm" />
 </video>
 
-### Disallow traditional classes
+### Disallow unknown classes
 You can also restrict teams to using [configuration](/docs/configuration) to create [styles](/docs/styles) instead of defining classes through traditional `html <style>` or CSS files.
 
 (i) Based on syntax error checking, you can [disallow non-markup-driven traditional classes](/docs/eslint#class-validation).
 <video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
-    <source src="/videos/disallow-traditional-class.webm" type="video/webm" />
+    <source src="/videos/disallow-unknown-class.webm" type="video/webm" />
 </video>
 
-(x) <span className="text:error">Disallow a traditional class `card`.</span>
+(x) <span className="text:error">"card" is not a valid or known class.</span>
 ```html
 <div class="btn">
 ```
