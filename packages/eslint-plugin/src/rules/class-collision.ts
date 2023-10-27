@@ -66,8 +66,7 @@ export default {
                                 loc: astUtil.findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
                                 messageId: 'collisionClass',
                                 data: {
-                                    message: `"${className}" applies the same CSS declarations as ${conflictClassNamesMsg}.
-                                    `,
+                                    message: `"${className}" applies the same CSS declarations as ${conflictClassNamesMsg}.`,
                                 },
                                 fix: function (fixer) {
                                     return fixer.replaceTextRange([start, end], fixClassNames)
