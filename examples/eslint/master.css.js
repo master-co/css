@@ -1,6 +1,6 @@
 /** @type {import('@master/css').Config} */
 export default {
     styles: {
-        btn: 'inline-flex'
+        // btn: 'inline-flex px:15'
     }
 }

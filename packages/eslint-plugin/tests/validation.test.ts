@@ -18,11 +18,11 @@ new RuleTester({
             code: `<div class="bg:black m:mistake rrr">Simple, basic</div>`,
             errors: [
                 { messageId: 'invalidClass' },
-                { messageId: 'disallowUnknowClass' }
+                { messageId: 'disallowUnknownClass' }
             ],
             options: [
                 {
-                    disallowUnknowClass: true
+                    disallowUnknownClass: true
                 }
             ]
         },
@@ -54,12 +54,12 @@ new RuleTester({
         {
             code: `<div class="btn rrr bg:black m:mistake">Simple, basic</div>`,
             errors: [
-                { messageId: 'disallowUnknowClass' },
+                { messageId: 'disallowUnknownClass' },
                 { messageId: 'invalidClass' }
             ],
             options: [
                 {
-                    disallowUnknowClass: true
+                    disallowUnknownClass: true
                 }
             ]
         },

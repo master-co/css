@@ -11,7 +11,7 @@ export default {
             description: 'Enforce a consistent and logical order of classes',
             category: 'Stylistic Issues',
             recommended: false,
-            url: 'https://beta.css.master.co/docs/code-linting#enforce-a-consistent-and-logical-order-of-classes',
+            url: 'https://beta.css.master.co/docs/code-linting#consistent-class-order',
         },
         messages: {
             invalidClassOrder: 'No consistent class order followed.',

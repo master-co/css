@@ -7,14 +7,14 @@ import { Rule } from 'eslint'
 export default {
     meta: {
         docs: {
-            description: 'Check the validity of classes with your configuration',
+            description: 'Detect syntax errors early when writing classes',
             category: 'Stylistic Issues',
             recommended: false,
-            url: 'https://beta.css.master.co/docs/code-linting#check-the-validity-of-classes-with-your-configuration',
+            url: 'https://beta.css.master.co/docs/code-linting#syntax-error-checks',
         },
         messages: {
             invalidClass: '{{message}}',
-            disallowUnknowClass: '{{message}}',
+            disallowUnknownClass: '{{message}}',
         },
         fixable: null
     },
@@ -41,12 +41,12 @@ export default {
                                             message: error.message + '.',
                                         }
                                     })
-                                } else if (options.disallowUnknowClass) {
+                                } else if (options.disallowUnknownClass) {
                                     context.report({
                                         loc: astUtil.findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
-                                        messageId: 'disallowUnknowClass',
+                                        messageId: 'disallowUnknownClass',
                                         data: {
-                                            message: `"${className}" is not a valid or known class.`,
+                                            message: `"${className}" is not a valid or known class.`
                                         }
                                     })
                                 }
