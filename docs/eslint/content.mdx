@@ -1,5 +1,5 @@
 import defaultConfigurationScript from '../../packages/eslint-config/index.js?text'
-import defaultSettings from '../../packages/eslint-plugin/lib/settings.js?text'
+import defaultSettings from '../../packages/eslint-plugin/src/settings.ts'
 
 ## Usage [sr-only]
 
@@ -35,7 +35,7 @@ Detect syntax errors early when writing classes.
     }
 }
 ```
-Set `disallowUnknownClass: true` to disallow using traditional classes:
+Set `disallowUnknownClass: true` to disallow unknow classes and enforce strict checks:
 ```json name=.eslintrc.json
 {
     "rules": {
@@ -46,9 +46,63 @@ Set `disallowUnknownClass: true` to disallow using traditional classes:
 }
 ```
 
+### `class-collision`
+Avoid applying classes with the same CSS declaration.
+```json name=.eslintrc.json
+{
+    "rules": {
+        "@master/css/class-collision": "warn"
+    }
+}
+```
+
 ---
 
 ## Settings
-<Code lang="js">
-    {defaultSettings}
+### `calleeMatching`
+Specify the names of the callee to check its arguments.
+<Code lang="json" name=".eslintrc.json">
+{`
+    {
+        "settings": {
+            "calleeMatching": "${defaultSettings.calleeMatching}"
+        }
+    }
+`}
+</Code>
+
+### `classMatching`
+Specify the attribute/property to check classes.
+<Code lang="json" name=".eslintrc.json">
+{`
+    {
+        "settings": {
+            "classMatching": "${defaultSettings.classMatching}"
+        }
+    }
+`}
+</Code>
+
+### `ignoredKeys`
+Specifies object keys to ignore checking.
+<Code lang="json" name=".eslintrc.json">
+{`
+    {
+        "settings": {
+            "ignoredKeys": ${JSON.stringify(defaultSettings.ignoredKeys)}
+        }
+    }
+`}
+</Code>
+
+### `config`
+Specify a custom Master CSS configuration or path.
+<Code lang="json" name=".eslintrc.json">
+{`
+    {
+        "settings": {
+            "config": "${defaultSettings.config}"
+        }
+    }
+`}
 </Code>

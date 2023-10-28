@@ -1,4 +1,4 @@
-import { IconStatusChange, IconTextSpellcheck, IconArrowMerge, IconShieldCheck, IconPencilOff, IconFunction } from '@tabler/icons-react'
+import { IconStatusChange, IconSettingsExclamation, IconArrowMerge, IconShieldCheck, IconPencilExclamation, IconFunction } from '@tabler/icons-react'
 import Features, { Feature } from 'shared/components/Features'
 
 <Features className="grid-cols:3@sm my:50">
@@ -19,7 +19,7 @@ import Features, { Feature } from 'shared/components/Features'
         </div>
     </Feature>
     <Feature>
-        <IconPencilOff className="app-icon-primary" />
+        <IconSettingsExclamation className="app-icon-primary" />
         <div>
             **[Disallow unknown classes](#disallow-unknown-classes)**
 
@@ -27,11 +27,11 @@ import Features, { Feature } from 'shared/components/Features'
         </div>
     </Feature>
     <Feature>
-        <IconTextSpellcheck className="app-icon" />
+        <IconPencilExclamation className="app-icon-primary" />
         <div>
-            **Conflicting class checks 🚧**
+            **[Class collision detection](#class-collision-detection)**
 
-            Avoid declaring the identical CSS property repeatedly
+            Avoid applying classes with the same CSS declaration
         </div>
     </Feature>
     <Feature>
@@ -65,57 +65,111 @@ import editors from 'shared/data/editors'
 ### Consistent class order
 In practice, you pay less attention to the order of classes, and as the number of classes increases, the template markup becomes less readable.
 
-(i) The [class order rule](/docs/eslint#class-order) helps enforce a consistent and fixed order for classes.
+(i) With the [class order rule](/docs/eslint#class-order), you can enforce a consistent and fixed order for classes.
 <video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
     <source src="/videos/consistent-class-order.webm" type="video/webm" />
 </video>
 
 (!) <span className="text:warning">No consistent class order followed.</span>
-```mcss
-font:12 font:24@sm m:32 block font:32@md mb:48
+```html
+<div class="font:12 font:24@sm m:32 block font:32@md mb:48">…</div>
 ```
 (o) Fix this @master/css/class-order problem.
-```mcss
-block font:12 font:24@sm font:32@md m:32 mb:48
+```html
+<div class="block font:12 font:24@sm font:32@md m:32 mb:48">…</div>
 ```
 
 ### Syntax error checks
 In the past, you would add utility classes to your templates in an unsafe manner, without being able to check whether they were valid or legal in the source code.
 
-(i) The [class validation rule](/docs/eslint#class-order) helps you check the validity of classes early as you write them.
+(i) With the [class validation rule](/docs/eslint#class-order), you can check the validity of classes early as you write them.
 <video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
     <source src="/videos/syntax-error-checks.webm" type="video/webm" />
 </video>
 
+(x) <span className="text:error">Invalid value for \`width\` property.</span>
+```html
+<div class="width:">…</div>
+```
+This is helpful if you make a typo or are unfamiliar with Master CSS syntax!
+
 ### Disallow unknown classes
 You can also restrict teams to using [configuration](/docs/configuration) to create [styles](/docs/styles) instead of defining classes through traditional `html <style>` or CSS files.
 
-(i) Based on syntax error checking, you can [disallow non-markup-driven traditional classes](/docs/eslint#class-validation).
+(i) Based on syntax error checking, you can [disallow unknown classes](/docs/eslint#class-validation).
 <video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
     <source src="/videos/disallow-unknown-class.webm" type="video/webm" />
 </video>
 
-(x) <span className="text:error">"card" is not a valid or known class.</span>
+(x) <span className="text:error">"btn" is not a valid or known class.</span>
 ```html
-<div class="btn">
+<button class="btn">…</button>
 ```
-(o) Use Master CSS syntax to fix this @master/css/class-validation problem.
+(o) Fix this @master/css/class-validation problem using the Master CSS syntax.
 ```html
-<div class="inline-flex">
+<button class="inline-flex px:15">…</button>
 ```
-(o) Or customize [styles](/docs/styles) to fix this problem.
+(o) Or create the custom style `btn` using the [styles](/docs/styles) configuration.
 ```js name=master.css.js
 export default {
     styles: {
-+        btn: 'inline-flex'
++        btn: 'inline-flex px:15'
     }
 }
 ```
+Restart the VSCode ESLint server to read the modified Master CSS configuration. [#298](https://github.com/master-co/css/issues/298)
+```html
+<button class="btn">…</button>
+```
 
-### Conflicting class checks 🚧
-Soon...
+### Class collision detection
+The class you added may collide with existing classes due to human error or having the same declarations as a third-party custom syntax.
+
+(i) With the [class collision rule](/docs/eslint#class-collision), you'll no longer collide with existing classes.
+<video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
+    <source src="/videos/class-collision-detection.webm" type="video/webm" />
+</video>
+
+(!) <span className="text:warning">"m:10" applies the same CSS declarations as "m:20".</span><br/><span className="text:warning">"m:20" applies the same CSS declarations as "m:10".</span>
+```html
+<div class="m:10 m:20">…</div>
+```
+(o) Fix this @master/css/class-collision problem by removing other colliding classes.
+```html
+<div class="m:10">…</div>
+```
+It can also detect whether declarations with the same selector and media query state collide!
+
+(!) <span className="text:warning">"m:40@sm" applies the same CSS declarations as "m:50@sm".</span><br/><span className="text:warning">"m:50@sm" applies the same CSS declarations as "m:40@sm".</span>
+```html
+<div class="m:40@sm m:50@sm">…</div>
+```
+(o) Fix this @master/css/class-collision problem by removing other colliding classes.
+```html
+<div class="m:50@sm">…</div>
+```
 
 ### Supports JS utilities
+You may be using [clsx](https://github.com/lukeed/clsx) or [class variant](/docs/class-variant) to conditionally apply classes, but unfortunately, they're just pure strings in JavaScript.
+
+(i) You can make arguments of JavaScript [callees](/docs/eslint#calleematching) have Master CSS code linting.
 <video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
     <source src="/videos/supports-js-utilities.webm" type="video/webm" />
 </video>
+
+(x) <span className="text:error">Invalid value for `display` property.</span>
+```tsx
+import clsx from 'clsx'
+
+export default () => (
+    <h1 className={clsx('display:bloc')}>Hello World</h1>
+)
+```
+(x) <span className="text:error">Invalid value for `text-align` property.</span>
+```tsx
+import { styled } from '@master/css.react'
+
+const H1 = styled.h1`text-align:cente`
+
+export default () => <H1>Hello World</H1>
+```

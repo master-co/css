@@ -2,7 +2,7 @@ import { Metadata } from 'shared/types/Metadata'
 
 const metadata: Metadata = {
     title: 'ESLint',
-    description: 'The ESLint config for Master CSS.',
+    description: 'The ESLint configuration and plugin reference for Master CSS.',
     category: 'API Reference'
 }
 
