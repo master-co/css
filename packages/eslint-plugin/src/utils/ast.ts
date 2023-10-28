@@ -1,3 +1,6 @@
+/* eslint-disable no-case-declarations */
+import { Rule } from 'eslint'
+
 const separatorRegEx = /([\t\n\f\r ]+)/
 
 export function extractRangeFromNode(node) {
@@ -36,19 +39,19 @@ export function extractClassnamesFromValue(classStr) {
     if (typeof classStr !== 'string') {
         return { classNames: [], whitespaces: [], headSpace: false, tailSpace: false }
     }
-    let parts = classStr.split(separatorRegEx)
+    const parts = classStr.split(separatorRegEx)
     if (parts[0] === '') {
         parts.shift()
     }
     if (parts[parts.length - 1] === '') {
         parts.pop()
     }
-    let headSpace = separatorRegEx.test(parts[0])
-    let tailSpace = separatorRegEx.test(parts[parts.length - 1])
+    const headSpace = separatorRegEx.test(parts[0])
+    const tailSpace = separatorRegEx.test(parts[parts.length - 1])
     const isClass = (_, i) => (headSpace ? i % 2 !== 0 : i % 2 === 0)
     const isNotClass = (_, i) => (headSpace ? i % 2 === 0 : i % 2 !== 0)
-    let classNames = parts.filter(isClass)
-    let whitespaces = parts.filter(isNotClass)
+    const classNames = parts.filter(isClass)
+    const whitespaces = parts.filter(isNotClass)
     return { classNames: classNames, whitespaces: whitespaces, headSpace: headSpace, tailSpace: tailSpace }
 }
 
@@ -64,7 +67,7 @@ export function extractClassnamesFromValue(classStr) {
  * @param {Array} ignoredKeys Optional, set object keys which should not be parsed e.g. for `cva`
  * @returns {void}
  */
-export function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, isolate = false, ignoredKeys = [], context = null) {
+export function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, isolate = false, ignoredKeys = [], context: Rule.RuleContext = null) {
     // TODO allow vue non litteral
     let originalClassNamesValue
     let classNames
@@ -161,7 +164,7 @@ export function parseNodeRecursive(rootNode, childNode, cb, skipConditional = fa
                 originalClassNamesValue = childNode.value.raw
                 start = childNode.range[0]
                 end = childNode.range[1]
-                const txt = context?.getSourceCode()?.getText(childNode) ?? ''
+                const txt = context?.sourceCode.getText(childNode) ?? ''
                 prefix = getTemplateElementPrefix(txt, originalClassNamesValue)
                 suffix = getTemplateElementSuffix(txt, originalClassNamesValue)
                 break
@@ -195,7 +198,7 @@ export function getTemplateElementSuffix(text, raw) {
 export function getTemplateElementBody(text, prefix, suffix) {
     let arr = text.split(prefix)
     arr.shift()
-    let body = arr.join(prefix)
+    const body = arr.join(prefix)
     arr = body.split(suffix)
     arr.pop()
     return arr.join(suffix)
