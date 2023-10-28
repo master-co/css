@@ -30,7 +30,7 @@ export default {
                     const nodeStartLine = node.loc.start.line
                     const nodeEndLine = node.loc.end.line
                     const ruleOfClass = {}
-
+                    console.log(classNames)
                     classNames
                         .forEach(eachClassName => {
                             ruleOfClass[eachClassName] = createValidRules(eachClassName, { config })[0]

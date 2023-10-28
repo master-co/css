@@ -1,6 +1,7 @@
 import type { RuleListener } from '@typescript-eslint/utils/ts-eslint'
+import { Rule } from 'eslint'
 
-export default function defineVisitors({ context, settings }: any, visitNode) {
+export default function defineVisitors({ context, settings }: { context: Rule.RuleContext, settings: any }, visitNode) {
 
     const isFnNode = (node) => {
         let calleeName = ''
@@ -70,9 +71,9 @@ export default function defineVisitors({ context, settings }: any, visitNode) {
         },
     }
 
-    if (context.parserServices == null || context.parserServices.defineTemplateBodyVisitor == null) {
+    if (context.sourceCode.parserServices == null || context.sourceCode.parserServices.defineTemplateBodyVisitor == null) {
         return scriptVisitor
     } else {
-        return context.parserServices.defineTemplateBodyVisitor(templateBodyVisitor, scriptVisitor)
+        return context.sourceCode.parserServices.defineTemplateBodyVisitor(templateBodyVisitor, scriptVisitor)
     }
 }

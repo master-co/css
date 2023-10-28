@@ -13,9 +13,6 @@ export default function areDeclarationsEqual(aDeclarations, bDeclarations) {
         if (!Object.prototype.hasOwnProperty.call(bDeclarations, key)) {
             return false
         }
-        if (aDeclarations[key] !== bDeclarations[key]) {
-            return false
-        }
     }
 
     // 如果所有属性都匹配，返回true
