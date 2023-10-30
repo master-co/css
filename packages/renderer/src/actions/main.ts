@@ -36,7 +36,7 @@ module.exports = async function action(filePatterns: Pattern | Pattern[], option
             .map(async (eachSourcePath) => {
                 const content = fs.readFileSync(eachSourcePath, { encoding: 'utf-8' })
                 const { html, css } = render(content, config)
-                const renderedCSSText = css.text
+                const renderedCSSText = css?.text
                 const renderedCSSSize = renderedCSSText
                     ? (options.analyze
                         ? zlib.brotliCompressSync(renderedCSSText).length
