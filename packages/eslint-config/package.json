@@ -19,6 +19,10 @@
         "directory": "packages/eslint-config"
     },
     "main": "index.js",
+    "exports": {
+        ".": "./index.js",
+        "./flat": "./flat.js"
+    },
     "publishConfig": {
         "access": "public"
     },

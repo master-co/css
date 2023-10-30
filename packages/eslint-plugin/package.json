@@ -1,7 +1,7 @@
 {
     "name": "@master/eslint-plugin-css",
     "scripts": {
-        "build": "techor pack 'src/**/*.ts' --format cjs",
+        "build": "techor pack 'src/**/*.ts'",
         "dev": "pnpm run build --watch --no-declare",
         "test": "jest",
         "type-check": "tsc --noEmit",
@@ -29,6 +29,9 @@
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
     "files": [
         "dist"
     ],
