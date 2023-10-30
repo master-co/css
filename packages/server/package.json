@@ -1,0 +1,55 @@
+{
+    "name": "@master/css-server",
+    "scripts": {
+        "build": "techor pack --platform node",
+        "dev": "pnpm run build --watch --no-declare",
+        "lint": "eslint ./src",
+        "type-check": "tsc --noEmit",
+        "test": "jest"
+    },
+    "license": "MIT",
+    "description": "Generate Master CSS text from markup on the server",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://css.master.co/docs/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/server"
+    },
+    "keywords": [
+        "server",
+        "static",
+        "html",
+        "markup",
+        "dom",
+        "css",
+        "mastercss"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.bundle.js",
+    "module": "./dist/index.bundle.mjs",
+    "jsnext:main": "./dist/index.bundle.mjs",
+    "esnext": "./dist/index.bundle.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.bundle.mjs",
+            "require": "./dist/index.bundle.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@master/css": "workspace:^",
+        "node-html-parser": "^6.1.11"
+    }
+}
