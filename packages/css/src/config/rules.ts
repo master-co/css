@@ -1,4 +1,4 @@
-import cssEscape from 'shared/utils/css-escape'
+import cssEscape from 'css-shared/utils/css-escape'
 import { START_SYMBOLS } from '../constants/start-symbol'
 import type { Rule } from '../rule'
 import { CSSDeclarations } from '../types/css-declarations'

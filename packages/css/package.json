@@ -78,7 +78,7 @@
         "@techor/extend": "^2.5.4",
         "@techor/pack": "^2.5.4",
         "csstype": "^3.1.2",
-        "shared": "workspace:^",
+        "css-shared": "workspace:^",
         "vite": "^4.2.1",
         "puppeteer": "^21.0.1"
     }

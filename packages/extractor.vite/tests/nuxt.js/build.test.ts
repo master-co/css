@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { execSync } from 'child_process'
-import { copy, rm } from 'shared/utils/fs'
+import { copy, rm } from 'css-shared/utils/fs'
 import { explorePathSync } from '@techor/glob'
 
 const examplePath = path.join(__dirname, '../../../../examples/nuxt.js-with-static-extraction')

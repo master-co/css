@@ -5,10 +5,8 @@ import { RedirectsProvider } from 'shared/contexts/redirects'
 import redirects from '~/redirects.mjs'
 import { Analytics } from '@vercel/analytics/react'
 import config from '../../../../../master.css'
-import dynamic from 'next/dynamic'
-
-const ThemeServiceProvider = dynamic(() => import('@master/css.react/ThemeServiceProvider'))
-const CSSProvider = dynamic(() => import('@master/css.react/CSSProvider'))
+import CSSProvider from '@master/css.react/CSSProvider'
+import ThemeServiceProvider from '@master/css.react/ThemeServiceProvider'
 
 export default async function RootLayout({
     children,

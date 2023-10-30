@@ -1,4 +1,4 @@
-import 'shared/test/matchMedia.mock'
+import 'css-shared/test/matchMedia.mock'
 import '../src/polyfills/css-escape'
 import { Config, MasterCSS, generateFromClasses } from '../src'
 

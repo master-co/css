@@ -10,7 +10,7 @@ import exploreConfig from 'explore-config'
 import { createValidRules } from '@master/css-validator'
 import chokidar from 'chokidar'
 import { EventEmitter } from 'node:events'
-import cssEscape from 'shared/utils/css-escape'
+import cssEscape from 'css-shared/utils/css-escape'
 import { explorePathsSync, explorePathSync } from '@techor/glob'
 import path from 'path'
 

@@ -14,7 +14,7 @@ import path from 'path';
 import mime from 'mime'
 
 const readImage = (filename: string) => {
-    const sharedFolderPath = path.join(process.cwd(), '../../shared')
+    const sharedFolderPath = path.join(process.cwd(), '../../../shared')
     const filepath = path.join(sharedFolderPath, filename.replace('shared/', ''))
     const extname = path.extname(filepath);
     const mimeType = mime.getType(extname);
@@ -45,15 +45,15 @@ const fonts = [
     },
     {
         name: 'NotoSansTC Regular',
-        data: fs.readFileSync(path.resolve('../../shared/fonts/NotoSansTC-Regular.ttf'))
+        data: fs.readFileSync(path.resolve('../../../shared/fonts/NotoSansTC-Regular.ttf'))
     },
     {
         name: 'NotoSansTC Medium',
-        data: fs.readFileSync(path.resolve('../../shared/fonts/NotoSansTC-Medium.ttf'))
+        data: fs.readFileSync(path.resolve('../../../shared/fonts/NotoSansTC-Medium.ttf'))
     },
     {
         name: 'NotoSansTC Black',
-        data: fs.readFileSync(path.resolve('../../shared/fonts/NotoSansTC-Black.ttf'))
+        data: fs.readFileSync(path.resolve('../../../shared/fonts/NotoSansTC-Black.ttf'))
     }
 ]
 

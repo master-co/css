@@ -2,7 +2,7 @@ import { execSync, spawnSync } from 'child_process'
 import { CONFIG_TS_TEXT } from '../../src'
 import { readFileSync } from 'fs'
 import { join } from 'path'
-import { rm } from 'shared/utils/fs'
+import { rm } from 'css-shared/utils/fs'
 
 it('init by tsconfig.json', () => {
     const configFilepath = join(__dirname, 'master.css.ts')

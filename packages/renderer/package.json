@@ -48,7 +48,7 @@
     "devDependencies": {
         "pretty-bytes": "^6.1.0",
         "pretty-hrtime": "^1.0.3",
-        "shared": "workspace:^",
+        "css-shared": "workspace:^",
         "ts-jest": "^29.0.5"
     }
 }

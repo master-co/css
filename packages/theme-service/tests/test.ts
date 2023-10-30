@@ -1,4 +1,4 @@
-import 'shared/test/matchMedia.mock'
+import 'css-shared/test/matchMedia.mock'
 import { init } from '../src'
 
 const themeService = init({ default: 'dark' })

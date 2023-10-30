@@ -2,7 +2,7 @@ import fs from 'fs'
 import { explorePathSync } from '@techor/glob'
 import path from 'upath'
 import { execSync } from 'child_process'
-import { copy, rm } from 'shared/utils/fs'
+import { copy, rm } from 'css-shared/utils/fs'
 
 const examplePath = path.join(__dirname, '../../../../examples/svelte-with-static-extraction')
 const tmpDir = path.join(__dirname, 'tmp/build')

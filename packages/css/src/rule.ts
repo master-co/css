@@ -1,6 +1,6 @@
 import type { MasterCSS } from './core'
 import { START_SYMBOLS } from './constants/start-symbol'
-import cssEscape from 'shared/utils/css-escape'
+import cssEscape from 'css-shared/utils/css-escape'
 import { transformColorWithOpacity } from './functions/transform-color-with-opacity'
 import { CSSDeclarations } from './types/css-declarations'
 import { CoreLayer, Layer } from './layer'

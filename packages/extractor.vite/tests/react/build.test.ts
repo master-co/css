@@ -1,6 +1,6 @@
 import path from 'path'
 import { execSync } from 'child_process'
-import { copy, rm } from 'shared/utils/fs'
+import { copy, rm } from 'css-shared/utils/fs'
 import fs from 'fs'
 import { explorePathSync } from '@techor/glob'
 

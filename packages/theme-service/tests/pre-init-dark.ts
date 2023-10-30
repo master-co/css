@@ -1,4 +1,4 @@
-import 'shared/test/matchMedia.mock'
+import 'css-shared/test/matchMedia.mock'
 import { getPreInitScript } from '../src'
 
 it('checks if init script syncs via localStorage', () => {
