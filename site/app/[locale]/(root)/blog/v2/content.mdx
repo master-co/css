@@ -1,0 +1,117 @@
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus luctus felis eget tellus tempus, in tempor nisl pretium. Sed ac dapibus lectus. Proin sed mauris sed risus mollis bibendum. Ut efficitur mi ut turpis efficitur, et tempor lorem volutpat. Quisque fringilla, turpis eu suscipit rhoncus, tortor enim malesuada risus, id pulvinar lorem felis et nunc. Nullam finibus augue at ipsum luctus iaculis. Aenean et ullamcorper lorem.
+
+<ArticleTOC data={toc}/>
+
+```install
+@master/css@latest
+```
+
+---
+
+## Framework Integration
+Vestibulum fringilla varius semper. Sed in placerat est, in iaculis urna. Sed at dignissim mauris. Cras ac feugiat quam, eget rutrum mauris. Sed consequat placerat neque in dictum. Nullam maximus est ut quam ultrices fringilla. Sed vehicula neque non bibendum ullamcorper. Maecenas mattis scelerisque tortor, ac ullamcorper tellus eleifend a. Suspendisse bibendum nibh at metus tempus, ac dignissim sem viverra. Morbi a tortor tincidunt, aliquam lectus nec, convallis mauris. Fusce non lorem vitae mauris ultrices aliquam. Donec id risus id massa lacinia semper. Curabitur laoreet magna a fringilla congue.
+
+---
+
+## New Configuration API
+
+### `.animations`
+You can now customize CSS [animations](/docs/configuration#animations) in `master.css.js`:
+```js name=master.css.js
+export default {
+    animations: {
+        fade: {
+            '0%': { opacity: 0 },
+            'to': { opacity: 1 }
+        },
+        …
+    }
+}
+```
+Apply the `fade` keyframe via [animation syntax](/docs/animation):
+```html
+<div class="**@fade|.5s|ease**"></div>
+```
+It only generates the CSS keyframe rule used:
+```css
++@keyframes fade {
++    0% {
++        opacity: 0
++    }
++
++    to {
++        opacity: 1
++    }
++}
+
+.\@fade\|\.5s\|ease {
+    animation: fade .5s ease
+}
+```
+
+---
+
+## Simplified Syntax
+
+### `animation-play-state:` to `@play:`
+```html
+-<div class="animation-play-state:paused">
+-<div class="animation-play-state:running">
++<div class="@play:paused">
++<div class="@play:running">
+```
+To learn more, check out the [Animaiton Play State](/docs/animation-play-state) documentation.
+
+### `animation-fill-mode:` to `@fill:`
+```html
+-<div class="animation-fill-mode:forwards">
+-<div class="animation-fill-mode:backwards">
+-<div class="animation-fill-mode:both">
++<div class="@fill:forwards">
++<div class="@fill:backwards">
++<div class="@fill:both">
+```
+To learn more, check out the [Animaiton Fill Mode](/docs/animation-fill-mode) documentation.
+
+### `animation-iteration-count:` to `@iteration:`
+```html
+-<div class="animation-iteration-count:infinite">
++<div class="@fill:infinite">
+```
+To learn more, check out the [Animaiton Fill Mode](/docs/animation-iteration-count) documentation.
+
+### `animation-direction` values
+```html
+-<div class="animation-direction:alternate">
+-<div class="animation-direction:alternate-reverse">
++<div class="@direction:alt">
++<div class="@direction:alt-reverse">
+```
+To learn more, check out the [Animaiton Direction](/docs/animation-direction) documentation.
+
+---
+
+## Enhanced Services
+
+### Theme Service
+Install the theme service separately and initialize it:
+```js
+import ThemeService from 'theme-service'
+
+export const themeService = new ThemeService({ default: 'dark' })
+```
+For React, check out the [Theme Service for React](/docs/theme-service/react).
+
+It helps you set up:
+```html
+<html class="**dark**" style="**color-scheme: dark**">
+    <body>
+        <h1 class="bg:black@dark ˟˟bg:white@light˟˟">Hello World</h1>
+    </body>
+</html>
+```
+To switch themes:
+```js
+themeService.switch('light')
+```
+Check out the full documentation [Theme Service](/docs/theme-service).

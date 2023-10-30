@@ -1,0 +1,107 @@
+import { settings, configs } from '@master/eslint-plugin-css'
+
+## Usage [sr-only]
+
+```json name=.eslintrc.json
+{
+    "extends": ["@master/css"]
+}
+```
+The extended recommended configuration:
+<Code lang="js">
+    {JSON.stringify(configs.recommended, null, 4)}
+</Code>
+
+---
+
+## Rules
+### `class-order`
+Enforce a consistent and logical order of classes.
+```json name=.eslintrc.json
+{
+    "rules": {
+        "@master/css/class-order": "warn"
+    }
+}
+```
+
+### `class-validation`
+Detect syntax errors early when writing classes.
+```json name=.eslintrc.json
+{
+    "rules": {
+        "@master/css/class-validation": "error"
+    }
+}
+```
+Set `disallowUnknownClass: true` to disallow unknow classes and enforce strict checks:
+```json name=.eslintrc.json
+{
+    "rules": {
+        "@master/css/class-validation": ["error", {
+            "disallowUnknownClass": true
+        }]
+    }
+}
+```
+
+### `class-collision`
+Avoid applying classes with the same CSS declaration.
+```json name=.eslintrc.json
+{
+    "rules": {
+        "@master/css/class-collision": "warn"
+    }
+}
+```
+
+---
+
+## Settings
+### `calleeMatching`
+Specify the names of the callee to check its arguments.
+<Code lang="json" name=".eslintrc.json">
+{`
+    {
+        "settings": {
+            "calleeMatching": "${settings.calleeMatching}"
+        }
+    }
+`}
+</Code>
+
+### `classMatching`
+Specify the attribute/property to check classes.
+<Code lang="json" name=".eslintrc.json">
+{`
+    {
+        "settings": {
+            "classMatching": "${settings.classMatching}"
+        }
+    }
+`}
+</Code>
+
+### `ignoredKeys`
+Specifies object keys to ignore checking.
+<Code lang="json" name=".eslintrc.json">
+{`
+    {
+        "settings": {
+            "ignoredKeys": ${JSON.stringify(settings.ignoredKeys)}
+        }
+    }
+`}
+</Code>
+
+### `config`
+Specify a custom Master CSS configuration or path.
+<Code lang="json" name=".eslintrc.json">
+{`
+    {
+        "settings": {
+            "config": "${settings.config}"
+        }
+    }
+`}
+</Code>

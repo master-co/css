@@ -1,0 +1,45 @@
+<StepSection className="mt:50">
+    <Step $row>
+        <StepL>
+            ### <StepNum />Installation
+            Install the plugin and parser into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            -D @master/eslint-config-css@beta vue-eslint-parser eslint
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up your config
+            Create [`.eslintrc.json`](https://eslint.org/docs/latest/use/getting-started) if you don't have one.
+            - Add `@master/css` to the `extends` section.
+            - Add `vue-eslint-parser` to the `overrides` section.
+        </StepL>
+        <StepR>
+            ```json name=.eslintrc.json
+            {
+                "extends": ["@master/css"],
+                "parserOptions": {
+                    "ecmaFeatures": {
+                        "jsx": true
+                    }
+                },
+                "overrides": [
+                    {
+                        "files": ["*.vue"],
+                        "parser": "vue-eslint-parser"
+                    }
+                ]
+            }
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start linting your code
+        ```bash
+        npx eslint *.vue
+        ```
+    </Step>
+</StepSection>

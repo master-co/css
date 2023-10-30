@@ -1,0 +1,13 @@
+{
+    "extends": "next/core-web-vitals",
+    "rules": {
+        "import/no-anonymous-default-export": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@next/next/google-font-display": "off",
+        "@next/next/google-font-preconnect": "off",
+        "@next/next/no-page-custom-font": "off",
+        "no-html-link-for-pages": "off",
+        "react/display-name": "off"
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "functions": {
+        "app/api/generate-page-cache/route.ts": {
+            "memory": 3008
+        }
+    }
+}

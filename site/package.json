@@ -1,0 +1,22 @@
+{
+    "name": "css.master.co",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build && npx mcss render \".next/**/*.html\"",
+        "start": "next start",
+        "lint": "next lint",
+        "type-check": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@monaco-editor/react": "^4.6.0",
+        "accept-language": "^3.0.18",
+        "cheerio": "1.0.0-rc.12",
+        "clone-deep": "^4.0.1",
+        "monaco-editor": "^0.44.0",
+        "monaco-editor-textmate": "^4.0.0",
+        "monaco-textmate": "^3.0.1",
+        "shared": "workspace:*"
+    }
+}
