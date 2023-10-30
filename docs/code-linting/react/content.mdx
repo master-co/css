@@ -21,6 +21,11 @@
             ```json name=.eslintrc.json
             {
                 "extends": ["@master/css"],
+                "parserOptions": {
+                    "ecmaFeatures": {
+                        "jsx": true
+                    }
+                },
                 "overrides": [
                     {
                         "files": ["*.ts", "*.tsx", "*.js"],

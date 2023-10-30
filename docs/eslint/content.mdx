@@ -1,5 +1,4 @@
-import defaultConfigurationScript from '../../packages/eslint-config/index.js?text'
-import defaultSettings from '../../packages/eslint-plugin/src/settings.ts'
+import { settings, configs } from '@master/eslint-plugin-css'
 
 ## Usage [sr-only]
 
@@ -8,9 +7,9 @@ import defaultSettings from '../../packages/eslint-plugin/src/settings.ts'
     "extends": ["@master/css"]
 }
 ```
-The `@master/eslint-config-css` package default configuration:
+The extended recommended configuration:
 <Code lang="js">
-    {defaultConfigurationScript}
+    {JSON.stringify(configs.recommended, null, 4)}
 </Code>
 
 ---
@@ -65,7 +64,7 @@ Specify the names of the callee to check its arguments.
 {`
     {
         "settings": {
-            "calleeMatching": "${defaultSettings.calleeMatching}"
+            "calleeMatching": "${settings.calleeMatching}"
         }
     }
 `}
@@ -77,7 +76,7 @@ Specify the attribute/property to check classes.
 {`
     {
         "settings": {
-            "classMatching": "${defaultSettings.classMatching}"
+            "classMatching": "${settings.classMatching}"
         }
     }
 `}
@@ -89,7 +88,7 @@ Specifies object keys to ignore checking.
 {`
     {
         "settings": {
-            "ignoredKeys": ${JSON.stringify(defaultSettings.ignoredKeys)}
+            "ignoredKeys": ${JSON.stringify(settings.ignoredKeys)}
         }
     }
 `}
@@ -101,7 +100,7 @@ Specify a custom Master CSS configuration or path.
 {`
     {
         "settings": {
-            "config": "${defaultSettings.config}"
+            "config": "${settings.config}"
         }
     }
 `}
