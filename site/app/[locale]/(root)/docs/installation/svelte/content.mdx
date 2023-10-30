@@ -77,7 +77,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             1. Dynamic `js import("@master/css.svelte")`
             2. Dynamic `js import('../master.css')`
             3. Use `Fragment` to keep the content pre-rendered
-            
+
             `@master/css.svelte` and `master.css.ts` will not be included in the page's initial JavaScript bundle.
         </StepL>
         <StepR>
@@ -104,17 +104,17 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     <Step $row>
         <StepL>
             ### <StepNum />Set up Master CSS renderer
-            Create a `src/hooks.server.js` and use the `renderHTML()` to scan the rendered HTML of the Svelte pages, extract class names, generate CSS rules, and inject the CSS text.
+            Create a `src/hooks.server.js` and use the `render()` to scan the rendered HTML of the Svelte pages, extract class names, generate CSS rules, and inject the CSS text.
         </StepL>
         <StepR>
             ```js name=src/hooks.server.js
-            +import { renderHTML } from '@master/css'
+            +import { render } from '@master/css-server'
             +import { config } from './master.css'
 
             /** @type {import('@sveltejs/kit').Handle} */
             export async function handle({ event, resolve }) {
                 return await resolve(event, {
-            +        transformPageChunk: ({ html }) => renderHTML(html, config)
+            +        transformPageChunk: ({ html }) => render(html, config).html
                 })
             }
             ```

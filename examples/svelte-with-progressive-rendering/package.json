@@ -11,6 +11,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-server": "workspace:^",
         "@master/css.svelte": "workspace:^"
     },
     "devDependencies": {

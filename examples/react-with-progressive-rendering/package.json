@@ -14,6 +14,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-server": "workspace:^",
         "@master/css.react": "workspace:^",
         "react": "^18.2.0",
         "react-dom": "^18.2.0"

@@ -70,7 +70,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         </StepL>
         <StepR>
             ```install
-            **@master/css.react@beta** **@master/css-renderer**
+            **@master/css.react@beta** **@master/css-renderer** **@master/css-server**
             ```
         </StepR>
     </Step>
@@ -131,7 +131,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                             import '../styles/globals.css'
                             import type { AppProps } from 'next/app'
                             +import dynamic from 'next/dynamic'
-                            
+
                             +const CSSProvider = dynamic(() => import('@master/css.react').then((m) => m.CSSProvider))
 
                             export default function App({ Component, pageProps }: AppProps) {
@@ -177,7 +177,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                         lang: 'tsx',
                         code: `
                             import NextDocument, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
-                            +import { renderHTML } from '@master/css'
+                            +import { renderAsCSS } from '@master/css-server'
                             +import { config } from '../master.css'
 
                             export default function Document() {
@@ -194,12 +194,12 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
 
                             +Document.getInitialProps = async (ctx: DocumentContext) => {
                             +    const initialProps = await NextDocument.getInitialProps(ctx)
-                            +    const cssText = renderHTML(initialProps.html, config)
+                            +    const css = renderAsCSS(initialProps.html, config)
                             +    return {
                             +        ...initialProps,
                             +        styles: (
                             +            <>
-                            +                <style id="master" dangerouslySetInnerHTML={{ __html: cssText }}></style>
+                            +                <style id="master" dangerouslySetInnerHTML={{ __html: css.text }}></style>
                             +                {initialProps.styles}
                             +            </>
                             +        )

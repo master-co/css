@@ -1,4 +1,4 @@
-import { renderHTML } from '@master/css'
+import { render } from '@master/css-server'
 import config from './master.css'
 import 'zone.js/node'
 
@@ -36,7 +36,7 @@ export function app(): express.Express {
             (error: Error, html: string) => {
                 error
                     ? console.error(error)
-                    : res.send(renderHTML(html, config))
+                    : res.send(render(html, config).html)
             }
         )
     })

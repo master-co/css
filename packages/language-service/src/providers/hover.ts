@@ -1,5 +1,5 @@
 import type { Hover, Range } from 'vscode-languageserver-types'
-import { generateFromClasses } from '@master/css'
+import MasterCSS from '@master/css'
 import { css_beautify } from 'js-beautify/js/lib/beautify-css'
 import { getCssEntryMarkdownDescription } from '../utils/get-css-entry-markdown-description'
 import { masterCssKeyValues } from '../constant'
@@ -27,7 +27,9 @@ export function doHover(instance: string, range: Range, config?: any): Hover | n
 }
 
 function getCssPreview(syntax: string, config: any) {
-    const renderText = generateFromClasses([syntax], config)
+    const css = new MasterCSS(config)
+    css.insert(syntax)
+    const renderText = css.text
     if (!renderText || renderText == ' ') {
         return null
     }

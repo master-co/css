@@ -1,7 +1,6 @@
 'use client'
 
 import DocTable from "shared/components/DocTable";
-import { generateFromClasses } from '@master/css';
 import { Fragment, useMemo, useState } from "react";
 import { beautifyCSS } from 'shared/utils/beautifyCSS';
 import line from 'to-line';
@@ -9,6 +8,7 @@ import { snackbar } from 'shared/utils/snackbar';
 import copy from 'copy-to-clipboard';
 import InlineCode from 'shared/components/InlineCode';
 import dedent from 'ts-dedent';
+import MasterCSS from '@master/css';
 
 export default function SyntaxTable({ title, value, children, previewClass, ...props }: any) {
     const [selectedClassName, setSelectedClassName] = useState(props.default)
@@ -70,7 +70,10 @@ const processCssText = (name: string | Record<string, any>) => {
         : name)
     // `size` -> 9999999999
     target = target.replace(/`size`/g, '1600')
-    let text = generateFromClasses(target.split(' '))
+    const classes = target.split(' ')
+    const css = new MasterCSS()
+    classes.forEach((eachClass: string) => css.insert(eachClass))
+    let text = css.text
     if (!text) return
     text = beautifyCSS(text)
     return text?.replace(/\..*(?:\\}|\\}\\\))(?={.*:[^}]*})/, '')

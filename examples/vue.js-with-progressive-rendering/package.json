@@ -16,6 +16,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-server": "workspace:^",
         "@master/css.vue": "workspace:^",
         "pinia": "^2.1.4",
         "server-static": "^2.0.5",

@@ -1,7 +1,7 @@
 
 import log from '@techor/log'
 import type { Pattern } from 'fast-glob'
-import { renderHTML } from '@master/css'
+import { render } from '@master/css-server'
 import zlib from 'zlib'
 import fs from 'fs'
 import prettyBytes from 'pretty-bytes'
@@ -26,7 +26,7 @@ module.exports = async function action(filePatterns: Pattern | Pattern[], option
                     return max
                 }
             })
-            .length + 10,
+                .length + 10,
             20
         )
         const col2Width = 8
@@ -35,12 +35,8 @@ module.exports = async function action(filePatterns: Pattern | Pattern[], option
         await Promise.all(sourcePaths
             .map(async (eachSourcePath) => {
                 const content = fs.readFileSync(eachSourcePath, { encoding: 'utf-8' })
-                const renderedContent = renderHTML(content, config)
-                let renderedCSSText = ''
-                renderedContent.replace(/<style id="master">(.*?)<\/style>/, (_, text) => {
-                    renderedCSSText = text
-                    return ''
-                })
+                const { html, css } = render(content, config)
+                const renderedCSSText = css.text
                 const renderedCSSSize = renderedCSSText
                     ? (options.analyze
                         ? zlib.brotliCompressSync(renderedCSSText).length
@@ -48,8 +44,8 @@ module.exports = async function action(filePatterns: Pattern | Pattern[], option
                     : 0
                 const prettifiedCSSSize = prettyBytes(renderedCSSSize, { space: false })
                 if (!options.analyze) {
-                    if (content !== renderedContent) {
-                        fs.writeFileSync(eachSourcePath, renderedContent)
+                    if (content !== html) {
+                        fs.writeFileSync(eachSourcePath, html)
                     }
                 }
                 log.ok`**${eachSourcePath}**${' '.repeat(col1Width - eachSourcePath.length - 2)}${prettifiedCSSSize.padStart(col2Width)}`

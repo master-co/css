@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
-import { renderHTML } from '@master/css'
+import { render as masterCSSRender } from '@master/css-server'
 import config from './master.css.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -85,7 +85,7 @@ export async function createServer(
 
             const html = template.replace(`<!--app-html-->`, appHtml)
 
-            res.status(200).set({ 'Content-Type': 'text/html' }).end(renderHTML(html, config))
+            res.status(200).set({ 'Content-Type': 'text/html' }).end(masterCSSRender(html, config).html)
         } catch (e) {
             !isProd && vite.ssrFixStacktrace(e)
             console.log(e.stack)

@@ -1,7 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import dedent from 'ts-dedent'
-import action from '../src/actions/main'
+
+const action = require('../src/actions/main')
 
 it('render css text into <head>', async () => {
     const filePath = path.join(__dirname, './a.test.html')

@@ -81,32 +81,6 @@ MasterCSS.refresh()
 ---
 
 ## Functions
-### `extractClassesFromHTML()`
-Extract classes from class attributes in HTML.
-<DocFn>
-    {[
-        { name: 'html', type: 'string', defaultValue: 'undefined' },
-        { name: 'return', type: 'string[]' },
-    ]}
-</DocFn>
-```ts
-import { extractClassesFromHTML } from '@master/css'
-
-const html: string = `
-    <html>
-        <head></head>
-        <body class="**bg:red**">
-            <h1 class="**text:center** **font:32**">Hello World</h1>
-        </body>
-    </html>
-`
-const result = extractClassesFromHTML(html)
-```
-Result:
-```js
-['bg:red', 'text:center', 'font:32']
-```
-
 ### `fillColorScale()`
 Fills 1~99 shades based on the average of adjacent shades.
 <DocFn>
@@ -142,54 +116,6 @@ Now you have richer intermediate color variables to work with:
 <div class="bg:**slate-98**"></div>
 ```
 
-### `generateFromClasses()`
-Generates the sorted CSS text from Master CSS classes.
-<DocFn>
-    {[
-        { name: 'classes', type: 'string[]', defaultValue: 'undefined' },
-        { name: 'config?', type: 'Config', defaultValue: 'undefined' },
-        { name: 'return', type: 'string' },
-    ]}
-</DocFn>
-```ts
-import { generateFromClasses } from '@master/css'
-
-const classes: string[] = ['text:center', 'font:32']
-const result = generateFromClasses(classes)
-```
-Result:
-```css
-.font\:32{font-size:2rem}.text\:center{text-align:center}
-```
-
-### `generateFromHTML()`
-Generates the sorted CSS text from HTML.
-<DocFn>
-    {[
-        { name: 'html', type: 'string', defaultValue: 'undefined' },
-        { name: 'config?', type: 'Config', defaultValue: 'undefined' },
-        { name: 'return', type: 'string' },
-    ]}
-</DocFn>
-```ts
-import { generateFromHTML } from '@master/css'
-import { config } from './master.css'
-
-const html: string = `
-    <html>
-        <head></head>
-        <body>
-            <h1 class="text:center font:32">Hello World</h1>
-        </body>
-    </html>
-`
-const result = generateFromHTML(html, config)
-```
-Result：
-```css
-.font\:32{font-size:2rem}.text\:center{text-align:center}
-```
-
 ### `initRuntime()`
 Initializes the Master CSS runtime rendering engine.
 <DocFn>
@@ -209,40 +135,5 @@ Equivalent to:
 import MasterCSS from '@master/css'
 
 const css = new MasterCSS().observe()
-```
-
-### `renderHTML()`
-Renders the page-required and sorted CSS text from HTML and injected it back into HTML.
-<DocFn>
-    {[
-        { name: 'html', type: 'string', defaultValue: 'undefined' },
-        { name: 'config?', type: 'Config', defaultValue: 'undefined' },
-        { name: 'return', type: 'string' },
-    ]}
-</DocFn>
-```ts
-import { renderHTML } from '@master/css'
-import { config } from './master.css'
-
-const html: string = `
-    <html>
-        <head></head>
-        <body>
-            <h1 class="text:center font:32">Hello World</h1>
-        </body>
-    </html>
-`
-const result = renderHTML(html, config)
-```
-Result:
-```html
-<html>
-    <head>
-        <style id="master">.font\:32{font-size:2rem}.text\:center{text-align:center}</style>
-    </head>
-    <body>
-        <h1 class="text:center font:32">Hello World</h1>
-    </body>
-</html>
 ```
 

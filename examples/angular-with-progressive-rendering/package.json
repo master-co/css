@@ -24,6 +24,7 @@
         "@angular/platform-server": "^16.0.0",
         "@angular/router": "^16.0.0",
         "@master/css": "workspace:^",
+        "@master/css-server": "workspace:^",
         "@nguniversal/express-engine": "^16.0.2",
         "express": "^4.15.2",
         "rxjs": "~7.8.0",

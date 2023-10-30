@@ -50,6 +50,7 @@
         "access": "public"
     },
     "dependencies": {
-        "@master/css": "workspace:^"
+        "@master/css": "workspace:^",
+        "@master/css-server": "workspace:^"
     }
 }
