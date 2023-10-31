@@ -1,7 +1,6 @@
 import type { MasterCSS } from './core'
 import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'css-shared/utils/css-escape'
-import { transformColorWithOpacity } from './functions/transform-color-with-opacity'
 import { CSSDeclarations } from './types/css-declarations'
 import { CoreLayer, Layer } from './layer'
 
@@ -15,8 +14,10 @@ export class Rule {
     readonly order: number = 0
     readonly stateToken: string
     readonly declarations: CSSDeclarations
+    readonly colored: boolean = false
 
     animationNames: string[]
+    variableNames: string[]
 
     constructor(
         public readonly className: string,
@@ -24,8 +25,9 @@ export class Rule {
             id?: string
             match?: RegExp | [string, string[]?]
             resolvedMatch?: RegExp
-            resolvedVariables?: any
-            variables?: Record<string, string | number> | Array<string | number | Record<string, string | number>>
+            resolvedNormalVariables?: any
+            resolvedColorVariables?: any
+            variableGroups?: string[]
             order?: number
             separators?: string[]
             shorthand?: string
@@ -45,24 +47,181 @@ export class Rule {
         } = {},
         public css: MasterCSS
     ) {
-        const { layer, unit, colored: configColored, resolvedPropName, analyze, transform, declare, create, order, id } = options
+        const { layer, unit, colored: configColored, resolvedPropName, analyze, transform, declare, create, order, id, resolvedNormalVariables, resolvedColorVariables } = options
         this.order = order
         if (!options.unit) options.unit = ''
         if (!options.separators) options.separators = [',']
         const { scope, important, functions, themeDriver } = css.config
-        const { themeNames, colorNames, colors, selectors, mediaQueries, stylesBy, animations } = css
+        const { selectors, mediaQueries, stylesBy, animations, colorVariables, normalVariables } = css
         const classNames = stylesBy[className]
+        const separators = [',']
+        if (this.options.separators.length) {
+            separators.push(...this.options.separators)
+        }
 
         if (create) create.call(this, className)
 
         // 1. value / selectorToken
         this.declarations = options.declarations
-
-        let hasMultipleThemes: boolean
-        let prefixToken: string
         let stateToken: string
-        let valueSplits: (string | { value: string, unit?: string })[]
-        let colored = configColored
+        let prefixToken: string
+        this.colored = configColored
+
+        const transform2ValueNodes = (
+            currentValueNodes: Rule['valueNodes'],
+            i: number,
+            value: string,
+            unit: string,
+            endSymbol?: string,
+            parentFunctionName = undefined,
+            bypassVariableNames: string[] = []
+        ) => {
+            const root = parentFunctionName === undefined
+            const isVarFunction = !root
+                && (
+                    parentFunctionName.endsWith('$')
+                    || parentFunctionName.endsWith('var')
+                )
+            const checkIsString = (value: string) => value === '\'' || value === '"'
+            const isString = checkIsString(endSymbol)
+    
+            let currentValue = ''
+            const transform2ValueNode = () => {
+                if (currentValue) {
+                    let handled = false
+                    if (!isVarFunction) {
+                        const normalVariable = Object.prototype.hasOwnProperty.call(resolvedNormalVariables, currentValue)
+                            ? resolvedNormalVariables[currentValue]
+                            : Object.prototype.hasOwnProperty.call(normalVariables, currentValue)
+                                ? normalVariables[currentValue]
+                                : undefined
+                        if (normalVariable) {
+                            const variableName = normalVariable.name ?? currentValue
+                            if (!bypassVariableNames.includes(variableName)) {
+                                handled = true
+    
+                                currentValueNodes.push({ type: 'variable', name: variableName })
+                            }
+                        } else if (this.colored) {
+                            const [colorName, alpha] = currentValue.split('/')
+                            const colorVariable = Object.prototype.hasOwnProperty.call(resolvedColorVariables, colorName)
+                                ? resolvedColorVariables[colorName]
+                                : Object.prototype.hasOwnProperty.call(colorVariables, colorName)
+                                    ? colorVariables[colorName]
+                                    : undefined
+                            if (colorVariable) {
+                                const variableName = colorVariable.name ?? colorName
+                                if (!bypassVariableNames.includes(variableName)) {
+                                    handled = true
+    
+                                    currentValueNodes.push({ type: 'variable', name: variableName, alpha })
+                                }
+                            }
+                        }
+                    }
+    
+                    if (!handled) {
+                        const uv = this.resolveUnitValue(currentValue, unit)
+                        currentValueNodes.push((uv?.value ?? currentValue) + (uv?.unit ?? ''))
+                    }
+    
+                    currentValue = ''
+                }
+            }
+    
+            for (; i < value.length; i++) {
+                const val = value[i]
+                if (val === endSymbol) {
+                    if (isString) {
+                        let count = 0
+                        for (let j = currentValue.length - 1; ; j--) {
+                            if (currentValue[j] !== '\\')
+                                break
+                            
+                            count++
+                        }
+                        if (count % 2) {
+                            currentValue += val
+                            continue
+                        } else {
+                            transform2ValueNode()
+                        }
+                    } else {
+                        transform2ValueNode()
+                    }
+    
+                    return i
+                } else if (!isString && val in START_SYMBOLS) {
+                    const functionName = currentValue
+                    const newValueNode: Rule['valueNodes'][0] = { type: 'function', name: functionName, symbol: val, childrens: [] }
+                    currentValueNodes.push(newValueNode)
+                    currentValue = ''
+    
+                    const functionConfig = val === '(' && functions?.[functionName]
+                    if (!this.colored && functionConfig?.colored) {
+                        // @ts-ignore
+                        this.colored = true
+                    }
+                   
+                    i = transform2ValueNodes(
+                        newValueNode.childrens,
+                        ++i,
+                        value,
+                        functionConfig?.unit ?? unit,
+                        START_SYMBOLS[val],
+                        functionName || parentFunctionName || ''
+                    )
+                } else if ((val === '|' || val === ' ') && endSymbol !== '}' && (!isString || parentFunctionName === 'path')) {
+                    transform2ValueNode()
+    
+                    currentValueNodes.push({ type: 'separator', value: ' ' })
+                } else {
+                    if (!isString) {
+                        if (val === '.') {
+                            if (isNaN(+value[i + 1])) {
+                                if (root) 
+                                    break
+                            } else if (value[i - 1] === '-') {
+                                currentValue += '0'
+                            }
+                        } else if (separators.includes(val)) {
+                            transform2ValueNode()
+    
+                            currentValueNodes.push({ 
+                                type: 'separator', 
+                                value: val, 
+                                prefixWhite: val !== ',',
+                                suffixWhite: val !== ','
+                            })
+    
+                            continue
+                        } else if (
+                            root
+                            && (
+                                val === '#' && (currentValue || currentValueNodes.length && currentValueNodes[currentValueNodes.length - 1]['type'] !== 'separator')
+                                || ['!', '*', '>', '+', '~', ':', '[', '@', '_'].includes(val)
+                            )
+                        ) {
+                            break
+                        }
+                    }
+    
+                    currentValue += val
+                }
+            }
+    
+            transform2ValueNode()
+    
+            return i
+        }
+        const pushVariableName = (variableName: string) => {
+            if (!this.variableNames) {
+                this.variableNames = []
+            }
+            if (!this.variableNames.includes(variableName)) {
+                this.variableNames.push(variableName)
+            }
+        }
 
         if (layer === CoreLayer.Semantic) {
             stateToken = className.slice(id.length - 1)
@@ -75,175 +234,9 @@ export class Rule {
                 this.prefix = className.slice(0, indexOfColon + 1)
                 valueToken = className.slice(indexOfColon + 1)
             }
-            valueSplits = []
+            this.valueNodes = []
 
-            // eslint-disable-next-line @typescript-eslint/no-this-alias
-            const instance = this
-            const variables = options.resolvedVariables
-            const separators = [',']
-            if (options.separators.length) {
-                separators.push(...options.separators)
-            }
-            let currentValueToken = ''
-            let i = 0;
-
-            (function analyze(
-                valueToken: string,
-                unit: string,
-                endSymbol?: string,
-                parentFunctionName = undefined,
-                usedValues: string[] = [],
-                usedGlobalValues: string[] = [],
-                bypassAnalyzeUnitValue?: boolean
-            ) {
-                const root = parentFunctionName === undefined
-                let lastPushIndex: number
-
-                const checkIsString = (value: string) => value === '\'' || value === '"'
-                const reloadLastPushIndex = () => lastPushIndex = currentValueToken.length
-                const transformAndPushValueToken = () => {
-                    if (currentValueToken) {
-                        const originalCurrentValueToken = currentValueToken
-                        const value = root
-                            ? originalCurrentValueToken
-                            : currentValueToken.slice(lastPushIndex)
-                        currentValueToken = ''
-                        functionName = ''
-
-                        if (variables && value in variables && !usedValues.includes(value)) {
-                            const originalIndex = i
-                            i = 0
-                            analyze(variables[value].toString(), unit, undefined, parentFunctionName, [...usedValues, value], usedGlobalValues, bypassAnalyzeUnitValue)
-                            i = originalIndex
-
-                            if (!root) {
-                                currentValueToken = originalCurrentValueToken.slice(0, lastPushIndex) + currentValueToken
-                            }
-                        } else if (root) {
-                            const uv = !bypassAnalyzeUnitValue && instance.resolveUnitValue(value, unit)
-                            valueSplits.push({ value: uv?.value ?? value, unit: uv?.unit })
-                        } else {
-                            const uv = !bypassAnalyzeUnitValue && instance.resolveUnitValue(value, unit)
-                            currentValueToken = uv
-                                ? originalCurrentValueToken.slice(0, lastPushIndex) + uv.value + uv.unit
-                                : originalCurrentValueToken
-                        }
-
-                        reloadLastPushIndex()
-                    }
-                }
-
-                const isString = checkIsString(endSymbol)
-                reloadLastPushIndex()
-                let functionName = ''
-
-                for (; i < valueToken.length; i++) {
-                    const val = valueToken[i]
-                    if (val === endSymbol) {
-                        if (isString) {
-                            currentValueToken += val
-
-                            let count = 0
-                            for (let j = currentValueToken.length - 2; ; j--) {
-                                if (currentValueToken[j] !== '\\') {
-                                    break
-                                }
-                                count++
-                            }
-                            if (count % 2) {
-                                continue
-                            }
-                        } else {
-                            transformAndPushValueToken()
-
-                            currentValueToken += val
-                        }
-
-                        return
-                    } else if (!isString && val in START_SYMBOLS) {
-                        const functionConfig = val === '(' && functionName && functions?.[functionName]
-                        if (!colored && functionConfig?.colored) {
-                            colored = true
-                        }
-
-                        currentValueToken += val
-                        i++
-
-                        const nextEndSymbol = START_SYMBOLS[val]
-                        analyze(valueToken,
-                            functionConfig?.unit ?? unit,
-                            nextEndSymbol,
-                            functionName || parentFunctionName || '',
-                            usedValues,
-                            usedGlobalValues,
-                            bypassAnalyzeUnitValue || !!functionConfig?.transform)
-
-                        if (functionConfig?.transform) {
-                            currentValueToken = currentValueToken.slice(0, lastPushIndex)
-                                + functionConfig.transform.call(instance,
-                                    functionName + '(',
-                                    currentValueToken.slice(lastPushIndex + (currentValueToken.slice(lastPushIndex).startsWith(functionName) ? functionName.length + 1 : 0), -1),
-                                    currentValueToken.slice(-1)
-                                )
-                        }
-
-                        if (root) {
-                            if (checkIsString(nextEndSymbol)) {
-                                valueSplits.push(currentValueToken)
-                                currentValueToken = ''
-                            } else {
-                                transformAndPushValueToken()
-                            }
-                        }
-
-                        functionName = ''
-                    } else if ((val === '|' || val === ' ') && endSymbol !== '}' && (!isString || parentFunctionName === 'path')) {
-                        transformAndPushValueToken()
-
-                        if (!root) {
-                            currentValueToken += ' '
-                            lastPushIndex++
-                        }
-                    } else {
-                        if (!isString) {
-                            if (val === '.') {
-                                if (isNaN(+valueToken[i + 1])) {
-                                    if (root) break
-                                } else if (valueToken[i - 1] === '-') {
-                                    currentValueToken += '0'
-                                }
-                            } else if (separators.includes(val)) {
-                                transformAndPushValueToken()
-
-                                if (root) {
-                                    valueSplits.push(val)
-                                } else {
-                                    currentValueToken += val
-                                    lastPushIndex++
-                                }
-                                continue
-                            } else if (
-                                root
-                                && (val === '#'
-                                    && (currentValueToken || valueSplits.length && (valueToken[i - 1] !== '|' && valueSplits[i - 1] !== ' '))
-                                    || ['!', '*', '>', '+', '~', ':', '[', '@', '_'].includes(val))
-                            ) {
-                                break
-                            }
-
-                            functionName += val
-                        }
-
-                        currentValueToken += val
-                    }
-                }
-
-                if (parentFunctionName === undefined) {
-                    transformAndPushValueToken()
-                }
-            })(valueToken, unit)
-
-            stateToken = valueToken.slice(i)
+            stateToken = valueToken.slice(transform2ValueNodes(this.valueNodes, 0, valueToken, unit))
         }
 
         // 2. !important
@@ -544,217 +537,224 @@ export class Rule {
         }
 
         // 7. value
-        const insertNewNative = (theme: string, bypassWhenUnmatchColor: boolean) => {
-            let newValue: string
-
-            const generateCssText = (
-                propertiesText: string,
-                theme: string,
-                prefixSelectors: string[],
-                suffixSelectors: string[]
-            ) => {
-                let prefixText = ''
-                if (this.direction) {
-                    prefixText += '[dir=' + this.direction + '] '
-                }
-
-                const prefixTexts = prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText)
-                const getCssText = (theme: string, name: string) =>
-                    prefixTexts
-                        .map(eachPrefixText => ((theme && themeDriver !== 'media')
-                            ? themeDriver === 'host'
-                                ? `:host(.${theme}) `
-                                : `.${theme} `
-                            : '')
-                            + (scope ? scope + ' ' : '')
-                            + eachPrefixText)
-                        .reduce((arr, eachPrefixText) => {
-                            arr.push(
-                                suffixSelectors
-                                    .reduce((_arr, eachSuffixSelector) => {
-                                        _arr.push(eachPrefixText + '.' + cssEscape(name) + eachSuffixSelector)
-                                        return _arr
-                                    }, [])
-                                    .join(',')
-                            )
-                            return arr
-                        }, [])
-                        .join(',')
-
-                let cssText = getCssText(theme, className)
-                    + (classNames
-                        ? classNames.reduce((str, className) => str + ',' + getCssText(this.theme ?? ((colored || hasMultipleThemes) ? theme : ''), className), '')
-                        : '')
-                    + '{'
-                    + propertiesText
-                    + '}'
-
-                for (const key of Object.keys(this.at).sort((a, b) => b === 'supports' ? -1 : 1)) {
-                    cssText = '@' + key + (key.includes(' ') ? '' : ' ') + this.at[key] + '{' + cssText + '}'
-                }
-
-                if (theme && themeDriver === 'media') {
-                    cssText = `@media(prefers-color-scheme:${theme}){` + cssText + '}'
-                }
-                return cssText
-            }
-
-            const newValueSplits: string[] = []
-
-            if (valueSplits) {
-                const themes = [this.theme ?? theme, '']
-                let anyColorMatched: boolean = undefined
-                let anyColorMismatched = false
-                for (const eachValueToken of valueSplits) {
-                    if (typeof eachValueToken === 'string') {
-                        newValueSplits.push(eachValueToken)
-                    } else {
-                        let token = eachValueToken.value
-                        if (eachValueToken.unit) {
-                            token += eachValueToken.unit
-                        } else if (colored && colors && colorNames) {
-                            let anyMatched = false
-                            token = token.replace(
-                                css.colorTokenRegExp,
-                                (origin, prefix, colorName, opacityStr) => {
-                                    const themeColorMap = colors[colorName]
-                                    if (themeColorMap) {
-                                        let color: string
-                                        let appliedTheme: string
-                                        for (const eachTheme of themes) {
-                                            if ((color = themeColorMap[eachTheme])) {
-                                                appliedTheme = eachTheme
-                                                break
+        let newValue: string
+        if (this.valueNodes) {
+            // eslint-disable-next-line @typescript-eslint/no-this-alias
+            const instance = this
+            newValue = (function transformValueNodes(valueNodes: Rule['valueNodes'], unit: string, bypassVariableNames: string[]) {
+                let currentValue = ''
+                for (const eachValueNode of valueNodes) {
+                    switch (typeof eachValueNode) {
+                        case 'object':
+                            switch (eachValueNode.type) {
+                                case 'function':
+                                    // eslint-disable-next-line no-case-declarations
+                                    const functionConfig = functions && functions[eachValueNode.name]
+                                    if (functionConfig?.transform) {
+                                        const result = functionConfig.transform.call(
+                                            instance, 
+                                            eachValueNode.symbol, 
+                                            transformValueNodes(
+                                                eachValueNode.childrens, 
+                                                functionConfig.unit ?? unit,
+                                                bypassVariableNames
+                                            )
+                                        )
+                                        currentValue += transformValueNodes(
+                                            Array.isArray(result) ? result : [result], 
+                                            unit, 
+                                            bypassVariableNames
+                                        )
+                                    } else {
+                                        currentValue += eachValueNode.name + eachValueNode.symbol + transformValueNodes(eachValueNode.childrens, functionConfig?.unit ?? unit, bypassVariableNames) + START_SYMBOLS[eachValueNode.symbol]
+                                    }
+                                    break
+                                case 'separator':
+                                    currentValue += (eachValueNode.prefixWhite ? ' ' : '') + eachValueNode.value + (eachValueNode.suffixWhite ? ' ' : '')
+                                    break
+                                case 'variable':
+                                    // eslint-disable-next-line no-case-declarations
+                                    const normalVariable = normalVariables[eachValueNode.name]
+                                    if (normalVariable) {
+                                        const handleStringNormalVariable = (stringNormalVariable) => {
+                                            const valueNodes: Rule['valueNodes'] = []
+                                            transform2ValueNodes(valueNodes, 0, stringNormalVariable['value'], unit, undefined, undefined, [...bypassVariableNames, eachValueNode.name])
+                                            currentValue += transformValueNodes(
+                                                valueNodes,
+                                                unit,
+                                                [...bypassVariableNames, eachValueNode.name]
+                                            )
+                                        }
+                                        const handleNumberNormalVariable = (numberNormalVariable) => {
+                                            const uv = instance.resolveUnitValue(numberNormalVariable['value'], unit)
+                                            currentValue += (uv?.value ?? numberNormalVariable['value']) + (uv?.unit ?? '')
+                                        }
+    
+                                        const keys = Object.keys(normalVariable)
+                                        if (keys.some(eachKey => eachKey === '' || eachKey.startsWith('@'))) {
+                                            const isStringType = normalVariable[keys[0]].type === 'string'
+                                            if (instance.theme) {
+                                                const themeNormalVariable = normalVariable['@' + instance.theme] ?? normalVariable['']
+                                                if (themeNormalVariable) {
+                                                    if (isStringType) {
+                                                        handleStringNormalVariable(themeNormalVariable)
+                                                    } else {
+                                                        handleNumberNormalVariable(themeNormalVariable)
+                                                    }
+                                                }
+                                            } else {
+                                                pushVariableName(eachValueNode.name)
+                                                currentValue += (isStringType || !unit)
+                                                    ? `var(--${eachValueNode.name})`
+                                                    : `calc(var(--${eachValueNode.name}) / 16 * 1rem)`
+                                            }
+                                        } else {
+                                            if (normalVariable['type'] === 'string') {
+                                                handleStringNormalVariable(normalVariable)
+                                            } else {
+                                                handleNumberNormalVariable(normalVariable)
                                             }
                                         }
-
-                                        if (color) {
-                                            anyMatched = !bypassWhenUnmatchColor || appliedTheme === theme
-                                            if (!anyColorMatched) {
-                                                anyColorMatched = anyMatched
+                                    } else {
+                                        const colorVariable = colorVariables[eachValueNode.name]
+                                        const alpha = eachValueNode.alpha ? ' / ' + eachValueNode.alpha : ''
+                                        const keys = Object.keys(colorVariable)
+                                        if (keys.some(eachKey => eachKey === '' || eachKey.startsWith('@'))) {
+                                            if (instance.theme) {
+                                                const themeColorVariable = colorVariable['@' + instance.theme] ?? colorVariable['']
+                                                currentValue += `${themeColorVariable['space']}(${themeColorVariable['value']}${alpha})`
+                                            } else {
+                                                pushVariableName(eachValueNode.name)
+                                                currentValue += `${colorVariable[keys[0]].space}(var(--${eachValueNode.name})${alpha})`
                                             }
-
-                                            return prefix + (opacityStr
-                                                ? transformColorWithOpacity(color, opacityStr)
-                                                : color)
                                         } else {
-                                            anyColorMismatched = true
+                                            currentValue += `${colorVariable['space']}(${colorVariable['value']}${alpha})`
                                         }
                                     }
-
-                                    return origin
-                                })
-                        }
-                        newValueSplits.push(token)
-                    }
-                }
-
-                if (bypassWhenUnmatchColor && (anyColorMismatched || (anyColorMatched === undefined ? theme : !anyColorMatched)))
-                    return
-
-                newValue = newValueSplits.reduce((previousVal, currentVal, i) => previousVal + currentVal + ((currentVal === ',' || valueSplits[i + 1] === ',' || i === valueSplits.length - 1) ? '' : ' '), '')
-
-                // 8. transform and convert
-                if (transform) {
-                    newValue = transform.call(this, newValue, this.css.config)
-                }
-
-                if (declare) {
-                    let value: string
-                    let unit: string
-                    if (valueSplits.length === 1) {
-                        const firstValueSplit = valueSplits[0]
-                        if (typeof firstValueSplit === 'object') {
-                            value = firstValueSplit.value
-                            unit = firstValueSplit.unit
-                        }
-                    }
-                    // @ts-ignore
-                    this.declarations = declare.call(this, unit ? value : newValue, unit || '')
-                } else if (resolvedPropName) {
-                    // @ts-ignore
-                    this.declarations = {
-                        [resolvedPropName as string]: newValue
-                    }
-                }
-            }
-
-            const propertiesTextByTheme: Record<string, string[]> = {}
-            for (const eachPropName in this.declarations) {
-                const push = (theme: string, propertyText: string) => {
-                    // animations
-                    if (
-                        animations
-                        && (propertyText.startsWith('animation') || propertyText.startsWith('animation-name'))
-                    ) {
-                        const animationNames = propertyText
-                            .split(':')[1]
-                            .split('!important')[0]
-                            .split(' ')
-                            .filter(eachValue => eachValue in this.css.animations && (!this.animationNames || !this.animationNames.includes(eachValue)))
-                        if (animationNames.length) {
-                            if (!this.animationNames) {
-                                this.animationNames = []
+    
+                                    break
                             }
-                            this.animationNames.push(...animationNames)
-                        }
-                    }
-
-                    const newPropertyText = propertyText
-                        + (((this.important || important) && !propertyText.endsWith('!important')) ? '!important' : '')
-
-                    if (theme in propertiesTextByTheme) {
-                        propertiesTextByTheme[theme].push(newPropertyText)
-                    } else {
-                        propertiesTextByTheme[theme] = [newPropertyText]
+                            break
+                        case 'number':
+                            // eslint-disable-next-line no-case-declarations
+                            const uv = instance.resolveUnitValue(eachValueNode, unit)
+                            currentValue += (uv?.value ?? eachValueNode) + (uv?.unit ?? '')
+                            break
+                        default:
+                            currentValue += eachValueNode
+                            break
                     }
                 }
+                return currentValue
+            })(this.valueNodes, unit, [])
 
-                const prefix = eachPropName + ':'
-                const declation = this.declarations[eachPropName]
-                if (typeof declation === 'object') {
-                    if (Array.isArray(declation)) {
-                        for (const value of declation) {
-                            push(theme, prefix + value.toString())
-                        }
-                    } else {
-                        hasMultipleThemes = true
-
-                        for (const theme in declation) {
-                            push(theme, prefix + declation[theme])
-                        }
-                    }
-                } else {
-                    push(theme, prefix + declation.toString())
-                }
+            // 8. transform and convert
+            if (transform) {
+                newValue = transform.call(this, newValue, this.css.config)
             }
 
-            // 創建 Natives
-            for (const prefixSelectorVendor in suffixSelectorVendorsByPrefixSelectorVendor) {
-                for (const eachSuffixSelectorVendor of suffixSelectorVendorsByPrefixSelectorVendor[prefixSelectorVendor]) {
-                    for (const theme in propertiesTextByTheme) {
-                        this.natives.push({
-                            text: generateCssText(
-                                propertiesTextByTheme[theme].join(';'),
-                                theme,
-                                this.vendorPrefixSelectors[prefixSelectorVendor],
-                                this.vendorSuffixSelectors[eachSuffixSelectorVendor]
-                            ),
-                            theme
-                        })
-                    }
+            if (declare) {
+                let value: string
+                let unit: string
+                this.declarations = declare.call(this, unit ? value : newValue, unit || '')
+            } else if (resolvedPropName) {
+                this.declarations = {
+                    [resolvedPropName as string]: newValue
                 }
             }
         }
 
-        if (this.theme) {
-            insertNewNative(this.theme, false)
-        } else if (colored) {
-            for (const eachThemeName of themeNames) {
-                insertNewNative(eachThemeName, true)
+        const propertiesText = []
+        for (const propertyName in this.declarations) {
+            const push = (propertyText: string) => {
+                // animations
+                if (
+                    animations
+                    && (propertyText.startsWith('animation') || propertyText.startsWith('animation-name'))
+                ) {
+                    const animationNames = propertyText
+                        .split(':')[1]
+                        .split('!important')[0]
+                        .split(' ')
+                        .filter(eachValue => eachValue in this.css.animations && (!this.animationNames || !this.animationNames.includes(eachValue)))
+                    if (animationNames.length) {
+                        if (!this.animationNames) {
+                            this.animationNames = []
+                        }
+                        this.animationNames.push(...animationNames)
+                    }
+                }
+
+                propertiesText.push(
+                    propertyText + (((this.important || important) && !propertyText.endsWith('!important')) ? '!important' : '')
+                )
             }
-        } else {
-            insertNewNative('', false)
+
+            const prefix = propertyName + ':'
+            const declation = this.declarations[propertyName]
+            if (typeof declation === 'object') {
+                for (const value of declation) {
+                    push(prefix + value.toString())
+                }
+            } else {
+                push(prefix + declation.toString())
+            }
+        }
+
+        // 創建 Natives
+        if (propertiesText.length) {
+            for (const prefixSelectorVendor in suffixSelectorVendorsByPrefixSelectorVendor) {
+                for (const eachSuffixSelectorVendor of suffixSelectorVendorsByPrefixSelectorVendor[prefixSelectorVendor]) {
+                    let prefixText = ''
+                    if (this.direction) {
+                        prefixText += '[dir=' + this.direction + '] '
+                    }
+
+                    const prefixSelectors = this.vendorPrefixSelectors[prefixSelectorVendor]
+                    const suffixSelectors = this.vendorSuffixSelectors[eachSuffixSelectorVendor]
+                    const prefixTexts = prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText)
+                    const getCssText = (name: string) =>
+                        prefixTexts
+                            .map(eachPrefixText => ((this.theme && themeDriver !== 'media')
+                                ? themeDriver === 'host'
+                                    ? `:host(.${this.theme}) `
+                                    : `.${this.theme} `
+                                : '')
+                                + (scope ? scope + ' ' : '')
+                                + eachPrefixText)
+                            .reduce((arr, eachPrefixText) => {
+                                arr.push(
+                                    suffixSelectors
+                                        .reduce((_arr, eachSuffixSelector) => {
+                                            _arr.push(eachPrefixText + '.' + cssEscape(name) + eachSuffixSelector)
+                                            return _arr
+                                        }, [])
+                                        .join(',')
+                                )
+                                return arr
+                            }, [])
+                            .join(',')
+
+                    let cssText = getCssText(className)
+                        + (classNames
+                            ? classNames.reduce((str, className) => str + ',' + getCssText(className), '')
+                            : '')
+                        + '{'
+                        + propertiesText.join(';')
+                        + '}'
+
+                    for (const key of Object.keys(this.at).sort((a, b) => b === 'supports' ? -1 : 1)) {
+                        cssText = '@' + key + (key.includes(' ') ? '' : ' ') + this.at[key] + '{' + cssText + '}'
+                    }
+
+                    if (this.theme && themeDriver === 'media') {
+                        cssText = `@media(prefers-color-scheme:${this.theme}){` + cssText + '}'
+                    }
+                    
+
+                    this.natives.push({ text: cssText })
+                }
+            }
         }
     }
 
@@ -825,6 +825,7 @@ export interface Rule {
     theme?: string
     unitToken?: string
     hasWhere?: boolean
+    valueNodes?: Array<string | number | { type: 'function', name: string, symbol: string, childrens: Rule['valueNodes'] } | { type: 'variable', name: string, alpha?: string } | { type: 'separator', value: string, prefixWhite?: boolean, suffixWhite?: boolean }>
     constructor: {
         match?(
             name: string,
@@ -837,7 +838,6 @@ export interface Rule {
 
 export interface RuleNative {
     text: string
-    theme: string
     cssRule?: CSSRule
 }
 

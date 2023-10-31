@@ -4,15 +4,19 @@ const config = {
         require('./master-1.css'),
         require('./master-2.css')
     ],
-    colors:  {
+    variables:  {
         first: {
-            '@dark': 'blue-80'
+            '@dark': '$(blue-80)'
         },
-        second: 'blue-30@dark',
+        second: {
+            '@dark': '$(blue-30)'
+        },
         third: {
-            '': 'blue-30'
+            '': '$(blue-30)'
         },
-        fourth: 'blue-50@dark'
+        fourth: {
+            '@dark': '$(blue-50)'
+        }
     }
 }
 

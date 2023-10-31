@@ -12,12 +12,12 @@ test('functions', () => {
 
     testCSS('grid-template-cols:repeat(2,auto|.6|calc(3-max(2,1)))', '.grid-template-cols\\:repeat\\(2\\,auto\\|\\.6\\|calc\\(3-max\\(2\\,1\\)\\)\\){grid-template-columns:repeat(2,auto .6 calc(0.1875rem - max(0.125rem, 0.0625rem)))}')
 
-    testCSS('$primary:red', '.\\$primary\\:red{--primary:#d11a1e}')
-    testCSS('$primary:red-80', '.\\$primary\\:red-80{--primary:#fdcfcf}')
-    testCSS('$primary:red/.5', '.\\$primary\\:red\\/\\.5{--primary:#d11a1e80}')
-    testCSS('$primary:red-80/.5', '.\\$primary\\:red-80\\/\\.5{--primary:#fdcfcf80}')
+    testCSS('$primary:red', '.\\$primary\\:red{--primary:rgb(209 26 30)}')
+    testCSS('$primary:red-80', '.\\$primary\\:red-80{--primary:rgb(253 207 207)}')
+    testCSS('$primary:red/.5', '.\\$primary\\:red\\/\\.5{--primary:rgb(209 26 30 / .5)}')
+    testCSS('$primary:red-80/.5', '.\\$primary\\:red-80\\/\\.5{--primary:rgb(253 207 207 / .5)}')
 })
 
 test('checks gradient-related functions with color variables', () => {
-    testProp('bg:linear-gradient(0deg,gray-14|0%,gray-16|100%)', 'background-image:linear-gradient(0deg,#272628 0%,#29282a 100%)')
+    testProp('bg:linear-gradient(0deg,gray-14|0%,gray-16|100%)', 'background-image:linear-gradient(0deg,rgb(39 38 40) 0%,rgb(41 40 42) 100%)')
 })

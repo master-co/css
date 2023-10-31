@@ -27,9 +27,9 @@ test('viewports', () => {
 test('colors', () => {
     testCSS(
         'fg:newColor',
-        '.fg\\:newColor{color:#63697c}',
+        '.fg\\:newColor{color:rgb(99 105 124)}',
         {
-            'colors': {
+            variables: {
                 newColor: {
                     '': '#63697c',
                     10: '#131518',

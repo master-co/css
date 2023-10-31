@@ -6,5 +6,5 @@ test('stroke-width', () => {
 
 test('stroke-color', () => {
     testProp('stroke:current', 'stroke:currentColor')
-    testProp('stroke:red', 'stroke:#d11a1e')
+    testProp('stroke:red', 'stroke:rgb(209 26 30)')
 })

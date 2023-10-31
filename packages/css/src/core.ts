@@ -1,30 +1,37 @@
 import { extend } from '@techor/extend'
 import { Rule, RuleNative } from './rule'
-import type { Config } from './config'
+import type { Config, variables } from './config'
 import { config as defaultConfig } from './config'
-import { rgbToHex } from './utils/rgb-to-hex'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { CSSDeclarations } from './types/css-declarations'
 import { CoreLayer, Layer } from './layer'
-import { flattenObj } from './utils/flatten-obj'
+import { hexToRgb } from './utils/hex-to-rgb'
 
-const COLOR_NAME_OBJECT_PREFIX = '_CNO_'
+type VariableValue =  { type: 'string', value: string } 
+    | { type: 'number', value: number } 
+    | { type: 'color', value: string, space: 'rgb' | 'hsl' }
+type Variables = {
+    [key: string]: VariableValue | {
+        [theme in '' | `@${string}`]?: VariableValue
+    }
+}
 
 export interface MasterCSS {
     readonly style: HTMLStyleElement
     readonly host: Element
     readonly root: Document | ShadowRoot
     styles: Record<string, string[]>
-    colors: Record<string, Record<string, string>>
-    colorNames: string[]
-    themeNames: string[]
     stylesBy: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>
-    fonts: Record<string, string>
-    variables: Record<string, string | number>
+    normalVariables: Variables
+    colorVariables: Variables
     mediaQueries: Record<string, string>
     keyframesMap: Record<string, {
         native: RuleNative
+        count: number
+    }>
+    variablesMap: Record<string, {
+        natives: RuleNative[]
         count: number
     }>
     animations: Config['animations']
@@ -49,9 +56,7 @@ export class MasterCSS {
     private readonly semanticRuleOptions: Rule['options'][] = []
     private readonly ruleOptions: Rule['options'][] = []
 
-    colorTokenRegExp: RegExp
     observer: MutationObserver
-    private colorByThemeByColorName: Record<string, Record<string, string>>
 
     constructor(
         public customConfig: Config = defaultConfig
@@ -67,16 +72,14 @@ export class MasterCSS {
 
     resolve() {
         this.styles = {}
-        this.colors = {}
         this.stylesBy = {}
-        this.themeNames = ['']
         this.selectors = {}
-        this.variables = {}
-        this.fonts = {}
+        this.normalVariables = {}
+        this.colorVariables = {}
         this.mediaQueries = {}
+        this.variablesMap = {}
         this.keyframesMap = {}
         this.animations = {}
-        this.colorTokenRegExp = null
         this.ruleOptions.length = 0
         this.semanticRuleOptions.length = 0
 
@@ -136,16 +139,139 @@ export class MasterCSS {
             }
         }
         if (variables) {
-            this.variables = flattenObj(variables)
-            for (const [name, value] of Object.entries(this.variables)) {
-                // negative value
-                if (typeof value === 'number') {
-                    this.variables['-' + name] = value * -1
-                } else if (Array.isArray(value)) {
-                    this.variables[name] = value.join(',')
-                } else {
-                    this.variables[name] = value
+            const unexecutedAliasVariable: Record<string, () => void> = {}
+            for (const parnetKey in variables) {
+                const transformVariableDeeply = (variable: any, name, theme: string = undefined) => {
+                    if (!variable)
+                        return
+
+                    const addVariable = (
+                        variables: Variables, 
+                        name: string, 
+                        variableValue: VariableValue, 
+                        replacedTheme: string = undefined,
+                        alpha: string = undefined
+                    ) => {
+                        if (variableValue === undefined)
+                           return
+
+                        if (alpha && variableValue.type === 'color') {
+                            const slashIndex = variableValue.value.indexOf('/')
+                            variableValue = {
+                                ...variableValue,
+                                value: slashIndex === -1
+                                    ? variableValue.value + ' / ' + (alpha.startsWith('0.') ? alpha.slice(1) : alpha) 
+                                    : (variableValue.value.slice(0, slashIndex + 2) + (+variableValue.value.slice(slashIndex + 2) * +alpha).toString().slice(1))
+                            }
+                        }
+
+                        const currentTheme = replacedTheme ?? theme
+                        if (currentTheme !== undefined) {
+                            if (!Object.prototype.hasOwnProperty.call(variables, name)) {
+                                variables[name] = {}
+                            }
+                            variables[name][currentTheme] = variableValue
+                        } else {
+                            variables[name] = variableValue
+                        }
+                    }
+
+                    const type = typeof variable
+                    if (type === 'object') {
+                        if (Array.isArray(variable)) {
+                            addVariable(this.normalVariables, name, { type: 'string', value: variable.join(',') })
+                        } else {
+                            const keys = Object.keys(variable)
+                            for (const eachKey of keys) {
+                                if (eachKey === '' || eachKey.startsWith('@')) {
+                                    transformVariableDeeply(variable[eachKey], name, (eachKey || keys.some(eachKey => eachKey.startsWith('@'))) ? eachKey : undefined)
+                                } else {
+                                    transformVariableDeeply(variable[eachKey], name + '-' + eachKey)
+                                }
+                            }
+                        }
+                    } else if (type === 'number') {
+                        addVariable(this.normalVariables, name, { type: 'number', value: variable })
+                        addVariable(this.normalVariables, '-' + name, { type: 'number', value: variable * -1 })
+                    } else if (type === 'string') {
+                        const aliasResult = /^\$\((.*?)\)(?: ?\/ ?(.+?))?$/.exec(variable)
+                        if (aliasResult) {
+                            unexecutedAliasVariable[name + '@' + theme] = () => {
+                                delete unexecutedAliasVariable[name + '@' + theme]
+
+                                const [alias, aliasTheme] = aliasResult[1].split('@')
+                                if (alias) {
+                                    if (Object.prototype.hasOwnProperty.call(unexecutedAliasVariable, alias)) {
+                                        unexecutedAliasVariable[alias]()
+                                    }
+
+                                    let variables: Variables
+                                    let variable: any
+                                    if (Object.prototype.hasOwnProperty.call(this.normalVariables, alias)) {
+                                        variables = this.normalVariables
+                                        variable = this.normalVariables[alias]
+                                    }
+                                    if (Object.prototype.hasOwnProperty.call(this.colorVariables, alias)) {
+                                        variables = this.colorVariables
+                                        variable = this.colorVariables[alias]
+                                    }
+                                    if (variables) {
+                                        const keys = Object.keys(variable)
+                                        if (aliasTheme === undefined && keys.some(eachKey => eachKey === '' || eachKey.startsWith('@'))) {
+                                            for (const eachKey of keys) {
+                                                addVariable(
+                                                    variables, 
+                                                    name, 
+                                                    variable[eachKey],
+                                                    eachKey,
+                                                    aliasResult[2]
+                                                )
+                                            }
+                                        } else {
+                                            addVariable(
+                                                variables, 
+                                                name, 
+                                                (aliasTheme !== undefined)
+                                                    ? variable['@' + aliasTheme]
+                                                    : variable,
+                                                undefined,
+                                                aliasResult[2]
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            let colorVariable: { type: 'color', value: string, space: 'rgb' | 'hsl' }
+
+                            const hexColorResult = /^#([A-Fa-f0-9]{3,4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.exec(variable)
+                            if (hexColorResult) {
+                                const [r, g, b, a] = hexToRgb(hexColorResult[1])
+                                colorVariable = { type: 'color', value: `${r} ${g} ${b}${a === 1 ? '' : ' / ' + a}` , space: 'rgb' }
+                            } else {
+                                const rgbFunctionResult = /^rgb\( *([0-9]{1,3})(?: *, *| +)([0-9]{1,3})(?: *, *| +)([0-9]{1,3}) *(?:(?:,|\/) *(.*?) *)?\)$/.exec(variable)
+                                if (rgbFunctionResult) {
+                                    colorVariable = { type: 'color', value: rgbFunctionResult[1] + ' ' + rgbFunctionResult[2] + ' ' + rgbFunctionResult[3] + (rgbFunctionResult[4] ? ' / ' + (rgbFunctionResult[4].startsWith('0.') ? rgbFunctionResult[4].slice(1)  : rgbFunctionResult[4]) : ''), space: 'rgb' }
+                                } else {
+                                    const hslFunctionResult = /^hsl\((.*?)\)$/.exec(variable)
+                                    if (hslFunctionResult) {
+                                        colorVariable = { type: 'color', value: hslFunctionResult[1], space: 'hsl' }
+                                    }
+                                }
+                            }
+
+                            if (colorVariable) {
+                                addVariable(this.colorVariables, name, colorVariable)
+                            } else {
+                                addVariable(this.normalVariables, name, { type: 'string', value: variable })
+                            }
+                        }
+                    }
                 }
+                transformVariableDeeply(variables[parnetKey], parnetKey)
+            }
+            for (const name of Object.keys(unexecutedAliasVariable)) {
+                unexecutedAliasVariable[name]?.()
             }
         }
         if (mediaQueries) {
@@ -212,87 +338,6 @@ export class MasterCSS {
             handleSemanticName(eachSemanticName)
         }
 
-        const _unexecutedColors: Record<string, () => void> = Object
-            .entries(this.colorByThemeByColorName)
-            .reduce((newunexecutedColors, [colorName, colorByTheme]) => {
-                newunexecutedColors[colorName] = () => {
-                    const getAlphaHexColor = (hexColor: string, alpha: string) => alpha
-                        ? hexColor.slice(0, 7) + Math.round(255 * +alpha).toString(16)
-                        : hexColor
-
-                    const hexColorByTheme: Record<string, string> = {}
-
-                    for (const themeKey in colorByTheme as Record<string, string>) {
-                        const colorsWithAlphaTheme: string[] = colorByTheme[themeKey].split(' ')
-                        for (const eachColorWithAlphaTheme of colorsWithAlphaTheme) {
-                            const atIndex = eachColorWithAlphaTheme.lastIndexOf('@')
-                            const colorWithAlpha = atIndex !== -1 ? eachColorWithAlphaTheme.slice(0, atIndex) : eachColorWithAlphaTheme
-                            const theme = atIndex !== -1 ? eachColorWithAlphaTheme.slice(atIndex + 1) : ''
-                            const currentTheme = themeKey.slice(1) || theme
-                            if (eachColorWithAlphaTheme.startsWith('#')) {
-                                hexColorByTheme[currentTheme] = colorWithAlpha
-                            } else if (eachColorWithAlphaTheme.startsWith(COLOR_NAME_OBJECT_PREFIX)) {
-                                const [replaceColorName, alpha] = colorWithAlpha.slice(COLOR_NAME_OBJECT_PREFIX.length).split('/')
-
-                                if (Object.prototype.hasOwnProperty.call(_unexecutedColors, replaceColorName)) {
-                                    const unhandledAction = _unexecutedColors[replaceColorName]
-                                    delete _unexecutedColors[replaceColorName]
-                                    unhandledAction()
-                                }
-
-                                const targetHexColorByTheme = Object.prototype.hasOwnProperty.call(this.colors, replaceColorName) && this.colors[replaceColorName]
-                                if (targetHexColorByTheme) {
-                                    for (const theme in targetHexColorByTheme) {
-                                        const hexColor = targetHexColorByTheme[theme]
-                                        hexColorByTheme[theme] = getAlphaHexColor(hexColor, alpha)
-                                    }
-                                } else {
-                                    hexColorByTheme[currentTheme] = replaceColorName
-                                    // console.error(`"${colorName}${themeKey}: ${eachColorWithAlphaTheme}" is an invalid ".colors" config`)
-                                }
-                            } else {
-                                const [colorNameWithAlpha, colorNameTheme] = colorWithAlpha.split('@')
-                                const [replaceColorName, alpha] = colorNameWithAlpha.split('/')
-
-                                if (Object.prototype.hasOwnProperty.call(_unexecutedColors, replaceColorName)) {
-                                    const unhandledAction = _unexecutedColors[replaceColorName]
-                                    delete _unexecutedColors[replaceColorName]
-                                    unhandledAction()
-                                }
-
-                                const hexColor = Object.prototype.hasOwnProperty.call(this.colors, replaceColorName) && this.colors[replaceColorName][(themeKey ? theme : colorNameTheme) || '']
-                                if (hexColor) {
-                                    hexColorByTheme[currentTheme] = getAlphaHexColor(hexColor, alpha)
-                                } else {
-                                    console.error(`"${colorName}${themeKey}: ${eachColorWithAlphaTheme}" is an invalid ".colors" config`)
-                                }
-                            }
-                        }
-                    }
-
-                    const themes = Object.keys(hexColorByTheme)
-                    if (themes.length) {
-                        this.colors[colorName] = hexColorByTheme
-                        for (const eachTheme of themes) {
-                            if (eachTheme && !this.themeNames.includes(eachTheme)) {
-                                this.themeNames.push(eachTheme)
-                            }
-                        }
-                    }
-
-                    delete _unexecutedColors[colorName]
-                }
-                return newunexecutedColors
-            }, {})
-
-        for (const eachColorName of Object.keys(_unexecutedColors)) {
-            _unexecutedColors[eachColorName]?.()
-        }
-
-        // colors
-        this.colorNames = Object.keys(this.colors)
-        this.colorTokenRegExp = new RegExp(`(^|,| |\\()(${this.colorNames.join('|')})(?:\\/(\\.?[0-9]+%?))?(?=(\\)|\\}|,| |$))`, 'g')
-
         if (semantics) {
             Object.entries(semantics)
                 .sort((a: any, b: any) => a[0].localeCompare(b[0]))
@@ -316,6 +361,8 @@ export class MasterCSS {
             })
         const rulesEntriesLength = rulesEntries.length
 
+        const colorVariableNames = Object.keys(this.colorVariables)
+        colorVariableNames.push('current', 'transparent')
         rulesEntries
             .forEach(([id, eachRuleOptions]: [string, Rule['options']], index: number) => {
                 this.ruleOptions.push(eachRuleOptions)
@@ -330,33 +377,35 @@ export class MasterCSS {
                 ) {
                     eachRuleOptions.resolvedPropName = id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
                 }
-                eachRuleOptions.resolvedVariables = {}
-                // 1. custom `config.variables`
-                const targetVariableGroup = variables[id]
-                if (typeof targetVariableGroup === 'object') {
-                    Object.assign(eachRuleOptions.resolvedVariables, targetVariableGroup)
+                eachRuleOptions.resolvedNormalVariables = {}
+                eachRuleOptions.resolvedColorVariables = {}
+                const addResolvedVariables = (resolvedVariables, variables, prefix: string) => {
+                    Object.assign(
+                        resolvedVariables, 
+                        Object.keys(variables)
+                            .filter(eachVariableName => eachVariableName.startsWith(prefix + '-'))
+                            .reduce((newResolvedVariables, eachVariableName) => {
+                                newResolvedVariables[eachVariableName.slice(prefix.length + (prefix.startsWith('-') ? 0 : 1))] = {
+                                    ...variables[eachVariableName],
+                                    name: eachVariableName
+                                }
+                                return newResolvedVariables
+                            }, {})
+                    )
                 }
-                // 2. custom `config.rules[id].variables`
-                if (eachRuleOptions.variables) {
-                    if (Array.isArray(eachRuleOptions.variables)) {
-                        for (const eachVariables of eachRuleOptions.variables) {
-                            if (typeof eachVariables === 'object') {
-                                Object.assign(eachRuleOptions.resolvedVariables, eachVariables)
-                            } else {
-                                Object.assign(eachRuleOptions.resolvedVariables, variables[eachVariables] || {})
-                            }
-                        }
-                    } else {
-                        Object.assign(eachRuleOptions.resolvedVariables, eachRuleOptions.variables)
+                // 1. custom `config.rules[id].variableGroups`
+                if (eachRuleOptions.variableGroups) {
+                    for (const eachVariableGroup of eachRuleOptions.variableGroups) {
+                        addResolvedVariables(eachRuleOptions.resolvedNormalVariables, this.normalVariables, eachVariableGroup)
+                        addResolvedVariables(eachRuleOptions.resolvedNormalVariables, this.normalVariables, '-' + eachVariableGroup)
+                        addResolvedVariables(eachRuleOptions.resolvedColorVariables, this.colorVariables, eachVariableGroup)
                     }
                 }
-                if (Object.keys(eachRuleOptions.resolvedVariables).length) {
-                    for (const [key, value] of Object.entries(eachRuleOptions.resolvedVariables)) {
-                        if (typeof value === 'number') {
-                            eachRuleOptions.resolvedVariables['-' + key] = value * -1
-                        }
-                    }
-                }
+                // 2. custom `config.variables`
+                addResolvedVariables(eachRuleOptions.resolvedNormalVariables, this.normalVariables, id)
+                addResolvedVariables(eachRuleOptions.resolvedNormalVariables, this.normalVariables, '-' + id)
+                addResolvedVariables(eachRuleOptions.resolvedColorVariables, this.colorVariables, id)
+
                 if (match) {
                     if (Array.isArray(match)) {
                         const [key, values = []] = match
@@ -364,14 +413,15 @@ export class MasterCSS {
                         if (values.length) {
                             valueMatches.push(`(?:${values.join('|')})(?![a-zA-Z0-9-])`)
                         }
-                        if (Object.keys(eachRuleOptions.resolvedVariables).length) {
-                            valueMatches.push(`(?:${Object.keys(eachRuleOptions.resolvedVariables).join('|')})(?![a-zA-Z0-9-])`)
+                        if (Object.keys(eachRuleOptions.resolvedNormalVariables).length) {
+                            valueMatches.push(`(?:${Object.keys(eachRuleOptions.resolvedNormalVariables).join('|')})(?![a-zA-Z0-9-])`)
                         }
                         if (eachRuleOptions.colored) {
-                            valueMatches.push('#', '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)')
-                            if (this.colorNames.length) {
-                                valueMatches.push(`(?:${this.colorNames.join('|')})(?![a-zA-Z0-9-])`)
-                            }
+                            valueMatches.push(
+                                '#', 
+                                '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)',
+                                `(?:${colorVariableNames.concat(Object.keys(eachRuleOptions.resolvedColorVariables)).join('|')})(?![a-zA-Z0-9-])`
+                            )
                         }
                         if (eachRuleOptions.numeric) {
                             valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
@@ -489,6 +539,9 @@ export class MasterCSS {
                         }
 
                         index += rule.natives.length - 1
+
+                        // variables
+                        this.handleRuleWithVariableNames(rule)
 
                         // animations
                         this.handleRuleWithAnimationNames(rule)
@@ -852,21 +905,43 @@ export class MasterCSS {
             this.rules.splice(this.rules.indexOf(rule), 1)
             delete this.ruleBy[name]
 
+            // variables
+            if (rule.variableNames) {
+                const variableRule = this.rules[0]
+                for (const eachVariableName of rule.variableNames) {
+                    const variable = this.variablesMap[eachVariableName]
+                    if (!--variable.count) {
+                        const nativeIndex = variableRule.natives.indexOf(variable.natives[0])
+                        for (let i = 0; i < variable.natives.length; i++) {
+                            this.style.sheet.deleteRule(nativeIndex)
+                            variableRule.natives.splice(nativeIndex, 1)
+                        }
+                        delete this.variablesMap[eachVariableName]
+                    }
+                }
+
+                if (!variableRule.natives.length) {
+                    this.rules.splice(0, 1)
+                }
+            }
+
             // animations
             if (rule.animationNames) {
-                const keyframeRule = this.rules[0]
+                const keyframeRuleIndex = Object.keys(this.variablesMap).length ? 1 : 0
+                const variableNativeCount = Object.keys(this.variablesMap).length ? this.rules[0].natives.length : 0
+                const keyframeRule = this.rules[keyframeRuleIndex]
                 for (const eachKeyframeName of rule.animationNames) {
                     const keyframe = this.keyframesMap[eachKeyframeName]
                     if (!--keyframe.count) {
                         const nativeIndex = keyframeRule.natives.indexOf(keyframe.native)
-                        this.style.sheet.deleteRule(nativeIndex)
+                        this.style.sheet.deleteRule(variableNativeCount + nativeIndex)
                         keyframeRule.natives.splice(nativeIndex, 1)
                         delete this.keyframesMap[eachKeyframeName]
                     }
                 }
 
                 if (!keyframeRule.natives.length) {
-                    this.rules.splice(0, 1)
+                    this.rules.splice(keyframeRuleIndex, 1)
                 }
             }
 
@@ -925,6 +1000,7 @@ export class MasterCSS {
              * @example <1  <2  <3  ALL  >=1 >=2 >=3
              * @description
              */
+            const hasVariableRule = Object.keys(this.variablesMap).length
             const hasKeyframeRule = Object.keys(this.keyframesMap).length
             const endIndex = this.rules.length - 1
             const { media, order, priority, hasWhere, className } = rule
@@ -1116,7 +1192,13 @@ export class MasterCSS {
                     }
                 }
             } else {
-                const findStartIndex = hasKeyframeRule ? 1 : 0
+                const findStartIndex = hasVariableRule
+                    ? hasKeyframeRule
+                        ? 2
+                        : 1
+                    : hasKeyframeRule
+                        ? 1 
+                        : 0
 
                 if (priority === -1) {
                     matchStartIndex = findStartIndex
@@ -1224,6 +1306,9 @@ export class MasterCSS {
                 }
             }
 
+            // variables
+            this.handleRuleWithVariableNames(rule)
+
             // animations
             this.handleRuleWithAnimationNames(rule)
 
@@ -1236,8 +1321,6 @@ export class MasterCSS {
     }
 
     private getExtendedConfig(...configs: Config[]) {
-        this.colorByThemeByColorName = {}
-
         const formatConfig = (config: Config) => {
             const clonedConfig: Config = extend({}, config)
 
@@ -1246,7 +1329,7 @@ export class MasterCSS {
                     const value = obj[key]
                     if (typeof value === 'object' && !Array.isArray(value)) {
                         formatDeeply(value)
-                    } else if (key) {
+                    } else if (key && !key.startsWith('@')) {
                         obj[key] = { '': value }
                     }
                 }
@@ -1261,97 +1344,10 @@ export class MasterCSS {
             } else {
                 clonedConfig.mediaQueries = {}
             }
-
-            // colors
-            if (clonedConfig.colors) {
-                const handleDeeply = (colors: Config['colors'], parentColorName: string) => {
-                    const handle = (colorName: string, entries: [string, string][], single: boolean) => {
-                        if (!Object.prototype.hasOwnProperty.call(this.colorByThemeByColorName, colorName)) {
-                            this.colorByThemeByColorName[colorName] = {}
-                        }
-                        const colorByTheme = this.colorByThemeByColorName[colorName]
-                        const colorNameObjectContained = colorByTheme['']?.includes(COLOR_NAME_OBJECT_PREFIX)
-
-                        const rgbaToHexColor = (rgba: string) => rgba.replace(
-                            /^rgba?\( *([0-9]{1,3}) *(?:\|| |,) *([0-9]{1,3}) *(?:\|| |,) *([0-9]{1,3}) *(?:(?:\/|,) *0?(\.[0-9]))?\)$/,
-                            (_, r, g, b, a) => {
-                                let hexColor = '#' + rgbToHex(+r, +g, +b)
-                                if (a) {
-                                    hexColor += Math.round(255 * +a).toString(16)
-                                }
-                                return hexColor
-                            }
-                        )
-
-                        for (const [themeKey, colorWithTheme] of entries) {
-                            if (colorWithTheme) {
-                                const regexp = /(?:^| )(?:(rgba?\(.*?\).*?)|([^ ]+))(?= |$)/g
-                                let result: RegExpExecArray
-                                while ((result = regexp.exec(colorWithTheme)) !== null) {
-                                    const colorWithAlphaTheme = result[0].trimStart()
-                                    const atIndex = colorWithAlphaTheme.lastIndexOf('@')
-                                    const colorWithAlpha = atIndex !== -1 ? colorWithAlphaTheme.slice(0, atIndex) : colorWithAlphaTheme
-                                    const theme = atIndex !== -1 ? colorWithAlphaTheme.slice(atIndex) : ''
-                                    const currentTheme = themeKey || theme
-                                    const newColorNameObjectContained = single && result[2] && !result[2].startsWith('#') && !theme
-                                    const color = result[1]
-                                        ? rgbaToHexColor(colorWithAlpha)
-                                        : (themeKey ? result[0] : colorWithAlpha)
-                                    if (colorNameObjectContained || newColorNameObjectContained) {
-                                        if (!Object.prototype.hasOwnProperty.call(colorByTheme, '')) {
-                                            colorByTheme[''] = ''
-                                        }
-                                        for (const eachTheme in colorByTheme) {
-                                            if (!eachTheme)
-                                                continue
-
-                                            colorByTheme[''] += ' ' + colorByTheme[eachTheme]
-                                            delete colorByTheme[eachTheme]
-                                        }
-                                        colorByTheme[''] += (colorByTheme[''] ? ' ' : '')
-                                            + (newColorNameObjectContained ? COLOR_NAME_OBJECT_PREFIX : '')
-                                            + color
-                                            + currentTheme
-                                    } else {
-                                        colorByTheme[currentTheme] = color
-                                    }
-
-                                    if (themeKey)
-                                        break
-                                }
-                            } else {
-                                if (single) {
-                                    delete this.colorByThemeByColorName[colorName]
-                                    return
-                                } else {
-                                    delete colorByTheme[themeKey]
-                                }
-                            }
-                        }
-
-                        if (!Object.keys(colorByTheme).length) {
-                            delete this.colorByThemeByColorName[colorName]
-                        }
-                    }
-
-                    const entries = Object.entries(colors)
-
-                    const currentColorEntries = entries.filter(([key]) => key === '' || key.startsWith('@'))
-                    if (currentColorEntries.length) {
-                        handle(parentColorName, currentColorEntries as [string, string][], false)
-                    }
-
-                    const otherColorEntries = entries.filter(([key]) => key !== '' && !key.startsWith('@'))
-                    for (const [key, value] of otherColorEntries) {
-                        const colorName = (parentColorName ? parentColorName + '-' : '') + key
-                        if (typeof value === 'string') {
-                            handle(colorName, [['', value]], true)
-                        } else {
-                            handleDeeply(value, colorName)
-                        }
-                    }
-                }
-                handleDeeply(clonedConfig.colors, '')
+            if (clonedConfig.variables) {
+                formatDeeply(clonedConfig.variables)
+            } else {
+                clonedConfig.variables = {}
             }
 
             return clonedConfig
@@ -1394,8 +1390,7 @@ export class MasterCSS {
                                 .entries(this.animations[eachKeyframeName])
                                 .map(([key, variables]) => `${key}{${Object.entries(variables).map(([name, value]) => name + ':' + value).join(';')}}`)
                                 .join('')
-                            + '}',
-                        theme: ''
+                            + '}'
                     }
 
                     let keyframeRule: Rule
@@ -1403,7 +1398,7 @@ export class MasterCSS {
                         (keyframeRule = this.rules[0]).natives.push(native)
                     } else {
                         this.rules.splice(
-                            0,
+                            Object.keys(this.variablesMap).length ? 1 : 0,
                             0,
                             keyframeRule = {
                                 natives: [native],
@@ -1438,6 +1433,62 @@ export class MasterCSS {
 
                     this.keyframesMap[eachKeyframeName] = {
                         native,
+                        count: 1
+                    }
+                }
+            }
+        }
+    }
+
+    private handleRuleWithVariableNames(rule: Rule) {
+        if (rule.variableNames) {
+            const sheet = this.style?.sheet
+            for (const eachVariableName of rule.variableNames) {
+                if (Object.prototype.hasOwnProperty.call(this.variablesMap, eachVariableName)) {
+                    this.variablesMap[eachVariableName].count++
+                } else {
+                    const variable = this.normalVariables[eachVariableName] ?? this.colorVariables[eachVariableName]
+                    const keys = Object.keys(variable)
+                    const natives: RuleNative[] = keys.some(eachKey => eachKey === '' || eachKey.startsWith('@'))
+                        ? keys.map(eachKey => ({ text: `${eachKey ? this.config.themeDriver === 'media' 
+                            ? `@media(prefers-color-scheme:${eachKey.slice(1)})` 
+                            : this.config.themeDriver === 'host'
+                                ? `:host(.${eachKey.slice(1)})` 
+                                : `.${eachKey.slice(1)}` 
+                            : ':root'}{--${eachVariableName}:${variable[eachKey].value}}` }))
+                        : [{ text: `:root{--${eachVariableName}:{${variable['value']}}` }]
+
+                    if (Object.keys(this.variablesMap).length) {
+                        this.rules[0].natives.push(...natives)
+                    } else {
+                        this.rules.splice(
+                            0,
+                            0,
+                            {
+                                natives: [...natives],
+                                get text() {
+                                    return this.natives.map((eachNative) => eachNative.text).join('')
+                                }
+                            } as Rule
+                        )
+                    }
+
+                    if (sheet) {
+                        let index = 0
+                        for (const variableName in this.variablesMap) {
+                            index += this.variablesMap[variableName].natives.length
+                        }
+
+                        for (let i = 0; i < natives.length; i++) {
+                            const eachNative = natives[i]
+                            const ruleIndex = index + i
+                            sheet.insertRule(eachNative.text, ruleIndex)
+                            eachNative.cssRule = sheet.cssRules[ruleIndex]
+                        }
+                    }
+
+                    this.variablesMap[eachVariableName] = {
+                        natives,
                         count: 1
                     }
                 }

@@ -24,7 +24,7 @@ test('selectors', () => {
     )
     testCSS(
         'bg:red:hover_.feature__tab-title',
-        '.bg\\:red\\:hover_\\.feature__tab-title:hover .feature__tab-title{background-color:#d11a1e}'
+        '.bg\\:red\\:hover_\\.feature__tab-title:hover .feature__tab-title{background-color:rgb(209 26 30)}'
     )
 })
 
@@ -47,7 +47,7 @@ test('reactive-rules', () => {
 })
 
 test('multiple', () => {
-    testCSS('bg:black>li:nth(2):not(:nth(4))', '.bg\\:black\\>li\\:nth\\(2\\)\\:not\\(\\:nth\\(4\\)\\)>li:nth-child(2):not(:nth-child(4)){background-color:#000000}')
-    testCSS('bg:black::slider-thumb', '.bg\\:black\\:\\:slider-thumb::-webkit-slider-thumb{background-color:#000000}.bg\\:black\\:\\:slider-thumb::-moz-range-thumb{background-color:#000000}')
+    testCSS('bg:black>li:nth(2):not(:nth(4))', '.bg\\:black\\>li\\:nth\\(2\\)\\:not\\(\\:nth\\(4\\)\\)>li:nth-child(2):not(:nth-child(4)){background-color:rgb(0 0 0)}')
+    testCSS('bg:black::slider-thumb', '.bg\\:black\\:\\:slider-thumb::-webkit-slider-thumb{background-color:rgb(0 0 0)}.bg\\:black\\:\\:slider-thumb::-moz-range-thumb{background-color:rgb(0 0 0)}')
     testCSS('content:\'⦿\':after,:before', '.content\\:\\\'⦿\\\'\\:after\\,\\:before:after,.content\\:\\\'⦿\\\'\\:after\\,\\:before:before{content:\'⦿\'}')
 })

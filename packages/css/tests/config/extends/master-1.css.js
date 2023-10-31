@@ -3,14 +3,21 @@ const config = {
         require('./master-1-1.css'),
         require('./master-1-2.css'),
     ],
-    colors: {
-        fourth: 'first',
-        first: '#111111 #222222@dark rgb(0, 0, 0)@light',
-        second: '#999999@dark rgba(0 0 0/.5)@light',
+    variables: {
+        fourth: '$(first)',
+        first: {
+            '': '#111111',
+            '@dark': '#222222',
+            '@light': 'rgb(0, 0, 0)'
+        },
+        second: {
+            '@dark': '#999999',
+            '@light': 'rgb(0 0 0 / .5)'
+        },
         third: {
-            '': 'blue-50@dark',
+            '@dark': '$(blue-50)',
             '2': {
-                '@dark': 'blue-60'
+                '@dark': '$(blue-60)'
             }
         }
     },

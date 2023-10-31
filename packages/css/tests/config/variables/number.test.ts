@@ -10,10 +10,10 @@ test('number', () => {
 
 test('number with themes', () => {
     testCSS('m:x1', [
-        ':root{--x1:16}',
-        '.dark{--x1:32}',
-        '.light{--x1:48}',
-        '.m\\:x1{margin:calc(var(--x1)/16*1rem)}'
+        ':root{--spacing-x1:16}',
+        '.dark{--spacing-x1:32}',
+        '.light{--spacing-x1:48}',
+        '.m\\:x1{margin:calc(var(--spacing-x1) / 16 * 1rem)}'
     ].join(''), {
         variables: {
             spacing: {
@@ -28,13 +28,13 @@ test('number with themes', () => {
 
     // 無單位屬性不需要 calc
     testCSS('line-height:x1', [
-        ':root{--x1:16}',
-        '.dark{--x1:32}',
-        '.light{--x1:48}',
-        '.line-height\\:x1{line-height:var(--x1)}'
+        ':root{--lineHeight-x1:16}',
+        '.dark{--lineHeight-x1:32}',
+        '.light{--lineHeight-x1:48}',
+        '.line-height\\:x1{line-height:var(--lineHeight-x1)}'
     ].join(''), {
         variables: {
-            spacing: {
+            lineHeight: {
                 x1: {
                     '': 16,
                     '@dark': 32,
@@ -46,7 +46,7 @@ test('number with themes', () => {
 })
 
 test('number using variable function', () => {
-    testProp('m:$(spacing.x1)', 'margin:1rem', {
+    testProp('m:$(spacing-x1)', 'margin:1rem', {
         variables: {
             spacing: { x1: 16 }
         }
@@ -54,11 +54,11 @@ test('number using variable function', () => {
 })
 
 test('number with themes using variable function', () => {
-    testCSS('m:$(spacing.x1)', [
-        ':root{--x1:16}',
-        '.dark{--x1:32}',
-        '.light{--x1:48}',
-        '.m\\:\\$\\(spacing\\.x1\\){margin:calc(var(--x1)/16*1rem)}'
+    testCSS('m:$(spacing-x1)', [
+        ':root{--spacing-x1:16}',
+        '.dark{--spacing-x1:32}',
+        '.light{--spacing-x1:48}',
+        '.m\\:\\$\\(spacing-x1\\){margin:calc(var(--spacing-x1) / 16 * 1rem)}'
     ].join(''), {
         variables: {
             spacing: {
@@ -72,11 +72,11 @@ test('number with themes using variable function', () => {
     })
 
     // 無單位屬性不需要 calc
-    testCSS('line-height:$(spacing.x1)', [
-        ':root{--x1:16}',
-        '.dark{--x1:32}',
-        '.light{--x1:48}',
-        '.line-height\\:\\$\\(spacing\\.x1\\){line-height:var(--x1)}'
+    testCSS('line-height:$(spacing-x1)', [
+        ':root{--spacing-x1:16}',
+        '.dark{--spacing-x1:32}',
+        '.light{--spacing-x1:48}',
+        '.line-height\\:\\$\\(spacing-x1\\){line-height:var(--spacing-x1)}'
     ].join(''), {
         variables: {
             spacing: {
