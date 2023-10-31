@@ -41,9 +41,9 @@
     },
     "dependencies": {
         "@master/css-server": "workspace:^",
-        "@techor/log": "^2.5.4",
-        "@techor/glob": "^2.5.4",
-        "explore-config": "^2.5.4"
+        "@techor/log": "^2.5.19",
+        "@techor/glob": "^2.5.19",
+        "explore-config": "^2.5.19"
     },
     "devDependencies": {
         "pretty-bytes": "^6.1.0",

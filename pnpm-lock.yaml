@@ -18,26 +18,26 @@ importers:
         specifier: workspace:^
         version: link:packages/renderer
       '@techor/fs':
-        specifier: ^2.5.17
-        version: 2.5.17
+        specifier: ^2.5.19
+        version: 2.5.19
       '@techor/glob':
-        specifier: ^2.5.17
-        version: 2.5.17
+        specifier: ^2.5.19
+        version: 2.5.19
       '@techor/jest':
-        specifier: ^2.5.17
-        version: 2.5.17(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(jest@29.7.0)
+        specifier: ^2.5.19
+        version: 2.5.19(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(jest@29.7.0)
       '@techor/jest-dom':
-        specifier: ^2.5.17
-        version: 2.5.17(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(jest@29.7.0)
+        specifier: ^2.5.19
+        version: 2.5.19(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(jest@29.7.0)
       '@techor/pack':
-        specifier: ^2.5.17
-        version: 2.5.17
+        specifier: ^2.5.19
+        version: 2.5.19
       '@techor/repo':
-        specifier: ^2.5.17
-        version: 2.5.17(@semantic-release/exec@6.0.3)(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(@types/node@20.8.9)(jest@29.7.0)(semantic-release@21.1.2)(turbo@1.10.16)(typescript@5.2.2)
+        specifier: ^2.5.19
+        version: 2.5.19(@semantic-release/exec@6.0.3)(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(@types/node@20.8.9)(jest@29.7.0)(semantic-release@21.1.2)(turbo@1.10.16)(typescript@5.2.2)
       '@techor/version':
-        specifier: ^2.5.17
-        version: 2.5.17
+        specifier: ^2.5.19
+        version: 2.5.19
       '@types/jest':
         specifier: ^29.5.2
         version: 29.5.6
@@ -1130,8 +1130,8 @@ importers:
         specifier: workspace:^
         version: link:../validator
       explore-config:
-        specifier: ^2.2.10
-        version: 2.5.17
+        specifier: ^2.5.19
+        version: 2.5.19
     devDependencies:
       '@angular-eslint/template-parser':
         specifier: ^16.2.0
@@ -1164,20 +1164,20 @@ importers:
         specifier: workspace:^
         version: link:../validator
       '@techor/extend':
-        specifier: ^2.5.4
-        version: 2.5.17
+        specifier: ^2.5.19
+        version: 2.5.19
       '@techor/glob':
-        specifier: ^2.5.4
-        version: 2.5.17
+        specifier: ^2.5.19
+        version: 2.5.19
       '@techor/log':
-        specifier: ^2.5.4
-        version: 2.5.17
+        specifier: ^2.5.19
+        version: 2.5.19
       chokidar:
         specifier: ^3.5.3
         version: 3.5.3
       explore-config:
-        specifier: ^2.5.4
-        version: 2.5.17
+        specifier: ^2.5.19
+        version: 2.5.19
       minimatch:
         specifier: ^9.0.1
         version: 9.0.3
@@ -1222,8 +1222,8 @@ importers:
         specifier: workspace:^
         version: link:../language-service
       explore-config:
-        specifier: ^2.2.10
-        version: 2.5.17
+        specifier: ^2.5.19
+        version: 2.5.19
       js-beautify:
         specifier: ^1.14.7
         version: 1.14.9
@@ -1295,14 +1295,14 @@ importers:
         specifier: workspace:^
         version: link:../server
       '@techor/glob':
-        specifier: ^2.5.4
-        version: 2.5.17
+        specifier: ^2.5.19
+        version: 2.5.19
       '@techor/log':
-        specifier: ^2.5.4
-        version: 2.5.17
+        specifier: ^2.5.19
+        version: 2.5.19
       explore-config:
-        specifier: ^2.5.4
-        version: 2.5.17
+        specifier: ^2.5.19
+        version: 2.5.19
     devDependencies:
       css-shared:
         specifier: workspace:^
@@ -3106,7 +3106,7 @@ packages:
     dependencies:
       '@babel/core': 7.22.9
       '@babel/helper-plugin-utils': 7.22.5
-      '@babel/template': 7.22.5
+      '@babel/template': 7.22.15
 
   /@babel/plugin-transform-computed-properties@7.22.5(@babel/core@7.23.2):
     resolution: {integrity: sha512-4GHWBgRf0krxPX+AaPtgBAlTgTeZmqDynokHOX7aqqAB4tHs3U2Y02zH6ETFdLZGcg9UQSD1WCmkVrE9ErHeOg==}
@@ -7553,19 +7553,33 @@ packages:
   /@techor/extend@2.5.17:
     resolution: {integrity: sha512-o4L9oLmr7yc+HPI/tgf6uq2hPfGsAJSgpEb0uyUBP5fSaDXGJXXxc1FxVBw6wUlo8SNDwrSDr5pXvht7ImlZEQ==}
 
+  /@techor/extend@2.5.19:
+    resolution: {integrity: sha512-EmNY4tQgmUscPtecO7mqh9WUZgZBX43Cd/kxXzP85/DB4nu402xgwba5rTsk8ervxqoSzrtT1b+OnZ51cYnjuQ==}
+
   /@techor/fs@2.5.17:
     resolution: {integrity: sha512-L/MNTvooqyaFlHtlRl9YUkzTjrHmVvhWH1MEFLfzVmdpY5OsxL57Ok3dkng4eQBmAhwOlWydXWf3lC5yGYN2hQ==}
+
+  /@techor/fs@2.5.19:
+    resolution: {integrity: sha512-pBcNUz8rG3XKqU9ZHHKeqNidH+XLYAy/cgu+R77xZVZe+7lhwatQb+fvCdeqOWks9zl8zqzRni0zq6LK4F5cxQ==}
+    dev: true
 
   /@techor/glob@2.5.17:
     resolution: {integrity: sha512-Nd3xQL2gGbVGHrygCf+Izil4h0v2i04aqSbQJGqqBYp0bS4NBe67CQOeTJOSKfQIj4nQ5JR0V5GfI/g5BGbFXw==}
     dependencies:
       fast-glob: 3.3.1
       upath: 2.0.1
+    dev: true
 
-  /@techor/jest-dom@2.5.17(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(jest@29.7.0):
-    resolution: {integrity: sha512-zGAOA6iDbm5OAoMCL1cfTs2C3/XeHVrn7XOHqutP3wkquuir67xfdgqlke6/MwN7p8uWzDm59iQdNfbFGTF7XA==}
+  /@techor/glob@2.5.19:
+    resolution: {integrity: sha512-feaU58ZvJS6TMDXdnNMDUIXC7RtO7tUeqhbaAR31LYjl5NUd59/GsviFa/1Q3/TwnaWC0IA3DPskhN+1sOnIKA==}
     dependencies:
-      '@techor/jest': 2.5.17(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(jest@29.7.0)
+      fast-glob: 3.3.1
+      upath: 2.0.1
+
+  /@techor/jest-dom@2.5.19(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(jest@29.7.0):
+    resolution: {integrity: sha512-xOIkGLTSd3a9ciB0t7Gnly4QkIhofloTJyowBKrJLoAgiry/IzBobyXrLECH2YEQIGCrOufcDbjrcv7XZhfhzg==}
+    dependencies:
+      '@techor/jest': 2.5.19(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(jest@29.7.0)
       jest-environment-jsdom: 29.7.0
     transitivePeerDependencies:
       - '@swc/core'
@@ -7578,8 +7592,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@techor/jest@2.5.17(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(jest@29.7.0):
-    resolution: {integrity: sha512-z7J+aCxuHHtT9rFy9LwgW2Ed9y1Jzt8KotGVD7dK2unjNMao3djGw8mKO9UGiszUhmolOSf+AV8MX0vHfOQTaw==}
+  /@techor/jest@2.5.19(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(jest@29.7.0):
+    resolution: {integrity: sha512-yRc6YPE7/ydp5E3yZlMPttGk/9aGb3EiKwAxC5pd4hIAXfUjpV9+VShHcfyjJ82cZZvEDo1JcOrTRYFDVkjATw==}
     peerDependencies:
       '@swc/core': ^1.3.30
       '@swc/jest': ^0.2.24
@@ -7595,13 +7609,16 @@ packages:
   /@techor/log@2.5.17:
     resolution: {integrity: sha512-/+PSy0C9SRSDcYpO94Y8sZWTDWY5bDFMRZf+nA2YXo/A6bi0vH2IAUSlOWvOfUDs6yhaPXyz3aMKXgfGf/HO5w==}
 
-  /@techor/npm@2.5.17:
-    resolution: {integrity: sha512-666KH/Fdyx8LbeHF+oqzUca1kArdHIBgjMPb/rz8q9UooH/+bg5QVe3bSzzz8o+p95mKy1coD4jrjhlH1+KH+A==}
+  /@techor/log@2.5.19:
+    resolution: {integrity: sha512-W7qXHhN3ALo+ufDNnmRX/BSLy+B689CQRwQNBoPugA/thGVhSaBKn/a2OAxOdZlNmG6ivJQAhh2NI+Du3uHWnA==}
+
+  /@techor/npm@2.5.19:
+    resolution: {integrity: sha512-MZhGOneZfvw9Lu+pTLS9Kdc+9+IWdScLc4aTuxEkAxu7zuh/Js3v5SpEsS2240D9LJTFC9qXEpiviEx2yM1hyw==}
     dependencies:
-      '@techor/extend': 2.5.17
-      '@techor/fs': 2.5.17
-      '@techor/glob': 2.5.17
-      '@techor/log': 2.5.17
+      '@techor/extend': 2.5.19
+      '@techor/fs': 2.5.19
+      '@techor/glob': 2.5.19
+      '@techor/log': 2.5.19
       js-yaml: 4.1.0
     dev: true
 
@@ -7625,21 +7642,38 @@ packages:
       upath: 2.0.1
     dev: true
 
-  /@techor/repo@2.5.17(@semantic-release/exec@6.0.3)(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(@types/node@20.8.9)(jest@29.7.0)(semantic-release@21.1.2)(turbo@1.10.16)(typescript@5.2.2):
-    resolution: {integrity: sha512-d1k8BAQojlIN2R4+vsDV/Z9tmtYdHApjZ5MlAJydODO/yWp7JdeHzs0dKngASZeI6sIxpldN8ajuqk0fCblmaw==}
+  /@techor/pack@2.5.19:
+    resolution: {integrity: sha512-DDQ1v7aTSVp2no26OC0IJEhOGLXtpQjGhH1f0J8EQTuJ8a5sinCRvF21aczhwMzlmAQJ5niyvUZ2byqS/n994A==}
+    dependencies:
+      '@techor/extend': 2.5.19
+      '@techor/fs': 2.5.19
+      '@techor/glob': 2.5.19
+      '@techor/log': 2.5.19
+      clsx: 2.0.0
+      cross-import: 2.5.19
+      esbuild: 0.18.20
+      explore-config: 2.5.19
+      lodash.isequal: 4.5.0
+      npm: 9.9.0
+      techor: 2.5.19
+      upath: 2.0.1
+    dev: true
+
+  /@techor/repo@2.5.19(@semantic-release/exec@6.0.3)(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(@types/node@20.8.9)(jest@29.7.0)(semantic-release@21.1.2)(turbo@1.10.16)(typescript@5.2.2):
+    resolution: {integrity: sha512-KQ4fUA4t93lTw8wsgPNmvW/E4mBTCPa4iggpJDmxuvmmXPAIB1QvsZbDa/Pbn1mmBDI1829b7P2Cq9sGhX8vKQ==}
     peerDependencies:
       '@types/node': ''
       turbo: ''
       typescript: ''
     dependencies:
-      '@techor/jest': 2.5.17(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(jest@29.7.0)
-      '@techor/pack': 2.5.17
-      '@techor/version': 2.5.17
+      '@techor/jest': 2.5.19(@swc/core@1.3.95)(@swc/jest@0.2.29)(@types/jest@29.5.6)(jest@29.7.0)
+      '@techor/pack': 2.5.19
+      '@techor/version': 2.5.19
       '@types/node': 20.8.9
-      commitlint-config-techor: 2.5.17(typescript@5.2.2)
-      conventional-changelog-techor: 2.5.17
-      eslint-config-techor: 2.5.17(typescript@5.2.2)
-      semantic-release-config-techor: 2.5.17(@semantic-release/exec@6.0.3)(semantic-release@21.1.2)
+      commitlint-config-techor: 2.5.19(typescript@5.2.2)
+      conventional-changelog-techor: 2.5.19
+      eslint-config-techor: 2.5.19(typescript@5.2.2)
+      semantic-release-config-techor: 2.5.19(@semantic-release/exec@6.0.3)(semantic-release@21.1.2)
       turbo: 1.10.16
       typescript: 5.2.2
     transitivePeerDependencies:
@@ -7655,14 +7689,14 @@ packages:
       - typescript
     dev: true
 
-  /@techor/version@2.5.17:
-    resolution: {integrity: sha512-oPQv4q8ancpQu88UgLWddStODHIodlrdCMLC6HOugEoD2+iC3wNh03xLcfUABjsqFHe+WbDCytcuT/yf5WZp4w==}
+  /@techor/version@2.5.19:
+    resolution: {integrity: sha512-p7KcMeIAZAX4UbhTm+K5AdXRxdzZ6tJnSTAbO67UpABwEuDvz9+zNUpeigQJMI/2vBqmDGNJF5E+u1yd9nObvw==}
     dependencies:
-      '@techor/fs': 2.5.17
-      '@techor/glob': 2.5.17
-      '@techor/log': 2.5.17
-      '@techor/npm': 2.5.17
-      techor: 2.5.17
+      '@techor/fs': 2.5.19
+      '@techor/glob': 2.5.19
+      '@techor/log': 2.5.19
+      '@techor/npm': 2.5.19
+      techor: 2.5.19
     dev: true
 
   /@testing-library/dom@8.20.1:
@@ -8006,7 +8040,6 @@ packages:
 
   /@types/node@14.18.63:
     resolution: {integrity: sha512-fAtCfv4jJg+ExtXhvCkCqUKZ+4ok/JQk01qDKhL5BDDoS3AxKXhV5/MAVUZyQnSEd2GT92fkgZl0pz0Q0AzcIQ==}
-    dev: true
 
   /@types/node@18.18.7:
     resolution: {integrity: sha512-bw+lEsxis6eqJYW8Ql6+yTqkE6RuFtsQPSe5JxXbqYRFQEER5aJA9a5UH9igqDWm3X4iLHIKOHlnAXLM4mi7uQ==}
@@ -8200,8 +8233,8 @@ packages:
       - supports-color
     dev: true
 
-  /@typescript-eslint/eslint-plugin@6.9.0(@typescript-eslint/parser@6.9.1)(eslint@8.52.0)(typescript@5.2.2):
-    resolution: {integrity: sha512-lgX7F0azQwRPB7t7WAyeHWVfW1YJ9NIgd9mvGhfQpRY56X6AVf8mwM8Wol+0z4liE7XX3QOt8MN1rUKCfSjRIA==}
+  /@typescript-eslint/eslint-plugin@6.9.1(@typescript-eslint/parser@6.9.1)(eslint@8.52.0)(typescript@5.2.2):
+    resolution: {integrity: sha512-w0tiiRc9I4S5XSXXrMHOWgHgxbrBn1Ro+PmiYhSg2ZVdxrAJtQgzU5o2m1BfP6UOn7Vxcc6152vFjQfmZR4xEg==}
     engines: {node: ^16.0.0 || >=18.0.0}
     peerDependencies:
       '@typescript-eslint/parser': ^6.0.0 || ^6.0.0-alpha
@@ -8213,10 +8246,10 @@ packages:
     dependencies:
       '@eslint-community/regexpp': 4.10.0
       '@typescript-eslint/parser': 6.9.1(eslint@8.52.0)(typescript@5.2.2)
-      '@typescript-eslint/scope-manager': 6.9.0
-      '@typescript-eslint/type-utils': 6.9.0(eslint@8.52.0)(typescript@5.2.2)
-      '@typescript-eslint/utils': 6.9.0(eslint@8.52.0)(typescript@5.2.2)
-      '@typescript-eslint/visitor-keys': 6.9.0
+      '@typescript-eslint/scope-manager': 6.9.1
+      '@typescript-eslint/type-utils': 6.9.1(eslint@8.52.0)(typescript@5.2.2)
+      '@typescript-eslint/utils': 6.9.1(eslint@8.52.0)(typescript@5.2.2)
+      '@typescript-eslint/visitor-keys': 6.9.1
       debug: 4.3.4
       eslint: 8.52.0
       graphemer: 1.4.0
@@ -8371,8 +8404,8 @@ packages:
       - supports-color
     dev: true
 
-  /@typescript-eslint/type-utils@6.9.0(eslint@8.52.0)(typescript@5.2.2):
-    resolution: {integrity: sha512-XXeahmfbpuhVbhSOROIzJ+b13krFmgtc4GlEuu1WBT+RpyGPIA4Y/eGnXzjbDj5gZLzpAXO/sj+IF/x2GtTMjQ==}
+  /@typescript-eslint/type-utils@6.9.1(eslint@8.52.0)(typescript@5.2.2):
+    resolution: {integrity: sha512-eh2oHaUKCK58qIeYp19F5V5TbpM52680sB4zNSz29VBQPTWIlE/hCj5P5B1AChxECe/fmZlspAWFuRniep1Skg==}
     engines: {node: ^16.0.0 || >=18.0.0}
     peerDependencies:
       eslint: ^7.0.0 || ^8.0.0
@@ -8381,8 +8414,8 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@typescript-eslint/typescript-estree': 6.9.0(typescript@5.2.2)
-      '@typescript-eslint/utils': 6.9.0(eslint@8.52.0)(typescript@5.2.2)
+      '@typescript-eslint/typescript-estree': 6.9.1(typescript@5.2.2)
+      '@typescript-eslint/utils': 6.9.1(eslint@8.52.0)(typescript@5.2.2)
       debug: 4.3.4
       eslint: 8.52.0
       ts-api-utils: 1.0.3(typescript@5.2.2)
@@ -8545,6 +8578,25 @@ packages:
       - typescript
     dev: true
 
+  /@typescript-eslint/utils@6.9.1(eslint@8.52.0)(typescript@5.2.2):
+    resolution: {integrity: sha512-L1T0A5nFdQrMVunpZgzqPL6y2wVreSyHhKGZryS6jrEN7bD9NplVAyMryUhXsQ4TWLnZmxc2ekar/lSGIlprCA==}
+    engines: {node: ^16.0.0 || >=18.0.0}
+    peerDependencies:
+      eslint: ^7.0.0 || ^8.0.0
+    dependencies:
+      '@eslint-community/eslint-utils': 4.4.0(eslint@8.52.0)
+      '@types/json-schema': 7.0.14
+      '@types/semver': 7.5.4
+      '@typescript-eslint/scope-manager': 6.9.1
+      '@typescript-eslint/types': 6.9.1
+      '@typescript-eslint/typescript-estree': 6.9.1(typescript@5.2.2)
+      eslint: 8.52.0
+      semver: 7.5.4
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+    dev: true
+
   /@typescript-eslint/visitor-keys@5.62.0:
     resolution: {integrity: sha512-07ny+LHRzQXepkGg6w0mFY41fVUNBrL2Roj/++7V1txKugfjm/Ci/qSND03r2RhlJhJYMcTn9AhhSSqQp0Ysyw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
@@ -8691,7 +8743,7 @@ packages:
     peerDependencies:
       vite: ^3.0.0 || ^4.0.0
     dependencies:
-      vite: 4.4.7(@types/node@20.8.9)(less@4.1.3)(sass@1.64.1)(terser@5.19.2)
+      vite: 4.4.7(@types/node@14.18.63)(less@4.1.3)(sass@1.64.1)(terser@5.19.2)
 
   /@vitejs/plugin-react@4.1.0(vite@4.5.0):
     resolution: {integrity: sha512-rM0SqazU9iqPUraQ2JlIvReeaxOoRj6n+PzB1C0cBzIbd8qP336nC39/R9yPi3wVcah7E7j/kdU1uCUqMEU4OQ==}
@@ -9401,6 +9453,9 @@ packages:
   /ansicolors@0.3.2:
     resolution: {integrity: sha512-QXu7BPrP29VllRxH8GwB7x5iX5qWKAAMLqKQGWTeLWVlNHNOpVMJ91dsxQAIWXpjuW5wqvxu3Jd/nRjrJ+0pqg==}
     dev: true
+
+  /any-promise@1.3.0:
+    resolution: {integrity: sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A==}
 
   /anymatch@1.3.2:
     resolution: {integrity: sha512-0XNayC8lTHQ2OI8aljNCN3sSx6hsr/1+rlcDAotXJR7C1oZZHCNsfpbKwMjRA3Uqb5tF1Rae2oloTr4xpq+WjA==}
@@ -10947,6 +11002,10 @@ packages:
   /commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
 
+  /commander@4.1.1:
+    resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
+    engines: {node: '>= 6'}
+
   /commander@6.2.1:
     resolution: {integrity: sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==}
     engines: {node: '>= 6'}
@@ -10962,13 +11021,13 @@ packages:
     engines: {node: '>= 12'}
     dev: true
 
-  /commitlint-config-techor@2.5.17(typescript@5.2.2):
-    resolution: {integrity: sha512-UWB/ee+bSjCM0I/eTLMYrDXkyVuRI81EgQ9ZMkIGiTrmPkzz9ucJvtuYhQK1o7EXRsaSUXXWWNhGmDQI/RdPiQ==}
+  /commitlint-config-techor@2.5.19(typescript@5.2.2):
+    resolution: {integrity: sha512-bP9YmGXrdpRUl8CMmxJy/aPBpQlrWmqLqAIEcZDiiOWGDj1aBaEZiAKP+z2gTRiOlpIDJPebd375Eykk28DVXw==}
     dependencies:
       '@commitlint/cli': 18.2.0(typescript@5.2.2)
-      conventional-changelog-techor: 2.5.17
+      conventional-changelog-techor: 2.5.19
       husky: 8.0.3
-      techor-conventional-commits: 2.5.17
+      techor-conventional-commits: 2.5.19
     transitivePeerDependencies:
       - typescript
     dev: true
@@ -11124,12 +11183,12 @@ packages:
       compare-func: 2.0.0
     dev: true
 
-  /conventional-changelog-techor@2.5.17:
-    resolution: {integrity: sha512-k0E50TNj/cG0XumZux+/hwwRyQq2hRiriS9/9pHqCiG+Xfr+34D45XEmpf01Y7nZ8+2MDzCt3WtZCcy12bkbMA==}
+  /conventional-changelog-techor@2.5.19:
+    resolution: {integrity: sha512-nTIXf36pFZ7LKlDIJo5pTQVOGHPOlK901vMa20ZRn29zNHqueQhnKcvmvRZ/EI5KK0vBKWGOIZrR+NZj1LIOgw==}
     dependencies:
       compare-func: 2.0.0
       dedent: 0.7.0
-      techor-conventional-commits: 2.5.17
+      techor-conventional-commits: 2.5.19
     dev: true
 
   /conventional-changelog-writer@6.0.1:
@@ -11249,7 +11308,7 @@ packages:
     dependencies:
       '@types/node': 18.18.7
       cosmiconfig: 8.3.6(typescript@5.2.2)
-      jiti: 1.20.0
+      jiti: 1.21.0
       typescript: 5.2.2
     dev: true
 
@@ -11348,6 +11407,13 @@ packages:
 
   /cross-import@2.5.17:
     resolution: {integrity: sha512-6qWH7anOiHpzKgzX0szSmPFzVcNngu3ScqlQg00jIFem/Lwv+97VTQuApsN6JRYHpp1LbgJBdtqNhV2XejgHCA==}
+    dev: true
+
+  /cross-import@2.5.19:
+    resolution: {integrity: sha512-g+NkWFUGI8Q4KWjUpI8X1ooXpIg3ez/VY2/7XrpAoGf9oZYQ9KUr7mxyiuzFRV4mpOQdXvHMStACA/T5dVk88Q==}
+    dependencies:
+      jiti: 1.21.0
+      sucrase: 3.34.0
 
   /cross-spawn@6.0.5:
     resolution: {integrity: sha512-eTVLrBSt7fjbDygz805pMnstIs2VTBNkRm0qxZd+M7A5XDdxVRWO5MxGBXZhjY4cqLYLdtrGqRf8mBPmzwSpWQ==}
@@ -12730,10 +12796,10 @@ packages:
       - supports-color
     dev: false
 
-  /eslint-config-techor@2.5.17(typescript@5.2.2):
-    resolution: {integrity: sha512-EhbEm0i9BcsXaiSpLgYaEyULuhJcWmpBoA79fmVJGtBXyhmyZLnyZ3cUGv9jfnsNRaTk2ykH/5IypuNve2Cgnw==}
+  /eslint-config-techor@2.5.19(typescript@5.2.2):
+    resolution: {integrity: sha512-JeSm6ugW+9xM+kkU8WpkPZx/4qXOllC4gkHcWDfEvVk94+TOk17mEfZCOHPflYMn3YYlJREnicng629b40RN+w==}
     dependencies:
-      '@typescript-eslint/eslint-plugin': 6.9.0(@typescript-eslint/parser@6.9.1)(eslint@8.52.0)(typescript@5.2.2)
+      '@typescript-eslint/eslint-plugin': 6.9.1(@typescript-eslint/parser@6.9.1)(eslint@8.52.0)(typescript@5.2.2)
       '@typescript-eslint/parser': 6.9.1(eslint@8.52.0)(typescript@5.2.2)
       eslint: 8.52.0
     transitivePeerDependencies:
@@ -13443,10 +13509,19 @@ packages:
   /explore-config@2.5.17:
     resolution: {integrity: sha512-JeGxVlwHnXcvpBgLZ2Otrd3PZi8UNwLvtbEkyR0OvRUrxZdcbAAc5kV+Uke8kqmF9dIlKaoglRRRvaONoHtehA==}
     dependencies:
-      '@techor/extend': 2.5.17
-      '@techor/glob': 2.5.17
-      '@techor/log': 2.5.17
+      '@techor/extend': 2.5.19
+      '@techor/glob': 2.5.19
+      '@techor/log': 2.5.19
       cross-import: 2.5.17
+    dev: true
+
+  /explore-config@2.5.19:
+    resolution: {integrity: sha512-IfQrV7jgKpjhKV7v+it4SjyPY0Sng0Vj09JVrb2SSmCePzlBbmDjqhcK7BIB1ZanZGbOhhTSamLDOIf46RNDQQ==}
+    dependencies:
+      '@techor/extend': 2.5.19
+      '@techor/glob': 2.5.19
+      '@techor/log': 2.5.19
+      cross-import: 2.5.19
 
   /exponential-backoff@3.1.1:
     resolution: {integrity: sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==}
@@ -14211,6 +14286,16 @@ packages:
       once: 1.4.0
       path-is-absolute: 1.0.1
     dev: false
+
+  /glob@7.1.6:
+    resolution: {integrity: sha512-LwaxwyZ72Lk7vZINtNNrywX0ZuLyStrdDtabefZKAY5ZGJhVtgdznluResxNmPitE0SAO+O26sWTHeKSI2wMBA==}
+    dependencies:
+      fs.realpath: 1.0.0
+      inflight: 1.0.6
+      inherits: 2.0.4
+      minimatch: 3.1.2
+      once: 1.4.0
+      path-is-absolute: 1.0.1
 
   /glob@7.1.7:
     resolution: {integrity: sha512-OvD9ENzPLbegENnYP5UUfJIirTg4+XwMWGaQfQTY0JenxNvvIKP3U3/tAQSPIu/lHxXYSZmpXlUHeqAIdKzBLQ==}
@@ -16255,6 +16340,10 @@ packages:
     resolution: {integrity: sha512-3TV69ZbrvV6U5DfQimop50jE9Dl6J8O1ja1dvBbMba/sZ3YBEQqJ2VZRoQPVnhlzjNtU1vaXRZVrVjU4qtm8yA==}
     hasBin: true
 
+  /jiti@1.21.0:
+    resolution: {integrity: sha512-gFqAIbuKyyso/3G2qhiO2OM6shY6EPP/R0+mkDbyspxKazh8BXDC5FiFsUjlczgdNz/vfra0da2y+aHrusLG/Q==}
+    hasBin: true
+
   /js-beautify@1.14.9:
     resolution: {integrity: sha512-coM7xq1syLcMyuVGyToxcj2AlzhkDjmfklL8r0JgJ7A76wyGMpJ1oA35mr4APdYNO/o/4YY8H54NQIJzhMbhBg==}
     engines: {node: '>=12'}
@@ -18247,6 +18336,13 @@ packages:
 
   /mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
+
+  /mz@2.7.0:
+    resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
+    dependencies:
+      any-promise: 1.3.0
+      object-assign: 4.1.1
+      thenify-all: 1.6.0
 
   /nan@2.18.0:
     resolution: {integrity: sha512-W7tfG7vMOGtD30sHoZSSc/JVYiyDPEyQVso/Zz+/uQd0B0L46gtC+pHha5FFMRpil6fm/AoEcRWyOVi4+E/f8w==}
@@ -21683,20 +21779,20 @@ packages:
       '@types/node-forge': 1.3.8
       node-forge: 1.3.1
 
-  /semantic-release-config-techor@2.5.17(@semantic-release/exec@6.0.3)(semantic-release@21.1.2):
-    resolution: {integrity: sha512-5mQjbpQ96Zgjq0zT6YKIYeurbYs8ckmpRZif/2RbECLdXDHo6Dm7Cv9Gp721em9CcUTyT62DN/3IRdNkE+IDjQ==}
+  /semantic-release-config-techor@2.5.19(@semantic-release/exec@6.0.3)(semantic-release@21.1.2):
+    resolution: {integrity: sha512-1L/oZJqurXgsuKl84OF96IujzHM5x75sUY/T3IUXMb2fSGouj4zi73XNk7SG0a8q481d1/zs34sI6z1RLssQLQ==}
     peerDependencies:
       '@semantic-release/exec': ^6.0.3
       semantic-release: ^21.0.7
     dependencies:
       '@semantic-release/exec': 6.0.3(semantic-release@21.1.2)
-      '@techor/extend': 2.5.17
-      '@techor/fs': 2.5.17
-      '@techor/log': 2.5.17
-      '@techor/npm': 2.5.17
-      conventional-changelog-techor: 2.5.17
+      '@techor/extend': 2.5.19
+      '@techor/fs': 2.5.19
+      '@techor/log': 2.5.19
+      '@techor/npm': 2.5.19
+      conventional-changelog-techor: 2.5.19
       semantic-release: 21.1.2(typescript@5.2.2)
-      techor-conventional-commits: 2.5.17
+      techor-conventional-commits: 2.5.19
     dev: true
 
   /semantic-release@21.1.2(typescript@5.2.2):
@@ -22787,6 +22883,19 @@ packages:
       postcss-selector-parser: 6.0.13
     dev: true
 
+  /sucrase@3.34.0:
+    resolution: {integrity: sha512-70/LQEZ07TEcxiU2dz51FKaE6hCTWC6vr7FOk3Gr0U60C3shtAN+H+BFr9XlYe5xqf3RA8nrc+VIwzCfnxuXJw==}
+    engines: {node: '>=8'}
+    hasBin: true
+    dependencies:
+      '@jridgewell/gen-mapping': 0.3.3
+      commander: 4.1.1
+      glob: 7.1.6
+      lines-and-columns: 1.2.4
+      mz: 2.7.0
+      pirates: 4.0.6
+      ts-interface-checker: 0.1.13
+
   /suf-log@2.5.3:
     resolution: {integrity: sha512-KvC8OPjzdNOe+xQ4XWJV2whQA0aM1kGVczMQ8+dStAO6KfEB140JEVQ9dE76ONZ0/Ylf67ni4tILPJB41U0eow==}
     dependencies:
@@ -23043,16 +23152,25 @@ packages:
       yallist: 4.0.0
     dev: true
 
-  /techor-conventional-commits@2.5.17:
-    resolution: {integrity: sha512-+UMUnJqLOqHTZEEQqXhqvxE5udPtdXQVy72Qr8Pk3SK8klV7KX/iHqMYo9PvzvxOktMBEyUO8k9nhHQ880FBMw==}
+  /techor-conventional-commits@2.5.19:
+    resolution: {integrity: sha512-3WVW/6vgmzFDx/km8a7v4gxcWjxXyvJlhFupDHoMYVyw++AHPJDWmlZ1elvFKwBwnFUrxNfpLz8yR/qfj1N+ZQ==}
     dev: true
 
   /techor@2.5.17:
     resolution: {integrity: sha512-YzTu7FfGqIIUlQh2KJtbShjMP8MD23kWlQJP/qUJmxjEKhL2qk0+I28ILydJagj1S3VzOM1TWHdFk++DY10zDQ==}
     hasBin: true
     dependencies:
-      '@techor/fs': 2.5.17
-      '@techor/log': 2.5.17
+      '@techor/fs': 2.5.19
+      '@techor/log': 2.5.19
+      commander: 11.1.0
+    dev: true
+
+  /techor@2.5.19:
+    resolution: {integrity: sha512-c7p6GS6J4MXYLDlyelszhMS8mZUBJ1Ezdr0TwKVPK3KwA3IqvsENGkwAgt3qbu2YfjIDNgaBIwCeKRZy29A6Hg==}
+    hasBin: true
+    dependencies:
+      '@techor/fs': 2.5.19
+      '@techor/log': 2.5.19
       commander: 11.1.0
     dev: true
 
@@ -23093,7 +23211,7 @@ packages:
       jest-worker: 27.5.1
       schema-utils: 3.3.0
       serialize-javascript: 6.0.1
-      terser: 5.19.2
+      terser: 5.23.0
       webpack: 5.88.2(@swc/core@1.3.95)(esbuild@0.18.17)
 
   /terser-webpack-plugin@5.3.9(@swc/core@1.3.95)(webpack@5.89.0):
@@ -23140,7 +23258,6 @@ packages:
       acorn: 8.11.2
       commander: 2.20.3
       source-map-support: 0.5.21
-    dev: true
 
   /test-exclude@6.0.0:
     resolution: {integrity: sha512-cAGWPIyOHU6zlmg88jwm7VRyXnMN7iV68OGAbYDk/Mh/xC/pzVPlQtY6ngoIH/5/tciuhGfvESU8GrHrcxD56w==}
@@ -23157,6 +23274,17 @@ packages:
 
   /text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
+
+  /thenify-all@1.6.0:
+    resolution: {integrity: sha512-RNxQH/qI8/t3thXJDwcstUO4zeqo64+Uy/+sNVRBx4Xn2OX+OZ9oP+iJnNFqplFra2ZUVeKCSa2oVWi3T4uVmA==}
+    engines: {node: '>=0.8'}
+    dependencies:
+      thenify: 3.3.1
+
+  /thenify@3.3.1:
+    resolution: {integrity: sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==}
+    dependencies:
+      any-promise: 1.3.0
 
   /through2@0.4.2:
     resolution: {integrity: sha512-45Llu+EwHKtAZYTPPVn3XZHBgakWMN3rokhEv5hu596XP+cNgplMg+Gj+1nmAvj+L0K7+N49zBKx5rah5u0QIQ==}
@@ -23361,6 +23489,9 @@ packages:
     resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
     engines: {node: '>=6.10'}
     dev: true
+
+  /ts-interface-checker@0.1.13:
+    resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
   /ts-jest@29.1.1(@babel/core@7.23.2)(jest@29.7.0)(typescript@5.2.2):
     resolution: {integrity: sha512-D6xjnnbP17cC85nliwGiL+tpoKN0StpgE0TeOjXQTU6MVCfsB4v7aW05CgQ/1OywGb0x/oy9hHFnN+sczTiRaA==}
@@ -24465,7 +24596,6 @@ packages:
       terser: 5.19.2
     optionalDependencies:
       fsevents: 2.3.3
-    dev: true
 
   /vite@4.4.7(@types/node@20.8.9)(less@4.1.3)(sass@1.64.1)(terser@5.19.2):
     resolution: {integrity: sha512-6pYf9QJ1mHylfVh39HpuSfMPojPSKVxZvnclX1K1FyZ1PXDOcLBibdq5t1qxJSnL63ca8Wf4zts6mD8u8oc9Fw==}

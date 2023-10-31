@@ -1,7 +1,7 @@
 import settings from '../settings'
 import exploreConfig from 'explore-config'
 
-export default function resolveContext (context) {
+export default function resolveContext(context) {
     const resolvedSettings = Object.assign(settings, context.settings?.['@master/css'])
     const config = resolvedSettings?.config
     return {
