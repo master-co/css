@@ -42,13 +42,6 @@ export async function generate(
                 creator: '@aron1tw',
                 card: 'summary_large_image',
                 images: ogImageUrl
-            },
-            viewport: {
-                initialScale: 1,
-                width: 'device-width',
-                maximumScale: 1,
-                userScalable: false,
-                viewportFit: 'cover'
             }
         } as Metadata,
         metadata,
