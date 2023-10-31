@@ -4,7 +4,7 @@ import { l } from 'to-line'
 import { RedirectsProvider } from 'shared/contexts/redirects'
 import redirects from '~/redirects.mjs'
 import { Analytics } from '@vercel/analytics/react'
-import config from '../../../../../master.css'
+import config from 'shared/master.css'
 import CSSProvider from '@master/css.react/CSSProvider'
 import ThemeServiceProvider from '@master/css.react/ThemeServiceProvider'
 

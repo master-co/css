@@ -1,4 +1,4 @@
-import pkg from '../../../package.json'
+import pkg from 'shared/package.json'
 
 const project = {
     name: 'CSS',
