@@ -80,6 +80,6 @@ export default {
                 context
             )
         }
-        return defineVisitors({ context, options, settings, config }, visitNode)
+        return defineVisitors({ context, settings }, visitNode)
     },
 } as Rule.RuleModule
