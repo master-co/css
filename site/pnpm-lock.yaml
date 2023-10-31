@@ -33,7 +33,7 @@ importers:
         specifier: workspace:../../../shared
         version: link:../../../shared
 
-  ../../..:
+  ../../../shared:
     dependencies:
       '@formatjs/intl-localematcher':
         specifier: ^0.2.32
@@ -312,8 +312,6 @@ importers:
       typescript:
         specifier: ^4.8.2
         version: 4.9.5
-
-  ../../../shared: {}
 
 packages:
 
