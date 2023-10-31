@@ -3,8 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev",
-        "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build && npx mcss render \".next/**/*.html\"",
+        "dev": "npx next dev",
+        "build": "npx next build && npx mcss render \".next/**/*.html\"",
         "start": "next start",
         "lint": "next lint",
         "type-check": "tsc --noEmit"
