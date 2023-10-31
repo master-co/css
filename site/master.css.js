@@ -1,1 +1,1 @@
-export { default } from 'shared/master.css.js'
+export { default } from '../../../master.css'
