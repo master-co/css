@@ -38,6 +38,9 @@ importers:
       '@formatjs/intl-localematcher':
         specifier: ^0.2.32
         version: 0.2.32
+      '@master/css':
+        specifier: ^2.0.0-beta.190
+        version: 2.0.0-beta.190
       '@master/css-extractor':
         specifier: ^2.0.0-beta.190
         version: 2.0.0-beta.190
