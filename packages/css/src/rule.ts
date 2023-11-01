@@ -10,7 +10,7 @@ export class Rule {
 
     readonly at: Record<string, string> = {}
     readonly priority: number = -1
-    readonly natives: RuleNative[] = []
+    readonly natives: NativeRule[] = []
     readonly order: number = 0
     readonly stateToken: string
     readonly declarations: CSSDeclarations
@@ -52,7 +52,7 @@ export class Rule {
         if (!options.unit) options.unit = ''
         if (!options.separators) options.separators = [',']
         const { scope, important, functions, themeDriver } = css.config
-        const { selectors, mediaQueries, stylesBy, animations, colorVariables, normalVariables } = css
+        const { selectors, mediaQueries, stylesBy, animations, colorVariables, generalVariables } = css
         const classNames = stylesBy[className]
         const separators = [',']
         if (this.options.separators.length) {
@@ -84,7 +84,7 @@ export class Rule {
                 )
             const checkIsString = (value: string) => value === '\'' || value === '"'
             const isString = checkIsString(endSymbol)
-    
+
             let currentValue = ''
             const transform2ValueNode = () => {
                 if (currentValue) {
@@ -92,14 +92,14 @@ export class Rule {
                     if (!isVarFunction) {
                         const normalVariable = Object.prototype.hasOwnProperty.call(resolvedNormalVariables, currentValue)
                             ? resolvedNormalVariables[currentValue]
-                            : Object.prototype.hasOwnProperty.call(normalVariables, currentValue)
-                                ? normalVariables[currentValue]
+                            : Object.prototype.hasOwnProperty.call(generalVariables, currentValue)
+                                ? generalVariables[currentValue]
                                 : undefined
                         if (normalVariable) {
                             const variableName = normalVariable.name ?? currentValue
                             if (!bypassVariableNames.includes(variableName)) {
                                 handled = true
-    
+
                                 currentValueNodes.push({ type: 'variable', name: variableName })
                             }
                         } else if (this.colored) {
@@ -113,22 +113,22 @@ export class Rule {
                                 const variableName = colorVariable.name ?? colorName
                                 if (!bypassVariableNames.includes(variableName)) {
                                     handled = true
-    
+
                                     currentValueNodes.push({ type: 'variable', name: variableName, alpha })
                                 }
                             }
                         }
                     }
-    
+
                     if (!handled) {
                         const uv = this.resolveUnitValue(currentValue, unit)
                         currentValueNodes.push((uv?.value ?? currentValue) + (uv?.unit ?? ''))
                     }
-    
+
                     currentValue = ''
                 }
             }
-    
+
             for (; i < value.length; i++) {
                 const val = value[i]
                 if (val === endSymbol) {
@@ -137,7 +137,7 @@ export class Rule {
                         for (let j = currentValue.length - 1; ; j--) {
                             if (currentValue[j] !== '\\')
                                 break
-                            
+
                             count++
                         }
                         if (count % 2) {
@@ -149,20 +149,20 @@ export class Rule {
                     } else {
                         transform2ValueNode()
                     }
-    
+
                     return i
                 } else if (!isString && val in START_SYMBOLS) {
                     const functionName = currentValue
                     const newValueNode: Rule['valueNodes'][0] = { type: 'function', name: functionName, symbol: val, childrens: [] }
                     currentValueNodes.push(newValueNode)
                     currentValue = ''
-    
+
                     const functionConfig = val === '(' && functions?.[functionName]
                     if (!this.colored && functionConfig?.colored) {
                         // @ts-ignore
                         this.colored = true
                     }
-                   
+
                     i = transform2ValueNodes(
                         newValueNode.childrens,
                         ++i,
@@ -173,27 +173,27 @@ export class Rule {
                     )
                 } else if ((val === '|' || val === ' ') && endSymbol !== '}' && (!isString || parentFunctionName === 'path')) {
                     transform2ValueNode()
-    
+
                     currentValueNodes.push({ type: 'separator', value: ' ' })
                 } else {
                     if (!isString) {
                         if (val === '.') {
                             if (isNaN(+value[i + 1])) {
-                                if (root) 
+                                if (root)
                                     break
                             } else if (value[i - 1] === '-') {
                                 currentValue += '0'
                             }
                         } else if (separators.includes(val)) {
                             transform2ValueNode()
-    
-                            currentValueNodes.push({ 
-                                type: 'separator', 
-                                value: val, 
+
+                            currentValueNodes.push({
+                                type: 'separator',
+                                value: val,
                                 prefixWhite: val !== ',',
                                 suffixWhite: val !== ','
                             })
-    
+
                             continue
                         } else if (
                             root
@@ -205,13 +205,13 @@ export class Rule {
                             break
                         }
                     }
-    
+
                     currentValue += val
                 }
             }
-    
+
             transform2ValueNode()
-    
+
             return i
         }
         const pushVariableName = (variableName: string) => {
@@ -552,17 +552,17 @@ export class Rule {
                                     const functionConfig = functions && functions[eachValueNode.name]
                                     if (functionConfig?.transform) {
                                         const result = functionConfig.transform.call(
-                                            instance, 
-                                            eachValueNode.symbol, 
+                                            instance,
+                                            eachValueNode.symbol,
                                             transformValueNodes(
-                                                eachValueNode.childrens, 
+                                                eachValueNode.childrens,
                                                 functionConfig.unit ?? unit,
                                                 bypassVariableNames
                                             )
                                         )
                                         currentValue += transformValueNodes(
-                                            Array.isArray(result) ? result : [result], 
-                                            unit, 
+                                            Array.isArray(result) ? result : [result],
+                                            unit,
                                             bypassVariableNames
                                         )
                                     } else {
@@ -574,7 +574,7 @@ export class Rule {
                                     break
                                 case 'variable':
                                     // eslint-disable-next-line no-case-declarations
-                                    const normalVariable = normalVariables[eachValueNode.name]
+                                    const normalVariable = generalVariables[eachValueNode.name]
                                     if (normalVariable) {
                                         const handleStringNormalVariable = (stringNormalVariable) => {
                                             const valueNodes: Rule['valueNodes'] = []
@@ -589,7 +589,7 @@ export class Rule {
                                             const uv = instance.resolveUnitValue(numberNormalVariable['value'], unit)
                                             currentValue += (uv?.value ?? numberNormalVariable['value']) + (uv?.unit ?? '')
                                         }
-    
+
                                         const keys = Object.keys(normalVariable)
                                         if (keys.some(eachKey => eachKey === '' || eachKey.startsWith('@'))) {
                                             const isStringType = normalVariable[keys[0]].type === 'string'
@@ -631,7 +631,7 @@ export class Rule {
                                             currentValue += `${colorVariable['space']}(${colorVariable['value']}${alpha})`
                                         }
                                     }
-    
+
                                     break
                             }
                             break
@@ -750,7 +750,7 @@ export class Rule {
                     if (this.theme && themeDriver === 'media') {
                         cssText = `@media(prefers-color-scheme:${this.theme}){` + cssText + '}'
                     }
-                    
+
 
                     this.natives.push({ text: cssText })
                 }
@@ -836,7 +836,7 @@ export interface Rule {
     }
 }
 
-export interface RuleNative {
+export interface NativeRule {
     text: string
     cssRule?: CSSRule
 }

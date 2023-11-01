@@ -6,7 +6,7 @@ import puppeteer, { Browser, ElementHandle, Page } from 'puppeteer-core'
 import path from 'path'
 import type { MasterCSS } from '../src'
 
-const variables = { 
+const variables = {
     first: {
         '': '#111111',
         '@dark': '#222222',
@@ -28,8 +28,11 @@ const variables = {
     fifth: {
         '@dark': '#022222',
         '@light': '#033333'
+    },
+    sixth: {
+        '@dark': '#666666'
     }
-} 
+}
 
 let browser: Browser
 let page: Page
@@ -37,7 +40,7 @@ let page: Page
 beforeAll(async () => {
     browser = await puppeteer.launch({ headless: 'new', channel: 'chrome' })
     page = await browser.newPage()
-    
+
     await page.evaluate(({ variables }) => window['masterCSSConfig'] = { variables }, { variables })
     await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
     await page.waitForNetworkIdle()
@@ -70,7 +73,8 @@ it('expects the keyframe output', async () => {
             'bg:second',
             'b:third',
             '{outline:fourth;accent:fifth}',
-            'fg:second'
+            'fg:second',
+            'accent:sixth'
         )
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         await new Promise(resolve => setTimeout(resolve, 0))
@@ -102,6 +106,8 @@ it('expects the keyframe output', async () => {
     await removeClass('fg:second')
     expect(cssText).not.toContain('.dark{--second:68 68 68}.light{--second:85 85 85}:root{--third:102 102 102}.light{--third:119 119 119}')
     await removeClass('bg:first')
+    expect(cssText).toContain('.dark{--sixth:102 102 102}')
+    await removeClass('accent:sixth')
     expect(cssText).toBe('')
 }, 60000)
 

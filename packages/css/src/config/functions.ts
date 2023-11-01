@@ -7,8 +7,8 @@ const functions = {
                 ? this.options.resolvedNormalVariables[value]
                 : (this.colored && Object.prototype.hasOwnProperty.call(this.options.resolvedColorVariables, value))
                     ? this.options.resolvedColorVariables[value]
-                    : Object.prototype.hasOwnProperty.call(this.css.normalVariables, value)
-                        ? this.css.normalVariables[value]
+                    : Object.prototype.hasOwnProperty.call(this.css.generalVariables, value)
+                        ? this.css.generalVariables[value]
                         : (this.colored && Object.prototype.hasOwnProperty.call(this.css.colorVariables, value))
                             ? this.css.colorVariables[value]
                             : undefined
@@ -53,12 +53,12 @@ const functions = {
                                 current = uv.value + uv.unit
                             }
                         }
-                       
+
                         currentValueNodes.push(current)
 
                         current = ''
                     }
-                    
+
                     if (separator) {
                         if (prefixWhite && value[i - 1] === ' ') {
                             prefixWhite = false
@@ -93,13 +93,13 @@ const functions = {
                         i++
                         const isVarFunction = newValueNode.name === '$' || newValueNode.name === 'var'
                         anaylze(
-                            newValueNode.childrens, 
-                            functionName !== '' 
-                                && functionName !== 'calc' 
+                            newValueNode.childrens,
+                            functionName !== ''
+                                && functionName !== 'calc'
                                 && (
                                     isVarFunction
                                     || Object.prototype.hasOwnProperty.call(functions, functionName)
-                                ), 
+                                ),
                             bypassHandlingUnit || isVarFunction
                         )
                     } else if (char === ')') {

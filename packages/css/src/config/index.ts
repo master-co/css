@@ -35,12 +35,8 @@ export {
 }
 
 
-type Variable = number | string | Array<number | string>
-type VariableGroup = {
-    [key in '' | `@${string}`]?: Variable
-} & {
-    [key: string]: Variable | VariableGroup
-}
+export type ConfigVariable = number | string | Array<number | string>
+export type ConfigVariableGroup = { [key in '' | `@${string}`]?: ConfigVariable } & { [key: string]: ConfigVariable | ConfigVariableGroup }
 
 export interface Config {
     extends?: (Config | { config: Config })[]
@@ -48,8 +44,8 @@ export interface Config {
     mediaQueries?: { [key: string]: number | string | Config['mediaQueries'] }
     selectors?: { [key: string]: string | string[] | Config['selectors'] }
     semantics?: { [key in keyof typeof semantics]?: CSSDeclarations } & { [key: string]: CSSDeclarations }
-    variables?: { [key in keyof typeof rules]?: VariableGroup }
-        & { [key: string]: VariableGroup | Variable }
+    variables?: { [key in keyof typeof rules]?: ConfigVariableGroup }
+    & { [key: string]: ConfigVariableGroup | ConfigVariable }
     rules?: { [key in keyof typeof rules | string]?: Rule['options'] }
     rootSize?: number
     scope?: string
