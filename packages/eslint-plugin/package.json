@@ -41,7 +41,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "explore-config": "^2.2.10"
+        "explore-config": "^2.5.19"
     },
     "devDependencies": {
         "@angular-eslint/template-parser": "^16.2.0",
