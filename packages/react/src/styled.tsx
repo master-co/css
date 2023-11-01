@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react'
 import cv from 'class-variant'
-import line from '@techor/one-liner'
+import clsx from 'clsx'
 
 type baseType<E> = string
     | string[]
@@ -163,7 +163,7 @@ function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
                 }
 
                 // @ts-ignore
-                return <Tag ref={ref} {...newProps} className={line(classNames, props.className)} />
+                return <Tag ref={ref} {...newProps} className={clsx(classNames, props.className)} />
             }) as any as MasterExoticComponent<K, E>
 
             component.displayName = displayName

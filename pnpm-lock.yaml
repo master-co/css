@@ -1243,9 +1243,9 @@ importers:
 
   packages/class-variant:
     dependencies:
-      '@techor/one-liner':
-        specifier: ^2.2.10
-        version: 2.5.17
+      clsx:
+        specifier: ^2.0.0
+        version: 2.0.0
       react:
         specifier: '>= 16.8.0'
         version: 18.2.0
@@ -1438,15 +1438,15 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../css
-      '@techor/one-liner':
-        specifier: ^2.2.10
-        version: 2.5.17
       '@types/react':
         specifier: '>=15'
         version: 18.2.33
       class-variant:
         specifier: workspace:^
         version: link:../class-variant
+      clsx:
+        specifier: ^2.0.0
+        version: 2.0.0
       react:
         specifier: '>= 16.8.0'
         version: 18.2.0
@@ -14995,7 +14995,6 @@ packages:
   /clsx@2.0.0:
     resolution: {integrity: sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==}
     engines: {node: '>=6'}
-    dev: true
 
   /cluster-key-slot@1.1.2:
     resolution: {integrity: sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==}
