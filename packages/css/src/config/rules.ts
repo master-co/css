@@ -1654,7 +1654,7 @@ const rules = {
         variables: ['spacing']
     } as Rule['options'],
     outlineStyle: {
-        match: ['outline', ['dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']],
+        match: ['outline', ['none', 'auto', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']],
         layer: CoreLayer.Native
     } as Rule['options'],
     outlineWidth: {
@@ -1668,9 +1668,15 @@ const rules = {
         layer: CoreLayer.NativeShorthand,
         colored: true,
         transform(value) {
-            if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
+            const outlineGlobalValuesRegex =
+                /^(?:inherit|initial|revert|revert-layer|unset)$/i
+            const outlineStyleRegex = /none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i
+            const outlineAutoRegex = /auto/i
+
+            if (!outlineGlobalValuesRegex.test(value) && !outlineStyleRegex.test(value) && !outlineAutoRegex.test(value)) {
                 value += ' solid'
             }
+
             return value
         },
         variables: [
