@@ -2,7 +2,7 @@ import { Viewport } from 'next';
 import i18n from 'shared/i18n.config.mjs'
 
 export const metadata = {
-    metadataBase: new URL(`https://${process.env.HOST}`),
+    metadataBase: new URL(process.env.HOST as string),
     title: {
         template: '%s - Master CSS',
         default: 'Master CSS'
