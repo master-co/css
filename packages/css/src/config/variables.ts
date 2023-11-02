@@ -144,7 +144,7 @@ const variables = {
     order: {
         first: -999999,
         last: 999999
-    }, 
+    },
     shapeOutside: {
         content: 'content-box',
         border: 'border-box',
@@ -161,7 +161,6 @@ const variables = {
         view: 'view-box',
         black: '#000000'
     },
-
     black: '#000000',
     white: '#ffffff',
     current: 'currentColor',

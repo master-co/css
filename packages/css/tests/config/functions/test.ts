@@ -14,8 +14,8 @@ test('functions', () => {
 
     testCSS('$primary:red', '.\\$primary\\:red{--primary:rgb(209 26 30)}')
     testCSS('$primary:red-80', '.\\$primary\\:red-80{--primary:rgb(253 207 207)}')
-    testCSS('$primary:red/.5', '.\\$primary\\:red\\/\\.5{--primary:rgb(209 26 30 / .5)}')
-    testCSS('$primary:red-80/.5', '.\\$primary\\:red-80\\/\\.5{--primary:rgb(253 207 207 / .5)}')
+    testCSS('$primary:red/.5', '.\\$primary\\:red\\/\\.5{--primary:rgb(209 26 30/.5)}')
+    testCSS('$primary:red-80/.5', '.\\$primary\\:red-80\\/\\.5{--primary:rgb(253 207 207/.5)}')
 })
 
 test('checks gradient-related functions with color variables', () => {

@@ -617,7 +617,7 @@ export class Rule {
                                         }
                                     } else {
                                         const colorVariable = colorVariables[eachValueNode.name]
-                                        const alpha = eachValueNode.alpha ? ' / ' + eachValueNode.alpha : ''
+                                        const alpha = eachValueNode.alpha ? '/' + eachValueNode.alpha : ''
                                         const keys = Object.keys(colorVariable)
                                         if (keys.some(eachKey => eachKey === '' || eachKey.startsWith('@'))) {
                                             if (instance.theme) {

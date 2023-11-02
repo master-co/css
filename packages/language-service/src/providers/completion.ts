@@ -213,7 +213,8 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
 
     if (masterCssKeys.includes(key) && key !== null && isMedia === true) { //show media
         masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(masterCssMedia as any, 10))
-        masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(css.themeNames, 10))
+        // todo: refactor theme
+        masterStyleCompletionItem = masterStyleCompletionItem.concat(getReturnItem(['light', 'dark'], 10))
         if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerKey !== '@' && triggerKey !== ':') {
             return HaveDash('@' + last, masterStyleCompletionItem)
         }
@@ -295,9 +296,11 @@ export function getReturnItem(items: Array<string | CompletionItem>, kind: Compl
 function getColorsItem(css: MasterCSS = new MasterCSS()): CompletionItem[] {
 
     const masterStyleCompletionItem: CompletionItem[] = []
-    Object.keys(css.colors)
+
+    // todo: refactor css.colorVariables
+    Object.keys(css.colorVariables)
         .forEach((colorName: string) => {
-            const colorValue: any = css.colors[colorName]
+            const colorValue: any = css.colorVariables[colorName]
             masterStyleCompletionItem.push({
                 label: colorName,
                 documentation: Object.values<string>(colorValue)[0],

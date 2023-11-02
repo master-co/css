@@ -211,7 +211,7 @@ test('colors', () => {
     )
     testCSS(
         'bg:code/.5',
-        '.dark{--code:251 224 157}.light{--code:220 160 0}.bg\\:code\\/\\.5{background-color:rgb(var(--code) / .5)}',
+        '.dark{--code:251 224 157}.light{--code:220 160 0}.bg\\:code\\/\\.5{background-color:rgb(var(--code)/.5)}',
         config
     )
     testCSS(
