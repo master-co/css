@@ -4,83 +4,73 @@ import config from '../../config'
 test('colors', () => {
     testCSS(
         'fg:primary',
-        '.fg\\:primary{color:#175fe9}.light .fg\\:primary{color:#ebbb40}.dark .fg\\:primary{color:#fbe09d}',
+        '.light{--primary:235 187 64}.dark{--primary:251 224 157}:root{--primary:23 95 233}.fg\\:primary{color:rgb(var(--primary))}',
         config
     )
     testCSS(
         'fg:primary-code',
-        '.fg\\:primary-code{color:#777777}.dark .fg\\:primary-code{color:#6b6a6d}',
+        ':root{--primary-code:119 119 119}.dark{--primary-code:107 106 109}.fg\\:primary-code{color:rgb(var(--primary-code))}',
         config
     )
     testCSS(
         'fg:primary-stage-1',
-        '.fg\\:primary-stage-1{color:#999999}.light .fg\\:primary-stage-1{color:#888888}.dark .fg\\:primary-stage-1{color:#AAAAAA}',
+        ':root{--primary-stage-1:153 153 153}.light{--primary-stage-1:136 136 136}.dark{--primary-stage-1:170 170 170}.fg\\:primary-stage-1{color:rgb(var(--primary-stage-1))}',
         config
     )
     testCSS(
         'b:input',
-        '.b\\:input{border-color:#123456}',
+        '.b\\:input{border-color:rgb(18 52 86)}',
         config
     )
     testCSS(
         'bg:blue-100',
-        '.bg\\:blue-100{background-color:#777}',
+        '.bg\\:blue-100{background-color:rgb(119 119 119)}',
         {
-            colors: {
+            variables: {
                 'blue-100': '#777'
             }
         }
     )
     testCSS(
         'bg:primary-alpha',
-        '.bg\\:primary-alpha{background-color:#175fe91a}',
+        '.bg\\:primary-alpha{background-color:rgb(23 95 233 / .1)}',
         config
     )
     testCSS(
         'bg:primary-rgb1',
-        '.bg\\:primary-rgb1{background-color:#000000}',
+        '.bg\\:primary-rgb1{background-color:rgb(0 0 0)}',
         config
     )
     testCSS(
         'bg:primary-rgb2',
-        '.bg\\:primary-rgb2{background-color:#000000}',
+        '.bg\\:primary-rgb2{background-color:rgb(0 0 0)}',
         config
     )
     testCSS(
         'bg:primary-rgb3',
-        '.bg\\:primary-rgb3{background-color:#00000080}',
+        '.bg\\:primary-rgb3{background-color:rgb(0 0 0 / .5)}',
         config
     )
     testCSS(
         'bg:primary-rgb4',
-        '.bg\\:primary-rgb4{background-color:#00000080}',
-        config
-    )
-    testCSS(
-        'bg:primary-rgb5',
-        '.bg\\:primary-rgb5{background-color:#000000}',
-        config
-    )
-    testCSS(
-        'bg:primary-rgb6',
-        '.bg\\:primary-rgb6{background-color:#00000080}',
+        '.bg\\:primary-rgb4{background-color:rgb(0 0 0 / .5)}',
         config
     )
     testCSS(
         'bg:primary-2',
-        '.bg\\:primary-2{background-color:#000000b3}',
+        '.bg\\:primary-2{background-color:rgb(0 0 0 / .35)}',
         config
     )
     testCSS(
         'bg:linear-gradient(180deg,major,gray-60)',
-        '.light .bg\\:linear-gradient\\(180deg\\,major\\,gray-60\\){background-image:linear-gradient(180deg,#19212d,#9e9da0)}.dark .bg\\:linear-gradient\\(180deg\\,major\\,gray-60\\){background-image:linear-gradient(180deg,#dad9db,#9e9da0)}',
+        '.light{--major:25 33 45}.dark{--major:218 217 219}.bg\\:linear-gradient\\(180deg\\,major\\,gray-60\\){background-image:linear-gradient(180deg,rgb(var(--major)),rgb(158 157 160))}',
         config
     )
     testCSS(
         'bg:linear-gradient(180deg,primary,accent)',
-        '.light .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#000000,#111111)}.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,#eeeeee)}',
+        '.light{--primary:0 0 0}.dark{--primary:255 255 255}.light{--accent:17 17 17}.dark{--accent:238 238 238}.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,rgb(var(--primary)),rgb(var(--accent)))}',
         {
-            colors: {
+            variables: {
                 primary: {
                     '@light': '#000000',
                     '@dark': '#ffffff'
@@ -94,9 +84,9 @@ test('colors', () => {
     )
     testCSS(
         'bg:linear-gradient(180deg,primary,accent)',
-        '.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,#eeeeee)}',
+        '.light{--primary:0 0 0}.dark{--primary:255 255 255}.dark{--accent:238 238 238}.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,rgb(var(--primary)),rgb(var(--accent)))}',
         {
-            colors: {
+            variables: {
                 primary: {
                     '@light': '#000000',
                     '@dark': '#ffffff'
@@ -109,9 +99,9 @@ test('colors', () => {
     )
     testCSS(
         'bg:linear-gradient(180deg,primary,accent)',
-        '.light .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#000000,accent)}.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,accent)}',
+        '.light{--primary:0 0 0}.dark{--primary:255 255 255}.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,rgb(var(--primary)),accent)}',
         {
-            colors: {
+            variables: {
                 primary: {
                     '@light': '#000000',
                     '@dark': '#ffffff'
@@ -121,9 +111,9 @@ test('colors', () => {
     )
     testCSS(
         'bg:linear-gradient(180deg,primary,accent)',
-        '.light .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#000000,#ff0000)}.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,#ff0000)}',
+        '.light{--primary:0 0 0}.dark{--primary:255 255 255}.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,rgb(var(--primary)),rgb(255 0 0))}',
         {
-            colors: {
+            variables: {
                 accent: '#ff0000',
                 primary: {
                     '@light': '#000000',
@@ -134,9 +124,9 @@ test('colors', () => {
     )
     testCSS(
         'bg:linear-gradient(180deg,primary,accent)',
-        '.dark .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#ffffff,#aa0000)}.light .bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,#000000,#ff0000)}',
+        '.light{--primary:0 0 0}.dark{--primary:255 255 255}:root{--accent:255 0 0}.dark{--accent:170 0 0}.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,rgb(var(--primary)),rgb(var(--accent)))}',
         {
-            colors: {
+            variables: {
                 accent: {
                     '': '#ff0000',
                     '@dark': '#aa0000'
@@ -150,9 +140,9 @@ test('colors', () => {
     )
     testCSS(
         '{block;fg:fade}_:where(p)_code:before',
-        '.\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{display:block}.light .\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{color:#cccccc}.dark .\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{color:#333333}',
+        '.light{--fade:204 204 204}.dark{--fade:51 51 51}.\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{display:block;color:rgb(var(--fade))}',
         {
-            colors: {
+            variables: {
                 fade: {
                     '@light': '#cccccc',
                     '@dark': '#333333'
@@ -162,14 +152,14 @@ test('colors', () => {
     )
     testCSS(
         'btn',
-        '.bg\\:primary-filled,.btn{background-color:#dca000}.light .bg\\:primary-filled,.light .btn{background-color:#ecbb40}.dark .bg\\:primary-filled,.dark .btn{background-color:#dca000}',
+        ':root{--primary-filled:220 160 0}.light{--primary-filled:236 187 64}.dark{--primary-filled:220 160 0}.bg\\:primary-filled,.btn{background-color:rgb(var(--primary-filled))}',
         {
-            colors: {
+            variables: {
                 primary: {
                     filled: {
-                        '': 'gold-70',
-                        '@light': 'gold-75',
-                        '@dark': 'gold-70'
+                        '': '$(gold-70)',
+                        '@light': '$(gold-75)',
+                        '@dark': '$(gold-70)'
                     }
                 }
             },
@@ -180,14 +170,14 @@ test('colors', () => {
     )
     testCSS(
         'bg:primary-filled',
-        '.bg\\:primary-filled,.btn{background-color:#dca000}.light .bg\\:primary-filled,.light .btn{background-color:#ecbb40}.dark .bg\\:primary-filled,.dark .btn{background-color:#dca000}',
+        ':root{--primary-filled:220 160 0}.light{--primary-filled:236 187 64}.dark{--primary-filled:220 160 0}.bg\\:primary-filled,.btn{background-color:rgb(var(--primary-filled))}',
         {
-            colors: {
+            variables: {
                 primary: {
                     filled: {
-                        '': 'gold-70',
-                        '@light': 'gold-75',
-                        '@dark': 'gold-70'
+                        '': '$(gold-70)',
+                        '@light': '$(gold-75)',
+                        '@dark': '$(gold-70)'
                     }
                 }
             },
@@ -198,14 +188,14 @@ test('colors', () => {
     )
     testCSS(
         'bg:primary-filled@dark',
-        '.dark .bg\\:primary-filled\\@dark{background-color:#dca000}',
+        '.dark .bg\\:primary-filled\\@dark{background-color:rgb(220 160 0)}',
         {
-            colors: {
+            variables: {
                 primary: {
                     filled: {
-                        '': 'gold-70',
-                        '@light': 'gold-75',
-                        '@dark': 'gold-70'
+                        '': '$(gold-70)',
+                        '@light': '$(gold-75)',
+                        '@dark': '$(gold-70)'
                     }
                 }
             },
@@ -216,17 +206,17 @@ test('colors', () => {
     )
     testCSS(
         'bg:code',
-        '.light .bg\\:code{background-color:#dca000}.dark .bg\\:code{background-color:#fbe09d}',
+        '.dark{--code:251 224 157}.light{--code:220 160 0}.bg\\:code{background-color:rgb(var(--code))}',
         config
     )
     testCSS(
         'bg:code/.5',
-        '.light .bg\\:code\\/\\.5{background-color:#dca00080}.dark .bg\\:code\\/\\.5{background-color:#fbe09d80}',
+        '.dark{--code:251 224 157}.light{--code:220 160 0}.bg\\:code\\/\\.5{background-color:rgb(var(--code)/.5)}',
         config
     )
     testCSS(
         'bg:fade-light',
-        '.light .bg\\:fade-light{background-color:#6c7693}',
+        '.light{--fade-light:108 118 147}.bg\\:fade-light{background-color:rgb(var(--fade-light))}',
         config
     )
 })
@@ -234,9 +224,9 @@ test('colors', () => {
 it('checks if similar color names collide.', () => {
     testCSS(
         'fg:a-1',
-        '.fg\\:a-1{color:#000000}',
+        '.fg\\:a-1{color:rgb(0 0 0)}',
         {
-            colors: {
+            variables: {
                 a: {
                     1: '#000000'
                 },

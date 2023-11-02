@@ -77,9 +77,9 @@
     "devDependencies": {
         "@techor/extend": "^2.5.4",
         "@techor/pack": "^2.5.4",
-        "csstype": "^3.1.2",
         "css-shared": "workspace:^",
-        "vite": "^4.2.1",
-        "puppeteer": "^21.0.1"
+        "csstype": "^3.1.2",
+        "puppeteer": "^21.0.1",
+        "vite": "^4.2.1"
     }
 }

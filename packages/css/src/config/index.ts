@@ -1,5 +1,4 @@
 import mediaQueries from './media-queries'
-import colors from './colors'
 import selectors from './selectors'
 import semantics from './semantics'
 import animations from './animations'
@@ -11,7 +10,6 @@ import type { Rule } from '../rule'
 
 const config: Config = {
     mediaQueries,
-    colors,
     selectors,
     semantics,
     rules,
@@ -28,7 +26,6 @@ const config: Config = {
 export {
     config,
     mediaQueries,
-    colors,
     selectors,
     semantics,
     rules,
@@ -38,17 +35,17 @@ export {
 }
 
 
-type Variable = number | string | (number | string)[]
-type VariableGroup = { [key: string]: Variable }
+export type ConfigVariable = number | string | Array<number | string>
+export type ConfigVariableGroup = { [key in '' | `@${string}`]?: ConfigVariable } & { [key: string]: ConfigVariable | ConfigVariableGroup }
 
 export interface Config {
     extends?: (Config | { config: Config })[]
     styles?: { [key: string]: string | Config['styles'] }
-    colors?: { [key: string]: string | Config['colors'] }
     mediaQueries?: { [key: string]: number | string | Config['mediaQueries'] }
     selectors?: { [key: string]: string | string[] | Config['selectors'] }
     semantics?: { [key in keyof typeof semantics]?: CSSDeclarations } & { [key: string]: CSSDeclarations }
-    variables?: { [key in keyof typeof rules]: VariableGroup } | { [key in string]: VariableGroup | Variable }
+    variables?: { [key in keyof typeof rules]?: ConfigVariableGroup }
+    & { [key: string]: ConfigVariableGroup | ConfigVariable }
     rules?: { [key in keyof typeof rules | string]?: Rule['options'] }
     rootSize?: number
     scope?: string
@@ -57,7 +54,7 @@ export interface Config {
     functions?: Record<string, {
         unit?: string
         colored?: boolean
-        transform?(this: Rule, opening: string, value: string, closing: string): string
+        transform?(this: Rule, opening: string, value: string, closing: string): string | Rule['valueNodes']
     }>,
     animations?: Record<string, { [key in 'from' | 'to']?: CSSDeclarations } & { [key: string]: CSSDeclarations }>
     themeDriver?: 'class' | 'media' | 'host'

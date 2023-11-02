@@ -1,53 +1,4 @@
 export default {
-    colors: {
-        primary: {
-            '': 'blue-50',
-            '@light': '#ebbb40',
-            '@dark': '#fbe09d',
-            code: {
-                '': '#777777',
-                '@dark': 'gray'
-            },
-            stage: {
-                '1': {
-                    '': '#999999',
-                    '@light': '#888888',
-                    '@dark': '#AAAAAA'
-                }
-            },
-            alpha: 'blue-50/.1',
-            rgb1: 'rgb(0, 0, 0)',
-            rgb2: 'rgb(0 0 0)',
-            rgb3: 'rgb(0 0 0/.5)',
-            rgb4: 'rgba(0,0,0,.5)',
-            rgb5: 'rgba(0|0|0)',
-            rgb6: 'rgba(0|0|0/.5)',
-            '2': 'primary-rgb4/.7'
-        },
-        input: {
-            '': '#123456'
-        },
-        accent: {
-            '@light': 'gold-70',
-            '@dark': '#fbe09d'
-        },
-        major: {
-            '@light': 'slate-10',
-            '@dark': 'gray-80'
-        },
-        content: {
-            '@light': 'slate-30',
-            '@dark': 'gray-60'
-        },
-        fade: {
-            '@light': 'slate-55',
-            '@dark': 'gray-60'
-        },
-        code: 'accent',
-        'fade-light': {
-            '@light': 'fade@light'
-        }
-    },
     styles: {
         btn: 'font:14 h:40 text:center bg:primary@light fg:white@light font:semibold@light bg:white@dark fg:primary@dark font:medium@dark',
         blue: {
@@ -56,33 +7,66 @@ export default {
             }
         }
     },
-    rules: {
+    variables: {
         fontSize: {
-            variables: {
-                sm: 16,
-                md: 20
-            }
+            sm: 16,
+            md: 20
         },
         letterSpacing: {
-            variables: {
-                wide: .4
-            }
+            wide: .4
         },
-        border: {
-            variables: {
-                'inputborder': '2|solid|red'
-            }
+        border:  {
+            'inputborder': '2|solid|red'
         },
         boxShadow: {
-            variables: {
-                x2: '0 25px 50px -12px rgb(0 0 0 / 25%)'
-            }
+            x2: '0 25px 50px -12px rgb(0 0 0 / 25%)'
         },
         inset: {
-            variables: {
-                sm: 10,
-                md: 20
-            }
+            sm: 10,
+            md: 20
+        },
+        primary: {
+            '': '$(blue-50)',
+            '@light': '#ebbb40',
+            '@dark': '#fbe09d',
+            code: {
+                '': '#777777',
+                '@dark': '$(gray)'
+            },
+            stage: {
+                '1': {
+                    '': '#999999',
+                    '@light': '#888888',
+                    '@dark': '#AAAAAA'
+                }
+            },
+            alpha: '$(blue-50)/.1',
+            rgb1: 'rgb(0, 0, 0)',
+            rgb2: 'rgb(0 0 0)',
+            rgb3: 'rgb(0 0 0/.5)',
+            rgb4: 'rgb(0,0,0,.5)',
+            '2': '$(primary-rgb4)/.7'
+        },
+        input: '#123456',
+        accent: {
+            '@light': '$(gold-70)',
+            '@dark': '#fbe09d'
+        },
+        major: {
+            '@light': '$(slate-10)',
+            '@dark': '$(gray-80)'
+        },
+        content: {
+            '@light': '$(slate-30)',
+            '@dark': '$(gray-60)'
+        },
+        fade: {
+            '@light': '$(slate-55)',
+            '@dark': '$(gray-60)'
+        },
+        code: '$(accent)',
+        'fade-light': {
+            '@light': '$(fade@light)'
         }
     },
     semantics: {

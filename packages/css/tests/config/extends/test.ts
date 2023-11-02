@@ -19,25 +19,69 @@ it('config extends', () => {
             '': 'font:200'
         },
     })
-    expect(css.colors.first).toEqual({
-        '': '#111111',
-        'dark': '#c6dbfe',
-        'light': '#000000'
+    expect(css.colorVariables.first).toEqual({
+        '': {
+            space: 'rgb',
+            type: 'color',
+            value: '17 17 17'
+        },
+        '@dark': {
+            space: 'rgb',
+            type: 'color',
+            value: '198 219 254'
+        },
+        '@light': {
+            space: 'rgb',
+            type: 'color',
+            value: '0 0 0'
+        }
     })
-    expect(css.colors.second).toEqual({
-        'dark': '#0e3496',
-        'light': '#00000080'
+    expect(css.colorVariables.second).toEqual({
+        '@dark': {
+            space: 'rgb',
+            type: 'color',
+            value: '14 52 150'
+        },
+        '@light': {
+            space: 'rgb',
+            type: 'color',
+            value: '0 0 0 / .5'
+        }
     })
-    expect(css.colors.third).toEqual({
-        '': '#0e3496',
-        'dark': '#175fe9'
+    expect(css.colorVariables.third).toEqual({
+        '': {
+            space: 'rgb',
+            type: 'color',
+            value: '14 52 150'
+        },
+        '@dark': {
+            space: 'rgb',
+            type: 'color',
+            value: '23 95 233'
+        }
     })
-    expect(css.colors['third-2']).toEqual({
-        'dark': '#6b9ef1'
+    expect(css.colorVariables['third-2']).toEqual({
+        '@dark': {
+            space: 'rgb',
+            type: 'color',
+            value: '107 158 241'
+        }
     })
-    expect(css.colors.fourth).toEqual({
-        '': '#111111',
-        'dark': '#175fe9',
-        'light': '#000000'
+    expect(css.colorVariables.fourth).toEqual({
+        '': {
+            space: 'rgb',
+            type: 'color',
+            value: '17 17 17'
+        },
+        '@dark': {
+            space: 'rgb',
+            type: 'color',
+            value: '23 95 233'
+        },
+        '@light': {
+            space: 'rgb',
+            type: 'color',
+            value: '0 0 0'
+        }
     })
 })

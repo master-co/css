@@ -77,7 +77,7 @@
     <link rel="stylesheet" href="https://cdn.master.co/normal.css@beta">
     <script>
         window.masterCSSConfig = {
-            colors: {
+            variables: {
                 primary: '#000000'
             }
         }

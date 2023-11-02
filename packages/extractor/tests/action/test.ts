@@ -6,7 +6,7 @@ it('basic extract', async () => {
     fs.rmSync(path.join(__dirname, '.virtual/master.css'), { force: true })
     fs.writeFileSync(path.join(__dirname, 'master.css.ts'), `
         export default {
-            colors: {
+            variables: {
                 primary: 'blue'
             }
         }

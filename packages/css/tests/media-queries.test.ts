@@ -24,17 +24,17 @@ test('mediaQueries', () => {
     )
     testCSS(
         'fg:red@christmas',
-        '.christmas .fg\\:red\\@christmas{color:#d11a1e}',
+        '.christmas .fg\\:red\\@christmas{color:rgb(209 26 30)}',
         config
     )
     testCSS(
         'fg:red@christmas&md',
-        '@media (min-width:1024px){.fg\\:red\\@christmas\\&md{color:#d11a1e}}',
+        '@media (min-width:1024px){.fg\\:red\\@christmas\\&md{color:rgb(209 26 30)}}',
         config
     )
     testCSS(
         'fg:red@christmas@md',
-        '@media (min-width:1024px){.christmas .fg\\:red\\@christmas\\@md{color:#d11a1e}}',
+        '@media (min-width:1024px){.christmas .fg\\:red\\@christmas\\@md{color:rgb(209 26 30)}}',
         config
     )
 })

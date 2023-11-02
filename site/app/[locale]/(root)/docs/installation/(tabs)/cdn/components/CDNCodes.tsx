@@ -16,7 +16,7 @@ export default () => <CodeTabs>
                 <link rel="stylesheet" href="https://cdn.master.co/normal.css@beta">
                 <script>
                     window.masterCSSConfig = {
-                        colors: {
+                        variables: {
                             primary: '#000000'
                         }
                     }
@@ -44,7 +44,7 @@ export default () => <CodeTabs>
             +    <script type="module">
             +        import { initRuntime } from 'https://cdn.master.co/css@beta/dist/index.mjs'
             +        initRuntime({
-            +            colors: {
+            +            variables: {
             +                primary: '#000000'
             +            }
             +       })

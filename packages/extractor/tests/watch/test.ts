@@ -40,11 +40,10 @@ const config: Config = {
     styles: {
         btn: 'bg:red'
     },
-    colors: {
+    variables: {
         primary: 'blue'
     },
     rules: {},
-    variables: {},
     semantics: {},
     mediaQueries: {},
     animations: {},

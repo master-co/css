@@ -1,74 +1,109 @@
+import type { Rule } from '../rule'
+
 const functions = {
     $: {
         transform(opening, value, closing) {
-            const foundValue = this.css.variables[value]
-            return foundValue
-                ? foundValue
-                : 'var(--' + value + ')'
+            const variable = Object.prototype.hasOwnProperty.call(this.options.resolvedNormalVariables, value)
+                ? this.options.resolvedNormalVariables[value]
+                : (this.colored && Object.prototype.hasOwnProperty.call(this.options.resolvedColorVariables, value))
+                    ? this.options.resolvedColorVariables[value]
+                    : Object.prototype.hasOwnProperty.call(this.css.generalVariables, value)
+                        ? this.css.generalVariables[value]
+                        : (this.colored && Object.prototype.hasOwnProperty.call(this.css.colorVariables, value))
+                            ? this.css.colorVariables[value]
+                            : undefined
+            if (variable) {
+                const keys = Object.keys(variable)
+                if (keys.some(eachKey => eachKey === '' || eachKey.startsWith('@'))) {
+                    const variableName = variable.name ?? value
+                    if (!this.variableNames) {
+                        this.variableNames = []
+                    }
+                    if (!this.variableNames.includes(variableName)) {
+                        this.variableNames.push(variableName)
+                    }
+
+                    return (variable[keys[0]].type === 'number' && this.options.unit)
+                        ? `calc(var(--${variableName}) / 16 * 1rem)`
+                        : 'var(--' + variableName + ')'
+                } else {
+                    return variable.value
+                }
+            } else {
+                return 'var(--' + value + ')'
+            }
         }
     },
     calc: {
         transform(opening, value, closing) {
-            const variables = this.variables
+            const valueNodes: Rule['valueNodes'] = []
             const functions = this.css.config.functions
 
             // eslint-disable-next-line @typescript-eslint/no-this-alias
             const instance = this
-            let i = 0, newValue = '', current = '';
-            (function anaylze(functionName: string, bypassHandlingUnitForcely: boolean) {
+            let i = 0;
+            (function anaylze(currentValueNodes: Rule['valueNodes'], bypassHandlingSeparator: boolean, bypassHandlingUnitForcely: boolean) {
                 let bypassHandlingUnit = false
-                const clear = (char: string, addPrefixSpace = false, addSuffixSpace = false) => {
-                    if (char !== '(') {
-                        if (variables && current in variables) {
-                            current = variables[current].toString()
+                let current = ''
+                const clear = (separator: string, prefixWhite = false, suffixWhite = false) => {
+                    if (current) {
+                        if (!bypassHandlingUnit && !bypassHandlingUnitForcely) {
+                            const uv = instance.resolveUnitValue(current, functions.calc.unit)
+                            if (uv) {
+                                current = uv.value + uv.unit
+                            }
+                        }
+
+                        currentValueNodes.push(current)
+
+                        current = ''
+                    }
+
+                    if (separator) {
+                        if (prefixWhite && value[i - 1] === ' ') {
+                            prefixWhite = false
+                        }
+                        if (suffixWhite && value[i + 1] === ' ') {
+                            suffixWhite = false
+                        }
+
+                        if (bypassHandlingSeparator) {
+                            currentValueNodes.push(separator)
+                        } else {
+                            currentValueNodes.push({ type: 'separator', value: separator, prefixWhite, suffixWhite })
                         }
                     }
 
-                    if (current && !bypassHandlingUnit && !bypassHandlingUnitForcely) {
-                        const result = instance.resolveUnitValue(current, functions.calc.unit)
-                        if (result) {
-                            current = result.value + result.unit
-                        }
-                    }
-
-                    newValue += current
-                        + ((addPrefixSpace && value[i - 1] !== ' ') ? ' ' : '')
-                        + char
-                        + ((addSuffixSpace && value[i + 1] !== ' ') ? ' ' : '')
-
-                    current = ''
                     bypassHandlingUnit = false
                 }
 
                 for (; i < value.length; i++) {
                     const char = value[i]
                     if (char === '(') {
-                        const isStartsWithSymbol = /^[+-]/.test(current)
-                        const newFunctionName = isStartsWithSymbol ? current.slice(1) : current
-                        const originalBypassHandlingUnit = bypassHandlingUnit
-                        const originalNewValueLength = newValue.length
-                        clear(char)
-                        i++
-                        anaylze(newFunctionName, originalBypassHandlingUnit || bypassHandlingUnitForcely)
-
-                        if (newFunctionName !== 'calc') {
-                            const functionConfig = functions[newFunctionName]
-                            if (functionConfig) {
-                                const functionValue = newValue.slice(originalNewValueLength + 2 + (isStartsWithSymbol ? 1 : 0), newValue.length - 1)
-                                newValue = newValue.slice(0, originalNewValueLength - newFunctionName.length + 1 + (isStartsWithSymbol ? 1 : 0))
-                                if (functionConfig.transform) {
-                                    const transformedValue = functionConfig.transform.call(instance, '(', functionValue, ')')
-                                    const result = instance.resolveUnitValue(transformedValue, functions.calc.unit)
-                                    newValue += result
-                                        ? result.value + result.unit
-                                        : transformedValue
-                                } else {
-                                    newValue += (functionConfig.name ?? newFunctionName) + '(' + functionValue + ')'
-                                }
-                            }
+                        const symbolResult = /^([+-])/.exec(current)
+                        if (symbolResult) {
+                            currentValueNodes.push(symbolResult[1])
                         }
+
+                        const functionName = symbolResult ? current.slice(1) : current
+                        const newValueNode: Rule['valueNodes'][0] = { type: 'function', name: functionName, symbol: char, childrens: [] }
+                        currentValueNodes.push(newValueNode)
+                        current = ''
+
+                        i++
+                        const isVarFunction = newValueNode.name === '$' || newValueNode.name === 'var'
+                        anaylze(
+                            newValueNode.childrens,
+                            functionName !== ''
+                                && functionName !== 'calc'
+                                && (
+                                    isVarFunction
+                                    || Object.prototype.hasOwnProperty.call(functions, functionName)
+                                ),
+                            bypassHandlingUnit || isVarFunction
+                        )
                     } else if (char === ')') {
-                        clear(char)
+                        clear('')
                         break
                     } else if (char === ',') {
                         clear(char, false, true)
@@ -85,7 +120,7 @@ const functions = {
                                 }
                                 break
                             case '-':
-                                if (functionName === 'var' || !current && previousChar !== ')') {
+                                if (!current && previousChar !== ')') {
                                     current += char
                                 } else {
                                     clear(char, true, true)
@@ -105,12 +140,10 @@ const functions = {
                     }
                 }
 
-                if (i >= value.length - 1) {
-                    clear('')
-                }
-            })('', false)
+                clear('')
+            })(valueNodes, false, false)
 
-            return opening + newValue + closing
+            return ['calc(', ...valueNodes, ')']
         }
     },
     translate: { unit: 'rem' },

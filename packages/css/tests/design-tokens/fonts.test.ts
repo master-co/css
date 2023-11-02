@@ -1,4 +1,4 @@
-import { MasterCSS, variables } from '../../../src'
+import { MasterCSS, variables } from '../../src'
 
 it('customizes fonts', () => {
     const css = new MasterCSS({
@@ -10,13 +10,13 @@ it('customizes fonts', () => {
         }
     })
     expect({
-        sans: css.variables['font-family.sans'],
-        mono: css.variables['font-family.mono'],
-        serif: css.variables['font-family.serif']
+        sans: css.generalVariables['fontFamily-sans'],
+        mono: css.generalVariables['fontFamily-mono'],
+        serif: css.generalVariables['fontFamily-serif']
     }).toEqual({
-        sans: 'Inter,' + variables.fontFamily.sans.join(','),
-        mono: 'Fira Code,' + variables.fontFamily.mono.join(','),
-        serif: variables.fontFamily.serif.join(',')
+        sans: { type: 'string', value: 'Inter,' + variables.fontFamily.sans.join(',') },
+        mono: { type: 'string', value: 'Fira Code,' + variables.fontFamily.mono.join(',') },
+        serif: { type: 'string', value: variables.fontFamily.serif.join(',') }
     })
 })
 

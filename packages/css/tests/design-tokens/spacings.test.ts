@@ -1,4 +1,4 @@
-import { testProp } from '../../css'
+import { testProp } from '../css'
 
 const config = {
     variables: {

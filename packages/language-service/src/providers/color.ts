@@ -14,7 +14,9 @@ export async function getDocumentColors(text: string, css: MasterCSS = new Maste
     let instanceMatch: RegExpExecArray | null
     while ((instanceMatch = instancePattern.exec(text)) !== null) {
         const instanceStartIndex = instanceMatch.index
-        const theme = css.themeNames.find(x => instanceMatch?.[0]?.endsWith(`@${x}`)) ?? ''
+        // todo: refactor theme
+        // const theme = css.themeNames.find(x => instanceMatch?.[0]?.endsWith(`@${x}`)) ?? ''
+        const theme = ''
 
         const colorPattern = /(?<=[|:\s"'`]|^)(?:#?[\w-]+(?:-[\d]{1,2})?(?:\/.?[\d]*)?(?:\([^\s)]+\))?(?![:]))/g
         let colorMatch: RegExpExecArray | null
@@ -129,7 +131,7 @@ function parseColorString(colorString: string, theme: string, css: MasterCSS = n
     //#region for mastercss color
     let colorAlpha = 1
     let colorName = colorString
-    const allMasterCssColorKeys = Object.keys(css.colors)
+    const allMasterCssColorKeys = Object.keys(css.colorVariables)
     if (colorString.split('/').length == 2) {
         colorAlpha = Number('0' + colorString.split('/')[1])
     }
@@ -147,7 +149,8 @@ function parseColorString(colorString: string, theme: string, css: MasterCSS = n
 
 function getColorsRGBA(colorName: string, colorAlpha = 1, theme = '', css: MasterCSS = new MasterCSS()): Color {
     try {
-        const colorNumberMap = css.colors[colorName]
+        // todo: refactor colorNumberMap
+        const colorNumberMap = css.colorVariables[colorName]
         const levelRgb = hexToRgb(colorNumberMap[theme] ?? colorNumberMap[''] ?? Object.values(colorNumberMap)[0])
 
         return { red: levelRgb.red / 255, green: levelRgb.green / 255, blue: levelRgb.blue / 255, alpha: colorAlpha }

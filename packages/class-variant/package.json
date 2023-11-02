@@ -49,6 +49,6 @@
         "react": ">= 16.8.0"
     },
     "dependencies": {
-        "@techor/one-liner": "^2.2.10"
+        "clsx": "^2.0.0"
     }
 }

@@ -90,7 +90,7 @@
         "@master/css": "workspace:^",
         "class-variant": "workspace:^",
         "theme-service": "workspace:^",
-        "@techor/one-liner": "^2.2.10"
+        "clsx": "^2.0.0"
     },
     "devDependencies": {
         "util": "^0.12.5"
