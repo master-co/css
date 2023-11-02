@@ -4,7 +4,7 @@ import path from 'path'
 
 fs.writeFileSync(path.join(__dirname, 'master.css.ts'), `
 export default {
-    colors: {
+    variables: {
         primary: 'blue'
     }
 }

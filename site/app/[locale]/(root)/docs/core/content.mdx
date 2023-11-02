@@ -81,41 +81,6 @@ MasterCSS.refresh()
 ---
 
 ## Functions
-### `fillColorScale()`
-Fills 1~99 shades based on the average of adjacent shades.
-<DocFn>
-    {[
-        { name: 'colors', type: 'string | Object', defaultValue: 'undefined' },
-        { name: 'return', type: 'Object' },
-    ]}
-</DocFn>
-For example, the preset slate color uses ten shades for better color rendering and more shades:
-```js name=master.css.js
-import { fillColorScale } from '@master/css'
-
-export default {
-    colors: {
-        slate: fillColorScale({
-            5: '#141e2b',
-            10: '#19212d',
-            20: '#262f3e',
-            30: '#323e52',
-            40: '#41516b',
-            50: '#616a84',
-            55: '#6c7693',
-            60: '#959db3',
-            70: '#a3abbf',
-            80: '#d7dae3',
-            95: '#f6f7f8'
-        })
-    }
-}
-```
-Now you have richer intermediate color variables to work with:
-```html
-<div class="bg:**slate-98**"></div>
-```
-
 ### `initRuntime()`
 Initializes the Master CSS runtime rendering engine.
 <DocFn>

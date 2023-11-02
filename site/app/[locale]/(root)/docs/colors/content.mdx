@@ -8,7 +8,7 @@
 Add your color variables using hex codes and extend the defaults.
 ```js name=master.css.js
 export default {
-    colors: {
+    variables: {
 +        primary: '#0e61fe',
 +        secondary: '#8a3ffc'
     }
@@ -27,7 +27,7 @@ Apply them using color-related syntax like [`fg:`](/docs/color).
 Create an alias for a color to link its value to an existing color. This allows you to implement [design tokens](/docs/design-tokens) and makes managing design updates more efficient.
 ```js name=master.css.js
 export default {
-    colors: {
+    variables: {
 +        primary: 'blue-60'
     }
 }
@@ -40,7 +40,7 @@ This is similar to [Figma's variables](https://help.figma.com/hc/en-us/articles/
 Sets multiple shades for a single color.
 ```js name=master.css.js
 export default {
-    colors: {
+    variables: {
 +        primary: {
 +            '': '#1192e8', // primary
 +            10: '#e5f6ff', // primary-10
@@ -62,7 +62,7 @@ Apply them using color-related syntax like [`fill:`](/docs/fill).
 Access the same key as the preset to override the default color.
 ```js name=master.css.js
 export default {
-    colors: {
+    variables: {
 +        blue: '#4589ff'
     }
 }
@@ -70,7 +70,7 @@ export default {
 (o) Use `brand-*` to avoid conflicts with presets and make Master CSS colors always consistent.
 ```js name=master.css.js
 export default {
-    colors: {
+    variables: {
 +        brand: {
 +            blue: '#4589ff' // brand-blue
 +        }
@@ -85,7 +85,7 @@ export default {
 Create color variables for backgrounds in apps, panels, cards, and more.
 ```js name=master.css.js
 export default {
-    colors: {
+    variables: {
 +       neutral: 'white',
 +       fade: 'slate-5'
     }
@@ -104,7 +104,7 @@ Use [background-color](/docs/background-color) syntax to set the app background 
 Create accessible color variables for titles, descriptions, icons, and other body text.
 ```js name=master.css.js
 export default {
-    colors: {
+    variables: {
 +        text: {
 +            netural: 'slate-70',
 +            strong: 'slate-95',
