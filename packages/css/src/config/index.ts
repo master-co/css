@@ -42,6 +42,7 @@ export type ConfigFunction = {
     colored?: boolean
     transform?(this: Rule, value: string): string | ValueComponent[]
 }
+export type ConfigAnimation = { [key in 'from' | 'to']?: CSSDeclarations } & { [key: string]: CSSDeclarations }
 
 export interface Config {
     extends?: (Config | { config: Config })[]
@@ -57,6 +58,6 @@ export interface Config {
     important?: boolean
     override?: boolean
     functions?: Record<string, ConfigFunction>,
-    animations?: Record<string, { [key in 'from' | 'to']?: CSSDeclarations } & { [key: string]: CSSDeclarations }>
+    animations?: Record<string, ConfigAnimation>
     themeDriver?: 'class' | 'media' | 'host'
 }

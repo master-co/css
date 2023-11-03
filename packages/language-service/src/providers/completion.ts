@@ -294,21 +294,20 @@ export function getReturnItem(items: Array<string | CompletionItem>, kind: Compl
 
 
 function getColorsItem(css: MasterCSS = new MasterCSS()): CompletionItem[] {
-
     const masterStyleCompletionItem: CompletionItem[] = []
 
-    // todo: refactor css.colorVariables
-    Object.keys(css.colorVariables)
-        .forEach((colorName: string) => {
-            const colorValue: any = css.colorVariables[colorName]
+    // todo: refactor css.variables
+    for (const eachVariableName of css.variables) {
+        const eachVariable = css.variables[eachVariableName]
+        if (eachVariable.type === 'color') {
             masterStyleCompletionItem.push({
-                label: colorName,
-                documentation: Object.values<string>(colorValue)[0],
+                label: eachVariable.name,
+                documentation: eachVariable.value,
                 kind: 16,
-                sortText: `${colorName}`
+                sortText: `${eachVariable.name}`
             })
-        })
-
+        }
+    }
     return masterStyleCompletionItem
 }
 

@@ -1,6 +1,6 @@
 import { extend } from '@techor/extend'
 import { Rule, NativeRule, RuleOptions } from './rule'
-import type { Config } from './config'
+import type { Config, ConfigAnimation } from './config'
 import { config as defaultConfig } from './config'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { CSSDeclarations } from './types/css-declarations'
@@ -33,7 +33,7 @@ export interface MasterCSS {
     mediaQueries: Record<string, string | number>
     hasVariablesRule: boolean
     hasKeyframesRule: boolean
-    animations: Record<string, Config['animations'][0] & { usage?: number, native?: NativeRule }>
+    animations: Record<string, ConfigAnimation & { usage?: number, native?: NativeRule }>
 }
 
 export class MasterCSS {
@@ -1484,7 +1484,7 @@ export class MasterCSS {
                         }
                     }
 
-                    let originalNativesCount: number = 0
+                    let originalNativesCount = 0
                     if (this.hasVariablesRule) {
                         originalNativesCount = this.rules[0].natives.length
                         this.rules[0].natives.push(...nativeRules)

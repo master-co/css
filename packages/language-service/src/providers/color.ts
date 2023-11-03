@@ -41,8 +41,8 @@ export async function getDocumentColors(text: string, css: MasterCSS = new Maste
     return colors
 }
 
-function percentageConverter (value: string, max = 1) {
-    if (value === 'none'){
+function percentageConverter(value: string, max = 1) {
+    if (value === 'none') {
         return 0
     }
     else if (value.endsWith('%')) {
@@ -131,7 +131,12 @@ function parseColorString(colorString: string, theme: string, css: MasterCSS = n
     //#region for mastercss color
     let colorAlpha = 1
     let colorName = colorString
-    const allMasterCssColorKeys = Object.keys(css.colorVariables)
+    const allCSSColorNames = []
+    for (const eachVariableName of css.variables) {
+        const eachVariable = css.variables[eachVariableName]
+        if (eachVariable.type === 'color')
+            allCSSColorNames.push(eachVariable.name)
+    }
     if (colorString.split('/').length == 2) {
         colorAlpha = Number('0' + colorString.split('/')[1])
     }
@@ -141,7 +146,7 @@ function parseColorString(colorString: string, theme: string, css: MasterCSS = n
         colorName = colorName.endsWith('_') ? colorName.replace('_', '') : colorName
     }
 
-    if (allMasterCssColorKeys.find(x => x == colorName)) {
+    if (allCSSColorNames.find(x => x == colorName)) {
         return getColorsRGBA(colorName, colorAlpha, theme, css)
     }
     //#endregion  for mastercss color
@@ -150,7 +155,7 @@ function parseColorString(colorString: string, theme: string, css: MasterCSS = n
 function getColorsRGBA(colorName: string, colorAlpha = 1, theme = '', css: MasterCSS = new MasterCSS()): Color {
     try {
         // todo: refactor colorNumberMap
-        const colorNumberMap = css.colorVariables[colorName]
+        const colorNumberMap = css.variables[colorName]
         const levelRgb = hexToRgb(colorNumberMap[theme] ?? colorNumberMap[''] ?? Object.values(colorNumberMap)[0])
 
         return { red: levelRgb.red / 255, green: levelRgb.green / 255, blue: levelRgb.blue / 255, alpha: colorAlpha }
