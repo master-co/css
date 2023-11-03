@@ -53,6 +53,7 @@ const nextConfig = {
     // Optionally, add any other Next.js config below
     reactStrictMode: true,
     images: {
+        formats: ['image/avif', 'image/webp'],
         remotePatterns: [
             {
                 protocol: 'https',
