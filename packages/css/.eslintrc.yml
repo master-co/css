@@ -1,2 +1,4 @@
 extends:
     - techor
+rules:
+    no-unsafe-declaration-merging: off

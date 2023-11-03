@@ -1,6 +1,6 @@
 // core
 export { MasterCSS, MasterCSS as default } from './core'
-export { Rule, NativeRule, MediaFeatureRule, MediaQuery } from './rule'
+export { Rule, NativeRule, MediaFeatureComponent, MediaQuery } from './rule'
 
 // constants
 export { CONFIG_TEXT } from './constants/config-text'

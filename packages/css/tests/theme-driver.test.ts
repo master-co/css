@@ -4,7 +4,7 @@ import config from './config'
 test('themeDriver', () => {
     testCSS(
         'fg:primary',
-        '@media(prefers-color-scheme:light){--primary:235 187 64}@media(prefers-color-scheme:dark){--primary:251 224 157}:root{--primary:23 95 233}.fg\\:primary{color:rgb(var(--primary))}',
+        ':root{--primary:23 95 233}@media(prefers-color-scheme:light){--primary:235 187 64}@media(prefers-color-scheme:dark){--primary:251 224 157}.fg\\:primary{color:rgb(var(--primary))}',
         { ...config, themeDriver: 'media' }
     )
     testCSS(
@@ -22,7 +22,7 @@ test('themeDriver', () => {
     )
     testCSS(
         'fg:primary',
-        ':host(.light){--primary:235 187 64}:host(.dark){--primary:251 224 157}:root{--primary:23 95 233}.fg\\:primary{color:rgb(var(--primary))}',
+        ':root{--primary:23 95 233}:host(.light){--primary:235 187 64}:host(.dark){--primary:251 224 157}.fg\\:primary{color:rgb(var(--primary))}',
         { ...config, themeDriver: 'host' }
     )
     testCSS(

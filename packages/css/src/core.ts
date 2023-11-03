@@ -12,10 +12,6 @@ type VariableValue =
     | { type: 'number', value: number }
     | { type: 'color', value: string, space: 'rgb' | 'hsl' }
 
-type VariableValues = {
-    [key: string]: VariableValue | { [theme in '' | `@${string}`]?: VariableValue }
-}
-
 export interface MasterCSS {
     readonly style: HTMLStyleElement
     readonly host: Element
@@ -23,18 +19,21 @@ export interface MasterCSS {
     styles: Record<string, string[]>
     stylesBy: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>
-    generalVariables: VariableValues
-    colorVariables: VariableValues
-    mediaQueries: Record<string, string>
-    keyframesMap: Record<string, {
-        nativeRule: NativeRule
-        count: number
-    }>
-    variablesMap: Record<string, {
-        nativeRules: NativeRule[]
-        count: number
-    }>
-    animations: Config['animations']
+    variables: Record<
+        string, 
+        Omit<VariableValue, 'value' | 'space'> 
+        & { 
+            value?: any, 
+            space?: any, 
+            usage?: number, 
+            natives?: NativeRule[], 
+            themes?: { [theme: string]: VariableValue } 
+        }
+    >
+    mediaQueries: Record<string, string | number>
+    hasVariablesRule: boolean
+    hasKeyframesRule: boolean
+    animations: Record<string, Config['animations'][0] & { usage?: number, native?: NativeRule }>
 }
 
 export class MasterCSS {
@@ -74,14 +73,18 @@ export class MasterCSS {
         this.styles = {}
         this.stylesBy = {}
         this.selectors = {}
-        this.generalVariables = {}
-        this.colorVariables = {}
+        this.variables = {}
         this.mediaQueries = {}
-        this.variablesMap = {}
-        this.keyframesMap = {}
         this.animations = {}
         this.ruleOptions.length = 0
         this.semanticRuleOptions.length = 0
+        this.hasVariablesRule = false
+        this.hasKeyframesRule = false
+        const colorVariableNames: Record<string, undefined> = {
+            current: undefined,
+            currentColor: undefined,
+            transparent: undefined
+        }
 
         const { styles, selectors, variables, semantics, mediaQueries, rules, animations } = this.config
 
@@ -139,14 +142,13 @@ export class MasterCSS {
             }
         }
         if (variables) {
-            const unexecutedAliasVariable: Record<string, () => void> = {}
+            const unexecutedAliasVariable: Record<string, { [theme: string]: () => void }> = {}
             for (const parnetKey in variables) {
-                const transformVariableDeeply = (variable: any, name, theme: string = undefined) => {
+                const transformVariableDeeply = (variable: any, name: string, theme: string = undefined) => {
                     if (!variable)
                         return
 
                     const addVariable = (
-                        variables: VariableValues,
                         name: string,
                         variableValue: VariableValue,
                         replacedTheme: string = undefined,
@@ -155,115 +157,133 @@ export class MasterCSS {
                         if (variableValue === undefined)
                             return
 
-                        if (alpha && variableValue.type === 'color') {
-                            const slashIndex = variableValue.value.indexOf('/')
-                            variableValue = {
-                                ...variableValue,
-                                value: slashIndex === -1
-                                    ? variableValue.value + ' / ' + (alpha.startsWith('0.') ? alpha.slice(1) : alpha)
-                                    : (variableValue.value.slice(0, slashIndex + 2) + (+variableValue.value.slice(slashIndex + 2) * +alpha).toString().slice(1))
+                        if (variableValue.type === 'color') {
+                            if (alpha) {
+                                const slashIndex = variableValue.value.indexOf('/')
+                                variableValue = {
+                                    ...variableValue,
+                                    value: slashIndex === -1
+                                        ? variableValue.value + ' / ' + (alpha.startsWith('0.') ? alpha.slice(1) : alpha)
+                                        : (variableValue.value.slice(0, slashIndex + 2) + (+variableValue.value.slice(slashIndex + 2) * +alpha).toString().slice(1))
+                                }
                             }
+
+                            colorVariableNames[name] = undefined
                         }
 
                         const currentTheme = replacedTheme ?? theme
                         if (currentTheme !== undefined) {
-                            if (!Object.prototype.hasOwnProperty.call(variables, name)) {
-                                variables[name] = {}
+                            if (Object.prototype.hasOwnProperty.call(this.variables, name)) {
+                                const variable = this.variables[name]
+                                if (currentTheme) {
+                                    if (!variable.themes) {
+                                        variable.themes = {}
+                                    }
+                                    variable.themes[currentTheme] = variableValue
+                                } else {
+                                    variable.value = variableValue.value
+                                    variable.space = variableValue['space']
+                                }
+                            } else {
+                                if (currentTheme) {
+                                    this.variables[name] = { 
+                                        type: variableValue.type,
+                                        space: variableValue['space'],
+                                        themes: { [currentTheme]: variableValue }
+                                    }
+                                } else {
+                                    this.variables[name] = variableValue
+                                }
                             }
-                            variables[name][currentTheme] = variableValue
                         } else {
-                            variables[name] = variableValue
+                            this.variables[name] = variableValue
                         }
                     }
 
                     const type = typeof variable
                     if (type === 'object') {
                         if (Array.isArray(variable)) {
-                            addVariable(this.generalVariables, name, { type: 'string', value: variable.join(',') })
+                            addVariable(name, { type: 'string', value: variable.join(',') })
                         } else {
                             const keys = Object.keys(variable)
                             for (const eachKey of keys) {
                                 if (eachKey === '' || eachKey.startsWith('@')) {
-                                    transformVariableDeeply(variable[eachKey], name, (eachKey || keys.some(eachKey => eachKey.startsWith('@'))) ? eachKey : undefined)
+                                    transformVariableDeeply(variable[eachKey], name, (eachKey || keys.some(eachKey => eachKey.startsWith('@'))) ? eachKey.slice(1) : undefined)
                                 } else {
                                     transformVariableDeeply(variable[eachKey], name + '-' + eachKey)
                                 }
                             }
                         }
                     } else if (type === 'number') {
-                        addVariable(this.generalVariables, name, { type: 'number', value: variable })
-                        addVariable(this.generalVariables, '-' + name, { type: 'number', value: variable * -1 })
+                        addVariable(name, { type: 'number', value: variable })
+                        addVariable('-' + name, { type: 'number', value: variable * -1 })
                     } else if (type === 'string') {
                         const aliasResult = /^\$\((.*?)\)(?: ?\/ ?(.+?))?$/.exec(variable)
                         if (aliasResult) {
-                            unexecutedAliasVariable[name + '@' + theme] = () => {
-                                delete unexecutedAliasVariable[name + '@' + theme]
+                            if (!Object.prototype.hasOwnProperty.call(unexecutedAliasVariable, name)) {
+                                unexecutedAliasVariable[name] = {}
+                            }
+                            unexecutedAliasVariable[name][theme] = () => {
+                                delete unexecutedAliasVariable[name][theme]
 
                                 const [alias, aliasTheme] = aliasResult[1].split('@')
                                 if (alias) {
                                     if (Object.prototype.hasOwnProperty.call(unexecutedAliasVariable, alias)) {
-                                        unexecutedAliasVariable[alias]()
+                                        for (const theme of Object.keys(unexecutedAliasVariable[alias])) {
+                                            unexecutedAliasVariable[alias][theme]?.()
+                                        }
                                     }
 
-                                    let variables: VariableValues
-                                    let variable: any
-                                    if (Object.prototype.hasOwnProperty.call(this.generalVariables, alias)) {
-                                        variables = this.generalVariables
-                                        variable = this.generalVariables[alias]
-                                    }
-                                    if (Object.prototype.hasOwnProperty.call(this.colorVariables, alias)) {
-                                        variables = this.colorVariables
-                                        variable = this.colorVariables[alias]
-                                    }
-                                    if (variables) {
-                                        const keys = Object.keys(variable)
-                                        if (aliasTheme === undefined && keys.some(eachKey => eachKey === '' || eachKey.startsWith('@'))) {
-                                            for (const eachKey of keys) {
+                                    const aliasVariable = this.variables[alias]
+                                    if (aliasVariable) {
+                                        if (aliasTheme === undefined && aliasVariable.themes) {
+                                            addVariable(
+                                                name,
+                                                { type: aliasVariable.type, value: aliasVariable.value, space: aliasVariable.space },
+                                                '',
+                                                aliasResult[2]
+                                            )
+                                            for (const theme in aliasVariable.themes) {
                                                 addVariable(
-                                                    variables,
                                                     name,
-                                                    variable[eachKey],
-                                                    eachKey,
+                                                    aliasVariable.themes[theme],
+                                                    theme,
                                                     aliasResult[2]
                                                 )
                                             }
                                         } else {
-                                            addVariable(
-                                                variables,
-                                                name,
-                                                (aliasTheme !== undefined)
-                                                    ? variable['@' + aliasTheme]
-                                                    : variable,
-                                                undefined,
-                                                aliasResult[2]
-                                            )
+                                            const variable = aliasTheme !== undefined
+                                                ? aliasVariable.themes?.[aliasTheme]
+                                                : aliasVariable
+                                            if (variable) {
+                                                addVariable(
+                                                    name,
+                                                    { type: variable.type, value: variable.value, space: variable['space'] },
+                                                    undefined,
+                                                    aliasResult[2]
+                                                )
+                                            }
                                         }
                                     }
                                 }
                             }
                         } else {
-                            let colorVariable: { type: 'color', value: string, space: 'rgb' | 'hsl' }
-
                             const hexColorResult = /^#([A-Fa-f0-9]{3,4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.exec(variable)
                             if (hexColorResult) {
                                 const [r, g, b, a] = hexToRgb(hexColorResult[1])
-                                colorVariable = { type: 'color', value: `${r} ${g} ${b}${a === 1 ? '' : ' / ' + a}`, space: 'rgb' }
+                                addVariable(name, { type: 'color', value: `${r} ${g} ${b}${a === 1 ? '' : ' / ' + a}`, space: 'rgb' })
                             } else {
                                 const rgbFunctionResult = /^rgb\( *([0-9]{1,3})(?: *, *| +)([0-9]{1,3})(?: *, *| +)([0-9]{1,3}) *(?:(?:,|\/) *(.*?) *)?\)$/.exec(variable)
                                 if (rgbFunctionResult) {
-                                    colorVariable = { type: 'color', value: rgbFunctionResult[1] + ' ' + rgbFunctionResult[2] + ' ' + rgbFunctionResult[3] + (rgbFunctionResult[4] ? ' / ' + (rgbFunctionResult[4].startsWith('0.') ? rgbFunctionResult[4].slice(1) : rgbFunctionResult[4]) : ''), space: 'rgb' }
+                                    addVariable(name, { type: 'color', value: rgbFunctionResult[1] + ' ' + rgbFunctionResult[2] + ' ' + rgbFunctionResult[3] + (rgbFunctionResult[4] ? ' / ' + (rgbFunctionResult[4].startsWith('0.') ? rgbFunctionResult[4].slice(1) : rgbFunctionResult[4]) : ''), space: 'rgb' })
                                 } else {
                                     const hslFunctionResult = /^hsl\((.*?)\)$/.exec(variable)
                                     if (hslFunctionResult) {
-                                        colorVariable = { type: 'color', value: hslFunctionResult[1], space: 'hsl' }
+                                        addVariable(name, { type: 'color', value: hslFunctionResult[1], space: 'hsl' })
+                                    } else {
+                                        addVariable(name, { type: 'string', value: variable })
                                     }
                                 }
-                            }
-
-                            if (colorVariable) {
-                                addVariable(this.colorVariables, name, colorVariable)
-                            } else {
-                                addVariable(this.generalVariables, name, { type: 'string', value: variable })
                             }
                         }
                     }
@@ -271,7 +291,9 @@ export class MasterCSS {
                 transformVariableDeeply(variables[parnetKey], parnetKey)
             }
             for (const name of Object.keys(unexecutedAliasVariable)) {
-                unexecutedAliasVariable[name]?.()
+                for (const theme of Object.keys(unexecutedAliasVariable[name])) {
+                    unexecutedAliasVariable[name][theme]?.()
+                }
             }
         }
         if (mediaQueries) {
@@ -360,9 +382,7 @@ export class MasterCSS {
                 return b[0].localeCompare(a[0])
             })
         const rulesEntriesLength = rulesEntries.length
-
-        const colorVariableNames = Object.keys(this.colorVariables)
-        colorVariableNames.push('current', 'transparent')
+        const colorNames = Object.keys(colorVariableNames)
         rulesEntries
             .forEach(([id, eachRuleOptions]: [string, Rule['options']], index: number) => {
                 this.ruleOptions.push(eachRuleOptions)
@@ -377,16 +397,15 @@ export class MasterCSS {
                 ) {
                     eachRuleOptions.resolvedPropName = id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
                 }
-                eachRuleOptions.resolvedNormalVariables = {}
-                eachRuleOptions.resolvedColorVariables = {}
-                const addResolvedVariables = (resolvedVariables, variables, prefix: string) => {
+                eachRuleOptions.resolvedVariables = {}
+                const addResolvedVariables = (prefix: string) => {
                     Object.assign(
-                        resolvedVariables,
-                        Object.keys(variables)
-                            .filter(eachVariableName => eachVariableName.startsWith(prefix + '-'))
+                        eachRuleOptions.resolvedVariables,
+                        Object.keys(this.variables)
+                            .filter(eachVariableName => eachVariableName.startsWith(prefix + '-') || eachVariableName.startsWith('-' + prefix + '-'))
                             .reduce((newResolvedVariables, eachVariableName) => {
                                 newResolvedVariables[eachVariableName.slice(prefix.length + (prefix.startsWith('-') ? 0 : 1))] = {
-                                    ...variables[eachVariableName],
+                                    ...this.variables[eachVariableName],
                                     name: eachVariableName
                                 }
                                 return newResolvedVariables
@@ -396,15 +415,11 @@ export class MasterCSS {
                 // 1. custom `config.rules[id].variableGroups`
                 if (eachRuleOptions.variableGroups) {
                     for (const eachVariableGroup of eachRuleOptions.variableGroups) {
-                        addResolvedVariables(eachRuleOptions.resolvedNormalVariables, this.generalVariables, eachVariableGroup)
-                        addResolvedVariables(eachRuleOptions.resolvedNormalVariables, this.generalVariables, '-' + eachVariableGroup)
-                        addResolvedVariables(eachRuleOptions.resolvedColorVariables, this.colorVariables, eachVariableGroup)
+                        addResolvedVariables(eachVariableGroup)
                     }
                 }
                 // 2. custom `config.variables`
-                addResolvedVariables(eachRuleOptions.resolvedNormalVariables, this.generalVariables, id)
-                addResolvedVariables(eachRuleOptions.resolvedNormalVariables, this.generalVariables, '-' + id)
-                addResolvedVariables(eachRuleOptions.resolvedColorVariables, this.colorVariables, id)
+                addResolvedVariables(id)
 
                 if (match) {
                     if (Array.isArray(match)) {
@@ -413,14 +428,14 @@ export class MasterCSS {
                         if (values.length) {
                             valueMatches.push(`(?:${values.join('|')})(?![a-zA-Z0-9-])`)
                         }
-                        if (Object.keys(eachRuleOptions.resolvedNormalVariables).length) {
-                            valueMatches.push(`(?:${Object.keys(eachRuleOptions.resolvedNormalVariables).join('|')})(?![a-zA-Z0-9-])`)
+                        if (Object.keys(eachRuleOptions.resolvedVariables).length) {
+                            valueMatches.push(`(?:${Object.keys(eachRuleOptions.resolvedVariables).join('|')})(?![a-zA-Z0-9-])`)
                         }
                         if (eachRuleOptions.colored) {
                             valueMatches.push(
                                 '#',
                                 '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)',
-                                `(?:${colorVariableNames.concat(Object.keys(eachRuleOptions.resolvedColorVariables)).join('|')})(?![a-zA-Z0-9-])`
+                                `(?:${colorNames.join('|')})(?![a-zA-Z0-9-])`
                             )
                         }
                         if (eachRuleOptions.numeric) {
@@ -909,39 +924,41 @@ export class MasterCSS {
             if (rule.variableNames) {
                 const variableRule = this.rules[0]
                 for (const eachVariableName of rule.variableNames) {
-                    const variable = this.variablesMap[eachVariableName]
-                    if (!--variable.count) {
-                        const nativeIndex = variableRule.natives.indexOf(variable.nativeRules[0])
-                        for (let i = 0; i < variable.nativeRules.length; i++) {
+                    const variable = this.variables[eachVariableName]
+                    if (!--variable.usage) {
+                        const nativeIndex = variableRule.natives.indexOf(variable.natives[0])
+                        for (let i = 0; i < variable.natives.length; i++) {
                             this.style.sheet.deleteRule(nativeIndex)
                             variableRule.natives.splice(nativeIndex, 1)
                         }
-                        delete this.variablesMap[eachVariableName]
+                        variable.natives = undefined
                     }
                 }
 
                 if (!variableRule.natives.length) {
                     this.rules.splice(0, 1)
+                    this.hasVariablesRule = false
                 }
             }
 
             // animations
             if (rule.animationNames) {
-                const keyframeRuleIndex = Object.keys(this.variablesMap).length ? 1 : 0
-                const variableNativeCount = Object.keys(this.variablesMap).length ? this.rules[0].natives.length : 0
+                const keyframeRuleIndex = this.hasVariablesRule ? 1 : 0
+                const variableNativeCount = this.hasVariablesRule ? this.rules[0].natives.length : 0
                 const keyframeRule = this.rules[keyframeRuleIndex]
                 for (const eachKeyframeName of rule.animationNames) {
-                    const keyframe = this.keyframesMap[eachKeyframeName]
-                    if (!--keyframe.count) {
-                        const nativeIndex = keyframeRule.natives.indexOf(keyframe.nativeRule)
+                    const keyframe = this.animations[eachKeyframeName]
+                    if (!--keyframe.usage) {
+                        const nativeIndex = keyframeRule.natives.indexOf(keyframe.native)
                         this.style.sheet.deleteRule(variableNativeCount + nativeIndex)
                         keyframeRule.natives.splice(nativeIndex, 1)
-                        delete this.keyframesMap[eachKeyframeName]
+                        keyframe.native = undefined
                     }
                 }
 
                 if (!keyframeRule.natives.length) {
                     this.rules.splice(keyframeRuleIndex, 1)
+                    this.hasKeyframesRule = false
                 }
             }
 
@@ -1000,8 +1017,6 @@ export class MasterCSS {
              * @example <1  <2  <3  ALL  >=1 >=2 >=3
              * @description
              */
-            const hasVariableRule = Object.keys(this.variablesMap).length
-            const hasKeyframeRule = Object.keys(this.keyframesMap).length
             const endIndex = this.rules.length - 1
             const { media, order, priority, hasWhere, className } = rule
 
@@ -1192,11 +1207,11 @@ export class MasterCSS {
                     }
                 }
             } else {
-                const findStartIndex = hasVariableRule
-                    ? hasKeyframeRule
+                const findStartIndex = this.hasVariablesRule
+                    ? this.hasKeyframesRule
                         ? 2
                         : 1
-                    : hasKeyframeRule
+                    : this.hasKeyframesRule
                         ? 1
                         : 0
 
@@ -1381,24 +1396,26 @@ export class MasterCSS {
         if (rule.animationNames) {
             const sheet = this.style?.sheet
             for (const eachKeyframeName of rule.animationNames) {
-                if (Object.prototype.hasOwnProperty.call(this.keyframesMap, eachKeyframeName)) {
-                    this.keyframesMap[eachKeyframeName].count++
+                const animation = this.animations[eachKeyframeName]
+                if (animation.usage) {
+                    animation.usage++
                 } else {
                     const nativeRule: NativeRule = {
                         text: `@keyframes ${eachKeyframeName}{`
                             + Object
-                                .entries(this.animations[eachKeyframeName])
+                                .entries(animation)
+                                .filter(([key]) => key !== 'usage' && key !== 'native')
                                 .map(([key, variables]) => `${key}{${Object.entries(variables).map(([name, value]) => name + ':' + value).join(';')}}`)
                                 .join('')
                             + '}'
                     }
 
                     let keyframeRule: Rule
-                    if (Object.keys(this.keyframesMap).length) {
+                    if (this.hasKeyframesRule) {
                         (keyframeRule = this.rules[0]).natives.push(nativeRule)
                     } else {
                         this.rules.splice(
-                            Object.keys(this.variablesMap).length ? 1 : 0,
+                            this.hasVariablesRule ? 1 : 0,
                             0,
                             keyframeRule = {
                                 natives: [nativeRule],
@@ -1407,6 +1424,7 @@ export class MasterCSS {
                                 }
                             } as Rule
                         )
+                        this.hasKeyframesRule = true
                     }
 
                     if (sheet) {
@@ -1431,10 +1449,8 @@ export class MasterCSS {
                         }
                     }
 
-                    this.keyframesMap[eachKeyframeName] = {
-                        nativeRule,
-                        count: 1
-                    }
+                    animation.usage = 1
+                    animation.native = nativeRule
                 }
             }
         }
@@ -1444,23 +1460,33 @@ export class MasterCSS {
         if (rule.variableNames) {
             const sheet = this.style?.sheet
             for (const eachVariableName of rule.variableNames) {
-                if (Object.prototype.hasOwnProperty.call(this.variablesMap, eachVariableName)) {
-                    this.variablesMap[eachVariableName].count++
+                const variable = this.variables[eachVariableName]
+                if (variable.usage) {
+                    variable.usage++
                 } else {
-                    const variable = this.generalVariables[eachVariableName] ?? this.colorVariables[eachVariableName]
-                    const keys = Object.keys(variable)
-                    const nativeRules: NativeRule[] = keys.some(eachKey => eachKey === '' || eachKey.startsWith('@'))
-                        ? keys.map(eachKey => ({
-                            text: `${eachKey ? this.config.themeDriver === 'media'
-                                ? `@media(prefers-color-scheme:${eachKey.slice(1)})`
-                                : this.config.themeDriver === 'host'
-                                    ? `:host(.${eachKey.slice(1)})`
-                                    : `.${eachKey.slice(1)}`
-                                : ':root'}{--${eachVariableName}:${variable[eachKey].value}}`
-                        }))
-                        : [{ text: `:root{--${eachVariableName}:{${variable['value']}}` }]
-
-                    if (Object.keys(this.variablesMap).length) {
+                    const nativeRules: NativeRule[] = []
+                    const addNativeRule = (theme: string, variableValue: VariableValue) => {
+                        if (variableValue.value) {
+                            nativeRules.push({
+                                text: `${theme ? this.config.themeDriver === 'media'
+                                    ? `@media(prefers-color-scheme:${theme})`
+                                    : this.config.themeDriver === 'host'
+                                        ? `:host(.${theme})`
+                                        : `.${theme}`
+                                    : ':root'}{--${eachVariableName}:${variableValue.value}}`
+                            })
+                        }
+                    }
+                    addNativeRule('', variable as any)
+                    if (variable.themes) {
+                        for (const theme in variable.themes) {
+                            addNativeRule(theme, variable.themes[theme])
+                        }
+                    }
+                  
+                    let originalNativesCount: number = 0
+                    if (this.hasVariablesRule) {
+                        originalNativesCount = this.rules[0].natives.length
                         this.rules[0].natives.push(...nativeRules)
                     } else {
                         this.rules.splice(
@@ -1473,26 +1499,20 @@ export class MasterCSS {
                                 }
                             } as Rule
                         )
+                        this.hasVariablesRule = true
                     }
 
                     if (sheet) {
-                        let index = 0
-                        for (const variableName in this.variablesMap) {
-                            index += this.variablesMap[variableName].nativeRules.length
-                        }
-
                         for (let i = 0; i < nativeRules.length; i++) {
                             const eachNative = nativeRules[i]
-                            const ruleIndex = index + i
+                            const ruleIndex = originalNativesCount + i
                             sheet.insertRule(eachNative.text, ruleIndex)
                             eachNative.cssRule = sheet.cssRules[ruleIndex]
                         }
                     }
 
-                    this.variablesMap[eachVariableName] = {
-                        nativeRules,
-                        count: 1
-                    }
+                    variable.usage = 1
+                    variable.natives = nativeRules
                 }
             }
         }

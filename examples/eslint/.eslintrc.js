@@ -1,11 +1,20 @@
 module.exports = {
+    parserOptions: {
+        ecmaFeatures: {
+            jsx: true,
+        },
+    },
     extends: [
-        '@master/css'
+        'plugin:mdx/recommended',
+        '@master/css',
     ],
     rules: {
         '@master/css/class-validation': ['error', {
             disallowUnknownClass: true
         }],
+    },
+    settings: {
+        "mdx/code-blocks": true,
     },
     overrides: [
         {
@@ -21,6 +30,13 @@ module.exports = {
                 '*.js'
             ],
             'parser': '@typescript-eslint/parser'
+        },
+        {
+            'files': [
+                '*.mdx',
+                '*.md'
+            ],
+            'parser': 'eslint-mdx'
         }
     ]
 }

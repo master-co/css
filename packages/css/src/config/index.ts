@@ -6,14 +6,14 @@ import variables from './variables'
 import rules from './rules'
 import functions from './functions'
 import { CSSDeclarations } from '../types/css-declarations'
-import type { Rule } from '../rule'
+import type { Rule, ValueComponent } from '../rule'
 
 const config: Config = {
     mediaQueries,
     selectors,
     semantics,
     rules,
-    functions,
+    functions: functions as any,
     animations,
     variables: variables as any,
     scope: '',
@@ -37,6 +37,11 @@ export {
 
 export type ConfigVariable = number | string | Array<number | string>
 export type ConfigVariableGroup = { [key in '' | `@${string}`]?: ConfigVariable } & { [key: string]: ConfigVariable | ConfigVariableGroup }
+export type ConfigFunction = {
+    unit?: string
+    colored?: boolean
+    transform?(this: Rule, value: string): string | ValueComponent[]
+}
 
 export interface Config {
     extends?: (Config | { config: Config })[]
@@ -51,11 +56,7 @@ export interface Config {
     scope?: string
     important?: boolean
     override?: boolean
-    functions?: Record<string, {
-        unit?: string
-        colored?: boolean
-        transform?(this: Rule, opening: string, value: string, closing: string): string | Rule['valueNodes']
-    }>,
+    functions?: Record<string, ConfigFunction>,
     animations?: Record<string, { [key in 'from' | 'to']?: CSSDeclarations } & { [key: string]: CSSDeclarations }>
     themeDriver?: 'class' | 'media' | 'host'
 }

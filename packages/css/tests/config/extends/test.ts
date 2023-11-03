@@ -19,69 +19,77 @@ it('config extends', () => {
             '': 'font:200'
         },
     })
-    expect(css.colorVariables.first).toEqual({
-        '': {
-            space: 'rgb',
-            type: 'color',
-            value: '17 17 17'
-        },
-        '@dark': {
-            space: 'rgb',
-            type: 'color',
-            value: '198 219 254'
-        },
-        '@light': {
-            space: 'rgb',
-            type: 'color',
-            value: '0 0 0'
+    expect(css.variables.first).toEqual({
+        type: 'color',
+        space: 'rgb',
+        value: '17 17 17',
+        themes: {
+            dark: {
+                space: 'rgb',
+                type: 'color',
+                value: '198 219 254'
+            },
+            light: {
+                space: 'rgb',
+                type: 'color',
+                value: '0 0 0'
+            }
         }
     })
-    expect(css.colorVariables.second).toEqual({
-        '@dark': {
-            space: 'rgb',
-            type: 'color',
-            value: '14 52 150'
-        },
-        '@light': {
-            space: 'rgb',
-            type: 'color',
-            value: '0 0 0 / .5'
+    expect(css.variables.second).toEqual({
+        type: 'color',
+        space: 'rgb',
+        themes: {
+            dark: {
+                space: 'rgb',
+                type: 'color',
+                value: '14 52 150'
+            },
+            light: {
+                space: 'rgb',
+                type: 'color',
+                value: '0 0 0 / .5'
+            }
         }
     })
-    expect(css.colorVariables.third).toEqual({
-        '': {
-            space: 'rgb',
-            type: 'color',
-            value: '14 52 150'
-        },
-        '@dark': {
-            space: 'rgb',
-            type: 'color',
-            value: '23 95 233'
+    expect(css.variables.third).toEqual({
+        type: 'color',
+        space: 'rgb',
+        value: '14 52 150',
+        themes: {
+            dark: {
+                space: 'rgb',
+                type: 'color',
+                value: '23 95 233'
+            }
         }
     })
-    expect(css.colorVariables['third-2']).toEqual({
-        '@dark': {
-            space: 'rgb',
-            type: 'color',
-            value: '107 158 241'
+    expect(css.variables['third-2']).toEqual({
+        type: 'color',
+        space: 'rgb',
+        themes: {
+            dark: {
+                space: 'rgb',
+                type: 'color',
+                value: '107 158 241'
+            }
         }
     })
-    expect(css.colorVariables.fourth).toEqual({
-        '': {
-            space: 'rgb',
-            type: 'color',
-            value: '17 17 17'
-        },
-        '@dark': {
-            space: 'rgb',
-            type: 'color',
-            value: '23 95 233'
-        },
-        '@light': {
-            space: 'rgb',
-            type: 'color',
-            value: '0 0 0'
+    expect(css.variables.fourth).toEqual({
+        type: 'color',
+        space: 'rgb',
+        value: '17 17 17',
+        themes: {
+            dark: {
+                space: 'rgb',
+                type: 'color',
+                value: '23 95 233'
+            },
+            light: {
+                space: 'rgb',
+                type: 'color',
+                value: '0 0 0'
+            }
         }
     })
 })

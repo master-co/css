@@ -7,6 +7,8 @@
         "@master/eslint-plugin-css": "workspace:^",
         "@typescript-eslint/parser": "^6.9.0",
         "clsx": "^2.0.0",
-        "eslint": "^8.51.0"
+        "eslint": "^8.51.0",
+        "eslint-mdx": "^2.2.0",
+        "eslint-plugin-mdx": "^2.2.0"
     }
 }

@@ -21,43 +21,16 @@ export class Rule {
 
     constructor(
         public readonly className: string,
-        public readonly options: {
-            id?: string
-            match?: RegExp | [string, string[]?]
-            resolvedMatch?: RegExp
-            resolvedNormalVariables?: any
-            resolvedColorVariables?: any
-            variableGroups?: string[]
-            order?: number
-            separators?: string[]
-            shorthand?: string
-            colored?: boolean
-            numeric?: boolean
-            unit?: any
-            native?: boolean
-            declarations?: CSSDeclarations
-            resolvedPropName?: string
-            layer?: Layer | CoreLayer,
-            analyze?: (this: Rule, className: string) => [valueToken: string, prefixToken?: string]
-            transform?(this: Rule, value: string): string
-            declare?(this: Rule, value: string, unit: string): CSSDeclarations
-            delete?(this: Rule, className: string): void
-            create?(this: Rule, className: string): void
-            insert?(this: Rule): void
-        } = {},
+        public readonly options: RuleOptions = {},
         public css: MasterCSS
     ) {
-        const { layer, unit, colored: configColored, resolvedPropName, analyze, transform, declare, create, order, id, resolvedNormalVariables, resolvedColorVariables } = options
+        const { layer, unit, colored: configColored, resolvedPropName, analyze, transform, declare, create, order, id } = options
         this.order = order
         if (!options.unit) options.unit = ''
         if (!options.separators) options.separators = [',']
-        const { scope, important, functions, themeDriver } = css.config
-        const { selectors, mediaQueries, stylesBy, animations, colorVariables, generalVariables } = css
+        const { scope, important, themeDriver } = css.config
+        const { selectors, mediaQueries, stylesBy, animations } = css
         const classNames = stylesBy[className]
-        const separators = [',']
-        if (this.options.separators.length) {
-            separators.push(...this.options.separators)
-        }
 
         if (create) create.call(this, className)
 
@@ -66,162 +39,6 @@ export class Rule {
         let stateToken: string
         let prefixToken: string
         this.colored = configColored
-
-        const transform2ValueNodes = (
-            currentValueNodes: Rule['valueNodes'],
-            i: number,
-            value: string,
-            unit: string,
-            endSymbol?: string,
-            parentFunctionName = undefined,
-            bypassVariableNames: string[] = []
-        ) => {
-            const root = parentFunctionName === undefined
-            const isVarFunction = !root
-                && (
-                    parentFunctionName.endsWith('$')
-                    || parentFunctionName.endsWith('var')
-                )
-            const checkIsString = (value: string) => value === '\'' || value === '"'
-            const isString = checkIsString(endSymbol)
-
-            let currentValue = ''
-            const transform2ValueNode = () => {
-                if (currentValue) {
-                    let handled = false
-                    if (!isVarFunction) {
-                        const normalVariable = Object.prototype.hasOwnProperty.call(resolvedNormalVariables, currentValue)
-                            ? resolvedNormalVariables[currentValue]
-                            : Object.prototype.hasOwnProperty.call(generalVariables, currentValue)
-                                ? generalVariables[currentValue]
-                                : undefined
-                        if (normalVariable) {
-                            const variableName = normalVariable.name ?? currentValue
-                            if (!bypassVariableNames.includes(variableName)) {
-                                handled = true
-
-                                currentValueNodes.push({ type: 'variable', name: variableName })
-                            }
-                        } else if (this.colored) {
-                            const [colorName, alpha] = currentValue.split('/')
-                            const colorVariable = Object.prototype.hasOwnProperty.call(resolvedColorVariables, colorName)
-                                ? resolvedColorVariables[colorName]
-                                : Object.prototype.hasOwnProperty.call(colorVariables, colorName)
-                                    ? colorVariables[colorName]
-                                    : undefined
-                            if (colorVariable) {
-                                const variableName = colorVariable.name ?? colorName
-                                if (!bypassVariableNames.includes(variableName)) {
-                                    handled = true
-
-                                    currentValueNodes.push({ type: 'variable', name: variableName, alpha })
-                                }
-                            }
-                        }
-                    }
-
-                    if (!handled) {
-                        const uv = this.resolveUnitValue(currentValue, unit)
-                        currentValueNodes.push((uv?.value ?? currentValue) + (uv?.unit ?? ''))
-                    }
-
-                    currentValue = ''
-                }
-            }
-
-            for (; i < value.length; i++) {
-                const val = value[i]
-                if (val === endSymbol) {
-                    if (isString) {
-                        let count = 0
-                        for (let j = currentValue.length - 1; ; j--) {
-                            if (currentValue[j] !== '\\')
-                                break
-
-                            count++
-                        }
-                        if (count % 2) {
-                            currentValue += val
-                            continue
-                        } else {
-                            transform2ValueNode()
-                        }
-                    } else {
-                        transform2ValueNode()
-                    }
-
-                    return i
-                } else if (!isString && val in START_SYMBOLS) {
-                    const functionName = currentValue
-                    const newValueNode: Rule['valueNodes'][0] = { type: 'function', name: functionName, symbol: val, childrens: [] }
-                    currentValueNodes.push(newValueNode)
-                    currentValue = ''
-
-                    const functionConfig = val === '(' && functions?.[functionName]
-                    if (!this.colored && functionConfig?.colored) {
-                        // @ts-ignore
-                        this.colored = true
-                    }
-
-                    i = transform2ValueNodes(
-                        newValueNode.childrens,
-                        ++i,
-                        value,
-                        functionConfig?.unit ?? unit,
-                        START_SYMBOLS[val],
-                        functionName || parentFunctionName || ''
-                    )
-                } else if ((val === '|' || val === ' ') && endSymbol !== '}' && (!isString || parentFunctionName === 'path')) {
-                    transform2ValueNode()
-
-                    currentValueNodes.push({ type: 'separator', value: ' ' })
-                } else {
-                    if (!isString) {
-                        if (val === '.') {
-                            if (isNaN(+value[i + 1])) {
-                                if (root)
-                                    break
-                            } else if (value[i - 1] === '-') {
-                                currentValue += '0'
-                            }
-                        } else if (separators.includes(val)) {
-                            transform2ValueNode()
-
-                            currentValueNodes.push({
-                                type: 'separator',
-                                value: val,
-                                prefixWhite: val !== ',',
-                                suffixWhite: val !== ','
-                            })
-
-                            continue
-                        } else if (
-                            root
-                            && (
-                                val === '#' && (currentValue || currentValueNodes.length && currentValueNodes[currentValueNodes.length - 1]['type'] !== 'separator')
-                                || ['!', '*', '>', '+', '~', ':', '[', '@', '_'].includes(val)
-                            )
-                        ) {
-                            break
-                        }
-                    }
-
-                    currentValue += val
-                }
-            }
-
-            transform2ValueNode()
-
-            return i
-        }
-        const pushVariableName = (variableName: string) => {
-            if (!this.variableNames) {
-                this.variableNames = []
-            }
-            if (!this.variableNames.includes(variableName)) {
-                this.variableNames.push(variableName)
-            }
-        }
 
         if (layer === CoreLayer.Semantic) {
             stateToken = className.slice(id.length - 1)
@@ -234,9 +51,8 @@ export class Rule {
                 this.prefix = className.slice(0, indexOfColon + 1)
                 valueToken = className.slice(indexOfColon + 1)
             }
-            this.valueNodes = []
-
-            stateToken = valueToken.slice(transform2ValueNodes(this.valueNodes, 0, valueToken, unit))
+            this.valueComponents = []
+            stateToken = valueToken.slice(this.parseValue(this.valueComponents, 0, valueToken, unit))
         }
 
         // 2. !important
@@ -454,9 +270,6 @@ export class Rule {
                                     if (targetMediaQuery && typeof targetMediaQuery === 'string') {
                                         queryTexts.push(targetMediaQuery)
                                     } else {
-                                        const feature: MediaFeatureRule = {
-                                            token: typeOrFeatureToken
-                                        }
                                         let featureName = ''
                                         let extremumOperator = ''
                                         let correction = 0
@@ -475,24 +288,34 @@ export class Rule {
                                             featureName = 'max-width'
                                             correction = -.02
                                         }
-                                        const conditionUnitValueToken
+                                        const token
                                             = extremumOperator
                                                 ? typeOrFeatureToken.replace(extremumOperator, '')
                                                 : typeOrFeatureToken
-                                        const viewport = mediaQueries[conditionUnitValueToken]
+                                        const viewport = mediaQueries[token]
                                         switch (featureName) {
                                             case 'max-width':
                                             case 'min-width':
-                                                if (viewport) {
-                                                    Object.assign(feature, this.resolveUnitValue(viewport.toString(), 'px'))
+                                                // eslint-disable-next-line no-case-declarations
+                                                let featureComponent: MediaFeatureComponent = {} as any
+                                                if (typeof viewport === 'number') {
+                                                    featureComponent = {
+                                                        type: 'number',
+                                                        value: viewport + correction,
+                                                        unit: 'px'
+                                                    }
                                                 } else {
-                                                    Object.assign(feature, this.resolveUnitValue(conditionUnitValueToken, 'px'))
+                                                    featureComponent = this.parseValueComponent(token, 'px') as MediaFeatureComponent
+                                                    if (featureComponent.type === 'number' && featureComponent.unit === 'px') {
+                                                        featureComponent.value += correction
+                                                    }
                                                 }
-                                                if (feature.unit === 'px') {
-                                                    feature.value += correction
+                                                this.media.features[featureName] = featureComponent
+                                                if (featureComponent.type === 'number') {
+                                                    queryTexts.push('(' + featureName + ':' + (featureComponent.value + featureComponent.unit) + ')')
+                                                } else {
+                                                    queryTexts.push('(' + featureName + ':' + featureComponent.value + ')')
                                                 }
-                                                this.media.features[featureName] = feature
-                                                queryTexts.push('(' + featureName + ':' + (feature.value + feature.unit) + ')')
                                                 break
                                         }
                                     }
@@ -538,116 +361,8 @@ export class Rule {
 
         // 7. value
         let newValue: string
-        if (this.valueNodes) {
-            // eslint-disable-next-line @typescript-eslint/no-this-alias
-            const instance = this
-            newValue = (function transformValueNodes(valueNodes: Rule['valueNodes'], unit: string, bypassVariableNames: string[]) {
-                let currentValue = ''
-                for (const eachValueNode of valueNodes) {
-                    switch (typeof eachValueNode) {
-                        case 'object':
-                            switch (eachValueNode.type) {
-                                case 'function':
-                                    // eslint-disable-next-line no-case-declarations
-                                    const functionConfig = functions && functions[eachValueNode.name]
-                                    if (functionConfig?.transform) {
-                                        const result = functionConfig.transform.call(
-                                            instance,
-                                            eachValueNode.symbol,
-                                            transformValueNodes(
-                                                eachValueNode.childrens,
-                                                functionConfig.unit ?? unit,
-                                                bypassVariableNames
-                                            )
-                                        )
-                                        currentValue += transformValueNodes(
-                                            Array.isArray(result) ? result : [result],
-                                            unit,
-                                            bypassVariableNames
-                                        )
-                                    } else {
-                                        currentValue += eachValueNode.name + eachValueNode.symbol + transformValueNodes(eachValueNode.childrens, functionConfig?.unit ?? unit, bypassVariableNames) + START_SYMBOLS[eachValueNode.symbol]
-                                    }
-                                    break
-                                case 'separator':
-                                    currentValue += (eachValueNode.prefixWhite ? ' ' : '') + eachValueNode.value + (eachValueNode.suffixWhite ? ' ' : '')
-                                    break
-                                case 'variable':
-                                    // eslint-disable-next-line no-case-declarations
-                                    const normalVariable = generalVariables[eachValueNode.name]
-                                    if (normalVariable) {
-                                        const handleStringNormalVariable = (stringNormalVariable) => {
-                                            const valueNodes: Rule['valueNodes'] = []
-                                            transform2ValueNodes(valueNodes, 0, stringNormalVariable['value'], unit, undefined, undefined, [...bypassVariableNames, eachValueNode.name])
-                                            currentValue += transformValueNodes(
-                                                valueNodes,
-                                                unit,
-                                                [...bypassVariableNames, eachValueNode.name]
-                                            )
-                                        }
-                                        const handleNumberNormalVariable = (numberNormalVariable) => {
-                                            const uv = instance.resolveUnitValue(numberNormalVariable['value'], unit)
-                                            currentValue += (uv?.value ?? numberNormalVariable['value']) + (uv?.unit ?? '')
-                                        }
-
-                                        const keys = Object.keys(normalVariable)
-                                        if (keys.some(eachKey => eachKey === '' || eachKey.startsWith('@'))) {
-                                            const isStringType = normalVariable[keys[0]].type === 'string'
-                                            if (instance.theme) {
-                                                const themeNormalVariable = normalVariable['@' + instance.theme] ?? normalVariable['']
-                                                if (themeNormalVariable) {
-                                                    if (isStringType) {
-                                                        handleStringNormalVariable(themeNormalVariable)
-                                                    } else {
-                                                        handleNumberNormalVariable(themeNormalVariable)
-                                                    }
-                                                }
-                                            } else {
-                                                pushVariableName(eachValueNode.name)
-                                                currentValue += (isStringType || !unit)
-                                                    ? `var(--${eachValueNode.name})`
-                                                    : `calc(var(--${eachValueNode.name}) / 16 * 1rem)`
-                                            }
-                                        } else {
-                                            if (normalVariable['type'] === 'string') {
-                                                handleStringNormalVariable(normalVariable)
-                                            } else {
-                                                handleNumberNormalVariable(normalVariable)
-                                            }
-                                        }
-                                    } else {
-                                        const colorVariable = colorVariables[eachValueNode.name]
-                                        const alpha = eachValueNode.alpha ? '/' + eachValueNode.alpha : ''
-                                        const keys = Object.keys(colorVariable)
-                                        if (keys.some(eachKey => eachKey === '' || eachKey.startsWith('@'))) {
-                                            if (instance.theme) {
-                                                const themeColorVariable = colorVariable['@' + instance.theme] ?? colorVariable['']
-                                                currentValue += `${themeColorVariable['space']}(${themeColorVariable['value']}${alpha})`
-                                            } else {
-                                                pushVariableName(eachValueNode.name)
-                                                currentValue += `${colorVariable[keys[0]].space}(var(--${eachValueNode.name})${alpha})`
-                                            }
-                                        } else {
-                                            currentValue += `${colorVariable['space']}(${colorVariable['value']}${alpha})`
-                                        }
-                                    }
-
-                                    break
-                            }
-                            break
-                        case 'number':
-                            // eslint-disable-next-line no-case-declarations
-                            const uv = instance.resolveUnitValue(eachValueNode, unit)
-                            currentValue += (uv?.value ?? eachValueNode) + (uv?.unit ?? '')
-                            break
-                        default:
-                            currentValue += eachValueNode
-                            break
-                    }
-                }
-                return currentValue
-            })(this.valueNodes, unit, [])
-
+        if (this.valueComponents) {
+            newValue = this.transformValueComponents(this.valueComponents, unit, [])
             // 8. transform and convert
             if (transform) {
                 newValue = transform.call(this, newValue, this.css.config)
@@ -758,8 +473,266 @@ export class Rule {
         }
     }
 
+    transformValueComponents = (valueComponents: ValueComponent[], unit: string, bypassVariableNames: string[]) => {
+        const { functions } = this.css.config
+
+        let currentValue = ''
+        for (const eachValueComponent of valueComponents) {
+            switch (eachValueComponent.type) {
+                case 'function':
+                    // eslint-disable-next-line no-case-declarations
+                    const functionConfig = functions && functions[eachValueComponent.name]
+                    if (functionConfig?.transform) {
+                        const result = functionConfig.transform.call(
+                            this,
+                            this.transformValueComponents(
+                                eachValueComponent.childrens,
+                                functionConfig.unit ?? unit,
+                                bypassVariableNames
+                            ),
+                            bypassVariableNames
+                        )
+                        currentValue += typeof result === 'string'
+                            ? result
+                            : this.transformValueComponents(result, functionConfig?.unit ?? unit, bypassVariableNames)
+                    } else {
+                        currentValue += eachValueComponent.name
+                            + eachValueComponent.symbol
+                            + this.transformValueComponents(eachValueComponent.childrens, functionConfig?.unit ?? unit, bypassVariableNames)
+                            + START_SYMBOLS[eachValueComponent.symbol]
+                    }
+                    break
+                // todo: 應挪到 parseValue 階段處理才能支援 variables: { x: 'calc(20vw-30px)' } 這種情況，並且解析上可能會比較合理、精簡
+                case 'variable':
+                    // eslint-disable-next-line no-case-declarations
+                    const variable = this.css.variables[eachValueComponent.name]
+                    if (variable) {
+                        const handleVariable = (
+                            normalHandler: (variable: MasterCSS['variables'][0]) => void,
+                            varHandler: () => void
+                        ) => {
+                            if (variable.themes) {
+                                if (this.theme) {
+                                    const themeVariable = variable.themes[this.theme] ?? variable
+                                    if (themeVariable?.value) {
+                                        normalHandler(themeVariable)
+                                    }
+                                } else {
+                                    if (!this.variableNames) {
+                                        this.variableNames = []
+                                    }
+                                    if (!this.variableNames.includes(eachValueComponent.name)) {
+                                        this.variableNames.push(eachValueComponent.name)
+                                    }
+                                    varHandler()
+                                }
+                            } else {
+                                normalHandler(variable)
+                            }
+                        }
+                        switch (variable.type) {
+                            case 'string':
+                                handleVariable(
+                                    (variable) => {
+                                        const valueComponents: ValueComponent[] = []
+                                        this.parseValue(valueComponents, 0, variable.value as string, unit, undefined, undefined, [...bypassVariableNames, eachValueComponent.name])
+                                        currentValue += this.transformValueComponents(
+                                            valueComponents,
+                                            unit,
+                                            [...bypassVariableNames, eachValueComponent.name]
+                                        )
+                                    },
+                                    () => {
+                                        currentValue += `var(--${eachValueComponent.name})`
+                                    }
+                                )
+                                break
+                            case 'number':
+                                handleVariable(
+                                    (variable) => {
+                                        const valueComponent = this.parseValueComponent(variable.value, unit) as NumericValueComponent
+                                        currentValue += valueComponent.value + (valueComponent.unit ?? '')
+                                    },
+                                    () => {
+                                        currentValue += unit
+                                            ? `calc(var(--${eachValueComponent.name}) / 16 * 1rem)`
+                                            : `var(--${eachValueComponent.name})`
+                                    }
+                                )
+                                break
+                            case 'color':
+                                // eslint-disable-next-line no-case-declarations
+                                const alpha = eachValueComponent.alpha ? '/' + eachValueComponent.alpha : ''
+                                handleVariable(
+                                    (variable) => {
+                                        currentValue += `${variable['space']}(${variable.value}${alpha})`
+                                    },
+                                    () => {
+                                        currentValue += `${variable.space}(var(--${eachValueComponent.name})${alpha})`
+                                    }
+                                )
+                                break
+                        }
+                    } else {
+                        currentValue += 'var(--' + eachValueComponent.name + ')'
+                    }
+                    break
+                case 'separator':
+                    currentValue += (eachValueComponent.prefix || '') + eachValueComponent.value + (eachValueComponent.suffix || '')
+                    break
+                case 'number':
+                    currentValue += eachValueComponent.value + eachValueComponent.unit
+                    break
+                default:
+                    currentValue += eachValueComponent.value
+                    break
+            }
+        }
+        return currentValue
+    }
+
     get text(): string {
         return this.natives.map((eachNative) => eachNative.text).join('')
+    }
+
+    parseValue = (
+        currentValueComponents: ValueComponent[],
+        i: number,
+        value: string,
+        unit: string,
+        endSymbol?: string,
+        parentFunctionName = undefined,
+        bypassVariableNames: string[] = []
+    ) => {
+        const root = parentFunctionName === undefined
+        const isVarFunction = !root
+            && (
+                parentFunctionName.endsWith('$')
+                || parentFunctionName.endsWith('var')
+            )
+        const checkIsString = (value: string) => value === '\'' || value === '"'
+        const isString = checkIsString(endSymbol)
+        const separators = [',']
+        if (this.options.separators.length) {
+            separators.push(...this.options.separators)
+        }
+
+        let currentValue = ''
+        const parse = () => {
+            if (currentValue) {
+                let handled = false
+                if (!isVarFunction) {
+                    const handleVariable = (variableName: string, alpha?: string) => {
+                        const variable = Object.prototype.hasOwnProperty.call(this.options.resolvedVariables, variableName)
+                            ? this.options.resolvedVariables[variableName]
+                            : Object.prototype.hasOwnProperty.call(this.css.variables, variableName)
+                                ? this.css.variables[variableName]
+                                : undefined
+                        if (variable) {
+                            const name = variable.name ?? variableName
+                            if (!bypassVariableNames.includes(name)) {
+                                handled = true
+    
+                                currentValueComponents.push({ type: 'variable', name: name, alpha })
+                            }
+                        } 
+                    }
+                    handleVariable(currentValue)
+                    if (!handled && this.colored) {
+                        const [colorName, alpha] = currentValue.split('/')
+                        handleVariable(colorName, alpha)
+                    }
+                }
+
+                if (!handled) {
+                    currentValueComponents.push(this.parseValueComponent(currentValue, unit))
+                }
+
+                currentValue = ''
+            }
+        }
+
+        for (; i < value.length; i++) {
+            const val = value[i]
+            if (val === endSymbol) {
+                if (isString) {
+                    let count = 0
+                    for (let j = currentValue.length - 1; ; j--) {
+                        if (currentValue[j] !== '\\')
+                            break
+
+                        count++
+                    }
+                    if (count % 2) {
+                        currentValue += val
+                        continue
+                    } else {
+                        parse()
+                    }
+                } else {
+                    parse()
+                }
+
+                return i
+            } else if (!isString && val in START_SYMBOLS) {
+                const functionName = currentValue
+                const newValueComponent: ValueComponent[][0] = { type: 'function', name: functionName, symbol: val, childrens: [] }
+                currentValueComponents.push(newValueComponent)
+                currentValue = ''
+
+                const functionConfig = val === '(' && this.css.config.functions?.[functionName]
+                if (!this.colored && functionConfig?.colored) {
+                    // @ts-ignore
+                    this.colored = true
+                }
+
+                i = this.parseValue(
+                    newValueComponent.childrens,
+                    ++i,
+                    value,
+                    functionConfig?.unit ?? unit,
+                    START_SYMBOLS[val],
+                    functionName || parentFunctionName || ''
+                )
+            } else if ((val === '|' || val === ' ') && endSymbol !== '}' && (!isString || parentFunctionName === 'path')) {
+                parse()
+                currentValueComponents.push({ type: 'separator', value: ' ' })
+            } else {
+                if (!isString) {
+                    if (val === '.') {
+                        if (isNaN(+value[i + 1])) {
+                            if (root)
+                                break
+                        } else if (value[i - 1] === '-') {
+                            currentValue += '0'
+                        }
+                    } else if (separators.includes(val)) {
+                        parse()
+                        currentValueComponents.push({
+                            type: 'separator',
+                            value: val,
+                            prefix: val === ',' ? '' : ' ',
+                            suffix: val === ',' ? '' : ' '
+                        })
+                        continue
+                    } else if (
+                        root
+                        && (
+                            val === '#' && (currentValue || currentValueComponents.length && currentValueComponents[currentValueComponents.length - 1]['type'] !== 'separator')
+                            || ['!', '*', '>', '+', '~', ':', '[', '@', '_'].includes(val)
+                        )
+                    ) {
+                        break
+                    }
+                }
+
+                currentValue += val
+            }
+        }
+
+        parse()
+
+        return i
     }
 
     resolveValue(value, unit) {
@@ -769,7 +742,7 @@ export class Rule {
             + unit
     }
 
-    resolveUnitValue(token: string | number, unit?: string): { value: string, unit: string } {
+    parseValueComponent(token: string | number, unit = this.options.unit): StringValueComponent | NumericValueComponent {
         const defaultUnit = unit ?? this.options.unit
         let newUnit = ''
         let value: any
@@ -786,17 +759,17 @@ export class Rule {
             } else {
                 value = token
             }
-            return { value, unit: newUnit }
+            return { value, unit: newUnit, type: 'number' }
         } else if (defaultUnit) {
             // w:1/2 -> width: 50%
             if (/^\d+\/\d+/.test(token)) {
                 const [dividend, divisor] = token.split('/')
-                return { value: (+dividend / +divisor) * 100 + '%', unit: newUnit }
+                return { value: (+dividend / +divisor) * 100, unit: '%', type: 'number' }
             }
             const matches = token.match(/^([+-.]?\d+(\.?\d+)?)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x|fr|db|st)?$/)
             // ['0.5deg', '0.5', 'deg', index: 0, input: '0.5deg', groups: undefined]
             if (matches) {
-                let value: any = +matches[1]
+                value = +matches[1]
                 newUnit = matches[3] || ''
                 /**
                  * 當無單位值且 defaultUnit === 'rem'，
@@ -808,11 +781,25 @@ export class Rule {
                     }
                     newUnit = defaultUnit || ''
                 }
-                return { value, unit: newUnit }
+                return { value, unit: newUnit, type: 'number' }
             }
         }
+        return { value: token, type: 'string' }
     }
 }
+
+export type ValueComponent =
+    StringValueComponent |
+    NumericValueComponent |
+    FunctionValueComponent |
+    VariableValueComponent |
+    SeparatorValueComponent
+
+export interface StringValueComponent { token?: string, type: 'string', value: string }
+export interface NumericValueComponent { token?: string, type: 'number', value: number, unit?: string }
+export interface FunctionValueComponent { token?: string, type: 'function', name: string, symbol: string, childrens: ValueComponent[] }
+export interface VariableValueComponent { token?: string, type: 'variable', name: string, alpha?: string }
+export interface SeparatorValueComponent { type: 'separator', value: string, prefix?: string, suffix?: string }
 
 export interface Rule {
     prefix?: string
@@ -825,7 +812,7 @@ export interface Rule {
     theme?: string
     unitToken?: string
     hasWhere?: boolean
-    valueNodes?: Array<string | number | { type: 'function', name: string, symbol: string, childrens: Rule['valueNodes'] } | { type: 'variable', name: string, alpha?: string } | { type: 'separator', value: string, prefixWhite?: boolean, suffixWhite?: boolean }>
+    valueComponents?: Array<ValueComponent>
     constructor: {
         match?(
             name: string,
@@ -836,23 +823,48 @@ export interface Rule {
     }
 }
 
+export interface RuleOptions {
+    id?: string
+    match?: RegExp | [string, string[]?]
+    resolvedMatch?: RegExp
+    resolvedVariables?: any
+    variableGroups?: string[]
+    order?: number
+    separators?: string[]
+    shorthand?: string
+    colored?: boolean
+    numeric?: boolean
+    unit?: any
+    native?: boolean
+    declarations?: CSSDeclarations
+    resolvedPropName?: string
+    layer?: Layer | CoreLayer,
+    analyze?: (this: Rule, className: string) => [valueToken: string, prefixToken?: string]
+    transform?(this: Rule, value: string): string
+    transformValueComponents?(this: Rule, valueComponents: ValueComponent[]): ValueComponent[]
+    declare?(this: Rule, value: string, unit: string): CSSDeclarations
+    delete?(this: Rule, className: string): void
+    create?(this: Rule, className: string): void
+    insert?(this: Rule): void
+}
+
 export interface NativeRule {
     text: string
     cssRule?: CSSRule
 }
 
-export interface MediaFeatureRule {
-    token: string;
-    tokenType?: string;
-    operator?: string;
-    value?: number;
-    unit?: string;
+export type MediaFeatureComponent = {
+    type: string
+    tokenType?: string
+    operator?: string
+    value: number
+    unit: string
 }
 
 export interface MediaQuery {
     token: string;
     features?: {
-        [key: string]: MediaFeatureRule
+        [key: string]: MediaFeatureComponent
     }
     type?: string;
 }

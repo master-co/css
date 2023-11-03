@@ -35,11 +35,15 @@ describe('with themes', () => {
 
     it('checks resolved colors', () => {
         const css = new MasterCSS(config)
-        expect(css.colorVariables.primary).toEqual({
-            '': { type: 'color', space: 'hsl', value: '0deg 0% 0%' },
-            '@dark': { type: 'color', space: 'hsl', value: '0deg 0% 100%' },
-            '@light': { type: 'color', space: 'hsl', value: '0deg 0% 58.82%' },
-            '@chrisma': { type: 'color', space: 'hsl', value: '0deg 0% 0%/.5' }
+        expect(css.variables.primary).toEqual({
+            type: 'color',
+            space: 'hsl',
+            value: '0deg 0% 0%',
+            themes: {
+                'dark': { type: 'color', space: 'hsl', value: '0deg 0% 100%' },
+                'light': { type: 'color', space: 'hsl', value: '0deg 0% 58.82%' },
+                'chrisma': { type: 'color', space: 'hsl', value: '0deg 0% 0%/.5' }
+            }
         })
     })
 

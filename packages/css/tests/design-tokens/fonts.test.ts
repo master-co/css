@@ -10,9 +10,9 @@ it('customizes fonts', () => {
         }
     })
     expect({
-        sans: css.generalVariables['fontFamily-sans'],
-        mono: css.generalVariables['fontFamily-mono'],
-        serif: css.generalVariables['fontFamily-serif']
+        sans: css.variables['fontFamily-sans'],
+        mono: css.variables['fontFamily-mono'],
+        serif: css.variables['fontFamily-serif']
     }).toEqual({
         sans: { type: 'string', value: 'Inter,' + variables.fontFamily.sans.join(',') },
         mono: { type: 'string', value: 'Fira Code,' + variables.fontFamily.mono.join(',') },

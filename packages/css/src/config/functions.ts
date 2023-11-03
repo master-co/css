@@ -1,79 +1,42 @@
+import type { Config, ConfigFunction } from './'
 import type { Rule } from '../rule'
 
 const functions = {
     $: {
-        transform(opening, value, closing) {
-            const variable = Object.prototype.hasOwnProperty.call(this.options.resolvedNormalVariables, value)
-                ? this.options.resolvedNormalVariables[value]
-                : (this.colored && Object.prototype.hasOwnProperty.call(this.options.resolvedColorVariables, value))
-                    ? this.options.resolvedColorVariables[value]
-                    : Object.prototype.hasOwnProperty.call(this.css.generalVariables, value)
-                        ? this.css.generalVariables[value]
-                        : (this.colored && Object.prototype.hasOwnProperty.call(this.css.colorVariables, value))
-                            ? this.css.colorVariables[value]
-                            : undefined
-            if (variable) {
-                const keys = Object.keys(variable)
-                if (keys.some(eachKey => eachKey === '' || eachKey.startsWith('@'))) {
-                    const variableName = variable.name ?? value
-                    if (!this.variableNames) {
-                        this.variableNames = []
-                    }
-                    if (!this.variableNames.includes(variableName)) {
-                        this.variableNames.push(variableName)
-                    }
-
-                    return (variable[keys[0]].type === 'number' && this.options.unit)
-                        ? `calc(var(--${variableName}) / 16 * 1rem)`
-                        : 'var(--' + variableName + ')'
-                } else {
-                    return variable.value
-                }
-            } else {
-                return 'var(--' + value + ')'
-            }
+        transform(value) {
+            return [{ type: 'variable', name: value }]
         }
     },
     calc: {
-        transform(opening, value, closing) {
-            const valueNodes: Rule['valueNodes'] = []
+        transform(value, bypassVariableNames) {
+            const valueComponents: Rule['valueComponents'] = []
             const functions = this.css.config.functions
-
-            // eslint-disable-next-line @typescript-eslint/no-this-alias
-            const instance = this
-            let i = 0;
-            (function anaylze(currentValueNodes: Rule['valueNodes'], bypassHandlingSeparator: boolean, bypassHandlingUnitForcely: boolean) {
+            let i = 0
+            const anaylze = (currentValueComponents: Rule['valueComponents'], bypassHandlingSeparator: boolean, bypassHandlingUnitForcely: boolean) => {
                 let bypassHandlingUnit = false
                 let current = ''
-                const clear = (separator: string, prefixWhite = false, suffixWhite = false) => {
+                const clear = (separator: string, prefix = '', suffix = '') => {
                     if (current) {
                         if (!bypassHandlingUnit && !bypassHandlingUnitForcely) {
-                            const uv = instance.resolveUnitValue(current, functions.calc.unit)
-                            if (uv) {
-                                current = uv.value + uv.unit
-                            }
+                            currentValueComponents.push(this.parseValueComponent(current, functions.calc.unit))
+                        } else {
+                            currentValueComponents.push({ type: 'string', value: current })
                         }
-
-                        currentValueNodes.push(current)
-
                         current = ''
                     }
-
                     if (separator) {
-                        if (prefixWhite && value[i - 1] === ' ') {
-                            prefixWhite = false
+                        if (prefix && value[i - 1] === ' ') {
+                            prefix = ''
                         }
-                        if (suffixWhite && value[i + 1] === ' ') {
-                            suffixWhite = false
+                        if (suffix && value[i + 1] === ' ') {
+                            suffix = ''
                         }
-
                         if (bypassHandlingSeparator) {
-                            currentValueNodes.push(separator)
+                            currentValueComponents.push({ type: 'separator', value: separator })
                         } else {
-                            currentValueNodes.push({ type: 'separator', value: separator, prefixWhite, suffixWhite })
+                            currentValueComponents.push({ type: 'separator', value: separator, prefix, suffix })
                         }
                     }
-
                     bypassHandlingUnit = false
                 }
 
@@ -82,31 +45,29 @@ const functions = {
                     if (char === '(') {
                         const symbolResult = /^([+-])/.exec(current)
                         if (symbolResult) {
-                            currentValueNodes.push(symbolResult[1])
+                            currentValueComponents.push({ type: 'string', value: symbolResult[1] })
                         }
-
                         const functionName = symbolResult ? current.slice(1) : current
-                        const newValueNode: Rule['valueNodes'][0] = { type: 'function', name: functionName, symbol: char, childrens: [] }
-                        currentValueNodes.push(newValueNode)
+                        const newValueComponent: Rule['valueComponents'][0] = { type: 'function', name: functionName, symbol: char, childrens: [] }
+                        currentValueComponents.push(newValueComponent)
                         current = ''
-
                         i++
-                        const isVarFunction = newValueNode.name === '$' || newValueNode.name === 'var'
+                        const isVarFunction = newValueComponent.name === '$' || newValueComponent.name === 'var'
                         anaylze(
-                            newValueNode.childrens,
+                            newValueComponent.childrens,
                             functionName !== ''
-                                && functionName !== 'calc'
-                                && (
-                                    isVarFunction
-                                    || Object.prototype.hasOwnProperty.call(functions, functionName)
-                                ),
+                            && functionName !== 'calc'
+                            && (
+                                isVarFunction
+                                || Object.prototype.hasOwnProperty.call(functions, functionName)
+                            ),
                             bypassHandlingUnit || isVarFunction
                         )
                     } else if (char === ')') {
                         clear('')
                         break
                     } else if (char === ',') {
-                        clear(char, false, true)
+                        clear(char, '', ' ')
                     } else if (char === ' ') {
                         clear(char)
                     } else {
@@ -116,21 +77,21 @@ const functions = {
                                 if (!current && previousChar !== ')') {
                                     current += char
                                 } else {
-                                    clear(char, true, true)
+                                    clear(char, ' ', ' ')
                                 }
                                 break
                             case '-':
                                 if (!current && previousChar !== ')') {
                                     current += char
                                 } else {
-                                    clear(char, true, true)
+                                    clear(char, ' ', ' ')
                                 }
                                 break
                             case '*':
-                                clear(char, true, true)
+                                clear(char, ' ', ' ')
                                 break
                             case '/':
-                                clear(char, true, true)
+                                clear(char, ' ', ' ')
                                 bypassHandlingUnit = true
                                 break
                             default:
@@ -139,13 +100,13 @@ const functions = {
                         }
                     }
                 }
-
                 clear('')
-            })(valueNodes, false, false)
+            }
+            anaylze(valueComponents, false, false)
 
-            return ['calc(', ...valueNodes, ')']
+            return 'calc(' + this.transformValueComponents(valueComponents, functions.calc.unit ?? this.options.unit, bypassVariableNames) + ')'
         }
-    },
+    } as ConfigFunction,
     translate: { unit: 'rem' },
     translateX: { unit: 'rem' },
     translateY: { unit: 'rem' },

@@ -4,7 +4,7 @@ import config from '../../config'
 test('colors', () => {
     testCSS(
         'fg:primary',
-        '.light{--primary:235 187 64}.dark{--primary:251 224 157}:root{--primary:23 95 233}.fg\\:primary{color:rgb(var(--primary))}',
+        ':root{--primary:23 95 233}.light{--primary:235 187 64}.dark{--primary:251 224 157}.fg\\:primary{color:rgb(var(--primary))}',
         config
     )
     testCSS(

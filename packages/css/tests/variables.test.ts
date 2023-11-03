@@ -66,7 +66,7 @@ it('expects the variable output', async () => {
 
 let p: ElementHandle<Element>
 
-it('expects the keyframe output', async () => {
+it('expects the variable output', async () => {
     p = await page.$('#mp') as any
     let cssText = await page.evaluate(async (p) => {
         p?.classList.add(
