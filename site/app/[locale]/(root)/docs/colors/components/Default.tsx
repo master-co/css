@@ -1,6 +1,6 @@
 'use client'
 
-import { colors } from '@master/css'
+import { variables } from '@master/css'
 import { Fragment } from 'react'
 import { l } from 'to-line'
 // @ts-expect-error
@@ -9,10 +9,11 @@ import { snackbar } from 'shared/utils/snackbar'
 import copy from 'copy-to-clipboard'
 
 export default () => <div className="grid-cols:6 grid-cols:13@sm my:40 gap:25|10">
-    {Object.keys(colors)
-        .filter((colorName) => !['black', 'white', 'current', 'transparent'].includes(colorName))
+    {Object.keys(variables)
+        // @ts-ignore todo fix this
+        .filter((colorName) => variables[colorName].type === 'color' && !['black', 'white', 'current', 'transparent'].includes(colorName))
         .map((colorName: string) => {
-            const eachColors = (colors as any)[colorName]
+            const eachColors = (variables as any)[colorName]
             return (
                 <Fragment key={colorName}>
                     <div className={l`font:12 font:semibold capitalize white-space:pre-line lh:1.5`}>{colorName}</div>
