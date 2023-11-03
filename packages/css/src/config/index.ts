@@ -6,7 +6,7 @@ import variables from './variables'
 import rules from './rules'
 import functions from './functions'
 import { CSSDeclarations } from '../types/css-declarations'
-import type { Rule, ValueComponent } from '../rule'
+import type { Rule, RuleOptions, ValueComponent } from '../rule'
 
 const config: Config = {
     mediaQueries,
@@ -51,7 +51,7 @@ export interface Config {
     semantics?: { [key in keyof typeof semantics]?: CSSDeclarations } & { [key: string]: CSSDeclarations }
     variables?: { [key in keyof typeof rules]?: ConfigVariableGroup }
     & { [key: string]: ConfigVariableGroup | ConfigVariable }
-    rules?: { [key in keyof typeof rules | string]?: Rule['options'] }
+    rules?: { [key in keyof typeof rules | string]?: RuleOptions }
     rootSize?: number
     scope?: string
     important?: boolean

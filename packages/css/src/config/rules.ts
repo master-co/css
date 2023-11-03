@@ -4,6 +4,8 @@ import type { Rule, RuleOptions } from '../rule'
 import { CSSDeclarations } from '../types/css-declarations'
 import { CoreLayer } from '../layer'
 
+export const BORDER_STYLES = ['hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
+
 const rules = {
     group: {
         match: /^(?:.+?[*_>~+])?\{.+?\}/,
@@ -994,23 +996,23 @@ const rules = {
     } as RuleOptions,
     // border style
     borderTopStyle: {
-        match: ['b(?:t|order-top(?:-style)?)', ['hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']],
+        match: ['b(?:t|order-top(?:-style)?)', BORDER_STYLES],
         layer: CoreLayer.Native,
     } as RuleOptions,
     borderBottomStyle: {
-        match: ['b(?:b|order-bottom(?:-style)?)', ['hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']],
+        match: ['b(?:b|order-bottom(?:-style)?)', BORDER_STYLES],
         layer: CoreLayer.Native,
     } as RuleOptions,
     borderLeftStyle: {
-        match: ['b(?:l|order-left(?:-style)?)', ['hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']],
+        match: ['b(?:l|order-left(?:-style)?)', BORDER_STYLES],
         layer: CoreLayer.Native,
     } as RuleOptions,
     borderRightStyle: {
-        match: ['b(?:r|order-right(?:-style)?)', ['hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']],
+        match: ['b(?:r|order-right(?:-style)?)', BORDER_STYLES],
         layer: CoreLayer.Native,
     } as RuleOptions,
     borderXStyle: {
-        match: ['b(?:x|order-x(?:-style)?)', ['hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']],
+        match: ['b(?:x|order-x(?:-style)?)', BORDER_STYLES],
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
             return {
@@ -1020,7 +1022,7 @@ const rules = {
         }
     } as RuleOptions,
     borderYStyle: {
-        match: ['b(?:y|order-y(?:-style)?)', ['hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']],
+        match: ['b(?:y|order-y(?:-style)?)', BORDER_STYLES],
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
             return {
@@ -1030,7 +1032,7 @@ const rules = {
         }
     } as RuleOptions,
     borderStyle: {
-        match: ['b(?:order)?(?:-style)?', ['hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']],
+        match: ['b(?:order)?(?:-style)?', BORDER_STYLES],
         layer: CoreLayer.NativeShorthand
     } as RuleOptions,
     // border width
@@ -1118,61 +1120,31 @@ const rules = {
         match: /^bt:./,
         layer: CoreLayer.Native,
         unit: 'rem',
-        colored: true,
-        transform(value) {
-            if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
-                value += ' solid'
-            }
-            return value
-        }
+        colored: true
     } as RuleOptions,
     borderBottom: {
         match: /^bb:./,
         layer: CoreLayer.Native,
         unit: 'rem',
-        colored: true,
-        transform(value) {
-            if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
-                value += ' solid'
-            }
-            return value
-        }
+        colored: true
     } as RuleOptions,
     borderLeft: {
         match: /^bl:./,
         layer: CoreLayer.Native,
         unit: 'rem',
-        colored: true,
-        transform(value) {
-            if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
-                value += ' solid'
-            }
-            return value
-        }
+        colored: true
     } as RuleOptions,
     borderRight: {
         match: /^br:./,
         layer: CoreLayer.Native,
         unit: 'rem',
-        colored: true,
-        transform(value) {
-            if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
-                value += ' solid'
-            }
-            return value
-        }
+        colored: true
     } as RuleOptions,
     borderX: {
         match: /^(?:bx|border-x):./,
         unit: 'rem',
         colored: true,
         layer: CoreLayer.Shorthand,
-        transform(value) {
-            if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
-                value += ' solid'
-            }
-            return value
-        },
         declare(value) {
             return {
                 'border-left': value,
@@ -1185,12 +1157,6 @@ const rules = {
         unit: 'rem',
         colored: true,
         layer: CoreLayer.Shorthand,
-        transform(value) {
-            if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
-                value += ' solid'
-            }
-            return value
-        },
         declare(value) {
             return {
                 'border-top': value,
@@ -1202,12 +1168,6 @@ const rules = {
         match: /^b:./,
         unit: 'rem',
         colored: true,
-        transform(value) {
-            if (!/hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i.test(value)) {
-                value += ' solid'
-            }
-            return value
-        },
         layer: CoreLayer.NativeShorthand
     } as RuleOptions,
     backgroundAttachment: {
@@ -1524,7 +1484,7 @@ const rules = {
         variableGroups: ['spacing']
     } as RuleOptions,
     outlineStyle: {
-        match: ['outline', ['none', 'auto', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']],
+        match: ['outline', ['dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']],
         layer: CoreLayer.Native
     } as RuleOptions,
     outlineWidth: {
@@ -1537,18 +1497,6 @@ const rules = {
         unit: 'rem',
         layer: CoreLayer.NativeShorthand,
         colored: true,
-        transform(value) {
-            const outlineGlobalValuesRegex =
-                /^(?:inherit|initial|revert|revert-layer|unset)$/i
-            const outlineStyleRegex = /none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset/i
-            const outlineAutoRegex = /auto/i
-
-            if (!outlineGlobalValuesRegex.test(value) && !outlineStyleRegex.test(value) && !outlineAutoRegex.test(value)) {
-                value += ' solid'
-            }
-
-            return value
-        },
         variableGroups: [
             'outlineWidth',
             'outlineStyle',

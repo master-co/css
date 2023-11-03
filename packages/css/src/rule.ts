@@ -632,10 +632,10 @@ export class Rule {
                             const name = variable.name ?? variableName
                             if (!bypassVariableNames.includes(name)) {
                                 handled = true
-    
+
                                 currentValueComponents.push({ type: 'variable', name: name, alpha })
                             }
-                        } 
+                        }
                     }
                     handleVariable(currentValue)
                     if (!handled && this.colored) {
@@ -871,5 +871,5 @@ export interface MediaQuery {
 
 export interface RuleMeta {
     value?: [string, string | Record<string, string>]
-    config?: Rule['options']
+    config?: RuleOptions
 }

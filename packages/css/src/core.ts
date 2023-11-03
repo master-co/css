@@ -1,5 +1,5 @@
 import { extend } from '@techor/extend'
-import { Rule, NativeRule } from './rule'
+import { Rule, NativeRule, RuleOptions } from './rule'
 import type { Config } from './config'
 import { config as defaultConfig } from './config'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
@@ -20,14 +20,14 @@ export interface MasterCSS {
     stylesBy: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>
     variables: Record<
-        string, 
-        Omit<VariableValue, 'value' | 'space'> 
-        & { 
-            value?: any, 
-            space?: any, 
-            usage?: number, 
-            natives?: NativeRule[], 
-            themes?: { [theme: string]: VariableValue } 
+        string,
+        Omit<VariableValue, 'value' | 'space'>
+        & {
+            value?: any,
+            space?: any,
+            usage?: number,
+            natives?: NativeRule[],
+            themes?: { [theme: string]: VariableValue }
         }
     >
     mediaQueries: Record<string, string | number>
@@ -52,8 +52,8 @@ export class MasterCSS {
     readonly countBy = {}
     readonly observing = false
     readonly config: Config
-    private readonly semanticRuleOptions: Rule['options'][] = []
-    private readonly ruleOptions: Rule['options'][] = []
+    private readonly semanticRuleOptions: RuleOptions[] = []
+    private readonly ruleOptions: RuleOptions[] = []
 
     observer: MutationObserver
 
@@ -186,7 +186,7 @@ export class MasterCSS {
                                 }
                             } else {
                                 if (currentTheme) {
-                                    this.variables[name] = { 
+                                    this.variables[name] = {
                                         type: variableValue.type,
                                         space: variableValue['space'],
                                         themes: { [currentTheme]: variableValue }
@@ -384,7 +384,7 @@ export class MasterCSS {
         const rulesEntriesLength = rulesEntries.length
         const colorNames = Object.keys(colorVariableNames)
         rulesEntries
-            .forEach(([id, eachRuleOptions]: [string, Rule['options']], index: number) => {
+            .forEach(([id, eachRuleOptions]: [string, RuleOptions], index: number) => {
                 this.ruleOptions.push(eachRuleOptions)
                 eachRuleOptions.order = this.semanticRuleOptions.length + rulesEntriesLength - 1 - index
                 const match = eachRuleOptions.match
@@ -797,7 +797,7 @@ export class MasterCSS {
      * @param syntax class syntax
      * @returns css text
      */
-    match(syntax: string): Rule['options'] {
+    match(syntax: string): RuleOptions {
         // 1. rules
         for (const eachRuleOptions of this.ruleOptions) {
             if (
@@ -1483,7 +1483,7 @@ export class MasterCSS {
                             addNativeRule(theme, variable.themes[theme])
                         }
                     }
-                  
+
                     let originalNativesCount: number = 0
                     if (this.hasVariablesRule) {
                         originalNativesCount = this.rules[0].natives.length
