@@ -7,7 +7,6 @@ export default async function Layout(props: {
     params: { locale: Locale }
 }) {
     return (
-        // @ts-expect-error server component
         <RootLayout {...props} bodyAttrs={{ className: 'bg:base' }} />
     )
 }

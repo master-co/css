@@ -8,7 +8,7 @@ import config from 'shared/master.css'
 import CSSProvider from '@master/css.react/CSSProvider'
 import ThemeServiceProvider from '@master/css.react/ThemeServiceProvider'
 
-export default async function RootLayout({
+export default function RootLayout({
     children,
     params,
     bodyAttrs
@@ -29,23 +29,6 @@ export default async function RootLayout({
                         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
                     </>
                 }
-                {/* <script dangerouslySetInnerHTML={{ __html: `
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const sidebar = document.getElementById('sidebar');
-                        if (sidebar) {
-                            const activeNav = sidebar.querySelector('.active');
-                            console.log(activeNav)
-                            console.log(sidebar.scrollTop)
-                            if (activeNav) {
-                                const activeNavRect = activeNav.getBoundingClientRect()
-                                setTimeout(() => {
-                                    sidebar.scrollTop = 200;
-                                    console.log('fuck');
-                                }, 1000)
-                            }
-                        }
-                    })
-                `}}></script> */}
             </head>
             <body {...bodyAttrs} className={l(bodyAttrs?.className, 'font:sans font:mono_:where(code,kbd,samp) overflow:hidden|overlay fg:neutral bg:slate-50/.2_:where(::selection)')}>
                 <ThemeServiceProvider options={{ default: 'system' }}>
