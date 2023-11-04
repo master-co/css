@@ -15,6 +15,8 @@ export default function reorderForReadableClasses(classes: string[], config?: Co
         css.insert(eachClass)
     }
     return css.rules
+        // 只保留樣式語法相關的 rules, 排除 keyframes 與 variables 在外
+        .filter(eachRule => eachRule.layer)
         .sort((a, b) => {
             if (a.options.layer === CoreLayer.Semantic && b.options.layer !== CoreLayer.Semantic) {
                 // 如果 a 是 CoreLayer.Semantic 而 b 不是，则 a 应该排在 b 前面
@@ -23,7 +25,7 @@ export default function reorderForReadableClasses(classes: string[], config?: Co
                 // 如果 b 是 CoreLayer.Semantic 而 a 不是，则 b 应该排在 a 前面
                 return 1
             } else if (a.options.id !== b.options.id) {
-                return a.options.id.localeCompare(b.options.id)
+                return a.className.localeCompare(b.className)
             } else {
                 // 檢查 vendorSuffixSelectors 是否存在
                 const aHasVendorSuffix = a.vendorSuffixSelectors?.['']?.[0]

@@ -17,6 +17,24 @@ test('mixed', () => {
             'block round bg:blue:hover font:12 font:24@sm font:32@md m:32 mb:48 px:16'.split(' ')
         )
     }
+
+    for (let i = 0; i < 10; i++) {
+        expect(reorderForReadableClasses(shuffle(
+            'abs inset:0 m:auto height:fit text:center font:7vw font:40@xs font:heavy fg:white blend:overlay @flash|3s|infinit'.split(' ')
+        ))).toEqual(
+            'abs @flash|3s|infinit blend:overlay fg:white font:7vw font:40@xs font:heavy height:fit inset:0 m:auto text:center'.split(' ')
+        )
+    }
+})
+
+it('sorts by layers', () => {
+    for (let i = 0; i < 10; i++) {
+        expect(reorderForReadableClasses(shuffle(
+            'b:1|blue b:1'.split(' ')
+        ))).toEqual(
+            'b:1 b:1|blue'.split(' ')
+        )
+    }
 })
 
 test('selectors', () => {

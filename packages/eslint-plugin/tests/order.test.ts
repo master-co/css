@@ -11,13 +11,13 @@ new RuleTester({
 }).run('class order', rule, {
     valid: [
         {
-            code: `<div class="bg:black fg:white f:24 m:8 p:8">Simple, basic</div>`,
+            code: `<div class="bg:black f:24 fg:white m:8 p:8">Simple, basic</div>`,
         },
         {
             code: `<div class="card mt:20">Traditional class + syntax</div>`,
         },
         {
-            code: `<div test="bg:black fg:white f:24 m:8 p:8">Simple, using 'test' prop</div>`,
+            code: `<div test="bg:black f:24 fg:white m:8 p:8">Simple, using 'test' prop</div>`,
             settings: {
                 '@master/css': {
                     classMatching: '^test|class(Name)?$',
@@ -28,23 +28,23 @@ new RuleTester({
             code: '<div className={ctl(`p:10 w:full ${live && \'bg:blue-10 bg:purple-40@dark r:5@sm\'}`)}>ctl + exp</div>',
         },
         {
-            code: '<div className={ctl(`bg:blue-50 r:100% h:48 w:48 ${className}`)}>ctl + var</div>',
+            code: '<div className={ctl(`bg:blue-50 h:48 r:100% w:48 ${className}`)}>ctl + var</div>',
         },
         {
             code: '<div className={ctl(`p:10 w:full ${live && \'bg: white bg: black@dark\'}`)}>Space trim issue</div>',
         },
         {
             code: `
-                    ctl(\`
-                        flex align-items:center justify-content:center
-                        \${ variant === SpinnerVariant.OVERLAY && \`rounded bg:gray-40 b:2 px:4 z:60 \${widthClass} \${heightClass}\`}
-                        \${ variant === SpinnerVariant.FULLSCREEN &&
-                        \`fixed bg:white@dark bottom:0 left:0 opacity:.6@dark px:4 right:0 top:0 z:60\`
-                            }
-                    \`)`,
+                ctl(\`
+                    flex align-items:center justify-content:center
+                    \${ variant === SpinnerVariant.OVERLAY && \`rounded b:2 bg:gray-40 px:4 z:60 \${widthClass} \${heightClass}\`}
+                    \${ variant === SpinnerVariant.FULLSCREEN &&
+                    \`fixed bg:white@dark bottom:0 left:0 opacity:.6@dark px:4 right:0 top:0 z:60\`}
+                \`)
+            `,
         },
         {
-            code: `<div class='bg:black fg:white f:24 m:8 p:8'>Simple quotes</div>`,
+            code: `<div class='bg:black f:24 fg:white m:8 p:8'>Simple quotes</div>`,
         },
         {
             code: `<div class="p:8 ">Extra space at the end</div>`,
@@ -111,16 +111,38 @@ new RuleTester({
             code: `<div class="m:10 m:20 m:30:hover m:40@dark">Collision class</div>`,
         },
 
+        {
+            code: `
+                export default () => (
+                    <Demo $py={0}>
+                        <div className="~transform|.2s scale(1.1):hover">
+                            <Image
+                                src={mobileImage}
+                                className="untouchable"
+                                width="480"
+                                height="319"
+                                priority={true}
+                                alt="hello world"
+                            />
+                            <h1 className="abs @flash|3s|infinite blend:overlay fg:white font:7vw font:40@xs font:heavy height:fit inset:0 m:auto text:center">
+                                Hello, World!
+                            </h1>
+                        </div>
+                    </Demo>
+                )
+            `,
+            parser: require.resolve('@typescript-eslint/parser')
+        }
     ],
     invalid: [
         {
             code: `<div class="fg:white f:24 m:8 p:8 bg:black">Classnames will be ordered</div>`,
-            output: `<div class="bg:black fg:white f:24 m:8 p:8">Classnames will be ordered</div>`,
+            output: `<div class="bg:black f:24 fg:white m:8 p:8">Classnames will be ordered</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `<div class="flex uppercase m:0 m:0>li text-decoration:none>li>a px:4>li align-items:baseline fg:gray-30>li>a gap-x:28 font:12 font:semibold pb:6>li pt:20 pt:10>li {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a fg:gray-10>li>a:hover box-shadow:none>li>a:focus">Group</div>`,
-            output: `<div class="flex uppercase align-items:baseline box-shadow:none>li>a:focus fg:gray-30>li>a fg:gray-10>li>a:hover gap-x:28 font:12 font:semibold {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a m:0 m:0>li pb:6>li pt:20 pt:10>li px:4>li text-decoration:none>li>a">Group</div>`,
+            output: `<div class="flex uppercase {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a align-items:baseline box-shadow:none>li>a:focus fg:gray-30>li>a fg:gray-10>li>a:hover font:12 font:semibold gap-x:28 m:0 m:0>li pb:6>li pt:20 pt:10>li px:4>li text-decoration:none>li>a">Group</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
@@ -449,8 +471,8 @@ new RuleTester({
         },
         {
             code: `ctl(\`p:3 b:3|solid|gray m:4 h:24 p:4@lg flex b:2 m:4@lg\`)`,
-            output: `ctl(\`flex b:3|solid|gray b:2 h:24 m:4 m:4@lg p:3 p:4@lg\`)`,
+            output: `ctl(\`flex b:2 b:3|solid|gray h:24 m:4 m:4@lg p:3 p:4@lg\`)`,
             errors: [{ messageId: 'invalidClassOrder' }],
-        },
+        }
     ],
 })

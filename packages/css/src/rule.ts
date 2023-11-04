@@ -12,6 +12,7 @@ export class Rule {
     readonly priority: number = -1
     readonly natives: NativeRule[] = []
     readonly order: number = 0
+    readonly layer: Layer | CoreLayer = 0
     readonly stateToken: string
     readonly declarations: CSSDeclarations
     readonly colored: boolean = false
@@ -26,6 +27,7 @@ export class Rule {
     ) {
         const { layer, unit, colored: configColored, resolvedPropName, analyze, transform, declare, create, order, id } = options
         this.order = order
+        this.layer = layer
         if (!options.unit) options.unit = ''
         if (!options.separators) options.separators = [',']
         const { scope, important, themeDriver } = css.config
