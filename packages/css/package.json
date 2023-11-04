@@ -40,7 +40,9 @@
         "build-tools",
         "mastercss"
     ],
-    "sideEffects": false,
+    "sideEffects": [
+        "./src/core.side-effect.ts"
+    ],
     "main": "./dist/index.bundle.js",
     "jsnext:main": "./dist/index.bundle.mjs",
     "esnext": "./dist/index.bundle.mjs",

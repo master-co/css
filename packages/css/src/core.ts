@@ -6,6 +6,7 @@ import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { CSSDeclarations } from './types/css-declarations'
 import { CoreLayer, Layer } from './layer'
 import { hexToRgb } from './utils/hex-to-rgb'
+import './core.side-effect'
 
 type VariableValue =
     { type: 'string', value: string }
@@ -37,16 +38,12 @@ export interface MasterCSS {
 }
 
 export class MasterCSS {
-
-    static root: MasterCSS
     static config: Config = defaultConfig
-    static instances: MasterCSS[] = []
     static refresh = (customConfig: Config) => {
-        for (const eachInstance of this.instances) {
+        for (const eachInstance of globalThis.masterCSSs) {
             eachInstance.refresh(customConfig)
         }
     }
-
     readonly rules: Rule[] = []
     readonly ruleBy: Record<string, Rule> = {}
     readonly countBy = {}
@@ -66,7 +63,7 @@ export class MasterCSS {
             this.config = this.getExtendedConfig(this.config)
         }
         this.resolve()
-        MasterCSS.instances.push(this)
+        globalThis.masterCSSs.push(this)
     }
 
     resolve() {
@@ -456,317 +453,310 @@ export class MasterCSS {
      * @returns this
      */
     observe(targetRoot: Document | ShadowRoot | null, options: MutationObserverInit = { subtree: true, childList: true }) {
-        if (typeof window !== 'undefined') {
-            if (!targetRoot) {
-                targetRoot = document
-            }
+        // prevent repeated observation of the same root element
+        if (this.root === targetRoot) {
+            return this
+        }
 
-            // prevent repeated observation of the same root element
-            if (this.root === targetRoot) {
-                return this
-            }
+        // @ts-ignore
+        this.root = targetRoot
+        const isDocumentRoot = targetRoot === document
 
-            // @ts-ignore
-            this.root = targetRoot
-            const isDocumentRoot = targetRoot === document
+        if (isDocumentRoot) {
+            globalThis.masterCSS = this
+        }
 
-            if (isDocumentRoot) {
-                // eslint-disable-next-line @typescript-eslint/no-this-alias
-                MasterCSS.root = this
-            }
+        // @ts-ignore
+        this.host = isDocumentRoot ? document.documentElement : (this.root as ShadowRoot).host
 
-            // @ts-ignore
-            this.host = isDocumentRoot ? document.documentElement : (this.root as ShadowRoot).host
-
-            const container = isDocumentRoot ? document.head : targetRoot
-            const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : targetRoot.styleSheets
-            // @ts-ignore
-            for (const sheet of styleSheets) {
-                const { ownerNode } = sheet
-                if (ownerNode && (ownerNode as HTMLStyleElement).id === 'master') {
-                    // @ts-ignore
-                    this.style = ownerNode
-                    break
-                }
-            }
-
-            if (this.style) {
-                for (let index = 0; index < this.style.sheet.cssRules.length; index++) {
-                    const cssRule = this.style.sheet.cssRules[index]
-                    if (
-                        cssRule instanceof CSSStyleRule && cssRule.style[0].startsWith('--') && !cssRule.selectorText.startsWith('.\\$') ||
-                        cssRule.constructor.name === 'CSSKeyframesRule'
-                    )
-                        continue
-
-                    const getRule = (cssRule: any): Rule => {
-                        if (cssRule.selectorText) {
-                            const selectorTexts = cssRule.selectorText.split(', ')
-                            const escapedClassNames = selectorTexts[0].split(' ')
-
-                            for (let i = 0; i < escapedClassNames.length; i++) {
-                                const eachSelectorText = escapedClassNames[i]
-                                if (eachSelectorText[0] === '.') {
-                                    const escapedClassName = eachSelectorText.slice(1)
-
-                                    let className = ''
-                                    for (let j = 0; j < escapedClassName.length; j++) {
-                                        const char = escapedClassName[j]
-                                        const nextChar = escapedClassName[j + 1]
-
-                                        if (char === '\\') {
-                                            j++
-
-                                            if (nextChar !== '\\') {
-                                                className += nextChar
-
-                                                continue
-                                            }
-                                        } else if (SELECTOR_SYMBOLS.includes(char)) {
-                                            break
-                                        }
-
-                                        className += char
-                                    }
-
-                                    if (
-                                        !(Object.prototype.hasOwnProperty.call(this.ruleBy, className))
-                                        && !(Object.prototype.hasOwnProperty.call(this.styles, className))
-                                    ) {
-                                        const currentRule = this.create(className)[0]
-                                        if (currentRule)
-                                            return currentRule
-                                    }
-                                }
-                            }
-                        } else if (cssRule.cssRules) {
-                            for (let index = 0; index < cssRule.cssRules.length; index++) {
-                                const currentRule = getRule(cssRule.cssRules[index])
-                                if (currentRule)
-                                    return currentRule
-                            }
-                        }
-                    }
-                    const rule = getRule(cssRule)
-                    if (rule) {
-                        this.rules.push(rule)
-                        this.ruleBy[rule.className] = rule
-
-                        for (let i = 0; i < rule.natives.length; i++) {
-                            rule.natives[i].cssRule = this.style.sheet.cssRules[index + i]
-                        }
-
-                        index += rule.natives.length - 1
-
-                        // variables
-                        this.handleRuleWithVariableNames(rule)
-
-                        // animations
-                        this.handleRuleWithAnimationNames(rule)
-
-                        rule.options.insert?.call(rule)
-                    }
-                }
-            } else {
+        const container = isDocumentRoot ? document.head : targetRoot
+        const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : targetRoot.styleSheets
+        // @ts-ignore
+        for (const sheet of styleSheets) {
+            const { ownerNode } = sheet
+            if (ownerNode && (ownerNode as HTMLStyleElement).id === 'master') {
                 // @ts-ignore
-                this.style = document.createElement('style')
-                this.style.id = 'master'
-                container.append(this.style)
+                this.style = ownerNode
+                break
             }
+        }
 
-            const handleClassList = (classList: DOMTokenList) => {
-                classList.forEach((className) => {
-                    if (Object.prototype.hasOwnProperty.call(this.countBy, className)) {
-                        this.countBy[className]++
-                    } else {
-                        this.countBy[className] = 1
+        if (this.style) {
+            for (let index = 0; index < this.style.sheet.cssRules.length; index++) {
+                const cssRule = this.style.sheet.cssRules[index]
+                if (
+                    cssRule instanceof CSSStyleRule && cssRule.style[0].startsWith('--') && !cssRule.selectorText.startsWith('.\\$') ||
+                    cssRule.constructor.name === 'CSSKeyframesRule'
+                )
+                    continue
 
-                        this.insert(className)
-                    }
-                })
-            }
+                const getRule = (cssRule: any): Rule => {
+                    if (cssRule.selectorText) {
+                        const selectorTexts = cssRule.selectorText.split(', ')
+                        const escapedClassNames = selectorTexts[0].split(' ')
 
-            handleClassList(this.host.classList)
+                        for (let i = 0; i < escapedClassNames.length; i++) {
+                            const eachSelectorText = escapedClassNames[i]
+                            if (eachSelectorText[0] === '.') {
+                                const escapedClassName = eachSelectorText.slice(1)
 
-            if (options.subtree) {
-                /**
-                 * 待所有 DOM 結構完成解析後，開始繪製 Rule 樣式
-                 */
-                this.host
-                    .querySelectorAll('[class]')
-                    .forEach((element) => handleClassList(element.classList))
-            }
+                                let className = ''
+                                for (let j = 0; j < escapedClassName.length; j++) {
+                                    const char = escapedClassName[j]
+                                    const nextChar = escapedClassName[j + 1]
 
-            this.observer = new MutationObserver((mutationRecords) => {
-                // console.time('css engine');
-                const correctionOfClassName = {}
-                const attributeMutationRecords: MutationRecord[] = []
-                const updatedElements: Element[] = []
-                const unchangedElements: Element[] = []
+                                    if (char === '\\') {
+                                        j++
 
-                /**
-                * 取得所有深層後代的 class names
-                */
-                const handleClassNameDeeply = (element: Element, remove: boolean) => {
-                    if (remove) {
-                        element.classList.forEach(removeClassName)
-                    } else {
-                        element.classList.forEach(addClassName)
-                    }
+                                        if (nextChar !== '\\') {
+                                            className += nextChar
 
-                    const children = element.children
-                    for (let i = 0; i < children.length; i++) {
-                        const eachChildren = children[i]
-                        if (eachChildren.classList) {
-                            updatedElements.push(eachChildren)
+                                            continue
+                                        }
+                                    } else if (SELECTOR_SYMBOLS.includes(char)) {
+                                        break
+                                    }
 
-                            handleClassNameDeeply(eachChildren, remove)
-                        }
-                    }
-                }
+                                    className += char
+                                }
 
-                const addClassName = (className: string) => {
-                    if (Object.prototype.hasOwnProperty.call(correctionOfClassName, className)) {
-                        correctionOfClassName[className]++
-                    } else {
-                        correctionOfClassName[className] = 1
-                    }
-                }
-
-                const removeClassName = (className: string) => {
-                    if (Object.prototype.hasOwnProperty.call(correctionOfClassName, className)) {
-                        correctionOfClassName[className]--
-                    } else if (Object.prototype.hasOwnProperty.call(this.countBy, className)) {
-                        correctionOfClassName[className] = -1
-                    }
-                }
-
-                const handleNodes = (nodes: HTMLCollection, remove: boolean) => {
-                    for (let i = 0; i < nodes.length; i++) {
-                        const eachNode = nodes[i]
-                        if (eachNode.classList && !updatedElements.includes(eachNode) && !unchangedElements.includes(eachNode)) {
-                            if (eachNode.isConnected !== remove) {
-                                updatedElements.push(eachNode)
-                                handleClassNameDeeply(eachNode, remove)
-                            } else {
-                                unchangedElements.push(eachNode)
-                            }
-                        }
-                    }
-                }
-
-                for (let i = 0; i < mutationRecords.length; i++) {
-                    const mutationRecord = mutationRecords[i]
-                    const { addedNodes, removedNodes, type, target } = mutationRecord
-                    if (type === 'attributes') {
-                        /**
-                         * 防止同樣的 MutationRecord 重複執行
-                         * According to this history,
-                         * MutationObserver was designed to work that way.
-                         * Any call to setAttribute triggers a mutation,
-                         * regardless of whether the value is being changed or set to the current value
-                         */
-                        if (
-                            attributeMutationRecords
-                                .find((eachAttributeMutationRecord) => eachAttributeMutationRecord.target === target)
-                        ) {
-                            continue
-                        } else {
-                            /**
-                             * 第一個匹配到的 oldValue 一定是該批變動前的原始狀態值
-                             */
-                            attributeMutationRecords.push(mutationRecord)
-                        }
-                    } else {
-                        // 先判斷節點新增或移除
-                        handleNodes(addedNodes as any, false)
-
-                        // 忽略處理新元素的已刪除子節點
-                        if (!target.isConnected || !updatedElements.includes(target as any)) {
-                            handleNodes(removedNodes as any, true)
-                        }
-                    }
-                }
-
-                if (!attributeMutationRecords.length && !Object.keys(correctionOfClassName).length) {
-                    // console.timeEnd('css engine');
-                    return
-                }
-
-                for (const { oldValue, target } of attributeMutationRecords) {
-                    /**
-                     * 如果被操作的元素中包含了屬性變更的目標，
-                     * 則將該目標從 existedAttributeMutationTargets 中移除，
-                     * 以防止執行接下來的屬性變更處理
-                     *
-                     * 該批 mutationRecords 中，某個 target 同時有 attribute 及 childList 的變更，
-                     * 則以 childList 節點插入及移除的 target.className 為主
-                     */
-                    const updated = updatedElements.includes(target as Element)
-                    const classNames = (target as Element).classList
-                    const oldClassNames = oldValue ? oldValue.split(' ') : []
-                    if (updated) {
-                        if (target.isConnected) {
-                            continue
-                        } else {
-                            for (const oldClassName of oldClassNames) {
-                                if (!classNames.contains(oldClassName)) {
-                                    removeClassName(oldClassName)
+                                if (
+                                    !(Object.prototype.hasOwnProperty.call(this.ruleBy, className))
+                                    && !(Object.prototype.hasOwnProperty.call(this.styles, className))
+                                ) {
+                                    const currentRule = this.create(className)[0]
+                                    if (currentRule)
+                                        return currentRule
                                 }
                             }
                         }
-                    } else if (target.isConnected) {
-                        classNames.forEach((className) => {
-                            if (!oldClassNames.includes(className)) {
-                                addClassName(className)
-                            }
-                        })
+                    } else if (cssRule.cssRules) {
+                        for (let index = 0; index < cssRule.cssRules.length; index++) {
+                            const currentRule = getRule(cssRule.cssRules[index])
+                            if (currentRule)
+                                return currentRule
+                        }
+                    }
+                }
+                const rule = getRule(cssRule)
+                if (rule) {
+                    this.rules.push(rule)
+                    this.ruleBy[rule.className] = rule
+
+                    for (let i = 0; i < rule.natives.length; i++) {
+                        rule.natives[i].cssRule = this.style.sheet.cssRules[index + i]
+                    }
+
+                    index += rule.natives.length - 1
+
+                    // variables
+                    this.handleRuleWithVariableNames(rule)
+
+                    // animations
+                    this.handleRuleWithAnimationNames(rule)
+
+                    rule.options.insert?.call(rule)
+                }
+            }
+        } else {
+            // @ts-ignore
+            this.style = document.createElement('style')
+            this.style.id = 'master'
+            container.append(this.style)
+        }
+
+        const handleClassList = (classList: DOMTokenList) => {
+            classList.forEach((className) => {
+                if (Object.prototype.hasOwnProperty.call(this.countBy, className)) {
+                    this.countBy[className]++
+                } else {
+                    this.countBy[className] = 1
+
+                    this.insert(className)
+                }
+            })
+        }
+
+        handleClassList(this.host.classList)
+
+        if (options.subtree) {
+            /**
+             * 待所有 DOM 結構完成解析後，開始繪製 Rule 樣式
+             */
+            this.host
+                .querySelectorAll('[class]')
+                .forEach((element) => handleClassList(element.classList))
+        }
+
+        this.observer = new MutationObserver((mutationRecords) => {
+            // console.time('css engine');
+            const correctionOfClassName = {}
+            const attributeMutationRecords: MutationRecord[] = []
+            const updatedElements: Element[] = []
+            const unchangedElements: Element[] = []
+
+            /**
+            * 取得所有深層後代的 class names
+            */
+            const handleClassNameDeeply = (element: Element, remove: boolean) => {
+                if (remove) {
+                    element.classList.forEach(removeClassName)
+                } else {
+                    element.classList.forEach(addClassName)
+                }
+
+                const children = element.children
+                for (let i = 0; i < children.length; i++) {
+                    const eachChildren = children[i]
+                    if (eachChildren.classList) {
+                        updatedElements.push(eachChildren)
+
+                        handleClassNameDeeply(eachChildren, remove)
+                    }
+                }
+            }
+
+            const addClassName = (className: string) => {
+                if (Object.prototype.hasOwnProperty.call(correctionOfClassName, className)) {
+                    correctionOfClassName[className]++
+                } else {
+                    correctionOfClassName[className] = 1
+                }
+            }
+
+            const removeClassName = (className: string) => {
+                if (Object.prototype.hasOwnProperty.call(correctionOfClassName, className)) {
+                    correctionOfClassName[className]--
+                } else if (Object.prototype.hasOwnProperty.call(this.countBy, className)) {
+                    correctionOfClassName[className] = -1
+                }
+            }
+
+            const handleNodes = (nodes: HTMLCollection, remove: boolean) => {
+                for (let i = 0; i < nodes.length; i++) {
+                    const eachNode = nodes[i]
+                    if (eachNode.classList && !updatedElements.includes(eachNode) && !unchangedElements.includes(eachNode)) {
+                        if (eachNode.isConnected !== remove) {
+                            updatedElements.push(eachNode)
+                            handleClassNameDeeply(eachNode, remove)
+                        } else {
+                            unchangedElements.push(eachNode)
+                        }
+                    }
+                }
+            }
+
+            for (let i = 0; i < mutationRecords.length; i++) {
+                const mutationRecord = mutationRecords[i]
+                const { addedNodes, removedNodes, type, target } = mutationRecord
+                if (type === 'attributes') {
+                    /**
+                     * 防止同樣的 MutationRecord 重複執行
+                     * According to this history,
+                     * MutationObserver was designed to work that way.
+                     * Any call to setAttribute triggers a mutation,
+                     * regardless of whether the value is being changed or set to the current value
+                     */
+                    if (
+                        attributeMutationRecords
+                            .find((eachAttributeMutationRecord) => eachAttributeMutationRecord.target === target)
+                    ) {
+                        continue
+                    } else {
+                        /**
+                         * 第一個匹配到的 oldValue 一定是該批變動前的原始狀態值
+                         */
+                        attributeMutationRecords.push(mutationRecord)
+                    }
+                } else {
+                    // 先判斷節點新增或移除
+                    handleNodes(addedNodes as any, false)
+
+                    // 忽略處理新元素的已刪除子節點
+                    if (!target.isConnected || !updatedElements.includes(target as any)) {
+                        handleNodes(removedNodes as any, true)
+                    }
+                }
+            }
+
+            if (!attributeMutationRecords.length && !Object.keys(correctionOfClassName).length) {
+                // console.timeEnd('css engine');
+                return
+            }
+
+            for (const { oldValue, target } of attributeMutationRecords) {
+                /**
+                 * 如果被操作的元素中包含了屬性變更的目標，
+                 * 則將該目標從 existedAttributeMutationTargets 中移除，
+                 * 以防止執行接下來的屬性變更處理
+                 *
+                 * 該批 mutationRecords 中，某個 target 同時有 attribute 及 childList 的變更，
+                 * 則以 childList 節點插入及移除的 target.className 為主
+                 */
+                const updated = updatedElements.includes(target as Element)
+                const classNames = (target as Element).classList
+                const oldClassNames = oldValue ? oldValue.split(' ') : []
+                if (updated) {
+                    if (target.isConnected) {
+                        continue
+                    } else {
                         for (const oldClassName of oldClassNames) {
                             if (!classNames.contains(oldClassName)) {
                                 removeClassName(oldClassName)
                             }
                         }
                     }
-                }
-
-                for (const className in correctionOfClassName) {
-                    const correction = correctionOfClassName[className]
-                    const count = (this.countBy[className] || 0) + correction
-                    if (count === 0) {
-                        // remove
-                        delete this.countBy[className]
-                        /**
-                         * class name 從 DOM tree 中被移除，
-                         * 匹配並刪除對應的 rule
-                         */
-                        this.delete(className)
-                    } else {
-                        if (!(Object.prototype.hasOwnProperty.call(this.countBy, className))) {
-                            // add
-                            /**
-                             * 新 class name 被 connected 至 DOM tree，
-                             * 匹配並創建對應的 Rule
-                             */
-                            this.insert(className)
+                } else if (target.isConnected) {
+                    classNames.forEach((className) => {
+                        if (!oldClassNames.includes(className)) {
+                            addClassName(className)
                         }
-
-                        this.countBy[className] = count
+                    })
+                    for (const oldClassName of oldClassNames) {
+                        if (!classNames.contains(oldClassName)) {
+                            removeClassName(oldClassName)
+                        }
                     }
                 }
+            }
 
-                // console.timeEnd('css engine');
-            })
-            this.observer.observe(targetRoot, {
-                ...options,
-                attributes: true,
-                attributeOldValue: true,
-                attributeFilter: ['class'],
-            });
+            for (const className in correctionOfClassName) {
+                const correction = correctionOfClassName[className]
+                const count = (this.countBy[className] || 0) + correction
+                if (count === 0) {
+                    // remove
+                    delete this.countBy[className]
+                    /**
+                     * class name 從 DOM tree 中被移除，
+                     * 匹配並刪除對應的 rule
+                     */
+                    this.delete(className)
+                } else {
+                    if (!(Object.prototype.hasOwnProperty.call(this.countBy, className))) {
+                        // add
+                        /**
+                         * 新 class name 被 connected 至 DOM tree，
+                         * 匹配並創建對應的 Rule
+                         */
+                        this.insert(className)
+                    }
 
-            (this.host as HTMLElement).style.display = null
-            // @ts-ignore
-            this.observing = true
-        }
+                    this.countBy[className] = count
+                }
+            }
+
+            // console.timeEnd('css engine');
+        })
+        this.observer.observe(targetRoot, {
+            ...options,
+            attributes: true,
+            attributeOldValue: true,
+            attributeFilter: ['class'],
+        });
+
+        (this.host as HTMLElement).style.display = null
+        // @ts-ignore
+        this.observing = true
         return this
     }
 
@@ -885,9 +875,8 @@ export class MasterCSS {
     }
 
     destroy() {
-        const instances = MasterCSS.instances
         this.disconnect()
-        instances.splice(instances.indexOf(this), 1)
+        globalThis.masterCSSs.splice(globalThis.masterCSSs.indexOf(this), 1)
     }
 
     /**
@@ -1522,12 +1511,19 @@ export class MasterCSS {
     }
 }
 
-if (typeof window !== 'undefined') {
-    window.MasterCSS = MasterCSS
-}
-
 declare global {
     interface Window {
         MasterCSS: typeof MasterCSS
+        masterCSSConfig: Config
+        masterCSSs: MasterCSS[]
+        masterCSS: MasterCSS
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace NodeJS {
+        interface Global {
+            MasterCSS: typeof MasterCSS;
+            masterCSSs: MasterCSS[]
+        }
     }
 }

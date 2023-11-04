@@ -1,6 +1,6 @@
 'use client'
 
-import { Config, MasterCSS, initRuntime } from '@master/css'
+import MasterCSS, { Config } from '@master/css'
 import { useEffect, useLayoutEffect, createContext, useContext, useState } from 'react'
 
 export const CSSContext = createContext<MasterCSS | undefined>(undefined)
@@ -18,17 +18,16 @@ export function CSSProvider({
     config?: Config | Promise<any>,
     root?: Document | ShadowRoot | null
 }) {
-    const [css, setCSS] = useState<MasterCSS | undefined>(MasterCSS.instances.find((eachCSS) => eachCSS.root === root));
-
+    const [css, setCSS] = useState<MasterCSS | undefined>(globalThis.masterCSSs.find((eachCSS) => eachCSS.root === root));
     (typeof window !== 'undefined' ? useLayoutEffect : useEffect)(() => {
         let newCSS: MasterCSS
         if (!css) {
             const init = (resolvedConfig?: Config) => {
-                const existingCSS = MasterCSS.instances.find((eachCSS) => eachCSS.root === root)
+                const existingCSS = globalThis.masterCSSs.find((eachCSS) => eachCSS.root === root)
                 if (existingCSS) {
                     setCSS(existingCSS)
                 } else {
-                    newCSS = initRuntime(resolvedConfig)
+                    newCSS = new MasterCSS(resolvedConfig).observe(root)
                     setCSS(newCSS)
                 }
             }
@@ -43,7 +42,6 @@ export function CSSProvider({
         } else if (!css.observing) {
             css.observe(root)
         }
-
         return () => {
             newCSS?.destroy()
         }
