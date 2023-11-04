@@ -132,10 +132,11 @@ function parseColorString(colorString: string, theme: string, css: MasterCSS = n
     let colorAlpha = 1
     let colorName = colorString
     const allCSSColorNames = []
-    for (const eachVariableName of css.variables) {
+    // todo: refactor css.variables
+    for (const eachVariableName in css.variables) {
         const eachVariable = css.variables[eachVariableName]
         if (eachVariable.type === 'color')
-            allCSSColorNames.push(eachVariable.name)
+            allCSSColorNames.push(eachVariableName)
     }
     if (colorString.split('/').length == 2) {
         colorAlpha = Number('0' + colorString.split('/')[1])

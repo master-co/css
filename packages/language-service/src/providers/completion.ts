@@ -297,14 +297,14 @@ function getColorsItem(css: MasterCSS = new MasterCSS()): CompletionItem[] {
     const masterStyleCompletionItem: CompletionItem[] = []
 
     // todo: refactor css.variables
-    for (const eachVariableName of css.variables) {
+    for (const eachVariableName in css.variables) {
         const eachVariable = css.variables[eachVariableName]
         if (eachVariable.type === 'color') {
             masterStyleCompletionItem.push({
-                label: eachVariable.name,
+                label: eachVariableName,
                 documentation: eachVariable.value,
                 kind: 16,
-                sortText: `${eachVariable.name}`
+                sortText: eachVariableName
             })
         }
     }
