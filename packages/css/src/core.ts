@@ -493,7 +493,10 @@ export class MasterCSS {
             if (this.style) {
                 for (let index = 0; index < this.style.sheet.cssRules.length; index++) {
                     const cssRule = this.style.sheet.cssRules[index]
-                    if (cssRule.constructor.name === 'CSSKeyframesRule')
+                    if (
+                        cssRule instanceof CSSStyleRule && cssRule.style[0].startsWith('--') && !cssRule.selectorText.startsWith('.\\$') ||
+                        cssRule.constructor.name === 'CSSKeyframesRule'
+                    )
                         continue
 
                     const getRule = (cssRule: any): Rule => {
