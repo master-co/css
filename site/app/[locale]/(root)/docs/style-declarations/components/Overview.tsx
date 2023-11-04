@@ -7,9 +7,7 @@ export default () => (
         <div className="scale(1.1):hover ~transform|.2s">
             <Image
                 src={mobileImage}
-                className="untouchable"
-                width="480"
-                height="319"
+                className="untouchable max:480x319"
                 priority={true}
                 alt="hello world"
             />
