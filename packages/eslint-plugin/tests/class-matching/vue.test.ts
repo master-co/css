@@ -10,39 +10,39 @@ const ruleTester = new RuleTester({
 })
 
 ruleTester.run('vue class order', rule, {
-    valid: [{ code: `<div class="bg:black fg:white f:24 m:8 p:8">Simple, basic</div>` }],
+    valid: [{ code: `<div class="bg:black f:24 fg:white m:8 p:8">Simple, basic</div>` }],
     invalid: [
         {
-            code: `<template><div class="m:8 bg:black p:8 fg:white f:24">Enhancing readability</div></template>`,
-            output: `<template><div class="bg:black fg:white f:24 m:8 p:8">Enhancing readability</div></template>`,
+            code: `<template><div class="m:8 bg:black p:8 f:24 fg:white">Enhancing readability</div></template>`,
+            output: `<template><div class="bg:black f:24 fg:white m:8 p:8">Enhancing readability</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             parser: require.resolve('vue-eslint-parser'),
         },
         {
-            code: `<template><div class="m:8 bg:black p:8 fg:white f:24">Classnames will be ordered</div></template>`,
-            output: `<template><div class="bg:black fg:white f:24 m:8 p:8">Classnames will be ordered</div></template>`,
+            code: `<template><div class="m:8 bg:black p:8 f:24 fg:white">Classnames will be ordered</div></template>`,
+            output: `<template><div class="bg:black f:24 fg:white m:8 p:8">Classnames will be ordered</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             parser: require.resolve('vue-eslint-parser'),
         },
         {
-            code: `<template><div :class="['m:8 bg:black p:8 fg:white f:24']">Enhancing readability 2</div></template>`,
-            output: `<template><div :class="['bg:black fg:white f:24 m:8 p:8']">Enhancing readability 2</div></template>`,
+            code: `<template><div :class="['m:8 bg:black p:8 f:24 fg:white']">Enhancing readability 2</div></template>`,
+            output: `<template><div :class="['bg:black f:24 fg:white m:8 p:8']">Enhancing readability 2</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             parser: require.resolve('vue-eslint-parser'),
         },
         {
-            code: `<template><div v-bind:class="{'m:8 bg:black p:8 fg:white f:24': true}">:)...</div></template>`,
-            output: `<template><div v-bind:class="{'bg:black fg:white f:24 m:8 p:8': true}">:)...</div></template>`,
+            code: `<template><div v-bind:class="{'m:8 bg:black p:8 f:24 fg:white': true}">:)...</div></template>`,
+            output: `<template><div v-bind:class="{'bg:black f:24 fg:white m:8 p:8': true}">:)...</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             parser: require.resolve('vue-eslint-parser'),
         },
         {
-            code: `<template><div :class="ctl(\`m:8 bg:black p:8 fg:white f:24 \${some}\`)" /></template>`,
-            output: `<template><div :class="ctl(\`bg:black fg:white f:24 m:8 p:8 \${some}\`)" /></template>`,
+            code: `<template><div :class="ctl(\`m:8 bg:black p:8 f:24 fg:white \${some}\`)" /></template>`,
+            output: `<template><div :class="ctl(\`bg:black f:24 fg:white m:8 p:8 \${some}\`)" /></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             parser: require.resolve('vue-eslint-parser'),

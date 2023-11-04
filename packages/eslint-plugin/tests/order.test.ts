@@ -136,7 +136,7 @@ new RuleTester({
     ],
     invalid: [
         {
-            code: `<div class="fg:white f:24 m:8 p:8 bg:black">Classnames will be ordered</div>`,
+            code: `<div class="f:24 fg:white m:8 p:8 bg:black">Classnames will be ordered</div>`,
             output: `<div class="bg:black f:24 fg:white m:8 p:8">Classnames will be ordered</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },

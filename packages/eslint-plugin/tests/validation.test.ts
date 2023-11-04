@@ -10,7 +10,7 @@ new RuleTester({
 }).run('invalid', rule, {
     valid: [
         {
-            code: `<div class="bg:black fg:white f:24 m:8 p:8">Simple, basic</div>`,
+            code: `<div class="bg:black f:24 fg:white m:8 p:8">Simple, basic</div>`,
         }
     ],
     invalid: [

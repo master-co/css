@@ -1,5 +1,6 @@
 import rule from '../../src/rules/class-order'
 import { RuleTester } from 'eslint'
+import parser from '@angular-eslint/template-parser'
 
 new RuleTester({
     parserOptions: {
@@ -16,23 +17,23 @@ new RuleTester({
                         m:8
                         bg:black
                         p:8
-                        fg:white
                         f:24
+                        fg:white
                     ">
                         :)
                     </div>`,
             output: `
                     <div class="
                         bg:black
-                        fg:white
                         f:24
+                        fg:white
                         m:8
                         p:8
                     ">
                         :)
                     </div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
-            parser: require.resolve('@angular-eslint/template-parser'),
+            parser,
         }
     ],
 })

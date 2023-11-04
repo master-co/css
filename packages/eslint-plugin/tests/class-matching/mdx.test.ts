@@ -11,15 +11,15 @@ const ruleTester = new RuleTester({
 })
 
 ruleTester.run('mdx class order', OrderRule, {
-    valid: [{ code: `<div class="bg:black fg:white f:24 m:8 p:8">Simple, basic</div>` }],
+    valid: [{ code: `<div class="bg:black f:24 fg:white m:8 p:8">Simple, basic</div>` }],
     invalid: [
         {
             code: `
             # Test
-            <div class="m:8 bg:black p:8 fg:white f:24">Simple</div>`,
+            <div class="m:8 bg:black p:8 f:24 fg:white">Simple</div>`,
             output: `
             # Test
-            <div class="bg:black fg:white f:24 m:8 p:8">Simple</div>`,
+            <div class="bg:black f:24 fg:white m:8 p:8">Simple</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.mdx',
             parser: require.resolve('eslint-mdx'),
