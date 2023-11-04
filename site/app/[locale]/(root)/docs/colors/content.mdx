@@ -28,7 +28,7 @@ Create an alias for a color to link its value to an existing color. This allows 
 ```js name=master.css.js
 export default {
     variables: {
-+        primary: 'blue-60'
++        primary: '$(blue-60)'
     }
 }
 ```
@@ -86,8 +86,8 @@ Create color variables for backgrounds in apps, panels, cards, and more.
 ```js name=master.css.js
 export default {
     variables: {
-+       neutral: 'white',
-+       fade: 'slate-5'
++       neutral: '$(white)',
++       fade: '$(slate-5)'
     }
 }
 ```
@@ -106,9 +106,9 @@ Create accessible color variables for titles, descriptions, icons, and other bod
 export default {
     variables: {
 +        text: {
-+            netural: 'slate-70',
-+            strong: 'slate-95',
-+            dim: 'slate-30'
++            netural: '$(slate-70)',
++            strong: '$(slate-95)',
++            dim: '$(slate-30)'
 +        }
     }
 }

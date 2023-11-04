@@ -11,7 +11,7 @@ import copy from 'copy-to-clipboard'
 export default () => <div className="grid-cols:6 grid-cols:13@sm my:40 gap:25|10">
     {Object.keys(variables)
         // @ts-ignore todo fix this
-        .filter((colorName) => variables[colorName].type === 'color' && !['black', 'white', 'current', 'transparent'].includes(colorName))
+        .filter((variableName) => ['slate', 'gray', 'brown', 'orange', 'gold', 'yellow', 'grass', 'green', 'beryl', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'crimson', 'red'].includes(variableName))
         .map((colorName: string) => {
             const eachColors = (variables as any)[colorName]
             return (
