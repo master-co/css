@@ -1,3 +1,5 @@
+import './core.side-effect'
+
 // core
 export { MasterCSS, MasterCSS as default } from './core'
 export { Rule, NativeRule, MediaFeatureComponent, MediaQuery } from './rule'

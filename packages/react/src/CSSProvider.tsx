@@ -18,7 +18,7 @@ export function CSSProvider({
     config?: Config | Promise<any>,
     root?: Document | ShadowRoot | null
 }) {
-    const [css, setCSS] = useState<MasterCSS | undefined>(globalThis.masterCSSs.find((eachCSS) => eachCSS.root === root));
+    const [css, setCSS] = useState<MasterCSS>();
     (typeof window !== 'undefined' ? useLayoutEffect : useEffect)(() => {
         let newCSS: MasterCSS
         if (!css) {

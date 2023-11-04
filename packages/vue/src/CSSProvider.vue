@@ -1,11 +1,11 @@
 <script setup lang="ts">
 
-import { MasterCSS, initRuntime, type Config } from '@master/css'
+import { MasterCSS, type Config } from '@master/css'
 import { onMounted, onBeforeUnmount, ref, provide } from 'vue'
 
 const props = defineProps<{
     config?: Config | Promise<Config> | Promise<any>
-    root?: Document | ShadowRoot
+    root?: Document | ShadowRoot | undefined | null
 }>()
 
 const css = ref()
@@ -15,11 +15,11 @@ onMounted(() => {
     if (typeof window === 'undefined') { return }
     if (!css.value) {
         const init = (resolvedConfig: Config | undefined) => {
-            const existingCSS = MasterCSS.instances.find((eachCSS: any) => eachCSS.root === props.root)
+            const existingCSS = (globalThis as any).masterCSSs.find((eachCSS: MasterCSS) => eachCSS.root === props.root)
             if (existingCSS) {
                 css.value = existingCSS
             } else {
-                newCSS.value = initRuntime(resolvedConfig)
+                newCSS.value = new MasterCSS(resolvedConfig).observe(props.root)
                 css.value = newCSS.value
             }
         }

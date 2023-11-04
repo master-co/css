@@ -1,25 +1,23 @@
 <script lang="ts">
-    import { MasterCSS, initRuntime, type Config } from "@master/css";
+    import { MasterCSS, type Config } from "@master/css";
     import { onMount, setContext } from "svelte";
     import { writable } from "svelte/store";
     import { cssSymbol } from "./css";
     export let config: Config | Promise<Config> | Promise<any>;
     export let root: Document | ShadowRoot | null =
         typeof document !== "undefined" ? document : null;
-    const css = writable<MasterCSS>(
-        MasterCSS.instances.find((eachCSS) => eachCSS.root === root)
-    );
+    const css = writable<MasterCSS>();
     onMount(() => {
         let newCSS: MasterCSS;
         if (!$css) {
             const init = (resolvedConfig?: Config) => {
-                const existingCSS = MasterCSS.instances.find(
-                    (eachCSS) => eachCSS.root === root
+                const existingCSS = (globalThis as any).masterCSSs.find(
+                    (eachCSS: MasterCSS) => eachCSS.root === root
                 );
                 if (existingCSS) {
                     css.set(existingCSS);
                 } else {
-                    newCSS = initRuntime(resolvedConfig);
+                    newCSS = new MasterCSS(resolvedConfig).observe(root);
                     css.set(newCSS);
                 }
             };

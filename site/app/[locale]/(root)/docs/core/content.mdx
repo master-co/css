@@ -43,27 +43,11 @@ Changes to the observed object's class name usually include all its descendant e
 css.observe(document)
 ```
 
-### `MasterCSS.root`
-Record the registered root `document` Master CSS instance, the field will be recorded only after executing `js css.observe()`.
-<DocProp defaultValue="undefined" types={['MasterCSS']} />
-```ts
-const rootCSS = MasterCSS.root
-```
-
-
 ### `MasterCSS.config`
 The default Master CSS [configuration](/docs/configuration).
 <DocProp defaultValue="{ … }" types={['Config']} />
 ```ts
 MasterCSS.config
-```
-
-
-### `MasterCSS.instances`
-All objects instantiated via `new MasterCSS()` will be recorded here.
-<DocProp defaultValue="[]" types={['MasterCSS[]']} />
-```ts
-MasterCSS.instances
 ```
 
 ### `MasterCSS.refresh()`
@@ -77,6 +61,14 @@ Refreshes all registered instances of Master CSS.
 ```ts
 MasterCSS.refresh()
 ```
+
+### `globalThis.masterCSS`
+Record the registered root `document` Master CSS instance; the field will be recorded only after executing `js css.observe()`.
+<DocProp defaultValue="undefined" types={['MasterCSS']} />
+
+### `globalThis.masterCSSs`
+All objects instantiated via `new MasterCSS()` will be recorded here.
+<DocProp defaultValue="[]" types={['MasterCSS[]']} />
 
 ---
 

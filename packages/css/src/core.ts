@@ -6,7 +6,6 @@ import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { CSSDeclarations } from './types/css-declarations'
 import { CoreLayer, Layer } from './layer'
 import { hexToRgb } from './utils/hex-to-rgb'
-import './core.side-effect'
 
 type VariableValue =
     { type: 'string', value: string }
@@ -452,7 +451,7 @@ export class MasterCSS {
      * @param options mutation observer options
      * @returns this
      */
-    observe(targetRoot: Document | ShadowRoot | null, options: MutationObserverInit = { subtree: true, childList: true }) {
+    observe(targetRoot: Document | ShadowRoot | null | undefined, options: MutationObserverInit = { subtree: true, childList: true }) {
         // prevent repeated observation of the same root element
         if (this.root === targetRoot) {
             return this
