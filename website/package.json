@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "build": "next build && npx mcss render \".next/**/*.html\"",
+        "build": "cd ../ && pnpm build && next build && npx mcss render \".next/**/*.html\"",
         "start": "next start",
         "lint": "next lint",
         "type-check": "tsc --noEmit"
