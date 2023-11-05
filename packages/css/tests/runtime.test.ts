@@ -27,9 +27,10 @@ it('css count class add', async () => {
         document.body.append(p1)
         p1.classList.add('italic')
     })
-
-    const countBy = await page.evaluate(() => window.MasterCSS.root.countBy)
-    expect(countBy).toEqual({
+    const classesUsage = await page.evaluate(function () {
+        return window.masterCSS.classesUsage
+    })
+    expect(classesUsage).toEqual({
         'block': 1,
         'font:bold': 1,
         'italic': 1
@@ -38,11 +39,13 @@ it('css count class add', async () => {
 
 it('css count class complicated example', async () => {
     await page.evaluate((complexHTML) => document.body.innerHTML = complexHTML, complexHTML)
-    let countBy = await page.evaluate(() => window.MasterCSS.root.countBy)
-    expect(Object.keys(countBy).length).toBeTruthy()
+    let classesUsage = await page.evaluate(function () {
+        return window.masterCSS.classesUsage
+    })
+    expect(Object.keys(classesUsage).length).toBeTruthy()
     await page.evaluate(() => document.body.innerHTML = '')
-    countBy = await page.evaluate(() => window.MasterCSS.root.countBy)
-    expect(countBy).toEqual({})
+    classesUsage = await page.evaluate(() => window.masterCSS.classesUsage)
+    expect(classesUsage).toEqual({})
 }, 30000)
 
 afterAll(async () => {

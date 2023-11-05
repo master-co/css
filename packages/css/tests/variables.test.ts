@@ -47,7 +47,7 @@ beforeAll(async () => {
 }, 60000)
 
 it('make sure not to extend variables deeply', async () => {
-    const first = await page.evaluate(() => window.MasterCSS.root.config.variables?.first)
+    const first = await page.evaluate(() => window.masterCSS.config.variables?.first)
     expect(first).toEqual(variables.first)
 }, 60000)
 
@@ -59,7 +59,7 @@ it('expects the variable output', async () => {
         document.body.append(p)
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         await new Promise(resolve => setTimeout(resolve, 0))
-        return window.MasterCSS.root.text
+        return window.masterCSS.text
     })
     expect(cssText).toContain(':root{--first:17 17 17}.dark{--first:34 34 34}.light{--first:51 51 51}.bg\\:first{background-color:rgb(var(--first))}')
 }, 60000)
@@ -78,7 +78,7 @@ it('expects the variable output', async () => {
         )
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         await new Promise(resolve => setTimeout(resolve, 0))
-        return window.MasterCSS.root.text
+        return window.masterCSS.text
     }, p)
     expect(cssText).toContain('.dark{--second:68 68 68}.light{--second:85 85 85}:root{--third:102 102 102}.light{--third:119 119 119}')
     expect(cssText).toContain('.bg\\:second{background-color:rgb(var(--second))}')
@@ -93,7 +93,7 @@ it('expects the variable output', async () => {
         cssText = await page.evaluate(async (p, className) => {
             p.classList.remove(className)
             await new Promise(resolve => setTimeout(resolve, 0))
-            return window.MasterCSS.root.text
+            return window.masterCSS.text
         }, p, className)
     }
     await removeClass('bg:second')

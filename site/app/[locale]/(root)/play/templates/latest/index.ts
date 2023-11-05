@@ -34,9 +34,9 @@ export default {
                     switch (name) {
                         case 'master.css.js':
                             const MasterCSS = window.MasterCSS;
-                            if (MasterCSS.root) {
+                            if (masterCSS) {
                                 eval(content.replace(/(export default|export const config =)/, 'config ='));
-                                MasterCSS.root.refresh(config);
+                                masterCSS.refresh(config);
                             };
                     }
                 })

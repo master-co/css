@@ -12,26 +12,28 @@ let page: Page
 beforeAll(async () => {
     browser = await puppeteer.launch({ headless: 'new', channel: 'chrome' })
     page = await browser.newPage()
-    await page.evaluate(() => window['masterCSSConfig'] = { animations: { fade: {} } })
+    await page.evaluate(function () {
+        window['masterCSSConfig'] = { animations: { fade: {} } }
+    })
     await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
     await page.waitForNetworkIdle()
 }, 60000)
 
 it('make sure not to extend animations deeply', async () => {
-    const fade = await page.evaluate(() => window.MasterCSS.root.config.animations?.fade)
+    const fade = await page.evaluate(() => window.masterCSS.config.animations?.fade)
     expect(fade).toEqual({})
 }, 60000)
 
 it('expects the animation output', async () => {
     const cssText = await page.evaluate(async () => {
-        window.MasterCSS.root.refresh({})
+        window.masterCSS.refresh({})
         const p = document.createElement('p')
         p.id = 'mp'
         p.classList.add('@fade|1s')
         document.body.append(p)
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         await new Promise(resolve => setTimeout(resolve, 0))
-        return window.MasterCSS.root.text
+        return window.masterCSS.text
     })
     expect(cssText).toContain('.\\@fade\\|1s{animation:fade 1s}')
 }, 60000)
@@ -55,7 +57,7 @@ it('expects the keyframe output', async () => {
         )
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         await new Promise(resolve => setTimeout(resolve, 0))
-        return window.MasterCSS.root.text
+        return window.masterCSS.text
     }, p)
     expect(cssText).toContain('@keyframes fade{0%{opacity:0}to{opacity:1}}')
     expect(cssText).toContain('@keyframes flash{0%,50%,to{opacity:1}25%,75%{opacity:0}}')
@@ -72,7 +74,7 @@ it('expects the keyframe output', async () => {
         cssText = await page.evaluate(async (p, className) => {
             p.classList.remove(className)
             await new Promise(resolve => setTimeout(resolve, 0))
-            return window.MasterCSS.root.text
+            return window.masterCSS.text
         }, p, className)
     }
     await removeClass('@fade|1s')

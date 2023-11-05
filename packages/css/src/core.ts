@@ -45,7 +45,7 @@ export class MasterCSS {
     }
     readonly rules: Rule[] = []
     readonly ruleBy: Record<string, Rule> = {}
-    readonly countBy = {}
+    readonly classesUsage = {}
     readonly observing = false
     readonly config: Config
     private readonly semanticRuleOptions: RuleOptions[] = []
@@ -566,10 +566,10 @@ export class MasterCSS {
 
         const handleClassList = (classList: DOMTokenList) => {
             classList.forEach((className) => {
-                if (Object.prototype.hasOwnProperty.call(this.countBy, className)) {
-                    this.countBy[className]++
+                if (Object.prototype.hasOwnProperty.call(this.classesUsage, className)) {
+                    this.classesUsage[className]++
                 } else {
-                    this.countBy[className] = 1
+                    this.classesUsage[className] = 1
 
                     this.insert(className)
                 }
@@ -626,7 +626,7 @@ export class MasterCSS {
             const removeClassName = (className: string) => {
                 if (Object.prototype.hasOwnProperty.call(correctionOfClassName, className)) {
                     correctionOfClassName[className]--
-                } else if (Object.prototype.hasOwnProperty.call(this.countBy, className)) {
+                } else if (Object.prototype.hasOwnProperty.call(this.classesUsage, className)) {
                     correctionOfClassName[className] = -1
                 }
             }
@@ -721,17 +721,17 @@ export class MasterCSS {
 
             for (const className in correctionOfClassName) {
                 const correction = correctionOfClassName[className]
-                const count = (this.countBy[className] || 0) + correction
+                const count = (this.classesUsage[className] || 0) + correction
                 if (count === 0) {
                     // remove
-                    delete this.countBy[className]
+                    delete this.classesUsage[className]
                     /**
                      * class name 從 DOM tree 中被移除，
                      * 匹配並刪除對應的 rule
                      */
                     this.delete(className)
                 } else {
-                    if (!(Object.prototype.hasOwnProperty.call(this.countBy, className))) {
+                    if (!(Object.prototype.hasOwnProperty.call(this.classesUsage, className))) {
                         // add
                         /**
                          * 新 class name 被 connected 至 DOM tree，
@@ -740,7 +740,7 @@ export class MasterCSS {
                         this.insert(className)
                     }
 
-                    this.countBy[className] = count
+                    this.classesUsage[className] = count
                 }
             }
 
@@ -769,7 +769,7 @@ export class MasterCSS {
         // @ts-ignore
         this.ruleBy = {}
         // @ts-ignore
-        this.countBy = {}
+        this.classesUsage = {}
         this.rules.length = 0
         const sheet = this.style?.sheet
         if (sheet?.cssRules) {
@@ -868,7 +868,7 @@ export class MasterCSS {
          * 拿當前所有的 classNames 按照最新的 colors, config.rules 匹配並生成新的 style
          * 所以 refresh 過後 rules 可能會變多也可能會變少
          */
-        for (const name in this.countBy) {
+        for (const name in this.classesUsage) {
             this.insert(name)
         }
     }
@@ -891,7 +891,7 @@ export class MasterCSS {
             const rule = this.ruleBy[name]
             if (
                 !rule
-                || Object.prototype.hasOwnProperty.call(this.stylesBy, name) && this.stylesBy[name].some(eachClassName => Object.prototype.hasOwnProperty.call(this.countBy, eachClassName))
+                || Object.prototype.hasOwnProperty.call(this.stylesBy, name) && this.stylesBy[name].some(eachClassName => Object.prototype.hasOwnProperty.call(this.classesUsage, eachClassName))
             )
                 return
 
@@ -958,7 +958,7 @@ export class MasterCSS {
 
         if (Object.prototype.hasOwnProperty.call(this.styles, className)) {
             for (const eachClassName of this.styles[className]) {
-                if (!Object.prototype.hasOwnProperty.call(this.countBy, eachClassName)) {
+                if (!Object.prototype.hasOwnProperty.call(this.classesUsage, eachClassName)) {
                     deleteRule(eachClassName)
                 }
             }
@@ -1527,3 +1527,8 @@ declare global {
         }
     }
 }
+
+(() => {
+    globalThis.MasterCSS = MasterCSS
+    if (!globalThis.masterCSSs) globalThis.masterCSSs = []
+})()
