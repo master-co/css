@@ -1118,25 +1118,25 @@ const rules = {
     // border
     borderTop: {
         match: /^bt:./,
-        layer: CoreLayer.Native,
+        layer: CoreLayer.NativeShorthand,
         unit: 'rem',
         colored: true
     } as RuleOptions,
     borderBottom: {
         match: /^bb:./,
-        layer: CoreLayer.Native,
+        layer: CoreLayer.NativeShorthand,
         unit: 'rem',
         colored: true
     } as RuleOptions,
     borderLeft: {
         match: /^bl:./,
-        layer: CoreLayer.Native,
+        layer: CoreLayer.NativeShorthand,
         unit: 'rem',
         colored: true
     } as RuleOptions,
     borderRight: {
         match: /^br:./,
-        layer: CoreLayer.Native,
+        layer: CoreLayer.NativeShorthand,
         unit: 'rem',
         colored: true
     } as RuleOptions,
