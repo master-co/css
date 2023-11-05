@@ -18,8 +18,14 @@
         "monaco-editor-textmate": "^4.0.0",
         "monaco-textmate": "^3.0.1",
         "@master/css": "workspace:^",
+        "@master/normal.css": "workspace:^",
         "@master/css.react": "workspace:^",
+        "@master/eslint-plugin-css": "workspace:^",
+        "@master/css-language-service": "workspace:^",
+        "@master/css-extractor": "workspace:^",
+        "@master/css-renderer": "workspace:^",
+        "@master/eslint-config-css": "workspace:^",
         "theme-service": "workspace:^",
-        "shared": "workspace:../../../shared"
+        "websites-shared": "workspace:../../../shared"
     }
 }

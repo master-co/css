@@ -1,9 +1,9 @@
-import Demo from 'shared/components/Demo'
-import DemoPanel from 'shared/components/DemoPanel'
+import Demo from 'websites-shared/components/Demo'
+import DemoPanel from 'websites-shared/components/DemoPanel'
 import Image from 'next/image'
 import { l } from 'to-line'
 import { IconUfo } from '@tabler/icons-react'
-import Code from 'shared/components/Code'
+import Code from 'websites-shared/components/Code'
 
 export default ({ className }: any) => {
     return (

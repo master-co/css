@@ -1,4 +1,4 @@
-import { Metadata } from 'shared/types/Metadata'
+import { Metadata } from 'websites-shared/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Grid Auto Columns',

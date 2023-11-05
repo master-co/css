@@ -1,4 +1,4 @@
-import ThemeButton from 'shared/components/ThemeButton'
+import ThemeButton from 'websites-shared/components/ThemeButton'
 
 We provide a complete solution and package and guide you to integrate the theme service in React in a standard way.
 
@@ -64,7 +64,7 @@ export default function ThemeSwitchingButton({ className }: any) {
         <button className="rel">
             <div className="block@dark hide">☀️</div>
             <div className="block@light hide">🌜</div>
-            <select 
+            <select
                 className="abs full opacity:0 cursor:pointer"
                 value={themeService?.value}
                 onChange={(event) => themeService.switch(event.target.value)}>

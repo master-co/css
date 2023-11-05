@@ -1,7 +1,7 @@
-import Tabs, { Tab, TabBadge } from 'shared/components/Tabs'
-import { queryDictionary } from 'shared/dictionaries';
+import Tabs, { Tab, TabBadge } from 'websites-shared/components/Tabs'
+import { queryDictionary } from 'websites-shared/dictionaries';
 import DocLayout from '~/layouts/doc'
-import SvelteSvg from 'shared/images/frameworks/svelte.svg'
+import SvelteSvg from 'websites-shared/images/frameworks/svelte.svg'
 
 export const metadata = {
     title: 'Set up Master CSS in Svelte',

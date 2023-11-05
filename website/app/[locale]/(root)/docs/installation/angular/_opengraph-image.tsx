@@ -1,7 +1,7 @@
-import { Props } from 'shared/types/Props'
+import { Props } from 'websites-shared/types/Props'
 import create from '~/og-image'
 import metadata from './metadata'
-import Icon from 'shared/images/frameworks/angular.svg'
+import Icon from 'websites-shared/images/frameworks/angular.svg'
 
 export const alt = metadata.title
 export const contentType = 'image/jpg'

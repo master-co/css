@@ -1,10 +1,10 @@
-import { Metadata } from 'shared/types/Metadata'
+import { Metadata } from 'websites-shared/types/Metadata'
 import path from 'upath'
 // @ts-ignore
 import metadataForList from './docs/*/metadata.ts'
-import docsInstallationMetadata from './docs/installation/(tabs)/metadata.ts'
 // @ts-ignore
 import allMetadata from './docs/*/**/metadata.ts'
+import docsInstallationMetadata from './docs/installation/(tabs)/metadata'
 
 metadataForList.push({
     ...docsInstallationMetadata,

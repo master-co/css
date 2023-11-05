@@ -11,9 +11,27 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../packages/css
+      '@master/css-extractor':
+        specifier: workspace:^
+        version: link:../packages/extractor
+      '@master/css-language-service':
+        specifier: workspace:^
+        version: link:../packages/language-service
+      '@master/css-renderer':
+        specifier: workspace:^
+        version: link:../packages/renderer
       '@master/css.react':
         specifier: workspace:^
         version: link:../packages/react
+      '@master/eslint-config-css':
+        specifier: workspace:^
+        version: link:../packages/eslint-config
+      '@master/eslint-plugin-css':
+        specifier: workspace:^
+        version: link:../packages/eslint-plugin
+      '@master/normal.css':
+        specifier: workspace:^
+        version: link:../packages/normal.css
       '@monaco-editor/react':
         specifier: ^4.6.0
         version: 4.6.0(monaco-editor@0.44.0)(react-dom@18.2.0)(react@18.2.0)
@@ -35,12 +53,12 @@ importers:
       monaco-textmate:
         specifier: ^3.0.1
         version: 3.0.1(onigasm@2.2.5)
-      shared:
-        specifier: workspace:../../../shared
-        version: link:../../../shared
       theme-service:
         specifier: workspace:^
         version: link:../packages/theme-service
+      websites-shared:
+        specifier: workspace:../../../shared
+        version: link:../../../shared
 
   ../../../shared:
     dependencies:
@@ -296,7 +314,7 @@ importers:
         version: 1.26.2
       '@types/react':
         specifier: ^18.0.18
-        version: 18.2.34
+        version: 18.2.35
       '@types/react-dom':
         specifier: ^18.0.3
         version: 18.2.14
@@ -533,7 +551,7 @@ importers:
         version: link:../css
       '@types/react':
         specifier: '>=15'
-        version: 18.2.34
+        version: 18.2.35
       class-variant:
         specifier: workspace:^
         version: link:../class-variant
@@ -3015,7 +3033,7 @@ packages:
       react: '>=16'
     dependencies:
       '@types/mdx': 2.0.9
-      '@types/react': 18.2.34
+      '@types/react': 18.2.35
       react: 18.2.0
     dev: false
 
@@ -3878,23 +3896,23 @@ packages:
   /@types/react-dom@18.2.14:
     resolution: {integrity: sha512-V835xgdSVmyQmI1KLV2BEIUgqEuinxp9O4G6g3FqO/SqLac049E53aysv0oEFD2kHfejeKU+ZqL2bcFWj9gLAQ==}
     dependencies:
-      '@types/react': 18.2.34
+      '@types/react': 18.2.35
     dev: true
 
   /@types/react-portal@4.0.5:
     resolution: {integrity: sha512-BgctZbzSwN7R2aZ1Ovv7x3A6pQZlTmkbdmuGa4sOXiF6V4+fwm5jGnHpONSKNmf2XyzjCIUzF0s7DNYiqjx7Dw==}
     dependencies:
-      '@types/react': 18.2.34
+      '@types/react': 18.2.35
     dev: true
 
   /@types/react-sticky-el@1.0.5:
     resolution: {integrity: sha512-aaR8feNGPZqC+GDB0ieW9xmvP6qRqNc0RsyqtYgrWObaGGVjdo/x2Ft8rJQaHzh8RbKynCd5FK3gJGuElR/iww==}
     dependencies:
-      '@types/react': 18.2.34
+      '@types/react': 18.2.35
     dev: true
 
-  /@types/react@18.2.34:
-    resolution: {integrity: sha512-U6eW/alrRk37FU/MS2RYMjx0Va2JGIVXELTODaTIYgvWGCV4Y4TfTUzG8DdmpDNIT0Xpj/R7GfyHOJJrDttcvg==}
+  /@types/react@18.2.35:
+    resolution: {integrity: sha512-LG3xpFZ++rTndV+/XFyX5vUP7NI9yxyk+MQvBDq+CVs8I9DLSc3Ymwb1Vmw5YDoeNeHN4PDZa3HylMKJYT9PNQ==}
     dependencies:
       '@types/prop-types': 15.7.9
       '@types/scheduler': 0.16.5

@@ -1,10 +1,10 @@
 import { getPreInitScript } from 'theme-service'
-import { Locale } from 'shared/i18n.config'
+import { Locale } from 'websites-shared/i18n.config'
 import { l } from 'to-line'
-import { RedirectsProvider } from 'shared/contexts/redirects'
+import { RedirectsProvider } from 'websites-shared/contexts/redirects'
 import redirects from '~/redirects.mjs'
 import { Analytics } from '@vercel/analytics/react'
-import config from 'shared/master.css'
+import config from '../../master.css'
 // production
 import CSSProvider from '@master/css.react/CSSProvider'
 import ThemeServiceProvider from '@master/css.react/ThemeServiceProvider'

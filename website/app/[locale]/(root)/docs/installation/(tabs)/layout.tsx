@@ -1,5 +1,5 @@
-import Tabs, { Tab } from 'shared/components/Tabs'
-import { queryDictionary } from 'shared/dictionaries';
+import Tabs, { Tab } from 'websites-shared/components/Tabs'
+import { queryDictionary } from 'websites-shared/dictionaries';
 import DocLayout from '~/layouts/doc'
 import metadata from './metadata';
 

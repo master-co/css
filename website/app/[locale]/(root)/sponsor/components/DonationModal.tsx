@@ -1,6 +1,6 @@
 'use client'
 
-import Modal from 'shared/components/Modal';
+import Modal from 'websites-shared/components/Modal';
 import { l } from 'to-line';
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation';
@@ -41,8 +41,8 @@ export default function DonationModal() {
                                     method: 'POST',
                                     headers: { "Content-Type": "application/json" },
                                     body: JSON.stringify({
-                                        query: `{ 
-                                            order(order: { id: \"${orderId}\" }) { 
+                                        query: `{
+                                            order(order: { id: \"${orderId}\" }) {
                                                 id
                                                 status
                                                 amount {
@@ -57,7 +57,7 @@ export default function DonationModal() {
                                                     name
                                                     interval
                                                 }
-                                            } 
+                                            }
                                         }`
                                     })
                                 }

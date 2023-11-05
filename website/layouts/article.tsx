@@ -1,11 +1,11 @@
-import { GridsBg } from 'shared/components/GridsBg';
-import Article from 'shared/components/Article';
+import { GridsBg } from 'websites-shared/components/GridsBg';
+import Article from 'websites-shared/components/Article';
 import DocHeader from '~/layouts/DocHeader';
 import DocFooter from '~/layouts/DocFooter';
-import ListAuthors from 'shared/components/ListAuthors';
-import { queryDictionary } from 'shared/dictionaries';
+import ListAuthors from 'websites-shared/components/ListAuthors';
+import { queryDictionary } from 'websites-shared/dictionaries';
 import dayjs from 'dayjs';
-import TimeAgo from 'shared/components/TimeAgo';
+import TimeAgo from 'websites-shared/components/TimeAgo';
 
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)

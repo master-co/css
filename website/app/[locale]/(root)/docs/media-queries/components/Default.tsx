@@ -1,5 +1,5 @@
 import { mediaQueries } from '@master/css'
-import InlineCode from 'shared/components/InlineCode'
+import InlineCode from 'websites-shared/components/InlineCode'
 
 export default () => <table>
     <thead>

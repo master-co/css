@@ -1,12 +1,12 @@
 'use client'
 
-import Demo from 'shared/components/Demo'
-import DemoPanel from 'shared/components/DemoPanel'
+import Demo from 'websites-shared/components/Demo'
+import DemoPanel from 'websites-shared/components/DemoPanel'
 import Image from 'next/image'
 import { l } from 'to-line'
 import { IconCar } from '@tabler/icons-react'
-import Code from 'shared/components/Code'
-import CodeTabs from 'shared/components/CodeTabs'
+import Code from 'websites-shared/components/Code'
+import CodeTabs from 'websites-shared/components/CodeTabs'
 import dedent from 'ts-dedent'
 import { useEffect, useState } from 'react'
 

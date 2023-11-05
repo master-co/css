@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import Demo from 'shared/components/Demo';
-import DemoPanel from 'shared/components/DemoPanel';
+import Demo from 'websites-shared/components/Demo';
+import DemoPanel from 'websites-shared/components/DemoPanel';
 import { l } from 'to-line';
 
 export default ({ className }: any) =>

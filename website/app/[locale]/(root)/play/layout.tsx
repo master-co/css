@@ -1,4 +1,4 @@
-import { Locale } from 'shared/i18n.config'
+import { Locale } from 'websites-shared/i18n.config'
 
 export default async function Layout({
     children

@@ -1,11 +1,11 @@
 import Play, { PlayShare } from '../Play'
-import app from 'shared/firebase-admin-app'
+import app from 'websites-shared/firebase-admin-app'
 import { initializeFirestore } from 'firebase-admin/firestore'
-const store = initializeFirestore(app)
 import { notFound } from "next/navigation"
-import { collectDictionary } from 'shared/dictionaries'
+import { collectDictionary } from 'websites-shared/dictionaries'
 
 export default async function Page(props: any) {
+    const store = initializeFirestore(app)
     const shareId = props.params.shareId
     const locale = props.params.locale
     if (!shareId) {

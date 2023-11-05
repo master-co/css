@@ -1,6 +1,6 @@
 import extend from '@techor/extend';
 import type { Metadata } from 'next';
-import authors from 'shared/data/authors'
+import authors from 'websites-shared/data/authors'
 
 export default function defineMetadata(metadata: Metadata | Record<string, any>) {
     if (metadata.authors) {

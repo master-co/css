@@ -1,11 +1,11 @@
 import { Dispatch } from 'react';
 import Image from 'next/image'
-import Modal from 'shared/components/Modal';
-import { cls } from 'shared/utils/cls';
-import Link from 'shared/components/Link';
+import Modal from 'websites-shared/components/Modal';
+import { cls } from 'websites-shared/utils/cls';
+import Link from 'websites-shared/components/Link';
 
 const LIST_NAV_CLASS = cls`
-    text-decoration:none! flex align-items:center px:20 min-h:48 gap:12 font:medium 
+    text-decoration:none! flex align-items:center px:20 min-h:48 gap:12 font:medium
     bg:slate-90:hover@light bg:gray-26:hover@dark
 `
 

@@ -1,4 +1,4 @@
-import i18n, { hreflangOfLocale } from 'shared/i18n.config.mjs'
+import i18n, { hreflangOfLocale } from 'websites-shared/i18n.config.mjs'
 import pages from '../[locale]/(root)/pages'
 
 export function GET(request: Request) {

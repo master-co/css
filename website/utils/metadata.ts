@@ -1,9 +1,9 @@
 import extend from '@techor/extend';
 import type { Metadata, ResolvingMetadata } from 'next';
-import type { Locale } from 'shared/i18n.config';
-import type { Props } from 'shared/types/Props';
-import allAuthors from 'shared/data/authors'
-import { queryDictionary } from 'shared/dictionaries';
+import type { Locale } from 'websites-shared/i18n.config';
+import type { Props } from 'websites-shared/types/Props';
+import allAuthors from 'websites-shared/data/authors'
+import { queryDictionary } from 'websites-shared/dictionaries';
 
 export async function generate(
     metadata: Metadata | Record<string, any>,

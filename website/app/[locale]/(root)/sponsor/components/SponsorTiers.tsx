@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { getSponsorTiers } from 'shared/utils/get-sponsor-tiers'
+import { getSponsorTiers } from 'websites-shared/utils/get-sponsor-tiers'
 import TierModal from './TierModal'
 
 export default function SponsorTiers() {

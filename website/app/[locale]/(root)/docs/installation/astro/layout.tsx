@@ -1,7 +1,7 @@
-import Tabs, { Tab, TabBadge } from 'shared/components/Tabs'
-import { queryDictionary } from 'shared/dictionaries';
+import Tabs, { Tab, TabBadge } from 'websites-shared/components/Tabs'
+import { queryDictionary } from 'websites-shared/dictionaries';
 import DocLayout from '~/layouts/doc'
-import NuxtjsSvg from 'shared/images/frameworks/astro.svg'
+import NuxtjsSvg from 'websites-shared/images/frameworks/astro.svg'
 
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)

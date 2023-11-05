@@ -1,5 +1,5 @@
 import dedent from 'ts-dedent'
-import CodeTabs from 'shared/components/CodeTabs'
+import CodeTabs from 'websites-shared/components/CodeTabs'
 
 export default function ({ children, cli, webpack, vite, addLines, imports, ...othersProps }: any) {
     const dedentCode = dedent(children)
@@ -11,7 +11,7 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
                 code: dedent`
                     ${imports ? `import { ${imports} } from '@master/css-extractor'` : ''}
                     /** @type {import('@master/css-extractor').Options} */
-                    export default { 
+                    export default {
                         ${dedentCode}
                     }
                 `,
@@ -32,7 +32,7 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
                             })
                         ]
                     }
-                    
+
                     export default config
                 `,
                 addLines: addLines && addLines.map((line: number) => line += 6),

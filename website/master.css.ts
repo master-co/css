@@ -1,1 +1,1 @@
-export { default } from 'shared/master.css'
+export { default } from 'websites-shared/master.css'

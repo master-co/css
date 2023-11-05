@@ -1,4 +1,4 @@
-import IESvg from 'shared/svgs/ie.svg'
+import IESvg from 'websites-shared/svgs/ie.svg'
 
 The Master CSS [runtime engine](/docs/rendering-modes/runtime-rendering) uses [Mutation Observer](https://developer.mozilla.org/zh-TW/docs/Web/API/MutationObserver) which **even <IESvg width="18" height="18" className="inline-block v:middle" /> IE 11 supports** to observe the DOM tree and traverse each class through a high-performant rule engine to generate the corresponding CSS rules and inject it into the browser instantly.
 
@@ -6,7 +6,7 @@ You hardly need to worry about browser support, since support depends on which C
 
 To check for specific CSS feature support, visiting [caniuse.com](https://caniuse.com/) is always the best choice.
 
-            
+
 ---
 
 ## Vendor prefixes
@@ -22,7 +22,7 @@ Take `backdrop-filter` as an example:
 <Class2CSS>
 {['backdrop-filter:blur(16)']}
 </Class2CSS>
-            
+
 ### Auto-prefixed CSS selectors
 Same goes for some CSS selectors.
 ```html
@@ -38,7 +38,7 @@ Same goes for some CSS selectors.
 
 ## Latest CSS features
 Master CSS has built-in commonly used CSS properties, and you hardly need to extend rules to transform styles, but once new CSS features are launched, how to use them immediately?
-            
+
 ### Support the new CSS property
 Assuming that a brand new CSS property of `new-property` has just been launched, you can use it ahead of time through [arbitrary property declarations](/docs/style-declarations#arbitrary-properties) `{}` before we include it in the core rules:
 ```html
@@ -60,7 +60,7 @@ Generated CSS:
     new-property: value
 }
 ```
-            
+
 ### Support the new CSS selector
 Master CSS will extract the applied selector string according to the syntax structure and insert it into the corresponding CSS rule, you can enter any string after `:` or `::`.
 

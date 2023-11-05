@@ -1,9 +1,9 @@
-import app from 'shared/firebase-admin-app'
+import app from 'websites-shared/firebase-admin-app'
 import { initializeFirestore } from 'firebase-admin/firestore'
-const store = initializeFirestore(app)
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
+    const store = initializeFirestore(app)
     const { id, data } = await req.json()
     const docRef = store.doc(`sandbox/${id}`)
     if (data) {

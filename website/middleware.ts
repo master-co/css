@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import i18n from 'shared/i18n.config.mjs'
+import i18n from 'websites-shared/i18n.config.mjs'
 
 export function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname

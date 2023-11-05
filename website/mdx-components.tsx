@@ -1,1 +1,1 @@
-export * from 'shared/components/mdx-components'
+export * from 'websites-shared/components/mdx-components'

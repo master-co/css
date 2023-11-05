@@ -1,17 +1,17 @@
 import links from '../links.mjs'
-import Header, { HeaderNav } from 'shared/components/Header'
-import LanguageButton from 'shared/components/LanguageButton';
-import GitHubIconButton from 'shared/components/GitHubIconButton';
-import ThemeButton from 'shared/components/ThemeButton';
-import TwitterIconButton from 'shared/components/TwitterIconButton';
-import DiscussionsIconButton from 'shared/components/DiscussionsIconButton';
-import DiscordIconButton from 'shared/components/DiscordIconButton';
+import Header, { HeaderNav } from 'websites-shared/components/Header'
+import LanguageButton from 'websites-shared/components/LanguageButton';
+import GitHubIconButton from 'websites-shared/components/GitHubIconButton';
+import ThemeButton from 'websites-shared/components/ThemeButton';
+import TwitterIconButton from 'websites-shared/components/TwitterIconButton';
+import DiscussionsIconButton from 'websites-shared/components/DiscussionsIconButton';
+import DiscordIconButton from 'websites-shared/components/DiscordIconButton';
 import { IconChevronDown } from '@tabler/icons-react';
 import project from '~/project';
 import { Logotype } from '~/components/Logotype';
 import DocVersionSelect from './DocVersionSelect';
-import { queryDictionary } from 'shared/dictionaries';
-import version from 'shared/version';
+import { queryDictionary } from 'websites-shared/dictionaries';
+import version from 'websites-shared/version';
 
 export default async function DocHeader({ children, ...props }: any) {
     const $ = await queryDictionary(props.locale)

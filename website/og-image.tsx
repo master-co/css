@@ -3,11 +3,11 @@
 
 import type { Metadata } from 'next';
 import type { Author } from 'next/dist/lib/metadata/types/metadata-types';
-import type { Props } from 'shared/types/Props';
+import type { Props } from 'websites-shared/types/Props';
 
 import { ImageResponse } from 'next/og';
-import authors from 'shared/data/authors';
-import { queryDictionary } from 'shared/dictionaries';
+import authors from 'websites-shared/data/authors';
+import { queryDictionary } from 'websites-shared/dictionaries';
 import stringWidth from 'string-width'
 import fs from 'fs'
 import path from 'path';
@@ -15,20 +15,20 @@ import mime from 'mime'
 
 const readImage = (filename: string) => {
     const sharedFolderPath = path.join(process.cwd(), '../../../shared')
-    const filepath = path.join(sharedFolderPath, filename.replace('shared/', ''))
+    const filepath = path.join(sharedFolderPath, filename.replace('websites-shared/', ''))
     const extname = path.extname(filepath);
     const mimeType = mime.getType(extname);
     return `data:${mimeType};base64,` + fs.readFileSync(filepath, { encoding: 'base64' })
 }
-const cssLogotypeSrc = readImage('shared/images/css-logotype@light.png')
-const coverBgSrc = readImage('shared/images/cover-bg.jpg')
+const cssLogotypeSrc = readImage('websites-shared/images/css-logotype@light.png')
+const coverBgSrc = readImage('websites-shared/images/cover-bg.jpg')
 const authorImages: any = {
-    Aron: readImage('shared/images/authors/aron.jpg'),
-    Joy: readImage('shared/images/authors/joy.jpg'),
-    Benseage: readImage('shared/images/authors/benseage.jpg'),
-    Miles: readImage('shared/images/authors/miles.jpg'),
-    Lola: readImage('shared/images/authors/lola.jpg'),
-    Monting: readImage('shared/images/authors/monting.jpg'),
+    Aron: readImage('websites-shared/images/authors/aron.jpg'),
+    Joy: readImage('websites-shared/images/authors/joy.jpg'),
+    Benseage: readImage('websites-shared/images/authors/benseage.jpg'),
+    Miles: readImage('websites-shared/images/authors/miles.jpg'),
+    Lola: readImage('websites-shared/images/authors/lola.jpg'),
+    Monting: readImage('websites-shared/images/authors/monting.jpg'),
 }
 const fonts = [
     {

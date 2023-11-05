@@ -1,4 +1,4 @@
-import CodeTabs from 'shared/components/CodeTabs'
+import CodeTabs from 'websites-shared/components/CodeTabs'
 
 export default () => <CodeTabs>
     {[

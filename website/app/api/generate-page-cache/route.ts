@@ -1,11 +1,10 @@
 import * as cheerio from 'cheerio'
-import app from 'shared/firebase-admin-app'
+import app from '../../../../../../shared/firebase-admin-app'
 import { getStorage } from 'firebase-admin/storage'
 import path from 'path'
 import fs from 'fs'
 import getCurrentGitBranch from 'current-git-branch'
 import zlib from 'zlib'
-const storage = getStorage(app)
 
 const currentBranch = getCurrentGitBranch()
 
@@ -56,7 +55,7 @@ function getBracketContent(source: string, startSymbol = '<', endSymbol = '>') {
 }
 
 export async function POST(req: Request) {
-
+    const storage = getStorage(app)
     let host = req.headers.get('host')
     const locale = new URL(req.url).searchParams.get('locale')
     if (!locale || !host)
@@ -104,7 +103,7 @@ export async function POST(req: Request) {
     const data: Record<string, { title: string, category: string, description: string, nodes: { text: string, id: string }[], disabled: boolean }> = {}
     const crawle = async (baseUrl: string, crawleUrl: string) => {
         const url = new URL(crawleUrl, baseUrl)
-        
+
         if (!(url.pathname in data) && url.href.startsWith(baseUrl)) {
             const html = await (await fetch(url.href)).text()
             const $ = cheerio.load(html)

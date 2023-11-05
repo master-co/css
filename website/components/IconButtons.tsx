@@ -1,5 +1,5 @@
 import { l } from 'to-line';
-import Link from 'shared/components/Link'
+import Link from 'websites-shared/components/Link'
 
 export default ({ children, className, url }: any) =>
     <div className={l(className, 'grid-cols:3 grid-cols:5@sm grid-cols:8@md gap:10')}>{

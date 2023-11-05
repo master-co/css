@@ -1,12 +1,12 @@
 'use client'
 
-import DocTable from "shared/components/DocTable";
-import { Fragment, useMemo, useState } from "react";
-import { beautifyCSS } from 'shared/utils/beautifyCSS';
+import DocTable from 'websites-shared/components/DocTable';
+import { Fragment, useMemo, useState } from 'react';
+import { beautifyCSS } from 'websites-shared/utils/beautifyCSS';
 import line from 'to-line';
-import { snackbar } from 'shared/utils/snackbar';
+import { snackbar } from 'websites-shared/utils/snackbar';
 import copy from 'copy-to-clipboard';
-import InlineCode from 'shared/components/InlineCode';
+import InlineCode from 'websites-shared/components/InlineCode';
 import dedent from 'ts-dedent';
 import MasterCSS from '@master/css';
 
