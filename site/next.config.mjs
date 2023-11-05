@@ -1,33 +1,9 @@
-import withSharedWebpackConfig from "../../../shared/with-shared-webpack-config.mjs";
 import redirects from './redirects.mjs';
 import CopyPlugin from 'copy-webpack-plugin'
 import path from 'path'
-
-import nextMDX from '@next/mdx'
-import remarkSlug from 'remark-slug';
-import rehypeSlug from 'rehype-slug'
-import remarkGfm from 'remark-gfm';
-import remarkCodeMeta from '../../../shared/remark/code-meta.mjs';
-
-const withMDX = nextMDX({
-    extension: /\.mdx?$/,
-    options: {
-        // If you use remark-gfm, you'll need to use next.config.mjs
-        // as the package is ESM only
-        // https://github.com/remarkjs/remark-gfm#install
-        remarkPlugins: [
-            remarkSlug,
-            remarkGfm,
-            remarkCodeMeta
-        ],
-        rehypePlugins: [
-            rehypeSlug
-        ],
-        // If you use `MDXProvider`, uncomment the following line.
-        // providerImportSource: "@mdx-js/react",
-    },
-})
-
+import withMDX from '../../../shared/width-mdx.mjs'
+import withSharedWebpackConfig from "../../../shared/with-shared-webpack-config.mjs";
+import withBundleAnalyzer from "../../../shared/with-bundle-analyzer.mjs";
 
 /**
  * @type {import('next').NextConfig}
@@ -99,9 +75,6 @@ const nextConfig = {
     }
 }
 
-import BundleAnalyzer from '@next/bundle-analyzer'
-
-const withBundleAnalyzer = BundleAnalyzer({ enabled: process.env.ANALYZE === 'true' })
 export default withBundleAnalyzer(withMDX(nextConfig))
 
 // export default withMDX(nextConfig)

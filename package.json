@@ -2,8 +2,7 @@
     "private": true,
     "scripts": {
         "postinstall": "husky install && pnpm ls --r --filter \"./packages/*\"",
-        "build": "pnpm run build:packages && pnpm run build:examples",
-        "build:packages": "cross-env NODE_OPTIONS=--max-old-space-size=16384 turbo run build --filter=./packages/* && pnpm i",
+        "build": "cross-env NODE_OPTIONS=--max-old-space-size=16384 turbo run build --filter=./packages/* && pnpm i",
         "build:examples": "cross-env NODE_OPTIONS=--max-old-space-size=16384 turbo run build --filter=./examples/*",
         "check": "pnpm run commit-check && pnpm run build && turbo run test lint type-check --parallel --filter=./packages/*",
         "test": "cross-env NODE_OPTIONS=--max-old-space-size=16384 turbo run test --parallel --filter=./packages/*",

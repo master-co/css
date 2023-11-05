@@ -25,7 +25,7 @@ import { beautifyCSS } from 'shared/utils/beautifyCSS'
 const alphabet = '0123456789abcdefghijklmnopqrstuvwxyz'
 const nanoid = customAlphabet(alphabet, 14)
 import templates from './templates';
-import { latestMasterCSSVersion } from 'shared/utils/latestMasterCSSVersion';
+import latestMasterCSSVersion from 'shared/version';
 import { useSearchParams } from 'next/navigation';
 import Resizable from 'shared/components/Resizable';
 import { getLinkHTML } from './getLinkHTML';

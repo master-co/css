@@ -17,6 +17,9 @@
         "monaco-editor": "^0.44.0",
         "monaco-editor-textmate": "^4.0.0",
         "monaco-textmate": "^3.0.1",
+        "@master/css": "workspace:^",
+        "@master/css.react": "workspace:^",
+        "theme-service": "workspace:^",
         "shared": "workspace:../../../shared"
     }
 }
