@@ -3,12 +3,12 @@ import DocHeader from '~/layouts/DocHeader';
 import DocFooter from '~/layouts/DocFooter';
 import { queryDictionary } from 'shared/dictionaries';
 // @ts-expect-error
-import allBlogMetadata from './*/metadata.ts'
+import allBlogMetadata from './*/metadata.js'
 import Image from 'next/image';
 import { l } from 'to-line';
 import dayjs from 'dayjs';
 import Link from 'shared/components/Link';
-import metadata from './metadata'
+import metadata from './metadata.js'
 import { generate } from '~/utils/metadata'
 
 export async function generateMetadata(props: any, parent: any) {
