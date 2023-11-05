@@ -48,22 +48,22 @@ importers:
         specifier: ^0.2.32
         version: 0.2.32
       '@master/css':
-        specifier: workspace:^
+        specifier: ../projects/css/packages/css
         version: link:../projects/css/packages/css
       '@master/css-extractor':
-        specifier: workspace:^
+        specifier: ../projects/css/packages/extractor
         version: link:../projects/css/packages/extractor
       '@master/css-language-service':
-        specifier: workspace:^
+        specifier: ../projects/css/packages/language-service
         version: link:../projects/css/packages/language-service
       '@master/css-renderer':
-        specifier: workspace:^
+        specifier: ../projects/css/packages/renderer
         version: link:../projects/css/packages/renderer
       '@master/css.react':
-        specifier: workspace:^
+        specifier: ../projects/css/packages/react
         version: link:../projects/css/packages/react
       '@master/eslint-config-css':
-        specifier: workspace:^
+        specifier: ../projects/css/packages/eslint-config
         version: link:../projects/css/packages/eslint-config
       '@mdx-js/loader':
         specifier: ^2.3.0
@@ -234,7 +234,7 @@ importers:
         specifier: ^5.1.2
         version: 5.1.2
       theme-service:
-        specifier: workspace:^
+        specifier: ../projects/css/packages/theme-service
         version: link:../projects/css/packages/theme-service
       throttle-debounce:
         specifier: ^5.0.0

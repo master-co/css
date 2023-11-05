@@ -20,6 +20,7 @@
         "jsx": "preserve",
         "incremental": true,
         "downlevelIteration": true,
+        "allowImportingTsExtensions": true,
         "plugins": [
             {
                 "name": "next"

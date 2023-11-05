@@ -1,9 +1,9 @@
 import redirects from './redirects.mjs';
 import CopyPlugin from 'copy-webpack-plugin'
 import path from 'path'
-import withMDX from 'shared/width-mdx.mjs'
-import withSharedWebpackConfig from "shared/with-shared-webpack-config.mjs";
-import withBundleAnalyzer from "shared/with-bundle-analyzer.mjs";
+import withMDX from '../../../shared/width-mdx.mjs'
+import withSharedWebpackConfig from '../../../shared/with-shared-webpack-config.mjs';
+import withBundleAnalyzer from '../../../shared/with-bundle-analyzer.mjs';
 
 /**
  * @type {import('next').NextConfig}
@@ -76,5 +76,3 @@ const nextConfig = {
 }
 
 export default withBundleAnalyzer(withMDX(nextConfig))
-
-// export default withMDX(nextConfig)
