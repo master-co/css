@@ -934,9 +934,9 @@ export class MasterCSS {
 
             // animations
             if (rule.animationNames) {
-                const keyframeRuleIndex = this.hasVariablesRule ? 1 : 0
+                const keyframeRulesIndex = this.hasVariablesRule ? 1 : 0
                 const variableNativeCount = this.hasVariablesRule ? this.rules[0].natives.length : 0
-                const keyframeRule = this.rules[keyframeRuleIndex]
+                const keyframeRule = this.rules[keyframeRulesIndex]
                 for (const eachKeyframeName of rule.animationNames) {
                     const keyframe = this.animations[eachKeyframeName]
                     if (!--keyframe.usage) {
@@ -948,7 +948,7 @@ export class MasterCSS {
                 }
 
                 if (!keyframeRule.natives.length) {
-                    this.rules.splice(keyframeRuleIndex, 1)
+                    this.rules.splice(keyframeRulesIndex, 1)
                     this.hasKeyframesRule = false
                 }
             }
@@ -1401,12 +1401,13 @@ export class MasterCSS {
                             + '}'
                     }
 
+                    const keyframeRulesIndex =  this.hasVariablesRule ? 1 : 0
                     let keyframeRule: Rule
                     if (this.hasKeyframesRule) {
-                        (keyframeRule = this.rules[0]).natives.push(nativeRule)
+                        (keyframeRule = this.rules[keyframeRulesIndex]).natives.push(nativeRule)
                     } else {
                         this.rules.splice(
-                            this.hasVariablesRule ? 1 : 0,
+                            keyframeRulesIndex,
                             0,
                             keyframeRule = {
                                 natives: [nativeRule],
@@ -1434,7 +1435,7 @@ export class MasterCSS {
                         if (nativeCssRule) {
                             nativeRule.cssRule = nativeCssRule
                         } else {
-                            const cssRuleIndex = keyframeRule.natives.length - 1
+                            const cssRuleIndex = (this.hasVariablesRule ? this.rules[0].natives.length : 0) + keyframeRule.natives.length
                             sheet.insertRule(nativeRule.text, cssRuleIndex)
                             nativeRule.cssRule = sheet.cssRules[cssRuleIndex]
                         }
