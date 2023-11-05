@@ -39,23 +39,23 @@ importers:
         specifier: ^0.2.32
         version: 0.2.32
       '@master/css':
-        specifier: ^2.0.0-beta.193
-        version: 2.0.0-beta.193
+        specifier: ^2.0.0-beta.194
+        version: 2.0.0-beta.194
       '@master/css-extractor':
-        specifier: ^2.0.0-beta.193
-        version: 2.0.0-beta.193
+        specifier: ^2.0.0-beta.194
+        version: 2.0.0-beta.194
       '@master/css-language-service':
-        specifier: ^2.0.0-beta.193
-        version: 2.0.0-beta.193
+        specifier: ^2.0.0-beta.194
+        version: 2.0.0-beta.194
       '@master/css-renderer':
-        specifier: ^2.0.0-beta.193
-        version: 2.0.0-beta.193
+        specifier: ^2.0.0-beta.194
+        version: 2.0.0-beta.194
       '@master/css.react':
-        specifier: ^2.0.0-beta.193
-        version: 2.0.0-beta.193(@types/react@18.2.33)(react@18.2.0)
+        specifier: ^2.0.0-beta.194
+        version: 2.0.0-beta.194(@types/react@18.2.33)(react@18.2.0)
       '@master/eslint-config-css':
-        specifier: ^2.0.0-beta.193
-        version: 2.0.0-beta.193
+        specifier: ^2.0.0-beta.194
+        version: 2.0.0-beta.194
       '@mdx-js/loader':
         specifier: ^2.3.0
         version: 2.3.0(webpack@5.89.0)
@@ -2152,11 +2152,11 @@ packages:
       call-bind: 1.0.5
     dev: false
 
-  /@master/css-extractor@2.0.0-beta.193:
-    resolution: {integrity: sha512-FGN4Cgh1vO/fFlEMpKiBWrRHYLiFqzO8z5QIZ1jef36WgBiqFiJ/XSztjzqqV+fUt9g+biH1lSwQ2g6aqX4nWg==}
+  /@master/css-extractor@2.0.0-beta.194:
+    resolution: {integrity: sha512-0YQE/KwEPBmIdXHGp39AfFUgx14I7KAUxLEsutYz608mBO1QD2uM73N2YcZIB9Acn9UsTKfP2yZEKpi+HDi5+w==}
     dependencies:
-      '@master/css': 2.0.0-beta.193
-      '@master/css-validator': 2.0.0-beta.193
+      '@master/css': 2.0.0-beta.194
+      '@master/css-validator': 2.0.0-beta.194
       '@techor/extend': 2.5.19
       '@techor/glob': 2.5.19
       '@techor/log': 2.5.19
@@ -2165,78 +2165,78 @@ packages:
       minimatch: 9.0.3
     dev: false
 
-  /@master/css-language-service@2.0.0-beta.193:
-    resolution: {integrity: sha512-yDpyURj0M2OPxahZZYjAy4WHP2Y+zwyC428nkODQurr5tQYhr3DMLX45E47w5vYc4qwX5GnQA64KzI4vdviFBA==}
+  /@master/css-language-service@2.0.0-beta.194:
+    resolution: {integrity: sha512-+mpDb+fuxOlF0VWnLKH3cyNBe/wbMsRDGZ2iV4/KPdgFTNZecDhVaYmDLG83TD3+SIP8UUPq8ti/CKKGT0ofUQ==}
     dependencies:
       '@babel/parser': 7.23.0
-      '@master/css': 2.0.0-beta.193
+      '@master/css': 2.0.0-beta.194
       color-convert: 2.0.1
       js-beautify: 1.14.9
     dev: false
 
-  /@master/css-renderer@2.0.0-beta.193:
-    resolution: {integrity: sha512-lvuQAeferzEIIR6HJEO2ZOEioFobK/jbOlKq4X2iCB6Y/6b1P1nkYryD+lgbsbVA1rwsBU+1rELexBoTWxVS7A==}
+  /@master/css-renderer@2.0.0-beta.194:
+    resolution: {integrity: sha512-2ewpFM2+EQlLMs5bU1LiuRpmWE2eO//bsTFnuo6xLx2LIC5YCuXqShuHNnswLVdF/7RzUIZZ91IfpdzltOE8MQ==}
     dependencies:
-      '@master/css-server': 2.0.0-beta.193
+      '@master/css-server': 2.0.0-beta.194
       '@techor/glob': 2.5.19
       '@techor/log': 2.5.19
       explore-config: 2.5.19
     dev: false
 
-  /@master/css-server@2.0.0-beta.193:
-    resolution: {integrity: sha512-fRwbLZmYbTZhBDpNRCI26hq2dUlGrs9uP98ecBlJ/13qtB/BG/t2MxnWWkSFB8/dq8ysLcPZJRk2ezfkZaWgYA==}
+  /@master/css-server@2.0.0-beta.194:
+    resolution: {integrity: sha512-k0vNOtrEeM0BXehPm35TsV5OHHmr8A3eycEnJMvdRzMyfFW2bF+rYlb+AWDd2w8ySbiKe33wOQ0JyCHow0ZYyA==}
     dependencies:
-      '@master/css': 2.0.0-beta.193
+      '@master/css': 2.0.0-beta.194
       node-html-parser: 6.1.11
     dev: false
 
-  /@master/css-validator@2.0.0-beta.193:
-    resolution: {integrity: sha512-aUiQz6BUn90DpnwnBvPg06TkHJgU3hPJMvAZvXkTef+zp8SUZbxCwC510IiZm/1Tw/tNLmE9/dZ6Fd5mgACDlw==}
+  /@master/css-validator@2.0.0-beta.194:
+    resolution: {integrity: sha512-B5qPFi2nQ1k7CDBQGCr9B0LYVNZjsFnagfyxIKT0aycX496f47s0eAS2jpt0vP8X4u6KC5Gu4eqdMFizQxvqwQ==}
     dependencies:
-      '@master/css': 2.0.0-beta.193
+      '@master/css': 2.0.0-beta.194
       css-tree: 2.3.1
     dev: false
 
-  /@master/css.react@2.0.0-beta.193(@types/react@18.2.33)(react@18.2.0):
-    resolution: {integrity: sha512-5KKRojLBOmh2tfz1O+cC+iOTjFs8Ccrwu7WPXzgQ5mlvm7x4AlK5fgOSyf34rFnN2sbcrc2lgPxGWZ3iwnEMog==}
+  /@master/css.react@2.0.0-beta.194(@types/react@18.2.33)(react@18.2.0):
+    resolution: {integrity: sha512-IdpfL92x54BBGuZ4IAoKPXpDbZbQM18CTNeuwzu6MivxsfI6wKDJ5iVc8CX+X42BJiH1KOqYGoVJoAAAFbbk0A==}
     peerDependencies:
       '@types/react': '>=15'
       react: '>= 16.8.0'
     dependencies:
-      '@master/css': 2.0.0-beta.193
+      '@master/css': 2.0.0-beta.194
       '@types/react': 18.2.33
-      class-variant: 2.0.0-beta.193(react@18.2.0)
+      class-variant: 2.0.0-beta.194(react@18.2.0)
       clsx: 2.0.0
       react: 18.2.0
-      theme-service: 2.0.0-beta.193
+      theme-service: 2.0.0-beta.194
     dev: false
 
-  /@master/css@2.0.0-beta.193:
-    resolution: {integrity: sha512-L7SSevEA2YlvI7AxtwLq/Er/WKa6fEUEmk0fwFUMh7TFXx0/4slkQQcOrjK8WrQt+MgTUg87F7oJ+kKOenfUxg==}
+  /@master/css@2.0.0-beta.194:
+    resolution: {integrity: sha512-1FC54zEx1EgCAwAYWzMabz+Ly93dznWp4SqOXF4w5D0e+m4p3Nu+aX7ScFGMnUMuQAhFAEcus+jmBuZHigzapg==}
     hasBin: true
     dependencies:
-      '@master/normal.css': 2.0.0-beta.193
+      '@master/normal.css': 2.0.0-beta.194
       '@techor/fs': 2.5.17
-      '@techor/log': 2.5.17
+      '@techor/log': 2.5.19
       commander: 11.1.0
     dev: false
 
-  /@master/eslint-config-css@2.0.0-beta.193:
-    resolution: {integrity: sha512-pY5MUFxOGXZKozHB2jtCRe2eyKd0qFS9FnluYnQdJkqpGUH8scStdha3cBUdgZSh2SJawE4EO5nUU7QDIgQ9qA==}
+  /@master/eslint-config-css@2.0.0-beta.194:
+    resolution: {integrity: sha512-5SPoZpeE/0Rb9PBpgZBgB/I8x/uLhL20ykIv1e4vtj331/ZAM9+dCue04HyvdFy++MpciSsu7AWgdSkkYfToHw==}
     dependencies:
-      '@master/eslint-plugin-css': 2.0.0-beta.193
+      '@master/eslint-plugin-css': 2.0.0-beta.194
     dev: false
 
-  /@master/eslint-plugin-css@2.0.0-beta.193:
-    resolution: {integrity: sha512-r0Pl8ncaUVkE6Wo2NNl5RG6/Udvg6k4kuqcMmMTiD+mi6AYLgbySBTsQXq2rWfYnlf5mN+azl2znuU+wExC6zw==}
+  /@master/eslint-plugin-css@2.0.0-beta.194:
+    resolution: {integrity: sha512-ljMaYctTZOc+XjYNCBhNFiACk/CCewjUdC5ViSGmttobXwQVPnxx5FoPsEe1yTRvWnZkxaFgHCid7WfqFse/ug==}
     dependencies:
-      '@master/css': 2.0.0-beta.193
-      '@master/css-validator': 2.0.0-beta.193
+      '@master/css': 2.0.0-beta.194
+      '@master/css-validator': 2.0.0-beta.194
       explore-config: 2.5.19
     dev: false
 
-  /@master/normal.css@2.0.0-beta.193:
-    resolution: {integrity: sha512-A2byT0sYSzZVWht0ZoMAfxxMPfIMjSqHTUCvNESL2MCUy78qioPBvURL6/0+Rn+3iVfr8WCaPXY2aNSh8M8DpA==}
+  /@master/normal.css@2.0.0-beta.194:
+    resolution: {integrity: sha512-g/qgjnXlDSDuKbjR4M/30Ayn5x95mdaxuhk4HrW22oVQG1hlSs6vTeuyQj+HZkmo16IHPPkYf6R22I9et70KaQ==}
     dev: false
 
   /@mdx-js/loader@2.3.0(webpack@5.89.0):
@@ -2787,10 +2787,6 @@ packages:
     dependencies:
       fast-glob: 3.3.1
       upath: 2.0.1
-    dev: false
-
-  /@techor/log@2.5.17:
-    resolution: {integrity: sha512-/+PSy0C9SRSDcYpO94Y8sZWTDWY5bDFMRZf+nA2YXo/A6bi0vH2IAUSlOWvOfUDs6yhaPXyz3aMKXgfGf/HO5w==}
     dev: false
 
   /@techor/log@2.5.19:
@@ -3913,8 +3909,8 @@ packages:
     resolution: {integrity: sha512-NIxF55hv4nSqQswkAeiOi1r83xy8JldOFDTWiug55KBu9Jnblncd2U6ViHmYgHf01TPZS77NJBhBMKdWj9HQMQ==}
     engines: {node: '>=8'}
 
-  /class-variant@2.0.0-beta.193(react@18.2.0):
-    resolution: {integrity: sha512-PM465prLkdxNygdcisaJurpM2Qp0FBgFzc0RGbfvx+I6pH802ifyidh6E+DhYXRnObIJNy5rLy0QFoWvT18+5Q==}
+  /class-variant@2.0.0-beta.194(react@18.2.0):
+    resolution: {integrity: sha512-2h9RP56M54aEOPoEmwWKzzKQsmX/enC3dFDxxwTGlaxyVffSZW7tyv6zR0E7KahIAnr8xHS0t9O3BM/I6pOa/A==}
     peerDependencies:
       react: '>= 16.8.0'
     dependencies:
@@ -9449,8 +9445,8 @@ packages:
   /text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
 
-  /theme-service@2.0.0-beta.193:
-    resolution: {integrity: sha512-Vg8Eon2bi/OE/4GtPewv+6HPbGPjwycv+16G13+iyoWxGwXl4A3Cci8UDRZKxQTvrHg7CnftlMXFZoxjRO8/1Q==}
+  /theme-service@2.0.0-beta.194:
+    resolution: {integrity: sha512-jCbkJFhJHirYwfLjfUccVYI/r0XRrGeW5n4T7D/1HWJqzBu9znnSj4jCMB28wmpBxxD+w+non7qv7Ucw0guFqg==}
     dev: false
 
   /thenify-all@1.6.0:
