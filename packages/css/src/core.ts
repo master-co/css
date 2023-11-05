@@ -457,6 +457,8 @@ export class MasterCSS {
             return this
         }
 
+        if (!targetRoot) targetRoot = document
+
         // @ts-ignore
         this.root = targetRoot
         const isDocumentRoot = targetRoot === document
@@ -1402,7 +1404,7 @@ export class MasterCSS {
                             + '}'
                     }
 
-                    const keyframeRulesIndex =  this.hasVariablesRule ? 1 : 0
+                    const keyframeRulesIndex = this.hasVariablesRule ? 1 : 0
                     let keyframeRule: Rule
                     if (this.hasKeyframesRule) {
                         (keyframeRule = this.rules[keyframeRulesIndex]).natives.push(nativeRule)
