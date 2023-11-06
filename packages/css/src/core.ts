@@ -552,10 +552,10 @@ export class MasterCSS {
                     index += rule.natives.length - 1
 
                     // variables
-                    this.handleRuleWithVariableNames(rule)
+                    this.handleRuleWithVariableNames(rule, true)
 
                     // animations
-                    this.handleRuleWithAnimationNames(rule)
+                    this.handleRuleWithAnimationNames(rule, true)
 
                     rule.options.insert?.call(rule)
                 }
@@ -774,6 +774,18 @@ export class MasterCSS {
         // @ts-ignore
         this.classesUsage = {}
         this.rules.length = 0
+        this.hasKeyframesRule = false
+        this.hasVariablesRule = false
+        for (const keyframeName in this.animations) {
+            const animation = this.animations[keyframeName]
+            animation.usage = undefined
+            animation.native = undefined
+        }
+        for (const variableName in this.variables) {
+            const variable = this.variables[variableName]
+            variable.usage = undefined
+            variable.natives = undefined
+        }
         const sheet = this.style?.sheet
         if (sheet?.cssRules) {
             for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
@@ -920,10 +932,15 @@ export class MasterCSS {
                 for (const eachVariableName of rule.variableNames) {
                     const variable = this.variables[eachVariableName]
                     if (!--variable.usage) {
-                        const nativeIndex = variableRule.natives.indexOf(variable.natives[0])
                         for (let i = 0; i < variable.natives.length; i++) {
-                            this.style.sheet.deleteRule(nativeIndex)
-                            variableRule.natives.splice(nativeIndex, 1)
+                            const eachNativeRule = variable.natives[i]
+                            for (let j = 0; j < this.style.sheet.cssRules.length; j++) {
+                                if (this.style.sheet.cssRules[j] === eachNativeRule.cssRule) {
+                                    this.style.sheet.deleteRule(j)
+                                    break
+                                }
+                            }
+                            variableRule.natives.splice(variableRule.natives.indexOf(eachNativeRule), 1)
                         }
                         variable.natives = undefined
                     }
@@ -1004,7 +1021,8 @@ export class MasterCSS {
         for (const rule of rules) {
             if (this.ruleBy[rule.className])
                 continue
-            let index
+
+            let index: number
             /**
              * 必須按斷點值遞增，並透過索引插入，
              * 以實現響應式先後套用的規則
@@ -1386,7 +1404,7 @@ export class MasterCSS {
         return extendedConfig
     }
 
-    private handleRuleWithAnimationNames(rule: Rule) {
+    private handleRuleWithAnimationNames(rule: Rule, initializing = false) {
         if (rule.animationNames) {
             const sheet = this.style?.sheet
             for (const eachKeyframeName of rule.animationNames) {
@@ -1423,20 +1441,30 @@ export class MasterCSS {
                     }
 
                     if (sheet) {
-                        let nativeCssRule: CSSRule
-                        for (let i = 0; i < sheet.cssRules.length; i++) {
-                            const cssRule = sheet.cssRules[i]
-                            if (cssRule.constructor.name !== 'CSSKeyframesRule')
-                                break
+                        let cssRule: CSSRule
+                        if (initializing) {
+                            for (let i = 0; i < sheet.cssRules.length; i++) {
+                                const eachCssRule = sheet.cssRules[i]
+                                if (
+                                    eachCssRule.constructor.name === 'CSSStyleRule' 
+                                    && (eachCssRule as CSSStyleRule).style.length === 1 
+                                    && (eachCssRule as CSSStyleRule).style[0].startsWith('--') 
+                                    && !(eachCssRule as CSSStyleRule).selectorText.startsWith('.\\$')
+                                )
+                                    continue
 
-                            if ((cssRule as CSSKeyframesRule).name === eachKeyframeName) {
-                                nativeCssRule = cssRule
-                                break
+                                if (eachCssRule.constructor.name !== 'CSSKeyframesRule')
+                                    break
+    
+                                if ((eachCssRule as CSSKeyframesRule).name === eachKeyframeName) {
+                                    cssRule = eachCssRule
+                                    break
+                                }
                             }
                         }
-
-                        if (nativeCssRule) {
-                            nativeRule.cssRule = nativeCssRule
+                      
+                        if (cssRule) {
+                            nativeRule.cssRule = cssRule
                         } else {
                             const cssRuleIndex = (this.hasVariablesRule ? this.rules[0].natives.length : 0) + keyframeRule.natives.length
                             sheet.insertRule(nativeRule.text, cssRuleIndex)
@@ -1451,7 +1479,7 @@ export class MasterCSS {
         }
     }
 
-    private handleRuleWithVariableNames(rule: Rule) {
+    private handleRuleWithVariableNames(rule: Rule, initializing = false) {
         if (rule.variableNames) {
             const sheet = this.style?.sheet
             for (const eachVariableName of rule.variableNames) {
@@ -1498,11 +1526,38 @@ export class MasterCSS {
                     }
 
                     if (sheet) {
+                        const firstNativeRule = nativeRules[0]
+                        let firstCssRuleIndex: number
+                        if (initializing) {
+                            for (let i = 0; i < sheet.cssRules.length; i++) {
+                                const eachCssRule = sheet.cssRules[i]
+                                if (
+                                    eachCssRule.constructor.name !== 'CSSStyleRule'
+                                    || (eachCssRule as CSSStyleRule).style.length !== 1 
+                                    || !(eachCssRule as CSSStyleRule).style[0].startsWith('--') 
+                                    || (eachCssRule as CSSStyleRule).selectorText.startsWith('.\\$')
+                                )
+                                    break
+
+                                if (
+                                    firstNativeRule.text.startsWith((eachCssRule as CSSStyleRule).selectorText + '{')
+                                    && (eachCssRule as CSSStyleRule).style[0].startsWith('--' + eachVariableName)
+                                ) {
+                                    firstCssRuleIndex = i
+                                    break
+                                }
+                            }
+                        }
+
                         for (let i = 0; i < nativeRules.length; i++) {
                             const eachNative = nativeRules[i]
-                            const ruleIndex = originalNativesCount + i
-                            sheet.insertRule(eachNative.text, ruleIndex)
-                            eachNative.cssRule = sheet.cssRules[ruleIndex]
+                            if (firstCssRuleIndex !== undefined) {
+                                eachNative.cssRule = sheet.cssRules[firstCssRuleIndex + i]
+                            } else {
+                                const ruleIndex = originalNativesCount + i
+                                sheet.insertRule(eachNative.text, ruleIndex)
+                                eachNative.cssRule = sheet.cssRules[ruleIndex]
+                            }
                         }
                     }
 
