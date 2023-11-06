@@ -1,8 +1,8 @@
 import Play, { PlayShare } from '../Play'
-import app from 'websites-shared/firebase-admin-app'
+import app from 'websites/firebase-admin-app'
 import { initializeFirestore } from 'firebase-admin/firestore'
 import { notFound } from "next/navigation"
-import { collectDictionary } from 'websites-shared/dictionaries'
+import { collectDictionary } from 'websites/dictionaries'
 
 export default async function Page(props: any) {
     const store = initializeFirestore(app)

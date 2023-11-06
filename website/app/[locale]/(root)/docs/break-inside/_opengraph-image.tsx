@@ -1,4 +1,4 @@
-import { Props } from 'websites-shared/types/Props'
+import { Props } from 'websites/types/Props'
 import create from '~/og-image'
 import metadata from './metadata'
 

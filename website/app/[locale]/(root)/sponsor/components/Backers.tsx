@@ -1,6 +1,6 @@
 import Image from 'next/image'
-import Link from 'websites-shared/components/Link'
-import toSlug from 'websites-shared/utils/toSlug'
+import Link from 'websites/components/Link'
+import toSlug from 'websites/utils/toSlug'
 import { l } from 'to-line'
 
 export default function Backers({ backers }: any) {

@@ -1,6 +1,6 @@
 'use client'
 
-import Modal from 'websites-shared/components/Modal';
+import Modal from 'websites/components/Modal';
 import { l } from 'to-line';
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation';

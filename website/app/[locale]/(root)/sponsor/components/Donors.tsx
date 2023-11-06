@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import Link from 'websites-shared/components/Link'
+import Link from 'websites/components/Link'
 
 export default function Donors({ sponsorTiers, sponsorsOfLevel }: any) {
     return sponsorTiers.map((eachSponsorTier: any) => (

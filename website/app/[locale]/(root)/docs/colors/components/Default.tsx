@@ -5,7 +5,7 @@ import { Fragment } from 'react'
 import { l } from 'to-line'
 // @ts-expect-error
 import contrast from 'get-contrast'
-import { snackbar } from 'websites-shared/utils/snackbar'
+import { snackbar } from 'websites/utils/snackbar'
 import copy from 'copy-to-clipboard'
 
 export default () => <div className="grid-cols:6 grid-cols:13@sm my:40 gap:25|10">

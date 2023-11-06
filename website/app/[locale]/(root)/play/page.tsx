@@ -1,6 +1,6 @@
 import metadata from './metadata'
 import Play from './Play'
-import { queryDictionary } from 'websites-shared/dictionaries'
+import { queryDictionary } from 'websites/dictionaries'
 import { generate } from '~/utils/metadata'
 
 export async function generateMetadata(props: any, parent: any) {

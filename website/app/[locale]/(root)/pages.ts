@@ -1,4 +1,4 @@
-import { Metadata } from 'websites-shared/types/Metadata'
+import { Metadata } from 'websites/types/Metadata'
 import path from 'upath'
 // @ts-ignore
 import metadataForList from './docs/*/metadata.ts'

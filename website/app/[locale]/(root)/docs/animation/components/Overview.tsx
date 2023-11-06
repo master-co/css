@@ -1,7 +1,7 @@
 'use client'
 
-import Demo from 'websites-shared/components/Demo'
-import Code from 'websites-shared/components/Code'
+import Demo from 'websites/components/Demo'
+import Code from 'websites/components/Code'
 import SyntaxTable from '~/components/SyntaxTable'
 import syntaxes from '../syntaxes'
 import { l } from 'to-line'

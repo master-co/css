@@ -1,5 +1,5 @@
 import project from '~/project';
-import Footer from 'websites-shared/components/Footer'
+import Footer from 'websites/components/Footer'
 
 export default async function DocFooter(props: any) {
     {/* @ts-expect-error server component */ }

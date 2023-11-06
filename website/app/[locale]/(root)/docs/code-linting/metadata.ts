@@ -1,4 +1,4 @@
-import { Metadata } from 'websites-shared/types/Metadata'
+import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Code Linting for Master CSS',
@@ -12,7 +12,7 @@ const metadata: Metadata = {
         description: 'An ESLint plugin enforcing a consistent coding style for Master CSS.'
     },
     ogImageTitle: 'Code Linting',
-    ogImageIcon: 'websites-shared/icons/eslint.svg',
+    ogImageIcon: 'websites/icons/eslint.svg',
     ogImageIconWidth: 200
 }
 

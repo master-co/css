@@ -1,15 +1,15 @@
-import Article from 'websites-shared/components/Article';
-import ArticleHeader from 'websites-shared/components/ArticleHeader';
-import CanIUseButton from 'websites-shared/components/CanIUseButton'
-import MdnButton from 'websites-shared/components/MdnButton'
+import Article from 'websites/components/Article';
+import ArticleHeader from 'websites/components/ArticleHeader';
+import CanIUseButton from 'websites/components/CanIUseButton'
+import MdnButton from 'websites/components/MdnButton'
 import { l } from 'to-line'
 import DocMain from './DocMain';
 import DocFooter from './DocFooter';
-import PageNavs from 'websites-shared/components/PageNavs';
+import PageNavs from 'websites/components/PageNavs';
 import pages from '../app/[locale]/(root)/pages'
 import dynamic from 'next/dynamic';
 
-const PageContent = dynamic(() => import('websites-shared/components/PageContent'))
+const PageContent = dynamic(() => import('websites/components/PageContent'))
 
 export default async function Layout(props: any) {
     const { children, params, toc } = props

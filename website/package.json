@@ -26,6 +26,6 @@
         "@master/css-renderer": "workspace:^",
         "@master/eslint-config-css": "workspace:^",
         "theme-service": "workspace:^",
-        "websites-shared": "workspace:../../../shared"
+        "websites": "workspace:../../.."
     }
 }

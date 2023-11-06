@@ -1,4 +1,4 @@
-import app from 'websites-shared/firebase-admin-app'
+import app from 'websites/firebase-admin-app'
 import { initializeFirestore } from 'firebase-admin/firestore'
 import { NextResponse } from 'next/server'
 

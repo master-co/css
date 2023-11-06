@@ -1,5 +1,5 @@
 import { animations } from '@master/css'
-import Code from 'websites-shared/components/Code'
+import Code from 'websites/components/Code'
 
 const Default = () =>
     <Code lang="js" beautify>

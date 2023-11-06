@@ -1,7 +1,7 @@
-import { Props } from 'websites-shared/types/Props'
+import { Props } from 'websites/types/Props'
 import create from '~/og-image'
 import metadata from './metadata'
-import Icon from 'websites-shared/images/frameworks/nuxtjs.svg'
+import Icon from 'websites/images/frameworks/nuxtjs.svg'
 
 export const alt = metadata.title
 export const contentType = 'image/jpg'

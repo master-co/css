@@ -1,11 +1,11 @@
-import { Metadata } from 'websites-shared/types/Metadata'
+import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Progressive Rendering in Nuxt.js',
     description: 'Guide to setting up Master CSS progressive rendering in your Nuxt.js project.',
     category: 'Installation',
     ogImageTitle: 'Progressive Rendering',
-    ogImageIcon: 'websites-shared/images/frameworks/nuxtjs.svg',
+    ogImageIcon: 'websites/images/frameworks/nuxtjs.svg',
     ogImageIconWidth: 256
 }
 

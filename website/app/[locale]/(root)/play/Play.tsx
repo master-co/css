@@ -5,39 +5,39 @@ import type { editor } from 'monaco-editor'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { customAlphabet } from 'nanoid'
 import { debounce } from 'throttle-debounce';
-import { snackbar } from 'websites-shared/utils/snackbar'
+import { snackbar } from 'websites/utils/snackbar'
 import copy from 'copy-to-clipboard'
-// import ThemeButton from 'websites-shared/components/ThemeButton'
+// import ThemeButton from 'websites/components/ThemeButton'
 import dedent from 'ts-dedent'
-// import DocHeader from 'websites-shared/layouts/Doc/DocHeader'
+// import DocHeader from 'websites/layouts/Doc/DocHeader'
 import { IconBrandCss3, IconChevronDown, IconDeviceDesktop, IconDeviceMobile } from '@tabler/icons-react'
-import Tabs, { Tab } from 'websites-shared/components/Tabs'
+import Tabs, { Tab } from 'websites/components/Tabs'
 import { l } from 'to-line'
-// import { Button } from 'websites-shared/components/App/AppBtn'
+// import { Button } from 'websites/components/App/AppBtn'
 import { usePathname, useRouter } from 'next/navigation'
-import LanguageButton from 'websites-shared/components/LanguageButton';
+import LanguageButton from 'websites/components/LanguageButton';
 import previewHandlerScriptText from './previewHandler.js?text'
-import ThemeButton from 'websites-shared/components/ThemeButton';
-import Button from 'websites-shared/components/Button'
+import ThemeButton from 'websites/components/ThemeButton';
+import Button from 'websites/components/Button'
 import { getScriptHTML } from './getScriptHTML';
 import { getStyleHTML } from './getStyleHTML';
-import { beautifyCSS } from 'websites-shared/utils/beautifyCSS'
+import { beautifyCSS } from 'websites/utils/beautifyCSS'
 const alphabet = '0123456789abcdefghijklmnopqrstuvwxyz'
 const nanoid = customAlphabet(alphabet, 14)
 import templates from './templates';
-import latestMasterCSSVersion from 'websites-shared/version';
+import latestMasterCSSVersion from 'websites/version';
 import { useSearchParams } from 'next/navigation';
-import Resizable from 'websites-shared/components/Resizable';
+import Resizable from 'websites/components/Resizable';
 import { getLinkHTML } from './getLinkHTML';
 /* 與本地 css 專案即時測試用 */
 // import { useTheme } from '../../../../../css/packages/react/src'
 import { useThemeService } from '@master/css.react'
 import cloneDeep from 'clone-deep'
 import { Logotype } from '~/components/Logotype';
-import Header, { HeaderNav } from 'websites-shared/components/Header'
+import Header, { HeaderNav } from 'websites/components/Header'
 import links from '~/links.mjs'
 import dynamic from 'next/dynamic'
-import i18n from 'websites-shared/i18n.config.mjs'
+import i18n from 'websites/i18n.config.mjs'
 import { mediaQueries } from '@master/css'
 
 // import { Registry } from 'monaco-textmate'

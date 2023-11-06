@@ -1,4 +1,4 @@
-import i18n from 'websites-shared/i18n.config.mjs'
+import i18n from 'websites/i18n.config.mjs'
 
 const redirects = [
     { source: `/${i18n.defaultLocale}/:path((?!.*opengraph-image).*)`, destination: "/:path*", permanent: true },

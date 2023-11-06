@@ -1,4 +1,4 @@
-import { Metadata } from 'websites-shared/types/Metadata'
+import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Migrating to Master CSS',

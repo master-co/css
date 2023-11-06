@@ -3,4 +3,4 @@ packages:
   - 'examples/*'
   - 'website'
   - 'shared'
-  - '../../shared'
+  - '../../'

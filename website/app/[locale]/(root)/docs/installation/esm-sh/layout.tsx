@@ -1,7 +1,7 @@
-import Tabs, { Tab, TabBadge } from 'websites-shared/components/Tabs'
-import { queryDictionary } from 'websites-shared/dictionaries';
+import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
+import { queryDictionary } from 'websites/dictionaries';
 import DocLayout from '~/layouts/doc'
-import LogoSvg from 'websites-shared/images/cdns/esm-sh.svg'
+import LogoSvg from 'websites/images/cdns/esm-sh.svg'
 import metadata from './metadata';
 
 export default async function Layout(props: any) {

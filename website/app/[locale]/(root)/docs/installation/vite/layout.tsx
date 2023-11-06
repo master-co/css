@@ -1,7 +1,7 @@
-import Tabs, { Tab, TabBadge } from 'websites-shared/components/Tabs'
-import { queryDictionary } from 'websites-shared/dictionaries';
+import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
+import { queryDictionary } from 'websites/dictionaries';
 import DocLayout from '~/layouts/doc'
-import LogoSvg from 'websites-shared/images/build-tools/vite.svg'
+import LogoSvg from 'websites/images/build-tools/vite.svg'
 
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)

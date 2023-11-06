@@ -1,5 +1,5 @@
 import DocHeader from '~/layouts/DocHeader'
-import DocSidebar from 'websites-shared/components/DocSidebar';
+import DocSidebar from 'websites/components/DocSidebar';
 import { pageCategories } from '../pages';
 
 export default async function Layout(props: any) {

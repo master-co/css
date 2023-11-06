@@ -2,8 +2,8 @@ import Layout from '~/layouts/doc'
 import metadata from './metadata'
 import Content from './content.mdx'
 import { generate } from '~/utils/metadata'
-import LogoSvg from 'websites-shared/icons/visualstudiocode.svg'
-import { queryDictionary } from 'websites-shared/dictionaries'
+import LogoSvg from 'websites/icons/visualstudiocode.svg'
+import { queryDictionary } from 'websites/dictionaries'
 
 export async function generateMetadata(props: any, parent: any) {
     return generate(metadata, props, parent)

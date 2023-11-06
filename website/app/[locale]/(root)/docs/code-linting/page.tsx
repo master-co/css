@@ -1,9 +1,9 @@
 import metadata from './metadata'
 import Content from './content.mdx'
 import { generate } from '~/utils/metadata'
-import { queryDictionary } from 'websites-shared/dictionaries';
+import { queryDictionary } from 'websites/dictionaries';
 import DocLayout from '~/layouts/doc'
-import ESLintSvg from 'websites-shared/icons/eslint.svg'
+import ESLintSvg from 'websites/icons/eslint.svg'
 
 export async function generateMetadata(props: any, parent: any) {
     return generate(metadata, props, parent)

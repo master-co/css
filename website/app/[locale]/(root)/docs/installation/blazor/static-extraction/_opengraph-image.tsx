@@ -1,7 +1,7 @@
-import { Props } from 'websites-shared/types/Props'
+import { Props } from 'websites/types/Props'
 import create from '~/og-image'
 import metadata from './metadata'
-import LogoSvg from 'websites-shared/images/frameworks/blazor.svg'
+import LogoSvg from 'websites/images/frameworks/blazor.svg'
 
 export const alt = metadata.title
 export const contentType = 'image/jpg'

@@ -2,7 +2,7 @@
 import Layout from '~/layouts/doc'
 import metadata from './metadata'
 import Content from './content.mdx'
-import { getSponsorTiers } from 'websites-shared/utils/get-sponsor-tiers'
+import { getSponsorTiers } from 'websites/utils/get-sponsor-tiers'
 import Backers from './components/Backers'
 import Donors from './components/Donors'
 import DonationModal from './components/DonationModal'

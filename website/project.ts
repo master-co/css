@@ -1,4 +1,4 @@
-import pkg from 'websites-shared/package.json'
+import pkg from 'websites/package.json'
 
 const project = {
     name: 'CSS',

@@ -1,4 +1,4 @@
-import Link from 'websites-shared/components/Link'
+import Link from 'websites/components/Link'
 import { l } from 'to-line'
 
 export default (props: any) => {

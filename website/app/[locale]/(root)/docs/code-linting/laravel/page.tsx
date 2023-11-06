@@ -2,8 +2,8 @@ import Layout from '~/layouts/doc'
 import metadata from './metadata'
 import Content from './content.mdx'
 import { generate } from '~/utils/metadata'
-import LogoSvg from 'websites-shared/images/frameworks/laravel.svg'
-import { queryDictionary } from 'websites-shared/dictionaries'
+import LogoSvg from 'websites/images/frameworks/laravel.svg'
+import { queryDictionary } from 'websites/dictionaries'
 
 export async function generateMetadata(props: any, parent: any) {
     return generate(metadata, props, parent)

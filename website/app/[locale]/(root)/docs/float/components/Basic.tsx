@@ -1,8 +1,8 @@
-import Demo from 'websites-shared/components/Demo'
-import DemoPanel from 'websites-shared/components/DemoPanel'
+import Demo from 'websites/components/Demo'
+import DemoPanel from 'websites/components/DemoPanel'
 import Image from 'next/image'
 import { l } from 'to-line'
-import Code from 'websites-shared/components/Code'
+import Code from 'websites/components/Code'
 
 export default ({ className }: any) => {
     return (

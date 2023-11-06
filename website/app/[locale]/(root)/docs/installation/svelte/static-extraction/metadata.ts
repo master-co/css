@@ -1,11 +1,11 @@
-import { Metadata } from 'websites-shared/types/Metadata'
+import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Static Extraction in Svelte',
     description: 'Guide to setting up Master CSS static extraction in your Svelte project.',
     category: 'Installation',
     ogImageTitle: 'Static Extraction',
-    ogImageIcon: 'websites-shared/images/frameworks/svelte.svg',
+    ogImageIcon: 'websites/images/frameworks/svelte.svg',
     ogImageIconWidth: 192
 }
 

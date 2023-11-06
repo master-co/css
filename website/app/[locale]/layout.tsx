@@ -1,5 +1,5 @@
 import { Viewport } from 'next';
-import i18n from 'websites-shared/i18n.config.mjs'
+import i18n from 'websites/i18n.config.mjs'
 
 export const metadata = {
     metadataBase: new URL(process.env.HOST as string),
