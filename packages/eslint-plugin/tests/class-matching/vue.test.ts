@@ -42,7 +42,7 @@ ruleTester.run('vue class order', rule, {
         },
         {
             code: `<template><div :class="ctl(\`m:8 bg:black p:8 f:24 fg:white \${some}\`)" /></template>`,
-            output: `<template><div :class="ctl(\`bg:black f:24 fg:white m:8 p:8 \${some}\`)" /></template>`,
+            output: `<template><div :class="ctl(\`\${some} bg:black f:24 fg:white m:8 p:8\`)" /></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             parser: require.resolve('vue-eslint-parser'),

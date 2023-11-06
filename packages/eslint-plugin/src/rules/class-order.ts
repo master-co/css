@@ -20,12 +20,17 @@ export default {
     },
     create: function (context) {
         const { options, settings, config } = resolveContext(context)
+        const sourceCode = context.sourceCode
+
         const visitNode = (node, arg = null) => {
             let originalClassNamesValue = null
             let start = null
             let end = null
             let prefix = ''
             let suffix = ''
+
+            let expStrings = []
+
             if (arg === null) {
                 originalClassNamesValue = astUtil.extractValueFromNode(node)
                 const range = astUtil.extractRangeFromNode(node)
@@ -44,10 +49,15 @@ export default {
                         arg.expressions.forEach((exp) => {
                             visitNode(node, exp)
                         })
-                        arg.quasis.forEach((quasis) => {
-                            visitNode(node, quasis)
-                        })
-                        return
+                        originalClassNamesValue = sourceCode.getText(arg)
+                        originalClassNamesValue = originalClassNamesValue.substring(1, originalClassNamesValue.length - 1)
+                        expStrings = originalClassNamesValue.match(/\$\{(?:(?<!\\\\)(['"`]).*?(?<!\\\\)\1|[^}])*?\}/g) ?? []
+                        for (let i = 0; i < expStrings.length; i++) {
+                            originalClassNamesValue = originalClassNamesValue.replace(expStrings[i], `EXPRESSION_STRING_NUM_${i}`)
+                        }
+                        start = arg.range[0] + 1
+                        end = arg.range[1] - 1
+                        break
                     case 'ConditionalExpression':
                         visitNode(node, arg.consequent)
                         visitNode(node, arg.alternate)
@@ -135,9 +145,14 @@ export default {
                 }
             }
 
+            for (let i = 0; i < expStrings.length; i++) {
+                originalClassNamesValue = originalClassNamesValue.replace(`EXPRESSION_STRING_NUM_${i}`, expStrings[i])
+                validatedClassNamesValue = validatedClassNamesValue.replace(`EXPRESSION_STRING_NUM_${i}`, expStrings[i])
+            }
+
             if (originalClassNamesValue !== validatedClassNamesValue) {
                 validatedClassNamesValue = prefix + validatedClassNamesValue + suffix
-                const sourceCode = context.sourceCode
+
                 const sourceCodeLines = sourceCode.lines
                 const nodeStartLine = node.loc.start.line
                 const nodeEndLine = node.loc.end.line

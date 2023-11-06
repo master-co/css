@@ -25,23 +25,13 @@ new RuleTester({
             },
         },
         {
-            code: '<div className={ctl(`p:10 w:full ${live && \'bg:blue-10 bg:purple-40@dark r:5@sm\'}`)}>ctl + exp</div>',
+            code: '<div className={ctl(`${live && \'bg:blue-10 bg:purple-40@dark r:5@sm\'} p:10 w:full`)}>ctl + exp</div>',
         },
         {
             code: '<div className={ctl(`bg:blue-50 h:48 r:100% w:48 ${className}`)}>ctl + var</div>',
         },
         {
-            code: '<div className={ctl(`p:10 w:full ${live && \'white black@dark bg:\'}`)}>Space trim issue</div>',
-        },
-        {
-            code: `
-                ctl(\`
-                    flex align-items:center justify-content:center
-                    \${ variant === SpinnerVariant.OVERLAY && \`rounded b:2 bg:gray-40 px:4 z:60 \${widthClass} \${heightClass}\`}
-                    \${ variant === SpinnerVariant.FULLSCREEN &&
-                    \`fixed bg:white@dark bottom:0 left:0 opacity:.6@dark px:4 right:0 top:0 z:60\`}
-                \`)
-            `,
+            code: '<div className={ctl(`${live && \'white black@dark bg:\'} p:10 w:full`)}>Space trim issue</div>',
         },
         {
             code: `<div class='bg:black f:24 fg:white m:8 p:8'>Simple quotes</div>`,
@@ -98,7 +88,7 @@ new RuleTester({
         },
         {
             code: `
-      <div className={\`rel overflow:hidden w:full \${yolo ? 'flex flex:col' : 'block'}\`}>Issue #131</div>
+      <div className={\`\${yolo ? 'flex flex:col' : 'block'} rel overflow:hidden w:full\`}>Issue #131</div>
       `,
         },
         {
@@ -162,14 +152,13 @@ new RuleTester({
         },
         {
             code: 'ctl(`p:10 flex ${some}`)',
-            output: 'ctl(`flex p:10 ${some}`)',
+            output: 'ctl(`${some} flex p:10`)',
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
-            code: '<div className={ctl(`p:10 flex ${live && \'bg:black@dark bg:white\'}`)}>Space trim issue with fix</div>',
-            output: '<div className={ctl(`flex p:10 ${live && \'bg:white bg:black@dark\'}`)}>Space trim issue with fix</div>',
+            code: '<div className={ctl(`${live && \'bg:black@dark bg:white\'} flex p:10`)}>Space trim issue with fix</div>',
+            output: '<div className={ctl(`${live && \'bg:white bg:black@dark\'} flex p:10`)}>Space trim issue with fix</div>',
             errors: [
-                { messageId: 'invalidClassOrder' },
                 { messageId: 'invalidClassOrder' }
             ],
         },
@@ -266,9 +255,9 @@ new RuleTester({
         \${fullWidth ? "w:12" : "w:6"}
         container
         \${fullWidth ? "w:8@sm" : "w:4@sm"}
+        \${hasError && "bg:red"}
         flex
         w:9@lg
-        \${hasError && "bg:red"}
       \`);`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
@@ -287,13 +276,13 @@ new RuleTester({
       const buttonClasses = ctl(\`
         \${fullWidth ? "w:12" : "w:6"}
         container
-        flex
         \${fullWidth ? "w:7@sm" : "w:4@sm"}
+        \${hasError && "bg:red"}
+        flex
         py:6@sm
         py:4@lg
-        \${hasError && "bg:red"}
       \`);`,
-            errors: [{ messageId: 'invalidClassOrder' }, { messageId: 'invalidClassOrder' }],
+            errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `<div class="w:12@sm w:320px">Allowed arbitrary value but incorrect order</div>`,
@@ -337,48 +326,47 @@ new RuleTester({
         {
             code: `
       ctl(\`
-        px:2
-        flex
         \${
-          !isDisabled &&
-          \`
+            !isDisabled &&
+            \`
             top:0
             flex
             b:0
-          \`
+            \`
         }
         \${
-          isDisabled &&
-          \`
+            isDisabled &&
+            \`
             mx:0
             b:0
-          \`
+            \`
         }
+        flex
+        px:2
       \`)
       `,
             output: `
       ctl(\`
-        flex
-        px:2
         \${
-          !isDisabled &&
-          \`
+            !isDisabled &&
+            \`
             flex
             b:0
             top:0
-          \`
+            \`
         }
         \${
-          isDisabled &&
-          \`
+            isDisabled &&
+            \`
             b:0
             mx:0
-          \`
+            \`
         }
+        flex
+        px:2
       \`)
       `,
             errors: [
-                { messageId: 'invalidClassOrder' },
                 { messageId: 'invalidClassOrder' },
                 { messageId: 'invalidClassOrder' }
             ],
@@ -472,6 +460,11 @@ new RuleTester({
         {
             code: `ctl(\`p:3 b:3|solid|gray m:4 h:24 p:4@lg flex b:2 m:4@lg\`)`,
             output: `ctl(\`flex b:2 b:3|solid|gray h:24 m:4 m:4@lg p:3 p:4@lg\`)`,
+            errors: [{ messageId: 'invalidClassOrder' }],
+        },
+        {
+            code: `<div className={\`object:contain full max-h:\${eachSponsorTier.height} bg:black\`}>Template</div>`,
+            output: `<div className={\`full bg:black max-h:\${eachSponsorTier.height} object:contain\`}>Template</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         }
     ],
