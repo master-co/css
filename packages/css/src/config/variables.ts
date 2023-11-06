@@ -48,7 +48,7 @@ const variables = {
         extrabold: 800,
         heavy: 900
     },
-    section: {
+    sizing: {
         '4xs': 360,
         '3xs': 480,
         '2xs': 600,
@@ -59,9 +59,7 @@ const variables = {
         'xl': 1440,
         '2xl': 1600,
         '3xl': 1920,
-        '4xl': 2560
-    },
-    flexBasis: {
+        '4xl': 2560,
         full: '100%',
         fit: 'fit-content',
         max: 'max-content',
@@ -71,33 +69,9 @@ const variables = {
         col: 'column',
         'col-reverse': 'column-reverse'
     },
-    width: {
-        full: '100%',
-        fit: 'fit-content',
-        max: 'max-content',
-        min: 'min-content'
-    },
-    height: {
-        full: '100%',
-        fit: 'fit-content',
-        max: 'max-content',
-        min: 'min-content'
-    },
-    minWidth: {
-        full: '100%',
-        fit: 'fit-content',
-        max: 'max-content',
-        min: 'min-content'
-    },
     boxSizing: {
         content: 'content-box',
         border: 'border-box'
-    },
-    maxHeight: {
-        full: '100%',
-        fit: 'fit-content',
-        max: 'max-content',
-        min: 'min-content'
     },
     position: {
         abs: 'absolute',
@@ -124,22 +98,6 @@ const variables = {
         content: 'content-box',
         border: 'border-box',
         padding: 'padding-box'
-    },
-    gridAutoColumns: {
-        min: 'min-content',
-        max: 'max-content'
-    },
-    gridAutoRows: {
-        min: 'min-content',
-        max: 'max-content'
-    },
-    gridTemplateColumns: {
-        min: 'min-content',
-        max: 'max-content'
-    },
-    gridTemplateRows: {
-        min: 'min-content',
-        max: 'max-content'
     },
     order: {
         first: -999999,

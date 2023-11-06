@@ -353,7 +353,7 @@ const rules = {
     } as RuleOptions,
     // flex
     flexBasis: {
-        variableGroups: ['section'],
+        variableGroups: ['sizing'],
         unit: 'rem',
         layer: CoreLayer.Native,
     } as RuleOptions,
@@ -382,25 +382,25 @@ const rules = {
         match: /^w:/,
         unit: 'rem',
         layer: CoreLayer.Native,
-        variableGroups: ['section']
+        variableGroups: ['sizing']
     } as RuleOptions,
     height: {
         match: /^h:/,
         unit: 'rem',
         layer: CoreLayer.Native,
-        variableGroups: ['section']
+        variableGroups: ['sizing']
     } as RuleOptions,
     minWidth: {
         match: /^min-w:/,
         unit: 'rem',
         layer: CoreLayer.Native,
-        variableGroups: ['section']
+        variableGroups: ['sizing']
     } as RuleOptions,
     minHeight: {
         match: /^min-h:/,
         unit: 'rem',
         layer: CoreLayer.Native,
-        variableGroups: ['section']
+        variableGroups: ['sizing']
     } as RuleOptions,
     box: {
         match: /^(?:(?:max|min|clamp|calc)\(.+\)|[0-9]+[a-z]*?)x(?:(?:max|min|clamp|calc)\(.+\)|[0-9]+[a-z]*?)/,
@@ -455,7 +455,7 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleOptions,
     boxDecorationBreak: {
-        match: ['section', ['slice', 'clone']],
+        match: ['sizing', ['slice', 'clone']],
         layer: CoreLayer.Native,
         declare(value, unit) {
             return {
@@ -600,13 +600,13 @@ const rules = {
         match: /^max-h:/,
         unit: 'rem',
         layer: CoreLayer.Native,
-        variableGroups: ['section']
+        variableGroups: ['sizing']
     } as RuleOptions,
     maxWidth: {
         match: /^max-w:/,
         unit: 'rem',
         layer: CoreLayer.Native,
-        variableGroups: ['section']
+        variableGroups: ['sizing']
     } as RuleOptions,
     opacity: {
         layer: CoreLayer.Native,
@@ -1357,14 +1357,16 @@ const rules = {
     } as RuleOptions,
     gridAutoColumns: {
         match: /^grid-auto-cols:/,
-        layer: CoreLayer.Native
+        layer: CoreLayer.Native,
+        variableGroups: ['sizing']
     } as RuleOptions,
     gridAutoFlow: {
         match: /^grid-flow:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     gridAutoRows: {
-        layer: CoreLayer.Native
+        layer: CoreLayer.Native,
+        variableGroups: ['sizing']
     } as RuleOptions,
     gridTemplateAreas: {
         layer: CoreLayer.Native
@@ -1372,11 +1374,13 @@ const rules = {
     gridTemplateColumns: {
         match: /^grid-template-cols:/,
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variableGroups: ['sizing']
     } as RuleOptions,
     gridTemplateRows: {
         layer: CoreLayer.Native,
-        unit: 'rem'
+        unit: 'rem',
+        variableGroups: ['sizing']
     } as RuleOptions,
     gridTemplate: {
         layer: CoreLayer.NativeShorthand

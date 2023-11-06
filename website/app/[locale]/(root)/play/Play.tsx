@@ -569,7 +569,7 @@ export default function Play(props: any) {
     return (
         <div className="abs flex full flex:col">
             <Header fixed={false} Logotype={Logotype}>
-                <label className='rel gap:5 ml:30 app-header-nav'>
+                <label className='app-header-nav rel gap:5 ml:30'>
                     v{version}
                     <select ref={versionSelectRef} name="version" defaultValue={version}
                         className="abs full cursor:pointer inset:0 opacity:0"
@@ -596,7 +596,7 @@ export default function Play(props: any) {
                 }}>{dict[eachLink.name] || eachLink.name}</HeaderNav>)}
                 <div className="flex align-items:center ml:auto mr:-12">
                     {/* copy share link */}
-                    {(shareId && !shareable) && <button className="hide@<md mx:12 w:auto! app-header-icon" onClick={copyLink}>
+                    {(shareId && !shareable) && <button className="app-header-icon hide@<md mx:12" onClick={copyLink}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M9 15l6 -6"></path>
@@ -620,7 +620,7 @@ export default function Play(props: any) {
                         </span>}
                     </button>}
                     {(shareId || shareable) && <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>}
-                    <button className="hide@<md app-header-icon" onClick={(event) => (setLayout(layout ? null : '2'))}>
+                    <button className="app-header-icon hide@<md" onClick={(event) => (setLayout(layout ? null : '2'))}>
                         <svg className={l({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={l(
                                 '~transform|.2s',
@@ -632,7 +632,7 @@ export default function Play(props: any) {
                             <path d="M12 4l0 16"></path>
                         </svg>
                     </button>
-                    <button className="hide@<md app-header-icon" onClick={(event) => (setLayout(layout === '3' ? '4' : '3'))}>
+                    <button className="app-header-icon hide@<md" onClick={(event) => (setLayout(layout === '3' ? '4' : '3'))}>
                         <svg className={l({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate(90)')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={l(
                                 '~transform|.2s',
@@ -644,7 +644,7 @@ export default function Play(props: any) {
                             <path d="M12 4l0 16"></path>
                         </svg>
                     </button>
-                    <button className="hide@<md app-header-icon" onClick={(event) => setLayout('5')}>
+                    <button className="app-header-icon hide@<md" onClick={(event) => setLayout('5')}>
                         <svg xmlns="http://www.w3.org/2000/svg" className={l(layout === '5' && 'stroke:accent')} width="22" height="22" strokeWidth="1.2" viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
@@ -654,21 +654,21 @@ export default function Play(props: any) {
                     </button>
                     <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>
                     {/* preview: desktop */}
-                    <button className="hide@<md app-header-icon" onClick={(event) => setPreview('')}>
+                    <button className="app-header-icon hide@<md" onClick={(event) => setPreview('')}>
                         <IconDeviceDesktop width="22" height="22" className={l(
                             'stroke:current stroke:1.3',
                             !preview ? 'stroke:accent fill:accent/.15' : 'fill:dim/.2'
                         )} />
                     </button>
                     {/* preview: responsive */}
-                    <button className="hide@<md app-header-icon" onClick={(event) => setPreview('responsive')}>
+                    <button className="app-header-icon hide@<md" onClick={(event) => setPreview('responsive')}>
                         <IconDeviceMobile width="22" height="22" className={l(
                             'stroke:current stroke:1.3',
                             responsive ? 'stroke:accent fill:accent/.15' : 'fill:dim/.2'
                         )} />
                     </button>
                     {/* preview: css */}
-                    <button className="hide@<md app-header-icon" onClick={(event) => setPreview('css')}>
+                    <button className="app-header-icon hide@<md" onClick={(event) => setPreview('css')}>
                         <IconBrandCss3 width="22" height="22" className={l(
                             'stroke:current stroke:1.3',
                             preview === 'css' ? 'stroke:accent fill:accent/.15' : 'fill:dim/.2'
@@ -704,13 +704,13 @@ export default function Play(props: any) {
                     showHandler={[layout === '4', !layout, layout === '3', layout === '2']}
                     className={l(
                         layout === '5' && 'hide!@md',
-                        'b:divider',
+                        'b:divider|solid',
                         {
                             'full!@<md': currentTabTitle !== 'Preview',
-                            'br:1|solid': !layout,
-                            'bl:1|solid': layout === '2',
-                            'bb:1|solid': layout === '3',
-                            'bt:1|solid': layout === '4'
+                            'br:1': !layout,
+                            'bl:1': layout === '2',
+                            'bb:1': layout === '3',
+                            'bt:1': layout === '4'
                         }
                     )}
                     width={currentTabTitle === 'Preview' ? '' : width}
@@ -812,7 +812,7 @@ export default function Play(props: any) {
                         {previewErrorEvent &&
                             <div className="abs full bg:red-10@dark bg:red-95@light fg:red-75@dark fg:red@light inset:0 p:50">
                                 <h2 className="font:20">Error at line {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
-                                <div className="bg:black/.2@dark bg:red-90@light r:5 font:14 font:medium my:20 p:15|20">
+                                <div className="bg:black/.2@dark bg:red-90@light font:14 font:medium my:20 p:15|20 r:5">
                                     {previewErrorEvent.message}
                                 </div>
                                 <div className="font:12">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>
