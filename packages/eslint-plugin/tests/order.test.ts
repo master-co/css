@@ -28,7 +28,7 @@ new RuleTester({
             code: '<div className={ctl(`${live && \'bg:blue-10 bg:purple-40@dark r:5@sm\'} p:10 w:full`)}>ctl + exp</div>',
         },
         {
-            code: '<div className={ctl(`bg:blue-50 h:48 r:100% w:48 ${className}`)}>ctl + var</div>',
+            code: '<div className={ctl(`${className} bg:blue-50 h:48 r:100% w:48`)}>ctl + var</div>',
         },
         {
             code: '<div className={ctl(`${live && \'white black@dark bg:\'} p:10 w:full`)}>Space trim issue</div>',
