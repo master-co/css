@@ -452,12 +452,11 @@ export class MasterCSS {
      * @returns this
      */
     observe(targetRoot: Document | ShadowRoot | null | undefined, options: MutationObserverInit = { subtree: true, childList: true }) {
+        if (!targetRoot) targetRoot = document
         // prevent repeated observation of the same root element
         if (this.root === targetRoot) {
             return this
         }
-
-        if (!targetRoot) targetRoot = document
 
         // @ts-ignore
         this.root = targetRoot
@@ -1446,23 +1445,23 @@ export class MasterCSS {
                             for (let i = 0; i < sheet.cssRules.length; i++) {
                                 const eachCssRule = sheet.cssRules[i]
                                 if (
-                                    eachCssRule.constructor.name === 'CSSStyleRule' 
-                                    && (eachCssRule as CSSStyleRule).style.length === 1 
-                                    && (eachCssRule as CSSStyleRule).style[0].startsWith('--') 
+                                    eachCssRule.constructor.name === 'CSSStyleRule'
+                                    && (eachCssRule as CSSStyleRule).style.length === 1
+                                    && (eachCssRule as CSSStyleRule).style[0].startsWith('--')
                                     && !(eachCssRule as CSSStyleRule).selectorText.startsWith('.\\$')
                                 )
                                     continue
 
                                 if (eachCssRule.constructor.name !== 'CSSKeyframesRule')
                                     break
-    
+
                                 if ((eachCssRule as CSSKeyframesRule).name === eachKeyframeName) {
                                     cssRule = eachCssRule
                                     break
                                 }
                             }
                         }
-                      
+
                         if (cssRule) {
                             nativeRule.cssRule = cssRule
                         } else {
@@ -1533,8 +1532,8 @@ export class MasterCSS {
                                 const eachCssRule = sheet.cssRules[i]
                                 if (
                                     eachCssRule.constructor.name !== 'CSSStyleRule'
-                                    || (eachCssRule as CSSStyleRule).style.length !== 1 
-                                    || !(eachCssRule as CSSStyleRule).style[0].startsWith('--') 
+                                    || (eachCssRule as CSSStyleRule).style.length !== 1
+                                    || !(eachCssRule as CSSStyleRule).style[0].startsWith('--')
                                     || (eachCssRule as CSSStyleRule).selectorText.startsWith('.\\$')
                                 )
                                     break
