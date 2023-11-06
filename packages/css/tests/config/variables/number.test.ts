@@ -89,3 +89,25 @@ test('number with themes using variable function', () => {
         }
     })
 })
+
+test('variables', () => {
+    testCSS('m:$(spacing-x1)', '.m\\:\\$\\(spacing-x1\\){margin:1rem}', {
+        variables: {
+            spacing: { x1: 16, x2: 32 },
+        }
+    })
+})
+
+test('negative variables', () => {
+    testCSS('m:$(-spacing-x1)', '.m\\:\\$\\(-spacing-x1\\){margin:-1rem}', {
+        variables: {
+            spacing: { x1: 16, x2: 32 }
+        }
+    })
+
+    testCSS('w:-11x', '.w\\:-11x{width:-3.75rem}', {
+        variables: {
+            width: { '11x': 60 }
+        }
+    })
+})

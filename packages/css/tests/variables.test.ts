@@ -4,7 +4,6 @@
 
 import puppeteer, { Browser, ElementHandle, Page } from 'puppeteer-core'
 import path from 'path'
-import type { MasterCSS } from '../src'
 
 const variables = {
     first: {

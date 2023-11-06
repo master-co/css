@@ -3,9 +3,10 @@ import type { Rule } from '../rule'
 
 const functions = {
     $: {
+        colored: true,
         transform(value) {
             return [{ type: 'variable', name: value }]
-        }
+        },
     },
     calc: {
         transform(value, bypassVariableNames) {
