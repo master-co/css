@@ -31,7 +31,7 @@ new RuleTester({
             code: '<div className={ctl(`bg:blue-50 h:48 r:100% w:48 ${className}`)}>ctl + var</div>',
         },
         {
-            code: '<div className={ctl(`p:10 w:full ${live && \'bg: white bg: black@dark\'}`)}>Space trim issue</div>',
+            code: '<div className={ctl(`p:10 w:full ${live && \'white black@dark bg:\'}`)}>Space trim issue</div>',
         },
         {
             code: `
