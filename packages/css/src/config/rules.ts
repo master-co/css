@@ -129,7 +129,7 @@ const rules = {
         }
     } as RuleOptions,
     variable: {
-        match: /^\$[\w-]+:./, // don't use 'rem' as default, because css variable is common API
+        match: /^\$[\w-]+:/, // don't use 'rem' as default, because css variable is common API
         colored: true,
         layer: CoreLayer.Normal,
         declare(value) {
@@ -183,11 +183,11 @@ const rules = {
         layer: CoreLayer.NativeShorthand
     },
     fontFeatureSettings: {
-        match: /^font-feature:./,
+        match: /^font-feature:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     font: {
-        match: /^f:./,
+        match: /^f:/,
         layer: CoreLayer.NativeShorthand,
         variableGroups: [
             'fontFamily',
@@ -199,37 +199,37 @@ const rules = {
         ]
     } as RuleOptions,
     color: {
-        match: /^(?:color|fg|foreground):./,
+        match: /^(?:color|fg|foreground):/,
         layer: CoreLayer.Native,
         colored: true
     } as RuleOptions,
     // margin
     marginLeft: {
-        match: /^ml:./,
+        match: /^ml:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     marginRight: {
-        match: /^mr:./,
+        match: /^mr:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     marginTop: {
-        match: /^mt:./,
+        match: /^mt:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     marginBottom: {
-        match: /^mb:./,
+        match: /^mb:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     marginX: {
-        match: /^(?:mx|margin-x):./,
+        match: /^(?:mx|margin-x):/,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -241,7 +241,7 @@ const rules = {
         variableGroups: ['spacing']
     } as RuleOptions,
     marginY: {
-        match: /^(?:my|margin-y):./,
+        match: /^(?:my|margin-y):/,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -253,57 +253,57 @@ const rules = {
         variableGroups: ['spacing']
     } as RuleOptions,
     margin: {
-        match: /^m:./,
+        match: /^m:/,
         unit: 'rem',
         layer: CoreLayer.NativeShorthand,
         variableGroups: ['spacing']
     } as RuleOptions,
     // margin inline
     marginInlineStart: {
-        match: /^mis:./,
+        match: /^mis:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     marginInlineEnd: {
-        match: /^mie:./,
+        match: /^mie:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     marginInline: {
-        match: /^mi:./,
+        match: /^mi:/,
         unit: 'rem',
         layer: CoreLayer.NativeShorthand,
         variableGroups: ['spacing']
     } as RuleOptions,
     // padding
     paddingLeft: {
-        match: /^pl:./,
+        match: /^pl:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     paddingRight: {
-        match: /^pr:./,
+        match: /^pr:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     paddingTop: {
-        match: /^pt:./,
+        match: /^pt:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     paddingBottom: {
-        match: /^pb:./,
+        match: /^pb:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     paddingX: {
-        match: /^(?:px|padding-x):./,
+        match: /^(?:px|padding-x):/,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -315,7 +315,7 @@ const rules = {
         variableGroups: ['spacing']
     } as RuleOptions,
     paddingY: {
-        match: /^(?:py|padding-y):./,
+        match: /^(?:py|padding-y):/,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -327,26 +327,26 @@ const rules = {
         variableGroups: ['spacing']
     } as RuleOptions,
     padding: {
-        match: /^p:./,
+        match: /^p:/,
         unit: 'rem',
         layer: CoreLayer.NativeShorthand,
         variableGroups: ['spacing']
     } as RuleOptions,
     // padding inline
     paddingInlineStart: {
-        match: /^pis:./,
+        match: /^pis:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     paddingInlineEnd: {
-        match: /^pie:./,
+        match: /^pie:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     paddingInline: {
-        match: /^pi:./,
+        match: /^pi:/,
         unit: 'rem',
         layer: CoreLayer.NativeShorthand,
         variableGroups: ['spacing']
@@ -375,29 +375,29 @@ const rules = {
         layer: CoreLayer.NativeShorthand
     } as RuleOptions,
     display: {
-        match: /^d:./,
+        match: /^d:/,
         layer: CoreLayer.Native,
     } as RuleOptions,
     width: {
-        match: /^w:./,
+        match: /^w:/,
         unit: 'rem',
         layer: CoreLayer.Native,
         variableGroups: ['section']
     } as RuleOptions,
     height: {
-        match: /^h:./,
+        match: /^h:/,
         unit: 'rem',
         layer: CoreLayer.Native,
         variableGroups: ['section']
     } as RuleOptions,
     minWidth: {
-        match: /^min-w:./,
+        match: /^min-w:/,
         unit: 'rem',
         layer: CoreLayer.Native,
         variableGroups: ['section']
     } as RuleOptions,
     minHeight: {
-        match: /^min-h:./,
+        match: /^min-h:/,
         unit: 'rem',
         layer: CoreLayer.Native,
         variableGroups: ['section']
@@ -419,7 +419,7 @@ const rules = {
         }
     } as RuleOptions,
     minBox: {
-        match: /^min:./,
+        match: /^min:/,
         layer: CoreLayer.Shorthand,
         unit: 'rem',
         separators: ['x'],
@@ -435,7 +435,7 @@ const rules = {
         }
     } as RuleOptions,
     maxBox: {
-        match: /^max:./,
+        match: /^max:/,
         layer: CoreLayer.Shorthand,
         unit: 'rem',
         separators: ['x'],
@@ -451,7 +451,7 @@ const rules = {
         }
     } as RuleOptions,
     boxSizing: {
-        match: /^box:./,
+        match: /^box:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     boxDecorationBreak: {
@@ -477,12 +477,12 @@ const rules = {
         layer: CoreLayer.Native,
     } as RuleOptions,
     letterSpacing: {
-        match: /^ls:./,
+        match: /^ls:/,
         layer: CoreLayer.Native,
         unit: 'em'
     } as RuleOptions,
     lineHeight: {
-        match: /^lh:./,
+        match: /^lh:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     objectFit: {
@@ -548,11 +548,11 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleOptions,
     verticalAlign: {
-        match: /^(?:v|vertical):./,
+        match: /^(?:v|vertical):/,
         layer: CoreLayer.Native
     } as RuleOptions,
     columns: {
-        match: /^(?:columns|cols):./,
+        match: /^(?:columns|cols):/,
         layer: CoreLayer.NativeShorthand
     } as RuleOptions,
     whiteSpace: {
@@ -584,7 +584,7 @@ const rules = {
         variableGroups: ['spacing']
     } as RuleOptions,
     lines: {
-        match: /^lines:./,
+        match: /^lines:/,
         declare(value, unit) {
             return {
                 overflow: 'hidden',
@@ -597,13 +597,13 @@ const rules = {
         }
     } as RuleOptions,
     maxHeight: {
-        match: /^max-h:./,
+        match: /^max-h:/,
         unit: 'rem',
         layer: CoreLayer.Native,
         variableGroups: ['section']
     } as RuleOptions,
     maxWidth: {
-        match: /^max-w:./,
+        match: /^max-w:/,
         unit: 'rem',
         layer: CoreLayer.Native,
         variableGroups: ['section']
@@ -657,7 +657,7 @@ const rules = {
         layer: CoreLayer.NativeShorthand
     } as RuleOptions,
     zIndex: {
-        match: /^z:./,
+        match: /^z:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     position: {
@@ -760,7 +760,7 @@ const rules = {
         }
     } as RuleOptions,
     boxShadow: {
-        match: /^s(?:hadow)?:./,
+        match: /^s(?:hadow)?:/,
         unit: 'rem',
         layer: CoreLayer.Native,
         colored: true
@@ -791,20 +791,20 @@ const rules = {
         variableGroups: ['spacing']
     } as RuleOptions,
     transitionProperty: {
-        match: /^~property:./,
+        match: /^~property:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     transitionTimingFunction: {
-        match: /^~easing:./,
+        match: /^~easing:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     transitionDuration: {
-        match: /^~duration:./,
+        match: /^~duration:/,
         layer: CoreLayer.Native,
         unit: 'ms'
     } as RuleOptions,
     transitionDelay: {
-        match: /^~delay:./,
+        match: /^~delay:/,
         layer: CoreLayer.Native,
         unit: 'ms'
     } as RuleOptions,
@@ -822,37 +822,37 @@ const rules = {
         layer: CoreLayer.NativeShorthand
     } as RuleOptions,
     animationDelay: {
-        match: /^@delay:./,
+        match: /^@delay:/,
         layer: CoreLayer.Native,
         unit: 'ms'
     } as RuleOptions,
     animationDirection: {
-        match: /^@direction:./,
+        match: /^@direction:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     animationDuration: {
-        match: /^@duration:./,
+        match: /^@duration:/,
         layer: CoreLayer.Native,
         unit: 'ms'
     } as RuleOptions,
     animationFillMode: {
-        match: /^@fill:./,
+        match: /^@fill:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     animationIterationCount: {
-        match: /^@iteration:./,
+        match: /^@iteration:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     animationName: {
-        match: /^@name:./,
+        match: /^@name:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     animationPlayState: {
-        match: /^@play:./,
+        match: /^@play:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     animationTimingFunction: {
-        match: /^@easing:./,
+        match: /^@easing:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     animation: {
@@ -926,27 +926,27 @@ const rules = {
     } as RuleOptions,
     // border radius
     borderTopLeftRadius: {
-        match: /^r(?:tl|lt):./,
+        match: /^r(?:tl|lt):/,
         unit: 'rem',
         layer: CoreLayer.Native
     } as RuleOptions,
     borderTopRightRadius: {
-        match: /^r(?:tr|rt):./,
+        match: /^r(?:tr|rt):/,
         unit: 'rem',
         layer: CoreLayer.Native
     } as RuleOptions,
     borderBottomLeftRadius: {
-        match: /^r(?:bl|lb):./,
+        match: /^r(?:bl|lb):/,
         unit: 'rem',
         layer: CoreLayer.Native
     } as RuleOptions,
     borderBottomRightRadius: {
-        match: /^r(?:br|rb):./,
+        match: /^r(?:br|rb):/,
         unit: 'rem',
         layer: CoreLayer.Native
     } as RuleOptions,
     borderTopRadius: {
-        match: /^rt:./,
+        match: /^rt:/,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -957,7 +957,7 @@ const rules = {
         }
     } as RuleOptions,
     borderBottomRadius: {
-        match: /^rb:./,
+        match: /^rb:/,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -968,7 +968,7 @@ const rules = {
         }
     } as RuleOptions,
     borderLeftRadius: {
-        match: /^rl:./,
+        match: /^rl:/,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -979,7 +979,7 @@ const rules = {
         }
     } as RuleOptions,
     borderRightRadius: {
-        match: /^rr:./,
+        match: /^rr:/,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -990,7 +990,7 @@ const rules = {
         }
     } as RuleOptions,
     borderRadius: {
-        match: /^r:./,
+        match: /^r:/,
         unit: 'rem',
         layer: CoreLayer.NativeShorthand
     } as RuleOptions,
@@ -1117,31 +1117,31 @@ const rules = {
     } as RuleOptions,
     // border
     borderTop: {
-        match: /^bt:./,
+        match: /^bt:/,
         layer: CoreLayer.NativeShorthand,
         unit: 'rem',
         colored: true
     } as RuleOptions,
     borderBottom: {
-        match: /^bb:./,
+        match: /^bb:/,
         layer: CoreLayer.NativeShorthand,
         unit: 'rem',
         colored: true
     } as RuleOptions,
     borderLeft: {
-        match: /^bl:./,
+        match: /^bl:/,
         layer: CoreLayer.NativeShorthand,
         unit: 'rem',
         colored: true
     } as RuleOptions,
     borderRight: {
-        match: /^br:./,
+        match: /^br:/,
         layer: CoreLayer.NativeShorthand,
         unit: 'rem',
         colored: true
     } as RuleOptions,
     borderX: {
-        match: /^(?:bx|border-x):./,
+        match: /^(?:bx|border-x):/,
         unit: 'rem',
         colored: true,
         layer: CoreLayer.Shorthand,
@@ -1153,7 +1153,7 @@ const rules = {
         }
     } as RuleOptions,
     borderY: {
-        match: /^(?:by|border-y):./,
+        match: /^(?:by|border-y):/,
         unit: 'rem',
         colored: true,
         layer: CoreLayer.Shorthand,
@@ -1165,7 +1165,7 @@ const rules = {
         }
     } as RuleOptions,
     border: {
-        match: /^b:./,
+        match: /^b:/,
         unit: 'rem',
         colored: true,
         layer: CoreLayer.NativeShorthand
@@ -1216,7 +1216,7 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleOptions,
     background: {
-        match: /^bg:./,
+        match: /^bg:/,
         colored: true,
         layer: CoreLayer.NativeShorthand
     } as RuleOptions,
@@ -1231,11 +1231,11 @@ const rules = {
         }
     } as RuleOptions,
     mixBlendMode: {
-        match: /^blend:./,
+        match: /^blend:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     backdropFilter: {
-        match: /^bd:./,
+        match: /^bd:/,
         layer: CoreLayer.Native,
         colored: true,
         declare(value, unit) {
@@ -1251,7 +1251,7 @@ const rules = {
         colored: true
     } as RuleOptions,
     fill: {
-        match: /^fill:./,
+        match: /^fill:/,
         layer: CoreLayer.Native,
         colored: true
     } as RuleOptions,
@@ -1295,15 +1295,15 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleOptions,
     gridColumnStart: {
-        match: /^grid-col-start:./,
+        match: /^grid-col-start:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     gridColumnEnd: {
-        match: /^grid-col-end:./,
+        match: /^grid-col-end:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     gridColumn: {
-        match: /^grid-col(?:umn)?(?:-span)?:./,
+        match: /^grid-col(?:umn)?(?:-span)?:/,
         layer: CoreLayer.NativeShorthand,
         transform(value) {
             return this.prefix.slice(-5, -1) === 'span' && value !== 'auto'
@@ -1312,7 +1312,7 @@ const rules = {
         }
     } as RuleOptions,
     gridColumns: {
-        match: /^grid-cols:./,
+        match: /^grid-cols:/,
         declare(value, unit) {
             return {
                 display: 'grid',
@@ -1332,7 +1332,7 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleOptions,
     gridRow: {
-        match: /^grid-row-span:./,
+        match: /^grid-row-span:/,
         layer: CoreLayer.NativeShorthand,
         transform(value) {
             return this.prefix.slice(-5, -1) === 'span' && value !== 'auto'
@@ -1341,7 +1341,7 @@ const rules = {
         }
     } as RuleOptions,
     gridRows: {
-        match: /^grid-rows:./,
+        match: /^grid-rows:/,
         declare(value, unit) {
             return {
                 display: 'grid',
@@ -1356,11 +1356,11 @@ const rules = {
         layer: CoreLayer.Normal
     } as RuleOptions,
     gridAutoColumns: {
-        match: /^grid-auto-cols:./,
+        match: /^grid-auto-cols:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     gridAutoFlow: {
-        match: /^grid-flow:./,
+        match: /^grid-flow:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     gridAutoRows: {
@@ -1370,7 +1370,7 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleOptions,
     gridTemplateColumns: {
-        match: /^grid-template-cols:./,
+        match: /^grid-template-cols:/,
         layer: CoreLayer.Native,
         unit: 'rem'
     } as RuleOptions,
@@ -1388,13 +1388,13 @@ const rules = {
         layer: CoreLayer.NativeShorthand
     } as RuleOptions,
     columnGap: {
-        match: /^gap-x:./,
+        match: /^gap-x:/,
         unit: 'rem',
         layer: CoreLayer.Native,
         variableGroups: ['spacing']
     } as RuleOptions,
     rowGap: {
-        match: /^gap-y:./,
+        match: /^gap-y:/,
         unit: 'rem',
         layer: CoreLayer.Native,
         variableGroups: ['spacing']
@@ -1405,7 +1405,7 @@ const rules = {
         variableGroups: ['spacing']
     } as RuleOptions,
     order: {
-        match: /^o:./,
+        match: /^o:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     breakInside: {
@@ -1418,19 +1418,19 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleOptions,
     aspectRatio: {
-        match: /^aspect:./,
+        match: /^aspect:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     columnSpan: {
-        match: /^col-span:./,
+        match: /^col-span:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     alignContent: {
-        match: /^ac:./,
+        match: /^ac:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     alignItems: {
-        match: /^ai:./,
+        match: /^ai:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     alignSelf: {
@@ -1438,15 +1438,15 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleOptions,
     justifyContent: {
-        match: /^jc:./,
+        match: /^jc:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     justifyItems: {
-        match: /^ji:./,
+        match: /^ji:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     justifySelf: {
-        match: /^js:./,
+        match: /^js:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     placeContent: {
@@ -1505,7 +1505,7 @@ const rules = {
         ]
     } as RuleOptions,
     accentColor: {
-        match: /^accent:./,
+        match: /^accent:/,
         layer: CoreLayer.Native,
         colored: true
     } as RuleOptions,
@@ -1513,7 +1513,7 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleOptions,
     caretColor: {
-        match: /^caret:./,
+        match: /^caret:/,
         layer: CoreLayer.Native,
         colored: true
     } as RuleOptions,
@@ -1522,31 +1522,31 @@ const rules = {
     } as RuleOptions,
     // scroll margin
     scrollMarginLeft: {
-        match: /^scroll-ml:./,
+        match: /^scroll-ml:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     scrollMarginRight: {
-        match: /^scroll-mr:./,
+        match: /^scroll-mr:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     scrollMarginTop: {
-        match: /^scroll-mt:./,
+        match: /^scroll-mt:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     scrollMarginBottom: {
-        match: /^scroll-mb:./,
+        match: /^scroll-mb:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     scrollMarginX: {
-        match: /^(?:scroll-margin-x|scroll-mx):./,
+        match: /^(?:scroll-margin-x|scroll-mx):/,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -1558,7 +1558,7 @@ const rules = {
         variableGroups: ['spacing']
     } as RuleOptions,
     scrollMarginY: {
-        match: /^(?:scroll-margin-y|scroll-my):./,
+        match: /^(?:scroll-margin-y|scroll-my):/,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -1570,38 +1570,38 @@ const rules = {
         variableGroups: ['spacing']
     } as RuleOptions,
     scrollMargin: {
-        match: /^scroll-m:./,
+        match: /^scroll-m:/,
         unit: 'rem',
         layer: CoreLayer.NativeShorthand,
         variableGroups: ['spacing']
     } as RuleOptions,
     // scroll padding
     scrollPaddingLeft: {
-        match: /^scroll-pl:./,
+        match: /^scroll-pl:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     scrollPaddingRight: {
-        match: /^scroll-pr:./,
+        match: /^scroll-pr:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     scrollPaddingTop: {
-        match: /^scroll-pt:./,
+        match: /^scroll-pt:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     scrollPaddingBottom: {
-        match: /^scroll-pb:./,
+        match: /^scroll-pb:/,
         layer: CoreLayer.Native,
         unit: 'rem',
         variableGroups: ['spacing']
     } as RuleOptions,
     scrollPaddingX: {
-        match: /^(?:scroll-padding-x|scroll-px):./,
+        match: /^(?:scroll-padding-x|scroll-px):/,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -1613,7 +1613,7 @@ const rules = {
         variableGroups: ['spacing']
     } as RuleOptions,
     scrollPaddingY: {
-        match: /^(?:scroll-padding-y|scroll-py):./,
+        match: /^(?:scroll-padding-y|scroll-py):/,
         unit: 'rem',
         layer: CoreLayer.Shorthand,
         declare(value, unit) {
@@ -1625,7 +1625,7 @@ const rules = {
         variableGroups: ['spacing']
     } as RuleOptions,
     scrollPadding: {
-        match: /^scroll-p:./,
+        match: /^scroll-p:/,
         unit: 'rem',
         layer: CoreLayer.NativeShorthand,
         variableGroups: ['spacing']
@@ -1647,7 +1647,7 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleOptions,
     writingMode: {
-        match: /^writing:./,
+        match: /^writing:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     direction: {
@@ -1668,7 +1668,7 @@ const rules = {
         layer: CoreLayer.Native
     } as RuleOptions,
     clipPath: {
-        match: /^clip:./,
+        match: /^clip:/,
         layer: CoreLayer.Native
     } as RuleOptions,
     quotes: {
