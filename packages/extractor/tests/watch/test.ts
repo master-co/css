@@ -41,7 +41,7 @@ const config: Config = {
         btn: 'bg:red'
     },
     variables: {
-        primary: 'blue'
+        primary: '$(blue)'
     },
     rules: {},
     semantics: {},

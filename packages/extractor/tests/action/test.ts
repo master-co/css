@@ -7,7 +7,7 @@ it('basic extract', async () => {
     fs.writeFileSync(path.join(__dirname, 'master.css.ts'), `
         export default {
             variables: {
-                primary: 'blue'
+                primary: '$(blue)'
             }
         }
     `, { flag: 'w' })
