@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio'
-import app from '../../../../../../shared/firebase-admin-app'
+import app from 'websites/firebase-admin-app'
 import { getStorage } from 'firebase-admin/storage'
 import path from 'path'
 import fs from 'fs'

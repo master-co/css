@@ -11,13 +11,13 @@ import { queryDictionary } from 'websites/dictionaries';
 import stringWidth from 'string-width'
 import fs from 'fs'
 import path from 'path';
-import mime from 'mime'
+import mime from 'mime-types'
 
 const readImage = (filename: string) => {
-    const sharedFolderPath = path.join(process.cwd(), '../../../shared')
+    const sharedFolderPath = path.join(process.cwd(), '../../../')
     const filepath = path.join(sharedFolderPath, filename.replace('websites/', ''))
     const extname = path.extname(filepath);
-    const mimeType = mime.getType(extname);
+    const mimeType = mime.lookup(extname);
     return `data:${mimeType};base64,` + fs.readFileSync(filepath, { encoding: 'base64' })
 }
 const cssLogotypeSrc = readImage('websites/images/css-logotype@light.png')
@@ -45,15 +45,15 @@ const fonts = [
     },
     {
         name: 'NotoSansTC Regular',
-        data: fs.readFileSync(path.resolve('../../../shared/fonts/NotoSansTC-Regular.ttf'))
+        data: fs.readFileSync(path.resolve('../../../fonts/NotoSansTC-Regular.ttf'))
     },
     {
         name: 'NotoSansTC Medium',
-        data: fs.readFileSync(path.resolve('../../../shared/fonts/NotoSansTC-Medium.ttf'))
+        data: fs.readFileSync(path.resolve('../../../fonts/NotoSansTC-Medium.ttf'))
     },
     {
         name: 'NotoSansTC Black',
-        data: fs.readFileSync(path.resolve('../../../shared/fonts/NotoSansTC-Black.ttf'))
+        data: fs.readFileSync(path.resolve('../../../fonts/NotoSansTC-Black.ttf'))
     }
 ]
 

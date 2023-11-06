@@ -1,6 +1,6 @@
 'use client'
 
-import MasterCSS, { Config } from '@master/css'
+import MasterCSS, { Config, initRuntime } from '@master/css'
 import { useEffect, useLayoutEffect, createContext, useContext, useState } from 'react'
 
 export const CSSContext = createContext<MasterCSS | undefined>(undefined)
@@ -20,14 +20,16 @@ export function CSSProvider({
 }) {
     const [css, setCSS] = useState<MasterCSS>();
     (typeof window !== 'undefined' ? useLayoutEffect : useEffect)(() => {
-        let newCSS: MasterCSS
-        if (!css) {
+        let newCSS: MasterCSS = window.masterCSSs?.find((eachCSS) => eachCSS.root === root)
+        if (newCSS) {
+            setCSS(newCSS)
+        } else if (!css) {
             const init = (resolvedConfig?: Config) => {
-                const existingCSS = globalThis.masterCSSs.find((eachCSS) => eachCSS.root === root)
+                const existingCSS = window.masterCSSs.find((eachCSS) => eachCSS.root === root)
                 if (existingCSS) {
                     setCSS(existingCSS)
                 } else {
-                    newCSS = new MasterCSS(resolvedConfig).observe(root)
+                    newCSS = initRuntime(resolvedConfig, root)
                     setCSS(newCSS)
                 }
             }
