@@ -18,8 +18,10 @@ export default {
         divider: { '@light': '$(slate-60)/.2', '@dark': '$(white)/.1' },
         ring: { '@light': '$(slate-60)/.1', '@dark': '$(white)/.1' },
         shadow: { '@light': '$(slate-70)', '@dark': '$(black)' },
-        boxShadow: {
-            x3: '0|2|4|shadow/.12,0|4|8|shadow/.08,0|20|30|shadow/.1'
+        box: {
+            shadow: {
+                x3: '0|2|4|shadow/.12,0|4|8|shadow/.08,0|20|30|shadow/.1'
+            }
         }
     }
 }
