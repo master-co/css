@@ -397,9 +397,9 @@ export class MasterCSS {
                             }, {})
                     )
                 }
-                // 1. custom `config.rules[id].variableGroups`
-                if (eachRuleOptions.variableGroups) {
-                    for (const eachVariableGroup of eachRuleOptions.variableGroups) {
+                // 1. custom `config.rules[id].variables`
+                if (eachRuleOptions.variables) {
+                    for (const eachVariableGroup of eachRuleOptions.variables) {
                         addResolvedVariables(eachVariableGroup)
                     }
                 }

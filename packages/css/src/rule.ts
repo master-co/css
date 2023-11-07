@@ -508,7 +508,7 @@ export class Rule {
                 // todo: 應挪到 parseValue 階段處理才能支援 variables: { x: 'calc(20vw-30px)' } 這種情況，並且解析上可能會比較合理、精簡
                 case 'variable':
                     // eslint-disable-next-line no-case-declarations
-                    const variable = eachValueComponent.variable
+                    const variable = this.css.variables[eachValueComponent.name]
                     if (variable) {
                         const handleVariable = (
                             normalHandler: (variable: MasterCSS['variables'][0]) => void,
@@ -821,7 +821,7 @@ export interface RuleDefinition {
     match?: RegExp | [string, string[]?]
     resolvedMatch?: RegExp
     resolvedVariables?: any
-    variableGroups?: string[]
+    variables?: string[]
     order?: number
     separators?: string[]
     shorthand?: string
