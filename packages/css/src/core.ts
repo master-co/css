@@ -1,6 +1,6 @@
 import { extend } from '@techor/extend'
-import { Rule, NativeRule, RuleOptions } from './rule'
-import type { Config, ConfigAnimation } from './config'
+import { Rule, NativeRule, RuleDefinition } from './rule'
+import type { Config, AnimationDefinitions } from './config'
 import { config as defaultConfig } from './config'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { CSSDeclarations } from './types/css-declarations'
@@ -33,7 +33,7 @@ export interface MasterCSS {
     mediaQueries: Record<string, string | number>
     hasVariablesRule: boolean
     hasKeyframesRule: boolean
-    animations: Record<string, ConfigAnimation & { usage?: number, native?: NativeRule }>
+    animations: Record<string, AnimationDefinitions & { usage?: number, native?: NativeRule }>
 }
 
 export class MasterCSS {
@@ -48,8 +48,8 @@ export class MasterCSS {
     readonly classesUsage = {}
     readonly observing = false
     readonly config: Config
-    private readonly semanticRuleOptions: RuleOptions[] = []
-    private readonly ruleOptions: RuleOptions[] = []
+    private readonly semanticRuleOptions: RuleDefinition[] = []
+    private readonly ruleOptions: RuleDefinition[] = []
 
     observer: MutationObserver
 
@@ -380,7 +380,7 @@ export class MasterCSS {
         const rulesEntriesLength = rulesEntries.length
         const colorNames = Object.keys(colorVariableNames)
         rulesEntries
-            .forEach(([id, eachRuleOptions]: [string, RuleOptions], index: number) => {
+            .forEach(([id, eachRuleOptions]: [string, RuleDefinition], index: number) => {
                 this.ruleOptions.push(eachRuleOptions)
                 eachRuleOptions.order = this.semanticRuleOptions.length + rulesEntriesLength - 1 - index
                 const match = eachRuleOptions.match
@@ -796,7 +796,7 @@ export class MasterCSS {
      * @param syntax class syntax
      * @returns css text
      */
-    match(syntax: string): RuleOptions {
+    match(syntax: string): RuleDefinition {
         // 1. rules
         for (const eachRuleOptions of this.ruleOptions) {
             if (

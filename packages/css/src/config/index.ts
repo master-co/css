@@ -6,7 +6,7 @@ import variables from './variables'
 import rules from './rules'
 import functions from './functions'
 import { CSSDeclarations } from '../types/css-declarations'
-import type { Rule, RuleOptions, ValueComponent } from '../rule'
+import type { Rule, RuleDefinition, ValueComponent } from '../rule'
 
 const config: Config = {
     mediaQueries,
@@ -35,29 +35,36 @@ export {
 }
 
 
-export type ConfigVariable = number | string | Array<number | string>
-export type ConfigVariableGroup = { [key in '' | `@${string}`]?: ConfigVariable } & { [key: string]: ConfigVariable | ConfigVariableGroup }
-export type ConfigFunction = {
+export type VariableValue = number | string | Array<number | string>
+export type VariableDefinition = { [key in '' | `@${string}`]?: VariableValue } & { [key: string]: VariableValue | VariableDefinition }
+export type FunctionDefinition = {
     unit?: string
     colored?: boolean
     transform?(this: Rule, value: string): string | ValueComponent[]
 }
-export type ConfigAnimation = { [key in 'from' | 'to']?: CSSDeclarations } & { [key: string]: CSSDeclarations }
+export type FunctionDefinitions = { [key: string]: FunctionDefinition }
+export type AnimationDefinition = { [key in 'from' | 'to']?: CSSDeclarations } & { [key: string]: CSSDeclarations }
+export type AnimationDefinitions = { [key: string]: AnimationDefinition }
+export type SelectorDefinitions = { [key: string]: string | string[] | SelectorDefinitions }
+export type MediaQueryDefinitions = { [key: string]: number | string | MediaQueryDefinitions }
+export type StyleDefinitions = { [key: string]: string | StyleDefinitions }
+export type RuleDefinitions = { [key in keyof typeof rules | string]?: RuleDefinition }
+export type VariableDefinitions = { [key in keyof typeof rules]?: VariableDefinition } & { [key: string]: VariableDefinition | VariableValue }
+export type SemanticDefinitions = { [key in keyof typeof semantics]?: CSSDeclarations } & { [key: string]: CSSDeclarations }
 
 export interface Config {
     extends?: (Config | { config: Config })[]
-    styles?: { [key: string]: string | Config['styles'] }
-    mediaQueries?: { [key: string]: number | string | Config['mediaQueries'] }
-    selectors?: { [key: string]: string | string[] | Config['selectors'] }
-    semantics?: { [key in keyof typeof semantics]?: CSSDeclarations } & { [key: string]: CSSDeclarations }
-    variables?: { [key in keyof typeof rules]?: ConfigVariableGroup }
-    & { [key: string]: ConfigVariableGroup | ConfigVariable }
-    rules?: { [key in keyof typeof rules | string]?: RuleOptions }
+    styles?: StyleDefinitions
+    mediaQueries?: MediaQueryDefinitions
+    selectors?: SelectorDefinitions
+    semantics?: SemanticDefinitions
+    variables?: VariableDefinitions
+    rules?: RuleDefinitions
     rootSize?: number
     scope?: string
     important?: boolean
     override?: boolean
-    functions?: Record<string, ConfigFunction>,
-    animations?: Record<string, ConfigAnimation>
+    functions?: FunctionDefinitions,
+    animations?: AnimationDefinitions
     themeDriver?: 'class' | 'media' | 'host'
 }

@@ -22,14 +22,14 @@ export class Rule {
 
     constructor(
         public readonly className: string,
-        public readonly options: RuleOptions = {},
+        public readonly definition: RuleDefinition = {},
         public css: MasterCSS
     ) {
-        const { layer, unit, colored: configColored, analyze, transform, declare, create, order, id } = options
+        const { layer, unit, colored: configColored, analyze, transform, declare, create, order, id } = definition
         this.order = order
         this.layer = layer
-        if (!options.unit) options.unit = ''
-        if (!options.separators) options.separators = [',']
+        if (!definition.unit) definition.unit = ''
+        if (!definition.separators) definition.separators = [',']
         const { scope, important, themeDriver } = css.config
         const { selectors, mediaQueries, stylesBy, animations } = css
         const classNames = stylesBy[className]
@@ -37,7 +37,7 @@ export class Rule {
         if (create) create.call(this, className)
 
         // 1. value / selectorToken
-        this.declarations = options.declarations
+        this.declarations = definition.declarations
         let stateToken: string
         let prefixToken: string
         this.colored = configColored
@@ -615,8 +615,8 @@ export class Rule {
         const checkIsString = (value: string) => value === '\'' || value === '"'
         const isString = checkIsString(endSymbol)
         const separators = [',']
-        if (this.options.separators.length) {
-            separators.push(...this.options.separators)
+        if (this.definition.separators.length) {
+            separators.push(...this.definition.separators)
         }
 
         let currentValue = ''
@@ -625,8 +625,8 @@ export class Rule {
                 let handled = false
                 if (!isVarFunction || currentValueComponents.length) {
                     const handleVariable = (variableName: string, alpha?: string) => {
-                        const variable = Object.prototype.hasOwnProperty.call(this.options.resolvedVariables, variableName)
-                            ? this.options.resolvedVariables[variableName]
+                        const variable = Object.prototype.hasOwnProperty.call(this.definition.resolvedVariables, variableName)
+                            ? this.definition.resolvedVariables[variableName]
                             : Object.prototype.hasOwnProperty.call(this.css.variables, variableName)
                                 ? this.css.variables[variableName]
                                 : undefined
@@ -744,8 +744,8 @@ export class Rule {
             + unit
     }
 
-    parseValueComponent(token: string | number, unit = this.options.unit): StringValueComponent | NumericValueComponent {
-        const defaultUnit = unit ?? this.options.unit
+    parseValueComponent(token: string | number, unit = this.definition.unit): StringValueComponent | NumericValueComponent {
+        const defaultUnit = unit ?? this.definition.unit
         let newUnit = ''
         let value: any
         if (typeof token === 'number') {
@@ -825,7 +825,7 @@ export interface Rule {
     }
 }
 
-export interface RuleOptions {
+export interface RuleDefinition {
     id?: string
     match?: RegExp | [string, string[]?]
     resolvedMatch?: RegExp
@@ -872,5 +872,5 @@ export interface MediaQuery {
 
 export interface RuleMeta {
     value?: [string, string | Record<string, string>]
-    config?: RuleOptions
+    config?: RuleDefinition
 }

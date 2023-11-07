@@ -1,4 +1,4 @@
-import type { ConfigFunction } from './'
+import type { FunctionDefinition } from './'
 import type { Rule } from '../rule'
 
 const functions = {
@@ -116,7 +116,7 @@ const functions = {
 
             return 'calc(' + this.transformValueComponents(valueComponents, functions.calc.unit ?? this.options.unit, bypassVariableNames) + ')'
         }
-    } as ConfigFunction,
+    } as FunctionDefinition,
     translate: { unit: 'rem' },
     translateX: { unit: 'rem' },
     translateY: { unit: 'rem' },
