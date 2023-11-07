@@ -1,23 +1,20 @@
 export const enum Layer {
-    // native shorthand
-    NativeShorthand = -300,
-    // shorthand
-    Shorthand = -200,
-    // native
-    Native = -100,
-    // normal
-    Normal = 0
-}
-
-export const enum CoreLayer {
     // semantic
-    Semantic = -401,
+    Semantic = -8,
     // native shorthand
-    NativeShorthand = -301,
+    CoreNativeShorthand = -7,
+    // native shorthand
+    NativeShorthand = -6,
     // shorthand
-    Shorthand = -201,
+    CoreShorthand = -5,
+    // shorthand
+    Shorthand = -4,
     // native
-    Native = -101,
+    CoreNative = -3,
+    // native
+    Native = -2,
     // normal
-    Normal = -1
+    Core = -1,
+    // normal
+    Normal = 0,
 }

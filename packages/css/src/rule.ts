@@ -2,7 +2,7 @@ import type { MasterCSS } from './core'
 import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'css-shared/utils/css-escape'
 import { CSSDeclarations } from './types/css-declarations'
-import { CoreLayer, Layer } from './layer'
+import { Layer } from './layer'
 
 const atRuleRegExp = /^(media|supports|page|font-face|keyframes|counter-style|font-feature-values|property|layer)(?=\||{|\(|$)/
 
@@ -12,7 +12,7 @@ export class Rule {
     readonly priority: number = -1
     readonly natives: NativeRule[] = []
     readonly order: number = 0
-    readonly layer: Layer | CoreLayer = 0
+    readonly layer: Layer = 0
     readonly stateToken: string
     readonly declarations: CSSDeclarations
     readonly colored: boolean = false
@@ -42,7 +42,7 @@ export class Rule {
         let prefixToken: string
         this.colored = configColored
 
-        if (layer === CoreLayer.Semantic) {
+        if (layer === Layer.Semantic) {
             stateToken = className.slice(id.length - 1)
         } else {
             let valueToken: string
@@ -840,7 +840,7 @@ export interface RuleOptions {
     native?: boolean
     declarations?: CSSDeclarations
     resolvedPropName?: string
-    layer?: Layer | CoreLayer,
+    layer?: Layer,
     analyze?: (this: Rule, className: string) => [valueToken: string, prefixToken?: string]
     transform?(this: Rule, value: string): string
     transformValueComponents?(this: Rule, valueComponents: ValueComponent[]): ValueComponent[]

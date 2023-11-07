@@ -6,7 +6,7 @@ export { Rule, NativeRule, MediaFeatureComponent, MediaQuery } from './rule'
 export { CONFIG_TEXT } from './constants/config-text'
 export { CONFIG_ESM_TEXT } from './constants/config-esm-text'
 export { CONFIG_TS_TEXT } from './constants/config-ts-text'
-export { Layer, CoreLayer } from './layer'
+export { Layer } from './layer'
 
 // functions
 export { default as extend } from '@techor/extend'

@@ -4,7 +4,7 @@ import type { Config, ConfigAnimation } from './config'
 import { config as defaultConfig } from './config'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { CSSDeclarations } from './types/css-declarations'
-import { CoreLayer, Layer } from './layer'
+import { Layer } from './layer'
 import { hexToRgb } from './utils/hex-to-rgb'
 
 type VariableValue =
@@ -365,7 +365,7 @@ export class MasterCSS {
                         resolvedMatch: new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'),
                         order: index,
                         declarations,
-                        layer: CoreLayer.Semantic
+                        layer: Layer.Semantic
                     })
                 })
         }
@@ -388,8 +388,8 @@ export class MasterCSS {
                 if (
                     eachRuleOptions.layer === Layer.Native ||
                     eachRuleOptions.layer === Layer.NativeShorthand ||
-                    eachRuleOptions.layer === CoreLayer.Native ||
-                    eachRuleOptions.layer === CoreLayer.NativeShorthand
+                    eachRuleOptions.layer === Layer.CoreNative ||
+                    eachRuleOptions.layer === Layer.CoreNativeShorthand
                 ) {
                     eachRuleOptions.resolvedPropName = id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
                 }
@@ -811,8 +811,8 @@ export class MasterCSS {
                 (
                     eachRuleOptions.layer === Layer.Native ||
                     eachRuleOptions.layer === Layer.NativeShorthand ||
-                    eachRuleOptions.layer === CoreLayer.Native ||
-                    eachRuleOptions.layer === CoreLayer.NativeShorthand
+                    eachRuleOptions.layer === Layer.CoreNative ||
+                    eachRuleOptions.layer === Layer.CoreNativeShorthand
                 ) && syntax.startsWith(eachRuleOptions.resolvedPropName + ':')
             ) {
                 return eachRuleOptions
