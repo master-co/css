@@ -1,12 +1,21 @@
-import type { Config, ConfigFunction } from './'
+import type { ConfigFunction } from './'
 import type { Rule } from '../rule'
 
 const functions = {
     $: {
         colored: true,
         transform(value) {
-            return [{ type: 'variable', name: value }]
-        },
+            let name: string
+            let fallback: string
+            const firstCommaIndex = value.indexOf(',')
+            if (firstCommaIndex !== -1) {
+                name = value.slice(0, firstCommaIndex)
+                fallback = value.slice(firstCommaIndex + 1)
+            } else {
+                name = value
+            }
+            return [{ type: 'variable', name, fallback }]
+        }
     },
     calc: {
         transform(value, bypassVariableNames) {

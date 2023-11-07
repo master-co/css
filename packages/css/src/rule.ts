@@ -576,7 +576,7 @@ export class Rule {
                                 break
                         }
                     } else {
-                        currentValue += 'var(--' + eachValueComponent.name + ')'
+                        currentValue += `var(--${eachValueComponent.name}${(eachValueComponent.fallback ? ',' + eachValueComponent.fallback : '')})`
                     }
                     break
                 case 'separator':
@@ -623,7 +623,7 @@ export class Rule {
         const parse = () => {
             if (currentValue) {
                 let handled = false
-                if (!isVarFunction) {
+                if (!isVarFunction || currentValueComponents.length) {
                     const handleVariable = (variableName: string, alpha?: string) => {
                         const variable = Object.prototype.hasOwnProperty.call(this.options.resolvedVariables, variableName)
                             ? this.options.resolvedVariables[variableName]
@@ -800,7 +800,7 @@ export type ValueComponent =
 export interface StringValueComponent { token?: string, type: 'string', value: string }
 export interface NumericValueComponent { token?: string, type: 'number', value: number, unit?: string }
 export interface FunctionValueComponent { token?: string, type: 'function', name: string, symbol: string, childrens: ValueComponent[] }
-export interface VariableValueComponent { token?: string, type: 'variable', name: string, alpha?: string }
+export interface VariableValueComponent { token?: string, type: 'variable', name: string, alpha?: string, fallback?: string }
 export interface SeparatorValueComponent { type: 'separator', value: string, prefix?: string, suffix?: string }
 
 export interface Rule {
