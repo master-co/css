@@ -164,7 +164,7 @@ export default class CSSExtractor extends EventEmitter {
                 .map(async (eachLatentClass) => {
                     const validRules = createValidRules(eachLatentClass, { css: this.css })
                     if (validRules.length) {
-                        this.css.insertRules(validRules)
+                        this.css.render(validRules)
                         validClasses.push(eachLatentClass)
                         this.validClasses.add(eachLatentClass)
                     } else {

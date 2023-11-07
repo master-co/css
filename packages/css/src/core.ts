@@ -994,7 +994,7 @@ export class MasterCSS {
     insert(syntax: string): boolean {
         const rules = this.create(syntax)
         if (rules.length) {
-            this.insertRules(rules)
+            this.render(rules)
             return true
         } else {
             return false
@@ -1016,7 +1016,7 @@ export class MasterCSS {
     * 11. media width where selectors
     * 12. media width selectors
     */
-    insertRules(rules: Rule[]) {
+    render(rules: Rule[]) {
         for (const rule of rules) {
             if (this.ruleBy[rule.className])
                 continue
