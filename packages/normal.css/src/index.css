@@ -1,16 +1,12 @@
 body {
     line-height: 1.2;
-
     -webkit-tap-highlight-color: transparent;
-
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
-
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
-
     -moz-tab-size: 4;
     tab-size: 4;
 }
@@ -24,11 +20,11 @@ strong {
 ::before,
 ::after {
     box-sizing: border-box;
+    border: 0 solid;
 }
 
 * {
     text-rendering: geometricPrecision;
-    border: 0 solid;
 }
 
 body,
