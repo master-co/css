@@ -16,7 +16,28 @@ export default {
             invalidClass: '{{message}}',
             disallowUnknownClass: '{{message}}',
         },
-        fixable: null
+        fixable: null,
+        schema: [
+            {
+                type: 'object',
+                properties: {
+                    calleeMatching: {
+                        type: 'string'
+                    },
+                    classMatching: {
+                        type: 'string'
+                    },
+                    ignoredKeys: {
+                        type: 'array',
+                        items: { type: 'string', minLength: 0 },
+                        uniqueItems: true,
+                    },
+                    config: {
+                        type: ['string', 'object'],
+                    }
+                },
+            },
+        ],
     },
     create: function (context) {
         const { options, settings, config } = resolveContext(context)

@@ -16,7 +16,28 @@ export default {
         messages: {
             invalidClassOrder: 'No consistent class order followed.',
         },
-        fixable: 'code'
+        fixable: 'code',
+        schema: [
+            {
+                type: 'object',
+                properties: {
+                    calleeMatching: {
+                        type: 'string'
+                    },
+                    classMatching: {
+                        type: 'string'
+                    },
+                    ignoredKeys: {
+                        type: 'array',
+                        items: { type: 'string', minLength: 0 },
+                        uniqueItems: true,
+                    },
+                    config: {
+                        type: ['string', 'object'],
+                    }
+                },
+            },
+        ],
     },
     create: function (context) {
         const { options, settings, config } = resolveContext(context)
