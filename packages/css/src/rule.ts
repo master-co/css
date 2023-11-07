@@ -25,7 +25,7 @@ export class Rule {
         public readonly options: RuleOptions = {},
         public css: MasterCSS
     ) {
-        const { layer, unit, colored: configColored, resolvedPropName, analyze, transform, declare, create, order, id } = options
+        const { layer, unit, colored: configColored, analyze, transform, declare, create, order, id } = options
         this.order = order
         this.layer = layer
         if (!options.unit) options.unit = ''
@@ -374,9 +374,9 @@ export class Rule {
                 let value: string
                 let unit: string
                 this.declarations = declare.call(this, unit ? value : newValue, unit || '')
-            } else if (resolvedPropName) {
+            } else if (id) {
                 this.declarations = {
-                    [resolvedPropName as string]: newValue
+                    [id]: newValue
                 }
             }
         }
@@ -839,7 +839,6 @@ export interface RuleOptions {
     unit?: any
     native?: boolean
     declarations?: CSSDeclarations
-    resolvedPropName?: string
     layer?: Layer,
     analyze?: (this: Rule, className: string) => [valueToken: string, prefixToken?: string]
     transform?(this: Rule, value: string): string

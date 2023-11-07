@@ -385,14 +385,6 @@ export class MasterCSS {
                 eachRuleOptions.order = this.semanticRuleOptions.length + rulesEntriesLength - 1 - index
                 const match = eachRuleOptions.match
                 eachRuleOptions.id = id
-                if (
-                    eachRuleOptions.layer === Layer.Native ||
-                    eachRuleOptions.layer === Layer.NativeShorthand ||
-                    eachRuleOptions.layer === Layer.CoreNative ||
-                    eachRuleOptions.layer === Layer.CoreNativeShorthand
-                ) {
-                    eachRuleOptions.resolvedPropName = id.replace(/(?!^)[A-Z]/g, m => '-' + m).toLowerCase()
-                }
                 eachRuleOptions.resolvedVariables = {}
                 const addResolvedVariables = (prefix: string) => {
                     Object.assign(
@@ -437,7 +429,8 @@ export class MasterCSS {
                         if (eachRuleOptions.numeric) {
                             valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
                         }
-                        eachRuleOptions.resolvedMatch = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
+                        if (valueMatches.length)
+                            eachRuleOptions.resolvedMatch = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
                     } else {
                         eachRuleOptions.resolvedMatch = match as RegExp
                     }
@@ -813,7 +806,7 @@ export class MasterCSS {
                     eachRuleOptions.layer === Layer.NativeShorthand ||
                     eachRuleOptions.layer === Layer.CoreNative ||
                     eachRuleOptions.layer === Layer.CoreNativeShorthand
-                ) && syntax.startsWith(eachRuleOptions.resolvedPropName + ':')
+                ) && syntax.startsWith(eachRuleOptions.id + ':')
             ) {
                 return eachRuleOptions
             }

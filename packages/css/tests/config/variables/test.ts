@@ -2,9 +2,9 @@ import { testCSS, testProp } from '../../css'
 import config from '../../config'
 
 it('uses with $ function', () => {
-    testProp('font-weight:$(fontWeight-thin)', 'font-weight:100')
-    testProp('font-weight:$(fontWeight-thin,123)', 'font-weight:100')
-    testProp('font-weight:$(fontWeight,fontWeight-thin)', 'font-weight:var(--fontWeight,100)')
+    testProp('font-weight:$(font-weight-thin)', 'font-weight:100')
+    testProp('font-weight:$(font-weight-thin,123)', 'font-weight:100')
+    testProp('font-weight:$(font-weight,font-weight-thin)', 'font-weight:var(--font-weight,100)')
     testProp('background-color:$(gray)', 'background-color:rgb(107 106 109)')
     testProp('background-color:$(my-gray,$(gray))', 'background-color:var(--my-gray,rgb(107 106 109))')
     testProp('background-color:$(my-gray,gray)', 'background-color:var(--my-gray,rgb(107 106 109))')
@@ -12,9 +12,9 @@ it('uses with $ function', () => {
 })
 
 it('uses with var function', () => {
-    testProp('font-weight:var(--fontWeight-thin)', 'font-weight:var(--fontWeight-thin)')
-    testProp('font-weight:var(--fontWeight-thin,123)', 'font-weight:var(--fontWeight-thin,123)')
-    testProp('font-weight:var(--fontWeight,fontWeight-thin)', 'font-weight:var(--fontWeight,100)')
+    testProp('font-weight:var(--font-weight-thin)', 'font-weight:var(--font-weight-thin)')
+    testProp('font-weight:var(--font-weight-thin,123)', 'font-weight:var(--font-weight-thin,123)')
+    testProp('font-weight:var(--font-weight,font-weight-thin)', 'font-weight:var(--font-weight,100)')
     testProp('background-color:var(--gray)', 'background-color:var(--gray)')
     testProp('background-color:var(--my-gray,$(gray))', 'background-color:var(--my-gray,rgb(107 106 109))')
     testProp('background-color:var(--my-gray,gray)', 'background-color:var(--my-gray,rgb(107 106 109))')

@@ -8,17 +8,17 @@ export default {
         }
     },
     variables: {
-        fontSize: {
+        'font-size': {
             sm: 16,
             md: 20
         },
-        letterSpacing: {
+        'letter-spacing': {
             wide: .4
         },
         border:  {
             'inputborder': '2|solid|red'
         },
-        boxShadow: {
+        'box-shadow': {
             x2: '0 25px 50px -12px rgb(0 0 0 / 25%)'
         },
         inset: {

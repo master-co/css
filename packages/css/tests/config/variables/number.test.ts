@@ -28,13 +28,13 @@ test('number with themes', () => {
 
     // 無單位屬性不需要 calc
     testCSS('line-height:x1', [
-        ':root{--lineHeight-x1:16}',
-        '.dark{--lineHeight-x1:32}',
-        '.light{--lineHeight-x1:48}',
-        '.line-height\\:x1{line-height:var(--lineHeight-x1)}'
+        ':root{--line-height-x1:16}',
+        '.dark{--line-height-x1:32}',
+        '.light{--line-height-x1:48}',
+        '.line-height\\:x1{line-height:var(--line-height-x1)}'
     ].join(''), {
         variables: {
-            lineHeight: {
+            'line-height': {
                 x1: {
                     '': 16,
                     '@dark': 32,

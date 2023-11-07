@@ -1,52 +1,54 @@
 import fillColorScale from '../functions/fill-color-scale'
 
 const variables = {
-    fontFamily: {
-        mono: [
-            'ui-monospace',
-            'SFMono-Regular',
-            'Menlo',
-            'Monaco',
-            'Consolas',
-            'Liberation Mono',
-            'Courier New',
-            'monospace'
-        ],
-        sans: [
-            'ui-sans-serif',
-            'system-ui',
-            '-apple-system',
-            'BlinkMacSystemFont',
-            'Segoe UI',
-            'Roboto',
-            'Helvetica Neue',
-            'Arial',
-            'Noto Sans',
-            'sans-serif',
-            'Apple Color Emoji',
-            'Segoe UI Emoji',
-            'Segoe UI Symbol',
-            'Noto Color Emoji'
-        ],
-        serif: [
-            'ui-serif',
-            'Georgia',
-            'Cambria',
-            'Times New Roman',
-            'Times',
-            'serif'
-        ]
-    },
-    fontWeight: {
-        thin: 100,
-        extralight: 200,
-        light: 300,
-        regular: 400,
-        medium: 500,
-        semibold: 600,
-        bold: 700,
-        extrabold: 800,
-        heavy: 900
+    font: {
+        family: {
+            mono: [
+                'ui-monospace',
+                'SFMono-Regular',
+                'Menlo',
+                'Monaco',
+                'Consolas',
+                'Liberation Mono',
+                'Courier New',
+                'monospace'
+            ],
+            sans: [
+                'ui-sans-serif',
+                'system-ui',
+                '-apple-system',
+                'BlinkMacSystemFont',
+                'Segoe UI',
+                'Roboto',
+                'Helvetica Neue',
+                'Arial',
+                'Noto Sans',
+                'sans-serif',
+                'Apple Color Emoji',
+                'Segoe UI Emoji',
+                'Segoe UI Symbol',
+                'Noto Color Emoji'
+            ],
+            serif: [
+                'ui-serif',
+                'Georgia',
+                'Cambria',
+                'Times New Roman',
+                'Times',
+                'serif'
+            ]
+        },
+        weight: {
+            thin: 100,
+            extralight: 200,
+            light: 300,
+            regular: 400,
+            medium: 500,
+            semibold: 600,
+            bold: 700,
+            extrabold: 800,
+            heavy: 900
+        }
     },
     sizing: {
         '4xs': 360,
@@ -65,59 +67,73 @@ const variables = {
         max: 'max-content',
         min: 'min-content'
     },
-    flexDirection: {
-        col: 'column',
-        'col-reverse': 'column-reverse'
+    flex: {
+        direction: {
+            col: 'column',
+            'col-reverse': 'column-reverse'
+        }
     },
-    boxSizing: {
-        content: 'content-box',
-        border: 'border-box'
+    box: {
+        sizing: {
+            content: 'content-box',
+            border: 'border-box'
+        }
     },
     position: {
         abs: 'absolute',
         rel: 'relative'
     },
-    transformBox: {
-        content: 'content-box',
-        border: 'border-box',
-        padding: 'padding-box',
-        fill: 'fill-box',
-        stroke: 'stroke-box',
-        view: 'view-box'
+    transform: {
+        box: {
+            content: 'content-box',
+            border: 'border-box',
+            padding: 'padding-box',
+            fill: 'fill-box',
+            stroke: 'stroke-box',
+            view: 'view-box'
+        }
     },
-    animationDirection: {
-        alt: 'alternate',
-        'alt-reverse': 'alternate-reverse'
+    animation: {
+        direction: {
+            alt: 'alternate',
+            'alt-reverse': 'alternate-reverse'
+        }
     },
-    backgroundClip: {
-        content: 'content-box',
-        border: 'border-box',
-        padding: 'padding-box'
-    },
-    backgroundOrigin: {
-        content: 'content-box',
-        border: 'border-box',
-        padding: 'padding-box'
+    background: {
+        clip: {
+            content: 'content-box',
+            border: 'border-box',
+            padding: 'padding-box'
+        },
+        origin: {
+            content: 'content-box',
+            border: 'border-box',
+            padding: 'padding-box'
+        }
     },
     order: {
         first: -999999,
         last: 999999
     },
-    shapeOutside: {
-        content: 'content-box',
-        border: 'border-box',
-        padding: 'padding-box',
-        margin: 'margin-box'
+    shape: {
+        outside: {
+            content: 'content-box',
+            border: 'border-box',
+            padding: 'padding-box',
+            margin: 'margin-box'
+        }
     },
-    clipPath: {
-        content: 'content-box',
-        border: 'border-box',
-        padding: 'padding-box',
-        margin: 'margin-box',
-        fill: 'fill-box',
-        stroke: 'stroke-box',
-        view: 'view-box',
-        black: '#000000'
+    clip: {
+        path: {
+            content: 'content-box',
+            border: 'border-box',
+            padding: 'padding-box',
+            margin: 'margin-box',
+            fill: 'fill-box',
+            stroke: 'stroke-box',
+            view: 'view-box',
+            black: '#000000'
+        }
     },
     black: '#000000',
     white: '#ffffff',

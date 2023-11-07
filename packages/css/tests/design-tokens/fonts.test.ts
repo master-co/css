@@ -3,20 +3,22 @@ import { MasterCSS, variables } from '../../src'
 it('customizes fonts', () => {
     const css = new MasterCSS({
         variables: {
-            fontFamily: {
-                sans: ['Inter', ...variables.fontFamily.sans],
-                mono: ['Fira Code', ...variables.fontFamily.mono]
+            font: {
+                family: {
+                    sans: ['Inter', ...variables.font.family.sans],
+                    mono: ['Fira Code', ...variables.font.family.mono]
+                }
             }
         }
     })
     expect({
-        sans: css.variables['fontFamily-sans'],
-        mono: css.variables['fontFamily-mono'],
-        serif: css.variables['fontFamily-serif']
+        sans: css.variables['font-family-sans'],
+        mono: css.variables['font-family-mono'],
+        serif: css.variables['font-family-serif']
     }).toEqual({
-        sans: { type: 'string', value: 'Inter,' + variables.fontFamily.sans.join(',') },
-        mono: { type: 'string', value: 'Fira Code,' + variables.fontFamily.mono.join(',') },
-        serif: { type: 'string', value: variables.fontFamily.serif.join(',') }
+        sans: { type: 'string', value: 'Inter,' + variables.font.family.sans.join(',') },
+        mono: { type: 'string', value: 'Fira Code,' + variables.font.family.mono.join(',') },
+        serif: { type: 'string', value: variables.font.family.serif.join(',') }
     })
 })
 
