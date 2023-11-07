@@ -14,8 +14,7 @@ import path from 'path';
 import mime from 'mime-types'
 
 const readImage = (filename: string) => {
-    const sharedFolderPath = path.join(process.cwd(), '../../../')
-    const filepath = path.join(sharedFolderPath, filename.replace('websites/', ''))
+    const filepath = path.join(process.cwd(), 'node_modules', filename)
     const extname = path.extname(filepath);
     const mimeType = mime.lookup(extname);
     return `data:${mimeType};base64,` + fs.readFileSync(filepath, { encoding: 'base64' })
