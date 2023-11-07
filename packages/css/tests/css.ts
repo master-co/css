@@ -2,9 +2,12 @@ import 'css-shared/test/matchMedia.mock'
 import '../src/polyfills/css-escape'
 import { Config, MasterCSS } from '../src'
 
-export const testCSS = (syntax: string, expected: string, config?: Config): void => {
+export const testCSS = (syntax: string, expected: string | string[], config?: Config): void => {
     const css = new MasterCSS(config)
     css.insert(syntax)
+    if (Array.isArray(expected)) {
+        expected = expected.join('')
+    }
     expect(css.text).toBe(expected)
 }
 

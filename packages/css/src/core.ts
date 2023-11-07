@@ -11,6 +11,13 @@ type VariableValue =
     { type: 'string', value: string }
     | { type: 'number', value: number }
     | { type: 'color', value: string, space: 'rgb' | 'hsl' }
+export type Variable = Omit<VariableValue, 'value' | 'space'> & {
+    value?: any,
+    space?: any,
+    usage?: number,
+    natives?: NativeRule[],
+    themes?: { [theme: string]: VariableValue }
+}
 
 export interface MasterCSS {
     readonly style: HTMLStyleElement
@@ -19,17 +26,7 @@ export interface MasterCSS {
     styles: Record<string, string[]>
     stylesBy: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>
-    variables: Record<
-        string,
-        Omit<VariableValue, 'value' | 'space'>
-        & {
-            value?: any,
-            space?: any,
-            usage?: number,
-            natives?: NativeRule[],
-            themes?: { [theme: string]: VariableValue }
-        }
-    >
+    variables: Record<string, Variable>
     mediaQueries: Record<string, string | number>
     hasVariablesRule: boolean
     hasKeyframesRule: boolean
@@ -549,7 +546,7 @@ export class MasterCSS {
                     // animations
                     this.handleRuleWithAnimationNames(rule, true)
 
-                    rule.options.insert?.call(rule)
+                    rule.definition.insert?.call(rule)
                 }
             }
         } else {
@@ -965,7 +962,7 @@ export class MasterCSS {
                 }
             }
 
-            rule.options.delete?.call(rule, name)
+            rule.definition.delete?.call(rule, name)
         }
 
         if (Object.prototype.hasOwnProperty.call(this.styles, className)) {
@@ -1331,7 +1328,7 @@ export class MasterCSS {
             // animations
             this.handleRuleWithAnimationNames(rule)
 
-            rule.options.insert?.call(rule)
+            rule.definition.insert?.call(rule)
         }
     }
 

@@ -1,22 +1,22 @@
-import { expectOrderOfRules, testProp } from './css'
+import { expectOrderOfRules, testCSS, testProp } from './css'
 
 test('border', () => {
     testProp('border:current', 'border-color:currentColor')
     testProp('border:transparent', 'border-color:transparent')
     testProp('border:black', 'border-color:rgb(0 0 0)')
-    testProp('border:2|black', 'border:0.125rem rgb(0 0 0)')
+    testProp('border:2|black', 'border:0.125rem rgb(0 0 0) solid')
     testProp('border:1', 'border-width:0.0625rem')
     testProp('border:dashed|black', 'border:dashed rgb(0 0 0)')
     testProp('border:solid', 'border-style:solid')
     testProp('border:1rem|solid', 'border:1rem solid')
     testProp('border:thick|double|black', 'border:thick double rgb(0 0 0)')
-    testProp('border:none', 'border:none')
+    testProp('border:none', 'border-style:none')
+    testProp('border:auto', 'border-style:auto')
     testProp('border:unset', 'border:unset')
     testProp('border:inherit', 'border:inherit')
     testProp('border:initial', 'border:initial')
     testProp('border:revert', 'border:revert')
     testProp('border:revert-layer', 'border:revert-layer')
-    testProp('border:auto', 'border:auto')
     testProp('border:auto|1', 'border:auto 0.0625rem')
 })
 
@@ -38,4 +38,19 @@ it('checks border order', () => {
         ['bt:1|solid', 'b:1|solid', 'br:1|solid'],
         ['b:1|solid', 'br:1|solid', 'bt:1|solid']
     )
+})
+
+test('autofill solid', () => {
+    testProp('border:16|black', 'border:1rem rgb(0 0 0) solid')
+    testProp('border:16|black|solid', 'border:1rem rgb(0 0 0) solid')
+    testProp('border:16|black|line', 'border:1rem rgb(0 0 0) solid', { variables: { line: 'solid' } })
+    testCSS('border:16|line', [
+        '.light{--line:solid}',
+        '.dark{--line:dotted}',
+        '.border\\:16\\|line{border:1rem var(--line) solid}'
+    ], {
+        variables: {
+            line: { '@light': 'solid', '@dark': 'dotted' }
+        }
+    })
 })

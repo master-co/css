@@ -37,12 +37,6 @@ export {
 
 export type VariableValue = number | string | Array<number | string>
 export type VariableDefinition = { [key in '' | `@${string}`]?: VariableValue } & { [key: string]: VariableValue | VariableDefinition }
-export type FunctionDefinition = {
-    unit?: string
-    colored?: boolean
-    transform?(this: Rule, value: string): string | ValueComponent[]
-}
-export type FunctionDefinitions = { [key: string]: FunctionDefinition }
 export type AnimationDefinition = { [key in 'from' | 'to']?: CSSDeclarations } & { [key: string]: CSSDeclarations }
 export type AnimationDefinitions = { [key: string]: AnimationDefinition }
 export type SelectorDefinitions = { [key: string]: string | string[] | SelectorDefinitions }
@@ -51,6 +45,12 @@ export type StyleDefinitions = { [key: string]: string | StyleDefinitions }
 export type RuleDefinitions = { [key in keyof typeof rules | string]?: RuleDefinition }
 export type VariableDefinitions = { [key in keyof typeof rules]?: VariableDefinition } & { [key: string]: VariableDefinition | VariableValue }
 export type SemanticDefinitions = { [key in keyof typeof semantics]?: CSSDeclarations } & { [key: string]: CSSDeclarations }
+export interface FunctionDefinition {
+    unit?: string
+    colored?: boolean
+    transform?(this: Rule, value: string): string | ValueComponent[]
+}
+export type FunctionDefinitions = { [key: string]: FunctionDefinition }
 
 export interface Config {
     extends?: (Config | { config: Config })[]

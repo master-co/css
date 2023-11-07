@@ -4,7 +4,22 @@ import type { Rule, RuleDefinition } from '../rule'
 import { CSSDeclarations } from '../types/css-declarations'
 import { Layer } from '../layer'
 
-export const BORDER_STYLES = ['hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
+export const BORDER_STYLES = ['none', 'auto', 'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
+
+export const autofillSolidToValueComponent: RuleDefinition['transformValueComponents'] = function (valueComponents) {
+    if (valueComponents.length < 2) return valueComponents
+    const styleValueComponent = valueComponents.find((valueComponent) => {
+        return valueComponent.type === 'string' && BORDER_STYLES.includes(valueComponent.value) ||
+            valueComponent.type === 'variable' && BORDER_STYLES.includes(valueComponent.variable.value)
+    })
+    if (!styleValueComponent) {
+        valueComponents.push(
+            { type: 'separator', value: ' ' },
+            { type: 'string', value: 'solid' }
+        )
+    }
+    return valueComponents
+}
 
 const rules = {
     group: {
@@ -1168,7 +1183,8 @@ const rules = {
         match: /^b:/,
         unit: 'rem',
         colored: true,
-        layer: Layer.CoreNativeShorthand
+        layer: Layer.CoreNativeShorthand,
+        transformValueComponents: autofillSolidToValueComponent,
     } as RuleDefinition,
     'background-attachment': {
         match: ['(?:bg|background)', ['fixed', 'local', 'scroll']],
@@ -1305,7 +1321,7 @@ const rules = {
     'grid-column': {
         match: /^grid-col(?:umn)?(?:-span)?:/,
         layer: Layer.CoreNativeShorthand,
-        transform(value) {
+        transformValue(value) {
             return this.prefix.slice(-5, -1) === 'span' && value !== 'auto'
                 ? 'span' + ' ' + value + '/' + 'span' + ' ' + value
                 : value
@@ -1334,7 +1350,7 @@ const rules = {
     'grid-row': {
         match: /^grid-row-span:/,
         layer: Layer.CoreNativeShorthand,
-        transform(value) {
+        transformValue(value) {
             return this.prefix.slice(-5, -1) === 'span' && value !== 'auto'
                 ? 'span' + ' ' + value + '/' + 'span' + ' ' + value
                 : value
@@ -1488,7 +1504,7 @@ const rules = {
         variableGroups: ['spacing']
     } as RuleDefinition,
     'outline-style': {
-        match: ['outline', ['dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']],
+        match: ['outline', BORDER_STYLES],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'outline-width': {
@@ -1502,11 +1518,12 @@ const rules = {
         layer: Layer.CoreNativeShorthand,
         colored: true,
         variableGroups: [
-            'outlineWidth',
-            'outlineStyle',
-            'outlineOffset',
-            'outlineColor'
-        ]
+            'outline-width',
+            'outline-style',
+            'outline-offset',
+            'outline-color'
+        ],
+        transformValueComponents: autofillSolidToValueComponent
     } as RuleDefinition,
     'accent-color': {
         match: /^accent:/,

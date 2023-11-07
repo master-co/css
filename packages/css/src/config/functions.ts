@@ -42,9 +42,9 @@ const functions = {
                             suffix = ''
                         }
                         if (bypassHandlingSeparator) {
-                            currentValueComponents.push({ type: 'separator', value: separator })
+                            currentValueComponents.push({ type: 'separator', value: separator, text: separator })
                         } else {
-                            currentValueComponents.push({ type: 'separator', value: separator, prefix, suffix })
+                            currentValueComponents.push({ type: 'separator', value: separator, text: prefix + separator + suffix })
                         }
                     }
                     bypassHandlingUnit = false
@@ -58,13 +58,13 @@ const functions = {
                             currentValueComponents.push({ type: 'string', value: symbolResult[1] })
                         }
                         const functionName = symbolResult ? current.slice(1) : current
-                        const newValueComponent: Rule['valueComponents'][0] = { type: 'function', name: functionName, symbol: char, childrens: [] }
+                        const newValueComponent: Rule['valueComponents'][0] = { type: 'function', name: functionName, symbol: char, children: [] }
                         currentValueComponents.push(newValueComponent)
                         current = ''
                         i++
                         const isVarFunction = newValueComponent.name === '$' || newValueComponent.name === 'var'
                         anaylze(
-                            newValueComponent.childrens,
+                            newValueComponent.children,
                             functionName !== ''
                             && functionName !== 'calc'
                             && (
@@ -114,7 +114,7 @@ const functions = {
             }
             anaylze(valueComponents, false, false)
 
-            return 'calc(' + this.transformValueComponents(valueComponents, functions.calc.unit ?? this.options.unit, bypassVariableNames) + ')'
+            return 'calc(' + this.resolveValue(valueComponents, functions.calc.unit ?? this.definition.unit, bypassVariableNames) + ')'
         }
     } as FunctionDefinition,
     translate: { unit: 'rem' },

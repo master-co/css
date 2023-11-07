@@ -1,4 +1,4 @@
-import type { MasterCSS } from './core'
+import type { MasterCSS, Variable } from './core'
 import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'css-shared/utils/css-escape'
 import { CSSDeclarations } from './types/css-declarations'
@@ -25,7 +25,7 @@ export class Rule {
         public readonly definition: RuleDefinition = {},
         public css: MasterCSS
     ) {
-        const { layer, unit, colored: configColored, analyze, transform, declare, create, order, id } = definition
+        const { layer, unit, colored: configColored, analyze, transformValue, declare, transformValueComponents, create, order, id } = definition
         this.order = order
         this.layer = layer
         if (!definition.unit) definition.unit = ''
@@ -364,12 +364,13 @@ export class Rule {
         // 7. value
         let newValue: string
         if (this.valueComponents) {
-            newValue = this.transformValueComponents(this.valueComponents, unit, [])
-            // 8. transform and convert
-            if (transform) {
-                newValue = transform.call(this, newValue, this.css.config)
+            if (transformValueComponents) {
+                this.valueComponents = transformValueComponents.call(this, this.valueComponents)
             }
-
+            newValue = this.resolveValue(this.valueComponents, unit, [])
+            if (transformValue) {
+                newValue = transformValue.call(this, newValue, this.css.config)
+            }
             if (declare) {
                 let value: string
                 let unit: string
@@ -475,7 +476,7 @@ export class Rule {
         }
     }
 
-    transformValueComponents = (valueComponents: ValueComponent[], unit: string, bypassVariableNames: string[]) => {
+    resolveValue = (valueComponents: ValueComponent[], unit: string, bypassVariableNames: string[]) => {
         const { functions } = this.css.config
 
         let currentValue = ''
@@ -483,31 +484,31 @@ export class Rule {
             switch (eachValueComponent.type) {
                 case 'function':
                     // eslint-disable-next-line no-case-declarations
-                    const functionConfig = functions && functions[eachValueComponent.name]
-                    if (functionConfig?.transform) {
-                        const result = functionConfig.transform.call(
+                    const functionDefinition = functions && functions[eachValueComponent.name]
+                    if (functionDefinition?.transform) {
+                        const result = functionDefinition.transform.call(
                             this,
-                            this.transformValueComponents(
-                                eachValueComponent.childrens,
-                                functionConfig.unit ?? unit,
+                            this.resolveValue(
+                                eachValueComponent.children,
+                                functionDefinition.unit ?? unit,
                                 bypassVariableNames
                             ),
                             bypassVariableNames
                         )
                         currentValue += typeof result === 'string'
                             ? result
-                            : this.transformValueComponents(result, functionConfig?.unit ?? unit, bypassVariableNames)
+                            : this.resolveValue(result, functionDefinition?.unit ?? unit, bypassVariableNames)
                     } else {
                         currentValue += eachValueComponent.name
                             + eachValueComponent.symbol
-                            + this.transformValueComponents(eachValueComponent.childrens, functionConfig?.unit ?? unit, bypassVariableNames)
+                            + this.resolveValue(eachValueComponent.children, functionDefinition?.unit ?? unit, bypassVariableNames)
                             + START_SYMBOLS[eachValueComponent.symbol]
                     }
                     break
                 // todo: 應挪到 parseValue 階段處理才能支援 variables: { x: 'calc(20vw-30px)' } 這種情況，並且解析上可能會比較合理、精簡
                 case 'variable':
                     // eslint-disable-next-line no-case-declarations
-                    const variable = this.css.variables[eachValueComponent.name]
+                    const variable = eachValueComponent.variable
                     if (variable) {
                         const handleVariable = (
                             normalHandler: (variable: MasterCSS['variables'][0]) => void,
@@ -538,7 +539,7 @@ export class Rule {
                                     (variable) => {
                                         const valueComponents: ValueComponent[] = []
                                         this.parseValue(valueComponents, 0, variable.value as string, unit, undefined, undefined, [...bypassVariableNames, eachValueComponent.name])
-                                        currentValue += this.transformValueComponents(
+                                        currentValue += this.resolveValue(
                                             valueComponents,
                                             unit,
                                             [...bypassVariableNames, eachValueComponent.name]
@@ -580,7 +581,7 @@ export class Rule {
                     }
                     break
                 case 'separator':
-                    currentValue += (eachValueComponent.prefix || '') + eachValueComponent.value + (eachValueComponent.suffix || '')
+                    currentValue += (eachValueComponent.text || eachValueComponent.value)
                     break
                 case 'number':
                     currentValue += eachValueComponent.value + eachValueComponent.unit
@@ -634,8 +635,9 @@ export class Rule {
                             const name = variable.name ?? variableName
                             if (!bypassVariableNames.includes(name)) {
                                 handled = true
-
-                                currentValueComponents.push({ type: 'variable', name: name, alpha })
+                                const valueComponent: VariableValueComponent = { type: 'variable', name, variable: this.css.variables[name] }
+                                if (alpha) valueComponent.alpha = alpha
+                                currentValueComponents.push(valueComponent)
                             }
                         }
                     }
@@ -678,21 +680,21 @@ export class Rule {
                 return i
             } else if (!isString && val in START_SYMBOLS) {
                 const functionName = currentValue
-                const newValueComponent: ValueComponent[][0] = { type: 'function', name: functionName, symbol: val, childrens: [] }
+                const newValueComponent: ValueComponent[][0] = { type: 'function', name: functionName, symbol: val, children: [] }
                 currentValueComponents.push(newValueComponent)
                 currentValue = ''
 
-                const functionConfig = val === '(' && this.css.config.functions?.[functionName]
-                if (!this.colored && functionConfig?.colored) {
+                const functionDefinition = val === '(' && this.css.config.functions?.[functionName]
+                if (!this.colored && functionDefinition?.colored) {
                     // @ts-ignore
                     this.colored = true
                 }
 
                 i = this.parseValue(
-                    newValueComponent.childrens,
+                    newValueComponent.children,
                     ++i,
                     value,
-                    functionConfig?.unit ?? unit,
+                    functionDefinition?.unit ?? unit,
                     START_SYMBOLS[val],
                     functionName || parentFunctionName || ''
                 )
@@ -713,8 +715,7 @@ export class Rule {
                         currentValueComponents.push({
                             type: 'separator',
                             value: val,
-                            prefix: val === ',' ? '' : ' ',
-                            suffix: val === ',' ? '' : ' '
+                            text: (val === ',' ? '' : ' ') + val + (val === ',' ? '' : ' ')
                         })
                         continue
                     } else if (
@@ -727,21 +728,11 @@ export class Rule {
                         break
                     }
                 }
-
                 currentValue += val
             }
         }
-
         parse()
-
         return i
-    }
-
-    resolveValue(value, unit) {
-        return Number.isNaN(+value)
-            ? value
-            : ((value as any) / (unit === 'rem' || unit === 'em' ? this.css.config.rootSize : 1))
-            + unit
     }
 
     parseValueComponent(token: string | number, unit = this.definition.unit): StringValueComponent | NumericValueComponent {
@@ -797,11 +788,11 @@ export type ValueComponent =
     VariableValueComponent |
     SeparatorValueComponent
 
-export interface StringValueComponent { token?: string, type: 'string', value: string }
-export interface NumericValueComponent { token?: string, type: 'number', value: number, unit?: string }
-export interface FunctionValueComponent { token?: string, type: 'function', name: string, symbol: string, childrens: ValueComponent[] }
-export interface VariableValueComponent { token?: string, type: 'variable', name: string, alpha?: string, fallback?: string }
-export interface SeparatorValueComponent { type: 'separator', value: string, prefix?: string, suffix?: string }
+export interface StringValueComponent { text?: string, token?: string, type: 'string', value: string }
+export interface NumericValueComponent { text?: string, token?: string, type: 'number', value: number, unit?: string }
+export interface FunctionValueComponent { text?: string, token?: string, type: 'function', name: string, symbol: string, children: ValueComponent[] }
+export interface VariableValueComponent { text?: string, token?: string, type: 'variable', name: string, alpha?: string, fallback?: string, variable?: Variable }
+export interface SeparatorValueComponent { text?: string, type: 'separator', value: string }
 
 export interface Rule {
     prefix?: string
@@ -841,7 +832,7 @@ export interface RuleDefinition {
     declarations?: CSSDeclarations
     layer?: Layer,
     analyze?: (this: Rule, className: string) => [valueToken: string, prefixToken?: string]
-    transform?(this: Rule, value: string): string
+    transformValue?(this: Rule, value: string): string
     transformValueComponents?(this: Rule, valueComponents: ValueComponent[]): ValueComponent[]
     declare?(this: Rule, value: string, unit: string): CSSDeclarations
     delete?(this: Rule, className: string): void
