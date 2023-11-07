@@ -373,93 +373,88 @@ export class MasterCSS {
         if (rules) {
             const rulesEntries = Object.entries(rules).sort((a: any, b: any) => {
                 if (a[1].layer !== b[1].layer) {
-                return (b[1].layer || 0) - (a[1].layer || 0)
+                    return (b[1].layer || 0) - (a[1].layer || 0)
                 }
                 return b[0].localeCompare(a[0])
             })
             const rulesEntriesLength = rulesEntries.length
             const colorNames = Object.keys(colorVariableNames)
-            rulesEntries.forEach(
-                ([id, eachRuleOptions]: [string, RuleOptions], index: number) => {
-                    this.ruleOptions.push(eachRuleOptions)
-                    eachRuleOptions.order =
-                        this.semanticRuleOptions.length + rulesEntriesLength - 1 - index
-                    const match = eachRuleOptions.match
-                    eachRuleOptions.id = id
-                    if (
-                        eachRuleOptions.layer === Layer.Native ||
-                        eachRuleOptions.layer === Layer.NativeShorthand ||
-                        eachRuleOptions.layer === CoreLayer.Native ||
-                        eachRuleOptions.layer === CoreLayer.NativeShorthand
-                    ) {
-                        eachRuleOptions.resolvedPropName = id
-                            .replace(/(?!^)[A-Z]/g, (m) => '-' + m)
-                            .toLowerCase()
-                    }
-                    eachRuleOptions.resolvedVariables = {}
-                    const addResolvedVariables = (prefix: string) => {
-                        Object.assign(
-                            eachRuleOptions.resolvedVariables,
-                            Object.keys(this.variables)
-                                .filter(
-                                    (eachVariableName) =>
-                                        eachVariableName.startsWith(prefix + '-') ||
-                                        eachVariableName.startsWith('-' + prefix + '-'),
-                                )
-                                .reduce((newResolvedVariables, eachVariableName) => {
-                                    newResolvedVariables[
-                                        eachVariableName.slice(
-                                            prefix.length + (prefix.startsWith('-') ? 0 : 1),
-                                        )
-                                    ] = {
-                                        ...this.variables[eachVariableName],
-                                        name: eachVariableName,
-                                    }
-                                    return newResolvedVariables
-                                }, {}),
-                        )
-                    }
-                    // 1. custom `config.rules[id].variableGroups`
-                    if (eachRuleOptions.variableGroups) {
-                        for (const eachVariableGroup of eachRuleOptions.variableGroups) {
-                            addResolvedVariables(eachVariableGroup)
-                        }
-                    }
-                    // 2. custom `config.variables`
-                    addResolvedVariables(id)
-
-                    if (match) {
-                        if (Array.isArray(match)) {
-                            const [key, values = []] = match
-                            const valueMatches = []
-                            if (values.length) {
-                                valueMatches.push(`(?:${values.join('|')})(?![a-zA-Z0-9-])`)
-                            }
-                            if (Object.keys(eachRuleOptions.resolvedVariables).length) {
-                                valueMatches.push(
-                                    `(?:${Object.keys(eachRuleOptions.resolvedVariables).join(
-                                        '|',
-                                    )})(?![a-zA-Z0-9-])`,
-                                )
-                            }
-                            if (eachRuleOptions.colored) {
-                                valueMatches.push(
-                                    '#',
-                                    '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)',
-                                    `(?:${colorNames.join('|')})(?![a-zA-Z0-9-])`,
-                                )
-                            }
-                            if (eachRuleOptions.numeric) {
-                                valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
-                            }
-                            eachRuleOptions.resolvedMatch = new RegExp(
-                                `^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`,
+            rulesEntries.forEach(([id, eachRuleOptions]: [string, RuleOptions], index: number) => {
+                this.ruleOptions.push(eachRuleOptions)
+                eachRuleOptions.order = this.semanticRuleOptions.length + rulesEntriesLength - 1 - index
+                const match = eachRuleOptions.match
+                eachRuleOptions.id = id
+                if (
+                    eachRuleOptions.layer === Layer.Native ||
+                    eachRuleOptions.layer === Layer.NativeShorthand ||
+                    eachRuleOptions.layer === CoreLayer.Native ||
+                    eachRuleOptions.layer === CoreLayer.NativeShorthand
+                ) {
+                    eachRuleOptions.resolvedPropName = id
+                        .replace(/(?!^)[A-Z]/g, (m) => '-' + m)
+                        .toLowerCase()
+                }
+                eachRuleOptions.resolvedVariables = {}
+                const addResolvedVariables = (prefix: string) => {
+                    Object.assign(
+                        eachRuleOptions.resolvedVariables,
+                        Object.keys(this.variables)
+                            .filter((eachVariableName) =>
+                                eachVariableName.startsWith(prefix + '-') ||
+                                eachVariableName.startsWith('-' + prefix + '-'),
                             )
-                        } else {
-                            eachRuleOptions.resolvedMatch = match as RegExp
-                        }
+                            .reduce((newResolvedVariables, eachVariableName) => {
+                                newResolvedVariables[
+                                    eachVariableName.slice(
+                                        prefix.length + (prefix.startsWith('-') ? 0 : 1),
+                                    )
+                                ] = {
+                                    ...this.variables[eachVariableName],
+                                    name: eachVariableName,
+                                }
+                                return newResolvedVariables
+                            }, {}),
+                    )
+                }
+                // 1. custom `config.rules[id].variableGroups`
+                if (eachRuleOptions.variableGroups) {
+                    for (const eachVariableGroup of eachRuleOptions.variableGroups) {
+                        addResolvedVariables(eachVariableGroup)
                     }
-                },
+                }
+                // 2. custom `config.variables`
+                addResolvedVariables(id)
+
+                if (match) {
+                    if (Array.isArray(match)) {
+                        const [key, values = []] = match
+                        const valueMatches = []
+                        if (values.length) {
+                            valueMatches.push(`(?:${values.join('|')})(?![a-zA-Z0-9-])`)
+                        }
+                        if (Object.keys(eachRuleOptions.resolvedVariables).length) {
+                            valueMatches.push(
+                                `(?:${Object.keys(eachRuleOptions.resolvedVariables).join('|')})(?![a-zA-Z0-9-])`,
+                            )
+                        }
+                        if (eachRuleOptions.colored) {
+                            valueMatches.push(
+                                '#',
+                                '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)',
+                                `(?:${colorNames.join('|')})(?![a-zA-Z0-9-])`,
+                            )
+                        }
+                        if (eachRuleOptions.numeric) {
+                            valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
+                        }
+                        eachRuleOptions.resolvedMatch = new RegExp(
+                            `^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`,
+                        )
+                    } else {
+                        eachRuleOptions.resolvedMatch = match as RegExp
+                    }
+                }
+            },
             )
         }
     }
@@ -1465,23 +1460,23 @@ export class MasterCSS {
                             for (let i = 0; i < sheet.cssRules.length; i++) {
                                 const eachCssRule = sheet.cssRules[i]
                                 if (
-                                    eachCssRule.constructor.name === 'CSSStyleRule' 
-                                    && (eachCssRule as CSSStyleRule).style.length === 1 
-                                    && (eachCssRule as CSSStyleRule).style[0].startsWith('--') 
+                                    eachCssRule.constructor.name === 'CSSStyleRule'
+                                    && (eachCssRule as CSSStyleRule).style.length === 1
+                                    && (eachCssRule as CSSStyleRule).style[0].startsWith('--')
                                     && !(eachCssRule as CSSStyleRule).selectorText.startsWith('.\\$')
                                 )
                                     continue
 
                                 if (eachCssRule.constructor.name !== 'CSSKeyframesRule')
                                     break
-    
+
                                 if ((eachCssRule as CSSKeyframesRule).name === eachKeyframeName) {
                                     cssRule = eachCssRule
                                     break
                                 }
                             }
                         }
-                      
+
                         if (cssRule) {
                             nativeRule.cssRule = cssRule
                         } else {
@@ -1552,8 +1547,8 @@ export class MasterCSS {
                                 const eachCssRule = sheet.cssRules[i]
                                 if (
                                     eachCssRule.constructor.name !== 'CSSStyleRule'
-                                    || (eachCssRule as CSSStyleRule).style.length !== 1 
-                                    || !(eachCssRule as CSSStyleRule).style[0].startsWith('--') 
+                                    || (eachCssRule as CSSStyleRule).style.length !== 1
+                                    || !(eachCssRule as CSSStyleRule).style[0].startsWith('--')
                                     || (eachCssRule as CSSStyleRule).selectorText.startsWith('.\\$')
                                 )
                                     break
