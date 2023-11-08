@@ -506,23 +506,29 @@ export class MasterCSS {
                     case 'CSSStyleRule':
                         // eslint-disable-next-line no-case-declarations
                         const selectorText = (eachCSSRule as CSSStyleRule).selectorText
-                        if (
-                            (eachCSSRule as CSSStyleRule).style.length
-                            && Array.from<any>(eachCSSRule['styleMap'].entries()).every(([property]) => property.startsWith('--'))
-                        ) {
-                            if (selectorText === ':root') {
-                                this.pushVariableNativeRule('', eachCSSRule as CSSStyleRule)
-                                continue
-                            } else {
-                                if (this.config.themeDriver === 'host') {
-                                    const result = /:host(.*?)/.exec(selectorText)
-                                    if (result) {
-                                        this.pushVariableNativeRule(result[1], eachCSSRule as CSSStyleRule)
+                        if ((eachCSSRule as CSSStyleRule).style.length) {
+                            let isVariablesRule = true
+                            for (let i = 0; i < (eachCSSRule as CSSStyleRule).style.length; i++) {
+                                if (!(eachCSSRule as CSSStyleRule).style[i]?.startsWith('--')) {
+                                    isVariablesRule = false
+                                    break
+                                }
+                            }
+                            if (isVariablesRule) {
+                                if (selectorText === ':root') {
+                                    this.pushVariableNativeRule('', eachCSSRule as CSSStyleRule)
+                                    continue
+                                } else {
+                                    if (this.config.themeDriver === 'host') {
+                                        const result = /:host(.*?)/.exec(selectorText)
+                                        if (result) {
+                                            this.pushVariableNativeRule(result[1], eachCSSRule as CSSStyleRule)
+                                            continue
+                                        }
+                                    } else if (!selectorText.startsWith('.\\$')) {
+                                        this.pushVariableNativeRule(selectorText.slice(1), eachCSSRule as CSSStyleRule)
                                         continue
                                     }
-                                } else if (!selectorText.startsWith('.\\$')) {
-                                    this.pushVariableNativeRule(selectorText.slice(1), eachCSSRule as CSSStyleRule)
-                                    continue
                                 }
                             }
                         }
@@ -1655,7 +1661,7 @@ export class MasterCSS {
                 const properties: string[] = []
                 for (let i = 0; i < variableCSSRule.style.length; i++) {
                     const property = variableCSSRule.style[i]
-                    properties.push(property + ':' + variableCSSRule['styleMap'].get(property).toString())
+                    properties.push(property + ':' + (variableCSSRule as CSSStyleRule).style.getPropertyValue(property))
                 }
                 return prefix + properties.join(';') + suffix
             }
