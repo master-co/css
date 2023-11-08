@@ -1,54 +1,32 @@
-/**
- * @jest-environment node
- */
-
-import puppeteer, { Browser, Page } from 'puppeteer-core'
-import path from 'path'
+import { initRuntime } from '../src'
 import { complexHTML } from './complex-html'
 
-let browser: Browser
-let page: Page
-
-beforeAll(async () => {
-    browser = await puppeteer.launch({ headless: 'new', channel: 'chrome' })
-    page = await browser.newPage()
-    await page.addScriptTag({ path: require.resolve(path.join(__dirname, '../dist/index.browser.bundle.js')) })
-    await page.waitForNetworkIdle()
-}, 30000)
+beforeAll(() => {
+    initRuntime()
+})
 
 /**
  * <p class="block font:bold">
  * <p class="block font:bold italic">
  */
 it('css count class add', async () => {
-    await page.evaluate(() => {
-        const p1 = document.createElement('p')
-        p1.classList.add('block', 'font:bold')
-        document.body.append(p1)
-        p1.classList.add('italic')
-    })
-    const classesUsage = await page.evaluate(function () {
-        return window.masterCSS.classesUsage
-    })
-    expect(classesUsage).toEqual({
+    const p1 = document.createElement('p')
+    p1.classList.add('block', 'font:bold')
+    document.body.append(p1)
+    p1.classList.add('italic')
+    await new Promise(resolve => setTimeout(resolve))
+    expect(window.masterCSS.classesUsage).toEqual({
         'block': 1,
         'font:bold': 1,
         'italic': 1
     })
-}, 30000)
+})
 
 it('css count class complicated example', async () => {
-    await page.evaluate((complexHTML) => document.body.innerHTML = complexHTML, complexHTML)
-    let classesUsage = await page.evaluate(function () {
-        return window.masterCSS.classesUsage
-    })
-    expect(Object.keys(classesUsage).length).toBeTruthy()
-    await page.evaluate(() => document.body.innerHTML = '')
-    classesUsage = await page.evaluate(() => window.masterCSS.classesUsage)
-    expect(classesUsage).toEqual({})
-}, 30000)
-
-afterAll(async () => {
-    await page.close()
-    await browser.close()
-}, 60000)
+    document.body.innerHTML = complexHTML
+    await new Promise(resolve => setTimeout(resolve))
+    expect(Object.keys(window.masterCSS.classesUsage).length).toBeTruthy()
+    document.body.innerHTML = ''
+    await new Promise(resolve => setTimeout(resolve))
+    expect(window.masterCSS.classesUsage).toEqual({})
+})
