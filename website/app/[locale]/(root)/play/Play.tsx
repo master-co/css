@@ -39,6 +39,7 @@ import links from '~/links.mjs'
 import dynamic from 'next/dynamic'
 import i18n from 'websites/i18n.config.mjs'
 import { mediaQueries } from '@master/css'
+import config from '~/master.css'
 
 // import { Registry } from 'monaco-textmate'
 // import { wireTmGrammars } from 'monaco-editor-textmate'
@@ -62,8 +63,10 @@ const editorOptions: editor.IStandaloneEditorConstructionOptions = {
     wrappingStrategy: 'advanced',
     overviewRulerLanes: 0,
     lineHeight: 22,
+    letterSpacing: -0.1,
     fontSize: 14,
-    fontFamily: `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`
+    fontFamily: config.variables.font.family.mono.join(','),
+    fontLigatures: true
 }
 
 const editorHTMLOptions: any = {
@@ -704,13 +707,12 @@ export default function Play(props: any) {
                     showHandler={[layout === '4', !layout, layout === '3', layout === '2']}
                     className={l(
                         layout === '5' && 'hide!@md',
-                        'b:divider|solid',
                         {
                             'full!@<md': currentTabTitle !== 'Preview',
-                            'br:1': !layout,
-                            'bl:1': layout === '2',
-                            'bb:1': layout === '3',
-                            'bt:1': layout === '4'
+                            'br:1|divider': !layout,
+                            'bl:1|divider': layout === '2',
+                            'bb:1|divider': layout === '3',
+                            'bt:1|divider': layout === '4'
                         }
                     )}
                     width={currentTabTitle === 'Preview' ? '' : width}
@@ -785,7 +787,7 @@ export default function Play(props: any) {
                         className={l(
                             'full',
                             {
-                                'max-w:100% max-h:100% outline:1|solid|divider': responsive
+                                'max-w:100% max-h:100% outline:1|divider': responsive
                             }
                         )}
                         showHeight={true}
