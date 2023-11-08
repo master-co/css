@@ -22,7 +22,7 @@ export function CSSProvider({ children, config, root }: {
                 if (existingCSS) {
                     setRuntimeCSS(existingCSS)
                 } else {
-                    newRuntimeCSS = new RuntimeCSS(root, resolvedConfig)
+                    newRuntimeCSS = new RuntimeCSS(root, resolvedConfig).observe()
                     setRuntimeCSS(newRuntimeCSS)
                 }
             }
