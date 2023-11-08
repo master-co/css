@@ -41,7 +41,7 @@ it('expects the variable output', async () => {
     p.id = 'mp'
     p.classList.add('bg:first')
     document.body.append(p)
-    await new Promise(resolve => setTimeout(resolve))
+    await new Promise(resolve => setTimeout(resolve, 100))
     expect(window.masterCSS.text).toContain(':root{--first:17 17 17}.dark{--first:34 34 34}.light{--first:51 51 51}.bg\\:first{background-color:rgb(var(--first))}')
 })
 
