@@ -33,10 +33,10 @@ export default {
                     const { name, content } = event.data;
                     switch (name) {
                         case 'master.css.js':
-                            const MasterCSS = window.MasterCSS;
-                            if (masterCSS) {
+                            const RuntimeCSS = window.RuntimeCSS;
+                            if (RuntimeCSS) {
                                 eval(content.replace(/(export default|export const config =)/, 'config ='));
-                                masterCSS.refresh(config);
+                                RuntimeCSS.refresh(config);
                             };
                     }
                 })
