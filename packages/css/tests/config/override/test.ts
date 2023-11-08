@@ -1,17 +1,17 @@
-import { Config, CoreLayer } from '../../../src'
+import { Config, Layer } from '../../../src'
 import { testCSS } from '../../css'
 
 const customConfig: Config = {
     override: true,
     rootSize: 10,
     rules: {
-        fontSize: {
+        'font-size': {
             match: ['custom'],
             numeric: true,
             unit: 'rem',
-            layer: CoreLayer.Native,
-        },
-    },
+            layer: Layer.Normal,
+        }
+    }
 }
 
 test('override', () => {
