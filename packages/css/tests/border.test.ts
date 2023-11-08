@@ -28,9 +28,8 @@ it('validates border rules', () => {
     testProp(['br:16|solid', 'border-right:16|solid'], 'border-right:1rem solid')
     testProp(['bx:16|solid', 'border-x:16|solid'], 'border-left:1rem solid;border-right:1rem solid')
     testProp(['by:16|solid', 'border-y:16|solid'], 'border-top:1rem solid;border-bottom:1rem solid')
-
     testProp(['br:1px|solid|gray'], 'border-right:1px solid rgb(107 106 109)')
-    testProp(['br:1px|gray'], 'border-right:1px rgb(107 106 109)')
+    testProp(['br:1px|gray'], 'border-right:1px rgb(107 106 109) solid')
 })
 
 it('checks border order', () => {
@@ -51,6 +50,15 @@ test('autofill solid', () => {
     ], {
         variables: {
             line: { '@light': 'solid', '@dark': 'dotted' }
+        }
+    })
+    testCSS('border:16|primary', [
+        '.light{--primary:0 0 0}',
+        '.dark{--primary:255 255 255}',
+        '.border\\:16\\|primary{border:1rem rgb(var(--primary)) solid}'
+    ], {
+        variables: {
+            primary: { '@light': '#000000', '@dark': '#ffffff' }
         }
     })
 })

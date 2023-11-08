@@ -1135,31 +1135,36 @@ const rules = {
         match: /^bt:/,
         layer: Layer.CoreNativeShorthand,
         unit: 'rem',
-        colored: true
+        colored: true,
+        transformValueComponents: autofillSolidToValueComponent,
     } as RuleDefinition,
     'border-bottom': {
         match: /^bb:/,
         layer: Layer.CoreNativeShorthand,
         unit: 'rem',
-        colored: true
+        colored: true,
+        transformValueComponents: autofillSolidToValueComponent,
     } as RuleDefinition,
     'border-left': {
         match: /^bl:/,
         layer: Layer.CoreNativeShorthand,
         unit: 'rem',
-        colored: true
+        colored: true,
+        transformValueComponents: autofillSolidToValueComponent,
     } as RuleDefinition,
     'border-right': {
         match: /^br:/,
         layer: Layer.CoreNativeShorthand,
         unit: 'rem',
-        colored: true
+        colored: true,
+        transformValueComponents: autofillSolidToValueComponent,
     } as RuleDefinition,
     'border-x': {
         match: /^(?:bx|border-x):/,
         unit: 'rem',
         colored: true,
         layer: Layer.CoreShorthand,
+        transformValueComponents: autofillSolidToValueComponent,
         declare(value) {
             return {
                 'border-left': value,
@@ -1172,6 +1177,7 @@ const rules = {
         unit: 'rem',
         colored: true,
         layer: Layer.CoreShorthand,
+        transformValueComponents: autofillSolidToValueComponent,
         declare(value) {
             return {
                 'border-top': value,
