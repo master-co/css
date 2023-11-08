@@ -1252,7 +1252,7 @@ const rules = {
             }
         }
     } as RuleDefinition,
-    'mixBlend-mode': {
+    'mix-blend-mode': {
         match: /^blend:/,
         layer: Layer.CoreNative
     } as RuleDefinition,
@@ -1691,7 +1691,7 @@ const rules = {
         layer: Layer.CoreNative,
         variables: ['spacing']
     } as RuleDefinition,
-    'shapeImage-threshold': {
+    'shape-image-threshold': {
         layer: Layer.CoreNative
     } as RuleDefinition,
     'clip-path': {
