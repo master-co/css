@@ -4,6 +4,7 @@
 
 import puppeteer, { Browser, ElementHandle, Page } from 'puppeteer-core'
 import path from 'path'
+import type { MasterCSS } from '../src'
 
 const variables = {
     first: {
@@ -79,14 +80,21 @@ it('expects the variable output', async () => {
         await new Promise(resolve => setTimeout(resolve, 0))
         return window.masterCSS.text
     }, p)
-    expect(cssText).toContain('.dark{--second:68 68 68}.light{--second:85 85 85}:root{--third:102 102 102}.light{--third:119 119 119}')
+    // expect(cssText).toContain(':root{--first:17 17 17;--third:102 102 102;--fourth:136 136 136}.dark{--first:34 34 34;--second:68 68 68;--fourth:153 153 153;--fifth:2 34 34;--sixth:102 102 102}.light{--first:51 51 51;--second:85 85 85;--third:119 119 119;--fourth:0 0 0;--fifth:3 51 51}')
+    expect(cssText).toMatch(/\.dark\{[^}]*--second:68 68 68[^}]*\}/)
+    expect(cssText).toMatch(/\.light\{[^}]*--second:85 85 85[^}]*\}/)
     expect(cssText).toContain('.bg\\:second{background-color:rgb(var(--second))}')
-    expect(cssText).toContain(':root{--third:102 102 102}.light{--third:119 119 119}')
+    expect(cssText).toMatch(/\:root\{[^}]*--third:102 102 102[^}]*\}/)
+    expect(cssText).toMatch(/\.light\{[^}]*--third:119 119 119[^}]*\}/)
     expect(cssText).toContain('.b\\:third{border-color:rgb(var(--third))}')
-    expect(cssText).toContain(':root{--fourth:136 136 136}.dark{--fourth:153 153 153}.light{--fourth:0 0 0}')
-    expect(cssText).toContain('.dark{--fifth:2 34 34}.light{--fifth:3 51 51}')
+    expect(cssText).toMatch(/\:root\{[^}]*--fourth:136 136 136[^}]*\}/)
+    expect(cssText).toMatch(/\.dark\{[^}]*--fourth:153 153 153[^}]*\}/)
+    expect(cssText).toMatch(/\.light\{[^}]*--fourth:0 0 0[^}]*\}/)
+    expect(cssText).toMatch(/\.dark\{[^}]*--fifth:2 34 34[^}]*\}/)
+    expect(cssText).toMatch(/\.light\{[^}]*--fifth:3 51 51[^}]*\}/)
     expect(cssText).toContain('.\\{outline\\:fourth\\;accent\\:fifth\\}{outline-color:rgb(var(--fourth));accent-color:rgb(var(--fifth))}')
     expect(cssText).toContain('.fg\\:second{color:rgb(var(--second))}')
+    expect(cssText).toMatch(/\.dark\{[^}]*--sixth:102 102 102[^}]*\}/)
 
     const removeClass = async (className: string) => {
         cssText = await page.evaluate(async (p, className) => {
@@ -96,16 +104,24 @@ it('expects the variable output', async () => {
         }, p, className)
     }
     await removeClass('bg:second')
-    expect(cssText).toContain('.dark{--second:68 68 68}.light{--second:85 85 85}:root{--third:102 102 102}.light{--third:119 119 119}')
+    expect(cssText).toMatch(/\.dark\{[^}]*--second:68 68 68[^}]*\}/)
+    expect(cssText).toMatch(/\.light\{[^}]*--second:85 85 85[^}]*\}/)
     await removeClass('b:third')
-    expect(cssText).not.toContain(':root{--third:102 102 102}.light{--third:119 119 119}')
+    expect(cssText).not.toMatch(/\:root\{[^}]*--third:102 102 102[^}]*\}/)
+    expect(cssText).not.toMatch(/\.light\{[^}]*--third:119 119 119[^}]*\}/)
     await removeClass('{outline:fourth;accent:fifth}')
-    expect(cssText).not.toContain(':root{--fourth:136 136 136}.dark{--fourth:153 153 153}.light{--fourth:0 0 0}')
-    expect(cssText).not.toContain('.dark{--fifth:2 34 34}.light{--fifth:3 51 51}')
+    expect(cssText).not.toMatch(/\:root\{[^}]*--fourth:136 136 136[^}]*\}/)
+    expect(cssText).not.toMatch(/\.dark\{[^}]*--fourth:153 153 153[^}]*\}/)
+    expect(cssText).not.toMatch(/\.light\{[^}]*--fourth:0 0 0[^}]*\}/)
+    expect(cssText).not.toMatch(/\.dark\{[^}]*--fifth:2 34 34[^}]*\}/)
+    expect(cssText).not.toMatch(/\.light\{[^}]*--fifth:3 51 51[^}]*\}/)
     await removeClass('fg:second')
-    expect(cssText).not.toContain('.dark{--second:68 68 68}.light{--second:85 85 85}:root{--third:102 102 102}.light{--third:119 119 119}')
+    expect(cssText).not.toMatch(/\.dark\{[^}]*--second:68 68 68[^}]*\}/)
+    expect(cssText).not.toMatch(/\.light\{[^}]*--second:85 85 85[^}]*\}/)
     await removeClass('bg:first')
-    expect(cssText).toContain('.dark{--sixth:102 102 102}')
+    expect(cssText).not.toMatch(/\:root\{[^}]*--first:17 17 17[^}]*\}/)
+    expect(cssText).not.toMatch(/\.dark\{[^}]*--first:34 34 34[^}]*\}/)
+    expect(cssText).not.toMatch(/\.light\{[^}]*--first:51 51 51[^}]*\}/)
     await removeClass('accent:sixth')
     expect(cssText).toBe('')
 }, 60000)

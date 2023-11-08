@@ -15,7 +15,6 @@ export type Variable = Omit<VariableValue, 'value' | 'space'> & {
     value?: any,
     space?: any,
     usage?: number,
-    natives?: NativeRule[],
     themes?: { [theme: string]: VariableValue }
 }
 
@@ -28,7 +27,7 @@ export interface MasterCSS {
     selectors: Record<string, [RegExp, string[]][]>
     variables: Record<string, Variable>
     mediaQueries: Record<string, string | number>
-    hasVariablesRule: boolean
+    variablesNativeRules: Record<string, NativeRule>
     hasKeyframesRule: boolean
     animations: Record<string, AnimationDefinitions & { usage?: number, native?: NativeRule }>
 }
@@ -71,7 +70,7 @@ export class MasterCSS {
         this.animations = {}
         this.ruleOptions.length = 0
         this.semanticRuleOptions.length = 0
-        this.hasVariablesRule = false
+        this.variablesNativeRules = undefined
         this.hasKeyframesRule = false
         const colorVariableNames: Record<string, undefined> = {
             current: undefined,
@@ -472,15 +471,55 @@ export class MasterCSS {
         }
 
         if (this.style) {
-            for (let index = 0; index < this.style.sheet.cssRules.length; index++) {
-                const cssRule = this.style.sheet.cssRules[index]
-                const ruleName = cssRule.constructor.name
-                if (
-                    ruleName === 'CSSStyleRule' && (cssRule as CSSStyleRule).style.length === 1 && (cssRule as CSSStyleRule).style[0].startsWith('--') && !(cssRule as CSSStyleRule).selectorText.startsWith('.\\$') ||
-                    ruleName === 'CSSKeyframesRule'
-                )
-                    continue
+            let index = 0
+            for (; index < this.style.sheet.cssRules.length; index++) {
+                const eachCSSRule = this.style.sheet.cssRules[index]
+                switch (eachCSSRule.constructor.name) {
+                    case 'CSSKeyframesRule':
+                        continue
+                    case 'CSSMeidaRule':
+                        if (this.config.themeDriver === 'media') {
+                            const result = /\(prefers-color-scheme: (.*?)\)/.exec((eachCSSRule as CSSMediaRule).conditionText)
+                            if (result) {
+                                const firstCSSRule = (eachCSSRule as CSSMediaRule).cssRules[0]
+                                if (
+                                    firstCSSRule?.constructor.name === 'CSSStyleRule' 
+                                    && (firstCSSRule as CSSStyleRule).selectorText === ':root'
+                                ) {
+                                    this.pushVariableNativeRule(result[1], firstCSSRule as CSSStyleRule)
+                                    continue
+                                }
+                            }
+                        }
+                        break
+                    case 'CSSStyleRule':
+                        // eslint-disable-next-line no-case-declarations
+                        const selectorText = (eachCSSRule as CSSStyleRule).selectorText
+                        if (
+                            (eachCSSRule as CSSStyleRule).style.length
+                            && Array.from<any>(eachCSSRule['styleMap'].entries()).every(([property]) => property.startsWith('--'))
+                        ) {
+                            if (selectorText === ':root') {
+                                this.pushVariableNativeRule('', eachCSSRule as CSSStyleRule)
+                                continue
+                            } else {
+                                if (this.config.themeDriver === 'host') {
+                                    const result = /:host(.*?)/.exec(selectorText)
+                                    if (result) {
+                                        this.pushVariableNativeRule(result[1], eachCSSRule as CSSStyleRule)
+                                        continue
+                                    }
+                                } else if (!selectorText.startsWith('.\\$')) {
+                                    this.pushVariableNativeRule(selectorText.slice(1), eachCSSRule as CSSStyleRule)
+                                    continue
+                                }
+                            }
+                        }
+                        break
+                }
+            }
 
+            for (;index < this.style.sheet.cssRules.length; index++) {
                 const getRule = (cssRule: any): Rule => {
                     if (cssRule.selectorText) {
                         const selectorTexts = cssRule.selectorText.split(', ')
@@ -529,7 +568,7 @@ export class MasterCSS {
                         }
                     }
                 }
-                const rule = getRule(cssRule)
+                const rule = getRule(this.style.sheet.cssRules[index])
                 if (rule) {
                     this.rules.push(rule)
                     this.ruleBy[rule.className] = rule
@@ -764,7 +803,7 @@ export class MasterCSS {
         this.classesUsage = {}
         this.rules.length = 0
         this.hasKeyframesRule = false
-        this.hasVariablesRule = false
+        this.variablesNativeRules = undefined
         for (const keyframeName in this.animations) {
             const animation = this.animations[keyframeName]
             animation.usage = undefined
@@ -773,7 +812,6 @@ export class MasterCSS {
         for (const variableName in this.variables) {
             const variable = this.variables[variableName]
             variable.usage = undefined
-            variable.natives = undefined
         }
         const sheet = this.style?.sheet
         if (sheet?.cssRules) {
@@ -902,8 +940,8 @@ export class MasterCSS {
             if (sheet && rule.natives.length) {
                 const firstNative = rule.natives[0]
                 for (let index = 0; index < sheet.cssRules.length; index++) {
-                    const eachCssRule = sheet.cssRules[index]
-                    if (eachCssRule === firstNative.cssRule) {
+                    const eachCSSRule = sheet.cssRules[index]
+                    if (eachCSSRule === firstNative.cssRule) {
                         for (let i = 0; i < rule.natives.length; i++) {
                             sheet.deleteRule(index)
                         }
@@ -917,40 +955,45 @@ export class MasterCSS {
 
             // variables
             if (rule.variableNames) {
-                const variableRule = this.rules[0]
                 for (const eachVariableName of rule.variableNames) {
                     const variable = this.variables[eachVariableName]
                     if (!--variable.usage) {
-                        for (let i = 0; i < variable.natives.length; i++) {
-                            const eachNativeRule = variable.natives[i]
-                            for (let j = 0; j < this.style.sheet.cssRules.length; j++) {
-                                if (this.style.sheet.cssRules[j] === eachNativeRule.cssRule) {
-                                    this.style.sheet.deleteRule(j)
-                                    break
+                        const removeProperty = (theme: string) => {
+                            const nativeRule = this.variablesNativeRules[theme];
+                            (nativeRule.cssRule as CSSStyleRule).style.removeProperty('--' + eachVariableName)
+                            if (!(nativeRule.cssRule as CSSStyleRule).style.length) {
+                                const variablesRule = this.rules[0]
+                                const index = variablesRule.natives.indexOf(nativeRule)
+                                sheet?.deleteRule(index)
+                                variablesRule.natives.splice(index, 1)
+                                delete this.variablesNativeRules[theme]
+                                if (!variablesRule.natives.length) {
+                                    this.rules.splice(0, 1)
+                                    this.variablesNativeRules = undefined
                                 }
                             }
-                            variableRule.natives.splice(variableRule.natives.indexOf(eachNativeRule), 1)
                         }
-                        variable.natives = undefined
+                        if (variable.value) {
+                            removeProperty('')
+                        }
+                        if (variable.themes) {
+                            for (const theme in variable.themes) {
+                                removeProperty(theme)
+                            }
+                        }
                     }
-                }
-
-                if (!variableRule.natives.length) {
-                    this.rules.splice(0, 1)
-                    this.hasVariablesRule = false
                 }
             }
 
             // animations
             if (rule.animationNames) {
-                const keyframeRulesIndex = this.hasVariablesRule ? 1 : 0
-                const variableNativeCount = this.hasVariablesRule ? this.rules[0].natives.length : 0
+                const keyframeRulesIndex = this.variablesNativeRules ? 1 : 0
                 const keyframeRule = this.rules[keyframeRulesIndex]
                 for (const eachKeyframeName of rule.animationNames) {
                     const keyframe = this.animations[eachKeyframeName]
                     if (!--keyframe.usage) {
                         const nativeIndex = keyframeRule.natives.indexOf(keyframe.native)
-                        this.style.sheet.deleteRule(variableNativeCount + nativeIndex)
+                        this.style.sheet.deleteRule((this.variablesNativeRules ? Object.keys(this.variablesNativeRules).length : 0) + nativeIndex)
                         keyframeRule.natives.splice(nativeIndex, 1)
                         keyframe.native = undefined
                     }
@@ -1208,7 +1251,7 @@ export class MasterCSS {
                     }
                 }
             } else {
-                const findStartIndex = this.hasVariablesRule
+                const findStartIndex = this.variablesNativeRules
                     ? this.hasKeyframesRule
                         ? 2
                         : 1
@@ -1298,7 +1341,8 @@ export class MasterCSS {
                         if (!previousRule.natives.length)
                             return getCssRuleIndex(index - 1)
 
-                        const lastNativeCssRule = previousRule.natives[previousRule.natives.length - 1].cssRule
+                        const lastNative = previousRule.natives[previousRule.natives.length - 1]
+                        const lastNativeCssRule = lastNative.cssRule.parentRule ?? lastNative.cssRule
                         for (let i = 0; i < sheet.cssRules.length; i++) {
                             if (sheet.cssRules[i] === lastNativeCssRule) {
                                 cssRuleIndex = i + 1
@@ -1411,7 +1455,7 @@ export class MasterCSS {
                             + '}'
                     }
 
-                    const keyframeRulesIndex = this.hasVariablesRule ? 1 : 0
+                    const keyframeRulesIndex = this.variablesNativeRules ? 1 : 0
                     let keyframeRule: Rule
                     if (this.hasKeyframesRule) {
                         (keyframeRule = this.rules[keyframeRulesIndex]).natives.push(nativeRule)
@@ -1433,20 +1477,12 @@ export class MasterCSS {
                         let cssRule: CSSRule
                         if (initializing) {
                             for (let i = 0; i < sheet.cssRules.length; i++) {
-                                const eachCssRule = sheet.cssRules[i]
+                                const eachCSSRule = sheet.cssRules[i]
                                 if (
-                                    eachCssRule.constructor.name === 'CSSStyleRule'
-                                    && (eachCssRule as CSSStyleRule).style.length === 1
-                                    && (eachCssRule as CSSStyleRule).style[0].startsWith('--')
-                                    && !(eachCssRule as CSSStyleRule).selectorText.startsWith('.\\$')
-                                )
-                                    continue
-
-                                if (eachCssRule.constructor.name !== 'CSSKeyframesRule')
-                                    break
-
-                                if ((eachCssRule as CSSKeyframesRule).name === eachKeyframeName) {
-                                    cssRule = eachCssRule
+                                    eachCSSRule.constructor.name === 'CSSKeyframesRule'
+                                    && (eachCSSRule as CSSKeyframesRule).name === eachKeyframeName
+                                ) {
+                                    cssRule = eachCSSRule
                                     break
                                 }
                             }
@@ -1455,7 +1491,7 @@ export class MasterCSS {
                         if (cssRule) {
                             nativeRule.cssRule = cssRule
                         } else {
-                            const cssRuleIndex = (this.hasVariablesRule ? this.rules[0].natives.length : 0) + keyframeRule.natives.length
+                            const cssRuleIndex = (this.variablesNativeRules ? Object.keys(this.variablesNativeRules).length : 0) + keyframeRule.natives.length - 1
                             sheet.insertRule(nativeRule.text, cssRuleIndex)
                             nativeRule.cssRule = sheet.cssRules[cssRuleIndex]
                         }
@@ -1476,85 +1512,145 @@ export class MasterCSS {
                 if (variable.usage) {
                     variable.usage++
                 } else {
-                    const nativeRules: NativeRule[] = []
-                    const addNativeRule = (theme: string, variableValue: VariableValue) => {
-                        if (variableValue.value) {
-                            nativeRules.push({
-                                text: `${theme ? this.config.themeDriver === 'media'
-                                    ? `@media(prefers-color-scheme:${theme})`
-                                    : this.config.themeDriver === 'host'
-                                        ? `:host(.${theme})`
-                                        : `.${theme}`
-                                    : ':root'}{--${eachVariableName}:${variableValue.value}}`
-                            })
+                    const addProperty = (theme: string, variableValue: VariableValue) => {
+                        let nativeRule = this.variablesNativeRules?.[theme]
+                        if (!nativeRule) {
+                            let cssRule: CSSStyleRule
+                            let mediaConditionText: string
+                            let selectorText: string
+
+                            if (theme) {
+                                switch (this.config.themeDriver) {
+                                    case 'media':
+                                        mediaConditionText = `@media(prefers-color-scheme:${theme})`
+                                        selectorText = ':root'
+                                        break
+                                    case 'host':
+                                        selectorText = `:host(.${theme})`
+                                        break
+                                    default:
+                                        selectorText = `.${theme}`
+                                        break
+                                }
+                            } else {
+                                selectorText = ':root'
+                            }
+                           
+                            if (sheet) {
+                                const newCSSRuleIndex = this.variablesNativeRules
+                                    ? this.rules[0].natives.length
+                                    : 0
+                                sheet.insertRule(
+                                    (mediaConditionText ? mediaConditionText + '{' : '')
+                                        + selectorText
+                                        + '{}'
+                                        +  (mediaConditionText ? mediaConditionText + '}' : ''),
+                                    newCSSRuleIndex
+                                )
+                                cssRule = (mediaConditionText
+                                    ? (sheet.cssRules[newCSSRuleIndex] as CSSMediaRule).cssRules[0]
+                                    : sheet.cssRules[newCSSRuleIndex]) as CSSStyleRule
+                            } else {
+                                const styleMap = new Map()
+                                const style = Object.defineProperties(
+                                    {} as CSSStyleDeclaration,
+                                    {
+                                        getPropertyValue: {
+                                            value: (property: string) => styleMap.get(property)
+                                        },
+                                        removeProperty: {
+                                            value: (property: string) => {
+                                                styleMap.delete(property)
+                                                for (let i = 0; i < style.length; i++) {
+                                                    if (style[i] === property) {
+                                                        delete style[i]
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        setProperty: {
+                                            value: (property: string, value: string) => {
+                                                style[style.length] = property
+                                                styleMap.set(property, value)
+                                            }
+                                        },
+                                        length: {
+                                            get() {
+                                                return Object.keys(style).length
+                                            }
+                                        }
+                                    }
+                                )
+                                cssRule = { 
+                                    selectorText,
+                                    style, 
+                                    styleMap 
+                                } as any as CSSStyleRule
+                                if (mediaConditionText) {
+                                    // @ts-ignore
+                                    cssRule.parentRule = { conditionText: mediaConditionText }
+                                }
+                            }
+
+                            nativeRule = this.pushVariableNativeRule(theme, cssRule)
+                        }
+
+                        const propertyName = '--' + eachVariableName
+                        if (!initializing || !(nativeRule.cssRule as CSSStyleRule).style.getPropertyValue(propertyName)) {
+                            (nativeRule.cssRule as CSSStyleRule).style.setProperty(propertyName, variableValue.value.toString())
                         }
                     }
-                    addNativeRule('', variable as any)
+                    if (variable.value) {
+                        addProperty('', variable as any)
+                    }
                     if (variable.themes) {
                         for (const theme in variable.themes) {
-                            addNativeRule(theme, variable.themes[theme])
-                        }
-                    }
-
-                    let originalNativesCount = 0
-                    if (this.hasVariablesRule) {
-                        originalNativesCount = this.rules[0].natives.length
-                        this.rules[0].natives.push(...nativeRules)
-                    } else {
-                        this.rules.splice(
-                            0,
-                            0,
-                            {
-                                natives: [...nativeRules],
-                                get text() {
-                                    return this.natives.map((eachNative) => eachNative.text).join('')
-                                }
-                            } as Rule
-                        )
-                        this.hasVariablesRule = true
-                    }
-
-                    if (sheet) {
-                        const firstNativeRule = nativeRules[0]
-                        let firstCssRuleIndex: number
-                        if (initializing) {
-                            for (let i = 0; i < sheet.cssRules.length; i++) {
-                                const eachCssRule = sheet.cssRules[i]
-                                if (
-                                    eachCssRule.constructor.name !== 'CSSStyleRule'
-                                    || (eachCssRule as CSSStyleRule).style.length !== 1
-                                    || !(eachCssRule as CSSStyleRule).style[0].startsWith('--')
-                                    || (eachCssRule as CSSStyleRule).selectorText.startsWith('.\\$')
-                                )
-                                    break
-
-                                if (
-                                    firstNativeRule.text.startsWith((eachCssRule as CSSStyleRule).selectorText + '{')
-                                    && (eachCssRule as CSSStyleRule).style[0].startsWith('--' + eachVariableName)
-                                ) {
-                                    firstCssRuleIndex = i
-                                    break
-                                }
-                            }
-                        }
-
-                        for (let i = 0; i < nativeRules.length; i++) {
-                            const eachNative = nativeRules[i]
-                            if (firstCssRuleIndex !== undefined) {
-                                eachNative.cssRule = sheet.cssRules[firstCssRuleIndex + i]
-                            } else {
-                                const ruleIndex = originalNativesCount + i
-                                sheet.insertRule(eachNative.text, ruleIndex)
-                                eachNative.cssRule = sheet.cssRules[ruleIndex]
-                            }
+                            addProperty(theme, variable.themes[theme])
                         }
                     }
 
                     variable.usage = 1
-                    variable.natives = nativeRules
                 }
             }
         }
+    }
+
+    private pushVariableNativeRule(theme: string, variableCSSRule: CSSStyleRule) {
+        if (!this.variablesNativeRules) {
+            this.variablesNativeRules = {}
+            this.rules.splice(
+                0, 
+                0, 
+                { 
+                    natives: [], 
+                    get text() {
+                        return this.natives.map((eachNative) => eachNative.text).join('')
+                    }
+                } as Rule
+            )
+        }
+
+        let prefix = ''
+        let suffix = '}'
+        if (variableCSSRule.parentRule) {
+            prefix += (variableCSSRule.parentRule as CSSMediaRule).conditionText.replace(/ /g, '') + '{'
+            suffix += '}'
+        }
+        prefix += variableCSSRule.selectorText + '{'
+
+        const nativeRule: NativeRule = {
+            cssRule: variableCSSRule,
+            get text() {
+                const properties: string[] = []
+                for (let i = 0; i < variableCSSRule.style.length; i++) {
+                    const property = variableCSSRule.style[i]
+                    properties.push(property + ':' + variableCSSRule['styleMap'].get(property).toString())
+                }
+                return prefix + properties.join(';') + suffix
+            }
+        }
+        this.rules[0].natives.push(this.variablesNativeRules[theme] = nativeRule)
+        return nativeRule
     }
 }
 

@@ -68,7 +68,7 @@ test('colors', () => {
     )
     testCSS(
         'bg:linear-gradient(180deg,primary,accent)',
-        '.light{--primary:0 0 0}.dark{--primary:255 255 255}.light{--accent:17 17 17}.dark{--accent:238 238 238}.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,rgb(var(--primary)),rgb(var(--accent)))}',
+        '.light{--primary:0 0 0;--accent:17 17 17}.dark{--primary:255 255 255;--accent:238 238 238}.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,rgb(var(--primary)),rgb(var(--accent)))}',
         {
             variables: {
                 primary: {
@@ -84,7 +84,7 @@ test('colors', () => {
     )
     testCSS(
         'bg:linear-gradient(180deg,primary,accent)',
-        '.light{--primary:0 0 0}.dark{--primary:255 255 255}.dark{--accent:238 238 238}.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,rgb(var(--primary)),rgb(var(--accent)))}',
+        '.light{--primary:0 0 0}.dark{--primary:255 255 255;--accent:238 238 238}.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,rgb(var(--primary)),rgb(var(--accent)))}',
         {
             variables: {
                 primary: {
@@ -124,7 +124,7 @@ test('colors', () => {
     )
     testCSS(
         'bg:linear-gradient(180deg,primary,accent)',
-        '.light{--primary:0 0 0}.dark{--primary:255 255 255}:root{--accent:255 0 0}.dark{--accent:170 0 0}.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,rgb(var(--primary)),rgb(var(--accent)))}',
+        '.light{--primary:0 0 0}.dark{--primary:255 255 255;--accent:170 0 0}:root{--accent:255 0 0}.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,rgb(var(--primary)),rgb(var(--accent)))}',
         {
             variables: {
                 accent: {

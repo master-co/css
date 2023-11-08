@@ -4,12 +4,12 @@ import config from './config'
 test('themeDriver', () => {
     testCSS(
         'fg:primary',
-        ':root{--primary:23 95 233}@media(prefers-color-scheme:light){--primary:235 187 64}@media(prefers-color-scheme:dark){--primary:251 224 157}.fg\\:primary{color:rgb(var(--primary))}',
+        ':root{--primary:23 95 233}@media(prefers-color-scheme:light){:root{--primary:235 187 64}}@media(prefers-color-scheme:dark){:root{--primary:251 224 157}}.fg\\:primary{color:rgb(var(--primary))}',
         { ...config, themeDriver: 'media' }
     )
     testCSS(
         '{block;fg:fade}_:where(p)_code:before',
-        '@media(prefers-color-scheme:light){--fade:204 204 204}@media(prefers-color-scheme:dark){--fade:51 51 51}.\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{display:block;color:rgb(var(--fade))}',
+        '@media(prefers-color-scheme:light){:root{--fade:204 204 204}}@media(prefers-color-scheme:dark){:root{--fade:51 51 51}}.\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{display:block;color:rgb(var(--fade))}',
         {
             variables: {
                 fade: {
