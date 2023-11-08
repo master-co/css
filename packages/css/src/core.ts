@@ -2,7 +2,6 @@ import { extend } from '@techor/extend'
 import { Rule, NativeRule, RuleDefinition } from './rule'
 import type { Config, AnimationDefinitions } from './config'
 import { config as defaultConfig } from './config'
-import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { CSSDeclarations } from './types/css-declarations'
 import { Layer } from './layer'
 import { hexToRgb } from './utils/hex-to-rgb'
@@ -20,8 +19,6 @@ export type Variable = Omit<VariableValue, 'value' | 'space'> & {
 
 export interface MasterCSS {
     readonly style: HTMLStyleElement
-    readonly host: Element
-    readonly root: Document | ShadowRoot
     styles: Record<string, string[]>
     stylesBy: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>
@@ -42,12 +39,9 @@ export class MasterCSS {
     readonly rules: Rule[] = []
     readonly ruleBy: Record<string, Rule> = {}
     readonly classesUsage = {}
-    readonly observing = false
     readonly config: Config
     private readonly semanticRuleOptions: RuleDefinition[] = []
     private readonly ruleOptions: RuleDefinition[] = []
-
-    observer: MutationObserver
 
     constructor(
         public customConfig: Config = defaultConfig
@@ -58,7 +52,9 @@ export class MasterCSS {
             this.config = this.getExtendedConfig(customConfig)
         }
         this.resolve()
-        globalThis.masterCSSs.push(this)
+        if (this.constructor === MasterCSS) {
+            globalThis.masterCSSs.push(this)
+        }
     }
 
     resolve() {
@@ -373,475 +369,76 @@ export class MasterCSS {
                 }
                 return b[0].localeCompare(a[0])
             })
-        const rulesEntriesLength = rulesEntries.length
-        const colorNames = Object.keys(colorVariableNames)
-        rulesEntries
-            .forEach(([id, eachRuleOptions]: [string, RuleDefinition], index: number) => {
-                this.ruleOptions.push(eachRuleOptions)
-                eachRuleOptions.order = this.semanticRuleOptions.length + rulesEntriesLength - 1 - index
-                const match = eachRuleOptions.match
-                eachRuleOptions.id = id
-                eachRuleOptions.resolvedVariables = {}
-                const addResolvedVariables = (prefix: string) => {
-                    Object.assign(
-                        eachRuleOptions.resolvedVariables,
-                        Object.keys(this.variables)
-                            .filter((eachVariableName) =>
-                                eachVariableName.startsWith(prefix + '-') ||
-                                eachVariableName.startsWith('-' + prefix + '-'),
-                            )
-                            .reduce((newResolvedVariables, eachVariableName) => {
-                                newResolvedVariables[
-                                    eachVariableName.slice(
-                                        prefix.length + (prefix.startsWith('-') ? 0 : 1),
-                                    )
-                                ] = {
-                                    ...this.variables[eachVariableName],
-                                    name: eachVariableName,
-                                }
-                                return newResolvedVariables
-                            }, {}),
-                    )
-                }
-                // 1. custom `config.rules[id].variables`
-                if (eachRuleOptions.variables) {
-                    for (const eachVariableGroup of eachRuleOptions.variables) {
-                        addResolvedVariables(eachVariableGroup)
-                    }
-                }
-                // 2. custom `config.variables`
-                addResolvedVariables(id)
-
-                if (match) {
-                    if (Array.isArray(match)) {
-                        const [key, values = []] = match
-                        const valueMatches = []
-                        if (values.length) {
-                            valueMatches.push(`(?:${values.join('|')})(?![a-zA-Z0-9-])`)
-                        }
-                        if (Object.keys(eachRuleOptions.resolvedVariables).length) {
-                            valueMatches.push(
-                                `(?:${Object.keys(eachRuleOptions.resolvedVariables).join('|')})(?![a-zA-Z0-9-])`,
-                            )
-                        }
-                        if (eachRuleOptions.colored) {
-                            valueMatches.push(
-                                '#',
-                                '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)',
-                                `(?:${colorNames.join('|')})(?![a-zA-Z0-9-])`,
-                            )
-                        }
-                        if (eachRuleOptions.numeric) {
-                            valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
-                        }
-                        if (valueMatches.length)
-                            eachRuleOptions.resolvedMatch = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
-                    } else {
-                        eachRuleOptions.resolvedMatch = match as RegExp
-                    }
-                }
-            },
-            )
-        }
-    }
-
-    /**
-     * Observe the DOM for changes and update the running stylesheet. (browser only)
-     * @param targetRoot root element to observe. default: document
-     * @param options mutation observer options
-     * @returns this
-     */
-    observe(targetRoot: Document | ShadowRoot | null | undefined, options: MutationObserverInit = { subtree: true, childList: true }) {
-        if (!targetRoot) targetRoot = document
-        // prevent repeated observation of the same root element
-        if (this.root === targetRoot) {
-            return this
-        }
-
-        // @ts-ignore
-        this.root = targetRoot
-        const isDocumentRoot = targetRoot === document
-
-        if (isDocumentRoot) {
-            globalThis.masterCSS = this
-        }
-
-        // @ts-ignore
-        this.host = isDocumentRoot ? document.documentElement : (this.root as ShadowRoot).host
-
-        const container = isDocumentRoot ? document.head : targetRoot
-        const styleSheets: StyleSheetList = isDocumentRoot ? document.styleSheets : targetRoot.styleSheets
-        // @ts-ignore
-        for (const sheet of styleSheets) {
-            const { ownerNode } = sheet
-            if (ownerNode && (ownerNode as HTMLStyleElement).id === 'master') {
-                // @ts-ignore
-                this.style = ownerNode
-                break
-            }
-        }
-
-        if (this.style) {
-            let index = 0
-            for (; index < this.style.sheet.cssRules.length; index++) {
-                const eachCSSRule = this.style.sheet.cssRules[index]
-                switch (eachCSSRule.constructor.name) {
-                    case 'CSSKeyframesRule':
-                        continue
-                    case 'CSSMeidaRule':
-                        if (this.config.themeDriver === 'media') {
-                            const result = /\(prefers-color-scheme: (.*?)\)/.exec((eachCSSRule as CSSMediaRule).conditionText)
-                            if (result) {
-                                const firstCSSRule = (eachCSSRule as CSSMediaRule).cssRules[0]
-                                if (
-                                    firstCSSRule?.constructor.name === 'CSSStyleRule'
-                                    && (firstCSSRule as CSSStyleRule).selectorText === ':root'
-                                ) {
-                                    this.pushVariableNativeRule(result[1], firstCSSRule as CSSStyleRule)
-                                    continue
-                                }
-                            }
-                        }
-                        break
-                    case 'CSSStyleRule':
-                        // eslint-disable-next-line no-case-declarations
-                        const selectorText = (eachCSSRule as CSSStyleRule).selectorText
-                        if ((eachCSSRule as CSSStyleRule).style.length) {
-                            let isVariablesRule = true
-                            for (let i = 0; i < (eachCSSRule as CSSStyleRule).style.length; i++) {
-                                if (!(eachCSSRule as CSSStyleRule).style[i]?.startsWith('--')) {
-                                    isVariablesRule = false
-                                    break
-                                }
-                            }
-                            if (isVariablesRule) {
-                                if (selectorText === ':root') {
-                                    this.pushVariableNativeRule('', eachCSSRule as CSSStyleRule)
-                                    continue
-                                } else {
-                                    if (this.config.themeDriver === 'host') {
-                                        const result = /:host(.*?)/.exec(selectorText)
-                                        if (result) {
-                                            this.pushVariableNativeRule(result[1], eachCSSRule as CSSStyleRule)
-                                            continue
-                                        }
-                                    } else if (!selectorText.startsWith('.\\$')) {
-                                        this.pushVariableNativeRule(selectorText.slice(1), eachCSSRule as CSSStyleRule)
-                                        continue
+            const rulesEntriesLength = rulesEntries.length
+            const colorNames = Object.keys(colorVariableNames)
+            rulesEntries
+                .forEach(([id, eachRuleOptions]: [string, RuleDefinition], index: number) => {
+                    this.ruleOptions.push(eachRuleOptions)
+                    eachRuleOptions.order = this.semanticRuleOptions.length + rulesEntriesLength - 1 - index
+                    const match = eachRuleOptions.match
+                    eachRuleOptions.id = id
+                    eachRuleOptions.resolvedVariables = {}
+                    const addResolvedVariables = (prefix: string) => {
+                        Object.assign(
+                            eachRuleOptions.resolvedVariables,
+                            Object.keys(this.variables)
+                                .filter((eachVariableName) =>
+                                    eachVariableName.startsWith(prefix + '-') ||
+                                    eachVariableName.startsWith('-' + prefix + '-'),
+                                )
+                                .reduce((newResolvedVariables, eachVariableName) => {
+                                    newResolvedVariables[
+                                        eachVariableName.slice(
+                                            prefix.length + (prefix.startsWith('-') ? 0 : 1),
+                                        )
+                                    ] = {
+                                        ...this.variables[eachVariableName],
+                                        name: eachVariableName,
                                     }
-                                }
+                                    return newResolvedVariables
+                                }, {}),
+                        )
+                    }
+                    // 1. custom `config.rules[id].variables`
+                    if (eachRuleOptions.variables) {
+                        for (const eachVariableGroup of eachRuleOptions.variables) {
+                            addResolvedVariables(eachVariableGroup)
+                        }
+                    }
+                    // 2. custom `config.variables`
+                    addResolvedVariables(id)
+
+                    if (match) {
+                        if (Array.isArray(match)) {
+                            const [key, values = []] = match
+                            const valueMatches = []
+                            if (values.length) {
+                                valueMatches.push(`(?:${values.join('|')})(?![a-zA-Z0-9-])`)
                             }
-                        }
-                        break
-                }
-                break
-            }
-
-            for (;index < this.style.sheet.cssRules.length; index++) {
-                const getRule = (cssRule: any): Rule => {
-                    if (cssRule.selectorText) {
-                        const selectorTexts = cssRule.selectorText.split(', ')
-                        const escapedClassNames = selectorTexts[0].split(' ')
-
-                        for (let i = 0; i < escapedClassNames.length; i++) {
-                            const eachSelectorText = escapedClassNames[i]
-                            if (eachSelectorText[0] === '.') {
-                                const escapedClassName = eachSelectorText.slice(1)
-
-                                let className = ''
-                                for (let j = 0; j < escapedClassName.length; j++) {
-                                    const char = escapedClassName[j]
-                                    const nextChar = escapedClassName[j + 1]
-
-                                    if (char === '\\') {
-                                        j++
-
-                                        if (nextChar !== '\\') {
-                                            className += nextChar
-
-                                            continue
-                                        }
-                                    } else if (SELECTOR_SYMBOLS.includes(char)) {
-                                        break
-                                    }
-
-                                    className += char
-                                }
-
-                                if (
-                                    !(Object.prototype.hasOwnProperty.call(this.ruleBy, className))
-                                    && !(Object.prototype.hasOwnProperty.call(this.styles, className))
-                                ) {
-                                    const currentRule = this.create(className)[0]
-                                    if (currentRule)
-                                        return currentRule
-                                }
+                            if (Object.keys(eachRuleOptions.resolvedVariables).length) {
+                                valueMatches.push(
+                                    `(?:${Object.keys(eachRuleOptions.resolvedVariables).join('|')})(?![a-zA-Z0-9-])`,
+                                )
                             }
-                        }
-                    } else if (cssRule.cssRules) {
-                        for (let index = 0; index < cssRule.cssRules.length; index++) {
-                            const currentRule = getRule(cssRule.cssRules[index])
-                            if (currentRule)
-                                return currentRule
-                        }
-                    }
-                }
-                const rule = getRule(this.style.sheet.cssRules[index])
-                if (rule) {
-                    this.rules.push(rule)
-                    this.ruleBy[rule.className] = rule
-
-                    for (let i = 0; i < rule.natives.length; i++) {
-                        rule.natives[i].cssRule = this.style.sheet.cssRules[index + i]
-                    }
-
-                    index += rule.natives.length - 1
-
-                    // variables
-                    this.handleRuleWithVariableNames(rule, true)
-
-                    // animations
-                    this.handleRuleWithAnimationNames(rule, true)
-
-                    rule.definition.insert?.call(rule)
-                }
-            }
-        } else {
-            // @ts-ignore
-            this.style = document.createElement('style')
-            this.style.id = 'master'
-            container.append(this.style)
-        }
-
-        const handleClassList = (classList: DOMTokenList) => {
-            classList.forEach((className) => {
-                if (Object.prototype.hasOwnProperty.call(this.classesUsage, className)) {
-                    this.classesUsage[className]++
-                } else {
-                    this.classesUsage[className] = 1
-
-                    this.insert(className)
-                }
-            })
-        }
-
-        handleClassList(this.host.classList)
-
-        if (options.subtree) {
-            /**
-             * 待所有 DOM 結構完成解析後，開始繪製 Rule 樣式
-             */
-            this.host
-                .querySelectorAll('[class]')
-                .forEach((element) => handleClassList(element.classList))
-        }
-
-        this.observer = new MutationObserver((mutationRecords) => {
-            // console.time('css engine');
-            const correctionOfClassName = {}
-            const attributeMutationRecords: MutationRecord[] = []
-            const updatedElements: Element[] = []
-            const unchangedElements: Element[] = []
-
-            /**
-            * 取得所有深層後代的 class names
-            */
-            const handleClassNameDeeply = (element: Element, remove: boolean) => {
-                if (remove) {
-                    element.classList.forEach(removeClassName)
-                } else {
-                    element.classList.forEach(addClassName)
-                }
-
-                const children = element.children
-                for (let i = 0; i < children.length; i++) {
-                    const eachChildren = children[i]
-                    if (eachChildren.classList) {
-                        updatedElements.push(eachChildren)
-
-                        handleClassNameDeeply(eachChildren, remove)
-                    }
-                }
-            }
-
-            const addClassName = (className: string) => {
-                if (Object.prototype.hasOwnProperty.call(correctionOfClassName, className)) {
-                    correctionOfClassName[className]++
-                } else {
-                    correctionOfClassName[className] = 1
-                }
-            }
-
-            const removeClassName = (className: string) => {
-                if (Object.prototype.hasOwnProperty.call(correctionOfClassName, className)) {
-                    correctionOfClassName[className]--
-                } else if (Object.prototype.hasOwnProperty.call(this.classesUsage, className)) {
-                    correctionOfClassName[className] = -1
-                }
-            }
-
-            const handleNodes = (nodes: HTMLCollection, remove: boolean) => {
-                for (let i = 0; i < nodes.length; i++) {
-                    const eachNode = nodes[i]
-                    if (eachNode.classList && !updatedElements.includes(eachNode) && !unchangedElements.includes(eachNode)) {
-                        if (eachNode.isConnected !== remove) {
-                            updatedElements.push(eachNode)
-                            handleClassNameDeeply(eachNode, remove)
+                            if (eachRuleOptions.colored) {
+                                valueMatches.push(
+                                    '#',
+                                    '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)',
+                                    `(?:${colorNames.join('|')})(?![a-zA-Z0-9-])`,
+                                )
+                            }
+                            if (eachRuleOptions.numeric) {
+                                valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
+                            }
+                            if (valueMatches.length)
+                                eachRuleOptions.resolvedMatch = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
                         } else {
-                            unchangedElements.push(eachNode)
+                            eachRuleOptions.resolvedMatch = match as RegExp
                         }
                     }
-                }
-            }
-
-            for (let i = 0; i < mutationRecords.length; i++) {
-                const mutationRecord = mutationRecords[i]
-                const { addedNodes, removedNodes, type, target } = mutationRecord
-                if (type === 'attributes') {
-                    /**
-                     * 防止同樣的 MutationRecord 重複執行
-                     * According to this history,
-                     * MutationObserver was designed to work that way.
-                     * Any call to setAttribute triggers a mutation,
-                     * regardless of whether the value is being changed or set to the current value
-                     */
-                    if (
-                        attributeMutationRecords
-                            .find((eachAttributeMutationRecord) => eachAttributeMutationRecord.target === target)
-                    ) {
-                        continue
-                    } else {
-                        /**
-                         * 第一個匹配到的 oldValue 一定是該批變動前的原始狀態值
-                         */
-                        attributeMutationRecords.push(mutationRecord)
-                    }
-                } else {
-                    // 先判斷節點新增或移除
-                    handleNodes(addedNodes as any, false)
-
-                    // 忽略處理新元素的已刪除子節點
-                    if (!target.isConnected || !updatedElements.includes(target as any)) {
-                        handleNodes(removedNodes as any, true)
-                    }
-                }
-            }
-
-            if (!attributeMutationRecords.length && !Object.keys(correctionOfClassName).length) {
-                // console.timeEnd('css engine');
-                return
-            }
-
-            for (const { oldValue, target } of attributeMutationRecords) {
-                /**
-                 * 如果被操作的元素中包含了屬性變更的目標，
-                 * 則將該目標從 existedAttributeMutationTargets 中移除，
-                 * 以防止執行接下來的屬性變更處理
-                 *
-                 * 該批 mutationRecords 中，某個 target 同時有 attribute 及 childList 的變更，
-                 * 則以 childList 節點插入及移除的 target.className 為主
-                 */
-                const updated = updatedElements.includes(target as Element)
-                const classNames = (target as Element).classList
-                const oldClassNames = oldValue ? oldValue.split(' ') : []
-                if (updated) {
-                    if (target.isConnected) {
-                        continue
-                    } else {
-                        for (const oldClassName of oldClassNames) {
-                            if (!classNames.contains(oldClassName)) {
-                                removeClassName(oldClassName)
-                            }
-                        }
-                    }
-                } else if (target.isConnected) {
-                    classNames.forEach((className) => {
-                        if (!oldClassNames.includes(className)) {
-                            addClassName(className)
-                        }
-                    })
-                    for (const oldClassName of oldClassNames) {
-                        if (!classNames.contains(oldClassName)) {
-                            removeClassName(oldClassName)
-                        }
-                    }
-                }
-            }
-
-            for (const className in correctionOfClassName) {
-                const correction = correctionOfClassName[className]
-                const count = (this.classesUsage[className] || 0) + correction
-                if (count === 0) {
-                    // remove
-                    delete this.classesUsage[className]
-                    /**
-                     * class name 從 DOM tree 中被移除，
-                     * 匹配並刪除對應的 rule
-                     */
-                    this.delete(className)
-                } else {
-                    if (!(Object.prototype.hasOwnProperty.call(this.classesUsage, className))) {
-                        // add
-                        /**
-                         * 新 class name 被 connected 至 DOM tree，
-                         * 匹配並創建對應的 Rule
-                         */
-                        this.insert(className)
-                    }
-
-                    this.classesUsage[className] = count
-                }
-            }
-
-            // console.timeEnd('css engine');
-        })
-        this.observer.observe(targetRoot, {
-            ...options,
-            attributes: true,
-            attributeOldValue: true,
-            attributeFilter: ['class'],
-        });
-
-        (this.host as HTMLElement).style.display = null
-        // @ts-ignore
-        this.observing = true
-        return this
-    }
-
-    disconnect(): void {
-        if (this.observer) {
-            this.observer.disconnect()
-            this.observer = null
+                },
+                )
         }
-        // @ts-ignore
-        this.observing = false
-        // @ts-ignore
-        this.ruleBy = {}
-        // @ts-ignore
-        this.classesUsage = {}
-        this.rules.length = 0
-        this.hasKeyframesRule = false
-        this.variablesNativeRules = undefined
-        for (const keyframeName in this.animations) {
-            const animation = this.animations[keyframeName]
-            animation.usage = undefined
-            animation.native = undefined
-        }
-        for (const variableName in this.variables) {
-            const variable = this.variables[variableName]
-            variable.usage = undefined
-        }
-        const sheet = this.style?.sheet
-        if (sheet?.cssRules) {
-            for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
-                sheet.deleteRule(i)
-            }
-        }
-        this.style?.remove()
-        // @ts-ignore
-        this.style = null
-        // @ts-ignore
-        this.root = null
     }
 
     /**
@@ -933,8 +530,36 @@ export class MasterCSS {
         }
     }
 
+    reset(): void {
+        // @ts-ignore
+        this.ruleBy = {}
+        // @ts-ignore
+        this.classesUsage = {}
+        this.rules.length = 0
+        this.hasKeyframesRule = false
+        this.variablesNativeRules = undefined
+        for (const keyframeName in this.animations) {
+            const animation = this.animations[keyframeName]
+            animation.usage = undefined
+            animation.native = undefined
+        }
+        for (const variableName in this.variables) {
+            const variable = this.variables[variableName]
+            variable.usage = undefined
+        }
+        const sheet = this.style?.sheet
+        if (sheet?.cssRules) {
+            for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+                sheet.deleteRule(i)
+            }
+        }
+        this.style?.remove()
+        // @ts-ignore
+        this.style = null
+    }
+
     destroy() {
-        this.disconnect()
+        this.reset()
         globalThis.masterCSSs.splice(globalThis.masterCSSs.indexOf(this), 1)
     }
 
@@ -1455,7 +1080,7 @@ export class MasterCSS {
         return extendedConfig
     }
 
-    private handleRuleWithAnimationNames(rule: Rule, initializing = false) {
+    handleRuleWithAnimationNames(rule: Rule, initializing = false) {
         if (rule.animationNames) {
             const sheet = this.style?.sheet
             for (const eachKeyframeName of rule.animationNames) {
@@ -1522,7 +1147,7 @@ export class MasterCSS {
         }
     }
 
-    private handleRuleWithVariableNames(rule: Rule, initializing = false) {
+    handleRuleWithVariableNames(rule: Rule, initializing = false) {
         if (rule.variableNames) {
             const sheet = this.style?.sheet
             for (const eachVariableName of rule.variableNames) {
@@ -1560,9 +1185,9 @@ export class MasterCSS {
                                     : 0
                                 sheet.insertRule(
                                     (mediaConditionText ? mediaConditionText + '{' : '')
-                                        + selectorText
-                                        + '{}'
-                                        +  (mediaConditionText ? mediaConditionText + '}' : ''),
+                                    + selectorText
+                                    + '{}'
+                                    + (mediaConditionText ? mediaConditionText + '}' : ''),
                                     newCSSRuleIndex
                                 )
                                 cssRule = (mediaConditionText
@@ -1633,7 +1258,7 @@ export class MasterCSS {
         }
     }
 
-    private pushVariableNativeRule(theme: string, variableCSSRule: CSSStyleRule) {
+    pushVariableNativeRule(theme: string, variableCSSRule: CSSStyleRule) {
         if (!this.variablesNativeRules) {
             this.variablesNativeRules = {}
             this.rules.splice(
@@ -1675,9 +1300,7 @@ export class MasterCSS {
 declare global {
     interface Window {
         MasterCSS: typeof MasterCSS
-        masterCSSConfig: Config
         masterCSSs: MasterCSS[]
-        masterCSS: MasterCSS
     }
 
     // eslint-disable-next-line @typescript-eslint/no-namespace

@@ -1,26 +1,26 @@
 <script setup lang="ts">
 
-import { MasterCSS, type Config } from '@master/css'
+import { RuntimeCSS, type Config } from '@master/css'
 import { onMounted, onBeforeUnmount, ref, provide } from 'vue'
 
 const props = defineProps<{
     config?: Config | Promise<Config> | Promise<any>
-    root?: Document | ShadowRoot | undefined | null
+    root?: Document | ShadowRoot
 }>()
 
-const css = ref()
-const newCSS = ref()
+const runtimeCSS = ref()
+const newRuntimeCSS = ref()
 
 onMounted(() => {
     if (typeof window === 'undefined') { return }
-    if (!css.value) {
+    if (!runtimeCSS.value) {
         const init = (resolvedConfig: Config | undefined) => {
-            const existingCSS = (globalThis as any).masterCSSs.find((eachCSS: MasterCSS) => eachCSS.root === props.root)
-            if (existingCSS) {
-                css.value = existingCSS
+            const existingRuntimeCSS = (globalThis as any).runtimeCSSs.find((eachCSS: RuntimeCSS) => eachCSS.root === props.root)
+            if (existingRuntimeCSS) {
+                runtimeCSS.value = existingRuntimeCSS
             } else {
-                newCSS.value = new MasterCSS(resolvedConfig).observe(props.root)
-                css.value = newCSS.value
+                newRuntimeCSS.value = new RuntimeCSS(props.root, resolvedConfig).observe()
+                runtimeCSS.value = newRuntimeCSS.value
             }
         }
 
@@ -32,18 +32,18 @@ onMounted(() => {
         } else {
             init(props.config)
         }
-    } else if (!css.value.observing) {
-        css.value.observe(props.root)
+    } else if (!runtimeCSS.value.observing) {
+        runtimeCSS.value.observe(props.root)
     }
 })
 
 onBeforeUnmount(() => {
-    if (css.value && newCSS) {
-        newCSS.value?.destroy()
+    if (runtimeCSS.value && newRuntimeCSS) {
+        newRuntimeCSS.value?.destroy()
     }
 })
 
-provide('css', css)
+provide('css', runtimeCSS)
 
 </script>
 

@@ -1,9 +1,7 @@
 import { initRuntime } from '../src'
 import { complexHTML } from './complex-html'
 
-beforeAll(() => {
-    initRuntime()
-})
+initRuntime()
 
 /**
  * <p class="block font:bold">
@@ -15,7 +13,7 @@ it('css count class add', async () => {
     document.body.append(p1)
     p1.classList.add('italic')
     await new Promise(resolve => setTimeout(resolve, 100))
-    expect(window.masterCSS.classesUsage).toEqual({
+    expect(globalThis.runtimeCSS.classesUsage).toEqual({
         'block': 1,
         'font:bold': 1,
         'italic': 1
@@ -25,8 +23,8 @@ it('css count class add', async () => {
 it('css count class complicated example', async () => {
     document.body.innerHTML = complexHTML
     await new Promise(resolve => setTimeout(resolve, 100))
-    expect(Object.keys(window.masterCSS.classesUsage).length).toBeTruthy()
+    expect(Object.keys(globalThis.runtimeCSS.classesUsage).length).toBeTruthy()
     document.body.innerHTML = ''
     await new Promise(resolve => setTimeout(resolve, 100))
-    expect(window.masterCSS.classesUsage).toEqual({})
+    expect(globalThis.runtimeCSS.classesUsage).toEqual({})
 })

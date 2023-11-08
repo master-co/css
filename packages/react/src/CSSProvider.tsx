@@ -1,36 +1,29 @@
 'use client'
 
-import MasterCSS, { Config, initRuntime } from '@master/css'
+import { Config, RuntimeCSS } from '@master/css'
 import { useEffect, useLayoutEffect, createContext, useContext, useState } from 'react'
 
-export const CSSContext = createContext<MasterCSS | undefined>(undefined)
+export const CSSContext = createContext<RuntimeCSS | undefined>(undefined)
+export const useCSS = () => useContext(CSSContext)
 
-export function useCSS() {
-    return useContext(CSSContext)
-}
-
-export function CSSProvider({
-    children,
-    config,
-    root = typeof document !== 'undefined' ? document : null
-}: {
+export function CSSProvider({ children, config, root }: {
     children: React.ReactNode,
     config?: Config | Promise<any>,
-    root?: Document | ShadowRoot | null
+    root?: Document | ShadowRoot
 }) {
-    const [css, setCSS] = useState<MasterCSS>();
+    const [runtimeCSS, setRuntimeCSS] = useState<RuntimeCSS>();
     (typeof window !== 'undefined' ? useLayoutEffect : useEffect)(() => {
-        let newCSS: MasterCSS = window.masterCSSs?.find((eachCSS) => eachCSS.root === root)
-        if (newCSS) {
-            setCSS(newCSS)
-        } else if (!css) {
+        let newRuntimeCSS: RuntimeCSS = globalThis.runtimeCSSs?.find((eachCSS) => eachCSS.root === root)
+        if (newRuntimeCSS) {
+            setRuntimeCSS(newRuntimeCSS)
+        } else if (!runtimeCSS) {
             const init = (resolvedConfig?: Config) => {
-                const existingCSS = window.masterCSSs.find((eachCSS) => eachCSS.root === root)
+                const existingCSS = globalThis.runtimeCSSs.find((eachCSS) => eachCSS.root === root)
                 if (existingCSS) {
-                    setCSS(existingCSS)
+                    setRuntimeCSS(existingCSS)
                 } else {
-                    newCSS = initRuntime(resolvedConfig, root)
-                    setCSS(newCSS)
+                    newRuntimeCSS = new RuntimeCSS(root, resolvedConfig)
+                    setRuntimeCSS(newRuntimeCSS)
                 }
             }
             if (config instanceof Promise) {
@@ -41,14 +34,14 @@ export function CSSProvider({
             } else {
                 init(config)
             }
-        } else if (!css.observing) {
-            css.observe(root)
+        } else if (!runtimeCSS.observing) {
+            runtimeCSS.observe()
         }
         return () => {
-            newCSS?.destroy()
+            newRuntimeCSS?.destroy()
         }
     }, [config, root])
-    return <CSSContext.Provider value={css}>{children}</CSSContext.Provider>
+    return <CSSContext.Provider value={runtimeCSS}>{children}</CSSContext.Provider>
 }
 
 export default CSSProvider

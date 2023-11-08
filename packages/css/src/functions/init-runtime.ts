@@ -1,4 +1,4 @@
-import { MasterCSS } from '../core'
+import { RuntimeCSS } from '../runtime'
 import type { Config } from '../config'
 
 /**
@@ -7,6 +7,6 @@ import type { Config } from '../config'
  * @param targetRoot target root to observe
  * @returns master css instance
  */
-export default function initRuntime(config?: Config, targetRoot?: Document | ShadowRoot | null): MasterCSS {
-    return new MasterCSS(config).observe(targetRoot)
+export default function initRuntime(config?: Config): RuntimeCSS {
+    return new RuntimeCSS(document, config).observe()
 }

@@ -1,7 +1,9 @@
 import type { Config } from './config'
-import { MasterCSS } from './core'
+import initRuntime from './functions/init-runtime'
 
-window.masterCSS = new MasterCSS(window.masterCSSConfig).observe(document)
+(() => {
+    initRuntime(window.masterCSSConfig)
+})()
 
 declare global {
     interface Window {
