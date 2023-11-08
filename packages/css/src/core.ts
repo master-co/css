@@ -55,7 +55,7 @@ export class MasterCSS {
         if (!customConfig?.override) {
             this.config = this.getExtendedConfig(defaultConfig, customConfig)
         } else {
-            this.config = this.getExtendedConfig(this.config)
+            this.config = this.getExtendedConfig(customConfig)
         }
         this.resolve()
         globalThis.masterCSSs.push(this)
@@ -366,8 +366,8 @@ export class MasterCSS {
                 })
         }
 
-        const rulesEntries = Object.entries(rules)
-            .sort((a: any, b: any) => {
+        if (rules) {
+            const rulesEntries = Object.entries(rules).sort((a: any, b: any) => {
                 if (a[1].layer !== b[1].layer) {
                     return (b[1].layer || 0) - (a[1].layer || 0)
                 }
@@ -386,14 +386,21 @@ export class MasterCSS {
                     Object.assign(
                         eachRuleOptions.resolvedVariables,
                         Object.keys(this.variables)
-                            .filter(eachVariableName => eachVariableName.startsWith(prefix + '-') || eachVariableName.startsWith('-' + prefix + '-'))
+                            .filter((eachVariableName) =>
+                                eachVariableName.startsWith(prefix + '-') ||
+                                eachVariableName.startsWith('-' + prefix + '-'),
+                            )
                             .reduce((newResolvedVariables, eachVariableName) => {
-                                newResolvedVariables[eachVariableName.slice(prefix.length + (prefix.startsWith('-') ? 0 : 1))] = {
+                                newResolvedVariables[
+                                    eachVariableName.slice(
+                                        prefix.length + (prefix.startsWith('-') ? 0 : 1),
+                                    )
+                                ] = {
                                     ...this.variables[eachVariableName],
-                                    name: eachVariableName
+                                    name: eachVariableName,
                                 }
                                 return newResolvedVariables
-                            }, {})
+                            }, {}),
                     )
                 }
                 // 1. custom `config.rules[id].variables`
@@ -413,13 +420,15 @@ export class MasterCSS {
                             valueMatches.push(`(?:${values.join('|')})(?![a-zA-Z0-9-])`)
                         }
                         if (Object.keys(eachRuleOptions.resolvedVariables).length) {
-                            valueMatches.push(`(?:${Object.keys(eachRuleOptions.resolvedVariables).join('|')})(?![a-zA-Z0-9-])`)
+                            valueMatches.push(
+                                `(?:${Object.keys(eachRuleOptions.resolvedVariables).join('|')})(?![a-zA-Z0-9-])`,
+                            )
                         }
                         if (eachRuleOptions.colored) {
                             valueMatches.push(
                                 '#',
                                 '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)',
-                                `(?:${colorNames.join('|')})(?![a-zA-Z0-9-])`
+                                `(?:${colorNames.join('|')})(?![a-zA-Z0-9-])`,
                             )
                         }
                         if (eachRuleOptions.numeric) {
@@ -431,7 +440,9 @@ export class MasterCSS {
                         eachRuleOptions.resolvedMatch = match as RegExp
                     }
                 }
-            })
+            },
+            )
+        }
     }
 
     /**
@@ -483,7 +494,7 @@ export class MasterCSS {
                             if (result) {
                                 const firstCSSRule = (eachCSSRule as CSSMediaRule).cssRules[0]
                                 if (
-                                    firstCSSRule?.constructor.name === 'CSSStyleRule' 
+                                    firstCSSRule?.constructor.name === 'CSSStyleRule'
                                     && (firstCSSRule as CSSStyleRule).selectorText === ':root'
                                 ) {
                                     this.pushVariableNativeRule(result[1], firstCSSRule as CSSStyleRule)
@@ -1535,7 +1546,7 @@ export class MasterCSS {
                             } else {
                                 selectorText = ':root'
                             }
-                           
+
                             if (sheet) {
                                 const newCSSRuleIndex = this.variablesNativeRules
                                     ? this.rules[0].natives.length
@@ -1581,10 +1592,10 @@ export class MasterCSS {
                                         }
                                     }
                                 )
-                                cssRule = { 
+                                cssRule = {
                                     selectorText,
-                                    style, 
-                                    styleMap 
+                                    style,
+                                    styleMap
                                 } as any as CSSStyleRule
                                 if (mediaConditionText) {
                                     // @ts-ignore
@@ -1619,10 +1630,10 @@ export class MasterCSS {
         if (!this.variablesNativeRules) {
             this.variablesNativeRules = {}
             this.rules.splice(
-                0, 
-                0, 
-                { 
-                    natives: [], 
+                0,
+                0,
+                {
+                    natives: [],
                     get text() {
                         return this.natives.map((eachNative) => eachNative.text).join('')
                     }
