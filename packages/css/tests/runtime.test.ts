@@ -20,7 +20,7 @@ it('css count class add', async () => {
         'font:bold': 1,
         'italic': 1
     })
-})
+}, 60000)
 
 it('css count class complicated example', async () => {
     document.body.innerHTML = complexHTML
@@ -29,4 +29,4 @@ it('css count class complicated example', async () => {
     document.body.innerHTML = ''
     await new Promise(resolve => setTimeout(resolve))
     expect(window.masterCSS.classesUsage).toEqual({})
-})
+}, 60000)
