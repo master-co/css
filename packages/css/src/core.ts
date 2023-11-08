@@ -534,6 +534,7 @@ export class MasterCSS {
                         }
                         break
                 }
+                break
             }
 
             for (;index < this.style.sheet.cssRules.length; index++) {
