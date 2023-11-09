@@ -25,22 +25,28 @@ export async function generate(
     if (requestedSearchParams.authors) {
         requestedSearchParams.authors = JSON.stringify(requestedSearchParams.authors)
     }
+
+    const baseMetadata: any = {
+        icons: '',
+        openGraph: {
+            title: ogTitle,
+            description: ogDescription,
+            siteName: 'Master CSS'
+        },
+        twitter: {
+            title: ogTitle,
+            description: ogDescription,
+            site: '@mastercorg',
+            creator: '@aron1tw',
+            card: 'summary_large_image'
+        }
+    }
+    if (!requestedSearchParams.ogImageIcon) {
+        const ogImageUrl = `${process.env.HOST}/api/og-image?${new URLSearchParams(requestedSearchParams)}`
+        baseMetadata.openGraph.images = baseMetadata.twitter.images = ogImageUrl
+    }
     return extend(
-        {
-            icons: '',
-            openGraph: {
-                title: ogTitle,
-                description: ogDescription,
-                siteName: 'Master CSS'
-            },
-            twitter: {
-                title: ogTitle,
-                description: ogDescription,
-                site: '@mastercorg',
-                creator: '@aron1tw',
-                card: 'summary_large_image'
-            }
-        } as Metadata,
+        baseMetadata,
         metadata,
         {
             title,
