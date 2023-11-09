@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to setting up Master CSS runtime rendering in your Angular project.',
     category: 'Installation',
     ogImageTitle: 'Runtime Rendering',
-    ogImageIcon: 'public/images/frameworks/angular.svg',
+    ogImageIcon: new URL('public/images/frameworks/angular.svg', import.meta.url),
     ogImageIconWidth: 256
 }
 

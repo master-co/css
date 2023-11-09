@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to installing Master CSS ESLint in your Angular project.',
     category: 'Code Linting',
     ogImageTitle: 'Master CSS ESLint',
-    ogImageIcon: 'public/images/frameworks/react.svg',
+    ogImageIcon: new URL('public/images/frameworks/react.svg', import.meta.url),
     ogImageIconWidth: 192
 }
 

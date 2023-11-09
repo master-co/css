@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to setting up Master CSS runtime rendering in your Next.js project.',
     category: 'Installation',
     ogImageTitle: 'Runtime Rendering',
-    ogImageIcon: 'public/images/frameworks/nextjs.svg',
+    ogImageIcon: new URL('public/images/frameworks/nextjs.svg', import.meta.url),
     ogImageIconWidth: 256
 }
 

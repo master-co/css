@@ -3,7 +3,7 @@ import Content from './content.mdx'
 import { generate } from '~/utils/metadata'
 import { queryDictionary } from 'websites/dictionaries';
 import DocLayout from '~/layouts/doc'
-import ESLintSvg from '~/public/icons/eslint.svg'
+import ESLintSvg from '~/public/icons/eslint.svg?inlineSvg'
 
 export async function generateMetadata(props: any, parent: any) {
     return generate(metadata, props, parent)

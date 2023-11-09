@@ -1,6 +1,6 @@
-import IESvg from 'websites/svgs/ie.svg'
+import ieSVG from 'websites/svgs/ie.svg?inlineSvg'
 
-The Master CSS [runtime engine](/docs/rendering-modes/runtime-rendering) uses [Mutation Observer](https://developer.mozilla.org/zh-TW/docs/Web/API/MutationObserver) which **even <IESvg width="18" height="18" className="inline-block v:middle" /> IE 11 supports** to observe the DOM tree and traverse each class through a high-performant rule engine to generate the corresponding CSS rules and inject it into the browser instantly.
+The Master CSS [runtime engine](/docs/rendering-modes/runtime-rendering) uses [Mutation Observer](https://developer.mozilla.org/zh-TW/docs/Web/API/MutationObserver) which **even <Image src={ieSVG} width="18" height="18" className="inline-block v:middle" alt="IE 11 Supports" /> IE 11 supports** to observe the DOM tree and traverse each class through a high-performant rule engine to generate the corresponding CSS rules and inject it into the browser instantly.
 
 You hardly need to worry about browser support, since support depends on which CSS features you use.
 

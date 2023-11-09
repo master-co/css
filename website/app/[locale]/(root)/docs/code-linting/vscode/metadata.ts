@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to installing Master CSS ESLint in your Visual Studio Code.',
     category: 'Code Linting',
     ogImageTitle: 'Master CSS ESLint',
-    ogImageIcon: 'public/icons/visualstudiocode.svg',
+    ogImageIcon: new URL('~/public/icons/visualstudiocode.svg', import.meta.url),
     ogImageIconWidth: 164
 }
 

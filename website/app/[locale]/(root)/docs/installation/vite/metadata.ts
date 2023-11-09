@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to setting up Master CSS runtime rendering in your Vite project.',
     category: 'Installation',
     ogImageTitle: 'Runtime Rendering',
-    ogImageIcon: 'public/images/build-tools/vite.svg',
+    ogImageIcon: new URL('public/images/build-tools/vite.svg', import.meta.url),
     ogImageIconWidth: 192
 }
 

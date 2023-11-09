@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to installing Master CSS ESLint in your Svelte project.',
     category: 'Code Linting',
     ogImageTitle: 'Master CSS ESLint',
-    ogImageIcon: 'public/images/frameworks/svelte.svg',
+    ogImageIcon: new URL('public/images/frameworks/svelte.svg', import.meta.url),
     ogImageIconWidth: 192
 }
 

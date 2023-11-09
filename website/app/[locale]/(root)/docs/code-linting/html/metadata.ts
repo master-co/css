@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to installing Master CSS ESLint in your HTML project.',
     category: 'Code Linting',
     ogImageTitle: 'Master CSS ESLint',
-    ogImageIcon: 'public/icons/html.svg',
+    ogImageIcon: new URL('~/public/icons/html.svg', import.meta.url),
     ogImageIconWidth: 192
 }
 

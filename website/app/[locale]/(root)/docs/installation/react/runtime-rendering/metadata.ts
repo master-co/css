@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to setting up Master CSS runtime rendering in your React project.',
     category: 'Installation',
     ogImageTitle: 'Runtime Rendering',
-    ogImageIcon: 'public/images/frameworks/react.svg',
+    ogImageIcon: new URL('public/images/frameworks/react.svg', import.meta.url),
     ogImageIconWidth: 192
 }
 

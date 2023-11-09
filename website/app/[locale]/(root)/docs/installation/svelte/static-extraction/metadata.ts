@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to setting up Master CSS static extraction in your Svelte project.',
     category: 'Installation',
     ogImageTitle: 'Static Extraction',
-    ogImageIcon: 'public/images/frameworks/svelte.svg',
+    ogImageIcon: new URL('public/images/frameworks/svelte.svg', import.meta.url),
     ogImageIconWidth: 192
 }
 

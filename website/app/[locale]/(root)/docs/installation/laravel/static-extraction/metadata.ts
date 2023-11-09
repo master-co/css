@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to setting up Master CSS static extraction in your Laravel project.',
     category: 'Installation',
     ogImageTitle: 'Static Extraction',
-    ogImageIcon: 'public/images/frameworks/laravel.svg',
+    ogImageIcon: new URL('public/images/frameworks/laravel.svg', import.meta.url),
     ogImageIconWidth: 192
 }
 

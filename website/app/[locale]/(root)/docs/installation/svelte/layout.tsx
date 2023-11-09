@@ -1,7 +1,7 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
 import { queryDictionary } from 'websites/dictionaries';
 import DocLayout from '~/layouts/doc'
-import SvelteSvg from '~/public/images/frameworks/svelte.svg'
+import SvelteSvg from '~/public/images/frameworks/svelte.svg?inlineSvg'
 
 export const metadata = {
     title: 'Set up Master CSS in Svelte',

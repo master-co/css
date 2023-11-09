@@ -1,7 +1,7 @@
 import { Props } from 'websites/types/Props'
 import create from '~/og-image'
 import metadata from './metadata'
-import Icon from '~/public/images/frameworks/vuejs.svg'
+import Icon from '~/public/images/frameworks/vuejs.svg?inlineSvg'
 
 export const alt = metadata.title
 export const contentType = 'image/jpg'
