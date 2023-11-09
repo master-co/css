@@ -1,7 +1,7 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
 import { queryDictionary } from 'websites/dictionaries';
 import DocLayout from '~/layouts/doc'
-import LogoSvg from 'websites/images/frameworks/angular.svg'
+import LogoSvg from '~/public/images/frameworks/angular.svg'
 
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)

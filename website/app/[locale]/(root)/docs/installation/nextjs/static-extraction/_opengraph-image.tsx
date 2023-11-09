@@ -1,7 +1,7 @@
 import { Props } from 'websites/types/Props'
 import create from '~/og-image'
 import metadata from './metadata'
-import NextjsSvg from 'websites/images/frameworks/nextjs.svg'
+import NextjsSvg from '~/public/images/frameworks/nextjs.svg'
 
 export const alt = metadata.title
 export const contentType = 'image/jpg'

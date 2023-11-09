@@ -14,20 +14,20 @@ import path from 'path';
 import mime from 'mime-types'
 
 const readImage = (filename: string) => {
-    const filepath = path.join(process.cwd(), 'node_modules', filename)
+    const filepath = path.join(process.cwd(), filename)
     const extname = path.extname(filepath);
     const mimeType = mime.lookup(extname);
     return `data:${mimeType};base64,` + fs.readFileSync(filepath, { encoding: 'base64' })
 }
-const cssLogotypeSrc = readImage('websites/images/css-logotype@light.png')
-const coverBgSrc = readImage('websites/images/cover-bg.jpg')
+const cssLogotypeSrc = readImage('public/images/css-logotype@light.png')
+const coverBgSrc = readImage('public/images/cover-bg.jpg')
 const authorImages: any = {
-    Aron: readImage('websites/images/authors/aron.jpg'),
-    Joy: readImage('websites/images/authors/joy.jpg'),
-    Benseage: readImage('websites/images/authors/benseage.jpg'),
-    Miles: readImage('websites/images/authors/miles.jpg'),
-    Lola: readImage('websites/images/authors/lola.jpg'),
-    Monting: readImage('websites/images/authors/monting.jpg'),
+    Aron: readImage('public/images/authors/aron.jpg'),
+    Joy: readImage('public/images/authors/joy.jpg'),
+    Benseage: readImage('public/images/authors/benseage.jpg'),
+    Miles: readImage('public/images/authors/miles.jpg'),
+    Lola: readImage('public/images/authors/lola.jpg'),
+    Monting: readImage('public/images/authors/monting.jpg'),
 }
 const fonts = [
     {

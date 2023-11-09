@@ -12,7 +12,7 @@ const metadata: Metadata = {
         description: 'An ESLint plugin enforcing a consistent coding style for Master CSS.'
     },
     ogImageTitle: 'Code Linting',
-    ogImageIcon: 'websites/icons/eslint.svg',
+    ogImageIcon: 'public/icons/eslint.svg',
     ogImageIconWidth: 200
 }
 

@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to setting up Master CSS static extraction in your Vite project.',
     category: 'Installation',
     ogImageTitle: 'Static Extraction',
-    ogImageIcon: 'websites/images/build-tools/vite.svg',
+    ogImageIcon: 'public/images/build-tools/vite.svg',
     ogImageIconWidth: 192
 }
 

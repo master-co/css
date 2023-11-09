@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to setting up Master CSS progressive rendering in your Vue.js project.',
     category: 'Installation',
     ogImageTitle: 'Progressive Rendering',
-    ogImageIcon: 'websites/images/frameworks/vuejs.svg',
+    ogImageIcon: 'public/images/frameworks/vuejs.svg',
     ogImageIconWidth: 192
 }
 

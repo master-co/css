@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to setting up Master CSS runtime rendering in your Webpack project.',
     category: 'Installation',
     ogImageTitle: 'Runtime Rendering',
-    ogImageIcon: 'websites/images/build-tools/webpack.svg',
+    ogImageIcon: 'public/images/build-tools/webpack.svg',
     ogImageIconWidth: 256
 }
 

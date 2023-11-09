@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to setting up Master CSS static extraction in your Vue.js project.',
     category: 'Installation',
     ogImageTitle: 'Static Extraction',
-    ogImageIcon: 'websites/images/frameworks/vuejs.svg',
+    ogImageIcon: 'public/images/frameworks/vuejs.svg',
     ogImageIconWidth: 192
 }
 

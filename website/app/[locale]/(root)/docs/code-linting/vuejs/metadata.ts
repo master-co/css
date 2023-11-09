@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to installing Master CSS ESLint in your Vue.js project.',
     category: 'Code Linting',
     ogImageTitle: 'Master CSS ESLint',
-    ogImageIcon: 'websites/images/frameworks/vuejs.svg',
+    ogImageIcon: 'public/images/frameworks/vuejs.svg',
     ogImageIconWidth: 192
 }
 

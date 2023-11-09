@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to setting up Master CSS runtime rendering in your Blazor project.',
     category: 'Installation',
     ogImageTitle: 'Runtime Rendering',
-    ogImageIcon: 'websites/images/frameworks/blazor.svg',
+    ogImageIcon: 'public/images/frameworks/blazor.svg',
     ogImageIconWidth: 256
 }
 

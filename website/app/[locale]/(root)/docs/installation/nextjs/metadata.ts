@@ -5,7 +5,7 @@ const metadata: Metadata = {
     description: 'Guide to setting up Master CSS progressive rendering in your Next.js project.',
     category: 'Installation',
     ogImageTitle: 'Progressive Rendering',
-    ogImageIcon: 'websites/images/frameworks/nextjs.svg',
+    ogImageIcon: 'public/images/frameworks/nextjs.svg',
     ogImageIconWidth: 256
 }
 

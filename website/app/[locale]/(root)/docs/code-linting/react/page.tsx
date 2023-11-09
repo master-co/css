@@ -2,7 +2,7 @@ import Layout from '~/layouts/doc'
 import metadata from './metadata'
 import Content from './content.mdx'
 import { generate } from '~/utils/metadata'
-import LogoSvg from 'websites/images/frameworks/react.svg'
+import LogoSvg from '~/public/images/frameworks/react.svg'
 import { queryDictionary } from 'websites/dictionaries'
 
 export async function generateMetadata(props: any, parent: any) {
