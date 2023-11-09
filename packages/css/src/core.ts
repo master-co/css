@@ -512,7 +512,7 @@ export class MasterCSS {
          * 所以 refresh 過後 rules 可能會變多也可能會變少
          */
         for (const name in this.classesUsage) {
-            this.insert(name)
+            this.add(name)
         }
         return this
     }
@@ -543,10 +543,17 @@ export class MasterCSS {
         return this
     }
 
-    /**
-     * 透過類名來刪除對應的 rules
-     */
-    delete(className: string) {
+    add(syntax: string): boolean {
+        const rules = this.create(syntax)
+        if (rules.length) {
+            this.insert(rules)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    delete(syntax: string) {
         /**
          * class name 從 DOM tree 中被移除，
          * 匹配並刪除對應的 rule
@@ -631,29 +638,16 @@ export class MasterCSS {
             rule.definition.delete?.call(rule, name)
         }
 
-        if (Object.prototype.hasOwnProperty.call(this.styles, className)) {
-            for (const eachClassName of this.styles[className]) {
+        if (Object.prototype.hasOwnProperty.call(this.styles, syntax)) {
+            for (const eachClassName of this.styles[syntax]) {
                 if (!Object.prototype.hasOwnProperty.call(this.classesUsage, eachClassName)) {
                     deleteRule(eachClassName)
                 }
             }
 
-            delete this.ruleBy[className]
+            delete this.ruleBy[syntax]
         } else {
-            deleteRule(className)
-        }
-    }
-
-    /**
-    * 依類名插入規則
-     */
-    insert(syntax: string): boolean {
-        const rules = this.create(syntax)
-        if (rules.length) {
-            this.render(rules)
-            return true
-        } else {
-            return false
+            deleteRule(syntax)
         }
     }
 
@@ -672,7 +666,7 @@ export class MasterCSS {
     * 11. media width where selectors
     * 12. media width selectors
     */
-    render(rules: Rule[]) {
+    insert(rules: Rule[]) {
         for (const rule of rules) {
             if (this.ruleBy[rule.className])
                 continue

@@ -28,7 +28,7 @@ export function doHover(instance: string, range: Range, config?: any): Hover | n
 
 function getCssPreview(syntax: string, config: any) {
     const css = new MasterCSS(config)
-    css.insert(syntax)
+    css.add(syntax)
     const renderText = css.text
     if (!renderText || renderText == ' ') {
         return null

@@ -82,7 +82,7 @@ export default class CSSExtractor extends EventEmitter {
         /* 插入指定的固定 class */
         if (this.options.classes?.fixed?.length) {
             for (const eachFixedClass of this.options.classes.fixed) {
-                this.css.insert(eachFixedClass)
+                this.css.add(eachFixedClass)
             }
             if (this.options.verbose) {
                 log.ok`${this.options.classes.fixed.length} fixed classes inserted ${this.options.classes.fixed}`
@@ -164,7 +164,7 @@ export default class CSSExtractor extends EventEmitter {
                 .map(async (eachLatentClass) => {
                     const validRules = createValidRules(eachLatentClass, { css: this.css })
                     if (validRules.length) {
-                        this.css.render(validRules)
+                        this.css.insert(validRules)
                         validClasses.push(eachLatentClass)
                         this.validClasses.add(eachLatentClass)
                     } else {

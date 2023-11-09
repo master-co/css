@@ -4,7 +4,7 @@ import { Config, MasterCSS } from '../src'
 
 export const testCSS = (syntax: string, expected: string | string[], config?: Config): void => {
     const css = new MasterCSS(config)
-    css.insert(syntax)
+    css.add(syntax)
     if (Array.isArray(expected)) {
         expected = expected.join('')
     }
@@ -22,7 +22,7 @@ export const testProp = (classes: string | string[], expected: string, config?: 
     classes.forEach((eachClassName) => {
         const selector = CSS.escape(eachClassName)
         const css = new MasterCSS(config)
-        css.insert(eachClassName)
+        css.add(eachClassName)
         expect(css.text).toBe(`.${selector}{${expected}}`)
     })
 }
@@ -30,7 +30,7 @@ export const testProp = (classes: string | string[], expected: string, config?: 
 export const expectOrderOfRules = (classNames: string[], expected: string[]): void => {
     const css = new MasterCSS()
     classNames.forEach((eachClassName) => {
-        css.insert(eachClassName)
+        css.add(eachClassName)
     })
     const sortedClassNames = css.rules.map((rule) => rule.className)
     expect(sortedClassNames).toEqual(expected)

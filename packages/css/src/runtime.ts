@@ -188,7 +188,7 @@ export class RuntimeCSS extends MasterCSS {
                 } else {
                     this.classesUsage[className] = 1
 
-                    this.insert(className)
+                    this.add(className)
                 }
             })
         }
@@ -354,7 +354,7 @@ export class RuntimeCSS extends MasterCSS {
                          * 新 class name 被 connected 至 DOM tree，
                          * 匹配並創建對應的 Rule
                          */
-                        this.insert(className)
+                        this.add(className)
                     }
 
                     this.classesUsage[className] = count

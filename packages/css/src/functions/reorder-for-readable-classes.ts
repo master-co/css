@@ -12,7 +12,7 @@ export default function reorderForReadableClasses(classes: string[], config?: Co
     if (!classes.length) return
     const css = new MasterCSS(config)
     for (const eachClass of classes) {
-        css.insert(eachClass)
+        css.add(eachClass)
     }
     return css.rules
         // 只保留樣式語法相關的 rules, 排除 keyframes 與 variables 在外

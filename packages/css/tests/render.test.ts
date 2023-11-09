@@ -17,7 +17,7 @@ const html = dedent`
 it('class to string', () => {
     const css = new MasterCSS()
     for (const eachClass of ['text:center', 'font:32']) {
-        css.insert(eachClass)
+        css.add(eachClass)
     }
     expect(css.text).toEqual('.font\\:32{font-size:2rem}.text\\:center{text-align:center}')
 })

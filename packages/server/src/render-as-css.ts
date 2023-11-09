@@ -12,6 +12,6 @@ export default function renderAsCSS(html: string, config?: Config): MasterCSS | 
     const { classes } = parseHTML(html)
     if (!classes.length) return
     const css = new MasterCSS(config)
-    classes.forEach(eachClass => css.insert(eachClass))
+    classes.forEach(eachClass => css.add(eachClass))
     return css
 }

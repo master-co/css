@@ -23,6 +23,34 @@ This `.text` getter returns the result of joining the text of all CSS rules.
 css.text
 ```
 
+### `.add()`
+Add a new syntax class.
+<DocFn>
+    {[
+        { name: 'syntax', type: 'string' },
+        { name: 'return', type: 'boolean' }
+    ]}
+</DocFn>
+```ts
+if (css.add('text:center')) {
+    console.log('added')
+} else {
+    console.log('not added')
+}
+```
+
+### `.delete()`
+Remove an existing syntax class.
+<DocFn>
+    {[
+        { name: 'syntax', type: 'string' },
+        { name: 'return', type: 'boolean' }
+    ]}
+</DocFn>
+```ts
+css.delete('text:center')
+```
+
 ### `.refresh()`
 Refresh the Master CSS with the configuration.
 <DocFn>
@@ -50,7 +78,7 @@ Destroy and remove the current instance from `globalThis.masterCSSs`.
     {[ { name: 'return', type: 'this' } ]}
 </DocFn>
 ```ts
-css.reset()
+css.destroy()
 ```
 
 ### `MasterCSS.config`

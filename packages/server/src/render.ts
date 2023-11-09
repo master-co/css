@@ -13,7 +13,7 @@ export default function render(html: string, config?: Config): { html: string, r
     const { classes, root } = parseHTML(html)
     if (!classes.length) return { html, root, classes }
     const css = new MasterCSS(config)
-    classes.forEach(eachClass => css.insert(eachClass))
+    classes.forEach(eachClass => css.add(eachClass))
     let styleElement = root.getElementById('master')
     if (styleElement) {
         styleElement.textContent = css.text

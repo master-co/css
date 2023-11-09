@@ -72,7 +72,7 @@ const processCssText = (name: string | Record<string, any>) => {
     target = target.replace(/`size`/g, '1600')
     const classes = target.split(' ')
     const css = new MasterCSS()
-    classes.forEach((eachClass: string) => css.insert(eachClass))
+    classes.forEach((eachClass: string) => css.add(eachClass))
     let text = css.text
     if (!text) return
     text = beautifyCSS(text)
