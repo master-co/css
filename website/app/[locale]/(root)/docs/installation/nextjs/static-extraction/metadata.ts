@@ -3,10 +3,7 @@ import { Metadata } from 'websites/types/Metadata'
 const metadata: Metadata = {
     title: 'Static Extraction in Next.js',
     description: 'Guide to setting up Master CSS static extraction in your Next.js project.',
-    category: 'Installation',
-    ogImageTitle: 'Static Extraction',
-    ogImageIcon: new URL('public/images/frameworks/nextjs.svg', import.meta.url),
-    ogImageIconWidth: 256
+    category: 'Installation'
 }
 
 export default metadata

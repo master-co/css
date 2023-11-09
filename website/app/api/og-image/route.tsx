@@ -22,27 +22,27 @@ export async function GET(req: NextRequest, { params }: any) {
     let fonts = [
         {
             name: 'Inter Medium',
-            data: await (await fetch(new URL('public/fonts/Inter-Medium.ttf', import.meta.url))).arrayBuffer()
+            data: await (await fetch(new URL('public/fonts/Inter-Medium.ttf', import.meta.url), { cache: 'no-store' })).arrayBuffer()
         },
         {
             name: 'Inter SemiBold',
-            data: await (await fetch(new URL('public/fonts/Inter-SemiBold.ttf', import.meta.url))).arrayBuffer()
+            data: await (await fetch(new URL('public/fonts/Inter-SemiBold.ttf', import.meta.url), { cache: 'no-store' })).arrayBuffer()
         },
         {
             name: 'Inter ExtraBold',
-            data: await (await fetch(new URL('public/fonts/Inter-ExtraBold.ttf', import.meta.url))).arrayBuffer()
+            data: await (await fetch(new URL('public/fonts/Inter-ExtraBold.ttf', import.meta.url), { cache: 'no-store' })).arrayBuffer()
         },
         {
             name: 'NotoSansTC Regular',
-            data: await (await fetch(new URL('public/fonts/NotoSansTC-Regular.ttf', import.meta.url))).arrayBuffer()
+            data: await (await fetch(new URL('public/fonts/NotoSansTC-Regular.ttf', import.meta.url), { cache: 'no-store' })).arrayBuffer()
         },
         {
             name: 'NotoSansTC Medium',
-            data: await (await fetch(new URL('public/fonts/NotoSansTC-Medium.ttf', import.meta.url))).arrayBuffer()
+            data: await (await fetch(new URL('public/fonts/NotoSansTC-Medium.ttf', import.meta.url), { cache: 'no-store' })).arrayBuffer()
         },
         {
             name: 'NotoSansTC Black',
-            data: await (await fetch(new URL('public/fonts/NotoSansTC-Black.ttf', import.meta.url))).arrayBuffer()
+            data: await (await fetch(new URL('public/fonts/NotoSansTC-Black.ttf', import.meta.url), { cache: 'no-store' })).arrayBuffer()
         }
     ]
     const $ = await queryDictionary(locale)
@@ -84,7 +84,7 @@ export async function GET(req: NextRequest, { params }: any) {
                 display: 'flex',
                 flexDirection: 'row',
                 flexWrap: 'nowrap',
-                backgroundImage: `url(${(await fetch(new URL('public/images/cover-bg.jpg', import.meta.url))).url})`,
+                backgroundImage: `url(${(await fetch(new URL('public/images/cover-bg.jpg', import.meta.url), { cache: 'no-store' })).url})`,
                 backgroundSize: '100% 100%',
                 padding: '70px 95px',
                 WebkitFontSmoothing: 'subpixel-antialiased',
@@ -101,7 +101,7 @@ export async function GET(req: NextRequest, { params }: any) {
                     <div style={{
                         display: 'flex'
                     }}>
-                        <img src={(await fetch(new URL('public/images/css-logotype@light.png', import.meta.url))).url} width="340" />
+                        <img src={(await fetch(new URL('public/images/css-logotype@light.png', import.meta.url), { cache: 'no-store' })).url} width="340" />
                     </div>
                     <div style={{
                         display: 'flex',
@@ -144,7 +144,7 @@ export async function GET(req: NextRequest, { params }: any) {
                                 // eslint-disable-next-line react/jsx-key
                                 <div style={{ display: 'flex', marginRight: '30px', alignItems: 'center' }}>
                                     <div style={{ display: 'flex', width: 70, height: 70, padding: 5, border: '1px solid #878D9F', borderRadius: '50%' }}>
-                                        <img src={(await fetch(new URL(authorImages[author.name], import.meta.url))).url} width="100%" height="100%" style={{ objectFit: 'cover', borderRadius: '50%' }} />
+                                        <img src={(await fetch(new URL(authorImages[author.name], import.meta.url), { cache: 'no-store' })).url} width="100%" height="100%" style={{ objectFit: 'cover', borderRadius: '50%' }} />
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', margin: '0px 15px' }}>
                                         <div style={{

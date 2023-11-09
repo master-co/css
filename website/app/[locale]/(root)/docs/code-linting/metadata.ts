@@ -10,10 +10,7 @@ const metadata: Metadata = {
     order: 3,
     openGraph: {
         description: 'An ESLint plugin enforcing a consistent coding style for Master CSS.'
-    },
-    ogImageTitle: 'Code Linting',
-    ogImageIcon: new URL('~/public/icons/eslint.svg', import.meta.url),
-    ogImageIconWidth: 200
+    }
 }
 
 export default metadata

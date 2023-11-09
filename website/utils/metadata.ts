@@ -25,23 +25,20 @@ export async function generate(
     if (requestedSearchParams.authors) {
         requestedSearchParams.authors = JSON.stringify(requestedSearchParams.authors)
     }
-    const ogImageUrl = `${process.env.HOST}/api/og-image?${new URLSearchParams(requestedSearchParams)}`
     return extend(
         {
             icons: '',
             openGraph: {
                 title: ogTitle,
                 description: ogDescription,
-                siteName: 'Master CSS',
-                images: ogImageUrl
+                siteName: 'Master CSS'
             },
             twitter: {
                 title: ogTitle,
                 description: ogDescription,
                 site: '@mastercorg',
                 creator: '@aron1tw',
-                card: 'summary_large_image',
-                images: ogImageUrl
+                card: 'summary_large_image'
             }
         } as Metadata,
         metadata,

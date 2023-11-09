@@ -3,33 +3,12 @@
 
 import type { Metadata } from 'next';
 import type { Author } from 'next/dist/lib/metadata/types/metadata-types';
-import type { Props } from 'websites/types/Props';
+import type { Props } from '../../../types/Props';
 
 import { ImageResponse } from 'next/og';
-import authors from 'websites/data/authors';
-import { queryDictionary } from 'websites/dictionaries';
+import authors from '../../../data/authors';
+import { queryDictionary } from '../../../dictionaries';
 import stringWidth from 'string-width'
-import path from 'path';
-import mime from 'mime-types'
-
-// const readImage = (filename: string) => {
-//     console.log('cwd:', process.cwd())
-//     console.log('read image:', filename)
-//     const extname = path.extname(filename);
-//     const mimeType = mime.lookup(extname);
-//     return `data:${mimeType};base64,` + fs.readFileSync(filename, { encoding: 'base64' })
-// }
-
-// const cssLogotypeSrc = readImage('public/images/css-logotype@light.png')
-// const coverBgSrc = readImage('public/images/cover-bg.jpg')
-const authorImages: any = {
-    Aron: 'public/images/authors/aron.jpg',
-    Joy: 'public/images/authors/joy.jpg',
-    Benseage: 'public/images/authors/benseage.jpg',
-    Miles: 'public/images/authors/miles.jpg',
-    Lola: 'public/images/authors/lola.jpg',
-    Monting: 'public/images/authors/monting.jpg',
-}
 
 export default async function create({
     metadata,
@@ -37,56 +16,56 @@ export default async function create({
     description,
     size = { width: 1200, height: 630 },
     icon,
-    props,
-    ogImageTitle,
-    ogImageIcon,
-    ogImageIconWidth
+    props
 }: {
     metadata?: Metadata
     title?: string | null
     description?: string | null
     size?: { width: number, height: number }
     icon?: JSX.Element,
-    props: Props,
-    ogImageTitle?: string | null,
-    ogImageIcon?: string | null,
-    ogImageIconWidth?: string | null
+    props: Props
 }): Promise<ImageResponse> {
     const fonts = [
         {
             name: 'Inter Medium',
-            data: await (await fetch(new URL('public/fonts/Inter-Medium.ttf', import.meta.url))).arrayBuffer()
+            data: await (await fetch(new URL('public/fonts/Inter-Medium.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
         },
         {
             name: 'Inter SemiBold',
-            data: await (await fetch(new URL('public/fonts/Inter-SemiBold.ttf', import.meta.url))).arrayBuffer()
+            data: await (await fetch(new URL('public/fonts/Inter-SemiBold.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
         },
         {
             name: 'Inter ExtraBold',
-            data: await (await fetch(new URL('public/fonts/Inter-ExtraBold.ttf', import.meta.url))).arrayBuffer()
+            data: await (await fetch(new URL('public/fonts/Inter-ExtraBold.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
         },
         {
             name: 'NotoSansTC Regular',
-            data: await (await fetch(new URL('../../../fonts/NotoSansTC-Regular.ttf', import.meta.url))).arrayBuffer()
+            data: await (await fetch(new URL('public/fonts/NotoSansTC-Regular.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
         },
         {
             name: 'NotoSansTC Medium',
-            data: await (await fetch(new URL('../../../fonts/NotoSansTC-Medium.ttf', import.meta.url))).arrayBuffer()
+            data: await (await fetch(new URL('public/fonts/NotoSansTC-Medium.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
         },
         {
             name: 'NotoSansTC Black',
-            data: await (await fetch(new URL('../../../fonts/NotoSansTC-Black.ttf', import.meta.url))).arrayBuffer()
+            data: await (await fetch(new URL('public/fonts/NotoSansTC-Black.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
         }
     ]
 
+    const authorImageURLs: any = {
+        Aron: await (await fetch(new URL('public/images/authors/aron.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer(),
+        Joy: await (await fetch(new URL('public/images/authors/joy.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer(),
+        Benseage: await (await fetch(new URL('public/images/authors/benseage.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer(),
+        Miles: await (await fetch(new URL('public/images/authors/miles.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer(),
+        Lola: await (await fetch(new URL('public/images/authors/lola.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer(),
+        Monting: await (await fetch(new URL('public/images/authors/monting.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer(),
+    }
+
     const $ = await queryDictionary(props.params?.locale)
-    title = $(ogImageTitle || title || metadata?.openGraph?.title).replace(' - Master CSS', '') as string
-    description = $(description || metadata?.openGraph?.description) as string
+    title = $(title || metadata?.openGraph?.title).replace(' - Master CSS', '') as string
+    description = $(description || metadata?.openGraph?.description || metadata?.description) as string
     const authorNames = metadata?.authors as Author[] || []
     const category = $(metadata?.category) as string
-    if (ogImageIcon) {
-        icon = <img src={(await fetch(new URL(ogImageIcon, import.meta.url))).url} width={ogImageIconWidth ? +ogImageIconWidth : undefined} height='100%' style={{ objectFit: 'contain', margin: 'auto' }} />
-    }
     if (stringWidth(description) > 110) {
         description = description.substring(0, 109)
         if (stringWidth(description) >= 110) {
@@ -112,19 +91,25 @@ export default async function create({
         extrabold: ['Inter ExtraBold', 'NotoSansTC Black'].join(',')
     }
 
+
     return new ImageResponse(
         (
             <div style={{
                 display: 'flex',
                 flexDirection: 'row',
                 flexWrap: 'nowrap',
-                backgroundImage: `url(${(await fetch(new URL('public/images/cover-bg.jpg', import.meta.url))).url})`,
-                backgroundSize: '100% 100%',
                 padding: '70px 95px',
                 WebkitFontSmoothing: 'subpixel-antialiased',
                 textRendering: 'geometricPrecision',
                 ...size
             }}>
+                <img src={await (await fetch(new URL('public/images/cover-bg.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer()}
+                    width={size.width}
+                    height={size.height}
+                    style={{
+                        position: 'absolute',
+                        inset: 0
+                    }} />
                 <div style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -135,7 +120,7 @@ export default async function create({
                     <div style={{
                         display: 'flex'
                     }}>
-                        <img src={(await fetch(new URL('public/images/css-logotype@light.png', import.meta.url))).url} width="340" />
+                        <img src={await (await fetch(new URL('public/images/css-logotype@light.png', import.meta.url), { cache: 'no-cache' })).arrayBuffer()} width="340" />
                     </div>
                     <div style={{
                         display: 'flex',
@@ -172,13 +157,13 @@ export default async function create({
                         alignItems: 'flex-end'
                     }}>
                         {/* authors */}
-                        {!!authorNames.length && Promise.all(authorNames.map(async (authorName, index) => {
+                        {!!authorNames.length && authorNames.map((authorName, index) => {
                             const author: any = authors.find((eachAuthor) => eachAuthor.name === authorName)
                             return (
                                 // eslint-disable-next-line react/jsx-key
                                 <div style={{ display: 'flex', marginRight: '30px', alignItems: 'center' }}>
                                     <div style={{ display: 'flex', width: 70, height: 70, padding: 5, border: '1px solid #878D9F', borderRadius: '50%' }}>
-                                        <img src={(await fetch(new URL(authorImages[author.name], import.meta.url))).url} width="100%" height="100%" style={{ objectFit: 'cover', borderRadius: '50%' }} />
+                                        <img src={authorImageURLs[author.name]} width="100%" height="100%" style={{ objectFit: 'cover', borderRadius: '50%' }} />
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', margin: '0px 15px' }}>
                                         <div style={{
@@ -200,7 +185,7 @@ export default async function create({
                                     </div>
                                 </div>
                             )
-                        }))}
+                        })}
                         {/* category */}
                         {!authorNames.length && category &&
                             <div style={{
