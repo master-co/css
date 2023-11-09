@@ -6,7 +6,6 @@ import NuxtjsSvg from '~/public/images/frameworks/astro.svg'
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return (
-        /* @ts-expect-error server component */
         <DocLayout {...props}
             metadata={{
                 title: 'Set up Master CSS in Astro',

@@ -12,7 +12,6 @@ export async function generateMetadata(props: any, parent: any) {
 export default async function Page(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return (
-        /* @ts-expect-error server component */
         <Layout {...props}
             metadata={metadata}
             backOnClickCategory='/docs/code-linting'

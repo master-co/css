@@ -12,7 +12,6 @@ export const metadata = {
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return (
-        /* @ts-expect-error server component */
         <DocLayout {...props}
             metadata={metadata}
             backOnClickCategory='/docs/installation'
