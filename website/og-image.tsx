@@ -14,11 +14,13 @@ import path from 'path';
 import mime from 'mime-types'
 
 const readImage = (filename: string) => {
-    const filepath = path.join(process.cwd(), filename)
-    const extname = path.extname(filepath);
+    console.log('cwd:', process.cwd())
+    console.log('read image:', filename)
+    const extname = path.extname(filename);
     const mimeType = mime.lookup(extname);
-    return `data:${mimeType};base64,` + fs.readFileSync(filepath, { encoding: 'base64' })
+    return `data:${mimeType};base64,` + fs.readFileSync(filename, { encoding: 'base64' })
 }
+
 const cssLogotypeSrc = readImage('public/images/css-logotype@light.png')
 const coverBgSrc = readImage('public/images/cover-bg.jpg')
 const authorImages: any = {
@@ -29,6 +31,7 @@ const authorImages: any = {
     Lola: readImage('public/images/authors/lola.jpg'),
     Monting: readImage('public/images/authors/monting.jpg'),
 }
+
 const fonts = [
     {
         name: 'Inter Medium',
