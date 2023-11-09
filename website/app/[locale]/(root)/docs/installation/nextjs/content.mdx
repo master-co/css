@@ -177,7 +177,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                         lang: 'tsx',
                         code: `
                             import NextDocument, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
-                            +import { renderAsCSS } from '@master/css-server'
+                            +import { renderCSS } from '@master/css-server'
                             +import { config } from '../master.css'
 
                             export default function Document() {
@@ -194,7 +194,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
 
                             +Document.getInitialProps = async (ctx: DocumentContext) => {
                             +    const initialProps = await NextDocument.getInitialProps(ctx)
-                            +    const css = renderAsCSS(initialProps.html, config)
+                            +    const css = renderCSS(initialProps.html, config)
                             +    return {
                             +        ...initialProps,
                             +        styles: (

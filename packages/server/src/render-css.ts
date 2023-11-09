@@ -7,7 +7,7 @@ import MasterCSS, { Config } from '@master/css'
  * @param config
  * @returns MasterCSS
  */
-export default function renderAsCSS(html: string, config?: Config): MasterCSS | undefined {
+export default function renderCSS(html: string, config?: Config): MasterCSS | undefined {
     if (!html) return
     const { classes } = parseHTML(html)
     if (!classes.length) return
