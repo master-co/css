@@ -103,6 +103,7 @@ export default async function create({
                 textRendering: 'geometricPrecision',
                 ...size
             }}>
+                {/* @ts-expect-error */}
                 <img src={await (await fetch(new URL('public/images/cover-bg.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer()}
                     width={size.width}
                     height={size.height}
@@ -120,6 +121,7 @@ export default async function create({
                     <div style={{
                         display: 'flex'
                     }}>
+                        {/* @ts-expect-error */}
                         <img src={await (await fetch(new URL('public/images/css-logotype@light.png', import.meta.url), { cache: 'no-cache' })).arrayBuffer()} width="340" />
                     </div>
                     <div style={{
