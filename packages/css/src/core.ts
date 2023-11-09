@@ -31,11 +31,6 @@ export interface MasterCSS {
 
 export class MasterCSS {
     static config: Config = defaultConfig
-    static refresh = (customConfig: Config) => {
-        for (const eachInstance of globalThis.masterCSSs) {
-            eachInstance.refresh(customConfig)
-        }
-    }
     readonly rules: Rule[] = []
     readonly ruleBy: Record<string, Rule> = {}
     readonly classesUsage = {}
@@ -509,18 +504,9 @@ export class MasterCSS {
             this.config = this.getExtendedConfig(customConfig)
         }
         this.resolve()
-        if (!this.style) {
-            return
-        }
-        const newStyle = document.createElement('style')
-        newStyle.id = 'master'
-        this.style.replaceWith(newStyle)
-        // @ts-ignore
-        this.style = newStyle
         this.rules.length = 0
         // @ts-ignore
         this.ruleBy = {}
-
         /**
          * 拿當前所有的 classNames 按照最新的 colors, config.rules 匹配並生成新的 style
          * 所以 refresh 過後 rules 可能會變多也可能會變少
@@ -528,9 +514,10 @@ export class MasterCSS {
         for (const name in this.classesUsage) {
             this.insert(name)
         }
+        return this
     }
 
-    reset(): void {
+    reset() {
         // @ts-ignore
         this.ruleBy = {}
         // @ts-ignore
@@ -547,20 +534,13 @@ export class MasterCSS {
             const variable = this.variables[variableName]
             variable.usage = undefined
         }
-        const sheet = this.style?.sheet
-        if (sheet?.cssRules) {
-            for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
-                sheet.deleteRule(i)
-            }
-        }
-        this.style?.remove()
-        // @ts-ignore
-        this.style = null
+        return this
     }
 
     destroy() {
         this.reset()
         globalThis.masterCSSs.splice(globalThis.masterCSSs.indexOf(this), 1)
+        return this
     }
 
     /**

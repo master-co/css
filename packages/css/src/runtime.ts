@@ -9,11 +9,6 @@ export class RuntimeCSS extends MasterCSS {
     readonly observing = false
     readonly container: HTMLElement | ShadowRoot
     readonly styleSheets: StyleSheetList
-    static refresh = (customConfig: Config) => {
-        for (const eachInstance of globalThis.runtimeCSSs) {
-            eachInstance.refresh(customConfig)
-        }
-    }
     observer: MutationObserver
     constructor(
         public root: Document | ShadowRoot | undefined = document,
@@ -24,7 +19,7 @@ export class RuntimeCSS extends MasterCSS {
         if (this.root === document) {
             globalThis.runtimeCSS = this
             this.container = document.head
-            this.host =  document.documentElement
+            this.host = document.documentElement
         } else {
             this.container = this.root as RuntimeCSS['container']
             this.host = (this.root as ShadowRoot).host
@@ -380,7 +375,31 @@ export class RuntimeCSS extends MasterCSS {
         return this
     }
 
-    disconnect(): void {
+    refresh(customConfig: Config = this.customConfig) {
+        const newStyle = document.createElement('style')
+        newStyle.id = 'master'
+        this.style.replaceWith(newStyle)
+        // @ts-ignore
+        this.style = newStyle
+        super.refresh(customConfig)
+        return this
+    }
+
+    reset() {
+        super.reset()
+        const sheet = this.style?.sheet
+        if (sheet?.cssRules) {
+            for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+                sheet.deleteRule(i)
+            }
+        }
+        this.style?.remove()
+        // @ts-ignore
+        this.style = null
+        return this
+    }
+
+    disconnect() {
         if (this.observer) {
             this.observer.disconnect()
             this.observer = null
@@ -388,11 +407,13 @@ export class RuntimeCSS extends MasterCSS {
         // @ts-ignore
         this.observing = false
         this.reset()
+        return this
     }
 
     destroy() {
         this.disconnect()
         globalThis.runtimeCSSs.splice(globalThis.runtimeCSSs.indexOf(this), 1)
+        return this
     }
 }
 

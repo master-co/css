@@ -1,27 +1,20 @@
-## Usage [sr-only]
-
-```js
-import MasterCSS, { initRuntime, … } from '@master/css'
-```
-Create a Master CSS instance with the custom [configuration](/docs/configuration):
-```js
-const css = new MasterCSS(config)
-```
-Or initialize the runtime rendering:
-```js
-const css = initRuntime(config)
-```
 
 ---
 
-## Properties
+## Master CSS
+Create a Master CSS instance with your custom [configuration](/docs/configuration):
+```js
+import MasterCSS from '@master/css'
+
+const css = new MasterCSS(config)
+```
+
 ### `.config`
 The `.config` property is the result of extending the default config with the custom config you passed by the constructor.
 <DocProp defaultValue="{ … }" types={['Config']} />
 ```ts
 css.config
 ```
-
 
 ### `.text`
 This `.text` getter returns the result of joining the text of all CSS rules.
@@ -30,17 +23,34 @@ This `.text` getter returns the result of joining the text of all CSS rules.
 css.text
 ```
 
-### `.observe()`
-Changes to the observed object's class name usually include all its descendant elements. This method only works in the browser environment.
+### `.refresh()`
+Refresh the Master CSS with the configuration.
 <DocFn>
     {[
-        { name: 'root', type: 'Document | ShadowRoot', defaultValue: 'undefined' },
-        { name: 'options?', type: 'MutationObserverInit', defaultValue: '{ subtree: true, childList: true }' },
+        { name: 'config?', type: 'Config', defaultValue: 'this.customConfig' },
         { name: 'return', type: 'this' },
     ]}
 </DocFn>
 ```ts
-css.observe(document)
+css.refresh(config)
+```
+
+### `.reset()`
+Clear all rules and reset to initial.
+<DocFn>
+    {[ { name: 'return', type: 'this' } ]}
+</DocFn>
+```ts
+css.reset()
+```
+
+### `.destroy()`
+Destroy and remove the current instance from `globalThis.masterCSSs`.
+<DocFn>
+    {[ { name: 'return', type: 'this' } ]}
+</DocFn>
+```ts
+css.reset()
 ```
 
 ### `MasterCSS.config`
@@ -50,25 +60,117 @@ The default Master CSS [configuration](/docs/configuration).
 MasterCSS.config
 ```
 
-### `MasterCSS.refresh()`
-Refreshes all registered instances of Master CSS.
+---
+
+## Runtime CSS
+The `Runtime` extends the `MasterCSS` and only works in the browser environment.
+
+Create a Master Runtime CSS instance with your custom [configuration](/docs/configuration):
+```ts
+import { RuntimeCSS } from '@master/css'
+
+const runtimeCSS = new RuntimeCSS(config)
+```
+
+### `.root`
+Observe the root element.
+<DocProp defaultValue="document" types={['Document', 'ShadowRoot']} />
+```ts
+runtimeCSS.root
+```
+
+### `.host`
+Observe the root's host element, usually `js this.root.host` or `js document.documentElement`.
+<DocProp defaultValue="auto" types={['Element']} readonly />
+```ts
+runtimeCSS.host
+```
+
+### `.container`
+Container for inserting style `html <style>`.
+<DocProp defaultValue="auto" types={['HTMLElement', 'ShadowRoot']} readonly />
+```ts
+runtimeCSS.host
+```
+
+### `.observing`
+Observation state. `js true` after `js .observe()`; `js false` after `js .disconnect()`.
+<DocProp defaultValue="auto" types={['boolean']} readonly />
+```ts
+runtimeCSS.observing
+```
+
+### `.observe()`
+Observe the `class` attribute changes of `js this.root` and all descendant elements.
+<DocFn>
+    {[ { name: 'return', type: 'this' } ]}
+</DocFn>
+```ts
+runtimeCSS.observe()
+```
+
+### `.disconnect()`
+Cancel the previous `.observe()` of `js this.root`.
 <DocFn>
     {[
-        { name: 'config?', type: 'Config', defaultValue: 'undefined' },
-        { name: 'return', type: 'void' },
+        { name: 'options?', type: 'MutationObserverInit', defaultValue: '{ subtree: true, childList: true }' },
+        { name: 'return', type: 'this' },
     ]}
 </DocFn>
 ```ts
-MasterCSS.refresh()
+runtimeCSS.disconnect()
 ```
 
-### `globalThis.masterCSS`
-Record the registered root `document` Master CSS instance; the field will be recorded only after executing `js css.observe()`.
-<DocProp defaultValue="undefined" types={['MasterCSS']} />
+### `.refresh()`
+Refresh the Master Runtime CSS with the configuration.
+<DocFn>
+    {[
+        { name: 'config?', type: 'Config', defaultValue: 'this.customConfig' },
+        { name: 'return', type: 'this' },
+    ]}
+</DocFn>
+```ts
+css.refresh(config)
+```
+
+### `.reset()`
+Clear all rules and styles and reset to initial.
+<DocFn>
+    {[ { name: 'return', type: 'this' } ]}
+</DocFn>
+```ts
+css.reset()
+```
+
+### `.destroy()`
+Destroy and remove the current instance from `globalThis.runtimeCSSs`.
+<DocFn>
+    {[ { name: 'return', type: 'this' } ]}
+</DocFn>
+```ts
+css.reset()
+```
+
+---
+
+## Global
+### `globalThis.runtimeCSS`
+Record the registered root `document` Runtime CSS instance; the field will be recorded only after executing `js css.observe()`.
+<DocProp defaultValue="undefined" types={['RuntimeCSS']} />
+
+### `globalThis.runtimeCSSs`
+All objects instantiated via `js new RuntimeCSS()`.
+<DocProp defaultValue="[]" types={['RuntimeCSS[]']} />
 
 ### `globalThis.masterCSSs`
-All objects instantiated via `new MasterCSS()` will be recorded here.
+All objects instantiated via `js new MasterCSS()`.
 <DocProp defaultValue="[]" types={['MasterCSS[]']} />
+
+### `globalThis.RuntimeCSS`
+<DocProp defaultValue="RuntimeCSS" types={['typeof RuntimeCSS']} />
+
+### `globalThis.MasterCSS`
+<DocProp defaultValue="MasterCSS" types={['typeof RuntimeCSS']} />
 
 ---
 
@@ -78,7 +180,6 @@ Initializes the Master CSS runtime rendering engine.
 <DocFn>
     {[
         { name: 'config?', type: 'Config', defaultValue: 'undefined' },
-        { name: 'targetRoot?', type: ['Document', 'ShadowRoot', 'null'], defaultValue: 'document' },
         { name: 'return', type: 'MasterCSS' },
     ]}
 </DocFn>
@@ -89,8 +190,7 @@ const css = initRuntime()
 ```
 Equivalent to:
 ```ts
-import MasterCSS from '@master/css'
+import { RuntimeCSS } from '@master/css'
 
-const css = new MasterCSS().observe()
+const runtimeCSS = new RuntimeCSS().observe()
 ```
-
