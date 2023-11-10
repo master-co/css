@@ -29,33 +29,33 @@ export default async function create({
     props: Props
 }): Promise<ImageResponse> {
     const getFilePath = (filePath: string) => {
-        return (process.env.VERCEL === '1' ? '' : 'public/') + filePath
+        return (process.env.VERCEL === '1' ? '../../' : 'public/') + filePath
     }
 
     const fonts = [
         {
             name: 'Inter Medium',
-            data: fs.readFileSync(path.join(process.cwd(), getFilePath('fonts/Inter-Medium.ttf')))
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-Medium.ttf'))
         },
         {
             name: 'Inter SemiBold',
-            data: fs.readFileSync(path.join(process.cwd(), getFilePath('fonts/Inter-SemiBold.ttf')))
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-SemiBold.ttf'))
         },
         {
             name: 'Inter ExtraBold',
-            data: fs.readFileSync(path.join(process.cwd(), getFilePath('fonts/Inter-ExtraBold.ttf')))
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-ExtraBold.ttf'))
         },
         {
             name: 'NotoSansTC Regular',
-            data: fs.readFileSync(path.join(process.cwd(), getFilePath('fonts/NotoSansTC-Regular.ttf')))
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansTC-Regular.ttf'))
         },
         {
             name: 'NotoSansTC Medium',
-            data: fs.readFileSync(path.join(process.cwd(), getFilePath('fonts/NotoSansTC-Medium.ttf')))
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansTC-Medium.ttf'))
         },
         {
             name: 'NotoSansTC Black',
-            data: fs.readFileSync(path.join(process.cwd(), getFilePath('fonts/NotoSansTC-Black.ttf')))
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansTC-Black.ttf'))
         }
     ]
 
