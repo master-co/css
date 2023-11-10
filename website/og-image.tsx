@@ -13,48 +13,6 @@ import fs from 'fs'
 import path from 'path';
 import mime from 'mime-types'
 
-const fonts = [
-    {
-        name: 'Inter Medium',
-        data: fs.readFileSync(path.resolve('public/fonts/Inter-Medium.ttf'))
-    },
-    {
-        name: 'Inter SemiBold',
-        data: fs.readFileSync(path.resolve('public/fonts/Inter-SemiBold.ttf'))
-    },
-    {
-        name: 'Inter ExtraBold',
-        data: fs.readFileSync(path.resolve('public/fonts/Inter-ExtraBold.ttf'))
-    },
-    {
-        name: 'NotoSansTC Regular',
-        data: fs.readFileSync(path.resolve('public/fonts/NotoSansTC-Regular.ttf'))
-    },
-    {
-        name: 'NotoSansTC Medium',
-        data: fs.readFileSync(path.resolve('public/fonts/NotoSansTC-Medium.ttf'))
-    },
-    {
-        name: 'NotoSansTC Black',
-        data: fs.readFileSync(path.resolve('public/fonts/NotoSansTC-Black.ttf'))
-    }
-]
-
-const readImage = (filename: string) => {
-    const extname = path.extname(filename);
-    const mimeType = mime.lookup(extname);
-    return `data:${mimeType};base64,` + fs.readFileSync(filename, { encoding: 'base64' })
-}
-
-const authorImageURLs: any = {
-    Aron: readImage('public/images/authors/aron.jpg'),
-    Joy: readImage('public/images/authors/joy.jpg'),
-    Benseage: readImage('public/images/authors/benseage.jpg'),
-    Miles: readImage('public/images/authors/miles.jpg'),
-    Lola: readImage('public/images/authors/lola.jpg'),
-    Monting: readImage('public/images/authors/monting.jpg'),
-}
-
 export default async function create({
     metadata,
     title,
@@ -70,6 +28,48 @@ export default async function create({
     icon?: JSX.Element,
     props: Props
 }): Promise<ImageResponse> {
+    const fonts = [
+        {
+            name: 'Inter Medium',
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-Medium.ttf'))
+        },
+        {
+            name: 'Inter SemiBold',
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-SemiBold.ttf'))
+        },
+        {
+            name: 'Inter ExtraBold',
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-ExtraBold.ttf'))
+        },
+        {
+            name: 'NotoSansTC Regular',
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansTC-Regular.ttf'))
+        },
+        {
+            name: 'NotoSansTC Medium',
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansTC-Medium.ttf'))
+        },
+        {
+            name: 'NotoSansTC Black',
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansTC-Black.ttf'))
+        }
+    ]
+
+    const readImage = (filename: string) => {
+        const extname = path.extname(filename);
+        const mimeType = mime.lookup(extname);
+        return `data:${mimeType};base64,` + fs.readFileSync(path.join(process.cwd(), filename), { encoding: 'base64' })
+    }
+
+    const authorImageURLs: any = {
+        Aron: readImage('public/images/authors/aron.jpg'),
+        Joy: readImage('public/images/authors/joy.jpg'),
+        Benseage: readImage('public/images/authors/benseage.jpg'),
+        Miles: readImage('public/images/authors/miles.jpg'),
+        Lola: readImage('public/images/authors/lola.jpg'),
+        Monting: readImage('public/images/authors/monting.jpg'),
+    }
+
     const $ = await queryDictionary(props.params?.locale)
     title = $(title || metadata?.openGraph?.title).replace(' - Master CSS', '') as string
     description = $(description || metadata?.openGraph?.description || metadata?.description) as string
