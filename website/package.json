@@ -3,8 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev",
-        "build": "cd ../ && pnpm build && cd website && next build && node ../packages/css/dist/bin/index.bundle render \".next/**/*.html\"",
+        "dev": "node ../../../scripts/assets && next dev",
+        "build": "node ../../../scripts/assets && cd ../ && pnpm build && cd website && next build && node ../packages/css/dist/bin/index.bundle render \".next/**/*.html\"",
         "start": "next start",
         "lint": "next lint",
         "type-check": "tsc --noEmit"

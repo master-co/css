@@ -10,7 +10,6 @@ export async function generateMetadata(props: any, parent: any) {
 
 export default async function Page(props: any) {
     return (
-        /* @ts-expect-error server component */
         <Layout {...props} metadata={metadata} toc={toc} titleBig={false} >
             <link rel="preload" href={'/' + props.params.locale + '/examples/responsive-gallery'} as="document" />
             <Content />

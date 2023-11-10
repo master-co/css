@@ -10,8 +10,8 @@ declare module "*.tsx?clearCodeTokens" {
     export default content;
 }
 
-declare module '*.svg' {
-    const content: () => JSX.Element;
+declare module '*.svg?inlineSvg' {
+    const content: SVGProps<SVGSVGElement>
     export default content;
 }
 

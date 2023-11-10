@@ -3,58 +3,15 @@
 
 import type { Metadata } from 'next';
 import type { Author } from 'next/dist/lib/metadata/types/metadata-types';
-import type { Props } from 'websites/types/Props';
+import type { Props } from '../../../types/Props';
 
 import { ImageResponse } from 'next/og';
-import authors from 'websites/data/authors';
-import { queryDictionary } from 'websites/dictionaries';
+import authors from '../../../data/authors';
+import { queryDictionary } from '../../../dictionaries';
 import stringWidth from 'string-width'
 import fs from 'fs'
 import path from 'path';
 import mime from 'mime-types'
-
-const readImage = (filename: string) => {
-    const filepath = path.join(process.cwd(), 'node_modules', filename)
-    const extname = path.extname(filepath);
-    const mimeType = mime.lookup(extname);
-    return `data:${mimeType};base64,` + fs.readFileSync(filepath, { encoding: 'base64' })
-}
-const cssLogotypeSrc = readImage('websites/images/css-logotype@light.png')
-const coverBgSrc = readImage('websites/images/cover-bg.jpg')
-const authorImages: any = {
-    Aron: readImage('websites/images/authors/aron.jpg'),
-    Joy: readImage('websites/images/authors/joy.jpg'),
-    Benseage: readImage('websites/images/authors/benseage.jpg'),
-    Miles: readImage('websites/images/authors/miles.jpg'),
-    Lola: readImage('websites/images/authors/lola.jpg'),
-    Monting: readImage('websites/images/authors/monting.jpg'),
-}
-const fonts = [
-    {
-        name: 'Inter Medium',
-        data: fs.readFileSync(path.resolve('public/fonts/Inter-Medium.ttf'))
-    },
-    {
-        name: 'Inter SemiBold',
-        data: fs.readFileSync(path.resolve('public/fonts/Inter-SemiBold.ttf'))
-    },
-    {
-        name: 'Inter ExtraBold',
-        data: fs.readFileSync(path.resolve('public/fonts/Inter-ExtraBold.ttf'))
-    },
-    {
-        name: 'NotoSansTC Regular',
-        data: fs.readFileSync(path.resolve('../../../fonts/NotoSansTC-Regular.ttf'))
-    },
-    {
-        name: 'NotoSansTC Medium',
-        data: fs.readFileSync(path.resolve('../../../fonts/NotoSansTC-Medium.ttf'))
-    },
-    {
-        name: 'NotoSansTC Black',
-        data: fs.readFileSync(path.resolve('../../../fonts/NotoSansTC-Black.ttf'))
-    }
-]
 
 export default async function create({
     metadata,
@@ -62,29 +19,66 @@ export default async function create({
     description,
     size = { width: 1200, height: 630 },
     icon,
-    props,
-    ogImageTitle,
-    ogImageIcon,
-    ogImageIconWidth
+    props
 }: {
     metadata?: Metadata
     title?: string | null
     description?: string | null
     size?: { width: number, height: number }
     icon?: JSX.Element,
-    props: Props,
-    ogImageTitle?: string | null,
-    ogImageIcon?: string | null,
-    ogImageIconWidth?: string | null
+    props: Props
 }): Promise<ImageResponse> {
+    const getFilePath = (filePath: string) => {
+        return (process.env.VERCEL === '1' ? '../../' : 'public/') + filePath
+    }
+
+    const fonts = [
+        {
+            name: 'Inter Medium',
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-Medium.ttf'))
+        },
+        {
+            name: 'Inter SemiBold',
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-SemiBold.ttf'))
+        },
+        {
+            name: 'Inter ExtraBold',
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-ExtraBold.ttf'))
+        },
+        {
+            name: 'NotoSansTC Regular',
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansTC-Regular.ttf'))
+        },
+        {
+            name: 'NotoSansTC Medium',
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansTC-Medium.ttf'))
+        },
+        {
+            name: 'NotoSansTC Black',
+            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansTC-Black.ttf'))
+        }
+    ]
+
+    const readImage = (filename: string) => {
+        const extname = path.extname(filename);
+        const mimeType = mime.lookup(extname);
+        return `data:${mimeType};base64,` + fs.readFileSync(path.join(process.cwd(), filename), { encoding: 'base64' })
+    }
+
+    const authorImageURLs: any = {
+        Aron: readImage(getFilePath('images/authors/aron.jpg')),
+        Joy: readImage(getFilePath('images/authors/joy.jpg')),
+        Benseage: readImage(getFilePath('images/authors/benseage.jpg')),
+        Miles: readImage(getFilePath('images/authors/miles.jpg')),
+        Lola: readImage(getFilePath('images/authors/lola.jpg')),
+        Monting: readImage(getFilePath('images/authors/monting.jpg')),
+    }
+
     const $ = await queryDictionary(props.params?.locale)
-    title = $(ogImageTitle || title || metadata?.openGraph?.title).replace(' - Master CSS', '') as string
-    description = $(description || metadata?.openGraph?.description) as string
+    title = $(title || metadata?.openGraph?.title).replace(' - Master CSS', '') as string
+    description = $(description || metadata?.openGraph?.description || metadata?.description) as string
     const authorNames = metadata?.authors as Author[] || []
     const category = $(metadata?.category) as string
-    if (ogImageIcon) {
-        icon = <img src={readImage(ogImageIcon)} width={ogImageIconWidth ? +ogImageIconWidth : undefined} height='100%' style={{ objectFit: 'contain', margin: 'auto' }} />
-    }
     if (stringWidth(description) > 110) {
         description = description.substring(0, 109)
         if (stringWidth(description) >= 110) {
@@ -116,13 +110,18 @@ export default async function create({
                 display: 'flex',
                 flexDirection: 'row',
                 flexWrap: 'nowrap',
-                backgroundImage: `url(${coverBgSrc})`,
-                backgroundSize: '100% 100%',
                 padding: '70px 95px',
                 WebkitFontSmoothing: 'subpixel-antialiased',
                 textRendering: 'geometricPrecision',
                 ...size
             }}>
+                <img src={readImage('public/images/cover-bg.jpg')}
+                    width={size.width}
+                    height={size.height}
+                    style={{
+                        position: 'absolute',
+                        inset: 0
+                    }} />
                 <div style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -133,7 +132,7 @@ export default async function create({
                     <div style={{
                         display: 'flex'
                     }}>
-                        <img src={cssLogotypeSrc} width="340" />
+                        <img src={readImage('public/images/css-logotype@light.png')} width="340" />
                     </div>
                     <div style={{
                         display: 'flex',
@@ -176,7 +175,7 @@ export default async function create({
                                 // eslint-disable-next-line react/jsx-key
                                 <div style={{ display: 'flex', marginRight: '30px', alignItems: 'center' }}>
                                     <div style={{ display: 'flex', width: 70, height: 70, padding: 5, border: '1px solid #878D9F', borderRadius: '50%' }}>
-                                        <img src={authorImages[author.name]} width="100%" height="100%" style={{ objectFit: 'cover', borderRadius: '50%' }} />
+                                        <img src={authorImageURLs[author.name]} width="100%" height="100%" style={{ objectFit: 'cover', borderRadius: '50%' }} />
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', margin: '0px 15px' }}>
                                         <div style={{

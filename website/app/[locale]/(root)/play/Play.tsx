@@ -79,16 +79,19 @@ export default function Play(props: any) {
     const { dict } = props
     const router = useRouter()
     const themeService = useThemeService()
+    const searchParams = useSearchParams()
+    const queryParams = useMemo(() => {
+        return Object.assign({}, props.searchParams, Object.fromEntries(searchParams))
+    }, [props.searchParams, searchParams])
     const pathname = usePathname();
-    const searchParams = useSearchParams();
     const versionSelectRef = useRef<HTMLSelectElement>(null)
     const monacoProvidersRef = useRef<any>([])
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
     const monacoRef = useRef<Monaco | null>(null)
     const previewIframeRef = useRef<HTMLIFrameElement>(null)
     const prevVersionRef = useRef(props.shareItem?.version ?? latestMasterCSSVersion)
-    const [layout, setLayout] = useState<string | null>(searchParams.get('layout'))
-    const [preview, setPreview] = useState<string | null>(searchParams.get('preview'))
+    const [layout, setLayout] = useState<string | null>(queryParams.layout)
+    const [preview, setPreview] = useState<string | null>(queryParams.preview)
     const [shareId, setShareId] = useState(props.shareId ?? '')
     const [sharing, setSharing] = useState(false)
     const [version, setVersion] = useState(props.shareItem?.version ?? latestMasterCSSVersion)
@@ -113,8 +116,8 @@ export default function Play(props: any) {
     }, [props.shareItem, template?.dependencies, template?.files, template?.links, version])
 
     const [currentTabTitle, setCurrentTabTitle] = useState<any>(
-        shareItem.files.find(({ title }) => searchParams.get('tab') === title)
-            ? searchParams.get('tab')
+        shareItem.files.find(({ title }) => queryParams.tab === title)
+            ? queryParams.tab
             : shareItem.files[0].title
     )
     const editorModelRef = useRef<Record<string, editor.IModel | undefined>>({})
@@ -156,9 +159,9 @@ export default function Play(props: any) {
     );
 
     useEffect(() => {
-        const queryLayout = searchParams.get('layout')
-        const queryPreview = searchParams.get('preview')
-        const queryTab = searchParams.get('tab')
+        const queryLayout = queryParams.layout
+        const queryPreview = queryParams.preview
+        const queryTab = queryParams.tab
         if (queryLayout) {
             setLayout(queryLayout)
         }
@@ -170,7 +173,7 @@ export default function Play(props: any) {
         } else {
             setCurrentTabTitle(shareItem.files[0].title)
         }
-    }, [createQueryString, pathname, router, searchParams, shareItem.files])
+    }, [createQueryString, pathname, queryParams.layout, queryParams.preview, queryParams.tab, router, searchParams, shareItem.files])
 
     /**
      * 避免切換到更大視口時仍停留在僅小視口支援的 Preview 或 Generated CSS 瀏覽模式
@@ -190,16 +193,16 @@ export default function Play(props: any) {
     }, [currentTabTitle, shareItem.files])
 
     useEffect(() => {
-        if (searchParams.get('layout') !== layout) {
+        if (queryParams.layout !== layout) {
             router.push(pathname + '?' + createQueryString('layout', layout))
         }
-    }, [createQueryString, layout, pathname, router, searchParams, shareId])
+    }, [createQueryString, layout, pathname, queryParams.layout, router, searchParams, shareId])
 
     useEffect(() => {
-        if (searchParams.get('preview') !== preview) {
+        if (queryParams.preview !== preview) {
             router.push(pathname + '?' + createQueryString('preview', preview))
         }
-    }, [createQueryString, pathname, preview, router, searchParams, shareId])
+    }, [createQueryString, pathname, preview, queryParams.preview, router, searchParams, shareId])
 
     /**
      * 需避免即時編輯 HTML, Config 或切換 Theme 時更新 previewHTML，否則 Preview 將重載並造成視覺閃爍

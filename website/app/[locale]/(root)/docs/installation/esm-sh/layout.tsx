@@ -1,13 +1,12 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
 import { queryDictionary } from 'websites/dictionaries';
 import DocLayout from '~/layouts/doc'
-import LogoSvg from 'websites/images/cdns/esm-sh.svg'
+import LogoSvg from '~/public/images/cdns/esm-sh.svg?inlineSvg'
 import metadata from './metadata';
 
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return (
-        /* @ts-expect-error server component */
         <DocLayout {...props}
             metadata={{
                 title: 'Launch Master CSS using esm.sh',

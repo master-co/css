@@ -14,13 +14,10 @@ export default async function Layout(props: any) {
     return <>
         <DocMain $hideRightSide={!toc} $hideLeftSide={$hideLeftSide}>
             <Article className={l({ 'max-w:sm_:where(p)': !toc })}>
-                {/* @ts-expect-error server component */}
                 <ArticleHeader locale={params.locale} metadata={props.metadata} backOnClickCategory={backOnClickCategory} icon={icon} titleBig={titleBig} />
                 {children}
             </Article>
-            {/* @ts-expect-error server component */}
             <PageNavs locale={params.locale} metadata={props.metadata} pages={pages} />
-            {/* @ts-expect-error server component */}
             <DocFooter locale={params.locale} title={props.metadata.title} editors={props.metadata.authors} />
         </DocMain>
         {toc && <PageContent locale={params.locale}>{toc}</PageContent>}

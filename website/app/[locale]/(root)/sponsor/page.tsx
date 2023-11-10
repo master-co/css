@@ -159,11 +159,10 @@ export default async function Page(props: any) {
     )
 
     return <>
-        {/* @ts-expect-error server component */}
         <Layout {...props} metadata={metadata} >
-            <div className="flex gap:10 align-items:center mt:80 mb:30">
+            <div className="flex align-items:center gap:10 mb:30 mt:80">
                 <h2 id="backer" className="m:0!">Backer</h2>
-                <hr className="my:0! flex:1|1|auto" />
+                <hr className="flex:1|1|auto my:0!" />
             </div>
             <Backers backers={backers} />
             <Donors sponsorTiers={sponsorTiers} sponsorsOfLevel={sponsorsOfLevel} />

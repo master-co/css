@@ -5,7 +5,9 @@
 /.pnp
 .pnp.js
 /public/monaco-editor
-/public/shared
+/public/images
+/public/icons
+/public/fonts
 
 # testing
 /coverage

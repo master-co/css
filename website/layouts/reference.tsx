@@ -17,13 +17,10 @@ export default async function Layout(props: any) {
     return <>
         <DocMain>
             <Article>
-                {/* @ts-expect-error server component */}
                 <ArticleHeader locale={params.locale} metadata={metadata} titleBig={true} />
                 {children}
             </Article>
-            {/* @ts-expect-error server component */}
             <PageNavs locale={params.locale} metadata={props.metadata} pages={pages} />
-            {/* @ts-expect-error server component */}
             <DocFooter locale={params.locale} title={metadata.title} />
         </DocMain>
         {toc && <PageContent locale={params.locale}

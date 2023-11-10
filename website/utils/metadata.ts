@@ -2,7 +2,6 @@ import extend from '@techor/extend';
 import type { Metadata, ResolvingMetadata } from 'next';
 import type { Locale } from 'websites/i18n.config';
 import type { Props } from 'websites/types/Props';
-import allAuthors from 'websites/data/authors'
 import { queryDictionary } from 'websites/dictionaries';
 
 export async function generate(
@@ -25,25 +24,27 @@ export async function generate(
     if (requestedSearchParams.authors) {
         requestedSearchParams.authors = JSON.stringify(requestedSearchParams.authors)
     }
-    const ogImageUrl = `${process.env.HOST}/api/og-image?${new URLSearchParams(requestedSearchParams)}`
+    const baseMetadata: any = {
+        icons: '',
+        openGraph: {
+            title: ogTitle,
+            description: ogDescription,
+            siteName: 'Master CSS'
+        },
+        twitter: {
+            title: ogTitle,
+            description: ogDescription,
+            site: '@mastercorg',
+            creator: '@aron1tw',
+            card: 'summary_large_image'
+        }
+    }
+    if (!(metadata as any).vercelOG) {
+        const ogImageUrl = `${process.env.HOST}/api/og-image?${new URLSearchParams(requestedSearchParams)}`
+        baseMetadata.openGraph.images = baseMetadata.twitter.images = ogImageUrl
+    }
     return extend(
-        {
-            icons: '',
-            openGraph: {
-                title: ogTitle,
-                description: ogDescription,
-                siteName: 'Master CSS',
-                images: ogImageUrl
-            },
-            twitter: {
-                title: ogTitle,
-                description: ogDescription,
-                site: '@mastercorg',
-                creator: '@aron1tw',
-                card: 'summary_large_image',
-                images: ogImageUrl
-            }
-        } as Metadata,
+        baseMetadata,
         metadata,
         {
             title,

@@ -1,7 +1,7 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
 import { queryDictionary } from 'websites/dictionaries';
 import DocLayout from '~/layouts/doc'
-import SvelteSvg from 'websites/images/frameworks/svelte.svg'
+import SvelteSvg from '~/public/images/frameworks/svelte.svg?inlineSvg'
 
 export const metadata = {
     title: 'Set up Master CSS in Svelte',
@@ -12,7 +12,6 @@ export const metadata = {
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return (
-        /* @ts-expect-error server component */
         <DocLayout {...props}
             metadata={metadata}
             backOnClickCategory='/docs/installation'

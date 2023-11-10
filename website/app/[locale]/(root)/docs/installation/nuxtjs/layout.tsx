@@ -1,12 +1,11 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
 import { queryDictionary } from 'websites/dictionaries';
 import DocLayout from '~/layouts/doc'
-import NuxtjsSvg from 'websites/images/frameworks/nuxtjs.svg'
+import NuxtjsSvg from '~/public/images/frameworks/nuxtjs.svg?inlineSvg'
 
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return (
-        /* @ts-expect-error server component */
         <DocLayout {...props}
             metadata={{
                 title: 'Set up Master CSS in Nuxt.js',

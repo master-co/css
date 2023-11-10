@@ -6,7 +6,6 @@ import metadata from './metadata';
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return (
-        /* @ts-expect-error server component */
         <DocLayout {...props} metadata={metadata}>
             <Tabs className="mb:30">
                 <Tab href='/docs/theme-service'>{$('Main')}</Tab>

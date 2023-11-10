@@ -18,11 +18,10 @@ export async function generateMetadata(props: any, parent: any) {
 export default async function Page(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return <>
-        {/* @ts-expect-error server component */}
         <DocHeader DocHeader contained locale={props.params.locale} />
         <main className='app-doc-main max-w:xl'>
             <Article className="mb:80" type="article">
-                <div className='grid-cols:4 gap:50|25'>
+                <div className='gap:50|25 grid-cols:4'>
                     {allBlogMetadata.concat(allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata)
                         .map((eachBlogMetadata: any, index: number) => {
                             const formattedDate = dayjs(eachBlogMetadata.date).format('ddd, MMMM D YYYY')
@@ -33,15 +32,14 @@ export default async function Page(props: any) {
                                         width={480}
                                         height={270}
                                         alt={eachBlogMetadata.title} />
-                                    <div className='text:12 font:medium fg:accent mt:10'>{formattedDate}</div>
-                                    <div className='text:18 font:semibold fg:major'>{eachBlogMetadata.title}</div>
-                                    <div className='text:14 font:regular fg:neutral fg:major'>{eachBlogMetadata.description}</div>
+                                    <div className='text:12 fg:accent font:medium mt:10'>{formattedDate}</div>
+                                    <div className='text:18 fg:major font:semibold'>{eachBlogMetadata.title}</div>
+                                    <div className='text:14 fg:major font:regular'>{eachBlogMetadata.description}</div>
                                 </Link>
                             )
                         })}
                 </div>
             </Article>
-            {/* @ts-expect-error server component */}
             <DocFooter locale={props.params.locale} title={metadata.title} />
         </main>
     </>
