@@ -38,18 +38,18 @@ export default async function create({
             name: 'Inter ExtraBold',
             data: await (await fetch(new URL('public/fonts/Inter-ExtraBold.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
         },
-        {
-            name: 'NotoSansTC Regular',
-            data: await (await fetch(new URL('public/fonts/NotoSansTC-Regular.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
-        },
-        {
-            name: 'NotoSansTC Medium',
-            data: await (await fetch(new URL('public/fonts/NotoSansTC-Medium.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
-        },
-        {
-            name: 'NotoSansTC Black',
-            data: await (await fetch(new URL('public/fonts/NotoSansTC-Black.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
-        }
+        // {
+        //     name: 'NotoSansTC Regular',
+        //     data: await (await fetch(new URL('public/fonts/NotoSansTC-Regular.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
+        // },
+        // {
+        //     name: 'NotoSansTC Medium',
+        //     data: await (await fetch(new URL('public/fonts/NotoSansTC-Medium.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
+        // },
+        // {
+        //     name: 'NotoSansTC Black',
+        //     data: await (await fetch(new URL('public/fonts/NotoSansTC-Black.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
+        // }
     ]
 
     const authorImageURLs: any = {
