@@ -2,7 +2,6 @@ import extend from '@techor/extend';
 import type { Metadata, ResolvingMetadata } from 'next';
 import type { Locale } from 'websites/i18n.config';
 import type { Props } from 'websites/types/Props';
-import allAuthors from 'websites/data/authors'
 import { queryDictionary } from 'websites/dictionaries';
 
 export async function generate(
@@ -25,7 +24,6 @@ export async function generate(
     if (requestedSearchParams.authors) {
         requestedSearchParams.authors = JSON.stringify(requestedSearchParams.authors)
     }
-
     const baseMetadata: any = {
         icons: '',
         openGraph: {
@@ -41,7 +39,7 @@ export async function generate(
             card: 'summary_large_image'
         }
     }
-    if (!requestedSearchParams.ogImageIcon) {
+    if (!(metadata as any).vercelOG) {
         const ogImageUrl = `${process.env.HOST}/api/og-image?${new URLSearchParams(requestedSearchParams)}`
         baseMetadata.openGraph.images = baseMetadata.twitter.images = ogImageUrl
     }

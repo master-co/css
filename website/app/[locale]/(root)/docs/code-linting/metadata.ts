@@ -10,7 +10,8 @@ const metadata: Metadata = {
     order: 3,
     openGraph: {
         description: 'An ESLint plugin enforcing a consistent coding style for Master CSS.'
-    }
+    },
+    vercelOG: true
 }
 
 export default metadata
