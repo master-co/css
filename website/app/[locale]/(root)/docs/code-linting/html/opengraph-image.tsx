@@ -5,7 +5,7 @@ import Icon from '~/public/icons/html.svg?inlineSvg'
 
 export const alt = metadata.title
 export const contentType = 'image/jpg'
-export const runtime = 'edge'
+export const runtime = 'nodejs'
 
 export default (props: Props) => create({
     props,

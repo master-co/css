@@ -7,7 +7,7 @@ import { queryDictionary } from 'websites/dictionaries';
 import stringWidth from 'string-width'
 import create from '~/og-image';
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
 
 export async function GET(req: NextRequest, props: any) {
     let { searchParams } = req.nextUrl

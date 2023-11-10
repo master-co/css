@@ -4,7 +4,7 @@ import metadata from './metadata'
 
 export const alt = metadata.title
 export const contentType = 'image/jpg'
-export const runtime = 'edge'
+export const runtime = 'nodejs'
 
 export default (props: Props) => create({
     props,

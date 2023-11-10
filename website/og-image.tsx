@@ -9,6 +9,51 @@ import { ImageResponse } from 'next/og';
 import authors from '../../../data/authors';
 import { queryDictionary } from '../../../dictionaries';
 import stringWidth from 'string-width'
+import fs from 'fs'
+import path from 'path';
+import mime from 'mime-types'
+
+const fonts = [
+    {
+        name: 'Inter Medium',
+        data: fs.readFileSync(path.resolve('public/fonts/Inter-Medium.ttf'))
+    },
+    {
+        name: 'Inter SemiBold',
+        data: fs.readFileSync(path.resolve('public/fonts/Inter-SemiBold.ttf'))
+    },
+    {
+        name: 'Inter ExtraBold',
+        data: fs.readFileSync(path.resolve('public/fonts/Inter-ExtraBold.ttf'))
+    },
+    {
+        name: 'NotoSansTC Regular',
+        data: fs.readFileSync(path.resolve('public/fonts/NotoSansTC-Regular.ttf'))
+    },
+    {
+        name: 'NotoSansTC Medium',
+        data: fs.readFileSync(path.resolve('public/fonts/NotoSansTC-Medium.ttf'))
+    },
+    {
+        name: 'NotoSansTC Black',
+        data: fs.readFileSync(path.resolve('public/fonts/NotoSansTC-Black.ttf'))
+    }
+]
+
+const readImage = (filename: string) => {
+    const extname = path.extname(filename);
+    const mimeType = mime.lookup(extname);
+    return `data:${mimeType};base64,` + fs.readFileSync(filename, { encoding: 'base64' })
+}
+
+const authorImageURLs: any = {
+    Aron: readImage('public/images/authors/aron.jpg'),
+    Joy: readImage('public/images/authors/joy.jpg'),
+    Benseage: readImage('public/images/authors/benseage.jpg'),
+    Miles: readImage('public/images/authors/miles.jpg'),
+    Lola: readImage('public/images/authors/lola.jpg'),
+    Monting: readImage('public/images/authors/monting.jpg'),
+}
 
 export default async function create({
     metadata,
@@ -25,42 +70,6 @@ export default async function create({
     icon?: JSX.Element,
     props: Props
 }): Promise<ImageResponse> {
-    const fonts = [
-        {
-            name: 'Inter Medium',
-            data: await (await fetch(new URL('public/fonts/Inter-Medium.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
-        },
-        {
-            name: 'Inter SemiBold',
-            data: await (await fetch(new URL('public/fonts/Inter-SemiBold.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
-        },
-        {
-            name: 'Inter ExtraBold',
-            data: await (await fetch(new URL('public/fonts/Inter-ExtraBold.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
-        },
-        // {
-        //     name: 'NotoSansTC Regular',
-        //     data: await (await fetch(new URL('public/fonts/NotoSansTC-Regular.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
-        // },
-        // {
-        //     name: 'NotoSansTC Medium',
-        //     data: await (await fetch(new URL('public/fonts/NotoSansTC-Medium.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
-        // },
-        // {
-        //     name: 'NotoSansTC Black',
-        //     data: await (await fetch(new URL('public/fonts/NotoSansTC-Black.ttf', import.meta.url), { cache: 'no-cache' })).arrayBuffer()
-        // }
-    ]
-
-    const authorImageURLs: any = {
-        Aron: await (await fetch(new URL('public/images/authors/aron.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer(),
-        Joy: await (await fetch(new URL('public/images/authors/joy.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer(),
-        Benseage: await (await fetch(new URL('public/images/authors/benseage.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer(),
-        Miles: await (await fetch(new URL('public/images/authors/miles.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer(),
-        Lola: await (await fetch(new URL('public/images/authors/lola.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer(),
-        Monting: await (await fetch(new URL('public/images/authors/monting.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer(),
-    }
-
     const $ = await queryDictionary(props.params?.locale)
     title = $(title || metadata?.openGraph?.title).replace(' - Master CSS', '') as string
     description = $(description || metadata?.openGraph?.description || metadata?.description) as string
@@ -91,7 +100,6 @@ export default async function create({
         extrabold: ['Inter ExtraBold', 'NotoSansTC Black'].join(',')
     }
 
-
     return new ImageResponse(
         (
             <div style={{
@@ -103,8 +111,7 @@ export default async function create({
                 textRendering: 'geometricPrecision',
                 ...size
             }}>
-                {/* @ts-expect-error */}
-                <img src={await (await fetch(new URL('public/images/cover-bg.jpg', import.meta.url), { cache: 'no-cache' })).arrayBuffer()}
+                <img src={readImage('public/images/cover-bg.jpg')}
                     width={size.width}
                     height={size.height}
                     style={{
@@ -121,8 +128,7 @@ export default async function create({
                     <div style={{
                         display: 'flex'
                     }}>
-                        {/* @ts-expect-error */}
-                        <img src={await (await fetch(new URL('public/images/css-logotype@light.png', import.meta.url), { cache: 'no-cache' })).arrayBuffer()} width="340" />
+                        <img src={readImage('public/images/css-logotype@light.png')} width="340" />
                     </div>
                     <div style={{
                         display: 'flex',
