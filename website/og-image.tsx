@@ -56,20 +56,27 @@ export default async function create({
     ]
 
     const readImage = (filename: string) => {
-        filename = (process.env.VERCEL === '1' ? '../../../' : 'public/') + filename
-
         const extname = path.extname(filename);
         const mimeType = mime.lookup(extname);
-        return `data:${mimeType};base64,` + fs.readFileSync(path.join(process.cwd(), filename), { encoding: 'base64' })
+        return `data:${mimeType};base64,` + fs.readFileSync(filename, { encoding: 'base64' })
     }
 
+    const aronFilename = path.join(process.cwd(), 'public/images/authors/aron.jpg')
+    const joyFilename = path.join(process.cwd(), 'public/images/authors/joy.jpg')
+    const benseageFilename = path.join(process.cwd(), 'public/images/authors/benseage.jpg')
+    const milesFilename = path.join(process.cwd(), 'public/images/authors/miles.jpg')
+    const lolaFilename = path.join(process.cwd(), 'public/images/authors/lola.jpg')
+    const montingFilename = path.join(process.cwd(), 'public/images/authors/monting.jpg')
+    const coverBgFilename = path.join(process.cwd(), 'public/images/cover-bg.jpg')
+    const cssLogoTypeFilename = path.join(process.cwd(), 'public/images/css-logotype@light.png')
+
     const authorImageURLs: any = {
-        Aron: readImage('images/authors/aron.jpg'),
-        Joy: readImage('images/authors/joy.jpg'),
-        Benseage: readImage('images/authors/benseage.jpg'),
-        Miles: readImage('images/authors/miles.jpg'),
-        Lola: readImage('images/authors/lola.jpg'),
-        Monting: readImage('images/authors/monting.jpg'),
+        Aron: readImage(aronFilename),
+        Joy: readImage(joyFilename),
+        Benseage: readImage(benseageFilename),
+        Miles: readImage(milesFilename),
+        Lola: readImage(lolaFilename),
+        Monting: readImage(montingFilename),
     }
 
     const $ = await queryDictionary(props.params?.locale)
@@ -113,7 +120,7 @@ export default async function create({
                 textRendering: 'geometricPrecision',
                 ...size
             }}>
-                <img src={readImage('public/images/cover-bg.jpg')}
+                <img src={readImage(coverBgFilename)}
                     width={size.width}
                     height={size.height}
                     style={{
@@ -130,7 +137,7 @@ export default async function create({
                     <div style={{
                         display: 'flex'
                     }}>
-                        <img src={readImage('public/images/css-logotype@light.png')} width="340" />
+                        <img src={readImage(cssLogoTypeFilename)} width="340" />
                     </div>
                     <div style={{
                         display: 'flex',
