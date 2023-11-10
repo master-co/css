@@ -352,12 +352,6 @@ export default function Play(props: any) {
     }, []);
 
     useEffect(() => {
-        const onUnload = (e: any) => {
-            e.preventDefault()
-            if (shareable) {
-                e.returnValue = ''
-            }
-        }
         const onMessage = (event: MessageEvent) => {
             const { type, content } = event.data
             if (event.origin !== document.location.origin) {
@@ -378,11 +372,24 @@ export default function Play(props: any) {
             setPreviewErrorEvent(initialErrorEvent)
             delete (window as any).__SANDBOX_INITIAL_ERROR_EVENT
         }
-        window.addEventListener('beforeunload', onUnload)
         window.addEventListener('message', onMessage)
         return () => {
-            window.removeEventListener('beforeunload', onUnload)
             window.removeEventListener('message', onMessage)
+        }
+    }, [shareable])
+
+    useEffect(() => {
+        const onUnload = (event: any) => {
+            event.preventDefault()
+            event.returnValue = true
+        }
+        if (shareable) {
+            window.addEventListener('beforeunload', onUnload)
+        } else {
+            window.removeEventListener('beforeunload', onUnload)
+        }
+        return () => {
+            window.removeEventListener('beforeunload', onUnload)
         }
     }, [shareable])
 
