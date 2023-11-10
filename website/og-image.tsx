@@ -28,30 +28,34 @@ export default async function create({
     icon?: JSX.Element,
     props: Props
 }): Promise<ImageResponse> {
+    const getFilePath = (filePath: string) => {
+        return (process.env.VERCEL === '1' ? '' : 'public/') + filePath
+    }
+
     const fonts = [
         {
             name: 'Inter Medium',
-            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-Medium.ttf'))
+            data: fs.readFileSync(path.join(process.cwd(), getFilePath('fonts/Inter-Medium.ttf')))
         },
         {
             name: 'Inter SemiBold',
-            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-SemiBold.ttf'))
+            data: fs.readFileSync(path.join(process.cwd(), getFilePath('fonts/Inter-SemiBold.ttf')))
         },
         {
             name: 'Inter ExtraBold',
-            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-ExtraBold.ttf'))
+            data: fs.readFileSync(path.join(process.cwd(), getFilePath('fonts/Inter-ExtraBold.ttf')))
         },
         {
             name: 'NotoSansTC Regular',
-            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansTC-Regular.ttf'))
+            data: fs.readFileSync(path.join(process.cwd(), getFilePath('fonts/NotoSansTC-Regular.ttf')))
         },
         {
             name: 'NotoSansTC Medium',
-            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansTC-Medium.ttf'))
+            data: fs.readFileSync(path.join(process.cwd(), getFilePath('fonts/NotoSansTC-Medium.ttf')))
         },
         {
             name: 'NotoSansTC Black',
-            data: fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansTC-Black.ttf'))
+            data: fs.readFileSync(path.join(process.cwd(), getFilePath('fonts/NotoSansTC-Black.ttf')))
         }
     ]
 
@@ -62,12 +66,12 @@ export default async function create({
     }
 
     const authorImageURLs: any = {
-        Aron: readImage('public/images/authors/aron.jpg'),
-        Joy: readImage('public/images/authors/joy.jpg'),
-        Benseage: readImage('public/images/authors/benseage.jpg'),
-        Miles: readImage('public/images/authors/miles.jpg'),
-        Lola: readImage('public/images/authors/lola.jpg'),
-        Monting: readImage('public/images/authors/monting.jpg'),
+        Aron: readImage(getFilePath('images/authors/aron.jpg')),
+        Joy: readImage(getFilePath('images/authors/joy.jpg')),
+        Benseage: readImage(getFilePath('images/authors/benseage.jpg')),
+        Miles: readImage(getFilePath('images/authors/miles.jpg')),
+        Lola: readImage(getFilePath('images/authors/lola.jpg')),
+        Monting: readImage(getFilePath('images/authors/monting.jpg')),
     }
 
     const $ = await queryDictionary(props.params?.locale)
