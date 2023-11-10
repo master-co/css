@@ -28,10 +28,6 @@ export default async function create({
     icon?: JSX.Element,
     props: Props
 }): Promise<ImageResponse> {
-    const getFilePath = (filePath: string) => {
-        return (process.env.VERCEL === '1' ? '../../' : 'public/') + filePath
-    }
-
     const fonts = [
         {
             name: 'Inter Medium',
@@ -60,18 +56,20 @@ export default async function create({
     ]
 
     const readImage = (filename: string) => {
+        filename = (process.env.VERCEL === '1' ? '../../../' : 'public/') + filename
+
         const extname = path.extname(filename);
         const mimeType = mime.lookup(extname);
         return `data:${mimeType};base64,` + fs.readFileSync(path.join(process.cwd(), filename), { encoding: 'base64' })
     }
 
     const authorImageURLs: any = {
-        Aron: readImage(getFilePath('images/authors/aron.jpg')),
-        Joy: readImage(getFilePath('images/authors/joy.jpg')),
-        Benseage: readImage(getFilePath('images/authors/benseage.jpg')),
-        Miles: readImage(getFilePath('images/authors/miles.jpg')),
-        Lola: readImage(getFilePath('images/authors/lola.jpg')),
-        Monting: readImage(getFilePath('images/authors/monting.jpg')),
+        Aron: readImage('images/authors/aron.jpg'),
+        Joy: readImage('images/authors/joy.jpg'),
+        Benseage: readImage('images/authors/benseage.jpg'),
+        Miles: readImage('images/authors/miles.jpg'),
+        Lola: readImage('images/authors/lola.jpg'),
+        Monting: readImage('images/authors/monting.jpg'),
     }
 
     const $ = await queryDictionary(props.params?.locale)
