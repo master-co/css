@@ -156,9 +156,10 @@ export default function Play(props: any) {
     );
 
     useEffect(() => {
-        const queryLayout = searchParams.get('layout')
-        const queryPreview = searchParams.get('preview')
-        const queryTab = searchParams.get('tab')
+        const urlSearchParams = new URLSearchParams(location.search) 
+        const queryLayout = urlSearchParams.get('layout')
+        const queryPreview = urlSearchParams.get('preview')
+        const queryTab = urlSearchParams.get('tab')
         if (queryLayout) {
             setLayout(queryLayout)
         }
