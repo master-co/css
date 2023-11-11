@@ -35,7 +35,6 @@ import cloneDeep from 'clone-deep'
 import { Logotype } from '~/components/Logotype';
 import Header, { HeaderNav } from 'websites/components/Header'
 import links from '~/links.mjs'
-import dynamic from 'next/dynamic'
 import i18n from 'websites/i18n.config.mjs'
 import { mediaQueries } from '@master/css'
 import config from '~/master.css'
@@ -87,20 +86,14 @@ export default function Play(props: any) {
     const monacoRef = useRef<Monaco | null>(null)
     const previewIframeRef = useRef<HTMLIFrameElement>(null)
     const prevVersionRef = useRef(props.shareItem?.version ?? latestMasterCSSVersion)
-    const [layout, setLayout] = useState<string | null>(searchParams.get('layout'))
-    const [preview, setPreview] = useState<string | null>(searchParams.get('preview'))
+    const [layout, setLayout] = useState<string | null>(props.searchParams?.layout || searchParams.get('layout'))
+    const [preview, setPreview] = useState<string | null>(props.searchParams?.preview || searchParams.get('preview'))
     const [shareId, setShareId] = useState(props.shareId ?? '')
     const [sharing, setSharing] = useState(false)
     const [version, setVersion] = useState(props.shareItem?.version ?? latestMasterCSSVersion)
     const [generatedCSSText, setGeneratedCSSText] = useState('')
     const template = useMemo(() => templates.find((eachTemplate) => eachTemplate.version === version), [version])
     const [previewErrorEvent, setPreviewErrorEvent] = useState<any>()
-
-    useEffect(() => {
-        setLayout(searchParams.get('layout'))
-        setPreview(searchParams.get('preview'))
-    }, [searchParams, setLayout, setPreview]); // 空的依赖数组确保只在初始渲染时执行
-
     const shareItem: PlayShare = useMemo(() => {
         if (props.shareItem && props.shareItem.version === version) {
             props.shareItem.files
@@ -575,7 +568,6 @@ export default function Play(props: any) {
 
     const width = useMemo(() => (!layout || layout === '2') ? '50%' : '100%', [layout])
     const height = useMemo(() => (!layout || layout === '2') ? '100%' : '50%', [layout])
-
     return (
         <div className="abs flex full flex:col">
             <Header fixed={false} Logotype={Logotype}>
