@@ -1,3 +1,4 @@
+import '../globals.css'
 import { getPreInitScript } from 'theme-service'
 import { Locale } from 'websites/i18n.config'
 import { l } from 'to-line'
@@ -16,14 +17,16 @@ import ThemeServiceProvider from '@master/css.react/ThemeServiceProvider'
 export default function RootLayout({
     children,
     params,
-    bodyAttrs
+    bodyAttrs,
+    ...props
 }: {
     children: JSX.Element,
     params: { locale: Locale },
-    bodyAttrs?: any
+    bodyAttrs?: any,
+    [key: string]: any
 }) {
     return (
-        <html lang={params.locale} style={process.env.NODE_ENV === 'development' ? { display: 'none' } : undefined}>
+        <html lang={params.locale} style={process.env.NODE_ENV === 'development' ? { display: 'none' } : undefined} {...props}>
             <head>
                 <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
                 <script dangerouslySetInnerHTML={{ __html: getPreInitScript({ default: 'system' }) }}></script>

@@ -1,4 +1,3 @@
-import '../../globals.css'
 import { Locale } from 'websites/i18n.config'
 import RootLayout from '../root.layout'
 
