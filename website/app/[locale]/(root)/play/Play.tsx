@@ -12,7 +12,6 @@ import dedent from 'ts-dedent'
 // import DocHeader from 'websites/layouts/Doc/DocHeader'
 import { IconBrandCss3, IconChevronDown, IconDeviceDesktop, IconDeviceMobile } from '@tabler/icons-react'
 import Tabs, { Tab } from 'websites/components/Tabs'
-import { l } from 'to-line'
 // import { Button } from 'websites/components/App/AppBtn'
 import { usePathname, useRouter } from 'next/navigation'
 import LanguageButton from 'websites/components/LanguageButton';
@@ -40,11 +39,12 @@ import dynamic from 'next/dynamic'
 import i18n from 'websites/i18n.config.mjs'
 import { mediaQueries } from '@master/css'
 import config from '~/master.css'
+import clsx from 'clsx'
 
 // import { Registry } from 'monaco-textmate'
 // import { wireTmGrammars } from 'monaco-editor-textmate'
 
-// loader.config({
+// loader.config({ 
 //     paths: {
 //         vs: '/monaco-editor/vs',
 //     }
@@ -92,7 +92,7 @@ export default function Play(props: any) {
     const [shareId, setShareId] = useState(props.shareId ?? '')
     const [sharing, setSharing] = useState(false)
     const [version, setVersion] = useState(props.shareItem?.version ?? latestMasterCSSVersion)
-    const [generatedCssText, setGeneratedCssText] = useState('')
+    const [generatedCSSText, setGeneratedCSSText] = useState('')
     const template = useMemo(() => templates.find((eachTemplate) => eachTemplate.version === version), [version])
     const [previewErrorEvent, setPreviewErrorEvent] = useState<any>()
     const shareItem: PlayShare = useMemo(() => {
@@ -155,7 +155,7 @@ export default function Play(props: any) {
     );
 
     useEffect(() => {
-        const urlSearchParams = new URLSearchParams(location.search) 
+        const urlSearchParams = new URLSearchParams(location.search)
         setLayout(urlSearchParams.get('layout') || '')
         setPreview(urlSearchParams.get('preview') || '')
         const queryTab = urlSearchParams.get('tab')
@@ -187,13 +187,13 @@ export default function Play(props: any) {
         if (new URLSearchParams(location.search).get('layout') !== layout) {
             router.push(pathname + '?' + createQueryString('layout', layout))
         }
-    }, [layout, searchParams])
+    }, [createQueryString, layout, pathname, router, searchParams])
 
     useEffect(() => {
         if (new URLSearchParams(location.search).get('preview') !== preview) {
             router.push(pathname + '?' + createQueryString('preview', preview))
         }
-    }, [preview, searchParams])
+    }, [createQueryString, pathname, preview, router, searchParams])
 
     /**
      * 需避免即時編輯 HTML, Config 或切換 Theme 時更新 previewHTML，否則 Preview 將重載並造成視覺閃爍
@@ -269,7 +269,7 @@ export default function Play(props: any) {
                     title: 'Generated CSS',
                     name: 'master.css',
                     language: 'css',
-                    content: generatedCssText,
+                    content: generatedCSSText,
                     readOnly: true
                 }
             // mobile
@@ -278,7 +278,7 @@ export default function Play(props: any) {
             default:
                 return shareItem.files.find((eachTab: any) => eachTab.title === currentTabTitle) as any
         }
-    }, [currentTabTitle, generatedCssText, shareItem.files])
+    }, [currentTabTitle, generatedCSSText, shareItem.files])
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const hotUpdatePreviewByFile = useCallback(debounce(250, () => {
@@ -309,7 +309,7 @@ export default function Play(props: any) {
      */
     useEffect(() => {
         if (currentTabTitle !== 'Preview' && editorRef.current && monacoRef.current) {
-            const content = currentTabTitle === 'Generated CSS' ? generatedCssText : currentCodeTab.content
+            const content = currentTabTitle === 'Generated CSS' ? generatedCSSText : currentCodeTab.content
             let currentEditorModel: any = editorModelRef.current?.[currentCodeTab.id]
             if (currentEditorModel) {
                 if (currentEditorModel.getValue() !== content) {
@@ -328,7 +328,7 @@ export default function Play(props: any) {
             /* 取消因上文觸發 hotUpdatePreviewByFile() */
             hotUpdatePreviewByFile.cancel({ upcomingOnly: true })
         }
-    }, [currentCodeTab, currentTabTitle, generatedCssText, hotUpdatePreviewByFile, shareItem.files])
+    }, [currentCodeTab, currentTabTitle, generatedCSSText, hotUpdatePreviewByFile, shareItem.files])
 
     // dispose monaco providers
     useEffect(() => {
@@ -351,7 +351,7 @@ export default function Play(props: any) {
             switch (type) {
                 case 'cssUpdate':
                     const cssText = content ? beautifyCSS(content) : ''
-                    setGeneratedCssText(cssText)
+                    setGeneratedCSSText(cssText)
                     break;
                 case 'error':
                     setPreviewErrorEvent(event.data)
@@ -612,7 +612,7 @@ export default function Play(props: any) {
                         </span>
                     </button>}
                     {/* share button */}
-                    {shareable && <button className={l('hide@<md', sharing ? 'app-header-nav' : 'app-header-icon')} onClick={share} disabled={sharing}>
+                    {shareable && <button className={clsx('hide@<md', sharing ? 'app-header-nav' : 'app-header-icon')} onClick={share} disabled={sharing}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M8 9h-1a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-8a2 2 0 0 0 -2 -2h-1" className="fill:dim/.2"></path>
@@ -625,8 +625,8 @@ export default function Play(props: any) {
                     </button>}
                     {(shareId || shareable) && <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>}
                     <button className="app-header-icon hide@<md" onClick={(event) => (setLayout(layout ? null : '2'))}>
-                        <svg className={l({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                            <path className={l(
+                        <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                            <path className={clsx(
                                 '~transform|.2s',
                                 (!layout || layout === '2') ? 'fill:accent/.15' : 'fill:dim/.2',
                                 { 'translate(12,4)': !layout }
@@ -637,8 +637,8 @@ export default function Play(props: any) {
                         </svg>
                     </button>
                     <button className="app-header-icon hide@<md" onClick={(event) => (setLayout(layout === '3' ? '4' : '3'))}>
-                        <svg className={l({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate(90)')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                            <path className={l(
+                        <svg className={clsx({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate(90)')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                            <path className={clsx(
                                 '~transform|.2s',
                                 (layout === '3' || layout === '4') ? 'fill:accent/.15' : 'fill:dim/.2',
                                 { 'translate(12,4)': layout === '3' }
@@ -649,7 +649,7 @@ export default function Play(props: any) {
                         </svg>
                     </button>
                     <button className="app-header-icon hide@<md" onClick={(event) => setLayout('5')}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className={l(layout === '5' && 'stroke:accent')} width="22" height="22" strokeWidth="1.2" viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" className={clsx(layout === '5' && 'stroke:accent')} width="22" height="22" strokeWidth="1.2" viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
                             <path d="M4 9l16 0"></path>
@@ -659,21 +659,21 @@ export default function Play(props: any) {
                     <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>
                     {/* preview: desktop */}
                     <button className="app-header-icon hide@<md" onClick={(event) => setPreview('')}>
-                        <IconDeviceDesktop width="22" height="22" className={l(
+                        <IconDeviceDesktop width="22" height="22" className={clsx(
                             'stroke:current stroke:1.3',
                             !preview ? 'stroke:accent fill:accent/.15' : 'fill:dim/.2'
                         )} />
                     </button>
                     {/* preview: responsive */}
                     <button className="app-header-icon hide@<md" onClick={(event) => setPreview('responsive')}>
-                        <IconDeviceMobile width="22" height="22" className={l(
+                        <IconDeviceMobile width="22" height="22" className={clsx(
                             'stroke:current stroke:1.3',
                             responsive ? 'stroke:accent fill:accent/.15' : 'fill:dim/.2'
                         )} />
                     </button>
                     {/* preview: css */}
                     <button className="app-header-icon hide@<md" onClick={(event) => setPreview('css')}>
-                        <IconBrandCss3 width="22" height="22" className={l(
+                        <IconBrandCss3 width="22" height="22" className={clsx(
                             'stroke:current stroke:1.3',
                             preview === 'css' ? 'stroke:accent fill:accent/.15' : 'fill:dim/.2'
                         )} />
@@ -690,7 +690,7 @@ export default function Play(props: any) {
                 </div>
             </Header >
             <div
-                className={l(
+                className={clsx(
                     'flex:col!@<sm flex full flex:1 overflow:hidden bg:transparent_:is(.monaco-editor,.monaco-editor-background,.monaco-editor_.margin)',
                     {
                         'flex:row': !layout,
@@ -706,7 +706,7 @@ export default function Play(props: any) {
                     originY={layout === '3' ? 'top' : 'bottom'}
                     handlerStyle="hidden"
                     showHandler={[layout === '4', !layout, layout === '3', layout === '2']}
-                    className={l(
+                    className={clsx(
                         layout === '5' && 'hide!@md',
                         {
                             'full!@<md': currentTabTitle !== 'Preview',
@@ -751,7 +751,7 @@ export default function Play(props: any) {
                     </Tabs>
                     <div className='full min-h:0'>
                         <Editor
-                            className={l(
+                            className={clsx(
                                 { 'hide!': currentTabTitle === 'Preview' }
                             )}
                             height="100%"
@@ -770,7 +770,7 @@ export default function Play(props: any) {
                         />
                     </div>
                 </Resizable>
-                <div className={l('rel overflow:hidden flex:1|1|auto bg:gray-10@dark bg:slate-95@light', {
+                <div className={clsx('rel overflow:hidden flex:1|1|auto bg:gray-10@dark bg:slate-95@light', {
                     'flex jc:center p:32': responsive,
                     'pt:64': responsive && layout !== '3',
                     'pb:64': responsive && layout === '3',
@@ -785,7 +785,7 @@ export default function Play(props: any) {
                         overlay={false}
                         originX={'center'}
                         showHandler={responsive ? [false, true, true] : false}
-                        className={l(
+                        className={clsx(
                             'full',
                             {
                                 'max-w:100% max-h:100% outline:1|divider': responsive
@@ -794,18 +794,18 @@ export default function Play(props: any) {
                         showHeight={true}
                     >
                         <iframe ref={previewIframeRef}
-                            className={l('demo', { hide: preview === 'css' })}
+                            className={clsx('demo', { hide: preview === 'css' })}
                             style={{ width: '100%', height: '100%', borderRadius: 0, margin: 0, padding: 0, border: 0 }}
                             sandbox="allow-popups-to-escape-sandbox allow-scripts allow-popups allow-forms allow-same-origin allow-pointer-lock allow-top-navigation allow-modals"
                             srcDoc={previewHTML}
                         />
                         <Editor
-                            wrapperProps={{ className: l({ 'hide!': preview !== 'css' }) }}
+                            wrapperProps={{ className: clsx({ 'hide!': preview !== 'css' }) }}
                             height="100%"
                             width="100%"
                             theme={'vs-' + themeService?.current}
-                            defaultValue={generatedCssText}
-                            value={generatedCssText}
+                            defaultValue={generatedCSSText}
+                            value={generatedCSSText}
                             language="css"
                             options={{
                                 ...editorOptions,

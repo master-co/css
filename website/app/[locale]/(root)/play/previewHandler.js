@@ -1,14 +1,14 @@
 /* eslint-disable */
 const targetOrigin = parent.document.location.origin
-let prevCssText = ''
+let prevCSSText = ''
 let prevHtmlContent = ''
 
-const updateCssText = (force) => {
-    const sheet = document.querySelector('style[id="master"]')?.sheet
-    if (sheet) {
-        const cssText = Object.values(sheet.cssRules).map(x => x.cssText).join('\n')
-        if (prevCssText !== cssText || force) {
-            prevCssText = cssText
+const updateCSSText = (force) => {
+    const runtimeCSS = window.runtimeCSS || window.MasterCSS && window.MasterCSS.root;
+    if (runtimeCSS) {
+        const cssText = runtimeCSS.text
+        if (prevCSSText !== cssText || force) {
+            prevCSSText = cssText
             parent.postMessage(
                 {
                     type: 'cssUpdate',
@@ -23,7 +23,7 @@ const updateCssText = (force) => {
 document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.className = parent.document.documentElement.className.replace('overflow-x:hidden', '')
     document.documentElement.setAttribute('style', parent.document.documentElement.getAttribute('style'))
-    updateCssText()
+    updateCSSText()
 })
 
 const observer = new MutationObserver((records) => {
@@ -54,7 +54,7 @@ window.addEventListener('message', function (event) {
     if (event.origin !== targetOrigin) { return }
     switch (type) {
         case 'editorReady':
-            updateCssText(true)
+            updateCSSText(true)
             break
         default:
             switch (language) {
@@ -70,7 +70,7 @@ window.addEventListener('message', function (event) {
                     }
                     break
             }
-            setTimeout(updateCssText, 0)
+            setTimeout(updateCSSText)
             break
     }
 })

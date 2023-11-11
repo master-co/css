@@ -3,7 +3,7 @@
 
 ---
 
-## Customization
+## Basic usage
 ### Add a color
 Add your color variables using hex codes and extend the defaults.
 ```js name=master.css.js
@@ -80,26 +80,7 @@ export default {
 
 ---
 
-## Style guide
-### Create background colors
-Create color variables for backgrounds in apps, panels, cards, and more.
-```js name=master.css.js
-export default {
-    variables: {
-+       neutral: '$(white)',
-+       fade: '$(slate-5)'
-    }
-}
-```
-Use [background-color](/docs/background-color) syntax to set the app background color:
-```html
-<body class="**bg:neutral**">…</body>
-```
-| Token             | Description                                                                                                                       |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| `neutral`         | The background color for apps...                                                                                                  |
-| `fade`            | The background color for panels...                                                                                                |
-
+## Foreground
 ### Create text colors
 Create accessible color variables for titles, descriptions, icons, and other body text.
 ```js name=master.css.js
@@ -134,3 +115,25 @@ You can apply them using any color-related syntax.
 | `text-strong`     | Strong color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background.     |
 | `text-dim`        | Dim color, a foreground color that contrasts slightly with the background.                                                        |
 | `text-{color}`    | Other accessible text foreground colors.                                                                                          |
+
+---
+
+## Background
+### Create background colors
+Create color variables for backgrounds in apps, panels, cards, and more.
+```js name=master.css.js
+export default {
+    variables: {
++       neutral: '$(white)',
++       fade: '$(slate-5)'
+    }
+}
+```
+Use [background-color](/docs/background-color) syntax to set the app background color:
+```html
+<body class="**bg:neutral**">…</body>
+```
+| Token             | Description                                                                                                                       |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `neutral`         | The background color for apps...                                                                                                  |
+| `fade`            | The background color for panels...                                                                                                |
