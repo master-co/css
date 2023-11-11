@@ -149,7 +149,6 @@ export default function Play(props: any) {
             } else {
                 params.set(name, value);
             }
-
             return params.toString();
         },
         [],
@@ -157,21 +156,15 @@ export default function Play(props: any) {
 
     useEffect(() => {
         const urlSearchParams = new URLSearchParams(location.search) 
-        const queryLayout = urlSearchParams.get('layout')
-        const queryPreview = urlSearchParams.get('preview')
+        setLayout(urlSearchParams.get('layout') || '')
+        setPreview(urlSearchParams.get('preview') || '')
         const queryTab = urlSearchParams.get('tab')
-        if (queryLayout) {
-            setLayout(queryLayout)
-        }
-        if (queryPreview) {
-            setPreview(queryPreview)
-        }
         if ([...shareItem.files.map(({ title }) => title)].includes(queryTab || '')) {
             setCurrentTabTitle(queryTab)
         } else {
             setCurrentTabTitle(shareItem.files[0].title)
         }
-    }, [createQueryString, pathname, router, searchParams, shareItem.files])
+    }, [pathname, router, searchParams, shareItem.files])
 
     /**
      * 避免切換到更大視口時仍停留在僅小視口支援的 Preview 或 Generated CSS 瀏覽模式
@@ -194,13 +187,13 @@ export default function Play(props: any) {
         if (new URLSearchParams(location.search).get('layout') !== layout) {
             router.push(pathname + '?' + createQueryString('layout', layout))
         }
-    }, [createQueryString, layout, pathname, router, searchParams, shareId])
+    }, [layout, searchParams])
 
     useEffect(() => {
         if (new URLSearchParams(location.search).get('preview') !== preview) {
             router.push(pathname + '?' + createQueryString('preview', preview))
         }
-    }, [createQueryString, pathname, preview, router, searchParams, shareId])
+    }, [preview, searchParams])
 
     /**
      * 需避免即時編輯 HTML, Config 或切換 Theme 時更新 previewHTML，否則 Preview 將重載並造成視覺閃爍
