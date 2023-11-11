@@ -143,7 +143,7 @@ export default function Play(props: any) {
 
     const createQueryString = useCallback(
         (name: string, value: any) => {
-            const params = new URLSearchParams(searchParams);
+            const params = new URLSearchParams(location.search);
             if (!value) {
                 params.delete(name)
             } else {
@@ -152,7 +152,7 @@ export default function Play(props: any) {
 
             return params.toString();
         },
-        [searchParams],
+        [],
     );
 
     useEffect(() => {
@@ -191,13 +191,13 @@ export default function Play(props: any) {
     }, [currentTabTitle, shareItem.files])
 
     useEffect(() => {
-        if (searchParams.get('layout') !== layout) {
+        if (new URLSearchParams(location.search).get('layout') !== layout) {
             router.push(pathname + '?' + createQueryString('layout', layout))
         }
     }, [createQueryString, layout, pathname, router, searchParams, shareId])
 
     useEffect(() => {
-        if (searchParams.get('preview') !== preview) {
+        if (new URLSearchParams(location.search).get('preview') !== preview) {
             router.push(pathname + '?' + createQueryString('preview', preview))
         }
     }, [createQueryString, pathname, preview, router, searchParams, shareId])
