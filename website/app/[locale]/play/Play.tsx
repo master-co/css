@@ -44,7 +44,7 @@ import clsx from 'clsx'
 // import { Registry } from 'monaco-textmate'
 // import { wireTmGrammars } from 'monaco-editor-textmate'
 
-// loader.config({ 
+// loader.config({
 //     paths: {
 //         vs: '/monaco-editor/vs',
 //     }
@@ -95,6 +95,12 @@ export default function Play(props: any) {
     const [generatedCSSText, setGeneratedCSSText] = useState('')
     const template = useMemo(() => templates.find((eachTemplate) => eachTemplate.version === version), [version])
     const [previewErrorEvent, setPreviewErrorEvent] = useState<any>()
+
+    useEffect(() => {
+        setLayout(searchParams.get('layout'))
+        setPreview(searchParams.get('preview'))
+    }, [searchParams, setLayout, setPreview]); // 空的依赖数组确保只在初始渲染时执行
+
     const shareItem: PlayShare = useMemo(() => {
         if (props.shareItem && props.shareItem.version === version) {
             props.shareItem.files
