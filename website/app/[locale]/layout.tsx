@@ -1,4 +1,5 @@
 import { Viewport } from 'next';
+import i18n from 'websites/i18n.config.mjs';
 
 export const metadata = {
     metadataBase: new URL(process.env.HOST as string),
@@ -14,6 +15,10 @@ export const viewport: Viewport = {
     maximumScale: 1,
     viewportFit: 'cover',
     userScalable: true
+}
+
+export async function generateStaticParams() {
+    return i18n.locales.map((locale: any) => ({ locale }));
 }
 
 export default async function RootLayout({

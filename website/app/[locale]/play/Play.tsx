@@ -86,8 +86,8 @@ export default function Play(props: any) {
     const monacoRef = useRef<Monaco | null>(null)
     const previewIframeRef = useRef<HTMLIFrameElement>(null)
     const prevVersionRef = useRef(props.shareItem?.version ?? latestMasterCSSVersion)
-    const [layout, setLayout] = useState<string | null>(props.searchParams?.layout || searchParams.get('layout'))
-    const [preview, setPreview] = useState<string | null>(props.searchParams?.preview || searchParams.get('preview'))
+    const [layout, setLayout] = useState<string | null>(searchParams.get('layout'))
+    const [preview, setPreview] = useState<string | null>(searchParams.get('preview'))
     const [shareId, setShareId] = useState(props.shareId ?? '')
     const [sharing, setSharing] = useState(false)
     const [version, setVersion] = useState(props.shareItem?.version ?? latestMasterCSSVersion)
@@ -658,22 +658,22 @@ export default function Play(props: any) {
                     {/* preview: desktop */}
                     <button className="app-header-icon hide@<md" onClick={(event) => setPreview('')}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
-                            'stroke:current stroke:1.3',
-                            !preview ? 'stroke:accent fill:accent/.15' : 'fill:dim/.2'
+                            'stroke:1.3 stroke:current',
+                            !preview ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
                         )} />
                     </button>
                     {/* preview: responsive */}
                     <button className="app-header-icon hide@<md" onClick={(event) => setPreview('responsive')}>
                         <IconDeviceMobile width="22" height="22" className={clsx(
-                            'stroke:current stroke:1.3',
-                            responsive ? 'stroke:accent fill:accent/.15' : 'fill:dim/.2'
+                            'stroke:1.3 stroke:current',
+                            responsive ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
                         )} />
                     </button>
                     {/* preview: css */}
                     <button className="app-header-icon hide@<md" onClick={(event) => setPreview('css')}>
                         <IconBrandCss3 width="22" height="22" className={clsx(
-                            'stroke:current stroke:1.3',
-                            preview === 'css' ? 'stroke:accent fill:accent/.15' : 'fill:dim/.2'
+                            'stroke:1.3 stroke:current',
+                            preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
                         )} />
                     </button>
                     <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>
@@ -689,7 +689,7 @@ export default function Play(props: any) {
             </Header >
             <div
                 className={clsx(
-                    'flex:col!@<sm flex full flex:1 overflow:hidden bg:transparent_:is(.monaco-editor,.monaco-editor-background,.monaco-editor_.margin)',
+                    'flex full bg:transparent_:is(.monaco-editor,.monaco-editor-background,.monaco-editor_.margin) flex:1 flex:col!@<sm overflow:hidden',
                     {
                         'flex:row': !layout,
                         'flex:row-reverse': layout === '2',
@@ -768,7 +768,7 @@ export default function Play(props: any) {
                         />
                     </div>
                 </Resizable>
-                <div className={clsx('rel overflow:hidden flex:1|1|auto bg:gray-10@dark bg:slate-95@light', {
+                <div className={clsx('rel bg:gray-10@dark bg:slate-95@light flex:1|1|auto overflow:hidden', {
                     'flex jc:center p:32': responsive,
                     'pt:64': responsive && layout !== '3',
                     'pb:64': responsive && layout === '3',
