@@ -6,7 +6,6 @@ import { l } from 'to-line'
 // @ts-expect-error
 import contrast from 'get-contrast'
 import { snackbar } from 'websites/utils/snackbar'
-import copy from 'copy-to-clipboard'
 
 export default () => <div className="grid-cols:6 grid-cols:13@sm my:40 gap:25|10">
     {Object.keys(variables)
@@ -35,7 +34,7 @@ export default () => <div className="grid-cols:6 grid-cols:13@sm my:40 gap:25|10
                                             snackbar(
                                                 `Copied <svg class="v:middle mt:-2 ml:4 mr:2 inline-block w:6 h:6 round bg:${backgroundHex}"></svg> <b>${backgroundHex}</b>`
                                             )
-                                            copy(backgroundHex)
+                                            navigator.clipboard.writeText(backgroundHex)
                                         }}
                                     >
                                         {/* <div className="info invisible lh:1">#{color}</div> */}

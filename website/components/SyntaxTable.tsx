@@ -5,7 +5,6 @@ import { Fragment, useMemo, useState } from 'react';
 import { beautifyCSS } from 'websites/utils/beautifyCSS';
 import line from 'to-line';
 import { snackbar } from 'websites/utils/snackbar';
-import copy from 'copy-to-clipboard';
 import InlineCode from 'websites/components/InlineCode';
 import dedent from 'ts-dedent';
 import MasterCSS from '@master/css';
@@ -35,7 +34,7 @@ export default function SyntaxTable({ title, value, children, previewClass, ...p
                                 isClickableItem ? () => {
                                     if (isClickableItem) {
                                         snackbar('Class copied <code class="font:90% font:semibold ls:-.5">' + targetClassName + '</code>')
-                                        copy(targetClassName)
+                                        navigator.clipboard.writeText(targetClassName)
                                         setSelectedClassName(targetClassName)
                                     }
                                 } : undefined
