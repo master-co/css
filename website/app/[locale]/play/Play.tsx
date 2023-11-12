@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { customAlphabet } from 'nanoid'
 import { debounce } from 'throttle-debounce';
 import { snackbar } from 'websites/utils/snackbar'
-import copy from 'copy-to-clipboard'
 // import ThemeButton from 'websites/components/ThemeButton'
 import dedent from 'ts-dedent'
 // import DocHeader from 'websites/layouts/Doc/DocHeader'
@@ -17,7 +16,6 @@ import { usePathname, useRouter } from 'next/navigation'
 import LanguageButton from 'websites/components/LanguageButton';
 import previewHandlerScriptText from './previewHandler.js?text'
 import ThemeButton from 'websites/components/ThemeButton';
-import Button from 'websites/components/Button'
 import { getScriptHTML } from './getScriptHTML';
 import { getStyleHTML } from './getStyleHTML';
 import { beautifyCSS } from 'websites/utils/beautifyCSS'
@@ -28,8 +26,6 @@ import latestMasterCSSVersion from 'websites/version';
 import { useSearchParams } from 'next/navigation';
 import Resizable from 'websites/components/Resizable';
 import { getLinkHTML } from './getLinkHTML';
-/* 與本地 css 專案即時測試用 */
-// import { useTheme } from '../../../../../css/packages/react/src'
 import { useThemeService } from '@master/css.react'
 import cloneDeep from 'clone-deep'
 import { Logotype } from '~/components/Logotype';
@@ -125,6 +121,7 @@ export default function Play(props: any) {
 
     const [strignifiedPrevShareItem, setStrignifiedPrevShareItem] = useState(JSON.stringify(generateDatabaseShareItem(shareItem)))
     const [shareable, setShareable] = useState(false)
+    const sharePathname = useMemo(() => `${props.locale === i18n.defaultLocale ? '' : `/${props.locale}`}/play/${shareId}${window.location.search}`, [props.locale, shareId])
 
     useEffect(() => {
         if (prevVersionRef.current !== version) {
@@ -383,36 +380,38 @@ export default function Play(props: any) {
         }
     }, [shareable])
 
-    const copyLink = useCallback(() => {
+    const copyShareLink = useCallback(async (newSharePathname?: string) => {
         snackbar('Share link copied!')
-        copy(window.location.href)
-    }, [])
+        await navigator.clipboard.writeText(window.location.origin + (newSharePathname || sharePathname))
+    }, [sharePathname])
 
     const share = useCallback(async () => {
         if (!shareable) {
             return
         }
         setSharing(true)
-        let newShareId = nanoid()
+        const [{ app }, { getFirestore, setDoc, doc }] = await Promise.all([
+            await import('websites/firebase-app'),
+            await import('@firebase/firestore/lite')
+        ])
+        const db = getFirestore(app)
         const databaseShareItem = generateDatabaseShareItem(shareItem)
-        await fetch(`${window.location.origin}/play/api`, {
-            body: JSON.stringify({
-                id: newShareId,
-                data: databaseShareItem
-            }),
-            method: 'POST',
-            headers: new Headers({
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            }),
-        })
-        router.push(`${props.locale === i18n.defaultLocale ? '' : `/${props.locale}`}/play/${newShareId}${window.location.search}`)
+        const newShareId = nanoid()
+        const docRef = doc(db, 'sandbox', newShareId)
+        // 將資料寫入集合並取得寫入後的 ID
+        try {
+            await setDoc(docRef, databaseShareItem);
+        } catch (error) {
+            console.error('Error adding document: ', error)
+        }
+        const newSharePathname = `${props.locale === i18n.defaultLocale ? '' : `/${props.locale}`}/play/${newShareId}${window.location.search}`
         setShareId(newShareId)
-        copyLink()
         setStrignifiedPrevShareItem(JSON.stringify(databaseShareItem))
         setShareable(false)
         setSharing(false)
-    }, [copyLink, generateDatabaseShareItem, props.locale, router, shareItem, shareable])
+        copyShareLink(newSharePathname)
+        router.push(newSharePathname)
+    }, [copyShareLink, generateDatabaseShareItem, props.locale, router, shareItem, shareable])
 
     const responsive = useMemo(() => {
         return preview === 'responsive'
@@ -597,8 +596,7 @@ export default function Play(props: any) {
                     }
                 }}>{dict[eachLink.name] || eachLink.name}</HeaderNav>)}
                 <div className="flex align-items:center ml:auto mr:-12">
-                    {/* copy share link */}
-                    {(shareId && !shareable) && <button className="app-header-icon hide@<md mx:12" onClick={copyLink}>
+                    {(shareId && !shareable) && <button className="app-header-icon hide@<md mx:12" onClick={() => copyShareLink()}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M9 15l6 -6"></path>
