@@ -121,7 +121,12 @@ export default function Play(props: any) {
 
     const [strignifiedPrevShareItem, setStrignifiedPrevShareItem] = useState(JSON.stringify(generateDatabaseShareItem(shareItem)))
     const [shareable, setShareable] = useState(false)
-    const sharePathname = useMemo(() => `${props.locale === i18n.defaultLocale ? '' : `/${props.locale}`}/play/${shareId}${window.location.search}`, [props.locale, shareId])
+    const sharePathname = useMemo(() => {
+        if (typeof window === 'undefined') {
+            return ''
+        }
+        return `${props.locale === i18n.defaultLocale ? '' : `/${props.locale}`}/play/${shareId}${window.location.search}`
+    }, [props.locale, shareId])
 
     useEffect(() => {
         if (prevVersionRef.current !== version) {
