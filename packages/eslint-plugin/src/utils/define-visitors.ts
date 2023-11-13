@@ -1,4 +1,4 @@
-import type { RuleListener } from '@typescript-eslint/utils/ts-eslint'
+import type { RuleListener } from '@typescript-eslint/utils/dist/ts-eslint'
 import { Rule } from 'eslint'
 
 export default function defineVisitors({ context, settings }: { context: Rule.RuleContext, settings: any }, visitNode) {

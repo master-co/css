@@ -69,3 +69,5 @@ packages/extractor.vite/tests/vite/index.html
 packages/extractor.vite/tests/vite/master.css.*
 packages/extractor.webpack/tests/webpack/src/index.html
 packages/extractor.webpack/tests/webpack/src/master.css.*
+
+**/*/cache

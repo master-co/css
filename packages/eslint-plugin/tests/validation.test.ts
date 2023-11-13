@@ -31,6 +31,27 @@ new RuleTester({
             errors: [
                 { messageId: 'invalidClass' },
             ]
+        },
+        {
+            code: `<div class="a c d hello:world font:error mt:0 mt:0@sm">Error class</div>`,
+            errors: [
+                { messageId: 'disallowUnknownClass' },
+                { messageId: 'disallowUnknownClass' },
+                { messageId: 'disallowUnknownClass' },
+                { messageId: 'disallowUnknownClass' },
+                { messageId: 'invalidClass' }
+            ],
+            options: [
+                {
+                    disallowUnknownClass: true
+                }
+            ]
+        },
+        {
+            code: `<div class="a c d hello:world font:error mt:0 mt:0@sm">Error class</div>`,
+            errors: [
+                { messageId: 'invalidClass' }
+            ]
         }
     ]
 })
@@ -54,6 +75,21 @@ new RuleTester({
         {
             code: `<div class="btn rrr bg:black m:mistake">Simple, basic</div>`,
             errors: [
+                { messageId: 'disallowUnknownClass' },
+                { messageId: 'invalidClass' }
+            ],
+            options: [
+                {
+                    disallowUnknownClass: true
+                }
+            ]
+        },
+        {
+            code: `<div class="btn a c d hello:world font:error mt:0 mt:0@sm">Error class</div>`,
+            errors: [
+                { messageId: 'disallowUnknownClass' },
+                { messageId: 'disallowUnknownClass' },
+                { messageId: 'disallowUnknownClass' },
                 { messageId: 'disallowUnknownClass' },
                 { messageId: 'invalidClass' }
             ],

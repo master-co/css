@@ -1,60 +1,9 @@
-/* eslint-disable no-case-declarations */
 import { Rule } from 'eslint'
-
-const separatorRegEx = /([\t\n\f\r ]+)/
-
-export function extractRangeFromNode(node) {
-    if (node.type === 'TextAttribute' && node.name === 'class') {
-        return [node.valueSpan.fullStart.offset, node.valueSpan.end.offset]
-    }
-    switch (node.value.type) {
-        case 'JSXExpressionContainer':
-            return node.value.expression.range
-        default:
-            return node.value.range
-    }
-}
-
-export function extractValueFromNode(node) {
-    if (node.type === 'TextAttribute' && node.name === 'class') {
-        return node.value
-    }
-    switch (node.value.type) {
-        case 'JSXExpressionContainer':
-            return node.value.expression.value
-        case 'VExpressionContainer':
-            switch (node.value.expression.type) {
-                case 'ArrayExpression':
-                    return node.value.expression.elements
-                case 'ObjectExpression':
-                    return node.value.expression.properties
-            }
-            return node.value.expression.value
-        default:
-            return node.value.value
-    }
-}
-
-export function extractClassnamesFromValue(classStr) {
-    if (typeof classStr !== 'string') {
-        return { classNames: [], whitespaces: [], headSpace: false, tailSpace: false }
-    }
-    const parts = classStr.split(separatorRegEx)
-    if (parts[0] === '') {
-        parts.shift()
-    }
-    if (parts[parts.length - 1] === '') {
-        parts.pop()
-    }
-    const headSpace = separatorRegEx.test(parts[0])
-    const tailSpace = separatorRegEx.test(parts[parts.length - 1])
-    const isClass = (_, i) => (headSpace ? i % 2 !== 0 : i % 2 === 0)
-    const isNotClass = (_, i) => (headSpace ? i % 2 === 0 : i % 2 !== 0)
-    const classNames = parts.filter(isClass)
-    const whitespaces = parts.filter(isNotClass)
-    return { classNames: classNames, whitespaces: whitespaces, headSpace: headSpace, tailSpace: tailSpace }
-}
-
+import getTemplateElementPrefix from './get-template-element-prefix'
+import getTemplateElementSuffix from './get-template-element-suffix'
+import extractValueFromNode from './extract-value-from-node'
+import extractClassnamesFromValue from './extract-classnames-from-value'
+import extractRangeFromNode from './extract-range-from-node'
 
 /**
  * Inspect and parse an abstract syntax node and run a callback function
@@ -164,6 +113,7 @@ export function parseNodeRecursive(rootNode, childNode, cb, skipConditional = fa
                 originalClassNamesValue = childNode.value.raw
                 start = childNode.range[0]
                 end = childNode.range[1]
+                // eslint-disable-next-line no-case-declarations
                 const txt = context?.sourceCode.getText(childNode) ?? ''
                 prefix = getTemplateElementPrefix(txt, originalClassNamesValue)
                 suffix = getTemplateElementSuffix(txt, originalClassNamesValue)
@@ -178,68 +128,4 @@ export function parseNodeRecursive(rootNode, childNode, cb, skipConditional = fa
         const targetNode = isolate ? null : rootNode
         cb(classNames, targetNode, originalClassNamesValue, start, end, prefix, suffix)
     }
-}
-
-export function getTemplateElementPrefix(text, raw) {
-    const idx = text.indexOf(raw)
-    if (idx === 0) {
-        return ''
-    }
-    return text.split(raw).shift()
-}
-
-export function getTemplateElementSuffix(text, raw) {
-    if (text.indexOf(raw) === -1) {
-        return ''
-    }
-    return text.split(raw).pop()
-}
-
-export function getTemplateElementBody(text, prefix, suffix) {
-    let arr = text.split(prefix)
-    arr.shift()
-    const body = arr.join(prefix)
-    arr = body.split(suffix)
-    arr.pop()
-    return arr.join(suffix)
-}
-
-export function findLoc(text, lines, startLine, endLine) {
-    const targetLines = text.match(/.+(?:\r\n|\n)?/g)
-
-    let checkingTargetLine = 0
-    let resultStart = null
-    let checking = false
-
-    for (let i = startLine; i <= endLine; i++) {
-        const sourceCodeLine = lines[i - 1]
-
-        const index = sourceCodeLine.indexOf(targetLines[checkingTargetLine].replace(/\r\n|\n/, ''))
-        if (index !== -1) {
-            if (checkingTargetLine === 0) {
-                resultStart = {
-                    line: i,
-                    column: index
-                }
-            }
-            if (checkingTargetLine === targetLines.length - 1) {
-                return {
-                    start: resultStart,
-                    end: {
-                        line: i,
-                        column: index + text.length
-                    }
-                }
-            }
-            checking = true
-            checkingTargetLine++
-        } else {
-            if (checking) {
-                checking = false
-                checkingTargetLine = 0
-                resultStart = null
-            }
-        }
-    }
-    return null
 }

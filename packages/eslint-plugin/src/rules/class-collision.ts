@@ -1,9 +1,10 @@
-import * as astUtil from '../utils/ast'
 import areDeclarationsEqual from '../utils/are-declarations-equal'
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
-import { createValidRules } from '@master/css-validator'
 import { Rule } from 'eslint'
+import findLoc from '../utils/find-loc'
+import { parseNodeRecursive } from '../utils/parse-node-recursive'
+import validRulesAction from '../utils/valid-rules-action'
 
 export default {
     meta: {
@@ -40,9 +41,9 @@ export default {
         ],
     },
     create(context) {
-        const { options, settings, config } = resolveContext(context)
+        const { options, settings } = resolveContext(context)
         const visitNode = (node, arg = null) => {
-            astUtil.parseNodeRecursive(
+            parseNodeRecursive(
                 node,
                 arg,
                 (classNames, node, originalClassNamesValue, start, end) => {
@@ -50,17 +51,11 @@ export default {
                     const sourceCodeLines = sourceCode.lines
                     const nodeStartLine = node.loc.start.line
                     const nodeEndLine = node.loc.end.line
-                    const ruleOfClass = {}
-                    classNames
-                        .forEach(eachClassName => {
-                            ruleOfClass[eachClassName] = createValidRules(eachClassName, { config })[0]
-                        })
-
+                    const ruleOfClass = validRulesAction(classNames, settings.config)
                     for (let i = 0; i < classNames.length; i++) {
                         const className = classNames[i]
                         const rule = ruleOfClass[className]
                         const conflicts = []
-
                         if (rule) {
                             for (let j = 0; j < classNames.length; j++) {
                                 const compareClassName = classNames[j]
@@ -83,7 +78,7 @@ export default {
                                 fixClassNames = fixClassNames.replace(new RegExp(`\\s+${regexSafe}|${regexSafe}\\s+`), '')
                             }
                             context.report({
-                                loc: astUtil.findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
+                                loc: findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
                                 messageId: 'collisionClass',
                                 data: {
                                     message: `"${className}" applies the same CSS declarations as ${conflictClassNamesMsg}.`,

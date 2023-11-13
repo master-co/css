@@ -41,17 +41,20 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "explore-config": "^2.5.19"
+        "explore-config": "^2.5.19",
+        "synckit": "^0.8.5"
     },
     "devDependencies": {
         "@angular-eslint/template-parser": "^16.2.0",
+        "@swc-node/register": "^1.6.8",
         "@types/node": "^20.6.0",
-        "@typescript-eslint/parser": "^5.50.0",
-        "@typescript-eslint/utils": "^6.9.0",
+        "@typescript-eslint/parser": "^6.10.0",
+        "@typescript-eslint/utils": "^6.10.0",
         "eslint": "^8.52.0",
         "eslint-plugin-markdown": "^3.0.1",
         "eslint-plugin-mdx": "^2.2.0",
         "svelte-eslint-parser": "^0.33.1",
+        "ts-node": "^10.9.1",
         "vue-eslint-parser": "^9.3.1"
     }
 }

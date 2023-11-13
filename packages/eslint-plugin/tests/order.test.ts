@@ -100,7 +100,6 @@ new RuleTester({
         {
             code: `<div class="m:10 m:20 m:30:hover m:40@dark">Collision class</div>`,
         },
-
         {
             code: `
                 export default () => (
@@ -122,6 +121,9 @@ new RuleTester({
                 )
             `,
             parser: require.resolve('@typescript-eslint/parser')
+        },
+        {
+            code: `<div class="a c d hello:world font:error mt:0 mt:0@sm">Error class</div>`,
         }
     ],
     invalid: [
@@ -465,6 +467,11 @@ new RuleTester({
         {
             code: `<div className={\`object:contain full max-h:\${eachSponsorTier.height} bg:black\`}>Template</div>`,
             output: `<div className={\`full bg:black max-h:\${eachSponsorTier.height} object:contain\`}>Template</div>`,
+            errors: [{ messageId: 'invalidClassOrder' }],
+        },
+        {
+            code: `<div class="a mt:0 mt:0@sm c d hello:world font:error">Error class</div>`,
+            output: `<div class="a c d hello:world font:error mt:0 mt:0@sm">Error class</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         }
     ],

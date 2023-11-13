@@ -3,7 +3,7 @@
     "compilerOptions": {
         "baseUrl": ".",
         "rootDir": "src",
-        "moduleResolution": "Bundler"
+        "moduleResolution": "Node"
     },
     "include": [
         "src/**/*"

@@ -5,12 +5,17 @@ import { MasterCSS } from '../core'
 /**
  * Sorts classes in a consistent order
  * @param classes
- * @param config
+ * @param options
  * @returns consistent classes
  */
-export default function reorderForReadableClasses(classes: string[], config?: Config) {
+export default function reorderForReadableClasses(classes: string[], options?: { css?: MasterCSS, config?: Config }) {
     if (!classes.length) return
-    const css = new MasterCSS(config)
+    let css: MasterCSS
+    if (options?.css) {
+        css = options?.css
+    } else {
+        css = new MasterCSS(options?.config)
+    }
     for (const eachClass of classes) {
         css.add(eachClass)
     }
