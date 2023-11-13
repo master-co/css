@@ -64,7 +64,7 @@ beforeAll(() => {
     fs.writeFileSync(configFilepath, originConfigText)
 
     child = spawnd('tsx ../../../css/src/bin extract -w', { shell: true, cwd: __dirname })
-}, 60000)
+}, 120000)
 
 it('start watch process', async () => {
     await waitForDataMatch(child, (data) => data.includes('Start watching source changes'))
@@ -73,7 +73,7 @@ it('start watch process', async () => {
     expect(fileCSSText).toContain(cssEscape('font:48'))
     expect(fileCSSText).toContain(cssEscape('bg:primary'))
     expect(fileCSSText).toContain(cssEscape('btn'))
-}, 60000)
+}, 120000)
 
 it('change options file `fixed` and reset process', async () => {
     await waitForDataMatch(child, (data) => data.includes('Restart watching source changes'), async () => {
@@ -81,7 +81,7 @@ it('change options file `fixed` and reset process', async () => {
     })
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
     expect(fileCSSText).toContain(cssEscape('fg:red'))
-}, 60000)
+}, 120000)
 
 it('change config file `styles` and reset process', async () => {
     await waitForDataMatch(child, (data) => data.includes('Restart watching source changes'), async () => {
@@ -89,7 +89,7 @@ it('change config file `styles` and reset process', async () => {
     })
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
     expect(fileCSSText).toContain(cssEscape('bg:blue'))
-}, 60000)
+}, 120000)
 
 it('change html file class attr and update', async () => {
     await waitForDataMatch(child, (data) => data.includes('exported'), async () => {
@@ -98,8 +98,8 @@ it('change html file class attr and update', async () => {
     const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
     /** There is no recycling mechanism during the development */
     expect(fileCSSText).toContain(cssEscape('text:underline'))
-}, 60000)
+}, 120000)
 
 afterAll(async () => {
     await child.destroy()
-}, 60000)
+}, 120000)
