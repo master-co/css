@@ -82,8 +82,8 @@ export default function Play(props: any) {
     const monacoRef = useRef<Monaco | null>(null)
     const previewIframeRef = useRef<HTMLIFrameElement>(null)
     const prevVersionRef = useRef(props.shareItem?.version ?? latestMasterCSSVersion)
-    const [layout, setLayout] = useState<string | null>(searchParams.get('layout'))
-    const [preview, setPreview] = useState<string | null>(searchParams.get('preview'))
+    const [layout, _setLayout] = useState<string | null>(searchParams.get('layout'))
+    const [preview, _setPreview] = useState<string | null>(searchParams.get('preview'))
     const [shareId, setShareId] = useState(props.shareId ?? '')
     const [sharing, setSharing] = useState(false)
     const [version, setVersion] = useState(props.shareItem?.version ?? latestMasterCSSVersion)
@@ -106,6 +106,29 @@ export default function Play(props: any) {
             }
         }
     }, [props.shareItem, template?.dependencies, template?.files, template?.links, version])
+
+    const navigateWithQueryParams = useCallback((params: Record<string, string | null | undefined>) => {
+        const urlSearchParams = new URLSearchParams(location.search)
+        for (const eachParamName in params) {
+            const eachParamValue = params[eachParamName]
+            if (!eachParamValue) {
+                urlSearchParams.delete(eachParamName)
+            } else {
+                urlSearchParams.set(eachParamName, eachParamValue);
+            }
+        }
+        router.push(pathname + '?' + urlSearchParams.toString())
+    }, [pathname, router])
+
+    const setLayout = useCallback((layout: string | null) => {
+        _setLayout(layout)
+        navigateWithQueryParams({ layout })
+    }, [navigateWithQueryParams])
+
+    const setPreview = useCallback((preview: string | null) => {
+        _setPreview(preview)
+        navigateWithQueryParams({ preview })
+    }, [navigateWithQueryParams])
 
     const [currentTabTitle, setCurrentTabTitle] = useState<any>(
         shareItem.files.find(({ title }) => searchParams.get('tab') === title)
@@ -142,23 +165,8 @@ export default function Play(props: any) {
         setShareable(strignifiedDatabaseShareItem !== strignifiedPrevShareItem)
     }, [generateDatabaseShareItem, shareItem, strignifiedPrevShareItem])
 
-    const createQueryString = useCallback(
-        (name: string, value: any) => {
-            const params = new URLSearchParams(location.search);
-            if (!value) {
-                params.delete(name)
-            } else {
-                params.set(name, value);
-            }
-            return params.toString();
-        },
-        [],
-    );
-
     useEffect(() => {
         const urlSearchParams = new URLSearchParams(location.search)
-        setLayout(urlSearchParams.get('layout') || '')
-        setPreview(urlSearchParams.get('preview') || '')
         const queryTab = urlSearchParams.get('tab')
         if ([...shareItem.files.map(({ title }) => title)].includes(queryTab || '')) {
             setCurrentTabTitle(queryTab)
@@ -183,18 +191,6 @@ export default function Play(props: any) {
             window.removeEventListener('resize', onResize)
         }
     }, [currentTabTitle, shareItem.files])
-
-    useEffect(() => {
-        if (new URLSearchParams(location.search).get('layout') !== layout) {
-            router.push(pathname + '?' + createQueryString('layout', layout))
-        }
-    }, [createQueryString, layout, pathname, router, searchParams])
-
-    useEffect(() => {
-        if (new URLSearchParams(location.search).get('preview') !== preview) {
-            router.push(pathname + '?' + createQueryString('preview', preview))
-        }
-    }, [createQueryString, pathname, preview, router, searchParams])
 
     /**
      * 需避免即時編輯 HTML, Config 或切換 Theme 時更新 previewHTML，否則 Preview 將重載並造成視覺閃爍
@@ -625,7 +621,7 @@ export default function Play(props: any) {
                         </span>}
                     </button>}
                     {(shareId || shareable) && <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>}
-                    <button className="app-header-icon hide@<md" onClick={(event) => (setLayout(layout ? null : '2'))}>
+                    <button className="app-header-icon hide@<md" onClick={() => (setLayout(layout ? null : '2'))}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
                                 '~transform|.2s',
@@ -724,11 +720,7 @@ export default function Play(props: any) {
                     <Tabs className="flex:0|0|auto" contentClassName="px:30">
                         {shareItem.files.map((file, index) => (
                             <Tab size="sm" active={currentTabTitle === file.title} key={file.id} onClick={() => {
-                                if (index === 0) {
-                                    router.push(pathname + '?' + createQueryString('tab', ''));
-                                } else {
-                                    router.push(pathname + '?' + createQueryString('tab', file.title));
-                                }
+                                navigateWithQueryParams({ tab: index === 0 ? '' : file.title })
                                 // 不可僅依賴 router push 進行切換
                                 setCurrentTabTitle(file.title)
                             }}>
