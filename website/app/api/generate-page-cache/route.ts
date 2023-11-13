@@ -78,6 +78,13 @@ export async function POST(req: Request) {
                     headers: { Authorization: 'Bearer ' + process.env.GITHUB_GENERATE_PAGE_CACHE_TOKEN }
                 })
 
+            console.log(
+                process.env.VERCEL_GIT_REPO_OWNER,
+                process.env.VERCEL_GIT_REPO_SLUG,
+                process.env.VERCEL_GIT_COMMIT_REF,
+                (await result.json()).sha,
+                process.env.VERCEL_GIT_COMMIT_SHA
+            )
 
             if ((await result.json()).sha !== process.env.VERCEL_GIT_COMMIT_SHA)
                 return new Response('Only the latest commit can generate the page cache.', { status: 400 })
