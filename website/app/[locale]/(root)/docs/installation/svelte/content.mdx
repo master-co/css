@@ -72,6 +72,29 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Allow configuration file
+            Add `./master.css.ts` to the `server.fs.allow` section in `vite.config.ts` to be allowed by the server file system.
+
+            (x) Accessing files outside this directory list that aren't imported from an allowed file will result in a 403.
+        </StepL>
+        <StepR>
+            ```ts name=vite.config.ts
+            import { sveltekit } from '@sveltejs/kit/vite'
+            import { defineConfig } from 'vite'
+
+            export default defineConfig({
+                plugins: [sveltekit()],
+            +    server: {
+            +        fs: {
+            +            allow: ['./master.css.ts']
+            +        }
+            +    }
+            })
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Set up CSS runtime engine
             Register Master CSS and provide instance context in `src/routes/+layout.svelte`:
             1. Dynamic `js import("@master/css.svelte")`
@@ -95,7 +118,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             +    });
             </script>
 
-            +<svelte:component this={CSSProvider} config={import('../master.css')}>
+            +<svelte:component this={CSSProvider} config={import('../../master.css')}>
                 <slot />
             +</svelte:component>
             ```
@@ -104,12 +127,12 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     <Step $row>
         <StepL>
             ### <StepNum />Set up Master CSS renderer
-            Create a `src/hooks.server.js` and use the `render()` to scan the rendered HTML of the Svelte pages, extract class names, generate CSS rules, and inject the CSS text.
+            Create a `src/hooks.server.ts` and use the `render()` to scan the rendered HTML of the Svelte pages, extract class names, generate CSS rules, and inject the CSS text.
         </StepL>
         <StepR>
-            ```js name=src/hooks.server.js
+            ```ts name=src/hooks.server.ts
             +import { render } from '@master/css-server'
-            +import { config } from './master.css'
+            +import { config } from '../master.css'
 
             /** @type {import('@sveltejs/kit').Handle} */
             export async function handle({ event, resolve }) {

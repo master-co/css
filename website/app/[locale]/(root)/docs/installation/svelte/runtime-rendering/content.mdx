@@ -1,7 +1,6 @@
 import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRenderingIntro.mdx'
 
 <RuntimeRenderingIntro img={{
-
     href: "https://svelte.rr.beta.css.master.co",
     src: "/images/svelte-dev.png",
     alt: 'Svelte and Master CSS',
@@ -73,6 +72,29 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Allow configuration file
+            Add `./master.css.ts` to the `server.fs.allow` section in `vite.config.ts` to be allowed by the server file system.
+
+            (x) Accessing files outside this directory list that aren't imported from an allowed file will result in a 403.
+        </StepL>
+        <StepR>
+            ```ts name=vite.config.ts
+            import { sveltekit } from '@sveltejs/kit/vite'
+            import { defineConfig } from 'vite'
+
+            export default defineConfig({
+                plugins: [sveltekit()],
+            +    server: {
+            +        fs: {
+            +            allow: ['./master.css.ts']
+            +        }
+            +    }
+            })
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Set up CSS runtime engine
             Register the `html <CSSProvider>` in `src/routes/+layout.svelte`.
         </StepL>
@@ -80,11 +102,11 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
             ```svelte name=src/routes/%2Blayout.svelte
                 <script>
                 +    import { CSSProvider } from "@master/css.svelte";
-                +    import config from '../master.css';
+                +    import config from '../../master.css';
                     import Header from "./Header.svelte";
                     import "./styles.css";
                 </script>
-                +<svelte:component this={CSSProvider} config={import('../master.css')}>
+                +<svelte:component this={CSSProvider} config={config}>
                     <slot />
                 +</svelte:component>
             ```
