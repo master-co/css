@@ -83,14 +83,14 @@ export default function Play(props: any) {
     const monacoRef = useRef<Monaco | null>(null)
     const previewIframeRef = useRef<HTMLIFrameElement>(null)
     const prevVersionRef = useRef(props.shareItem?.version ?? latestMasterCSSVersion)
-    const [layout, _setLayout] = useState<string | null>(searchParams.get('layout'))
-    const [preview, _setPreview] = useState<string | null>(searchParams.get('preview'))
     const [shareId, setShareId] = useState(props.shareId ?? '')
     const [sharing, setSharing] = useState(false)
     const [version, setVersion] = useState(props.shareItem?.version ?? latestMasterCSSVersion)
     const [generatedCSSText, setGeneratedCSSText] = useState('')
     const template = useMemo(() => templates.find((eachTemplate) => eachTemplate.version === version), [version])
     const [previewErrorEvent, setPreviewErrorEvent] = useState<any>()
+    const layout = useMemo(() => searchParams.get('layout'), [searchParams])
+    const preview = useMemo(() => searchParams.get('preview'), [searchParams])
     const shareItem: PlayShare = useMemo(() => {
         if (props.shareItem && props.shareItem.version === version) {
             props.shareItem.files
@@ -120,16 +120,6 @@ export default function Play(props: any) {
         }
         router.push(pathname + '?' + urlSearchParams.toString())
     }, [pathname, router])
-
-    const setLayout = useCallback((layout: string | null) => {
-        _setLayout(layout)
-        navigateWithQueryParams({ layout })
-    }, [navigateWithQueryParams])
-
-    const setPreview = useCallback((preview: string | null) => {
-        _setPreview(preview)
-        navigateWithQueryParams({ preview })
-    }, [navigateWithQueryParams])
 
     const [currentTabTitle, setCurrentTabTitle] = useState<any>(
         shareItem.files.find(({ title }) => searchParams.get('tab') === title)
@@ -606,7 +596,7 @@ export default function Play(props: any) {
                         </span>}
                     </ShareButton>}
                     {(shareId || shareable) && <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>}
-                    <button className="app-header-icon hide@<md" onClick={() => (setLayout(layout ? null : '2'))}>
+                    <button className="app-header-icon hide@<md" onClick={() => navigateWithQueryParams({ layout: layout ? null : '2' })}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
                                 '~transform|.2s',
@@ -618,7 +608,7 @@ export default function Play(props: any) {
                             <path d="M12 4l0 16"></path>
                         </svg>
                     </button>
-                    <button className="app-header-icon hide@<md" onClick={(event) => (setLayout(layout === '3' ? '4' : '3'))}>
+                    <button className="app-header-icon hide@<md" onClick={() => navigateWithQueryParams({ layout: layout === '3' ? '4' : '3' })}>
                         <svg className={clsx({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate(90)')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
                                 '~transform|.2s',
@@ -630,7 +620,7 @@ export default function Play(props: any) {
                             <path d="M12 4l0 16"></path>
                         </svg>
                     </button>
-                    <button className="app-header-icon hide@<md" onClick={(event) => setLayout('5')}>
+                    <button className="app-header-icon hide@<md" onClick={() => navigateWithQueryParams({ layout: '5' })}>
                         <svg xmlns="http://www.w3.org/2000/svg" className={clsx(layout === '5' && 'stroke:accent')} width="22" height="22" strokeWidth="1.2" viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
@@ -640,21 +630,21 @@ export default function Play(props: any) {
                     </button>
                     <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>
                     {/* preview: desktop */}
-                    <button className="app-header-icon hide@<md" onClick={(event) => setPreview('')}>
+                    <button className="app-header-icon hide@<md" onClick={() => navigateWithQueryParams({ preview: '' })}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
                             'stroke:1.3 stroke:current',
                             !preview ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
                         )} />
                     </button>
                     {/* preview: responsive */}
-                    <button className="app-header-icon hide@<md" onClick={(event) => setPreview('responsive')}>
+                    <button className="app-header-icon hide@<md" onClick={() => navigateWithQueryParams({ preview: 'responsive' })}>
                         <IconDeviceMobile width="22" height="22" className={clsx(
                             'stroke:1.3 stroke:current',
                             responsive ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
                         )} />
                     </button>
                     {/* preview: css */}
-                    <button className="app-header-icon hide@<md" onClick={(event) => setPreview('css')}>
+                    <button className="app-header-icon hide@<md" onClick={() => navigateWithQueryParams({ preview: 'css' })}>
                         <IconBrandCss3 width="22" height="22" className={clsx(
                             'stroke:1.3 stroke:current',
                             preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
