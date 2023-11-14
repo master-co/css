@@ -17,6 +17,9 @@ importers:
       '@master/css-renderer':
         specifier: workspace:^
         version: link:packages/renderer
+      '@swc-node/jest':
+        specifier: ^1.6.8
+        version: 1.6.8(@swc/core@1.3.96)(typescript@5.2.2)
       '@techor/fs':
         specifier: ^2.5.19
         version: 2.5.19
@@ -5884,6 +5887,142 @@ packages:
       eslint-scope: 5.1.1
     dev: true
 
+  /@node-rs/xxhash-android-arm-eabi@1.4.2:
+    resolution: {integrity: sha512-6aonl3wNY/axTiW9jSz+Z2RduP2xCZTgX1M1ur8uCJcUVv/kkv+dEMFb3o/k19qBGntPWvGXZTj2mYO6onDr/g==}
+    engines: {node: '>= 12'}
+    cpu: [arm]
+    os: [android]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@node-rs/xxhash-android-arm64@1.4.2:
+    resolution: {integrity: sha512-Uhwsk3mp++Op2Sl/TzR1VfFqHx5sGMAwQGhQKThc/w8QSrDNfWKd1R9rjohIDWeNbmRguUCDPEKEOZwGewWacw==}
+    engines: {node: '>= 12'}
+    cpu: [arm64]
+    os: [android]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@node-rs/xxhash-darwin-arm64@1.4.2:
+    resolution: {integrity: sha512-0JYLJQ9C8prYbPPr3WlScYnAgIxLwitUwx2FnxNmBNH9bCDFoMdFXylzlxdYPHEYcXMsvWWcOnf9cESBH0WqzA==}
+    engines: {node: '>= 12'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@node-rs/xxhash-darwin-x64@1.4.2:
+    resolution: {integrity: sha512-9CMuC7PZqHDaPCnOUrW6AIL+2gzLq22klGKBRXHXVfUELuNEqp7N0HyHheoQ99U0otCNnsA54zkfBw9cL1pcIA==}
+    engines: {node: '>= 12'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@node-rs/xxhash-freebsd-x64@1.4.2:
+    resolution: {integrity: sha512-pPvuivkR3oyZ6DocgX6LSN2GpgF6Z4DK8M0UwDlY5P2wAUoi1JIOJBLjOrQmiaCUIIGCTTDBKTPwgIDUh6A7mg==}
+    engines: {node: '>= 12'}
+    cpu: [x64]
+    os: [freebsd]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@node-rs/xxhash-linux-arm-gnueabihf@1.4.2:
+    resolution: {integrity: sha512-LzI9WMW2scTG3/87/9j+oE0njz1o/2s7c61h1rEZyP1WBGA1cZ2xn3wAnwqFOPKE3s7QvONXoYjMMqa+BtDNNg==}
+    engines: {node: '>= 12'}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@node-rs/xxhash-linux-arm64-gnu@1.4.2:
+    resolution: {integrity: sha512-BeOlxfDzdnYRfK0nEyG8gpA6AGpamZVe2FNBl96xB5eVYiPp8PhIFLFsfoPURqa/Abm8+JV+QHzf3sngD1Gr+Q==}
+    engines: {node: '>= 12'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@node-rs/xxhash-linux-arm64-musl@1.4.2:
+    resolution: {integrity: sha512-u6l7mE5jmEWwUghZbfVHhhN9pMDkE0pjxjZu52bd8Ohk8LkbFDOJVNG2AWkWkjdInP31PmhvtCgE2laKCCQeRQ==}
+    engines: {node: '>= 12'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@node-rs/xxhash-linux-x64-gnu@1.4.2:
+    resolution: {integrity: sha512-h3FUuuDBGdJ42HgA9lxX9cNSussF1lO/04OKXkVuJGRPR6mBCqBZ9SPNhzSk2PyYEqHimXIBYr+CdDRCS1xsfQ==}
+    engines: {node: '>= 12'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@node-rs/xxhash-linux-x64-musl@1.4.2:
+    resolution: {integrity: sha512-W3/lMn1IBeTAcYVJEycxeyiMLD05M7OGsCZLAE0PB/t8dC+tH5jayVrYRhj+ZznK3V3pZfZb7cCVvZD2eCMb3g==}
+    engines: {node: '>= 12'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@node-rs/xxhash-win32-arm64-msvc@1.4.2:
+    resolution: {integrity: sha512-53WhZY+khV/d8qmbLimCLXptq6/r1KD61Hi8I96KWxP6WiDl7Himhi5Pm2SbA2YK1WA3xPCaHj/LkPRks8Zi2g==}
+    engines: {node: '>= 12'}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@node-rs/xxhash-win32-ia32-msvc@1.4.2:
+    resolution: {integrity: sha512-F1gWrwrNmw9rjxGphsDw9iGttXDEaGnAAj9U14+9n3WREMsmCRsKfoSZ41ln9KHH8hEABsxL15Tiutm++S3LmA==}
+    engines: {node: '>= 12'}
+    cpu: [ia32]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@node-rs/xxhash-win32-x64-msvc@1.4.2:
+    resolution: {integrity: sha512-d7CUKK3IFYbED/0w6RosCKWL/RODfmA6yMfQdu3BZvh9Y8GTjRLE+DAIOOklP9Rb9qkKYSyzp2ALrHSkrHdRXQ==}
+    engines: {node: '>= 12'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@node-rs/xxhash@1.4.2:
+    resolution: {integrity: sha512-PvFTpG5z8tdXdZNkHUpjHDnBAKLxn6Xwp4yH8nfuVA2NcO3J970IHnm9yWcs9VVNwLr2aJx0lb8OvBAuLUNiEw==}
+    engines: {node: '>= 12'}
+    optionalDependencies:
+      '@node-rs/xxhash-android-arm-eabi': 1.4.2
+      '@node-rs/xxhash-android-arm64': 1.4.2
+      '@node-rs/xxhash-darwin-arm64': 1.4.2
+      '@node-rs/xxhash-darwin-x64': 1.4.2
+      '@node-rs/xxhash-freebsd-x64': 1.4.2
+      '@node-rs/xxhash-linux-arm-gnueabihf': 1.4.2
+      '@node-rs/xxhash-linux-arm64-gnu': 1.4.2
+      '@node-rs/xxhash-linux-arm64-musl': 1.4.2
+      '@node-rs/xxhash-linux-x64-gnu': 1.4.2
+      '@node-rs/xxhash-linux-x64-musl': 1.4.2
+      '@node-rs/xxhash-win32-arm64-msvc': 1.4.2
+      '@node-rs/xxhash-win32-ia32-msvc': 1.4.2
+      '@node-rs/xxhash-win32-x64-msvc': 1.4.2
+    dev: true
+
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -7195,6 +7334,21 @@ packages:
       '@swc/core': '>= 1.3'
     dependencies:
       '@swc/core': 1.3.96
+    dev: true
+
+  /@swc-node/jest@1.6.8(@swc/core@1.3.96)(typescript@5.2.2):
+    resolution: {integrity: sha512-Ce9D3vSmTjyb3TnCKWHtzXNMaGxfz0rMUO6r+7yt1eQj4YdVZP6/TWcgwI84j3OMjvUW0gQx0GPWrnNTP1GzWQ==}
+    peerDependencies:
+      '@swc/core': '>= 1.3'
+      typescript: '>= 4.3'
+    dependencies:
+      '@node-rs/xxhash': 1.4.2
+      '@swc-node/core': 1.10.6(@swc/core@1.3.96)
+      '@swc-node/register': 1.6.8(@swc/core@1.3.96)(typescript@5.2.2)
+      '@swc/core': 1.3.96
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /@swc-node/register@1.6.8(@swc/core@1.3.96)(typescript@5.2.2):
@@ -17734,6 +17888,7 @@ packages:
   /mimic-response@3.1.0:
     resolution: {integrity: sha512-z0yWI+4FDrrweS8Zmt4Ej5HdJmky15+L2e6Wgn3+iK5fWzb6T3fhNFq2+MeTRb064c6Wr4N/wv0DzQTjNzHNGQ==}
     engines: {node: '>=10'}
+    requiresBuild: true
     dev: true
 
   /min-indent@1.0.1:

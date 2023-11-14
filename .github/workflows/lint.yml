@@ -12,7 +12,6 @@ on:
 
 jobs:
     lint:
-        timeout-minutes: 25
         runs-on: ubuntu-20.04
         strategy:
             matrix:

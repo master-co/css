@@ -3,7 +3,7 @@
     "scripts": {
         "postinstall": "husky install && pnpm ls --r --filter \"./packages/*\"",
         "build": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" build",
-        "build:examples": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./examples/*\" build",
+        "build:examples": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./examples/*\" --parallel build",
         "check": "pnpm run commit-check && pnpm run build && pnpm --filter \"./packages/*\" --parallel run \"/^(test|lint|type-check)/\"",
         "test": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --parallel test",
         "lint": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --parallel lint",
@@ -24,6 +24,7 @@
         "@master/css-extractor": "workspace:^",
         "@master/css-extractor.vite": "workspace:^",
         "@master/css-renderer": "workspace:^",
+        "@swc-node/jest": "^1.6.8",
         "@techor/fs": "^2.5.19",
         "@techor/glob": "^2.5.19",
         "@techor/jest": "^2.5.19",

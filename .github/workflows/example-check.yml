@@ -1,4 +1,4 @@
-name: Type Check
+name: Example Check
 on:
     push:
         branches:
@@ -12,10 +12,12 @@ on:
 
 jobs:
     check:
-        runs-on: ubuntu-20.04
+        runs-on: ${{ matrix.os }}
         strategy:
             matrix:
                 node-version: [18.17.0]
+                os: [ubuntu-latest, windows-latest, macos-latest]
+
         steps:
             - uses: actions/checkout@v3
             - uses: pnpm/action-setup@v2
@@ -26,5 +28,4 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   cache: 'pnpm'
             - run: pnpm install
-            - run: pnpm run build
-            - run: pnpm run type-check
+            - run: pnpm build:examples

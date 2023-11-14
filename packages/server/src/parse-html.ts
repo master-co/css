@@ -7,7 +7,7 @@ import { parse, type HTMLElement } from 'node-html-parser'
 export default function parseHTML(html: string): { classes: string[], root: HTMLElement } {
     if (!html) return
     const classes = []
-    const root = parse(html)
+    const root = parse(html, { comment: true })
     root.querySelectorAll('[class]').forEach(element => {
         const className = element.getAttribute('class')
         if (className) {
