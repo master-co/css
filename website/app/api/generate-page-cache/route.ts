@@ -6,11 +6,13 @@ import fs from 'fs'
 import getCurrentGitBranch from 'current-git-branch'
 import zlib from 'zlib'
 import { default as githubToken } from 'websites/tokens/github'
+import type { File } from '@google-cloud/storage'
+import { default as i18n } from 'websites/i18n.config.mjs'
 
 const currentBranch = getCurrentGitBranch()
 
 const isProduction = process.env.NODE_ENV === 'production';
-const DOMAINS: { name: string, units: Record<string, string> }[] = isProduction
+const DOMAINS: { name: string, units: Record<string, string> }[] = true
     ? [{ name: 'https://beta.css.master.co', units: { 'docs': 'installation' } }]
     : [{ name: 'http://localhost:3000', units: { 'docs': 'installation' } }];
 const TEXT_TAGS = ['p', 'span', 'h1', 'h2', 'h3', 'h4', 'li', 'a', 'code', 'mark'];
@@ -62,16 +64,21 @@ export async function POST(req: Request) {
     if (!locale || !host)
         return new Response(null, { status: 200 })
 
-    const name = `${host}-${locale}.br`
     const bucket = storage.bucket(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET);
-    const file = bucket.file(name)
+    let name: string
+    let file: File
     if (host.startsWith('localhost')) {
         if (currentBranch === 'main') {
             host = 'css.master.co'
         } else {
             host = currentBranch + '.css.master.co'
         }
+        name = `${host}-${locale}.br`
+        file = bucket.file(name)
     } else {
+        name = `${host}-${locale}.br`
+        file = bucket.file(name)
+
         try {
             const result = await fetch(
                 `https://api.github.com/repos/${process.env.VERCEL_GIT_REPO_OWNER}/${process.env.VERCEL_GIT_REPO_SLUG}/commits/${process.env.VERCEL_GIT_COMMIT_REF}`,
@@ -109,10 +116,16 @@ export async function POST(req: Request) {
     }
 
     const data: Record<string, { title: string, category: string, description: string, nodes: { text: string, id: string }[], disabled: boolean }> = {}
+    const nullData: Record<string, boolean> = {}
     const crawle = async (baseUrl: string, crawleUrl: string) => {
         const url = new URL(crawleUrl, baseUrl)
 
-        if (!(url.pathname in data) && url.href.startsWith(baseUrl)) {
+        if (
+            !(url.pathname in data) 
+            && !(url.pathname in nullData) 
+            && url.href.startsWith(baseUrl)
+        ) {
+            console.log(url.pathname)
             const html = await (await fetch(url.href)).text()
             const $ = cheerio.load(html)
 
@@ -195,6 +208,8 @@ export async function POST(req: Request) {
                     nodes,
                     disabled
                 }
+            } else {
+                nullData[url.pathname] = true
             }
 
             const hrefs = $('a')
@@ -208,7 +223,7 @@ export async function POST(req: Request) {
 
     const content = [];
     const regexp = new RegExp('^https:\\/\\/([A-Za-z]+).master.co(\\/' + locale + ')', 'm')
-    const suffix = '/' + locale;
+    const suffix = (locale === i18n.defaultLocale) ? '' : '/' + locale;
     for (const eachDomain of DOMAINS) {
         for (const eachUnit in eachDomain.units) {
             await crawle(eachDomain.name + suffix + '/' + eachUnit, eachUnit + '/' + eachDomain.units[eachUnit])
