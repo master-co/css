@@ -127,17 +127,17 @@ export default function Play(props: any) {
     const updateLayout = useCallback((layout: any) => {
         setLayout(layout)
         updateQueryParams('layout', layout)
-    }, [])
+    }, [updateQueryParams])
 
     const updatePreview = useCallback((preview: any) => {
         setPreview(preview)
         updateQueryParams('preview', preview)
-    }, [])
+    }, [updateQueryParams])
 
     const updateTab = useCallback((tab: any) => {
         setTab(tab)
         updateQueryParams('tab', tab === shareItem.files[0].title ? '' : tab)
-    }, [])
+    }, [shareItem.files, updateQueryParams])
 
     const [tab, setTab] = useState<any>(
         () => shareItem.files.find(({ title }) => searchParams?.get('tab') === title)
@@ -191,7 +191,7 @@ export default function Play(props: any) {
         return () => {
             window.removeEventListener('resize', onResize)
         }
-    }, [tab, shareItem.files])
+    }, [tab, shareItem.files, updateTab, updatePreview])
 
     /**
      * 需避免即時編輯 HTML, Config 或切換 Theme 時更新 previewHTML，否則 Preview 將重載並造成視覺閃爍
