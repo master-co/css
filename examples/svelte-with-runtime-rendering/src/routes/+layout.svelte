@@ -1,6 +1,6 @@
 <script>
     import { CSSProvider } from "@master/css.svelte";
-    import config from "../master.css";
+    import config from "../../master.css";
     import Header from "./Header.svelte";
     import "./styles.css";
 </script>

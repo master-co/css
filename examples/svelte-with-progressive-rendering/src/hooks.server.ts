@@ -1,5 +1,5 @@
 import { render } from '@master/css-server'
-import config from './master.css'
+import config from '../master.css'
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
