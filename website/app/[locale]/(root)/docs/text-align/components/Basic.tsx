@@ -1,7 +1,7 @@
-import Image from 'next/image';
-import Demo from 'websites/components/Demo';
-import DemoPanel from 'websites/components/DemoPanel';
-import { l } from 'to-line';
+import Image from 'next/image'
+import Demo from 'websites/components/Demo'
+import DemoPanel from 'websites/components/DemoPanel'
+import { l } from 'to-line'
 
 export default ({ className }: any) =>
     <Demo $py={0}>

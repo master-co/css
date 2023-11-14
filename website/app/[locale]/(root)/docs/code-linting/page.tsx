@@ -1,7 +1,7 @@
 import metadata from './metadata'
 import Content from './content.mdx'
 import { generate } from '~/utils/metadata'
-import { queryDictionary } from 'websites/dictionaries';
+import { queryDictionary } from 'websites/dictionaries'
 import DocLayout from '~/layouts/doc'
 import ESLintSvg from '~/public/icons/eslint.svg?inlineSvg'
 

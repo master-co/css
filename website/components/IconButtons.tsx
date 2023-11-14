@@ -1,4 +1,4 @@
-import { l } from 'to-line';
+import { l } from 'to-line'
 import Link from 'websites/components/Link'
 
 export default ({ children, className, url }: any) =>

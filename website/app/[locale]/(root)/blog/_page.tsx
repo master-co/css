@@ -1,13 +1,13 @@
-import Article from 'websites/components/Article';
-import DocHeader from '~/layouts/DocHeader';
-import DocFooter from '~/layouts/DocFooter';
-import { queryDictionary } from 'websites/dictionaries';
+import Article from 'websites/components/Article'
+import DocHeader from '~/layouts/DocHeader'
+import DocFooter from '~/layouts/DocFooter'
+import { queryDictionary } from 'websites/dictionaries'
 // @ts-expect-error
 import allBlogMetadata from './*/metadata.js'
-import Image from 'next/image';
-import { l } from 'to-line';
-import dayjs from 'dayjs';
-import Link from 'websites/components/Link';
+import Image from 'next/image'
+import { l } from 'to-line'
+import dayjs from 'dayjs'
+import Link from 'websites/components/Link'
 import metadata from './metadata.js'
 import { generate } from '~/utils/metadata'
 

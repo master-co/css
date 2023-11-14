@@ -1,13 +1,13 @@
 'use client'
 
-import DocTable from 'websites/components/DocTable';
-import { Fragment, useMemo, useState } from 'react';
-import { beautifyCSS } from 'websites/utils/beautifyCSS';
-import line from 'to-line';
-import { snackbar } from 'websites/utils/snackbar';
-import InlineCode from 'websites/components/InlineCode';
-import dedent from 'ts-dedent';
-import MasterCSS from '@master/css';
+import DocTable from 'websites/components/DocTable'
+import { Fragment, useMemo, useState } from 'react'
+import { beautifyCSS } from 'websites/utils/beautifyCSS'
+import line from 'to-line'
+import { snackbar } from 'websites/utils/snackbar'
+import InlineCode from 'websites/components/InlineCode'
+import dedent from 'ts-dedent'
+import MasterCSS from '@master/css'
 
 export default function SyntaxTable({ title, value, children, previewClass, ...props }: any) {
     const [selectedClassName, setSelectedClassName] = useState(props.default)
@@ -79,5 +79,5 @@ const processCssText = (name: string | Record<string, any>) => {
         .replace(/@keyframes\s+[\w-]+\s*{\s*([\s\S]*{[\s\S]*?})*\s*}/g, '')
         .replace(/.*{([\s\S]*?)}.*/g, '$1')
         .replace(/`(.*?)`/g, `_PLACEHOLDER_$1_PLACEHOLDER_`)
-        .replace(/(1600|100)/g, '`size`');
+        .replace(/(1600|100)/g, '`size`')
 }

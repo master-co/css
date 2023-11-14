@@ -6,8 +6,8 @@ import { positionCheck, getColorPresentation, getDocumentColors, getCompletionIt
 
 export function CompletionItemProvider(document: monaco.editor.ITextModel, position: monaco.Position, language: string = 'html') {
 
-    var word = document.getWordUntilPosition(position)
-    var range = {
+    const word = document.getWordUntilPosition(position)
+    const range = {
         startLineNumber: position.lineNumber,
         endLineNumber: position.lineNumber,
         startColumn: word.startColumn,
@@ -42,15 +42,15 @@ export function CompletionItemProvider(document: monaco.editor.ITextModel, posit
 
     const inMasterCSS = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch).IsMatch
 
-    let line = document.getValueInRange({
+    const line = document.getValueInRange({
         startLineNumber: position.lineNumber,
         startColumn: 0,
         endLineNumber: position.lineNumber,
         endColumn: position.column
     })
 
-    let lineText: string = line == null ? '' : line;
-    lineText = lineText.trim();
+    let lineText: string = line == null ? '' : line
+    lineText = lineText.trim()
 
     const lastInstance = getLastInstance(lineText, monacoPositionToVsCodePosition(position), language)
 
@@ -83,9 +83,9 @@ export function CompletionItemProvider(document: monaco.editor.ITextModel, posit
 }
 
 export function HoverItemProvider(textDocumentPosition: monaco.Position, document: monaco.editor.ITextModel) {
-    const position = textDocumentPosition;
+    const position = textDocumentPosition
 
-    let text = document.getValue()
+    const text = document.getValue()
 
     const positionIndex = document.getOffsetAt(position) ?? 0
     const startIndex = document.getOffsetAt({ lineNumber: position.lineNumber - 100, column: 0 }) ?? 0
@@ -104,7 +104,7 @@ export function HoverItemProvider(textDocumentPosition: monaco.Position, documen
                         return x
                     }
                 })
-            };
+            }
         }
     }
 }
@@ -134,7 +134,7 @@ export function ColorPresentationProvider(document: monaco.editor.ITextModel, co
 
     const colorRender = ['(?<=colors:\\s*{\\s*.*)([^}]*)}']
 
-    let text = document.getValue()
+    const text = document.getValue()
 
     const positionIndex = document.getOffsetAt({ lineNumber: colorInfo.range.startLineNumber, column: colorInfo.range.startColumn }) ?? 0
     const startIndex = document.getOffsetAt({ lineNumber: colorInfo.range.startLineNumber - 100, column: 0 }) ?? 0
@@ -142,7 +142,7 @@ export function ColorPresentationProvider(document: monaco.editor.ITextModel, co
 
     const isColorRender = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, colorRender)
 
-    let documentColors = getColorPresentation({ color: colorInfo.color, range: monacoRangeToVsCodeRange(colorInfo.range) } as any, isColorRender.IsMatch)
+    const documentColors = getColorPresentation({ color: colorInfo.color, range: monacoRangeToVsCodeRange(colorInfo.range) } as any, isColorRender.IsMatch)
 
     return documentColors.map(x => ({ label: x.label, textEdit: { range: colorInfo.range, text: x.textEdit?.newText ?? '' } }))
 }

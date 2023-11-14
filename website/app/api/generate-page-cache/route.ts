@@ -10,51 +10,47 @@ import type { File } from '@google-cloud/storage'
 import { default as i18n } from 'websites/i18n.config.mjs'
 
 const currentBranch = getCurrentGitBranch()
-
-const isProduction = process.env.NODE_ENV === 'production';
-const DOMAINS: { name: string, units: Record<string, string> }[] = true
-    ? [{ name: 'https://beta.css.master.co', units: { 'docs': 'installation' } }]
-    : [{ name: 'http://localhost:3000', units: { 'docs': 'installation' } }];
-const TEXT_TAGS = ['p', 'span', 'h1', 'h2', 'h3', 'h4', 'li', 'a', 'code', 'mark'];
-const SELF_CLOSING_TAGS = ['path', 'area', 'base', 'img', 'hr', 'br', 'col', 'embed', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
-const BYPASS_TAGS = ['svg'];
-const commentRegexp = /<!--.*?-->/g;
-const idRegexp = / id="(.*?)"/;
+const DOMAINS: { name: string, units: Record<string, string> }[] = [{ name: 'https://beta.css.master.co', units: { 'docs': 'installation' } }]
+const TEXT_TAGS = ['p', 'span', 'h1', 'h2', 'h3', 'h4', 'li', 'a', 'code', 'mark']
+const SELF_CLOSING_TAGS = ['path', 'area', 'base', 'img', 'hr', 'br', 'col', 'embed', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr']
+const BYPASS_TAGS = ['svg']
+const commentRegexp = /<!--.*?-->/g
+const idRegexp = / id="(.*?)"/
 
 function getBracketContent(source: string, startSymbol = '<', endSymbol = '>') {
-    let startIndex = source.indexOf(startSymbol);
-    let currentIndex = startIndex;
-    let curlyBracketCount = 0;
-    let stringModeSymbol = '';
+    const startIndex = source.indexOf(startSymbol)
+    let currentIndex = startIndex
+    let curlyBracketCount = 0
+    let stringModeSymbol = ''
 
     for (; currentIndex <= source.length; currentIndex++) {
-        const char = source[currentIndex];
+        const char = source[currentIndex]
         if (char === '\\') {
-            currentIndex++;
-            continue;
+            currentIndex++
+            continue
         }
 
         if (char === '\'' || char === '"') {
             if (stringModeSymbol) {
                 if (stringModeSymbol === char) {
-                    stringModeSymbol = '';
+                    stringModeSymbol = ''
                 }
             } else {
-                stringModeSymbol = char;
+                stringModeSymbol = char
             }
         } else if (!stringModeSymbol) {
             if (char === startSymbol) {
-                curlyBracketCount++;
+                curlyBracketCount++
             } else if (char === endSymbol) {
-                curlyBracketCount--;
+                curlyBracketCount--
                 if (!curlyBracketCount) {
-                    break;
+                    break
                 }
             }
         }
     }
 
-    return source.slice(startIndex, currentIndex + 1);
+    return source.slice(startIndex, currentIndex + 1)
 }
 
 export async function POST(req: Request) {
@@ -64,7 +60,7 @@ export async function POST(req: Request) {
     if (!locale || !host)
         return new Response(null, { status: 200 })
 
-    const bucket = storage.bucket(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET);
+    const bucket = storage.bucket(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET)
     let name: string
     let file: File
     if (host.startsWith('localhost')) {
@@ -121,8 +117,8 @@ export async function POST(req: Request) {
         const url = new URL(crawleUrl, baseUrl)
 
         if (
-            !(url.pathname in data) 
-            && !(url.pathname in nullData) 
+            !(url.pathname in data)
+            && !(url.pathname in nullData)
             && url.href.startsWith(baseUrl)
         ) {
             console.log(url.pathname)
@@ -132,73 +128,73 @@ export async function POST(req: Request) {
             let content = html
             content = content.slice(content.indexOf('<article')).replace(commentRegexp, '')
 
-            let i = 0;
+            let i = 0
             const nodes: { text: string, id: string, tag: string }[] = [];
             (function reorganizate(tag, isParentTextTag, isParentBypassTag, bypassHandleTag) {
-                const tagContent = getBracketContent(content.slice(i));
-                i += tagContent.length;
+                const tagContent = getBracketContent(content.slice(i))
+                i += tagContent.length
                 if (tagContent.endsWith('/>') || SELF_CLOSING_TAGS.includes(tag))
-                    return '';
+                    return ''
 
                 const closedTag = '</' + tag + '>'
-                const isBypassTag = isParentBypassTag || BYPASS_TAGS.includes(tag);
-                const isTextTag = !isBypassTag && (isParentTextTag || TEXT_TAGS.includes(tag));
+                const isBypassTag = isParentBypassTag || BYPASS_TAGS.includes(tag)
+                const isTextTag = !isBypassTag && (isParentTextTag || TEXT_TAGS.includes(tag))
 
-                let currentData = '';
-                let nextTagName = '';
+                let currentData = ''
+                let nextTagName = ''
                 for (; i < content.length; i++) {
-                    const char = content[i];
+                    const char = content[i]
                     if (nextTagName) {
                         if (char.match(/[a-zA-Z0-9]/)) {
-                            nextTagName += char;
+                            nextTagName += char
                         } else {
                             if (nextTagName.length > 1) {
-                                i -= nextTagName.length;
+                                i -= nextTagName.length
 
-                                const innerData = reorganizate(nextTagName.slice(1), isTextTag, isBypassTag, bypassHandleTag || nextTagName.slice(1) === 'code');
+                                const innerData = reorganizate(nextTagName.slice(1), isTextTag, isBypassTag, bypassHandleTag || nextTagName.slice(1) === 'code')
                                 if (isTextTag) {
-                                    currentData += innerData;
+                                    currentData += innerData
                                 }
 
-                                i--;
+                                i--
                             } else {
                                 currentData += nextTagName + char
                             }
 
-                            nextTagName = '';
+                            nextTagName = ''
                         }
                     } else if (char === '<') {
                         if (content.slice(i, i + closedTag.length) === closedTag) {
-                            i += closedTag.length;
-                            break;
+                            i += closedTag.length
+                            break
                         } else if (bypassHandleTag) {
-                            currentData += char;
+                            currentData += char
                         } else {
-                            nextTagName += char;
+                            nextTagName += char
                         }
                     } else {
-                        currentData += char;
+                        currentData += char
                     }
                 }
 
                 if (isTextTag && !isParentTextTag && !bypassHandleTag) {
                     if (currentData) {
-                        let id = '';
-                        idRegexp.lastIndex = 0;
-                        const idResult = idRegexp.exec(tagContent);
+                        let id = ''
+                        idRegexp.lastIndex = 0
+                        const idResult = idRegexp.exec(tagContent)
                         if (idResult) {
-                            id = idResult[1];
+                            id = idResult[1]
                         }
 
-                        nodes.push({ text: currentData.replace(/&nbsp;/g, ' '), id, tag });
+                        nodes.push({ text: currentData.replace(/&nbsp;/g, ' '), id, tag })
                     }
-                    return '';
+                    return ''
                 } else {
-                    return currentData;
+                    return currentData
                 }
-            })('article', false, false, false);
+            })('article', false, false, false)
 
-            let disabled: boolean = false
+            const disabled: boolean = false
 
             if (nodes.length) {
                 data[url.pathname] = {
@@ -214,16 +210,16 @@ export async function POST(req: Request) {
 
             const hrefs = $('a')
                 .map((index, element) => $(element).attr('href'))
-                .get();
+                .get()
             for (const eachHref of hrefs) {
                 await crawle(baseUrl, eachHref)
             }
         }
     }
 
-    const content = [];
+    const content = []
     const regexp = new RegExp('^https:\\/\\/([A-Za-z]+).master.co(\\/' + locale + ')', 'm')
-    const suffix = (locale === i18n.defaultLocale) ? '' : '/' + locale;
+    const suffix = (locale === i18n.defaultLocale) ? '' : '/' + locale
     for (const eachDomain of DOMAINS) {
         for (const eachUnit in eachDomain.units) {
             await crawle(eachDomain.name + suffix + '/' + eachUnit, eachUnit + '/' + eachDomain.units[eachUnit])
@@ -236,15 +232,15 @@ export async function POST(req: Request) {
                 content.push({
                     url: eachUrl,
                     ...data[eachUrl]
-                });
-                delete data[eachUrl];
+                })
+                delete data[eachUrl]
             }
         }
     }
 
     if (content?.length) {
         const filePath = path.resolve(process.cwd(), `${process.env.CRAWLEE_STORAGE_DIR}/${name}`).replace(/:[0-9]+/, '')
-        fs.writeFileSync(filePath, zlib.brotliCompressSync(JSON.stringify(content)), { encoding: 'utf-8' });
+        fs.writeFileSync(filePath, zlib.brotliCompressSync(JSON.stringify(content)), { encoding: 'utf-8' })
 
         await bucket.upload(filePath, { destination: name, contentType: 'application/json', metadata: { contentEncoding: 'br', metadata: { sha: process.env.VERCEL_GIT_COMMIT_SHA } } })
         await bucket.file(name).makePublic()

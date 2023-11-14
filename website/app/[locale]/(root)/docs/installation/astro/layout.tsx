@@ -1,5 +1,5 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
-import { queryDictionary } from 'websites/dictionaries';
+import { queryDictionary } from 'websites/dictionaries'
 import DocLayout from '~/layouts/doc'
 import NuxtjsSvg from '~/public/images/frameworks/astro.svg?inlineSvg'
 

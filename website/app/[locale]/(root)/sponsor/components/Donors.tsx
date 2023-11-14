@@ -1,6 +1,4 @@
-/* eslint-disable @master/css/class-validation */
-
-import { Fragment } from 'react';
+import { Fragment } from 'react'
 import Link from 'websites/components/Link'
 
 export default function Donors({ sponsorTiers, sponsorsOfLevel }: any) {

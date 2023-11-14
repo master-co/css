@@ -4,7 +4,7 @@ import Editor, { type Monaco } from '@monaco-editor/react'
 import type { editor } from 'monaco-editor'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { customAlphabet } from 'nanoid'
-import { debounce } from 'throttle-debounce';
+import { debounce } from 'throttle-debounce'
 import { snackbar } from 'websites/utils/snackbar'
 // import ThemeButton from 'websites/components/ThemeButton'
 import dedent from 'ts-dedent'
@@ -13,22 +13,22 @@ import { IconBrandCss3, IconChevronDown, IconDeviceDesktop, IconDeviceMobile } f
 import Tabs, { Tab } from 'websites/components/Tabs'
 // import { Button } from 'websites/components/App/AppBtn'
 import { usePathname, useRouter } from 'next/navigation'
-import LanguageButton from 'websites/components/LanguageButton';
+import LanguageButton from 'websites/components/LanguageButton'
 import previewHandlerScriptText from './previewHandler.js?text'
-import ThemeButton from 'websites/components/ThemeButton';
-import { getScriptHTML } from './getScriptHTML';
-import { getStyleHTML } from './getStyleHTML';
+import ThemeButton from 'websites/components/ThemeButton'
+import { getScriptHTML } from './getScriptHTML'
+import { getStyleHTML } from './getStyleHTML'
 import { beautifyCSS } from 'websites/utils/beautifyCSS'
 const alphabet = '0123456789abcdefghijklmnopqrstuvwxyz'
 const nanoid = customAlphabet(alphabet, 14)
-import templates from './templates';
-import latestMasterCSSVersion from 'websites/version';
-import { useSearchParams } from 'next/navigation';
-import Resizable from 'websites/components/Resizable';
-import { getLinkHTML } from './getLinkHTML';
+import templates from './templates'
+import latestMasterCSSVersion from 'websites/version'
+import { useSearchParams } from 'next/navigation'
+import Resizable from 'websites/components/Resizable'
+import { getLinkHTML } from './getLinkHTML'
 import { useThemeService } from '@master/css.react'
 import cloneDeep from 'clone-deep'
-import { Logotype } from '~/components/Logotype';
+import { Logotype } from '~/components/Logotype'
 import Header, { HeaderNav } from 'websites/components/Header'
 import links from '~/links.mjs'
 import i18n from 'websites/i18n.config.mjs'
@@ -75,7 +75,7 @@ export default function Play(props: any) {
     const router = useRouter()
     const themeService = useThemeService()
     const searchParams = useSearchParams()
-    const pathname = usePathname();
+    const pathname = usePathname()
     const versionSelectRef = useRef<HTMLSelectElement>(null)
     const monacoProvidersRef = useRef<any>([])
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
@@ -114,7 +114,7 @@ export default function Play(props: any) {
             if (!eachParamValue) {
                 urlSearchParams.delete(eachParamName)
             } else {
-                urlSearchParams.set(eachParamName, eachParamValue);
+                urlSearchParams.set(eachParamName, eachParamValue)
             }
         }
         router.push(pathname + '?' + urlSearchParams.toString())
@@ -200,7 +200,7 @@ export default function Play(props: any) {
         let bodyInnerHTML = ''
 
         const appendFile = (eachFile: PlayShareFile) => {
-            let content = eachFile.content;
+            const content = eachFile.content
             if (!content) {
                 return
             }
@@ -210,6 +210,7 @@ export default function Play(props: any) {
                     bodyInnerHTML += content
                     return
                 case 'javascript':
+                    // eslint-disable-next-line no-case-declarations
                     let eachScriptHTML = getScriptHTML({ ...eachTemplateFile, text: content })
                     if (eachFile.name === 'master.css.js') {
                         eachScriptHTML = eachScriptHTML
@@ -334,10 +335,10 @@ export default function Play(props: any) {
             monacoProvidersRef.current.forEach((provider: any) => {
                 provider.dispose()
             })
-            editorRef.current?.dispose();
+            editorRef.current?.dispose()
 
-        };
-    }, []);
+        }
+    }, [])
 
     useEffect(() => {
         const onMessage = (event: MessageEvent) => {
@@ -347,12 +348,13 @@ export default function Play(props: any) {
             }
             switch (type) {
                 case 'cssUpdate':
+                    // eslint-disable-next-line no-case-declarations
                     const cssText = content ? beautifyCSS(content) : ''
                     setGeneratedCSSText(cssText)
-                    break;
+                    break
                 case 'error':
                     setPreviewErrorEvent(event.data)
-                    break;
+                    break
             }
         }
         const initialErrorEvent = (window as any).__SANDBOX_INITIAL_ERROR_EVENT
@@ -401,7 +403,7 @@ export default function Play(props: any) {
         const docRef = doc(db, 'sandbox', newShareId)
         // 將資料寫入集合並取得寫入後的 ID
         try {
-            await setDoc(docRef, databaseShareItem);
+            await setDoc(docRef, databaseShareItem)
         } catch (error) {
             console.error('Error adding document: ', error)
         }

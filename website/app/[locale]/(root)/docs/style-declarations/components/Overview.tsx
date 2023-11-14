@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import Demo from 'websites/components/Demo';
+import Image from 'next/image'
+import Demo from 'websites/components/Demo'
 import mobileImage from '~/public/images/landscape-mobile-screen.png'
 
 export default () => (

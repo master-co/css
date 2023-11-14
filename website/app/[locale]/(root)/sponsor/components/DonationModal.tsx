@@ -1,10 +1,10 @@
 'use client'
 
-import Modal from 'websites/components/Modal';
-import { l } from 'to-line';
+import Modal from 'websites/components/Modal'
+import { l } from 'to-line'
 import Image from 'next/image'
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 
 export default function DonationModal() {
@@ -35,14 +35,15 @@ export default function DonationModal() {
                 try {
                     switch (platform) {
                         case 'Open Collective':
+                            // eslint-disable-next-line no-case-declarations
                             const openCollectiveRes = await (await fetch(
                                 'https://api.opencollective.com/graphql/v2/7542a8819268783e1eb4f796fbda7f0bbf6793d2',
                                 {
                                     method: 'POST',
-                                    headers: { "Content-Type": "application/json" },
+                                    headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
                                         query: `{
-                                            order(order: { id: \"${orderId}\" }) {
+                                            order(order: { id: "${orderId}" }) {
                                                 id
                                                 status
                                                 amount {
@@ -82,7 +83,7 @@ export default function DonationModal() {
                 }
             })()
         }
-    }, [searchParams]);
+    }, [searchParams])
 
     return donationOrder && <Modal backdropClick={() => setDonationOrder(null)} contentClass="max-w:320 p:80|30|30|30">
         <div

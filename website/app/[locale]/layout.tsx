@@ -1,4 +1,4 @@
-import { Viewport } from 'next';
+import { Viewport } from 'next'
 
 export const metadata = {
     metadataBase: new URL(process.env.HOST as string),

@@ -21,7 +21,7 @@ const categoryOrder = [
     'Enhanced Service',
     'API Reference',
     'CLI Reference',
-];
+]
 
 let pages: { metadata: Metadata, pathname: string }[] = metadataForList.map((eachMetadata: Metadata) => {
     return {
@@ -48,7 +48,7 @@ function sortPages(eachPages: any[]) {
             if (eachPageCategoryName) {
                 const existingCategory = categories.find((eachCategory: any) => eachCategory.name === eachPageCategoryName)
                 if (existingCategory) {
-                    existingCategory.pages.push(eachPage);
+                    existingCategory.pages.push(eachPage)
                     existingCategory.pages.sort((a: any, b: any) => {
                         if (a.metadata.order !== undefined && b.metadata.order !== undefined) {
                             return a.metadata.order - b.metadata.order
@@ -67,22 +67,22 @@ function sortPages(eachPages: any[]) {
             return categories
         }, [])
         .sort((a, b) => {
-            const indexA = categoryOrder.indexOf(a.name);
-            const indexB = categoryOrder.indexOf(b.name);
+            const indexA = categoryOrder.indexOf(a.name)
+            const indexB = categoryOrder.indexOf(b.name)
 
             if (indexA === -1 && indexB === -1) {
-                return a.name.localeCompare(b.name);
+                return a.name.localeCompare(b.name)
             }
 
             if (indexA === -1) {
-                return 1;
+                return 1
             }
 
             if (indexB === -1) {
-                return -1;
+                return -1
             }
 
-            return indexA - indexB;
+            return indexA - indexB
         })
 }
 
@@ -93,16 +93,16 @@ pages = pageCategories
     .flat()
 
 allPages = allPages.sort((a, b) => {
-    const titleA = a.metadata.title.toLowerCase();
-    const titleB = b.metadata.title.toLowerCase();
+    const titleA = a.metadata.title.toLowerCase()
+    const titleB = b.metadata.title.toLowerCase()
 
     if (titleA < titleB) {
-        return -1;
+        return -1
     }
     if (titleA > titleB) {
-        return 1;
+        return 1
     }
-    return 0;
+    return 0
 })
 
 export { allPages }

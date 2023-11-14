@@ -7,9 +7,9 @@ export default function Backers({ backers }: any) {
     return <div className="grid-cols:6 grid-cols:8@2xs grid-cols:10@xs grid-cols:14@sm grid-cols:18@md gap:8">
         {backers.map((eachBacker: any, i: number) => {
             let href = eachBacker.websiteUrl || eachBacker.twitterUrl || eachBacker.githubUrl
-            if (href && !href?.startsWith("http://") && !href?.startsWith("https://")) {
+            if (href && !href?.startsWith('http://') && !href?.startsWith('https://')) {
                 // 如果沒有，根據需要自動加上
-                href = "https://" + href; // 或是 "http://" + url;
+                href = 'https://' + href // 或是 "http://" + url;
             }
             const className = `rel block round aspect:1/1 content:''::after`
             const Avatar = () =>

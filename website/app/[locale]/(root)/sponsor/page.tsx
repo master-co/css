@@ -17,7 +17,7 @@ export default async function Page(props: any) {
     const getSponsor = async () => {
         const openCollectiveRes = await (await fetch(`https://api.opencollective.com/graphql/v2/${openCollectiveToken}`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json" },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 query: `{
                             account(slug: "master-co") {
