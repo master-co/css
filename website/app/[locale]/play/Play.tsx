@@ -118,9 +118,7 @@ export default function Play(props: any) {
         return pathname + (searchParamsStr ? '?' + searchParamsStr : '')
     }, [pathname, searchParams])
 
-    const tab = useMemo(() => shareItem.files.find(({ title }) => searchParams.get('tab') === title)
-        ? searchParams.get('tab')
-        : shareItem.files[0].title, [searchParams, shareItem.files])
+    const tab = useMemo(() => searchParams.get('tab') || shareItem.files.find(({ title }) => searchParams.get('tab') === title) || shareItem.files[0].title, [searchParams, shareItem.files])
 
     const editorModelRef = useRef<Record<string, editor.IModel | undefined>>({})
     const generateDatabaseShareItem = useCallback((target: any) => ({
@@ -682,7 +680,7 @@ export default function Play(props: any) {
                 >
                     <Tabs className="flex:0|0|auto" contentClassName="px:30">
                         {shareItem.files.map((file, index) => (
-                            <Tab href={getSearchPath('tab', index === 0 ? '' : file.title)} size="sm" active={tab === file.title} key={file.id}>
+                            <Tab href={getSearchPath('tab', index === 0 ? '' : file.title)} size="sm" key={file.id} active={tab === file.title || ''}>
                                 {file.title || ''}
                             </Tab>
                         ))}
