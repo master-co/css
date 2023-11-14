@@ -2,7 +2,7 @@ import { LitElement, css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import masterLogo from './assets/master.svg'
 import litLogo from './assets/lit.svg'
-import MasterCSS, { initRuntime } from '@master/css'
+import { RuntimeCSS } from '@master/css'
 import config from '../master.css'
 
 /**
@@ -14,7 +14,7 @@ import config from '../master.css'
 @customElement('my-element')
 export class MyElement extends LitElement {
 
-    css: MasterCSS | undefined
+    runtimeCSS: RuntimeCSS | undefined
 
     /**
      * Copy for the read the docs hint.
@@ -30,12 +30,12 @@ export class MyElement extends LitElement {
 
     connectedCallback() {
         super.connectedCallback()
-        this.css = initRuntime(config, this.shadowRoot)
+        this.runtimeCSS = new RuntimeCSS(this.shadowRoot, config)
     }
 
     disconnectedCallback() {
         super.disconnectedCallback()
-        this.css?.destroy()
+        this.runtimeCSS?.destroy()
     }
 
     render() {

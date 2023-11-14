@@ -11,7 +11,7 @@ export class RuntimeCSS extends MasterCSS {
     readonly styleSheets: StyleSheetList
     observer: MutationObserver
     constructor(
-        public root: Document | ShadowRoot | undefined = document,
+        public root: Document | ShadowRoot | undefined | null = document,
         public customConfig: Config = defaultConfig
     ) {
         super(customConfig)
