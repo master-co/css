@@ -5,6 +5,7 @@ import path from 'path'
 import fs from 'fs'
 import getCurrentGitBranch from 'current-git-branch'
 import zlib from 'zlib'
+import { default as githubToken } from 'websites/tokens/github'
 
 const currentBranch = getCurrentGitBranch()
 
@@ -75,7 +76,7 @@ export async function POST(req: Request) {
             const result = await fetch(
                 `https://api.github.com/repos/${process.env.VERCEL_GIT_REPO_OWNER}/${process.env.VERCEL_GIT_REPO_SLUG}/commits/${process.env.VERCEL_GIT_COMMIT_REF}`,
                 {
-                    headers: { Authorization: 'Bearer ' + process.env.GITHUB_GENERATE_PAGE_CACHE_TOKEN }
+                    headers: { Authorization: 'Bearer ' + githubToken }
                 })
 
             console.log(

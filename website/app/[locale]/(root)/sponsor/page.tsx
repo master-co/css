@@ -7,15 +7,14 @@ import Backers from './components/Backers'
 import Donors from './components/Donors'
 import DonationModal from './components/DonationModal'
 import { generate } from '~/utils/metadata'
+import { default as openCollectiveToken } from 'websites/tokens/open-collective'
 
 export async function generateMetadata(props: any, parent: any) {
     return generate(metadata, props, parent)
 }
 
 export default async function Page(props: any) {
-
     const getSponsor = async () => {
-        const openCollectiveToken = '7542a8819268783e1eb4f796fbda7f0bbf6793d2'
         const openCollectiveRes = await (await fetch(`https://api.opencollective.com/graphql/v2/${openCollectiveToken}`, {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
