@@ -3,7 +3,6 @@
 import Editor, { type Monaco } from '@monaco-editor/react'
 import type { editor } from 'monaco-editor'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { customAlphabet } from 'nanoid'
 import { debounce } from 'throttle-debounce'
 import { snackbar } from 'websites/utils/snackbar'
 // import ThemeButton from 'websites/components/ThemeButton'
@@ -19,8 +18,6 @@ import ThemeButton from 'websites/components/ThemeButton'
 import { getScriptHTML } from './getScriptHTML'
 import { getStyleHTML } from './getStyleHTML'
 import { beautifyCSS } from 'websites/utils/beautifyCSS'
-const alphabet = '0123456789abcdefghijklmnopqrstuvwxyz'
-const nanoid = customAlphabet(alphabet, 14)
 import templates from './templates'
 import latestMasterCSSVersion from 'websites/version'
 import { useSearchParams } from 'next/navigation'
@@ -35,6 +32,9 @@ import i18n from 'websites/i18n.config.mjs'
 import { mediaQueries } from '@master/css'
 import config from '~/master.css'
 import clsx from 'clsx'
+import dynamic from 'next/dynamic'
+
+const ShareButton = dynamic(() => import('./components/ShareButton'))
 
 // import { Registry } from 'monaco-textmate'
 // import { wireTmGrammars } from 'monaco-editor-textmate'
@@ -388,25 +388,13 @@ export default function Play(props: any) {
         await navigator.clipboard.writeText(window.location.origin + (newSharePathname || sharePathname))
     }, [sharePathname])
 
-    const share = useCallback(async () => {
+    const share = useCallback(async (writeShareItem: any) => {
         if (!shareable) {
             return
         }
         setSharing(true)
-        const [{ app }, { getFirestore, setDoc, doc }] = await Promise.all([
-            await import('websites/firebase-app'),
-            await import('@firebase/firestore/lite')
-        ])
-        const db = getFirestore(app)
         const databaseShareItem = generateDatabaseShareItem(shareItem)
-        const newShareId = nanoid()
-        const docRef = doc(db, 'sandbox', newShareId)
-        // 將資料寫入集合並取得寫入後的 ID
-        try {
-            await setDoc(docRef, databaseShareItem)
-        } catch (error) {
-            console.error('Error adding document: ', error)
-        }
+        const newShareId = await writeShareItem(databaseShareItem)
         const newSharePathname = `${props.locale === i18n.defaultLocale ? '' : `/${props.locale}`}/play/${newShareId}${window.location.search}`
         setShareId(newShareId)
         setStrignifiedPrevShareItem(JSON.stringify(databaseShareItem))
@@ -611,17 +599,11 @@ export default function Play(props: any) {
                         </span>
                     </button>}
                     {/* share button */}
-                    {shareable && <button className={clsx('hide@<md', sharing ? 'app-header-nav' : 'app-header-icon')} onClick={share} disabled={sharing}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M8 9h-1a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-8a2 2 0 0 0 -2 -2h-1" className="fill:dim/.2"></path>
-                            <path d="M12 14v-11"></path>
-                            <path d="M9 6l3 -3l3 3"></path>
-                        </svg>
+                    {shareable && <ShareButton className={clsx('hide@<md', sharing ? 'app-header-nav' : 'app-header-icon')} disabled={sharing} onClick={share}>
                         {sharing && <span className="ml:10">
                             {dict['Sharing ...']}
                         </span>}
-                    </button>}
+                    </ShareButton>}
                     {(shareId || shareable) && <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>}
                     <button className="app-header-icon hide@<md" onClick={() => (setLayout(layout ? null : '2'))}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
