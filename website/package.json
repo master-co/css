@@ -10,6 +10,14 @@
         "type-check": "tsc --noEmit"
     },
     "dependencies": {
+        "@master/css": "workspace:^",
+        "@master/css-extractor": "workspace:^",
+        "@master/css-language-service": "workspace:^",
+        "@master/css-renderer": "workspace:^",
+        "@master/css.react": "workspace:^",
+        "@master/eslint-config-css": "workspace:^",
+        "@master/eslint-plugin-css": "workspace:^",
+        "@master/normal.css": "workspace:^",
         "@monaco-editor/react": "^4.6.0",
         "accept-language": "^3.0.18",
         "cheerio": "1.0.0-rc.12",
@@ -17,14 +25,7 @@
         "monaco-editor": "^0.44.0",
         "monaco-editor-textmate": "^4.0.0",
         "monaco-textmate": "^3.0.1",
-        "@master/css": "workspace:^",
-        "@master/normal.css": "workspace:^",
-        "@master/css.react": "workspace:^",
-        "@master/eslint-plugin-css": "workspace:^",
-        "@master/css-language-service": "workspace:^",
-        "@master/css-extractor": "workspace:^",
-        "@master/css-renderer": "workspace:^",
-        "@master/eslint-config-css": "workspace:^",
+        "next": "^14.0.3-canary.7",
         "theme-service": "workspace:^",
         "websites": "workspace:../../.."
     }

@@ -1,15 +1,17 @@
 'use client'
 
-import { app } from 'websites/firebase-app'
+import firebaseConfig from 'websites/firebase-config'
+import { initializeApp } from '@firebase/app'
 import { getFirestore, setDoc, doc } from '@firebase/firestore/lite'
 import { customAlphabet } from 'nanoid'
 const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 14)
+const app = initializeApp(firebaseConfig)
+const db = getFirestore(app)
 
 const ShareButton = ({ children, onClick, ...props }: any) => {
     return (
         <button {...props} onClick={() => {
             onClick(async (databaseShareItem: any) => {
-                const db = getFirestore(app)
                 const newShareId = nanoid()
                 const docRef = doc(db, 'sandbox', newShareId)
                 // 將資料寫入集合並取得寫入後的 ID

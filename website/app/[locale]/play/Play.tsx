@@ -2,7 +2,7 @@
 
 import Editor, { type Monaco } from '@monaco-editor/react'
 import type { editor } from 'monaco-editor'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { debounce } from 'throttle-debounce'
 import { snackbar } from 'websites/utils/snackbar'
 // import ThemeButton from 'websites/components/ThemeButton'
@@ -72,9 +72,8 @@ const editorHTMLOptions: any = {
 
 export default function Play(props: any) {
     const { dict } = props
-    const router = useRouter()
     const themeService = useThemeService()
-    const searchParams = useSearchParams()
+    const [searchParams, setSearchParams] = useState<URLSearchParams>()
     const pathname = usePathname()
     const versionSelectRef = useRef<HTMLSelectElement>(null)
     const monacoProvidersRef = useRef<any>([])
@@ -88,8 +87,8 @@ export default function Play(props: any) {
     const [generatedCSSText, setGeneratedCSSText] = useState('')
     const template = useMemo(() => templates.find((eachTemplate) => eachTemplate.version === version), [version])
     const [previewErrorEvent, setPreviewErrorEvent] = useState<any>()
-    const [layout, setLayout] = useState(() => searchParams.get('layout'))
-    const [preview, setPreview] = useState(() => searchParams.get('preview'))
+    const [layout, setLayout] = useState('')
+    const [preview, setPreview] = useState('')
     const shareItem: PlayShare = useMemo(() => {
         if (props.shareItem && props.shareItem.version === version) {
             props.shareItem.files
@@ -107,16 +106,23 @@ export default function Play(props: any) {
         }
     }, [props.shareItem, template?.dependencies, template?.files, template?.links, version])
 
+    useLayoutEffect(() => {
+        const urlSearchParams = new URLSearchParams(window.location.search)
+        setLayout(urlSearchParams.get('layout') || '')
+        setPreview(urlSearchParams.get('preview') || '')
+        setSearchParams(urlSearchParams)
+    }, [])
+
     const updateQueryParams = useCallback((name: string, value: any) => {
-        const urlSearchParams = new URLSearchParams(location.search)
+        const urlSearchParams = new URLSearchParams(window.location.search)
         if (!value) {
             urlSearchParams.delete(name)
         } else {
             urlSearchParams.set(name, value)
         }
         const searchParamsStr = urlSearchParams.toString()
-        history.replaceState({ [name]: value }, '', pathname + (searchParamsStr ? '?' + searchParamsStr : ''))
-    }, [pathname, router])
+        window.history.replaceState({ [name]: value }, '', pathname + (searchParamsStr ? '?' + searchParamsStr : ''))
+    }, [pathname])
 
     const updateLayout = useCallback((layout: any) => {
         setLayout(layout)
@@ -134,8 +140,8 @@ export default function Play(props: any) {
     }, [])
 
     const [tab, setTab] = useState<any>(
-        () => shareItem.files.find(({ title }) => searchParams.get('tab') === title)
-            ? searchParams.get('tab')
+        () => shareItem.files.find(({ title }) => searchParams?.get('tab') === title)
+            ? searchParams?.get('tab')
             : shareItem.files[0].title
     )
     const editorModelRef = useRef<Record<string, editor.IModel | undefined>>({})
@@ -396,8 +402,8 @@ export default function Play(props: any) {
         setShareable(false)
         setSharing(false)
         copyShareLink(newSharePathname)
-        router.replace(newSharePathname)
-    }, [copyShareLink, generateDatabaseShareItem, props.locale, router, shareItem, shareable])
+        window.history.replaceState({}, '', newSharePathname)
+    }, [copyShareLink, generateDatabaseShareItem, props.locale, shareItem, shareable])
 
     const responsive = useMemo(() => {
         return preview === 'responsive'
