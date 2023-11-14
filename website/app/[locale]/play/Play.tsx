@@ -33,17 +33,18 @@ import { mediaQueries } from '@master/css'
 import config from '~/master.css'
 import clsx from 'clsx'
 import dynamic from 'next/dynamic'
+import loader from '@monaco-editor/loader'
 
 const ShareButton = dynamic(() => import('./components/ShareButton'))
 
 // import { Registry } from 'monaco-textmate'
 // import { wireTmGrammars } from 'monaco-editor-textmate'
 
-// loader.config({
-//     paths: {
-//         vs: '/monaco-editor/vs',
-//     }
-// })
+loader.config({
+    paths: {
+        vs: '/monaco-editor/vs',
+    }
+})
 
 const editorOptions: editor.IStandaloneEditorConstructionOptions = {
     readOnly: false,
