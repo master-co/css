@@ -11,7 +11,7 @@ import dedent from 'ts-dedent'
 import { IconBrandCss3, IconChevronDown, IconDeviceDesktop, IconDeviceMobile } from '@tabler/icons-react'
 import Tabs, { Tab } from 'websites/components/Tabs'
 // import { Button } from 'websites/components/App/AppBtn'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import LanguageButton from 'websites/components/LanguageButton'
 import previewHandlerScriptText from './previewHandler.js?text'
 import ThemeButton from 'websites/components/ThemeButton'
@@ -74,7 +74,7 @@ export default function Play(props: any) {
     const { dict } = props
     const router = useRouter()
     const themeService = useThemeService()
-    const [searchParams, setSearchParams] = useState(() => new URLSearchParams(window.location.search))
+    const searchParams = useSearchParams()
     const pathname = usePathname()
     const versionSelectRef = useRef<HTMLSelectElement>(null)
     const monacoProvidersRef = useRef<any>([])
@@ -114,7 +114,6 @@ export default function Play(props: any) {
         } else {
             urlSearchParams.set(name, value)
         }
-        setSearchParams(urlSearchParams)
         const searchParamsStr = urlSearchParams.toString()
         history.replaceState({ [name]: value }, '', pathname + (searchParamsStr ? '?' + searchParamsStr : ''))
     }, [pathname, router])
