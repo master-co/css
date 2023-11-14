@@ -20,7 +20,6 @@ import { getStyleHTML } from './getStyleHTML'
 import { beautifyCSS } from 'websites/utils/beautifyCSS'
 import templates from './templates'
 import latestMasterCSSVersion from 'websites/version'
-import { useSearchParams } from 'next/navigation'
 import Resizable from 'websites/components/Resizable'
 import { getLinkHTML } from './getLinkHTML'
 import { useThemeService } from '@master/css.react'
@@ -75,7 +74,7 @@ export default function Play(props: any) {
     const { dict } = props
     const router = useRouter()
     const themeService = useThemeService()
-    const searchParams = useSearchParams()
+    const [searchParams, setSearchParams] = useState(() => new URLSearchParams(window.location.search))
     const pathname = usePathname()
     const versionSelectRef = useRef<HTMLSelectElement>(null)
     const monacoProvidersRef = useRef<any>([])
@@ -89,8 +88,8 @@ export default function Play(props: any) {
     const [generatedCSSText, setGeneratedCSSText] = useState('')
     const template = useMemo(() => templates.find((eachTemplate) => eachTemplate.version === version), [version])
     const [previewErrorEvent, setPreviewErrorEvent] = useState<any>()
-    const layout = useMemo(() => searchParams.get('layout'), [searchParams])
-    const preview = useMemo(() => searchParams.get('preview'), [searchParams])
+    const [layout, setLayout] = useState(() => searchParams.get('layout'))
+    const [preview, setPreview] = useState(() => searchParams.get('preview'))
     const shareItem: PlayShare = useMemo(() => {
         if (props.shareItem && props.shareItem.version === version) {
             props.shareItem.files
@@ -108,21 +107,35 @@ export default function Play(props: any) {
         }
     }, [props.shareItem, template?.dependencies, template?.files, template?.links, version])
 
-    const navigateWithQueryParams = useCallback((params: Record<string, string | null | undefined>) => {
+    const updateQueryParams = useCallback((name: string, value: any) => {
         const urlSearchParams = new URLSearchParams(location.search)
-        for (const eachParamName in params) {
-            const eachParamValue = params[eachParamName]
-            if (!eachParamValue) {
-                urlSearchParams.delete(eachParamName)
-            } else {
-                urlSearchParams.set(eachParamName, eachParamValue)
-            }
+        if (!value) {
+            urlSearchParams.delete(name)
+        } else {
+            urlSearchParams.set(name, value)
         }
-        router.push(pathname + '?' + urlSearchParams.toString())
+        setSearchParams(urlSearchParams)
+        const searchParamsStr = urlSearchParams.toString()
+        history.replaceState({ [name]: value }, '', pathname + (searchParamsStr ? '?' + searchParamsStr : ''))
     }, [pathname, router])
 
-    const [currentTabTitle, setCurrentTabTitle] = useState<any>(
-        shareItem.files.find(({ title }) => searchParams.get('tab') === title)
+    const updateLayout = useCallback((layout: any) => {
+        setLayout(layout)
+        updateQueryParams('layout', layout)
+    }, [])
+
+    const updatePreview = useCallback((preview: any) => {
+        setPreview(preview)
+        updateQueryParams('preview', preview)
+    }, [])
+
+    const updateTab = useCallback((tab: any) => {
+        setTab(tab)
+        updateQueryParams('tab', tab === shareItem.files[0].title ? '' : tab)
+    }, [])
+
+    const [tab, setTab] = useState<any>(
+        () => shareItem.files.find(({ title }) => searchParams.get('tab') === title)
             ? searchParams.get('tab')
             : shareItem.files[0].title
     )
@@ -156,32 +169,24 @@ export default function Play(props: any) {
         setShareable(strignifiedDatabaseShareItem !== strignifiedPrevShareItem)
     }, [generateDatabaseShareItem, shareItem, strignifiedPrevShareItem])
 
-    useEffect(() => {
-        const urlSearchParams = new URLSearchParams(location.search)
-        const queryTab = urlSearchParams.get('tab')
-        if ([...shareItem.files.map(({ title }) => title)].includes(queryTab || '')) {
-            setCurrentTabTitle(queryTab)
-        } else {
-            setCurrentTabTitle(shareItem.files[0].title)
-        }
-    }, [pathname, router, searchParams, shareItem.files])
-
     /**
      * 避免切換到更大視口時仍停留在僅小視口支援的 Preview 或 Generated CSS 瀏覽模式
      */
     useEffect(() => {
         const onResize = () => {
             if (window.innerWidth >= mediaQueries.md) {
-                if (currentTabTitle === 'Preview' || currentTabTitle === 'Generated CSS') {
-                    setCurrentTabTitle(shareItem.files[0].title)
+                if (tab === 'Preview' || tab === 'Generated CSS') {
+                    updateTab(shareItem.files[0].title)
                 }
+            } else {
+                updatePreview('')
             }
         }
         window.addEventListener('resize', onResize, { passive: true })
         return () => {
             window.removeEventListener('resize', onResize)
         }
-    }, [currentTabTitle, shareItem.files])
+    }, [tab, shareItem.files])
 
     /**
      * 需避免即時編輯 HTML, Config 或切換 Theme 時更新 previewHTML，否則 Preview 將重載並造成視覺閃爍
@@ -250,7 +255,7 @@ export default function Play(props: any) {
     }, [shareItem?.dependencies?.scripts, shareItem?.dependencies?.styles, shareItem.files, shareItem?.links, template?.files])
 
     const currentCodeTab: { id: string, language: string, content: string, readOnly: boolean, name: string, title: string } = useMemo(() => {
-        switch (currentTabTitle) {
+        switch (tab) {
             // mobile
             case 'Generated CSS':
                 return {
@@ -265,9 +270,9 @@ export default function Play(props: any) {
             case 'Preview':
                 return shareItem.files[0]
             default:
-                return shareItem.files.find((eachTab: any) => eachTab.title === currentTabTitle) as any
+                return shareItem.files.find((eachTab: any) => eachTab.title === tab) as any
         }
-    }, [currentTabTitle, generatedCSSText, shareItem.files])
+    }, [tab, generatedCSSText, shareItem.files])
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const hotUpdatePreviewByFile = useCallback(debounce(250, () => {
@@ -297,8 +302,8 @@ export default function Play(props: any) {
      * 手動更新 editor value，不要使用 value={currentCodeTab.value}
      */
     useEffect(() => {
-        if (currentTabTitle !== 'Preview' && editorRef.current && monacoRef.current) {
-            const content = currentTabTitle === 'Generated CSS' ? generatedCSSText : currentCodeTab.content
+        if (tab !== 'Preview' && editorRef.current && monacoRef.current) {
+            const content = tab === 'Generated CSS' ? generatedCSSText : currentCodeTab.content
             let currentEditorModel: any = editorModelRef.current?.[currentCodeTab.id]
             if (currentEditorModel) {
                 if (currentEditorModel.getValue() !== content) {
@@ -317,7 +322,7 @@ export default function Play(props: any) {
             /* 取消因上文觸發 hotUpdatePreviewByFile() */
             hotUpdatePreviewByFile.cancel({ upcomingOnly: true })
         }
-    }, [currentCodeTab, currentTabTitle, generatedCSSText, hotUpdatePreviewByFile, shareItem.files])
+    }, [currentCodeTab, tab, generatedCSSText, hotUpdatePreviewByFile, shareItem.files])
 
     // dispose monaco providers
     useEffect(() => {
@@ -392,14 +397,14 @@ export default function Play(props: any) {
         setShareable(false)
         setSharing(false)
         copyShareLink(newSharePathname)
-        router.push(newSharePathname)
+        router.replace(newSharePathname)
     }, [copyShareLink, generateDatabaseShareItem, props.locale, router, shareItem, shareable])
 
     const responsive = useMemo(() => {
         return preview === 'responsive'
             // 避免在 @<md 時觸發響應式預覽
-            && currentTabTitle !== 'Preview'
-    }, [currentTabTitle, preview])
+            && tab !== 'Preview'
+    }, [tab, preview])
 
     // change version
     const onVersionSelectChange = (event: any) => {
@@ -427,21 +432,21 @@ export default function Play(props: any) {
         //     HoverItemProvider
         // } = await import('./master-css-monaco')
 
-        // monacoProvidersRef.current.push(languages.registerCompletionItemProvider('html', {
+        // monacoProvidersRef.current.replace(languages.registerCompletionItemProvider('html', {
         //     provideCompletionItems: function (model, position) {
         //         return CompletionItemProvider(model, position, 'html')
         //     },
         //     triggerCharacters: [':', '@', '~'],
         // }))
 
-        // monacoProvidersRef.current.push(languages.registerCompletionItemProvider('javascript', {
+        // monacoProvidersRef.current.replace(languages.registerCompletionItemProvider('javascript', {
         //     provideCompletionItems: function (model, position) {
         //         return CompletionItemProvider(model, position, 'javascript')
         //     },
         //     triggerCharacters: [':', '@', '~'],
         // }))
 
-        // monacoProvidersRef.current.push(languages.registerHoverProvider('html', {
+        // monacoProvidersRef.current.replace(languages.registerHoverProvider('html', {
         //     provideHover: function (model, position) {
         //         var result = HoverItemProvider(position, model)
         //         if (result != null) {
@@ -450,7 +455,7 @@ export default function Play(props: any) {
         //     },
         // }))
 
-        // monacoProvidersRef.current.push(languages.registerColorProvider('html', {
+        // monacoProvidersRef.current.replace(languages.registerColorProvider('html', {
         //     provideColorPresentations(model, colorInfo) {
         //         return ColorPresentationProvider(model, colorInfo)
         //     },
@@ -460,7 +465,7 @@ export default function Play(props: any) {
         //     },
         // }))
 
-        // monacoProvidersRef.current.push(languages.registerColorProvider('javascript', {
+        // monacoProvidersRef.current.replace(languages.registerColorProvider('javascript', {
         //     provideColorPresentations(model, colorInfo) {
         //         return ColorPresentationProvider(model, colorInfo)
         //     },
@@ -596,7 +601,7 @@ export default function Play(props: any) {
                         </span>}
                     </ShareButton>}
                     {(shareId || shareable) && <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>}
-                    <button className="app-header-icon hide@<md" onClick={() => navigateWithQueryParams({ layout: layout ? null : '2' })}>
+                    <button className="app-header-icon hide@<md" onClick={() => updateLayout(layout ? null : '2')}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
                                 '~transform|.2s',
@@ -608,7 +613,7 @@ export default function Play(props: any) {
                             <path d="M12 4l0 16"></path>
                         </svg>
                     </button>
-                    <button className="app-header-icon hide@<md" onClick={() => navigateWithQueryParams({ layout: layout === '3' ? '4' : '3' })}>
+                    <button className="app-header-icon hide@<md" onClick={() => updateLayout(layout === '3' ? '4' : '3')}>
                         <svg className={clsx({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate(90)')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
                                 '~transform|.2s',
@@ -620,7 +625,7 @@ export default function Play(props: any) {
                             <path d="M12 4l0 16"></path>
                         </svg>
                     </button>
-                    <button className="app-header-icon hide@<md" onClick={() => navigateWithQueryParams({ layout: '5' })}>
+                    <button className="app-header-icon hide@<md" onClick={() => updateLayout('5')}>
                         <svg xmlns="http://www.w3.org/2000/svg" className={clsx(layout === '5' && 'stroke:accent')} width="22" height="22" strokeWidth="1.2" viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
@@ -630,21 +635,21 @@ export default function Play(props: any) {
                     </button>
                     <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>
                     {/* preview: desktop */}
-                    <button className="app-header-icon hide@<md" onClick={() => navigateWithQueryParams({ preview: '' })}>
+                    <button className="app-header-icon hide@<md" onClick={() => updatePreview('')}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
                             'stroke:1.3 stroke:current',
                             !preview ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
                         )} />
                     </button>
                     {/* preview: responsive */}
-                    <button className="app-header-icon hide@<md" onClick={() => navigateWithQueryParams({ preview: 'responsive' })}>
+                    <button className="app-header-icon hide@<md" onClick={() => updatePreview('responsive')}>
                         <IconDeviceMobile width="22" height="22" className={clsx(
                             'stroke:1.3 stroke:current',
                             responsive ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
                         )} />
                     </button>
                     {/* preview: css */}
-                    <button className="app-header-icon hide@<md" onClick={() => navigateWithQueryParams({ preview: 'css' })}>
+                    <button className="app-header-icon hide@<md" onClick={() => updatePreview('css')}>
                         <IconBrandCss3 width="22" height="22" className={clsx(
                             'stroke:1.3 stroke:current',
                             preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
@@ -681,46 +686,35 @@ export default function Play(props: any) {
                     className={clsx(
                         layout === '5' && 'hide!@md',
                         {
-                            'full!@<md': currentTabTitle !== 'Preview',
+                            'full!@<md': tab !== 'Preview',
                             'br:1|divider': !layout,
                             'bl:1|divider': layout === '2',
                             'bb:1|divider': layout === '3',
                             'bt:1|divider': layout === '4'
                         }
                     )}
-                    width={currentTabTitle === 'Preview' ? '' : width}
-                    height={currentTabTitle === 'Preview' ? '' : height}
+                    width={tab === 'Preview' ? '' : width}
+                    height={tab === 'Preview' ? '' : height}
                     showHeight={true}
                 >
                     <Tabs className="flex:0|0|auto" contentClassName="px:30">
                         {shareItem.files.map((file, index) => (
-                            <Tab size="sm" active={currentTabTitle === file.title} key={file.id} onClick={() => {
-                                navigateWithQueryParams({ tab: index === 0 ? '' : file.title })
-                                // 不可僅依賴 router push 進行切換
-                                setCurrentTabTitle(file.title)
-                            }}>
+                            <Tab size="sm" active={tab === file.title} key={file.id} onClick={() => updateTab(file.title)}>
                                 {file.title || ''}
                             </Tab>
                         ))}
                         {/* mobile couldn't support tab active */}
-                        <Tab size="sm" className="hide@md" active={currentTabTitle === 'Generated CSS'} onClick={() => {
-                            // 不可依賴 router push 進行切換
-                            setCurrentTabTitle('Generated CSS')
-                        }
-                        }>
+                        <Tab size="sm" className="hide@md" active={tab === 'Generated CSS'} onClick={() => updateTab('Generated CSS')}>
                             Generated CSS
                         </Tab>
-                        <Tab className="hide@sm" size="sm" active={currentTabTitle === 'Preview'} onClick={() => {
-                            // 不可依賴 router push 進行切換
-                            setCurrentTabTitle('Preview')
-                        }}>
+                        <Tab className="hide@sm" size="sm" active={tab === 'Preview'} onClick={() => updateTab('Preview')}>
                             Preview
                         </Tab>
                     </Tabs>
                     <div className='full min-h:0'>
                         <Editor
                             className={clsx(
-                                { 'hide!': currentTabTitle === 'Preview' }
+                                { 'hide!': tab === 'Preview' }
                             )}
                             height="100%"
                             width="100%"
@@ -728,7 +722,7 @@ export default function Play(props: any) {
                             defaultValue={currentCodeTab.content}
                             defaultLanguage={currentCodeTab.language}
                             language={currentCodeTab.language}
-                            path={currentTabTitle}
+                            path={tab}
                             options={{
                                 ...editorOptions,
                                 readOnly: currentCodeTab.readOnly
@@ -742,7 +736,7 @@ export default function Play(props: any) {
                     'flex jc:center p:32': responsive,
                     'pt:64': responsive && layout !== '3',
                     'pb:64': responsive && layout === '3',
-                    'hide@<md': currentTabTitle !== 'Preview'
+                    'hide@<md': tab !== 'Preview'
                 })}>
                     <Resizable
                         ruleClassName={'abs'}
