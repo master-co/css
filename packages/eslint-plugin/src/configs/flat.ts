@@ -1,5 +1,5 @@
-import plugin from '../plugin';
-import config from './config';
+import plugin from '../plugin'
+import config from './config'
 
 export default {
     plugins: {

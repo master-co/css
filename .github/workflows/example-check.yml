@@ -29,4 +29,5 @@ jobs:
                   cache: 'pnpm'
             - run: pnpm install
             - run: pnpm build
+            - run: pnpm install
             - run: pnpm build:examples
