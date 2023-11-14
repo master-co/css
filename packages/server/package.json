@@ -1,7 +1,7 @@
 {
     "name": "@master/css-server",
     "scripts": {
-        "build": "techor pack --platform node",
+        "build": "techor pack './src/**/*.ts' --platform node --format cjs",
         "dev": "pnpm run build --watch --no-declare",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
@@ -30,15 +30,11 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.bundle.js",
-    "module": "./dist/index.bundle.mjs",
-    "jsnext:main": "./dist/index.bundle.mjs",
-    "esnext": "./dist/index.bundle.mjs",
+    "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "import": "./dist/index.bundle.mjs",
-            "require": "./dist/index.bundle.js",
+            "require": "./dist/index.js",
             "types": "./dist/index.d.ts"
         }
     },
