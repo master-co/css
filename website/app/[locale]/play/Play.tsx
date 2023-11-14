@@ -2,16 +2,13 @@
 
 import Editor, { type Monaco } from '@monaco-editor/react'
 import type { editor } from 'monaco-editor'
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { debounce } from 'throttle-debounce'
 import { snackbar } from 'websites/utils/snackbar'
-// import ThemeButton from 'websites/components/ThemeButton'
 import dedent from 'ts-dedent'
-// import DocHeader from 'websites/layouts/Doc/DocHeader'
 import { IconBrandCss3, IconChevronDown, IconDeviceDesktop, IconDeviceMobile } from '@tabler/icons-react'
 import Tabs, { Tab } from 'websites/components/Tabs'
-// import { Button } from 'websites/components/App/AppBtn'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import LanguageButton from 'websites/components/LanguageButton'
 import previewHandlerScriptText from './previewHandler.js?text'
 import ThemeButton from 'websites/components/ThemeButton'
@@ -33,6 +30,8 @@ import config from '~/master.css'
 import clsx from 'clsx'
 import dynamic from 'next/dynamic'
 import loader from '@monaco-editor/loader'
+import { useRouter } from 'next/navigation'
+import Link from 'websites/components/Link'
 
 const ShareButton = dynamic(() => import('./components/ShareButton'))
 
@@ -72,8 +71,9 @@ const editorHTMLOptions: any = {
 
 export default function Play(props: any) {
     const { dict } = props
+    const router = useRouter()
     const themeService = useThemeService()
-    const [searchParams, setSearchParams] = useState<URLSearchParams>()
+    const searchParams = useSearchParams()
     const pathname = usePathname()
     const versionSelectRef = useRef<HTMLSelectElement>(null)
     const monacoProvidersRef = useRef<any>([])
@@ -87,8 +87,8 @@ export default function Play(props: any) {
     const [generatedCSSText, setGeneratedCSSText] = useState('')
     const template = useMemo(() => templates.find((eachTemplate) => eachTemplate.version === version), [version])
     const [previewErrorEvent, setPreviewErrorEvent] = useState<any>()
-    const [layout, setLayout] = useState('')
-    const [preview, setPreview] = useState('')
+    const layout = useMemo(() => searchParams.get('layout'), [searchParams])
+    const preview = useMemo(() => searchParams.get('preview'), [searchParams])
     const shareItem: PlayShare = useMemo(() => {
         if (props.shareItem && props.shareItem.version === version) {
             props.shareItem.files
@@ -106,44 +106,22 @@ export default function Play(props: any) {
         }
     }, [props.shareItem, template?.dependencies, template?.files, template?.links, version])
 
-    useLayoutEffect(() => {
-        const urlSearchParams = new URLSearchParams(window.location.search)
-        setLayout(urlSearchParams.get('layout') || '')
-        setPreview(urlSearchParams.get('preview') || '')
-        setSearchParams(urlSearchParams)
-    }, [])
-
-    const updateQueryParams = useCallback((name: string, value: any) => {
-        const urlSearchParams = new URLSearchParams(window.location.search)
-        if (!value) {
-            urlSearchParams.delete(name)
-        } else {
-            urlSearchParams.set(name, value)
-        }
+    const getSearchPath = useCallback((name?: string, value?: any) => {
+        const urlSearchParams = new URLSearchParams(searchParams.toString())
+        if (name)
+            if (!value) {
+                urlSearchParams.delete(name)
+            } else {
+                urlSearchParams.set(name, value)
+            }
         const searchParamsStr = urlSearchParams.toString()
-        window.history.replaceState({ [name]: value }, '', pathname + (searchParamsStr ? '?' + searchParamsStr : ''))
-    }, [pathname])
+        return pathname + (searchParamsStr ? '?' + searchParamsStr : '')
+    }, [pathname, searchParams])
 
-    const updateLayout = useCallback((layout: any) => {
-        setLayout(layout)
-        updateQueryParams('layout', layout)
-    }, [updateQueryParams])
+    const tab = useMemo(() => shareItem.files.find(({ title }) => searchParams.get('tab') === title)
+        ? searchParams.get('tab')
+        : shareItem.files[0].title, [searchParams, shareItem.files])
 
-    const updatePreview = useCallback((preview: any) => {
-        setPreview(preview)
-        updateQueryParams('preview', preview)
-    }, [updateQueryParams])
-
-    const updateTab = useCallback((tab: any) => {
-        setTab(tab)
-        updateQueryParams('tab', tab === shareItem.files[0].title ? '' : tab)
-    }, [shareItem.files, updateQueryParams])
-
-    const [tab, setTab] = useState<any>(
-        () => shareItem.files.find(({ title }) => searchParams?.get('tab') === title)
-            ? searchParams?.get('tab')
-            : shareItem.files[0].title
-    )
     const editorModelRef = useRef<Record<string, editor.IModel | undefined>>({})
     const generateDatabaseShareItem = useCallback((target: any) => ({
         files: target.files,
@@ -181,17 +159,17 @@ export default function Play(props: any) {
         const onResize = () => {
             if (window.innerWidth >= mediaQueries.md) {
                 if (tab === 'Preview' || tab === 'Generated CSS') {
-                    updateTab(shareItem.files[0].title)
+                    router.push(getSearchPath('tab', shareItem.files[0].title))
                 }
             } else {
-                updatePreview('')
+                router.push(getSearchPath('preview', ''))
             }
         }
         window.addEventListener('resize', onResize, { passive: true })
         return () => {
             window.removeEventListener('resize', onResize)
         }
-    }, [tab, shareItem.files, updateTab, updatePreview])
+    }, [tab, shareItem.files, router, getSearchPath])
 
     /**
      * 需避免即時編輯 HTML, Config 或切換 Theme 時更新 previewHTML，否則 Preview 將重載並造成視覺閃爍
@@ -402,8 +380,8 @@ export default function Play(props: any) {
         setShareable(false)
         setSharing(false)
         copyShareLink(newSharePathname)
-        window.history.replaceState({}, '', newSharePathname)
-    }, [copyShareLink, generateDatabaseShareItem, props.locale, shareItem, shareable])
+        router.push(newSharePathname)
+    }, [copyShareLink, generateDatabaseShareItem, props.locale, router, shareItem, shareable])
 
     const responsive = useMemo(() => {
         return preview === 'responsive'
@@ -606,7 +584,7 @@ export default function Play(props: any) {
                         </span>}
                     </ShareButton>}
                     {(shareId || shareable) && <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>}
-                    <button className="app-header-icon hide@<md" onClick={() => updateLayout(layout ? null : '2')}>
+                    <Link className="app-header-icon hide@<md" href={getSearchPath('layout', layout ? '' : '2')}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
                                 '~transform|.2s',
@@ -617,8 +595,8 @@ export default function Play(props: any) {
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
                             <path d="M12 4l0 16"></path>
                         </svg>
-                    </button>
-                    <button className="app-header-icon hide@<md" onClick={() => updateLayout(layout === '3' ? '4' : '3')}>
+                    </Link>
+                    <Link className="app-header-icon hide@<md" href={getSearchPath('layout', layout === '3' ? '4' : '3')}>
                         <svg className={clsx({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate(90)')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
                                 '~transform|.2s',
@@ -629,37 +607,37 @@ export default function Play(props: any) {
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
                             <path d="M12 4l0 16"></path>
                         </svg>
-                    </button>
-                    <button className="app-header-icon hide@<md" onClick={() => updateLayout('5')}>
+                    </Link>
+                    <Link className="app-header-icon hide@<md" href={getSearchPath('layout', '5')}>
                         <svg xmlns="http://www.w3.org/2000/svg" className={clsx(layout === '5' && 'stroke:accent')} width="22" height="22" strokeWidth="1.2" viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
                             <path d="M4 9l16 0"></path>
                             <rect className={layout === '5' ? 'fill:accent/.15' : 'fill:dim/.2'} width="16" height="11" stroke='none' transform="translate(4 9)" />
                         </svg>
-                    </button>
+                    </Link>
                     <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>
                     {/* preview: desktop */}
-                    <button className="app-header-icon hide@<md" onClick={() => updatePreview('')}>
+                    <Link className="app-header-icon hide@<md" href={getSearchPath('preview', '')}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
                             'stroke:1.3 stroke:current',
                             !preview ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
                         )} />
-                    </button>
+                    </Link>
                     {/* preview: responsive */}
-                    <button className="app-header-icon hide@<md" onClick={() => updatePreview('responsive')}>
+                    <Link className="app-header-icon hide@<md" href={getSearchPath('preview', 'responsive')}>
                         <IconDeviceMobile width="22" height="22" className={clsx(
                             'stroke:1.3 stroke:current',
                             responsive ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
                         )} />
-                    </button>
+                    </Link>
                     {/* preview: css */}
-                    <button className="app-header-icon hide@<md" onClick={() => updatePreview('css')}>
+                    <Link className="app-header-icon hide@<md" href={getSearchPath('preview', 'css')}>
                         <IconBrandCss3 width="22" height="22" className={clsx(
                             'stroke:1.3 stroke:current',
                             preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
                         )} />
-                    </button>
+                    </Link>
                     <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>
                     <LanguageButton className="app-header-icon" locale={props.locale} />
                     <ThemeButton className="app-header-icon"
@@ -704,15 +682,15 @@ export default function Play(props: any) {
                 >
                     <Tabs className="flex:0|0|auto" contentClassName="px:30">
                         {shareItem.files.map((file, index) => (
-                            <Tab size="sm" active={tab === file.title} key={file.id} onClick={() => updateTab(file.title)}>
+                            <Tab href={getSearchPath('tab', index === 0 ? '' : file.title)} size="sm" active={tab === file.title} key={file.id}>
                                 {file.title || ''}
                             </Tab>
                         ))}
                         {/* mobile couldn't support tab active */}
-                        <Tab size="sm" className="hide@md" active={tab === 'Generated CSS'} onClick={() => updateTab('Generated CSS')}>
+                        <Tab href={getSearchPath('tab', 'Generated CSS')} size="sm" className="hide@md" active={tab === 'Generated CSS'}>
                             Generated CSS
                         </Tab>
-                        <Tab className="hide@sm" size="sm" active={tab === 'Preview'} onClick={() => updateTab('Preview')}>
+                        <Tab href={getSearchPath('tab', 'Preview')} className="hide@sm" size="sm" active={tab === 'Preview'}>
                             Preview
                         </Tab>
                     </Tabs>
@@ -727,7 +705,7 @@ export default function Play(props: any) {
                             defaultValue={currentCodeTab.content}
                             defaultLanguage={currentCodeTab.language}
                             language={currentCodeTab.language}
-                            path={tab}
+                            path={tab || ''}
                             options={{
                                 ...editorOptions,
                                 readOnly: currentCodeTab.readOnly

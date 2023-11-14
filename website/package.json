@@ -10,7 +10,7 @@
         "type-check": "tsc --noEmit"
     },
     "dependencies": {
-        "next": "^14.0.3-canary.7",
+        "next": "^14.0.2",
         "@master/css": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-language-service": "workspace:^",
