@@ -1,7 +1,7 @@
 {
     "name": "@master/css-renderer",
     "scripts": {
-        "build": "techor pack --platform node",
+        "build": "techor pack 'src/**/*.ts' --platform node",
         "dev": "pnpm run build --watch --no-declare",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
@@ -34,20 +34,20 @@
         "dist"
     ],
     "exports": {
-        "./actions/main": "./dist/actions/main.bundle.js"
+        "./actions/main": "./dist/actions/main.js"
     },
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
         "@master/css-server": "workspace:^",
-        "@techor/log": "^2.5.19",
         "@techor/glob": "^2.5.19",
-        "explore-config": "^2.5.19"
+        "@techor/log": "^2.5.19",
+        "bytes": "^3.1.2",
+        "explore-config": "^2.5.19",
+        "pretty-hrtime": "^1.0.3"
     },
     "devDependencies": {
-        "pretty-bytes": "^6.1.0",
-        "pretty-hrtime": "^1.0.3",
         "css-shared": "workspace:^",
         "ts-jest": "^29.0.5"
     }
