@@ -1,8 +1,7 @@
 'use client'
 
-import Editor, { type Monaco } from '@monaco-editor/react'
 import type { editor } from 'monaco-editor'
-import { use, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { debounce } from 'throttle-debounce'
 import { snackbar } from 'websites/utils/snackbar'
 import dedent from 'ts-dedent'
@@ -32,6 +31,7 @@ import dynamic from 'next/dynamic'
 import loader from '@monaco-editor/loader'
 import { useRouter } from 'next/navigation'
 import Link from 'websites/components/Link'
+import Editor, { type Monaco } from '@monaco-editor/react'
 
 const ShareButton = dynamic(() => import('./components/ShareButton'))
 
@@ -90,21 +90,12 @@ export default function Play(props: any) {
     const layout = useMemo(() => searchParams.get('layout'), [searchParams])
     const preview = useMemo(() => searchParams.get('preview'), [searchParams])
     const shareItem: PlayShare = useMemo(() => {
-        if (props.shareItem && props.shareItem.version === version) {
-            props.shareItem.files
-                .forEach((eachFile: PlayShareFile) => {
-                    eachFile.content = (eachFile.content || '').replace(/\\n/g, '\n')
-                })
+        if (props.shareItem) {
             return props.shareItem
         } else {
-            return {
-                files: props.shareItem?.files ?? cloneDeep(template?.files),
-                dependencies: cloneDeep(template?.dependencies),
-                version: latestMasterCSSVersion,
-                links: cloneDeep(template?.links)
-            }
+            return template
         }
-    }, [props.shareItem, template?.dependencies, template?.files, template?.links, version])
+    }, [props.shareItem, template])
 
     const getSearchPath = useCallback((name?: string, value?: any) => {
         const urlSearchParams = new URLSearchParams(searchParams.toString())
@@ -237,7 +228,7 @@ export default function Play(props: any) {
         </html>`
     }, [shareItem?.dependencies?.scripts, shareItem?.dependencies?.styles, shareItem.files, shareItem?.links, template?.files])
 
-    const currentCodeTab: { id: string, language: string, content: string, readOnly: boolean, name: string, title: string } = useMemo(() => {
+    const tabFile: { id: string, language: string, content: string, readOnly: boolean, name: string, title: string } = useMemo(() => {
         switch (tab) {
             // mobile
             case 'Generated CSS':
@@ -260,52 +251,26 @@ export default function Play(props: any) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const hotUpdatePreviewByFile = useCallback(debounce(250, () => {
         if (editorRef.current) {
-            currentCodeTab.content = editorRef.current?.getValue()
+            tabFile.content = editorRef.current?.getValue()
             validateShareable()
         }
 
         previewIframeRef?.current?.contentWindow?.postMessage({
-            id: currentCodeTab.id,
-            language: currentCodeTab.language,
-            name: currentCodeTab.name,
-            title: currentCodeTab.title,
-            content: currentCodeTab.content
+            id: tabFile.id,
+            language: tabFile.language,
+            name: tabFile.name,
+            title: tabFile.title,
+            content: tabFile.content
         }, window.location.origin)
 
         setTimeout(() => {
             setPreviewErrorEvent(null)
         })
-    }), [currentCodeTab, validateShareable])
+    }), [tabFile, validateShareable])
 
     const editorOnChange = useCallback(() => {
         hotUpdatePreviewByFile()
     }, [hotUpdatePreviewByFile])
-
-    /**
-     * 手動更新 editor value，不要使用 value={currentCodeTab.value}
-     */
-    useEffect(() => {
-        if (tab !== 'Preview' && editorRef.current && monacoRef.current) {
-            const content = tab === 'Generated CSS' ? generatedCSSText : currentCodeTab.content
-            let currentEditorModel: any = editorModelRef.current?.[currentCodeTab.id]
-            if (currentEditorModel) {
-                if (currentEditorModel.getValue() !== content) {
-                    currentEditorModel.setValue(content)
-                }
-            } else {
-                currentEditorModel
-                    = editorModelRef.current[currentCodeTab.id]
-                    = monacoRef.current?.editor.createModel(content, currentCodeTab.language) as editor.ITextModel
-            }
-
-            if (editorRef.current.getValue() !== content) {
-                editorRef.current.setModel(currentEditorModel)
-            }
-
-            /* 取消因上文觸發 hotUpdatePreviewByFile() */
-            hotUpdatePreviewByFile.cancel({ upcomingOnly: true })
-        }
-    }, [currentCodeTab, tab, generatedCSSText, hotUpdatePreviewByFile, shareItem.files])
 
     // dispose monaco providers
     useEffect(() => {
@@ -546,14 +511,16 @@ export default function Play(props: any) {
                         className="abs full cursor:pointer inset:0 opacity:0"
                         onChange={onVersionSelectChange}>
                         {templates.map(({ version: eachVersion }) => (
-                            <option value={eachVersion} key={eachVersion}>v{eachVersion}</option>
+                            <option value={eachVersion} key={eachVersion} disabled={props.shareItem && version !== eachVersion}>
+                                v{eachVersion}
+                            </option>
                         ))}
-                        {
+                        {/* {
                             shareItem?.version && !templates.find((eachTemplate) => eachTemplate.version === version)
                             && <option value={shareItem.version} disabled>
                                 v{shareItem?.version}
                             </option>
-                        }
+                        } */}
                     </select>
                     <IconChevronDown className="1emx1em mr:-3 stroke:1.3" />
                 </label>
@@ -702,13 +669,12 @@ export default function Play(props: any) {
                             height="100%"
                             width="100%"
                             theme={'vs-' + themeService?.current}
-                            defaultValue={currentCodeTab.content}
-                            defaultLanguage={currentCodeTab.language}
-                            language={currentCodeTab.language}
-                            path={tab || ''}
+                            defaultValue={tabFile.content}
+                            defaultLanguage={tabFile.language}
+                            path={tabFile.id}
                             options={{
                                 ...editorOptions,
-                                readOnly: currentCodeTab.readOnly
+                                readOnly: tabFile.readOnly
                             }}
                             onMount={editorOnMount}
                             onChange={editorOnChange}
