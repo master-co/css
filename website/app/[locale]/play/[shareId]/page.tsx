@@ -3,6 +3,7 @@ import app from 'websites/firebase-admin-app'
 import { initializeFirestore } from 'firebase-admin/firestore'
 import { notFound } from 'next/navigation'
 import { collectDictionary } from 'websites/dictionaries'
+import { Suspense } from 'react'
 
 export const dynamic = 'force-static'
 export const revalidate = false
@@ -19,11 +20,13 @@ export default async function Page(props: any) {
     if (doc.exists) {
         shareItem = doc.data() as PlayShare
         return (
-            <Play shareItem={shareItem}
-                shareId={shareId}
-                locale={locale}
-                dict={await collectDictionary(locale, ['Docs', 'Play', 'Roadmap', 'Blog', 'Components', 'Sharing ...', 'Share'])}
-            />
+            <Suspense fallback={null}>
+                <Play shareItem={shareItem}
+                    shareId={shareId}
+                    locale={locale}
+                    dict={await collectDictionary(locale, ['Docs', 'Play', 'Roadmap', 'Blog', 'Components', 'Sharing ...', 'Share'])}
+                />
+            </Suspense>
         )
     } else {
         notFound()

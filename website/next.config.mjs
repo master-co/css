@@ -1,9 +1,9 @@
-import redirects from './redirects.mjs';
+import redirects from './redirects.mjs'
 import CopyPlugin from 'copy-webpack-plugin'
 import path from 'path'
 import withMDX from 'websites/width-mdx.mjs'
-import withWebpackConfig from 'websites/with-webpack-config.mjs';
-import withBundleAnalyzer from 'websites/with-bundle-analyzer.mjs';
+import withWebpackConfig from 'websites/with-webpack-config.mjs'
+import withBundleAnalyzer from 'websites/with-bundle-analyzer.mjs'
 
 /**
  * @type {import('next').NextConfig}
@@ -21,13 +21,12 @@ const nextConfig = {
         /**
          * 解決：You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file.
          */
-        externalDir: true
+        externalDir: true,
+        ppr: true
     },
     async redirects() {
-        return redirects;
+        return redirects
     },
-    // Optionally, add any other Next.js config below
-    reactStrictMode: true,
     images: {
         formats: ['image/avif', 'image/webp'],
         remotePatterns: [

@@ -9,7 +9,7 @@ export async function generateMetadata(props: any, parent: any) {
     return generate(metadata, props, parent)
 }
 
-export default async function Layout(props: any) {
+export default async function Page(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return (
         <DocLayout {...props} metadata={metadata} icon={{
