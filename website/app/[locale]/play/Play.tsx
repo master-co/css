@@ -118,7 +118,9 @@ export default function Play(props: any) {
         return pathname + (searchParamsStr ? '?' + searchParamsStr : '')
     }, [pathname, searchParams])
 
-    const tab = useMemo(() => searchParams.get('tab') || shareItem.files.find(({ title }) => searchParams.get('tab') === title) || shareItem.files[0].title, [searchParams, shareItem.files])
+    const tab = useMemo(() => searchParams.get('tab') || shareItem.files[0].title,
+        [searchParams, shareItem.files]
+    )
 
     const editorModelRef = useRef<Record<string, editor.IModel | undefined>>({})
     const generateDatabaseShareItem = useCallback((target: any) => ({
