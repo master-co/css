@@ -11,16 +11,14 @@ export async function generateMetadata(props: any, parent: any) {
 export default async function Page(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return (
-        <Suspense fallback={null}>
-            <Play locale={props.params.locale} dict={{
-                Docs: $('Docs'),
-                Play: $('Play'),
-                Roadmap: $('Roadmap'),
-                Blog: $('Blog'),
-                Components: $('Components'),
-                'Sharing ...': $('Sharing ...'),
-                Share: $('Share')
-            }} />
-        </Suspense>
+        <Play locale={props.params.locale} dict={{
+            Docs: $('Docs'),
+            Play: $('Play'),
+            Roadmap: $('Roadmap'),
+            Blog: $('Blog'),
+            Components: $('Components'),
+            'Sharing ...': $('Sharing ...'),
+            Share: $('Share')
+        }} />
     )
 }

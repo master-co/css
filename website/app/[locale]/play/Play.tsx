@@ -87,8 +87,8 @@ export default function Play(props: any) {
     const [generatedCSSText, setGeneratedCSSText] = useState('')
     const template = useMemo(() => templates.find((eachTemplate) => eachTemplate.version === version), [version])
     const [previewErrorEvent, setPreviewErrorEvent] = useState<any>()
-    const layout = useMemo(() => searchParams.get('layout'), [searchParams])
-    const preview = useMemo(() => searchParams.get('preview'), [searchParams])
+    const [layout, setLayout] = useState(() => searchParams.get('layout'))
+    const [preview, setPreview] = useState(() => searchParams.get('preview'))
     const shareItem: PlayShare = useMemo(() => {
         if (props.shareItem) {
             return props.shareItem
@@ -96,6 +96,13 @@ export default function Play(props: any) {
             return template
         }
     }, [props.shareItem, template])
+    const [tab, setTab] = useState(()=> searchParams.get('tab') || shareItem.files[0].title)
+
+    useEffect(() => {
+        setLayout(searchParams.get('layout'))
+        setPreview(searchParams.get('preview'))
+        setTab(searchParams.get('tab') || shareItem.files[0].title)
+    }, [searchParams, shareItem.files])
 
     const getSearchPath = useCallback((name?: string, value?: any) => {
         const urlSearchParams = new URLSearchParams(searchParams.toString())
@@ -108,10 +115,6 @@ export default function Play(props: any) {
         const searchParamsStr = urlSearchParams.toString()
         return pathname + (searchParamsStr ? '?' + searchParamsStr : '')
     }, [pathname, searchParams])
-
-    const tab = useMemo(() => searchParams.get('tab') || shareItem.files[0].title,
-        [searchParams, shareItem.files]
-    )
 
     const editorModelRef = useRef<Record<string, editor.IModel | undefined>>({})
     const generateDatabaseShareItem = useCallback((target: any) => ({

@@ -20,13 +20,11 @@ export default async function Page(props: any) {
     if (doc.exists) {
         shareItem = doc.data() as PlayShare
         return (
-            <Suspense fallback={null}>
-                <Play shareItem={shareItem}
-                    shareId={shareId}
-                    locale={locale}
-                    dict={await collectDictionary(locale, ['Docs', 'Play', 'Roadmap', 'Blog', 'Components', 'Sharing ...', 'Share'])}
-                />
-            </Suspense>
+            <Play shareItem={shareItem}
+                shareId={shareId}
+                locale={locale}
+                dict={await collectDictionary(locale, ['Docs', 'Play', 'Roadmap', 'Blog', 'Components', 'Sharing ...', 'Share'])}
+            />
         )
     } else {
         notFound()
