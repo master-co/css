@@ -1,24 +1,25 @@
 import Play, { PlayShare } from '../Play'
-import app from 'websites/firebase-admin-app'
-import { initializeFirestore } from 'firebase-admin/firestore'
 import { notFound } from 'next/navigation'
 import { collectDictionary } from 'websites/dictionaries'
-import { Suspense } from 'react'
+import firebaseConfig from 'websites/firebase-config'
+import { initializeApp } from '@firebase/app'
+import { getFirestore, doc, getDoc } from '@firebase/firestore/lite'
 
 export const dynamic = 'force-static'
 export const revalidate = false
 
 export default async function Page(props: any) {
-    const store = initializeFirestore(app)
+    const app = initializeApp(firebaseConfig)
+    const db = getFirestore(app)
     const { shareId, locale } = props.params
     if (!shareId) {
         notFound()
     }
     let shareItem: PlayShare | null = null
-    const shareItemRef = store.doc(`sandbox/${shareId}`)
-    const doc = await shareItemRef.get()
-    if (doc.exists) {
-        shareItem = doc.data() as PlayShare
+    const shareItemRef = doc(db, `sandbox/${shareId}`)
+    const data = await getDoc(shareItemRef)
+    if (data.exists()) {
+        shareItem = data.data() as PlayShare
         return (
             <Play shareItem={shareItem}
                 shareId={shareId}

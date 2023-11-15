@@ -1,5 +1,11 @@
 import { Locale } from 'websites/i18n.config'
 import RootLayout from '../root.layout'
+import metadata from './metadata'
+import { generate } from '~/utils/metadata'
+
+export async function generateMetadata(props: any, parent: any) {
+    return generate(metadata, props, parent)
+}
 
 export default async function Layout(props: {
     children: JSX.Element,

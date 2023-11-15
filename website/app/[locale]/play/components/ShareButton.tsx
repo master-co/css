@@ -1,10 +1,10 @@
 'use client'
 
+import { customAlphabet } from 'nanoid'
+const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 14)
 import firebaseConfig from 'websites/firebase-config'
 import { initializeApp } from '@firebase/app'
 import { getFirestore, setDoc, doc } from '@firebase/firestore/lite'
-import { customAlphabet } from 'nanoid'
-const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 14)
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
 
