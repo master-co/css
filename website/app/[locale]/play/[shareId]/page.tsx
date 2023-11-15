@@ -4,6 +4,9 @@ import { initializeFirestore } from 'firebase-admin/firestore'
 import { notFound } from 'next/navigation'
 import { collectDictionary } from 'websites/dictionaries'
 
+export const dynamic = 'force-static'
+export const revalidate = false
+
 export default async function Page(props: any) {
     const store = initializeFirestore(app)
     const { shareId, locale } = props.params
