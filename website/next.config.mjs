@@ -21,8 +21,7 @@ const nextConfig = {
         /**
          * 解決：You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file.
          */
-        externalDir: true,
-        ppr: true
+        externalDir: true
     },
     async redirects() {
         return redirects

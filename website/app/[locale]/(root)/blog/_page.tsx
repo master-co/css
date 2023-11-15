@@ -18,7 +18,7 @@ export async function generateMetadata(props: any, parent: any) {
 export default async function Page(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return <>
-        <DocHeader DocHeader contained locale={props.params.locale} />
+        <DocHeader contained locale={props.params.locale} />
         <main className='app-doc-main max-w:xl'>
             <Article className="mb:80" type="article">
                 <div className='gap:50|25 grid-cols:4'>
