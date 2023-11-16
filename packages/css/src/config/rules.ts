@@ -216,7 +216,10 @@ const rules = {
     color: {
         match: /^(?:color|fg|foreground):/,
         layer: Layer.CoreNative,
-        colored: true
+        colored: true,
+        variables: [
+            'foreground'
+        ]
     } as RuleDefinition,
     // margin
     'margin-left': {
@@ -515,7 +518,10 @@ const rules = {
     'text-decoration-color': {
         match: ['text-decoration'],
         layer: Layer.CoreNative,
-        colored: true
+        colored: true,
+        variables: [
+            'foreground'
+        ]
     } as RuleDefinition,
     'text-decoration-style': {
         match: ['t(?:ext)?', ['solid', 'double', 'dotted', 'dashed', 'wavy']],
@@ -535,7 +541,10 @@ const rules = {
         match: ['t(?:ext)?', ['underline', 'overline', 'line-through']],
         unit: 'rem',
         colored: true,
-        layer: Layer.CoreNativeShorthand
+        layer: Layer.CoreNativeShorthand,
+        variables: [
+            'foreground'
+        ]
     } as RuleDefinition,
     'text-underline-offset': {
         unit: 'rem',
@@ -738,6 +747,9 @@ const rules = {
         match: ['(?:text-fill|text|t)'],
         layer: Layer.CoreNative,
         colored: true,
+        variables: [
+            'foreground'
+        ],
         declare(value, unit) {
             return {
                 '-webkit-text-fill-color': value + unit
@@ -759,6 +771,9 @@ const rules = {
         match: ['text-stroke'],
         layer: Layer.CoreNative,
         colored: true,
+        variables: [
+            'foreground'
+        ],
         declare(value, unit) {
             return {
                 '-webkit-text-stroke-color': value + unit
@@ -1275,7 +1290,10 @@ const rules = {
     fill: {
         match: /^fill:/,
         layer: Layer.CoreNative,
-        colored: true
+        colored: true,
+        variables: [
+            'foreground'
+        ]
     } as RuleDefinition,
     'stroke-dasharray': {
         layer: Layer.CoreNative
@@ -1292,7 +1310,10 @@ const rules = {
     stroke: {
         match: ['stroke'],
         layer: Layer.CoreNative,
-        colored: true
+        colored: true,
+        variables: [
+            'foreground'
+        ]
     } as RuleDefinition,
     x: {
         layer: Layer.CoreNative,
@@ -1534,7 +1555,10 @@ const rules = {
     'accent-color': {
         match: /^accent:/,
         layer: Layer.CoreNative,
-        colored: true
+        colored: true,
+        variables: [
+            'foreground'
+        ]
     } as RuleDefinition,
     appearance: {
         layer: Layer.CoreNative
@@ -1542,7 +1566,10 @@ const rules = {
     'caret-color': {
         match: /^caret:/,
         layer: Layer.CoreNative,
-        colored: true
+        colored: true,
+        variables: [
+            'foreground'
+        ]
     } as RuleDefinition,
     'scroll-behavior': {
         layer: Layer.CoreNative
