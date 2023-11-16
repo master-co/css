@@ -106,7 +106,6 @@ export default function Play(props: any) {
         return pathname + (searchParamsStr ? '?' + searchParamsStr : '')
     }, [pathname, searchParams])
 
-    const editorModelRef = useRef<Record<string, editor.IModel | undefined>>({})
     const generateDatabaseShareItem = useCallback((target: any) => ({
         files: target.files,
         dependencies: template?.dependencies,

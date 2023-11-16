@@ -5,7 +5,7 @@ import firebaseConfig from 'websites/firebase-config'
 import { initializeApp } from '@firebase/app'
 import { getFirestore, doc, getDoc } from '@firebase/firestore/lite'
 
-export const dynamic = 'force-static'
+export const dynamic = 'force-dynamic'
 export const revalidate = false
 
 export default async function Page(props: any) {
