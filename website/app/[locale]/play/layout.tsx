@@ -3,6 +3,9 @@ import RootLayout from '../root.layout'
 import metadata from './metadata'
 import { generate } from '~/utils/metadata'
 
+export const dynamic = 'force-static'
+export const revalidate = false
+
 export async function generateMetadata(props: any, parent: any) {
     return generate(metadata, props, parent)
 }

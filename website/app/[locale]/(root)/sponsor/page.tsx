@@ -9,6 +9,9 @@ import DonationModal from './components/DonationModal'
 import { generate } from '~/utils/metadata'
 import { default as openCollectiveToken } from 'websites/tokens/open-collective'
 
+export const dynamic = 'force-static'
+export const revalidate = false
+
 export async function generateMetadata(props: any, parent: any) {
     return generate(metadata, props, parent)
 }

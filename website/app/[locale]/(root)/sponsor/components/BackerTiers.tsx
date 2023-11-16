@@ -1,11 +1,11 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import TierModal from './TierModal'
+import useRewritedPathname from 'websites/uses/rewrited-pathname'
 
 export default function BackerTiers() {
-    const pathname = usePathname()
+    const pathname = useRewritedPathname()
     const [selectedTier, setSelectedTier] = useState<any>()
     const openCollectiveRedirectUrl = 'https://docs.master.co' + pathname.replace('donate', 'sponsor')
     const backerTiers: {

@@ -11,6 +11,9 @@ import Link from 'websites/components/Link'
 import metadata from './metadata.js'
 import { generate } from '~/utils/metadata'
 
+export const dynamic = 'force-static'
+export const revalidate = false
+
 export async function generateMetadata(props: any, parent: any) {
     return generate(metadata, props, parent)
 }

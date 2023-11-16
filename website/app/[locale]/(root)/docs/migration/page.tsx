@@ -4,6 +4,9 @@ import { generate } from '~/utils/metadata'
 import { queryDictionary } from 'websites/dictionaries'
 import DocLayout from '~/layouts/doc'
 
+export const dynamic = 'force-static'
+export const revalidate = false
+
 export async function generateMetadata(props: any, parent: any) {
     return generate(metadata, props, parent)
 }

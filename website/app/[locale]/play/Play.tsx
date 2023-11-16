@@ -7,7 +7,8 @@ import { snackbar } from 'websites/utils/snackbar'
 import dedent from 'ts-dedent'
 import { IconBrandCss3, IconChevronDown, IconDeviceDesktop, IconDeviceMobile } from '@tabler/icons-react'
 import Tabs, { Tab } from 'websites/components/Tabs'
-import { usePathname, useSearchParams } from 'next/navigation'
+import useRewritedPathname from 'websites/uses/rewrited-pathname'
+import { useSearchParams } from 'next/navigation'
 import LanguageButton from 'websites/components/LanguageButton'
 import previewHandlerScriptText from './previewHandler.js?text'
 import ThemeButton from 'websites/components/ThemeButton'
@@ -75,7 +76,7 @@ export default function Play(props: any) {
     const router = useRouter()
     const themeService = useThemeService()
     const searchParams = useSearchParams()
-    const pathname = usePathname()
+    const pathname = useRewritedPathname()
     const versionSelectRef = useRef<HTMLSelectElement>(null)
     const monacoProvidersRef = useRef<any>([])
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)

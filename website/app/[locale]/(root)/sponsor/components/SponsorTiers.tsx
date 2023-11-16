@@ -1,12 +1,12 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { getSponsorTiers } from 'websites/utils/get-sponsor-tiers'
 import TierModal from './TierModal'
+import useRewritedPathname from 'websites/uses/rewrited-pathname'
 
 export default function SponsorTiers() {
-    const pathname = usePathname()
+    const pathname = useRewritedPathname()
     const [selectedTier, setSelectedTier] = useState<any>()
     const sponsorTiers = getSponsorTiers(pathname)
 

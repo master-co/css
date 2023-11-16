@@ -5,6 +5,9 @@ import { generate } from '~/utils/metadata'
 import LogoSvg from '~/public/images/frameworks/angular.svg?inlineSvg'
 import { queryDictionary } from 'websites/dictionaries'
 
+export const dynamic = 'force-static'
+export const revalidate = false
+
 export async function generateMetadata(props: any, parent: any) {
     return generate(metadata, props, parent)
 }
