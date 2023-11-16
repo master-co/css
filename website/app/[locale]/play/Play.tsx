@@ -575,6 +575,7 @@ export default function Play(props: any) {
                             <rect className={layout === '5' ? 'fill:accent/.15' : 'fill:dim/.2'} width="16" height="11" stroke='none' transform="translate(4 9)" />
                         </svg>
                     </Link>
+                    <span className='hide'>{layout}</span>
                     <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>
                     {/* preview: desktop */}
                     <Link className="app-header-icon hide@<md" href={getSearchPath('preview', '')}>
@@ -597,6 +598,7 @@ export default function Play(props: any) {
                             preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
                         )} />
                     </Link>
+                    <span className='hide'>{preview}</span>
                     <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>
                     <LanguageButton className="app-header-icon" locale={props.locale} />
                     <ThemeButton className="app-header-icon"
@@ -653,6 +655,8 @@ export default function Play(props: any) {
                             Preview
                         </Tab>
                     </Tabs>
+                    {/* fix render issue */}
+                    <span className='hide'>{tab}</span>
                     <div className='full min-h:0'>
                         <Editor
                             className={clsx(

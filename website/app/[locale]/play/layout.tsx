@@ -12,7 +12,7 @@ export default async function Layout(props: {
     params: { locale: Locale }
 }) {
     return (
-        <RootLayout {...props} bodyAttrs={{ className: 'bg:base' }} style={{ display: 'none' }}>
+        <RootLayout {...props} bodyAttrs={{ className: 'bg:base' }}>
             <>
                 <link as="script" rel="preload" href="/monaco-editor/vs/loader.js" />
                 <link as="script" rel="preload" href="/monaco-editor/vs/editor/editor.main.js" />

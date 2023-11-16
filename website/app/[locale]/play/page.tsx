@@ -1,7 +1,7 @@
 import Play from './Play'
 import { queryDictionary } from 'websites/dictionaries'
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-static'
 export const revalidate = false
 
 export default async function Page(props: any) {
