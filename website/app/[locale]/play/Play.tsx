@@ -21,7 +21,8 @@ import { getLinkHTML } from './getLinkHTML'
 import { useThemeService } from '@master/css.react'
 import cloneDeep from 'clone-deep'
 import { Logotype } from '~/components/Logotype'
-import Header, { HeaderNav } from 'websites/components/Header'
+import Header from 'websites/components/Header'
+import HeaderNav from 'websites/components/HeaderNav'
 import links from '~/links.mjs'
 import i18n from 'websites/i18n.config.mjs'
 import { mediaQueries } from '@master/css'
@@ -87,22 +88,10 @@ export default function Play(props: any) {
     const [generatedCSSText, setGeneratedCSSText] = useState('')
     const template = useMemo(() => templates.find((eachTemplate) => eachTemplate.version === version), [version])
     const [previewErrorEvent, setPreviewErrorEvent] = useState<any>()
-    const [layout, setLayout] = useState(() => searchParams.get('layout'))
-    const [preview, setPreview] = useState(() => searchParams.get('preview'))
-    const shareItem: PlayShare = useMemo(() => {
-        if (props.shareItem) {
-            return props.shareItem
-        } else {
-            return template
-        }
-    }, [props.shareItem, template])
-    const [tab, setTab] = useState(()=> searchParams.get('tab') || shareItem.files[0].title)
-
-    useEffect(() => {
-        setLayout(searchParams.get('layout'))
-        setPreview(searchParams.get('preview'))
-        setTab(searchParams.get('tab') || shareItem.files[0].title)
-    }, [searchParams, shareItem.files])
+    const layout = useMemo(() => searchParams.get('layout'), [searchParams])
+    const preview = useMemo(() => searchParams.get('preview'), [searchParams])
+    const shareItem: PlayShare = useMemo(() => props.shareItem || template, [props.shareItem, template])
+    const tab = useMemo(() => searchParams.get('tab') || shareItem.files[0].title, [searchParams, shareItem.files])
 
     const getSearchPath = useCallback((name?: string, value?: any) => {
         const urlSearchParams = new URLSearchParams(searchParams.toString())
@@ -652,7 +641,7 @@ export default function Play(props: any) {
                 >
                     <Tabs className="flex:0|0|auto" contentClassName="px:30">
                         {shareItem.files.map((file, index) => (
-                            <Tab href={getSearchPath('tab', index === 0 ? '' : file.title)} size="sm" key={file.id} active={tab === file.title || ''}>
+                            <Tab href={getSearchPath('tab', index === 0 ? '' : file.title)} size="sm" key={file.id} active={tab === file.title}>
                                 {file.title || ''}
                             </Tab>
                         ))}

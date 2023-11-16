@@ -1,17 +1,17 @@
 import links from '../links.mjs'
-import Header, { HeaderNav } from 'websites/components/Header'
-import LanguageButton from 'websites/components/LanguageButton';
-import GitHubIconButton from 'websites/components/GitHubIconButton';
-import ThemeButton from 'websites/components/ThemeButton';
-import TwitterIconButton from 'websites/components/TwitterIconButton';
-import DiscussionsIconButton from 'websites/components/DiscussionsIconButton';
-import DiscordIconButton from 'websites/components/DiscordIconButton';
-import { IconChevronDown } from '@tabler/icons-react';
-import project from '~/project';
-import { Logotype } from '~/components/Logotype';
-import DocVersionSelect from './DocVersionSelect';
-import { queryDictionary } from 'websites/dictionaries';
-import version from 'websites/version';
+import Header from 'websites/components/Header'
+import HeaderNav from 'websites/components/HeaderNav'
+import LanguageButton from 'websites/components/LanguageButton'
+import GitHubIconButton from 'websites/components/GitHubIconButton'
+import ThemeButton from 'websites/components/ThemeButton'
+import TwitterIconButton from 'websites/components/TwitterIconButton'
+import DiscussionsIconButton from 'websites/components/DiscussionsIconButton'
+import DiscordIconButton from 'websites/components/DiscordIconButton'
+import { IconChevronDown } from '@tabler/icons-react'
+import { Logotype } from '~/components/Logotype'
+import DocVersionSelect from './DocVersionSelect'
+import { queryDictionary } from 'websites/dictionaries'
+import version from 'websites/version'
 
 export default async function DocHeader({ children, ...props }: any) {
     const $ = await queryDictionary(props.locale)
