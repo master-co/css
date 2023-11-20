@@ -11,7 +11,7 @@ export default () =>
                     {(className: string) =>
                         <>
                             <Demo>
-                                <div className="gap:30 cols:3 w:full w:full_:where(div)">
+                                <div className="cols:3 gap:30 w:full w:full_:where(div)">
                                     <div className="box mb:30">1</div>
                                     <div className="box mb:30">2</div>
                                     <div className="box mb:30">3</div>

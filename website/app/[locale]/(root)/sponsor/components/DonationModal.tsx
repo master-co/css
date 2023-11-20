@@ -92,15 +92,15 @@ export default function DonationModal() {
                 bg:gray-87@dark bg:white@light round mx:auto
             `}
         >
-            <Image className="round object:contain rel top:2 mx:auto" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
+            <Image className="rel round mx:auto object:contain top:2" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
         </div>
-        <div className="font:24 t:center font:bold">{donationOrder.name || 'Unknown'}</div>
+        <div className="font:24 font:bold t:center">{donationOrder.name || 'Unknown'}</div>
         <p className="t:center">Thanks for your donation 🥳</p>
 
         <ul>
             {donationOrder.tier && (
                 <li>
-                    <b className="uppercase::first-letter inline-block">{donationOrder.tier.replace('-', ' ')}</b>
+                    <b className="inline-block uppercase::first-letter">{donationOrder.tier.replace('-', ' ')}</b>
                 </li>
             )}
             <li>

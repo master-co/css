@@ -7,7 +7,7 @@ export default function DocVersionSelect({ version }: any) {
         window.location.href = event.target.value
     }, [])
     return <select name="version" defaultValue="https://beta.css.master.co"
-        className="abs full inset:0 opacity:0 cursor:pointer"
+        className="abs full cursor:pointer inset:0 opacity:0"
         onChange={navigate}>
         <option value="https://beta.css.master.co">v{version}</option>
         <option value="https://css.master.co">v1.37.3</option>

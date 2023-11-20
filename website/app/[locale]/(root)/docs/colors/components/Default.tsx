@@ -7,7 +7,7 @@ import { l } from 'to-line'
 import contrast from 'get-contrast'
 import { snackbar } from 'websites/utils/snackbar'
 
-export default () => <div className="grid-cols:6 grid-cols:13@sm my:40 gap:25|10">
+export default () => <div className="gap:25|10 grid-cols:6 grid-cols:13@sm my:40">
     {Object.keys(variables)
         // @ts-ignore todo fix this
         .filter((variableName) => ['slate', 'gray', 'brown', 'orange', 'gold', 'yellow', 'grass', 'green', 'beryl', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'crimson', 'red'].includes(variableName))
@@ -24,7 +24,7 @@ export default () => <div className="grid-cols:6 grid-cols:13@sm my:40 gap:25|10
                             const ratio = Math.round(contrast.ratio(backgroundHex, '#ffffff') * 10) / 10
                             return (
                                 <div key={color + level}>
-                                    <div className="flex center-content ls:.5 w:full font:12 h:40 r:5 cursor:pointer"
+                                    <div className="center-content flex cursor:pointer font:12 h:40 ls:.5 r:5 w:full"
                                         style={{
                                             backgroundColor: backgroundHex,
                                             color: ratio > 4.5 ? '#fff' : '#000',
@@ -39,8 +39,8 @@ export default () => <div className="grid-cols:6 grid-cols:13@sm my:40 gap:25|10
                                     >
                                         {/* <div className="info invisible lh:1">#{color}</div> */}
                                     </div>
-                                    <code className="block mt:8 font:12">{level}</code>
-                                    <code className="block mt:4 font:10 fg:neutral">{color}</code>
+                                    <code className="block font:12 mt:8">{level}</code>
+                                    <code className="block fg:neutral font:10 mt:4">{color}</code>
                                     {/* <code className="block mt:4 font:10 fg:neutral">{ratio}</code> */}
                                 </div>
                             )

@@ -9,7 +9,7 @@ export default ({ className }: any) => {
     return (
         <>
             <Demo>
-                <IconRotateClockwise className="stroke:.5 stroke:dim 48x48" strokeDasharray={1.5} />
+                <IconRotateClockwise className="48x48 stroke:.5 stroke:dim" strokeDasharray={1.5} />
                 <IconRotateClockwise className={l(className, 'app-icon-primary stroke:.5 48x48')} />
             </Demo>
             <Code lang="html">{`

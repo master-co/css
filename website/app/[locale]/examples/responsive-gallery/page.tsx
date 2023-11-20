@@ -31,7 +31,7 @@ export default async function Page(props: any) {
         <>
             <div className="gap:15 grid-cols:2 grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md p:40">
                 <Image
-                    className="object:cover full aspect:2/1 grid-col-span:2 grid-row-span:2 r:5"
+                    className="full aspect:2/1 grid-col-span:2 grid-row-span:2 object:cover r:5"
                     src={mountain1.src}
                     blurDataURL={mountain1.blurDataURL}
                     placeholder='blur'

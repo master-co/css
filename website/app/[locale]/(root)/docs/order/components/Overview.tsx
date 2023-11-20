@@ -11,12 +11,12 @@ export default () =>
                     {(className: string) =>
                         <>
                             <Demo className="py:0">
-                                <div className="w:full bg-stripe p:10 flex gap:10">
-                                    <div className="o:-3 box">1</div>
-                                    <div className="o:-1 box">2</div>
+                                <div className="bg-stripe flex gap:10 p:10 w:full">
+                                    <div className="box o:-3">1</div>
+                                    <div className="box o:-1">2</div>
                                     <div className={line(className, 'flex:1 box bg:blue-58! fg:white')}>{className}</div>
-                                    <div className="o:1 box">4</div>
-                                    <div className="o:3 box">5</div>
+                                    <div className="box o:1">4</div>
+                                    <div className="box o:3">5</div>
                                 </div>
                             </Demo>
                             <Code lang="html">{`

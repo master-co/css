@@ -1,3 +1,4 @@
+/* eslint-disable @master/css/class-order */
 import { Fragment } from 'react'
 import Link from 'websites/components/Link'
 
@@ -10,7 +11,8 @@ export default function Donors({ sponsorTiers, sponsorsOfLevel }: any) {
                 </h2>
                 <hr className="flex:1|1|auto my:0!" />
             </div>
-            <div className={`grid-cols:${eachSponsorTier.columns} gap:${eachSponsorTier.gap - 20} gap:${eachSponsorTier.gap}@sm align-items:center`}>
+            {/* eslint-disable @master/css/class-validation */}
+            <div className={`align-items:center gap:${eachSponsorTier.gap - 20} gap:${eachSponsorTier.gap}@sm grid-cols:${eachSponsorTier.columns}`}>
                 {sponsorsOfLevel[eachSponsorTier.name] &&
                     sponsorsOfLevel[eachSponsorTier.name].map((eachSponsor: any, i: number) => (
                         // eslint-disable-next-line @next/next/no-img-element

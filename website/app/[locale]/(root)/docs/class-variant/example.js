@@ -1,15 +1,15 @@
 import cv from 'class-variant'
 
 const btn = cv(
-    `font:semibold rounded`,
+    `rounded font:semibold`,
     {
         intent: {
-            primary: 'bg:blue fg:white bg:blue-55:hover',
-            secondary: 'bg:white fg:slate-30 bg:slate-90:hover',
+            primary: 'bg:blue bg:blue-55:hover fg:white',
+            secondary: 'bg:white bg:slate-90:hover fg:slate-30',
         },
         size: {
-            sm: 'text:14 py:5 px:8',
-            md: 'text:16 py:10 px:15'
+            sm: 'text:14 px:8 py:5',
+            md: 'text:16 px:15 py:10'
         }
     },
     ['uppercase', { intent: 'primary', size: 'md' }],

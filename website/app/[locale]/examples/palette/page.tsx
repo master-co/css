@@ -282,7 +282,7 @@ export default async function Page(props: any) {
                                         const ratio = Math.round(contrast.ratio(backgroundHex, '#ffffff') * 10) / 10
                                         return (
                                             <div key={color + level}>
-                                                <div className="flex center-content ls:.5 w:full font:12 h:40"
+                                                <div className="center-content flex font:12 h:40 ls:.5 w:full"
                                                     style={{
                                                         backgroundColor: backgroundHex,
                                                         color: ratio > 4.5 ? '#fff' : '#000',

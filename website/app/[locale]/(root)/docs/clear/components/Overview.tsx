@@ -12,9 +12,9 @@ export default () =>
                         <>
                             <Demo>
                                 <div>
-                                    <div className="box w:150 h:200 float:left">Left</div>
-                                    <div className="box w:150 h:200 float:left">Left</div>
-                                    <div className="box w:150 h:120 float:right">Right</div>
+                                    <div className="box float:left h:200 w:150">Left</div>
+                                    <div className="box float:left h:200 w:150">Left</div>
+                                    <div className="box float:right h:120 w:150">Right</div>
                                     <div className={line(className, 'box w:150 h:120')}>Clear</div>
                                 </div>
                             </Demo>
