@@ -1,3 +1,5 @@
+@import './eliminate-click-delays.css';
+
 body {
     line-height: 1.2;
     -webkit-tap-highlight-color: transparent;

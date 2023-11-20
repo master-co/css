@@ -1,7 +1,7 @@
 {
     "name": "@master/normal.css",
     "scripts": {
-        "build": "techor pack",
+        "build": "techor pack \"./src/*.css\" --no-declare --bundle",
         "dev": "npm run build -- --watch"
     },
     "license": "MIT",
@@ -30,8 +30,8 @@
         "lightweight",
         "antialiased"
     ],
-    "main": "./dist/index.css",
-    "style": "./dist/index.css",
+    "main": "./dist/index.bundle.css",
+    "style": "./dist/index.bundle.css",
     "files": [
         "dist"
     ],
