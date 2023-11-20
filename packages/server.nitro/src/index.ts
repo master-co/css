@@ -1,1 +1,1 @@
-export * from './create-css-server-plugin'
+export { default as createCSSServerPlugin } from './create-css-server-plugin'
