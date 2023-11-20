@@ -1,11 +1,11 @@
-import { GridsBg } from 'websites/components/GridsBg';
-import Article from 'websites/components/Article';
-import DocHeader from '~/layouts/DocHeader';
-import DocFooter from '~/layouts/DocFooter';
-import ListAuthors from 'websites/components/ListAuthors';
-import { queryDictionary } from 'websites/dictionaries';
-import dayjs from 'dayjs';
-import TimeAgo from 'websites/components/TimeAgo';
+import { GridsBg } from 'websites/components/GridsBg'
+import Article from 'websites/components/Article'
+import DocHeader from '~/components/DocHeader'
+import DocFooter from '~/components/DocFooter'
+import ListAuthors from 'websites/components/ListAuthors'
+import { queryDictionary } from 'websites/dictionaries'
+import dayjs from 'dayjs'
+import TimeAgo from 'websites/components/TimeAgo'
 
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)
@@ -24,7 +24,7 @@ export default async function Layout(props: any) {
             {props.metadata.authors && <ListAuthors className="center-content gap:30 mt:50">{props.metadata.authors}</ListAuthors>}
         </div>
         <main className='app-doc-main max-w:sm'>
-            <Article className="mb:80 mt:0>:first" type="article">
+            <Article className="mb:80 mt:0>:first" h2Big>
                 {props.children}
             </Article>
         </main>

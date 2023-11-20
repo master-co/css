@@ -66,7 +66,7 @@ import editors from 'websites/data/editors'
 In practice, you pay less attention to the order of classes, and as the number of classes increases, the template markup becomes less readable.
 
 (i) With the [class order rule](/docs/eslint#class-order), you can enforce a consistent and fixed order for classes.
-<video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
+<video className="aspect:2/1 r:5 max-w:xs w:full" autoPlay loop muted playsInline>
     <source src="/videos/consistent-class-order.webm" type="video/webm" />
 </video>
 
@@ -83,7 +83,7 @@ In practice, you pay less attention to the order of classes, and as the number o
 In the past, you would add utility classes to your templates in an unsafe manner, without being able to check whether they were valid or legal in the source code.
 
 (i) With the [class validation rule](/docs/eslint#class-order), you can check the validity of classes early as you write them.
-<video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
+<video className="aspect:2/1 r:5 max-w:xs w:full" autoPlay loop muted playsInline>
     <source src="/videos/syntax-error-checks.webm" type="video/webm" />
 </video>
 
@@ -97,7 +97,7 @@ This is helpful if you make a typo or are unfamiliar with Master CSS syntax!
 You can also restrict teams to using [configuration](/docs/configuration) to create [styles](/docs/styles) instead of defining classes through traditional `html <style>` or CSS files.
 
 (i) Based on syntax error checking, you can [disallow unknown classes](/docs/eslint#class-validation).
-<video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
+<video className="aspect:2/1 r:5 max-w:xs w:full" autoPlay loop muted playsInline>
     <source src="/videos/disallow-unknown-class.webm" type="video/webm" />
 </video>
 
@@ -126,7 +126,7 @@ Restart the VSCode ESLint server to read the modified Master CSS configuration. 
 The class you added may collide with existing classes due to human error or having the same declarations as a third-party custom syntax.
 
 (i) With the [class collision rule](/docs/eslint#class-collision), you'll no longer collide with existing classes.
-<video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
+<video className="aspect:2/1 r:5 max-w:xs w:full" autoPlay loop muted playsInline>
     <source src="/videos/class-collision-detection.webm" type="video/webm" />
 </video>
 
@@ -153,7 +153,7 @@ It can also detect whether declarations with the same selector and media query s
 You may be using [clsx](https://github.com/lukeed/clsx) or [class variant](/docs/class-variant) to conditionally apply classes, but unfortunately, they're just pure strings in JavaScript.
 
 (i) You can make arguments of JavaScript [callees](/docs/eslint#calleematching) have Master CSS code linting.
-<video className="aspect:2/1 r:5 max-w:xs" autoPlay loop muted playsInline>
+<video className="aspect:2/1 r:5 max-w:xs w:full" autoPlay loop muted playsInline>
     <source src="/videos/supports-js-utilities.webm" type="video/webm" />
 </video>
 

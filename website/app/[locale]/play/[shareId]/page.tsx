@@ -4,6 +4,7 @@ import { collectDictionary } from 'websites/dictionaries'
 import firebaseConfig from 'websites/firebase-config'
 import { initializeApp } from '@firebase/app'
 import { getFirestore, doc, getDoc } from '@firebase/firestore/lite'
+import docMenuDict from '~/components/docMenuDict'
 
 export const dynamic = 'force-static'
 export const revalidate = false
@@ -21,10 +22,11 @@ export default async function Page(props: any) {
     if (data.exists()) {
         shareItem = data.data() as PlayShare
         return (
-            <Play shareItem={shareItem}
-                shareId={shareId}
-                locale={locale}
-                dict={await collectDictionary(locale, ['Docs', 'Play', 'Roadmap', 'Blog', 'Components', 'Sharing ...', 'Share'])}
+            <Play shareItem={shareItem} shareId={shareId} locale={locale} dict={await collectDictionary(locale, [
+                ...docMenuDict,
+                'Sharing ...',
+                'Share'
+            ])}
             />
         )
     } else {

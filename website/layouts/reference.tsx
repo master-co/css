@@ -1,19 +1,19 @@
-import Article from 'websites/components/Article';
-import ArticleHeader from 'websites/components/ArticleHeader';
+import Article from 'websites/components/Article'
+import ArticleHeader from 'websites/components/ArticleHeader'
 import CanIUseButton from 'websites/components/CanIUseButton'
 import MdnButton from 'websites/components/MdnButton'
 import { l } from 'to-line'
-import DocMain from './DocMain';
-import DocFooter from './DocFooter';
-import PageNavs from 'websites/components/PageNavs';
+import DocMain from '../components/DocMain'
+import DocFooter from '../components/DocFooter'
+import PageNavs from 'websites/components/PageNavs'
 import pages from '../app/[locale]/(root)/pages'
-import dynamic from 'next/dynamic';
+import dynamic from 'next/dynamic'
 
 const PageContent = dynamic(() => import('websites/components/PageContent'))
 
 export default async function Layout(props: any) {
     const { children, params, toc } = props
-    let { mdn = true, canIUse = true, ...metadata } = props.metadata
+    const { mdn = true, canIUse = true, ...metadata } = props.metadata
     return <>
         <DocMain>
             <Article>

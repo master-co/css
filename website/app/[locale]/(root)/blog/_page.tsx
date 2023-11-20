@@ -1,6 +1,6 @@
 import Article from 'websites/components/Article'
-import DocHeader from '~/layouts/DocHeader'
-import DocFooter from '~/layouts/DocFooter'
+import DocHeader from '~/components/DocHeader.jsx'
+import DocFooter from '~/components/DocFooter.jsx'
 import { queryDictionary } from 'websites/dictionaries'
 // @ts-expect-error
 import allBlogMetadata from './*/metadata.js'

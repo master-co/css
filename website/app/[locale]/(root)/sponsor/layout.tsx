@@ -1,4 +1,4 @@
-import DocHeader from '~/layouts/DocHeader'
+import DocHeader from '~/components/DocHeader'
 import DocSidebar from 'websites/components/DocSidebar'
 import { pageCategories } from '../pages'
 

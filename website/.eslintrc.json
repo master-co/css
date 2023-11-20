@@ -1,5 +1,10 @@
 {
-    "extends": "next/core-web-vitals",
+    "root": true,
+    "extends": [
+        "next/core-web-vitals",
+        "@master/css",
+        "techor"
+    ],
     "rules": {
         "import/no-anonymous-default-export": "off",
         "@typescript-eslint/ban-ts-comment": "off",
