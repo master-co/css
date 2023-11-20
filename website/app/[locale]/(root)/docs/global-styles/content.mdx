@@ -1,4 +1,65 @@
-## Overview [sr-only]
+## Installation [sr-only]
+You might be familiar with CSS packages like [modern-normalize](https://github.com/sindresorhus/modern-normalize) or [normalize.css](https://github.com/necolas/normalize.css). We've created a lightweight **~500B** CSS package, [@master/normal.css](https://www.npmjs.com/package/@master/normal.css), streamlines your global style setup and tackles inconsistencies in default browser styles.
+
+You can `npm install @master/normal.css@beta` and import it into your global CSS file:
+```css
+@import '@master/normal.css';
+```
+Or paste the CDN to preset global styles quickly:
+```html
+<link href="https://cdn.master.co/normal.css@beta" rel="stylesheet">
+```
+View the [source code](https://github.com/master-co/css/tree/beta/packages/normal.css) or continue to understand what the package does ↓
+
+---
+
+## Normalizing styles
+### Better text rendering and appearance
+Ensure consistent, clear, high-quality text and font appearance across various browsers.
+<Code lang="css">
+{require('!!raw-loader!../../../../../../packages/normal.css/src/better-text-appearance.css').default}
+</Code>
+
+### Intuitive sizing control
+Control the size of elements more intuitively, including content and padding, without worrying about the impact of padding and borders on dimensions.
+<Code lang="css">
+{require('!!raw-loader!../../../../../../packages/normal.css/src/intuitive-sizing-control.css').default}
+</Code>
+
+### Remove default borders and preset to solid style
+Remove borders from all elements to give you the freedom to fully customize the appearance of your elements, preset to the most used solid style.
+<Code lang="css">
+{require('!!raw-loader!../../../../../../packages/normal.css/src/remove-default-borders.css').default}
+</Code>
+
+### Remove default spacing
+Setting margins and padding to zero allows you to customize the appearance and spacing of elements without worrying about the impact of default browser styles.
+<Code lang="css">
+{require('!!raw-loader!../../../../../../packages/normal.css/src/remove-default-spacing.css').default}
+</Code>
+
+### Eliminate click delays
+Disable double-click to zoom on links, input fields, and buttons to improve responsiveness for touch devices.
+<figure>
+    <iframe className="aspect:16/9 w:full" src="https://www.youtube.com/embed/AjUpiwvIa5A?si=qatiz-LszvYqE15c&amp;controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <figcaption>[300ms tap delay, gone away](https://developer.chrome.com/blog/300ms-tap-delay-gone-away)</figcaption>
+</figure>
+<Code lang="css">
+{require('!!raw-loader!../../../../../../packages/normal.css/src/eliminate-click-delays.css').default}
+</Code>
+An instantly responsive UI enables users to confidently press each button without pausing and waiting for a response. To learn more about the influence of human reaction times and web performance, explore the [introduction to RAIL](https://web.dev/articles/rail).
+
+### Responsive friendly media elements
+Preset the maximum width of media-related elements to the parent container to make them responsive.
+<Code lang="css">
+{require('!!raw-loader!../../../../../../packages/normal.css/src/responsive-media-elements.css').default}
+</Code>
+Browsers default these elements to `inline` display. Preset them as `block` and can be centered using common tricks like `margin: auto`.
+
+---
+
+## Using syntax
+### Preset for descendant elements
 Customize your fonts, foreground color, etc., add syntax in `html <body class="…">` and rely on native inheritance behavior or use CSS selectors to preset global styles.
 
 As an example of custom [fonts](/docs/font-family):
@@ -6,7 +67,7 @@ As an example of custom [fonts](/docs/font-family):
 <body class="**font:sans** **font:mono_:where(code,pre)**">…</body>
 ```
 
-We recommend using `css :where()` to select elements and preset styles, it has zero [specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity), otherwise you risk falling into `css !important` hell with `css :is()` and `css _` descendant selectors.
+It's recommended to use `css :where()` to select elements and preset styles; it has zero [specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity), otherwise you risk falling into `css !important` hell with `css :is()` and `css _` descendant selectors.
 
 For example, add a blue underline to all links:
 <Demo>
@@ -20,129 +81,4 @@ For example, add a blue underline to all links:
 Henceforth you don't need to declare `css !important` to remove the underline for a specific link.
 ```html
 <a class="**text-decoration:none**">…</a>
-```
-
----
-
-## Official normalize plugin
-You're probably using a CSS package like [modern-normalize](https://github.com/sindresorhus/modern-normalize) or [normalize.css](https://github.com/necolas/normalize.css).
-
-Nevertheless, based on our own experience and style, we've created an only **~704B** CSS package `@master/normal.css` to help you quickly preset the global style, to eliminate the problem of inconsistent initial styles of browsers, and to use more pure styles as your starting point.
-
-### Installation
-Copy and paste the CDN to quickly preset your global styles.
-```html name=index.html
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-+        <link href="https://cdn.master.co/normal.css@beta" rel="stylesheet">
-    </head>
-    </html>
-```
-Or install `@master/normal.css@beta` into your project:
-```install
-**@master/normal.css@beta**
-```
-
-Import into your global CSS file:
-
-```css name=main.css
-@import '@master/normal.css';
-```
-
-### Features and behavior
-Here are some optimizations and presets made by `@master/normal.css`, the complete code is [here](https://github.com/master-co/css/tree/beta/packages/normal.css)
-
-If you want to stay lazy, you can use it without even knowing the behavior behind it!
-
-### Geometric precision rendering for prettier text
-```css
-* {
-    text-rendering: geometricPrecision;
-}
-```
-            
-### Antialiased font smoothing looks great
-```css
-body {
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-}
-```
-            
-### Remove margins and padding from certain elements
-```css
-body, blockquote, dl, dd, h1, h2, h3, h4, h5, h6, hr, figure, p, button, optgroup, select, textarea, pre {
-    margin: 0;
-}
-
-td, legend, textarea, input, fieldset {
-    padding: 0;
-}
-
-ul, ol {
-    margin: 0;
-    padding: 0;
-}
-```
-            
-### Uniform box sizing calculation
-```css
-*, ::before, ::after {
-    box-sizing: border-box;
-}
-```
-            
-### Neutral typography and formatting
-```css
-body {
-    line-height: 1.2;
-    text-size-adjust: 100%;
-    -webkit-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;
-    -ms-text-size-adjust: 100%;
-    -moz-tab-size: 4;
-    tab-size: 4;
-}
-
-b, strong {
-    font-weight: bolder;
-}
-
-small {
-    font-size: 80%;
-}
-
-sub, sup {
-    font-size: 75%;
-    line-height: 0;
-    position: relative;
-    vertical-align: baseline;
-}
-
-sub {
-    bottom: -0.25em;
-}
-
-sup {
-    top: -0.5em;
-}
-
-ul {
-    list-style: none;
-}
-
-hr {
-    height: 0;
-    color: inherit;
-}
-```
-            
-### Preset some elements
-```css
-img, svg, video, canvas, audio, iframe, embed, object {
-    display: block;
-}
 ```

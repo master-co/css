@@ -1,9 +1,3 @@
-/*
- * Disable double-click to zoom on links,
- * input fields and buttons to improve responsiveness for touch devices
- */
-
-a,
-button {
+a, button {
     touch-action: manipulation;
 }
