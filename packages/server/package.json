@@ -1,7 +1,7 @@
 {
     "name": "@master/css-server",
     "scripts": {
-        "build": "techor pack './src/**/*.ts' --platform node --format cjs",
+        "build": "techor pack './src/**/*.ts' --platform node",
         "dev": "pnpm run build --watch --no-declare",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
@@ -31,9 +31,13 @@
     ],
     "sideEffects": false,
     "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
+            "import": "./dist/index.mjs",
             "require": "./dist/index.js",
             "types": "./dist/index.d.ts"
         }
