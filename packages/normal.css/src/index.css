@@ -2,11 +2,11 @@
 @import './eliminate-click-delays.css';
 @import './remove-default-borders.css';
 @import './remove-default-spacing.css';
+@import './remove-tap-highlight.css';
 @import './better-text-appearance.css';
 @import './responsive-media-elements.css';
 
 body {
-    -webkit-tap-highlight-color: transparent;
     -moz-tab-size: 4;
     tab-size: 4;
 }

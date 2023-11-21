@@ -1,7 +1,7 @@
 ## Installation [sr-only]
 You might be familiar with CSS packages like [modern-normalize](https://github.com/sindresorhus/modern-normalize) or [normalize.css](https://github.com/necolas/normalize.css). We've created a lightweight **~500B** CSS package, [@master/normal.css](https://www.npmjs.com/package/@master/normal.css), streamlines your global style setup and tackles inconsistencies in default browser styles.
 
-You can `npm install @master/normal.css@beta` and import it into your global CSS file:
+`npm install @master/normal.css@beta` and import into your global CSS file:
 ```css
 @import '@master/normal.css';
 ```
@@ -37,6 +37,13 @@ Setting margins and padding to zero allows you to customize the appearance and s
 <Code lang="css">
 {require('!!raw-loader!../../../../../../packages/normal.css/src/remove-default-spacing.css').default}
 </Code>
+
+### Remove tap highlight color
+You should customize the tap highlight color based on current UI features rather than relying on the default.
+<Code lang="css">
+{require('!!raw-loader!../../../../../../packages/normal.css/src/remove-tap-highlight.css').default}
+</Code>
+The `-webkit-tap-highlight-color` CSS property controls the highlight color that appears when an element is tapped on a mobile device, such as Safari and some WebKit-based mobile browsers.
 
 ### Eliminate click delays
 Disable double-click to zoom on links, input fields, and buttons to improve responsiveness for touch devices.
