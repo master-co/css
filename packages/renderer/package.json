@@ -34,7 +34,10 @@
         "dist"
     ],
     "exports": {
-        "./actions/main": "./dist/actions/main.js"
+        "./actions/main": {
+            "require": "./dist/actions/main.js",
+            "import": "./dist/actions/main.mjs"
+        }
     },
     "publishConfig": {
         "access": "public"
