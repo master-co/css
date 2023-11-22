@@ -1,5 +1,9 @@
 ## Using official package [sr-only]
-[@master/normal.css](https://www.npmjs.com/package/@master/normal.css) is a **~500B** lightweight CSS package, [normalizing global styles](#normalizing-styles) and addressing cross-browser style inconsistencies; it's similar to [modern-normalize](https://github.com/sindresorhus/modern-normalize) and [normalize.css](https://github.com/necolas/normalize.css) you are familiar with but more optimization and elimination.
+[@master/normal.css](https://www.npmjs.com/package/@master/normal.css) is a **~500B** lightweight CSS package, is similar to [modern-normalize](https://github.com/sindresorhus/modern-normalize) and [normalize.css](https://github.com/necolas/normalize.css) you are familiar with but better:
+
+- [Consistency](#consistency): Keep element styles consistent across browsers.
+- [Elimination](#elimination): Remove browser default styles for a better start.
+- [Improvement](#improvement): Support responsive media and better text rendering.
 
 `npm install @master/normal.css@beta` and import it in your global CSS file:
 ```css
@@ -20,13 +24,7 @@
 
 ---
 
-## Normalizing styles
-### Better text rendering and appearance
-Ensure consistent, clear, high-quality text and font appearance across various browsers.
-<Code lang="css">
-{require('!!raw-loader!../../../../../../packages/normal.css/better-text-appearance.css').default}
-</Code>
-
+## Consistency
 ### Consistent abbreviation styles
 Fixed the inconsistent appearance of `html <abbr>` across browsers.
 <Code lang="css">
@@ -92,12 +90,9 @@ Control the size of elements more intuitively, including content and padding, wi
 {require('!!raw-loader!../../../../../../packages/normal.css/intuitive-sizing-control.css').default}
 </Code>
 
-### Readable tab size
-Setting the tab size to 4 makes the code more structured and easier to read.
-<Code lang="css">
-{require('!!raw-loader!../../../../../../packages/normal.css/readable-tab-size.css').default}
-</Code>
+---
 
+## Elimination
 ### Remove anchor styles
 The `html <a>` element usually serves as more than just an inline text link; it could be a button, navigation, or even a card.
 
@@ -165,6 +160,21 @@ An instantly responsive UI enables users to confidently press each button withou
 <meta name="viewport" content="width=device-width, **user-scalable=no**">
 ```
 
+---
+
+## Improvement
+### Better text rendering and appearance
+Ensure consistent, clear, high-quality text and font appearance across various browsers.
+<Code lang="css">
+{require('!!raw-loader!../../../../../../packages/normal.css/better-text-appearance.css').default}
+</Code>
+
+### Readable tab size
+Setting the tab size to 4 makes the code more structured and easier to read.
+<Code lang="css">
+{require('!!raw-loader!../../../../../../packages/normal.css/readable-tab-size.css').default}
+</Code>
+
 ### Responsive friendly media elements
 Preset the maximum width of media-related elements to the parent container to make them responsive.
 <Demo>
@@ -191,7 +201,7 @@ Browsers default these elements to `inline` display. `block` can be centered usi
 ---
 
 ## Using syntax
-### Preset for descendant elements
+### Stylizing descendant elements
 Customize your fonts, foreground color, etc., add syntax in `html <body class="…">` and rely on native inheritance behavior or use CSS selectors to preset global styles.
 
 (o) Use zero [specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity) `css :where()` to select elements and preset styles.
