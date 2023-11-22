@@ -17,6 +17,7 @@ export default async function Layout(props: any) {
                 Element: LogoSvg,
                 class: 'w:72'
             }}
+            titleBig
         >
             <Tabs className="mb:30">
                 <Tab href='/docs/installation/vite'>{$('Runtime Rendering')}</Tab>

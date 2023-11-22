@@ -17,6 +17,7 @@ export default async function Layout(props: any) {
                 Element: NextjsSvg,
                 class: 'w:100 invert(1)@dark'
             }}
+            titleBig
         >
             <Tabs className="mb:30">
                 <Tab href='/docs/installation/nextjs'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>

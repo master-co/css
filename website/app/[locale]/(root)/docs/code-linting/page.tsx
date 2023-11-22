@@ -15,7 +15,7 @@ export async function generateMetadata(props: any, parent: any) {
 export default async function Page(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return (
-        <DocLayout {...props} metadata={metadata} icon={{
+        <DocLayout {...props} metadata={metadata} titleBig icon={{
             Element: ESLintSvg,
             class: 'w:90'
         }}>

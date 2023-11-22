@@ -14,7 +14,7 @@ export async function generateMetadata(props: any, parent: any) {
 export default async function Layout(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return (
-        <DocLayout {...props} metadata={metadata}>
+        <DocLayout {...props} metadata={metadata} titleBig>
             <Content />
         </DocLayout >
     )

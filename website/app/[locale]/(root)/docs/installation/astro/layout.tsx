@@ -17,6 +17,7 @@ export default async function Layout(props: any) {
                 Element: NuxtjsSvg,
                 class: 'w:105'
             }}
+            titleBig
         >
             <Tabs className="mb:30">
                 {/* <Tab href='/docs/installation/astro'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab> */}

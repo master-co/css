@@ -17,6 +17,7 @@ export default async function Layout(props: any) {
                 Element: LogoSvg,
                 class: 'w:75'
             }}
+            titleBig
         >
             <Tabs className="mb:30">
                 <Tab href='/docs/installation/react'>{$('Progressive Rendering')}</Tab>

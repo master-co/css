@@ -18,6 +18,7 @@ export default async function Layout(props: any) {
                 Element: LogoSvg,
                 class: 'w:64'
             }}
+            titleBig
         >
             {props.children}
         </DocLayout >

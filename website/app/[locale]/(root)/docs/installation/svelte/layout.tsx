@@ -19,6 +19,7 @@ export default async function Layout(props: any) {
                 Element: SvelteSvg,
                 class: 'w:64'
             }}
+            titleBig
         >
             <Tabs className="mb:30">
                 <Tab href='/docs/installation/svelte'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>
