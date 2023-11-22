@@ -1,5 +1,5 @@
-## Installation [sr-only]
-You might be familiar with CSS packages like [modern-normalize](https://github.com/sindresorhus/modern-normalize) or [normalize.css](https://github.com/necolas/normalize.css). We've created a lightweight **~500B** CSS package, [@master/normal.css](https://www.npmjs.com/package/@master/normal.css), streamlines your global style setup and tackles inconsistencies in default browser styles.
+## Using official package [sr-only]
+[@master/normal.css](https://www.npmjs.com/package/@master/normal.css) is a **~500B** lightweight CSS package, [normalizing global styles](#normalizing-styles) and addressing cross-browser style inconsistencies; it's similar to [modern-normalize](https://github.com/sindresorhus/modern-normalize) and [normalize.css](https://github.com/necolas/normalize.css) you are familiar with but more optimization and elimination.
 
 `npm install @master/normal.css@beta` and import it in your global CSS file:
 ```css
@@ -194,23 +194,8 @@ Browsers default these elements to `inline` display. `block` can be centered usi
 ### Preset for descendant elements
 Customize your fonts, foreground color, etc., add syntax in `html <body class="…">` and rely on native inheritance behavior or use CSS selectors to preset global styles.
 
-As an example of custom [fonts](/docs/font-family):
+(o) Use zero [specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity) `css :where()` to select elements and preset styles.
 ```html
-<body class="**font:sans** **font:mono_:where(code,pre)**">…</body>
+<body class="font:sans **font:mono_:where(code,pre)**">…</body>
 ```
-
-It's recommended to use `css :where()` to select elements and preset styles; it has zero [specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity), otherwise you risk falling into `css !important` hell with `css :is()` and `css _` descendant selectors.
-
-For example, add a blue underline to all links:
-<Demo>
-    <a href="#weakly-apply-styles" className="text:underline|blue|1.5!">Weakly apply styles</a>
-</Demo>
-```html
-<article class="**text:underline|blue|1.5_:where(a)**">
-    <a href="#weakly-apply-styles">Weakly apply styles</a>
-</article>
-```
-(o) You can now remove the underline without `css !important`.
-```html
-<a class="**text-decoration:none**">…</a>
-```
+Otherwise, you risk falling into `css !important` hell with `css :is()` and `css _` descendant selectors.

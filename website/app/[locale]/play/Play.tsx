@@ -519,7 +519,7 @@ export default function Play(props: any) {
                     </select>
                     <IconChevronDown className="1emx1em mr:-3 stroke:1.5" />
                 </label>
-                {links?.map((eachLink: any) =>
+                {links?.map(({ fullName, Icon, ...eachLink}: any) =>
                     <HeaderNav className="hide@<md" key={eachLink.name} {...eachLink} onClick={(event: any) => {
                         if (shareable) {
                             if (!window.confirm('Are you sure to go to another page and discard current changes?')) {
