@@ -32,9 +32,6 @@
     ],
     "main": "./dist/index.bundle.css",
     "style": "./dist/index.bundle.css",
-    "files": [
-        "dist"
-    ],
     "publishConfig": {
         "access": "public"
     }
