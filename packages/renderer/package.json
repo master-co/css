@@ -1,7 +1,7 @@
 {
     "name": "@master/css-renderer",
     "scripts": {
-        "build": "techor pack 'src/**/*.ts' --platform node",
+        "build": "techor pack \"src/**/*.ts\" --platform node",
         "dev": "pnpm run build --watch --no-declare",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
