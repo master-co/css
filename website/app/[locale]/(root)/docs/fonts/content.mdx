@@ -1,4 +1,4 @@
-## Customization [sr-only]
+## Overview [sr-only]
 <Demo $py={0}>
     <DemoPanel className="flex flex:col gap:30">
         <div className="w:full">
@@ -17,8 +17,9 @@
 </Demo>
 The default provides three neutral [font family](/docs/font-family) variables, `sans`, `serif`, and `mono`, to facilitate your use as fallbacks when adding custom fonts.
 
-The `variables.font.family` inherits from both `font-family` and `font`, so you can quickly apply it, such as `mcss font:sans`.
+---
 
+## Basic usage
 ### Add custom fonts
 Define [variables](/docs/variables) to use font tokens from a single source. For example, add `Inter` as the general font and `Fira Code` as the code font.
 ```js name=master.css.js
@@ -35,22 +36,20 @@ export default {
     }
 }
 ```
+By default, `font.family` variables are inherited by the `font-family` and `font` rules.
 
 ### Apply custom fonts
-Apply the defined font variables using [font family](/docs/font-family) syntax, with [Google Fonts](https://fonts.google.com/) as an example.
+Apply the defined font variables using the [font family](/docs/font-family) syntax. For example, presetting the global fonts in `html <body>`:
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-+    <link rel="preconnect" href="https://fonts.googleapis.com">
-+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-</head>
-<body class="**font:sans** **font:mono_:where(code,pre)** font-feature:'salt'">…</body>
-</html>
+<body class="**font:sans** **font:mono_:where(code,pre)** font-feature:'salt'">
+    …
+</body>
 ```
 
-### Use Google Fonts
+---
+
+## Font faces
+### Google Fonts
 The fastest way to declare custom font faces is through [Google Fonts](https://fonts.google.com/).
 ```html name=index.html
 <!DOCTYPE html>
@@ -63,7 +62,7 @@ The fastest way to declare custom font faces is through [Google Fonts](https://f
 </html>
 ```
 
-### Use self-hosted fonts
+### Self-hosted fonts
 You can also self-host the fonts via native CSS, as usual.
 ```css name=styles/fonts.css
 @font-face {
