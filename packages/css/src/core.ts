@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { extend } from '@techor/extend'
 import { Rule, NativeRule, RuleDefinition } from './rule'
 import type { Config, AnimationDefinitions } from './config'
@@ -5,6 +6,8 @@ import { config as defaultConfig } from './config'
 import { CSSDeclarations } from './types/css-declarations'
 import { Layer } from './layer'
 import { hexToRgb } from './utils/hex-to-rgb'
+import { flattenObject } from './utils/flatten-object'
+import { extendConfig } from './utils/extend-config'
 
 type VariableValue =
     { type: 'string', value: string }
@@ -42,9 +45,9 @@ export class MasterCSS {
         public customConfig: Config = defaultConfig
     ) {
         if (!customConfig?.override) {
-            this.config = this.getExtendedConfig(defaultConfig, customConfig)
+            this.config = extendConfig(defaultConfig, customConfig)
         } else {
-            this.config = this.getExtendedConfig(customConfig)
+            this.config = extendConfig(customConfig)
         }
         this.resolve()
         if (this.constructor === MasterCSS) {
@@ -74,52 +77,22 @@ export class MasterCSS {
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
         }
-        function getFlatData(obj: Record<string, any>, hasObjectValue: boolean, parentKey = '', newData: Record<string, any> = {}) {
-            const getCurrenyKey = (key) => key ? (parentKey ? parentKey + '-' : '') + key : parentKey
-            const entries = Object.entries(obj)
-            const objectEntries = []
-            const nonObjectEntries = []
-            for (const eachEntry of entries) {
-                const value = eachEntry[1];
-                ((typeof value === 'object' && !Array.isArray(value)) ? objectEntries : nonObjectEntries).push(eachEntry)
-            }
-
-            for (const [key, value] of objectEntries) {
-                getFlatData(value, hasObjectValue, getCurrenyKey(key), newData)
-            }
-
-            if (hasObjectValue && parentKey) {
-                if (nonObjectEntries.length) {
-                    newData[parentKey] = nonObjectEntries.reduce((newValue, [key, value]) => {
-                        newValue[key] = value
-                        return newValue
-                    }, {})
-                }
-            } else {
-                for (const [key, value] of nonObjectEntries) {
-                    newData[getCurrenyKey(key)] = value
-                }
-            }
-
-            return newData
-        }
         if (selectors) {
-            for (const [replacedSelectorText, newSelectorText] of Object.entries(getFlatData(selectors, false))) {
-                const regexp = new RegExp(escapeString(replacedSelectorText) + '(?![a-z-])')
-                for (const eachNewSelectorText of Array.isArray(newSelectorText) ? newSelectorText : [newSelectorText]) {
+            const resolvedSelectors = flattenObject(selectors)
+            for (const eachSelectorName in resolvedSelectors) {
+                const eachResolvedSelectorText = resolvedSelectors[eachSelectorName]
+                const regexp = new RegExp(escapeString(eachSelectorName) + '(?![a-z-])')
+                for (const eachNewSelectorText of Array.isArray(eachResolvedSelectorText) ? eachResolvedSelectorText : [eachResolvedSelectorText]) {
                     const vendor = eachNewSelectorText.match(/^::-[a-z]+-/m)?.[0] ?? ''
-
                     let selectorValues = this.selectors[vendor]
                     if (!selectorValues) {
                         selectorValues = this.selectors[vendor] = []
                     }
-
                     let currentSelectValue = selectorValues.find(([_valueRegexp]) => _valueRegexp === regexp)
                     if (!currentSelectValue) {
                         currentSelectValue = [regexp, []]
                         selectorValues.push(currentSelectValue)
                     }
-
                     currentSelectValue[1].push(eachNewSelectorText)
                 }
             }
@@ -280,7 +253,7 @@ export class MasterCSS {
             }
         }
         if (mediaQueries) {
-            this.mediaQueries = getFlatData(mediaQueries, false)
+            this.mediaQueries = flattenObject(mediaQueries)
         }
         if (animations) {
             for (const animationName in animations) {
@@ -296,7 +269,7 @@ export class MasterCSS {
             }
         }
 
-        const flattedStyles: Record<string, string> = styles ? getFlatData(styles, false) : {}
+        const flattedStyles: Record<string, string> = styles ? flattenObject(styles) : {}
         const semanticNames = Object.keys(flattedStyles)
         const handleSemanticName = (semanticName: string) => {
             if (Object.prototype.hasOwnProperty.call(this.styles, semanticName))
@@ -498,10 +471,10 @@ export class MasterCSS {
     refresh(customConfig: Config = this.customConfig) {
         if (!customConfig?.override) {
             // @ts-ignore
-            this.config = this.getExtendedConfig(defaultConfig, customConfig)
+            this.config = extendConfig(defaultConfig, customConfig)
         } else {
             // @ts-ignore
-            this.config = this.getExtendedConfig(customConfig)
+            this.config = extendConfig(customConfig)
         }
         this.resolve()
         this.rules.length = 0
@@ -995,63 +968,6 @@ export class MasterCSS {
 
     get text() {
         return this.rules.map((eachRule) => eachRule.text).join('')
-    }
-
-    private getExtendedConfig(...configs: Config[]) {
-        const formatConfig = (config: Config) => {
-            const clonedConfig: Config = extend({}, config)
-
-            const formatDeeply = (obj: Record<string, any>) => {
-                for (const key in obj) {
-                    const value = obj[key]
-                    if (typeof value === 'object' && !Array.isArray(value)) {
-                        formatDeeply(value)
-                    } else if (key && !key.startsWith('@')) {
-                        obj[key] = { '': value }
-                    }
-                }
-            }
-            if (clonedConfig.styles) {
-                formatDeeply(clonedConfig.styles)
-            } else {
-                clonedConfig.styles = {}
-            }
-            if (clonedConfig.mediaQueries) {
-                formatDeeply(clonedConfig.mediaQueries)
-            } else {
-                clonedConfig.mediaQueries = {}
-            }
-            if (clonedConfig.variables) {
-                formatDeeply(clonedConfig.variables)
-            } else {
-                clonedConfig.variables = {}
-            }
-
-            return clonedConfig
-        }
-
-        const formattedConfigs: Config[] = []
-        for (const eachConfig of configs) {
-            (function getConfigsDeeply(config: Config) {
-                if (config.extends?.length) {
-                    for (const eachExtend of config.extends) {
-                        getConfigsDeeply('config' in eachExtend ? eachExtend.config : eachExtend)
-                    }
-                }
-                formattedConfigs.push(formatConfig(config))
-            })(eachConfig)
-        }
-
-        let extendedConfig = formattedConfigs[0]
-        for (let i = 1; i < formattedConfigs.length; i++) {
-            const currentFormattedConfig = formattedConfigs[i]
-            extendedConfig = extend(extendedConfig, currentFormattedConfig)
-            if (Object.prototype.hasOwnProperty.call(currentFormattedConfig, 'animations')) {
-                Object.assign(extendedConfig.animations, currentFormattedConfig.animations)
-            }
-        }
-
-        return extendedConfig
     }
 
     handleRuleWithAnimationNames(rule: Rule, initializing = false) {
