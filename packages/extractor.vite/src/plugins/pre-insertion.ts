@@ -51,7 +51,7 @@ export default function PreInsertionPlugin(
         name: 'master-css-extractor:pre-insertion',
         enforce: 'pre',
         apply(config, env) {
-            return !env.ssrBuild
+            return env.command === 'build' || !env.ssrBuild
         },
         async buildStart() {
             await extractor.prepare()
@@ -106,6 +106,6 @@ export default function PreInsertionPlugin(
                 HMRReady = true
             })
             extractor.startWatch()
-        },
+        }
     } as Plugin
 }

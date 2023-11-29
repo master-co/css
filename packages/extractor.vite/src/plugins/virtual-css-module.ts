@@ -26,7 +26,7 @@ export default function VirtualCSSModulePlugins(
         {
             name: 'master-css-extractor:virtual-css-module:build',
             apply: 'build',
-            enforce: 'post',
+            enforce: 'pre',
             async resolveId(id) {
                 if (id === extractor.options.module) {
                     return extractor.resolvedVirtualModuleId
