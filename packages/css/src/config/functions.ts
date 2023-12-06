@@ -6,7 +6,7 @@ const functions = {
         colored: true,
         transform(value) {
             let name: string
-            let fallback: string
+            let fallback!: string
             const firstCommaIndex = value.indexOf(',')
             if (firstCommaIndex !== -1) {
                 name = value.slice(0, firstCommaIndex)
