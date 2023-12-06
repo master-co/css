@@ -1,0 +1,35 @@
+## Overview [sr-only]
+Master CSS provides practical container/viewport sizes, `4xs` to `4xl`, and aliases for native box size values.
+
+<details>
+    <summary>View the default variables</summary>
+    <div>
+        <Code lang="js">
+            {JSON.stringify(require('../../../../../../packages/css/src/config/variables').default['box-size'], null, 4)}
+        </Code>
+    </div>
+</details>
+
+Apply the defined `box-size` variables using the inherited rules <Heirs />.
+```html
+<div class="**max-w:md** **w:full**">…</div>
+```
+
+---
+
+## Basic usage
+### Add a box size
+Customize your box size tokens by defining [variables](/docs/variables).
+```js name=master.css.js
+export default {
+    variables: {
+        'box-size': {
++            desktop: 1280
+        }
+    }
+}
+```
+Apply it using the inherited syntax.
+```html
+<div class="**max-w:desktop**">…</div>
+```

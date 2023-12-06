@@ -1,4 +1,4 @@
-## Default [sr-only]
+## Overview [sr-only]
 <Demo $py={0}>
     <DemoPanel className="flex flex:col gap:30">
         <div className="w:full">
@@ -17,7 +17,6 @@
 </Demo>
 There are three default [font family](/docs/font-family) variables, `sans`, `serif`, and `mono`, to facilitate your use as fallbacks when adding custom fonts.
 
-By default, `font-family` variables are inherited by the <Heirs /> rules.
 <details>
     <summary>View the default variables</summary>
     <div>
@@ -27,11 +26,16 @@ By default, `font-family` variables are inherited by the <Heirs /> rules.
     </div>
 </details>
 
+Apply the defined `font-family` variables using the inherited rules <Heirs />. For example, presetting the global fonts in `html <body>`:
+```html
+<body class="**font:sans** **font:mono_:where(code,pre)** font-feature:'salt'">…</body>
+```
+
 ---
 
 ## Basic usage
 ### Add a font
-Add a font token by defining [variables](/docs/variables). For example, add `Inter` as the general font and `Fira Code` as the code font.
+Customize your font tokens by defining [variables](/docs/variables). For example, add `Inter` as the general font and `Fira Code` as the code font.
 ```js name=master.css.js
 import { variables } from '@master/css'
 
@@ -45,11 +49,6 @@ export default {
 }
 ```
 
-### Apply the added font
-Apply the defined font variables using the syntax of the [font family](/docs/font-family). For example, presetting the global fonts in `html <body>`:
-```html
-<body class="**font:sans** **font:mono_:where(code,pre)** font-feature:'salt'">…</body>
-```
 
 ---
 
