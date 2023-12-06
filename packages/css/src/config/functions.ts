@@ -16,7 +16,7 @@ const functions = {
             }
             return [{ type: 'variable', name, fallback }]
         }
-    },
+    } as FunctionDefinition,
     calc: {
         transform(value, bypassVariableNames) {
             const valueComponents: Rule['valueComponents'] = []
