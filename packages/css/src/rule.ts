@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import type { MasterCSS, Variable } from './core'
 import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'css-shared/utils/css-escape'
@@ -7,7 +8,6 @@ import { Layer } from './layer'
 const atRuleRegExp = /^(media|supports|page|font-face|keyframes|counter-style|font-feature-values|property|layer)(?=\||{|\(|$)/
 
 export class Rule {
-
     readonly at: Record<string, string> = {}
     readonly priority: number = -1
     readonly natives: NativeRule[] = []

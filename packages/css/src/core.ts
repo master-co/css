@@ -12,6 +12,7 @@ type VariableValue =
     { type: 'string', value: string }
     | { type: 'number', value: number }
     | { type: 'color', value: string, space: 'rgb' | 'hsl' }
+
 export type Variable = Omit<VariableValue, 'value' | 'space'> & {
     value?: any,
     space?: any,
@@ -76,6 +77,7 @@ export class MasterCSS {
         function escapeString(str) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
         }
+
         if (selectors) {
             const resolvedSelectors = flattenObject(selectors)
             for (const eachSelectorName in resolvedSelectors) {
@@ -96,154 +98,155 @@ export class MasterCSS {
                 }
             }
         }
+
         if (variables) {
             const unexecutedAliasVariable: Record<string, { [theme: string]: () => void }> = {}
-            for (const parnetKey in variables) {
-                const transformVariableDeeply = (variable: any, name: string, theme: string = undefined) => {
-                    if (!variable)
+            const parseVariable = (variable: any, name: string, theme: string = undefined, group?: string) => {
+                if (!variable)
+                    return
+
+                const addVariable = (
+                    name: string,
+                    variableValue: VariableValue,
+                    replacedTheme: string = undefined,
+                    alpha: string = undefined
+                ) => {
+                    if (variableValue === undefined)
                         return
 
-                    const addVariable = (
-                        name: string,
-                        variableValue: VariableValue,
-                        replacedTheme: string = undefined,
-                        alpha: string = undefined
-                    ) => {
-                        if (variableValue === undefined)
-                            return
-
-                        if (variableValue.type === 'color') {
-                            if (alpha) {
-                                const slashIndex = variableValue.value.indexOf('/')
-                                variableValue = {
-                                    ...variableValue,
-                                    value: slashIndex === -1
-                                        ? variableValue.value + ' / ' + (alpha.startsWith('0.') ? alpha.slice(1) : alpha)
-                                        : (variableValue.value.slice(0, slashIndex + 2) + (+variableValue.value.slice(slashIndex + 2) * +alpha).toString().slice(1))
-                                }
+                    if (variableValue.type === 'color') {
+                        if (alpha) {
+                            const slashIndex = variableValue.value.indexOf('/')
+                            variableValue = {
+                                ...variableValue,
+                                value: slashIndex === -1
+                                    ? variableValue.value + ' / ' + (alpha.startsWith('0.') ? alpha.slice(1) : alpha)
+                                    : (variableValue.value.slice(0, slashIndex + 2) + (+variableValue.value.slice(slashIndex + 2) * +alpha).toString().slice(1))
                             }
-
-                            colorVariableNames[name] = undefined
                         }
 
-                        const currentTheme = replacedTheme ?? theme
-                        if (currentTheme !== undefined) {
-                            if (Object.prototype.hasOwnProperty.call(this.variables, name)) {
-                                const variable = this.variables[name]
-                                if (currentTheme) {
-                                    if (!variable.themes) {
-                                        variable.themes = {}
-                                    }
-                                    variable.themes[currentTheme] = variableValue
-                                } else {
-                                    variable.value = variableValue.value
-                                    variable.space = variableValue['space']
-                                }
-                            } else {
-                                if (currentTheme) {
-                                    this.variables[name] = {
-                                        type: variableValue.type,
-                                        space: variableValue['space'],
-                                        themes: { [currentTheme]: variableValue }
-                                    }
-                                } else {
-                                    this.variables[name] = variableValue
-                                }
-                            }
-                        } else {
-                            this.variables[name] = variableValue
-                        }
+                        colorVariableNames[name] = undefined
                     }
 
-                    const type = typeof variable
-                    if (type === 'object') {
-                        if (Array.isArray(variable)) {
-                            addVariable(name, { type: 'string', value: variable.join(',') })
+                    const currentTheme = replacedTheme ?? theme
+                    if (currentTheme !== undefined) {
+                        if (Object.prototype.hasOwnProperty.call(this.variables, name)) {
+                            const variable = this.variables[name]
+                            if (currentTheme) {
+                                if (!variable.themes) {
+                                    variable.themes = {}
+                                }
+                                variable.themes[currentTheme] = variableValue
+                            } else {
+                                variable.value = variableValue.value
+                                variable.space = variableValue['space']
+                            }
                         } else {
-                            const keys = Object.keys(variable)
-                            for (const eachKey of keys) {
-                                if (eachKey === '' || eachKey.startsWith('@')) {
-                                    transformVariableDeeply(variable[eachKey], name, (eachKey || keys.some(eachKey => eachKey.startsWith('@'))) ? eachKey.slice(1) : undefined)
-                                } else {
-                                    transformVariableDeeply(variable[eachKey], name + '-' + eachKey)
+                            if (currentTheme) {
+                                this.variables[name] = {
+                                    type: variableValue.type,
+                                    space: variableValue['space'],
+                                    themes: { [currentTheme]: variableValue }
+                                }
+                            } else {
+                                this.variables[name] = variableValue
+                            }
+                        }
+                    } else {
+                        this.variables[name] = variableValue
+                    }
+                }
+
+                const type = typeof variable
+                if (type === 'object') {
+                    if (Array.isArray(variable)) {
+                        addVariable(name, { type: 'string', value: variable.join(',') })
+                    } else {
+                        const keys = Object.keys(variable)
+                        for (const eachKey of keys) {
+                            if (eachKey === '' || eachKey.startsWith('@')) {
+                                parseVariable(variable[eachKey], name, (eachKey || keys.some(eachKey => eachKey.startsWith('@'))) ? eachKey.slice(1) : undefined, name)
+                            } else {
+                                parseVariable(variable[eachKey], name + '-' + eachKey, undefined, name)
+                            }
+                        }
+                    }
+                } else if (type === 'number') {
+                    addVariable(name, { type: 'number', value: variable })
+                    addVariable('-' + name, { type: 'number', value: variable * -1 })
+                } else if (type === 'string') {
+                    const aliasResult = /^\$\((.*?)\)(?: ?\/ ?(.+?))?$/.exec(variable)
+                    if (aliasResult) {
+                        if (!Object.prototype.hasOwnProperty.call(unexecutedAliasVariable, name)) {
+                            unexecutedAliasVariable[name] = {}
+                        }
+                        unexecutedAliasVariable[name][theme] = () => {
+                            delete unexecutedAliasVariable[name][theme]
+
+                            const [alias, aliasTheme] = aliasResult[1].split('@')
+                            if (alias) {
+                                if (Object.prototype.hasOwnProperty.call(unexecutedAliasVariable, alias)) {
+                                    for (const theme of Object.keys(unexecutedAliasVariable[alias])) {
+                                        unexecutedAliasVariable[alias][theme]?.()
+                                    }
+                                }
+
+                                const aliasVariable = this.variables[alias]
+                                if (aliasVariable) {
+                                    if (aliasTheme === undefined && aliasVariable.themes) {
+                                        addVariable(
+                                            name,
+                                            { type: aliasVariable.type, value: aliasVariable.value, space: aliasVariable.space },
+                                            '',
+                                            aliasResult[2]
+                                        )
+                                        for (const theme in aliasVariable.themes) {
+                                            addVariable(
+                                                name,
+                                                aliasVariable.themes[theme],
+                                                theme,
+                                                aliasResult[2]
+                                            )
+                                        }
+                                    } else {
+                                        const variable = aliasTheme !== undefined
+                                            ? aliasVariable.themes?.[aliasTheme]
+                                            : aliasVariable
+                                        if (variable) {
+                                            addVariable(
+                                                name,
+                                                { type: variable.type, value: variable.value, space: variable['space'] },
+                                                undefined,
+                                                aliasResult[2]
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
-                    } else if (type === 'number') {
-                        addVariable(name, { type: 'number', value: variable })
-                        addVariable('-' + name, { type: 'number', value: variable * -1 })
-                    } else if (type === 'string') {
-                        const aliasResult = /^\$\((.*?)\)(?: ?\/ ?(.+?))?$/.exec(variable)
-                        if (aliasResult) {
-                            if (!Object.prototype.hasOwnProperty.call(unexecutedAliasVariable, name)) {
-                                unexecutedAliasVariable[name] = {}
-                            }
-                            unexecutedAliasVariable[name][theme] = () => {
-                                delete unexecutedAliasVariable[name][theme]
-
-                                const [alias, aliasTheme] = aliasResult[1].split('@')
-                                if (alias) {
-                                    if (Object.prototype.hasOwnProperty.call(unexecutedAliasVariable, alias)) {
-                                        for (const theme of Object.keys(unexecutedAliasVariable[alias])) {
-                                            unexecutedAliasVariable[alias][theme]?.()
-                                        }
-                                    }
-
-                                    const aliasVariable = this.variables[alias]
-                                    if (aliasVariable) {
-                                        if (aliasTheme === undefined && aliasVariable.themes) {
-                                            addVariable(
-                                                name,
-                                                { type: aliasVariable.type, value: aliasVariable.value, space: aliasVariable.space },
-                                                '',
-                                                aliasResult[2]
-                                            )
-                                            for (const theme in aliasVariable.themes) {
-                                                addVariable(
-                                                    name,
-                                                    aliasVariable.themes[theme],
-                                                    theme,
-                                                    aliasResult[2]
-                                                )
-                                            }
-                                        } else {
-                                            const variable = aliasTheme !== undefined
-                                                ? aliasVariable.themes?.[aliasTheme]
-                                                : aliasVariable
-                                            if (variable) {
-                                                addVariable(
-                                                    name,
-                                                    { type: variable.type, value: variable.value, space: variable['space'] },
-                                                    undefined,
-                                                    aliasResult[2]
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                    } else {
+                        const hexColorResult = /^#([A-Fa-f0-9]{3,4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.exec(variable)
+                        if (hexColorResult) {
+                            const [r, g, b, a] = hexToRgb(hexColorResult[1])
+                            addVariable(name, { type: 'color', value: `${r} ${g} ${b}${a === 1 ? '' : ' / ' + a}`, space: 'rgb' })
                         } else {
-                            const hexColorResult = /^#([A-Fa-f0-9]{3,4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.exec(variable)
-                            if (hexColorResult) {
-                                const [r, g, b, a] = hexToRgb(hexColorResult[1])
-                                addVariable(name, { type: 'color', value: `${r} ${g} ${b}${a === 1 ? '' : ' / ' + a}`, space: 'rgb' })
+                            const rgbFunctionResult = /^rgb\( *([0-9]{1,3})(?: *, *| +)([0-9]{1,3})(?: *, *| +)([0-9]{1,3}) *(?:(?:,|\/) *(.*?) *)?\)$/.exec(variable)
+                            if (rgbFunctionResult) {
+                                addVariable(name, { type: 'color', value: rgbFunctionResult[1] + ' ' + rgbFunctionResult[2] + ' ' + rgbFunctionResult[3] + (rgbFunctionResult[4] ? ' / ' + (rgbFunctionResult[4].startsWith('0.') ? rgbFunctionResult[4].slice(1) : rgbFunctionResult[4]) : ''), space: 'rgb' })
                             } else {
-                                const rgbFunctionResult = /^rgb\( *([0-9]{1,3})(?: *, *| +)([0-9]{1,3})(?: *, *| +)([0-9]{1,3}) *(?:(?:,|\/) *(.*?) *)?\)$/.exec(variable)
-                                if (rgbFunctionResult) {
-                                    addVariable(name, { type: 'color', value: rgbFunctionResult[1] + ' ' + rgbFunctionResult[2] + ' ' + rgbFunctionResult[3] + (rgbFunctionResult[4] ? ' / ' + (rgbFunctionResult[4].startsWith('0.') ? rgbFunctionResult[4].slice(1) : rgbFunctionResult[4]) : ''), space: 'rgb' })
+                                const hslFunctionResult = /^hsl\((.*?)\)$/.exec(variable)
+                                if (hslFunctionResult) {
+                                    addVariable(name, { type: 'color', value: hslFunctionResult[1], space: 'hsl' })
                                 } else {
-                                    const hslFunctionResult = /^hsl\((.*?)\)$/.exec(variable)
-                                    if (hslFunctionResult) {
-                                        addVariable(name, { type: 'color', value: hslFunctionResult[1], space: 'hsl' })
-                                    } else {
-                                        addVariable(name, { type: 'string', value: variable })
-                                    }
+                                    addVariable(name, { type: 'string', value: variable })
                                 }
                             }
                         }
                     }
                 }
-                transformVariableDeeply(variables[parnetKey], parnetKey)
+            }
+            for (const parnetKey in variables) {
+                parseVariable(variables[parnetKey], parnetKey)
             }
             for (const name of Object.keys(unexecutedAliasVariable)) {
                 for (const theme of Object.keys(unexecutedAliasVariable[name])) {
@@ -251,9 +254,11 @@ export class MasterCSS {
                 }
             }
         }
+
         if (mediaQueries) {
             this.mediaQueries = flattenObject(mediaQueries)
         }
+
         if (animations) {
             for (const animationName in animations) {
                 const newValueByPropertyNameByKeyframeName = this.animations[animationName] = {}
@@ -346,33 +351,27 @@ export class MasterCSS {
                     const match = eachRuleDefinition.match
                     eachRuleDefinition.id = id
                     eachRuleDefinition.resolvedVariables = {}
+
+                    // todo: 不可使用 startsWith 判斷，應改為更精準的從 config.variables 取得目標變數群組，但 config.variables 中的值還沒被 resolve 像是 Array
                     const addResolvedVariables = (prefix: string) => {
-                        Object.assign(
-                            eachRuleDefinition.resolvedVariables,
-                            Object.keys(this.variables)
-                                .filter((eachVariableName) =>
-                                    eachVariableName.startsWith(prefix + '-') ||
-                                    eachVariableName.startsWith('-' + prefix + '-'),
-                                )
-                                .reduce((newResolvedVariables, eachVariableName) => {
-                                    newResolvedVariables[
-                                        eachVariableName.slice(
-                                            prefix.length + (prefix.startsWith('-') ? 0 : 1),
-                                        )
-                                    ] = {
-                                        ...this.variables[eachVariableName],
-                                        name: eachVariableName,
-                                    }
-                                    return newResolvedVariables
-                                }, {}),
-                        )
+                        for (const eachVariableName in this.variables) {
+                            if (eachVariableName.startsWith(prefix + '-') || eachVariableName.startsWith('-' + prefix + '-')) {
+                                const simplifiedName = eachVariableName.slice(prefix.length + (prefix.startsWith('-') ? 0 : 1))
+                                eachRuleDefinition.resolvedVariables[simplifiedName] = {
+                                    ...this.variables[eachVariableName],
+                                    name: eachVariableName,
+                                }
+                            }
+                        }
                     }
+
                     // 1. custom `config.rules[id].variables`
                     if (eachRuleDefinition.variables) {
                         for (const eachVariableGroup of eachRuleDefinition.variables) {
                             addResolvedVariables(eachVariableGroup)
                         }
                     }
+
                     // 2. custom `config.variables`
                     addResolvedVariables(id)
 
