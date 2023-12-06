@@ -13,7 +13,7 @@ metadataForList.push({
 
 const categoryOrder = [
     'Getting Started',
-    'Core Syntax',
+    'Syntax Tutorial',
     'Fundamentals',
     'Production Optimization',
     'Design Tokens',

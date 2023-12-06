@@ -61,7 +61,7 @@ const editorOptions: editor.IStandaloneEditorConstructionOptions = {
     lineHeight: 22,
     letterSpacing: -0.1,
     fontSize: 14,
-    fontFamily: config.variables.font.family.mono.join(','),
+    fontFamily: config.variables['font-family'].mono.join(','),
     fontLigatures: true
 }
 
