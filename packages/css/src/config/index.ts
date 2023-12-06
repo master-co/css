@@ -48,7 +48,7 @@ export type SemanticDefinitions = { [key in keyof typeof semantics]?: CSSDeclara
 export interface FunctionDefinition {
     unit?: string
     colored?: boolean
-    transform?(this: Rule, value: string): string | ValueComponent[]
+    transform?(this: Rule, value: string, bypassVariableNames?: string[]): string | ValueComponent[]
 }
 export type FunctionDefinitions = { [key: string]: FunctionDefinition }
 
