@@ -519,8 +519,8 @@ export default function Play(props: any) {
                     </select>
                     <IconChevronDown className="1emx1em mr:-3 stroke:1.5" />
                 </label>
-                {links?.map(({ fullName, Icon, ...eachLink}: any) =>
-                    <HeaderNav className="hide@<md" key={eachLink.name} {...eachLink} onClick={(event: any) => {
+                {links?.map(({ fullName, Icon, ...eachLink }: any, index) =>
+                    <HeaderNav className={clsx('hide@<md', index === links.length - 1 && 'mr:auto')} key={eachLink.name} {...eachLink} onClick={(event: any) => {
                         if (shareable) {
                             if (!window.confirm('Are you sure to go to another page and discard current changes?')) {
                                 event.preventDefault()
@@ -550,7 +550,7 @@ export default function Play(props: any) {
                     </span>}
                 </ShareButton>}
                 {(shareId || shareable) && <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>}
-                <Link className="app-header-icon hide@<md ml:auto" href={getSearchPath('layout', layout ? '' : '2')}>
+                <Link className="app-header-icon hide@<md" href={getSearchPath('layout', layout ? '' : '2')}>
                     <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path className={clsx(
                             '~transform|.2s',
