@@ -28,13 +28,13 @@ onMounted(() => {
         themeService.value.init()
         current.value = themeService.value.current
         value.value = themeService.value.value
-        themeService.value.host.addEventListener('themeChange', onThemeChange)
+        themeService.value.host?.addEventListener('themeChange', onThemeChange)
     }
 })
 
 onBeforeUnmount(() => {
     if (themeService.value) {
-        themeService.value.host.removeEventListener('themeChange', onThemeChange)
+        themeService.value.host?.removeEventListener('themeChange', onThemeChange)
         themeService.value.destroy(false)
     }
 })
@@ -43,7 +43,7 @@ provide('theme-service', {
     current: readonly(current),
     value: readonly(value),
     switch: readonly((
-        _value: ThemeValue, 
+        _value: ThemeValue,
         // options?: { store?: boolean, emit?: boolean }
     ) => {
         if (themeService.value) {
