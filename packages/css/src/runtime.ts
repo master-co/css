@@ -16,14 +16,14 @@ export class RuntimeCSS extends MasterCSS {
         super(customConfig)
         if (!root) this.root = document
         if (this.root === document) {
-            globalThis.runtimeCSS = this
+            (globalThis as any).runtimeCSS = this
             this.container = document.head
             this.host = document.documentElement
         } else {
             this.container = this.root as RuntimeCSS['container']
             this.host = (this.root as ShadowRoot).host
         }
-        globalThis.runtimeCSSs.push(this)
+        runtimeCSSs.push(this)
     }
 
     /**
@@ -33,7 +33,7 @@ export class RuntimeCSS extends MasterCSS {
      */
     observe(options: MutationObserverInit = { subtree: true, childList: true }) {
         if (this.observing || !this.root) return this
-        if (globalThis.runtimeCSSs.find((eachRuntimeCSS) => eachRuntimeCSS !== this && eachRuntimeCSS.root === this.root)) {
+        if (runtimeCSSs.find((eachRuntimeCSS) => eachRuntimeCSS !== this && eachRuntimeCSS.root === this.root)) {
             console.warn('Cannot observe the same root element repeatedly.')
             return this
         }
@@ -411,31 +411,29 @@ export class RuntimeCSS extends MasterCSS {
 
     destroy() {
         this.disconnect()
-        globalThis.runtimeCSSs.splice(globalThis.runtimeCSSs.indexOf(this), 1)
+        runtimeCSSs.splice(runtimeCSSs.indexOf(this), 1)
         return this
     }
 }
 
+export const runtimeCSSs: RuntimeCSS[] = []
+
 declare global {
-    // @ts-expect-error
+    // @ts-ignore
     // eslint-disable-next-line no-var
     var RuntimeCSS: typeof RuntimeCSS
+    // @ts-ignore
     // eslint-disable-next-line no-var
     var masterCSSConfig: Config
+    // @ts-ignore
     // eslint-disable-next-line no-var
-    var runtimeCSSs: RuntimeCSS[]
+    var runtimeCSSs: typeof runtimeCSSs
+    // @ts-ignore
     // eslint-disable-next-line no-var
     var runtimeCSS: RuntimeCSS
-
-    interface Window {
-        RuntimeCSS: typeof RuntimeCSS
-        masterCSSConfig: Config
-        runtimeCSSs: RuntimeCSS[]
-        runtimeCSS: RuntimeCSS
-    }
 }
 
 (() => {
     globalThis.RuntimeCSS = RuntimeCSS
-    if (!globalThis.runtimeCSSs) globalThis.runtimeCSSs = []
+    globalThis.runtimeCSSs = runtimeCSSs
 })()

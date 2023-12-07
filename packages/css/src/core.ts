@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { Rule, NativeRule, RuleDefinition, RegisteredRule } from './rule'
 import type { Config, AnimationDefinitions } from './config'
 import { config as defaultConfig } from './config'
@@ -51,7 +50,7 @@ export class MasterCSS {
         }
         this.resolve()
         if (this.constructor === MasterCSS) {
-            globalThis.masterCSSs.push(this)
+            masterCSSs.push(this)
         }
     }
 
@@ -515,7 +514,7 @@ export class MasterCSS {
 
     destroy() {
         this.reset()
-        globalThis.masterCSSs.splice(globalThis.masterCSSs.indexOf(this), 1)
+        masterCSSs.splice(masterCSSs.indexOf(this), 1)
         return this
     }
 
@@ -1190,28 +1189,18 @@ export class MasterCSS {
     }
 }
 
-declare global {
-    // @ts-expect-error
-    // eslint-disable-next-line no-var
-    var MasterCSS: typeof MasterCSS
-    // eslint-disable-next-line no-var
-    var masterCSSs: MasterCSS[]
-
-    interface Window {
-        MasterCSS: typeof MasterCSS
-        masterCSSs: MasterCSS[]
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-namespace
-    namespace NodeJS {
-        interface Global {
-            MasterCSS: typeof MasterCSS;
-            masterCSSs: MasterCSS[]
-        }
-    }
-}
+export const masterCSSs: MasterCSS[] = [];
 
 (() => {
     globalThis.MasterCSS = MasterCSS
-    if (!globalThis.masterCSSs) globalThis.masterCSSs = []
+    globalThis.masterCSSs = masterCSSs
 })()
+
+declare global {
+    // @ts-ignore
+    // eslint-disable-next-line no-var
+    var MasterCSS: typeof MasterCSS
+    // @ts-ignore
+    // eslint-disable-next-line no-var
+    var masterCSSs: typeof masterCSSs
+}

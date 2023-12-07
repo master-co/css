@@ -6,7 +6,6 @@ import initRuntime from './functions/init-runtime'
 })()
 
 declare global {
-    interface Window {
-        masterCSSConfig: Config
-    }
+    // eslint-disable-next-line no-var
+    var masterCSSConfig: Config
 }

@@ -55,7 +55,7 @@ export interface FunctionDefinition {
 export type FunctionDefinitions = { [key: string]: FunctionDefinition }
 
 export interface Config {
-    extends?: (Config | { config: Config })[]
+    extends?: (Config | any)[]
     styles?: StyleDefinitions
     mediaQueries?: MediaQueryDefinitions
     selectors?: SelectorDefinitions
