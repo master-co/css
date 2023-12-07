@@ -39,7 +39,7 @@ export function activate(context: ExtensionContext) {
 
 
     const Languages: { scheme: 'file', language: string }[] = []
-    langs.forEach(x => {
+    langs.forEach((x: any) => {
         Languages.push({ scheme: 'file', language: x })
     })
 

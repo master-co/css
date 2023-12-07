@@ -9,7 +9,6 @@ import parseHTML from './parse-html'
  * @param config
  */
 export default function render(html: string, config?: Config): { html: string, root: HTMLElement, css?: MasterCSS, classes?: string[] } {
-    if (!html) return
     const { classes, root } = parseHTML(html)
     if (!classes.length) return { html, root, classes }
     const css = new MasterCSS(config)

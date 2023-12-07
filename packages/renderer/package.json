@@ -51,6 +51,7 @@
         "pretty-hrtime": "^1.0.3"
     },
     "devDependencies": {
+        "@types/pretty-hrtime": "^1.0.3",
         "css-shared": "workspace:^",
         "ts-jest": "^29.0.5"
     }

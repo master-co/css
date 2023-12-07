@@ -11,7 +11,9 @@ import {
 import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver-types'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import { MasterCSS } from '@master/css'
+// @ts-expect-error
 import { cssData } from 'vscode-css-languageservice/lib/umd/data/webCustomData'
+// @ts-expect-error
 import { CSSDataProvider } from 'vscode-css-languageservice/lib/umd/languageFacts/dataProvider'
 
 let cssKeys: Array<string | CompletionItem> = []
@@ -132,7 +134,7 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
 
     masterCssKeyValues.forEach(x => {
         const fullKey = x.key[0]
-        const originalCssProperty = cssProperties.find(x => x.name == fullKey)
+        const originalCssProperty = cssProperties.find((x: { name: string }) => x.name == fullKey)
         const originalCssValues = originalCssProperty?.values ?? []
         for (const masterKey of x.key) {
             if (!masterCssKeyCompletionItems.find(existedValue => existedValue.label === masterKey + ':')) {
@@ -158,13 +160,13 @@ export function getCompletionItem(instance: string, triggerKey: string, isStart:
 
             masterCssValues = masterCssValues.concat(
                 originalCssValues
-                    .filter((cssValue, index) => cssValue.description || (!cssValue.description && originalCssValues.indexOf(cssValue) === index))
-                    .map(cssValue => ({
+                    .filter((cssValue: { description: any }, index: any) => cssValue.description || (!cssValue.description && originalCssValues.indexOf(cssValue) === index))
+                    .map((cssValue: { name: string; description: any }) => ({
                         label: cssValue.name.replace(/,\s/g, ',').replace(/\s/g, '|').replace(/["']/g, ''),
                         kind: 10,
                         documentation: cssValue?.description ?? ''
                     } as CompletionItem))
-                    .filter(cssValue =>
+                    .filter((cssValue: { label: any }) =>
                         !masterCssValues.find(existedValue => (typeof existedValue === 'string' ? existedValue : existedValue.label) === (typeof cssValue === 'string' ? cssValue : cssValue.label))
                     )
             )

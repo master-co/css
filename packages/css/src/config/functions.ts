@@ -1,4 +1,4 @@
-import type { FunctionDefinition } from './'
+import type { FunctionDefinition, FunctionDefinitions } from './'
 import type { Rule } from '../rule'
 
 const functions = {
@@ -20,7 +20,7 @@ const functions = {
     calc: {
         transform(value, bypassVariableNames) {
             const valueComponents: Rule['valueComponents'] = []
-            const functions = this.css.config.functions
+            const functions = this.css.config.functions as FunctionDefinitions
             let i = 0
             const anaylze = (currentValueComponents: Rule['valueComponents'], bypassHandlingSeparator: boolean, bypassHandlingUnitForcely: boolean) => {
                 let bypassHandlingUnit = false

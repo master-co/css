@@ -47,5 +47,8 @@
         "@master/css": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "lodash.debounce": "^4.0.8"
+    },
+    "devDependencies": {
+        "@types/lodash.debounce": "^4.0.9"
     }
 }

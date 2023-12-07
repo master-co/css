@@ -1,9 +1,12 @@
 import type { Hover, Range } from 'vscode-languageserver-types'
 import MasterCSS from '@master/css'
-import { css_beautify } from 'js-beautify/js/lib/beautify-css'
 import { getCssEntryMarkdownDescription } from '../utils/get-css-entry-markdown-description'
 import { masterCssKeyValues } from '../constant'
+// @ts-expect-error
+import { css_beautify } from 'js-beautify/js/lib/beautify-css'
+// @ts-expect-error
 import { cssData } from 'vscode-css-languageservice/lib/umd/data/webCustomData'
+// @ts-expect-error
 import { CSSDataProvider } from 'vscode-css-languageservice/lib/umd/languageFacts/dataProvider'
 
 export function doHover(instance: string, range: Range, config?: any): Hover | null {
@@ -51,9 +54,9 @@ function getCssHoverInfo(instance: string) {
     let cssHoverInfo: any = null
     for (const masterCssKeyValue of masterCssKeyValues) {
         const fullKey = masterCssKeyValue.key[0]
-        const originalCssProperty = cssProperties.find(x => x.name == fullKey)
+        const originalCssProperty = cssProperties.find((x: { name: string }) => x.name == fullKey)
         if (masterCssKeyValue.key.includes(masterKey) && originalCssProperty) {
-            if (!originalCssProperty.references?.find(x => x.name === 'Master Reference')) {
+            if (!originalCssProperty.references?.find((x: { name: string }) => x.name === 'Master Reference')) {
                 originalCssProperty.references = [
                     ...(originalCssProperty?.references ?? []),
                     {

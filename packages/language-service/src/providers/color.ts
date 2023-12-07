@@ -156,7 +156,7 @@ function parseColorString(colorString: string, theme: string, css: MasterCSS = n
 function getColorsRGBA(colorName: string, colorAlpha = 1, theme = '', css: MasterCSS = new MasterCSS()): Color {
     try {
         // todo: refactor colorNumberMap
-        const colorNumberMap = css.variables[colorName]
+        const colorNumberMap: any = css.variables[colorName]
         const levelRgb = hexToRgb(colorNumberMap[theme] ?? colorNumberMap[''] ?? Object.values(colorNumberMap)[0])
 
         return { red: levelRgb.red / 255, green: levelRgb.green / 255, blue: levelRgb.blue / 255, alpha: colorAlpha }

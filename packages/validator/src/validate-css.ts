@@ -1,30 +1,32 @@
 /* eslint-disable no-cond-assign */
+// @ts-expect-error
 import { lexer, parse, walk, property as propertyName } from 'css-tree'
+import { SyntaxError } from './interfaces/syntax-error'
 
-export default function validateCSS(text, parseOptions = {
+export default function validateCSS(text: string, parseOptions = {
     parseAtrulePrelude: false,
     parseRulePrelude: false,
     parseValue: false,
     parseCustomProperty: false
 }) {
-    const errors = []
+    const errors: any[] = []
     const ast = parse(text, {
         ...parseOptions,
-        onParseError(error) {
+        onParseError(error: any) {
             errors.push(error)
         }
     })
 
     walk(ast, {
         visit: 'Atrule',
-        enter(node) {
+        enter(node: any) {
             errors.push(...validateAtrule(node))
         }
     })
 
     walk(ast, {
         visit: 'Rule',
-        enter(node) {
+        enter(node: any) {
             errors.push(...validateRule(node))
         }
     })
@@ -32,7 +34,7 @@ export default function validateCSS(text, parseOptions = {
 }
 
 
-function isTargetError(error) {
+function isTargetError(error: SyntaxError) {
     if (!error) {
         return null
     }
@@ -46,7 +48,7 @@ function isTargetError(error) {
     return error
 }
 
-export function validateAtrule(node) {
+export function validateAtrule(node: { name: any; prelude: any; block: { children: any[] } }) {
     const atrule = node.name
     const errors = []
     let error
@@ -65,7 +67,7 @@ export function validateAtrule(node) {
     ))
 
     if (node.block && node.block.children) {
-        node.block.children.forEach(child => {
+        node.block.children.forEach((child: { type: string; property: any; value: any }) => {
             if (child.type === 'Declaration') {
                 errors.push(...validateAtruleDescriptor(
                     atrule,
@@ -79,9 +81,9 @@ export function validateAtrule(node) {
     return errors
 }
 
-export function validateAtrulePrelude(atrule, prelude) {
+export function validateAtrulePrelude(atrule: string, prelude: any) {
     const errors = []
-    let error
+    let error: SyntaxError | null
 
     if (error = isTargetError(lexer.checkAtrulePrelude(atrule, prelude))) {
         errors.push(Object.assign(error, {
@@ -98,7 +100,7 @@ export function validateAtrulePrelude(atrule, prelude) {
     return errors
 }
 
-export function validateAtruleDescriptor(atrule, descriptor, value) {
+export function validateAtruleDescriptor(atrule: any, descriptor: string, value: any) {
     const errors = []
     let error
 
@@ -121,9 +123,9 @@ export function validateAtruleDescriptor(atrule, descriptor, value) {
     return errors
 }
 
-export function validateDeclaration(property, value) {
-    const errors = []
-    let error
+export function validateDeclaration(property: string, value: any) {
+    const errors: any[] = []
+    let error: SyntaxError | null
 
     if (propertyName(property).custom) {
         return errors
@@ -144,11 +146,11 @@ export function validateDeclaration(property, value) {
     return errors
 }
 
-export function validateRule(node) {
-    const errors = []
+export function validateRule(node: { block: { children: any[] } }) {
+    const errors: any[] = []
 
     if (node.block && node.block.children) {
-        node.block.children.forEach(child => {
+        node.block.children.forEach((child: { type: string; property: any; value: any }) => {
             if (child.type === 'Declaration') {
                 errors.push(...validateDeclaration(
                     child.property,

@@ -4,9 +4,9 @@ import defaultOptions, { Options, ThemeValue } from './options'
 export class ThemeService {
 
     // 按照系統的主題切換，目前只支援 light dark
-    private _darkMQL: MediaQueryList = typeof matchMedia !== 'undefined' ? matchMedia?.('(prefers-color-scheme:dark)') : undefined
-    private _value: ThemeValue
-    private _current: string
+    private _darkMQL?: MediaQueryList = typeof matchMedia !== 'undefined' ? matchMedia?.('(prefers-color-scheme:dark)') : undefined
+    private _value?: ThemeValue | null
+    private _current?: string | null
     public initialized = false
 
     constructor(
@@ -17,7 +17,7 @@ export class ThemeService {
     }
 
     init() {
-        let value = this.options.default
+        let value = this.options?.default
         const storage = this.storage
         if (storage) {
             value = storage
@@ -28,17 +28,16 @@ export class ThemeService {
     }
 
     get storage() {
-        const { store } = this.options
-        if (typeof localStorage !== 'undefined' && store) {
-            return localStorage.getItem(store)
+        if (typeof localStorage !== 'undefined' && this.options?.store) {
+            return localStorage.getItem(this.options?.store)
         }
     }
 
     get systemCurrent(): string {
-        return this._darkMQL.matches ? 'dark' : 'light'
+        return this._darkMQL?.matches ? 'dark' : 'light'
     }
 
-    set value(value: ThemeValue) {
+    set value(value: ThemeValue | undefined) {
         if (value === 'system') {
             this._darkMQL?.addEventListener?.('change', this._onThemeChange)
             this.current = this.systemCurrent
@@ -47,16 +46,16 @@ export class ThemeService {
             this.current = value
         }
         if (value !== this._value) {
-            this.host.dispatchEvent(new CustomEvent('themeChange', { detail: this }))
+            this.host?.dispatchEvent(new CustomEvent('themeChange', { detail: this }))
             this._value = value
         }
     }
 
-    get value() {
+    get value(): ThemeService['_value'] {
         return this._value
     }
 
-    set current(current: string) {
+    set current(current: string | undefined) {
         const previous = this._current
         this._current = current
         if (this.host && previous !== current) {
@@ -72,7 +71,7 @@ export class ThemeService {
         }
     }
 
-    get current() {
+    get current(): ThemeService['_current'] {
         return this._current
     }
 
@@ -80,7 +79,7 @@ export class ThemeService {
         if (value && value !== this.value) {
             this.value = value
             // 儲存 theme 到 localStorage
-            if (typeof localStorage !== 'undefined' && this.storage !== value && this.options.store) {
+            if (typeof localStorage !== 'undefined' && this.storage !== value && this.options?.store) {
                 localStorage.setItem(this.options.store, value)
             }
         }
@@ -97,10 +96,11 @@ export class ThemeService {
     destroy(complete = true) {
         this._removeDarkMQLListener()
         if (this.host) {
-            this.host.style.colorScheme = null
-            this.host.classList.remove(this.current)
+            this.host.style.removeProperty('color-scheme')
+            if (this.current)
+                this.host.classList.remove(this.current)
         }
-        if (complete && typeof localStorage !== 'undefined' && this.options.store) {
+        if (complete && typeof localStorage !== 'undefined' && this.options?.store) {
             localStorage.removeItem(this.options.store)
         }
         this._current = null

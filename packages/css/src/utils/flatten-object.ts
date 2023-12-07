@@ -1,5 +1,5 @@
 export function flattenObject(obj: Record<string, any>, parentKey = ''): Record<string, any> {
-    return Object.entries(obj).reduce((acc, [key, value]) => {
+    return Object.entries(obj).reduce((acc: Record<string, any>, [key, value]) => {
         const currentKey = parentKey
             ? `${parentKey}${key ? '-' + key : ''}`
             : key

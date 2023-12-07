@@ -9,7 +9,6 @@ import { MasterCSS } from '../core'
  * @returns consistent classes
  */
 export default function reorderForReadableClasses(classes: string[], options?: { css?: MasterCSS, config?: Config }) {
-    if (!classes.length) return
     let css: MasterCSS
     if (options?.css) {
         css = options?.css
@@ -23,13 +22,13 @@ export default function reorderForReadableClasses(classes: string[], options?: {
         // 只保留樣式語法相關的 rules, 排除 keyframes 與 variables 在外
         .filter(eachRule => eachRule.layer)
         .sort((a, b) => {
-            if (a.definition.layer === Layer.Semantic && b.definition.layer !== Layer.Semantic) {
+            if (a.layer === Layer.Semantic && b.layer !== Layer.Semantic) {
                 // 如果 a 是 Layer.Semantic 而 b 不是，则 a 应该排在 b 前面
                 return -1
-            } else if (a.definition.layer !== Layer.Semantic && b.definition.layer === Layer.Semantic) {
+            } else if (a.layer !== Layer.Semantic && b.layer === Layer.Semantic) {
                 // 如果 b 是 Layer.Semantic 而 a 不是，则 b 应该排在 a 前面
                 return 1
-            } else if (a.definition.id !== b.definition.id) {
+            } else if (a.id !== b.id) {
                 return a.className.localeCompare(b.className)
             } else {
                 // 檢查 vendorSuffixSelectors 是否存在
@@ -66,7 +65,7 @@ export default function reorderForReadableClasses(classes: string[], options?: {
 
                 // 如果 a 和 b 的 id 相同，則按照以下規則排序
                 if (
-                    a.definition.id === b.definition.id &&
+                    a.id === b.id &&
                     a.stateToken === b.stateToken
                 ) {
                     return a.className.localeCompare(b.className)

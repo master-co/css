@@ -8,7 +8,7 @@ const NAME = 'MasterCSSExtractorPlugin'
 export class CSSExtractorPlugin extends CSSExtractor {
 
     initialized = false
-    moduleContentByPath = {}
+    moduleContentByPath: any = {}
 
     apply(compiler: Compiler) {
         if (!this.initialized) {
@@ -47,8 +47,10 @@ export class CSSExtractorPlugin extends CSSExtractor {
 
         compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
             compilation.hooks.succeedModule.tap(NAME, async (module) => {
+                // @ts-expect-error
                 const modulePath = module['resourceResolveData']?.['path'] || module['resource']
                 if (modulePath) {
+                    // @ts-expect-error
                     const moduleSource = module['_source']
                     const moduleContent = moduleSource?.source()
                     this.moduleContentByPath[modulePath] = moduleContent

@@ -42,10 +42,11 @@ export default function VirtualCSSModulePlugins(
                 for (const eachCssFileName of cssFileNames) {
                     const chunk = bundle[eachCssFileName]
                     if (chunk.type === 'asset') {
+                        // @ts-expect-error
                         bundle[eachCssFileName]['source'] = bundle[eachCssFileName]['source'].replace(extractor.slotCSSRule, extractor.css.text)
                     }
                 }
-                return null
+                return
             }
         } as Plugin
     ]

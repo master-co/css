@@ -11,11 +11,13 @@ import type { Rule, RuleDefinition, ValueComponent } from '../rule'
 const config: Config = {
     mediaQueries,
     selectors,
+    // @ts-expect-error
     semantics,
     rules,
-    functions: functions as any,
+    functions,
+    // @ts-expect-error
     animations,
-    variables: variables as any,
+    variables,
     scope: '',
     rootSize: 16,
     override: false,
@@ -48,7 +50,7 @@ export type SemanticDefinitions = { [key in keyof typeof semantics]?: CSSDeclara
 export interface FunctionDefinition {
     unit?: string
     colored?: boolean
-    transform?(this: Rule, value: string, bypassVariableNames?: string[]): string | ValueComponent[]
+    transform?(this: Rule, value: string, bypassVariableNames: string[]): string | ValueComponent[]
 }
 export type FunctionDefinitions = { [key: string]: FunctionDefinition }
 

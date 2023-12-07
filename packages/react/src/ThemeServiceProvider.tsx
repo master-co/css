@@ -6,7 +6,7 @@ import { Context, createContext, DependencyList, EffectCallback, useCallback, us
 const useIsomorphicEffect: (effect: EffectCallback, deps?: DependencyList) => void =
     typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
-export const ThemeServiceContext: Context<ThemeService> = createContext<ThemeService>(null)
+export const ThemeServiceContext: Context<ThemeService | null> = createContext<ThemeService | null>(null)
 
 export function useThemeService() {
     return useContext(ThemeServiceContext)

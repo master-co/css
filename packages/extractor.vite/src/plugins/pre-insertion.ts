@@ -1,6 +1,6 @@
 import CSSExtractor from '@master/css-extractor'
 import type { Plugin, ViteDevServer } from 'vite'
-import { exists, existsSync, readFileSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 import debounce from 'lodash.debounce'
 
 /**
@@ -74,7 +74,7 @@ export default function PreInsertionPlugin(
         },
         configureServer(devServer) {
             const resetHandler = async () => {
-                const tasks = []
+                const tasks: any[] = []
                 /* 1. fixed sources */
                 tasks.push(await extractor.prepare())
                 /* 2. transform index.html */
@@ -82,17 +82,18 @@ export default function PreInsertionPlugin(
                     tasks.push(extractor.insert(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
                 }
                 /* 3. transformed modules */
-                const resolvedVirtualModuleId = extractor.resolvedVirtualModuleId
                 tasks.concat(
                     Array.from(server.moduleGraph.idToModuleMap.keys())
                         .filter((eachModuleId) => eachModuleId !== extractor.resolvedVirtualModuleId)
                         .map(async (eachModuleId: string) => {
                             const eachModule = server.moduleGraph.idToModuleMap.get(eachModuleId)
-                            let eachModuleCode = eachModule.transformResult?.code
-                            if (typeof eachModuleCode !== 'string' && !eachModule.file.startsWith('virtual:') && existsSync(eachModule.file)) {
-                                eachModuleCode = readFileSync(eachModule.file, 'utf-8')
+                            let eachModuleCode = eachModule?.transformResult?.code
+                            if (eachModule && eachModuleCode) {
+                                if (eachModule.file && typeof eachModuleCode !== 'string' && !eachModule.file.startsWith('virtual:') && existsSync(eachModule.file)) {
+                                    eachModuleCode = readFileSync(eachModule.file, 'utf-8')
+                                }
+                                await extractor.insert(eachModuleId, eachModuleCode)
                             }
-                            await extractor.insert(eachModuleId, eachModuleCode)
                         })
                 )
                 await Promise.all(tasks)

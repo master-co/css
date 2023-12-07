@@ -8,8 +8,7 @@ export class RuntimeCSS extends MasterCSS {
     readonly host: Element
     readonly observing = false
     readonly container: HTMLElement | ShadowRoot
-    readonly styleSheets: StyleSheetList
-    observer: MutationObserver
+    observer?: MutationObserver | null
     constructor(
         public root: Document | ShadowRoot | undefined | null = document,
         public customConfig: Config = defaultConfig
@@ -23,9 +22,7 @@ export class RuntimeCSS extends MasterCSS {
         } else {
             this.container = this.root as RuntimeCSS['container']
             this.host = (this.root as ShadowRoot).host
-            this.styleSheets = this.root.styleSheets
         }
-        this.styleSheets = this.root.styleSheets
         globalThis.runtimeCSSs.push(this)
     }
 
@@ -35,21 +32,23 @@ export class RuntimeCSS extends MasterCSS {
      * @returns this
      */
     observe(options: MutationObserverInit = { subtree: true, childList: true }) {
-        if (this.observing) return
+        if (this.observing || !this.root) return this
         if (globalThis.runtimeCSSs.find((eachRuntimeCSS) => eachRuntimeCSS !== this && eachRuntimeCSS.root === this.root)) {
             console.warn('Cannot observe the same root element repeatedly.')
-            return
-        }
-        for (const sheet of this.styleSheets) {
-            const { ownerNode } = sheet
-            if (ownerNode && (ownerNode as HTMLStyleElement).id === 'master') {
-                // @ts-ignore
-                this.style = ownerNode
-                break
-            }
+            return this
         }
 
-        if (this.style) {
+        if (this.root?.styleSheets)
+            for (const sheet of this.root.styleSheets) {
+                const { ownerNode } = sheet
+                if (ownerNode && (ownerNode as HTMLStyleElement).id === 'master') {
+                    // @ts-ignore
+                    this.style = ownerNode
+                    break
+                }
+            }
+
+        if (this.style?.sheet) {
             let index = 0
             for (; index < this.style.sheet.cssRules.length; index++) {
                 const eachCSSRule = this.style.sheet.cssRules[index]
@@ -106,7 +105,7 @@ export class RuntimeCSS extends MasterCSS {
             }
 
             for (; index < this.style.sheet.cssRules.length; index++) {
-                const getRule = (cssRule: any): Rule => {
+                const getRule = (cssRule: any): Rule | undefined => {
                     if (cssRule.selectorText) {
                         const selectorTexts = cssRule.selectorText.split(', ')
                         const escapedClassNames = selectorTexts[0].split(' ')
@@ -206,7 +205,7 @@ export class RuntimeCSS extends MasterCSS {
 
         this.observer = new MutationObserver((mutationRecords) => {
             // console.time('css engine');
-            const correctionOfClassName = {}
+            const correctionOfClassName: Record<string, number> = {}
             const attributeMutationRecords: MutationRecord[] = []
             const updatedElements: Element[] = []
             const unchangedElements: Element[] = []
@@ -369,7 +368,7 @@ export class RuntimeCSS extends MasterCSS {
             attributeFilter: ['class'],
         });
 
-        (this.host as HTMLElement).style.display = null
+        (this.host as HTMLElement).style.removeProperty('display')
         // @ts-ignore
         this.observing = true
         return this
@@ -418,6 +417,16 @@ export class RuntimeCSS extends MasterCSS {
 }
 
 declare global {
+    // @ts-expect-error
+    // eslint-disable-next-line no-var
+    var RuntimeCSS: typeof RuntimeCSS
+    // eslint-disable-next-line no-var
+    var masterCSSConfig: Config
+    // eslint-disable-next-line no-var
+    var runtimeCSSs: RuntimeCSS[]
+    // eslint-disable-next-line no-var
+    var runtimeCSS: RuntimeCSS
+
     interface Window {
         RuntimeCSS: typeof RuntimeCSS
         masterCSSConfig: Config

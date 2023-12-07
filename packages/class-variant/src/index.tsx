@@ -1,12 +1,12 @@
 import clsx from 'clsx'
 
-type Param<T> = string 
+type Param<T> = string
     | string[]
     | Record<string, boolean>
     | [string, { [key in keyof T]?: T[key] }]
     | { [key in keyof T]?: T[key] extends boolean | undefined ? string : Record<string, string> }
     | ((valueByProp: T) => any)
-type ReturnType<T> = { default?: Partial<T> } & ((valueByProp?: T) => string) 
+type ReturnType<T> = { default?: Partial<T> } & ((valueByProp?: T) => string)
 
 /**
  * 1. 'inline-flex rounded'
@@ -20,7 +20,7 @@ function cv<T extends Record<string, string | number | boolean>>(...params: Arra
 function cv<T extends Record<string, string | number | boolean>>(firstParam: TemplateStringsArray, ...params: Array<Param<T>>): ReturnType<T>
 function cv<T extends Record<string, string | number | boolean>>(firstParam: TemplateStringsArray | Param<T>, ...params: Array<Param<T>>): ReturnType<T> {
     return function getClassNames(valueByProp: T = {} as any) {
-        const mergedValueByProp = Object.assign({}, getClassNames['default'], valueByProp)
+        const mergedValueByProp = Object.assign({}, (getClassNames as ReturnType<T>).default, valueByProp)
         const isTemplateLiteral = Array.isArray(firstParam) && 'raw' in firstParam
         const classesConditions: [string, Record<string, string | number | boolean>][] = []
         const valuesByProp: Record<string, Record<string, string>> = {}
@@ -34,7 +34,7 @@ function cv<T extends Record<string, string | number | boolean>>(firstParam: Tem
                         const newClassesByCondition = param[1]
                         if (newClassesByCondition && typeof newClassesByCondition === 'object') {
                             const keys = Object.keys(newClassesByCondition)
-        
+
                             let duplicated = false
                             for (const eachClassesByCondition of classesConditions) {
                                 const entries = Object.entries(eachClassesByCondition[1])
@@ -47,7 +47,7 @@ function cv<T extends Record<string, string | number | boolean>>(firstParam: Tem
                                     break
                                 }
                             }
-        
+
                             if (!duplicated) {
                                 classesConditions.push(param as any)
                             }
@@ -83,7 +83,7 @@ function cv<T extends Record<string, string | number | boolean>>(firstParam: Tem
                                         }
                                     }
                                     break
-                            } 
+                            }
                         }
                     }
                     break
@@ -126,10 +126,10 @@ function cv<T extends Record<string, string | number | boolean>>(firstParam: Tem
                 classNames.push(eachClassesByCondition[0])
             }
         }
-    
+
         for (const eachProp in valuesByProp) {
             const value = mergedValueByProp[eachProp] ?? mergedValueByProp['$' + eachProp] ?? ''
-            const classes = valuesByProp[eachProp][value]
+            const classes = valuesByProp[eachProp][value as string | number]
             if (classes) {
                 classNames.push(classes)
             }
@@ -148,7 +148,7 @@ function cv<T extends Record<string, string | number | boolean>>(firstParam: Tem
                 classNames.push(eachClasses)
             }
         }
-    
+
         let result = classNames.join(' ')
         if (isTemplateLiteral) {
             result = result.trim().replace(/\n/g, ' ').replace(/  +/g, ' ')

@@ -49,7 +49,7 @@ export function extendConfig(...configs: Config[]) {
     for (let i = 1; i < formattedConfigs.length; i++) {
         const currentFormattedConfig = formattedConfigs[i]
         extendedConfig = extend(extendedConfig, currentFormattedConfig)
-        if (Object.prototype.hasOwnProperty.call(currentFormattedConfig, 'animations')) {
+        if (Object.prototype.hasOwnProperty.call(currentFormattedConfig, 'animations') && extendedConfig.animations) {
             Object.assign(extendedConfig.animations, currentFormattedConfig.animations)
         }
     }

@@ -44,7 +44,7 @@ export const styled: {
     //@ts-ignore
     <F extends React.ComponentType<any>, E extends object = object>(firstParam: F, ...params: F extends React.ComponentType<infer RE> ? ParamsType<'div', RE & E> : never): F extends React.ComponentType<infer RE> ? ReturnType<React.ComponentType<RE & E>> : never
 } = new Proxy(
-    ((firstParam, ...params) => {
+    ((firstParam: any, ...params: any[]) => {
         return (Array.isArray(firstParam) && 'raw' in firstParam || typeof firstParam !== 'object' || !('render' in firstParam))
             ? styled.div(firstParam as any, ...params)
             : handle(firstParam.tag ?? firstParam, firstParam.params, firstParam.displayName)
@@ -59,8 +59,8 @@ export const styled: {
     }
 )
 
-function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E extends object = object>(Tag: K, tagParams: TagParams, displayName: string, defaultProps?: Partial<E>) {
-    return (...params: any[]) => {
+function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E extends object = object>(Tag: K, tagParams: TagParams = [], displayName: string, defaultProps?: Partial<E>) {
+    return (...params: any[]): any => {
         const generateFunctionComponent = (defaultClassNames: TemplateStringsArray, ...params: any[]) => {
             const newTagParams: TagParams = [...(tagParams || []), [defaultClassNames, params]]
             const component = forwardRef<K, MasterComponentProps<K, E>>((props, ref) => {
@@ -149,7 +149,7 @@ function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
                     }
                     unhandledTagParams.push([eachNewTagParam[0], newParams])
                 }
-                
+
                 for (let i = unhandledTagParams.length - 1; i >= 0; i--) {
                     const eachHandledTagParam = unhandledTagParams[i]
                     classNames.push(cv(eachHandledTagParam[0], ...eachHandledTagParam[1])(props))
@@ -174,7 +174,7 @@ function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
         }
 
         const firstParam = params[0]
-        let newTagParams = tagParams || []
+        let newTagParams = tagParams
         if (firstParam.params) {
             newTagParams = [...newTagParams, ...firstParam.params]
         }
@@ -184,8 +184,8 @@ function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
         } else if (typeof firstParam === 'object' && 'render' in firstParam) {
             return handle(Tag, newTagParams, firstParam.displayName, firstParam.defaultProps)
         } else {
-            const templateStringsArray = []
-            const newParams = []
+            const templateStringsArray: any[] = []
+            const newParams: any[] = []
             for (const eachParam of params) {
                 (typeof eachParam === 'string' ? templateStringsArray : newParams).push(eachParam)
             }

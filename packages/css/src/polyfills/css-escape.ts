@@ -3,7 +3,7 @@
     if (!root.CSS && !root.CSS?.escape) {
 
         // https://drafts.csswg.org/cssom/#serialize-an-identifier
-        const cssEscape = function (value) {
+        const cssEscape = function (value: string) {
             if (arguments.length == 0) {
                 throw new TypeError('`CSS.escape` requires an argument.')
             }

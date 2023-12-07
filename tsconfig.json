@@ -11,6 +11,9 @@
         "skipLibCheck": true,
         "declaration": true,
         "sourceMap": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
         "lib": [
             "es2021",
             "dom"

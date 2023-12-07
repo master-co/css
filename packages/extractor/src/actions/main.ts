@@ -9,22 +9,22 @@ module.exports = async function action(specifiedSourcePaths: string[], options?:
     cwd?: string,
     options?: string | string[] | Options
 }): Promise<CSSExtractor> {
-    const { watch, output, verbose, cwd, options: customOptions } = options
+    const { watch, output, verbose, cwd, options: customOptions } = options || {}
     const extractor = new CSSExtractor(customOptions, cwd)
     extractor.on('init', (options: Options) => {
         if (specifiedSourcePaths?.length) {
             options.include = []
             options.exclude = []
         } else {
-            if (!options.exclude.includes('**/node_modules/**')) {
-                options.exclude.push('**/node_modules/**')
+            if (!options.exclude?.includes('**/node_modules/**')) {
+                options.exclude?.push('**/node_modules/**')
             }
-            if (!options.exclude.includes('node_modules')) {
-                options.exclude.push('node_modules')
+            if (!options.exclude?.includes('node_modules')) {
+                options.exclude?.push('node_modules')
             }
         }
         options.output = output
-        options.verbose = +verbose || options.verbose
+        options.verbose = +(verbose || 0) || options.verbose
     })
     extractor.init()
     const insert = async () => {
@@ -43,7 +43,7 @@ module.exports = async function action(specifiedSourcePaths: string[], options?:
         const reset = async () => {
             await insert()
             /* If the specified source does not exist, watch the .include - .exclude */
-            if (!specifiedSourcePaths?.length) {
+            if (!specifiedSourcePaths?.length && extractor.options.include) {
                 await extractor.watchSource(extractor.options.include, { ignored: extractor.options.exclude })
             }
         }
@@ -73,4 +73,4 @@ module.exports = async function action(specifiedSourcePaths: string[], options?:
         extractor.export()
     }
     return extractor
-} 
+}

@@ -15,11 +15,9 @@ import { explorePathsSync, explorePathSync } from '@techor/glob'
 import path from 'path'
 
 export default class CSSExtractor extends EventEmitter {
-    css: MasterCSS
     latentClasses = new Set<string>()
     validClasses = new Set<string>()
     invalidClasses = new Set<string>()
-    options: Options
     watching = false
     watchers: chokidar.FSWatcher[] = []
 
@@ -42,7 +40,7 @@ export default class CSSExtractor extends EventEmitter {
         } else {
             this.options = extend(defaultOptions, customOptions)
         }
-        if (this.options.verbose > 1) {
+        if (this.options.verbose && this.options.verbose > 1) {
             log.ok`**options**`
             log.tree(this.options)
             log``
@@ -50,7 +48,7 @@ export default class CSSExtractor extends EventEmitter {
         this.css = new MasterCSS(
             typeof this.options.config === 'object'
                 ? this.options.config
-                : (exploreConfig(this.options.config, { cwd: this.cwd }) || {})
+                : (exploreConfig(this.options.config as string, { cwd: this.cwd }) || {})
         )
         this.emit('init', this.options, this.config)
         return this
@@ -145,19 +143,20 @@ export default class CSSExtractor extends EventEmitter {
         /* 排除指定的 class */
         if (this.options.classes?.ignored?.length)
             latentClasses = latentClasses.filter((eachLatentClass) => {
-                for (const eachIgnoreClass of this.options.classes.ignored) {
-                    if (typeof eachIgnoreClass === 'string') {
-                        if (eachIgnoreClass === eachLatentClass) return false
-                    } else if (eachIgnoreClass.test(eachLatentClass)) {
-                        return false
+                if (this.options.classes?.ignored)
+                    for (const eachIgnoreClass of this.options.classes.ignored) {
+                        if (typeof eachIgnoreClass === 'string') {
+                            if (eachIgnoreClass === eachLatentClass) return false
+                        } else if (eachIgnoreClass.test(eachLatentClass)) {
+                            return false
+                        }
                     }
-                }
                 return true
             })
 
         let time = process.hrtime()
         /* 根據類名尋找並插入規則 ( MasterCSS 本身帶有快取機制，重複的類名不會再編譯及產生 ) */
-        const validClasses = []
+        const validClasses: string[] = []
 
         await Promise.all(
             latentClasses
@@ -191,7 +190,7 @@ export default class CSSExtractor extends EventEmitter {
         return Promise.all(sources.map((eachRelPaths) => this.insertFile(eachRelPaths)))
     }
 
-    export(filename = this.options.module) {
+    export(filename = this.options.module as string) {
         const filepath = path.resolve(this.cwd, filename)
         const dir = path.dirname(filepath)
         if (!fs.existsSync(dir)) {
@@ -318,15 +317,18 @@ export default class CSSExtractor extends EventEmitter {
             source = source.split('?')[0]
         }
         const { include, exclude, sources } = this.options
-        for (const eachSource of sources) {
-            if (minimatch(source, eachSource, { dot: true })) return true
-        }
-        for (const eachIncludePattern of include) {
-            if (!minimatch(source, eachIncludePattern, { dot: true })) return false
-        }
-        for (const eachExcludePattern of exclude) {
-            if (minimatch(source, eachExcludePattern, { dot: true })) return false
-        }
+        if (sources)
+            for (const eachSource of sources) {
+                if (minimatch(source, eachSource, { dot: true })) return true
+            }
+        if (include)
+            for (const eachIncludePattern of include) {
+                if (!minimatch(source, eachIncludePattern, { dot: true })) return false
+            }
+        if (exclude)
+            for (const eachExcludePattern of exclude) {
+                if (minimatch(source, eachExcludePattern, { dot: true })) return false
+            }
         return true
     }
 
@@ -340,7 +342,7 @@ export default class CSSExtractor extends EventEmitter {
     /**
      * computed from string `options.config`
     */
-    get configPath(): string {
+    get configPath(): string | undefined {
         if (typeof this.options.config === 'string' || Array.isArray(this.options.config)) {
             return explorePathSync(this.options.config, { cwd: this.cwd })
         }
@@ -349,7 +351,7 @@ export default class CSSExtractor extends EventEmitter {
     /**
      * computed from string `options.config`
     */
-    get resolvedConfigPath(): string {
+    get resolvedConfigPath(): string | undefined {
         const configPath = this.configPath
         if (configPath) {
             return path.resolve(this.cwd, configPath)
@@ -359,7 +361,7 @@ export default class CSSExtractor extends EventEmitter {
     /**
      * computed from string `customOptions`
     */
-    get optionsPath(): string {
+    get optionsPath(): string | undefined {
         if (typeof this.customOptions === 'string' || Array.isArray(this.customOptions)) {
             return explorePathSync(this.customOptions, { cwd: this.cwd })
         }
@@ -368,7 +370,7 @@ export default class CSSExtractor extends EventEmitter {
     /**
      * computed from string `customOptions`
     */
-    get resolvedOptionsPath(): string {
+    get resolvedOptionsPath(): string | undefined {
         const optionsPath = this.optionsPath
         if (optionsPath) {
             return path.resolve(this.cwd, optionsPath)
@@ -380,6 +382,11 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     get slotCSSRule(): string {
-        return '#' + cssEscape(this.options.module) + '{--slot:0}'
+        return '#' + cssEscape(this.options.module as string) + '{--slot:0}'
     }
+}
+
+export default interface CSSExtractor {
+    css: MasterCSS
+    options: Options
 }

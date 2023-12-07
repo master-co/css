@@ -1,7 +1,7 @@
 import { hexToRgb } from '../utils/hex-to-rgb'
 import { rgbToHex } from '../utils/rgb-to-hex'
 
-export default function fillColorScale(data) {
+export default function fillColorScale(data: any) {
     if (typeof data === 'string') {
         data = { '': data }
     }
@@ -18,20 +18,20 @@ export default function fillColorScale(data) {
 
     if (!isLevelMore100 && (!hasMainRgb || Object.keys(data).length > 1)) {
         let startLevel = 0,
-            startRgb = '0' in data
+            startRgb: any = '0' in data
                 ? hexToRgb(data[0])
                 : [0, 0, 0],
-            endLevel,
-            endRgb
+            endLevel: number,
+            endRgb: any
 
-        const newLevels = []
+        const newLevels: number[] = []
         const generateColor = () => {
             const levelDiff = endLevel - startLevel
-            const rgbDiff = endRgb.map((color, i) => (color - startRgb[i]) / levelDiff)
+            const rgbDiff = endRgb.map((color: any, i: any) => (color - startRgb[i]) / levelDiff)
             for (const eachNewLevel of newLevels) {
                 const currentLevelDiff = eachNewLevel - startLevel
-                const newRgb = startRgb.map((color, i) => Math.round(color + rgbDiff[i] * currentLevelDiff))
-                data[eachNewLevel] = '#' + rgbToHex.call(this, ...newRgb)
+                const newRgb = startRgb.map((color: any, i: any) => Math.round(color + rgbDiff[i] * currentLevelDiff))
+                data[eachNewLevel] = '#' + rgbToHex(newRgb[0], newRgb[1], newRgb[2])
             }
         }
 

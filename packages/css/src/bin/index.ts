@@ -69,7 +69,7 @@ program.command('render')
         try {
             const action = require('@master/css-renderer/actions/main')
             await action(args, options)
-        } catch (error) {
+        } catch (error: any) {
             if (error.code === 'ERR_MODULE_NOT_FOUND') {
                 log.i`Please run **npm** **install** **@master/css-renderer** first`
             } else {
@@ -88,7 +88,7 @@ program.command('extract')
         try {
             const action = require('@master/css-extractor/actions/main')
             await action(args, options)
-        } catch (error) {
+        } catch (error: any) {
             if (error.code === 'ERR_MODULE_NOT_FOUND') {
                 log.i`Please run **npm** **install** **@master/css-extractor** first`
             } else {

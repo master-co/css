@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
-import { Rule, NativeRule, RuleDefinition } from './rule'
+import { Rule, NativeRule, RuleDefinition, RegisteredRule } from './rule'
 import type { Config, AnimationDefinitions } from './config'
 import { config as defaultConfig } from './config'
 import { CSSDeclarations } from './types/css-declarations'
@@ -36,10 +36,10 @@ export class MasterCSS {
     static config: Config = defaultConfig
     readonly rules: Rule[] = []
     readonly ruleBy: Record<string, Rule> = {}
-    readonly classesUsage = {}
+    readonly classesUsage: Record<string, number> = {}
     readonly config: Config
-    private readonly semanticRuleOptions: RuleDefinition[] = []
-    private readonly ruleDefinitions: RuleDefinition[] = []
+    readonly RegisteredSemanticRules: RegisteredRule[] = []
+    readonly RegisteredRules: RegisteredRule[] = []
 
     constructor(
         public customConfig: Config = defaultConfig
@@ -62,9 +62,9 @@ export class MasterCSS {
         this.variables = {}
         this.mediaQueries = {}
         this.animations = {}
-        this.ruleDefinitions.length = 0
-        this.semanticRuleOptions.length = 0
-        this.variablesNativeRules = undefined
+        this.RegisteredRules.length = 0
+        this.RegisteredSemanticRules.length = 0
+        this.variablesNativeRules = {}
         this.hasKeyframesRule = false
         const colorVariableNames: Record<string, undefined> = {
             current: undefined,
@@ -74,7 +74,7 @@ export class MasterCSS {
 
         const { styles, selectors, variables, semantics, mediaQueries, rules, animations } = this.config
 
-        function escapeString(str) {
+        function escapeString(str: string) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
         }
 
@@ -101,15 +101,15 @@ export class MasterCSS {
 
         if (variables) {
             const unexecutedAliasVariable: Record<string, { [theme: string]: () => void }> = {}
-            const parseVariable = (variable: any, name: string, theme: string = undefined, group?: string) => {
+            const parseVariable = (variable: any, name: string, theme?: string) => {
                 if (!variable)
                     return
 
                 const addVariable = (
                     name: string,
                     variableValue: VariableValue,
-                    replacedTheme: string = undefined,
-                    alpha: string = undefined
+                    replacedTheme?: string,
+                    alpha?: string
                 ) => {
                     if (variableValue === undefined)
                         return
@@ -139,15 +139,20 @@ export class MasterCSS {
                                 variable.themes[currentTheme] = variableValue
                             } else {
                                 variable.value = variableValue.value
-                                variable.space = variableValue['space']
+                                if (variableValue.type === 'color') {
+                                    variable.space = variableValue.space
+                                }
                             }
                         } else {
                             if (currentTheme) {
-                                this.variables[name] = {
+                                const newVariable: Variable = {
                                     type: variableValue.type,
-                                    space: variableValue['space'],
                                     themes: { [currentTheme]: variableValue }
                                 }
+                                if (variableValue.type === 'color') {
+                                    newVariable.space = variableValue.space
+                                }
+                                this.variables[name] = newVariable
                             } else {
                                 this.variables[name] = variableValue
                             }
@@ -165,9 +170,9 @@ export class MasterCSS {
                         const keys = Object.keys(variable)
                         for (const eachKey of keys) {
                             if (eachKey === '' || eachKey.startsWith('@')) {
-                                parseVariable(variable[eachKey], name, (eachKey || keys.some(eachKey => eachKey.startsWith('@'))) ? eachKey.slice(1) : undefined, name)
+                                parseVariable(variable[eachKey], name, (eachKey || keys.some(eachKey => eachKey.startsWith('@'))) ? eachKey.slice(1) : undefined)
                             } else {
-                                parseVariable(variable[eachKey], name + '-' + eachKey, undefined, name)
+                                parseVariable(variable[eachKey], name + '-' + eachKey, undefined)
                             }
                         }
                     }
@@ -180,8 +185,8 @@ export class MasterCSS {
                         if (!Object.prototype.hasOwnProperty.call(unexecutedAliasVariable, name)) {
                             unexecutedAliasVariable[name] = {}
                         }
-                        unexecutedAliasVariable[name][theme] = () => {
-                            delete unexecutedAliasVariable[name][theme]
+                        unexecutedAliasVariable[name][theme as string] = () => {
+                            delete unexecutedAliasVariable[name][theme as string]
 
                             const [alias, aliasTheme] = aliasResult[1].split('@')
                             if (alias) {
@@ -213,12 +218,11 @@ export class MasterCSS {
                                             ? aliasVariable.themes?.[aliasTheme]
                                             : aliasVariable
                                         if (variable) {
-                                            addVariable(
-                                                name,
-                                                { type: variable.type, value: variable.value, space: variable['space'] },
-                                                undefined,
-                                                aliasResult[2]
-                                            )
+                                            const newVariable = { type: variable.type, value: variable.value } as VariableValue
+                                            if (variable.type === 'color') {
+                                                (newVariable as any).space = variable.space
+                                            }
+                                            addVariable(name, newVariable, undefined, aliasResult[2])
                                         }
                                     }
                                 }
@@ -261,10 +265,10 @@ export class MasterCSS {
 
         if (animations) {
             for (const animationName in animations) {
-                const newValueByPropertyNameByKeyframeName = this.animations[animationName] = {}
+                const newValueByPropertyNameByKeyframeName: any = this.animations[animationName] = {}
                 const valueByPropertyNameByKeyframeName = animations[animationName]
                 for (const animationName in valueByPropertyNameByKeyframeName) {
-                    const newValueByPropertyName = newValueByPropertyNameByKeyframeName[animationName] = {}
+                    const newValueByPropertyName: any = newValueByPropertyNameByKeyframeName[animationName] = {}
                     const valueByPropertyName = valueByPropertyNameByKeyframeName[animationName]
                     for (const propertyName in valueByPropertyName) {
                         newValueByPropertyName[propertyName] = valueByPropertyName[propertyName]
@@ -279,7 +283,7 @@ export class MasterCSS {
             if (Object.prototype.hasOwnProperty.call(this.styles, semanticName))
                 return
 
-            const currentClass = this.styles[semanticName] = []
+            const currentClass: string[] = this.styles[semanticName] = []
 
             const className = flattedStyles[semanticName]
             if (!className)
@@ -324,13 +328,15 @@ export class MasterCSS {
             Object.entries(semantics)
                 .sort((a: any, b: any) => a[0].localeCompare(b[0]))
                 .forEach(([id, declarations]: [string, CSSDeclarations], index: number) => {
-                    this.semanticRuleOptions.push({
+                    this.RegisteredSemanticRules.push({
                         id: '.' + id,
-                        resolvedMatch: new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'),
+                        match: new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'),
                         order: index,
-                        declarations,
-                        layer: Layer.Semantic
-                    })
+                        definition: {
+                            declarations,
+                            layer: Layer.Semantic
+                        }
+                    } as RegisteredRule)
                 })
         }
 
@@ -341,23 +347,26 @@ export class MasterCSS {
                         return (b[1].layer || 0) - (a[1].layer || 0)
                     }
                     return b[0].localeCompare(a[0])
-                })
+                }) as [string, RuleDefinition][]
             const rulesEntriesLength = rulesEntries.length
             const colorNames = Object.keys(colorVariableNames)
             rulesEntries
                 .forEach(([id, eachRuleDefinition]: [string, RuleDefinition], index: number) => {
-                    this.ruleDefinitions.push(eachRuleDefinition)
-                    eachRuleDefinition.order = this.semanticRuleOptions.length + rulesEntriesLength - 1 - index
+                    const eachRegisteredRule: RegisteredRule = {
+                        id,
+                        variables: {},
+                        order: this.RegisteredSemanticRules.length + rulesEntriesLength - 1 - index,
+                        definition: eachRuleDefinition
+                    }
+                    this.RegisteredRules.push(eachRegisteredRule)
                     const match = eachRuleDefinition.match
-                    eachRuleDefinition.id = id
-                    eachRuleDefinition.resolvedVariables = {}
 
                     // todo: 不可使用 startsWith 判斷，應改為更精準的從 config.variables 取得目標變數群組，但 config.variables 中的值還沒被 resolve 像是 Array
                     const addResolvedVariables = (prefix: string) => {
                         for (const eachVariableName in this.variables) {
                             if (eachVariableName.startsWith(prefix + '-') || eachVariableName.startsWith('-' + prefix + '-')) {
                                 const simplifiedName = eachVariableName.slice(prefix.length + (prefix.startsWith('-') ? 0 : 1))
-                                eachRuleDefinition.resolvedVariables[simplifiedName] = {
+                                eachRegisteredRule.variables[simplifiedName] = {
                                     ...this.variables[eachVariableName],
                                     name: eachVariableName,
                                 }
@@ -382,9 +391,9 @@ export class MasterCSS {
                             if (values.length) {
                                 valueMatches.push(`(?:${values.join('|')})(?![a-zA-Z0-9-])`)
                             }
-                            if (Object.keys(eachRuleDefinition.resolvedVariables).length) {
+                            if (Object.keys(eachRegisteredRule.variables).length) {
                                 valueMatches.push(
-                                    `(?:${Object.keys(eachRuleDefinition.resolvedVariables).join('|')})(?![a-zA-Z0-9-])`,
+                                    `(?:${Object.keys(eachRegisteredRule.variables).join('|')})(?![a-zA-Z0-9-])`,
                                 )
                             }
                             if (eachRuleDefinition.colored) {
@@ -398,9 +407,9 @@ export class MasterCSS {
                                 valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
                             }
                             if (valueMatches.length)
-                                eachRuleDefinition.resolvedMatch = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
+                                eachRegisteredRule.match = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
                         } else {
-                            eachRuleDefinition.resolvedMatch = match as RegExp
+                            eachRegisteredRule.match = match as RegExp
                         }
                     }
                 },
@@ -413,25 +422,25 @@ export class MasterCSS {
      * @param syntax class syntax
      * @returns css text
      */
-    match(syntax: string): RuleDefinition {
+    match(syntax: string): RegisteredRule | undefined {
         // 1. rules
-        for (const eachRuleDefinition of this.ruleDefinitions) {
+        for (const eachRegisteredRule of this.RegisteredRules) {
             if (
-                eachRuleDefinition.resolvedMatch && eachRuleDefinition.resolvedMatch.test(syntax) ||
+                eachRegisteredRule.match?.test(syntax) ||
                 (
-                    eachRuleDefinition.layer === Layer.Native ||
-                    eachRuleDefinition.layer === Layer.NativeShorthand ||
-                    eachRuleDefinition.layer === Layer.CoreNative ||
-                    eachRuleDefinition.layer === Layer.CoreNativeShorthand
-                ) && syntax.startsWith(eachRuleDefinition.id + ':')
+                    eachRegisteredRule.definition.layer === Layer.Native ||
+                    eachRegisteredRule.definition.layer === Layer.NativeShorthand ||
+                    eachRegisteredRule.definition.layer === Layer.CoreNative ||
+                    eachRegisteredRule.definition.layer === Layer.CoreNativeShorthand
+                ) && syntax.startsWith(eachRegisteredRule.id + ':')
             ) {
-                return eachRuleDefinition
+                return eachRegisteredRule
             }
         }
         // 2. semantic rules
-        for (const eachSemanticRuleOptions of this.semanticRuleOptions) {
-            if (eachSemanticRuleOptions.resolvedMatch.test(syntax)) {
-                return eachSemanticRuleOptions
+        for (const EachRegisteredSemanticRule of this.RegisteredSemanticRules) {
+            if (EachRegisteredSemanticRule.match?.test(syntax)) {
+                return EachRegisteredSemanticRule
             }
         }
     }
@@ -446,22 +455,17 @@ export class MasterCSS {
             if (Object.prototype.hasOwnProperty.call(this.ruleBy, eachSyntax))
                 return this.ruleBy[eachSyntax]
 
-            const ruleConfig = this.match(eachSyntax)
-            if (ruleConfig) {
-                return new Rule(
-                    eachSyntax,
-                    ruleConfig,
-                    this
-                )
+            const RegistedRule = this.match(eachSyntax)
+            if (RegistedRule) {
+                return new Rule(eachSyntax, RegistedRule, this)
             }
         }
         return (
-            // `in` cannot be used
             Object.prototype.hasOwnProperty.call(this.styles, syntax)
                 ? this.styles[syntax].map((eachSyntax) => create(eachSyntax))
                 : [create(syntax)]
         )
-            .filter(eachRule => eachRule && eachRule.text)
+            .filter(eachRule => eachRule && eachRule.text) as Rule[]
     }
 
     /**
@@ -496,15 +500,15 @@ export class MasterCSS {
         this.classesUsage = {}
         this.rules.length = 0
         this.hasKeyframesRule = false
-        this.variablesNativeRules = undefined
+        this.variablesNativeRules = {}
         for (const keyframeName in this.animations) {
             const animation = this.animations[keyframeName]
-            animation.usage = undefined
+            animation.usage = 0
             animation.native = undefined
         }
         for (const variableName in this.variables) {
             const variable = this.variables[variableName]
-            variable.usage = undefined
+            variable.usage = 0
         }
         return this
     }
@@ -559,6 +563,7 @@ export class MasterCSS {
             if (rule.variableNames) {
                 for (const eachVariableName of rule.variableNames) {
                     const variable = this.variables[eachVariableName]
+                    if (!variable.usage) variable.usage = 0
                     if (!--variable.usage) {
                         const removeProperty = (theme: string) => {
                             const nativeRule = this.variablesNativeRules[theme];
@@ -571,7 +576,7 @@ export class MasterCSS {
                                 delete this.variablesNativeRules[theme]
                                 if (!variablesRule.natives.length) {
                                     this.rules.splice(0, 1)
-                                    this.variablesNativeRules = undefined
+                                    this.variablesNativeRules = {}
                                 }
                             }
                         }
@@ -589,13 +594,14 @@ export class MasterCSS {
 
             // animations
             if (rule.animationNames) {
-                const keyframeRulesIndex = this.variablesNativeRules ? 1 : 0
+                const keyframeRulesIndex = Object.keys(this.variablesNativeRules).length ? 1 : 0
                 const keyframeRule = this.rules[keyframeRulesIndex]
                 for (const eachKeyframeName of rule.animationNames) {
                     const keyframe = this.animations[eachKeyframeName]
-                    if (!--keyframe.usage) {
+                    if (!keyframe.usage) keyframe.usage = 0
+                    if (!--keyframe.usage && keyframe.native) {
                         const nativeIndex = keyframeRule.natives.indexOf(keyframe.native)
-                        this.style.sheet.deleteRule((this.variablesNativeRules ? Object.keys(this.variablesNativeRules).length : 0) + nativeIndex)
+                        this.style.sheet?.deleteRule(Object.keys(this.variablesNativeRules).length + nativeIndex)
                         keyframeRule.natives.splice(nativeIndex, 1)
                         keyframe.native = undefined
                     }
@@ -643,7 +649,7 @@ export class MasterCSS {
             if (this.ruleBy[rule.className])
                 continue
 
-            let index: number
+            let index: number | undefined
             /**
              * 必須按斷點值遞增，並透過索引插入，
              * 以實現響應式先後套用的規則
@@ -653,7 +659,7 @@ export class MasterCSS {
             const endIndex = this.rules.length - 1
             const { media, order, priority, hasWhere, className } = rule
 
-            const findIndex = (startIndex: number, stopCheck: (rule: Rule) => any, matchCheck?: (rule: Rule) => any) => {
+            const findIndex = (startIndex: number, stopCheck?: (rule: Rule) => any, matchCheck?: (rule: Rule) => any) => {
                 let i = startIndex
                 for (; i <= endIndex; i++) {
                     const eachRule = this.rules[i]
@@ -670,8 +676,8 @@ export class MasterCSS {
                     : i - 1
             }
 
-            let matchStartIndex: number
-            let matchEndIndex: number
+            let matchStartIndex: number | undefined
+            let matchEndIndex: number | undefined
             if (media) {
                 const mediaStartIndex = this.rules.findIndex(eachRule => eachRule.media)
                 if (mediaStartIndex === -1) {
@@ -728,7 +734,7 @@ export class MasterCSS {
                                     }
                                 }
 
-                                if (matchStartIndex !== -1) {
+                                if (matchStartIndex !== -1 && matchStartIndex !== undefined) {
                                     const range = maxWidthFeature.value - minWidthFeature.value
                                     for (let i = matchEndIndex; i >= matchStartIndex; i--) {
                                         const { 'max-width': eachMaxWidthFeature, 'min-width': eachMinWidthFeature } = this.rules[i].media.features
@@ -840,7 +846,7 @@ export class MasterCSS {
                     }
                 }
             } else {
-                const findStartIndex = this.variablesNativeRules
+                const findStartIndex = Object.keys(this.variablesNativeRules).length
                     ? this.hasKeyframesRule
                         ? 2
                         : 1
@@ -867,7 +873,7 @@ export class MasterCSS {
                 }
             }
 
-            if (index === undefined) {
+            if (index === undefined && matchEndIndex !== undefined && matchStartIndex !== undefined) {
                 if (matchStartIndex === -1) {
                     index = matchEndIndex + 1
                 } else {
@@ -916,7 +922,7 @@ export class MasterCSS {
                 }
             }
 
-            this.rules.splice(index, 0, rule)
+            this.rules.splice(index as number, 0, rule)
             this.ruleBy[className] = rule
 
             // 只在瀏覽器端運行
@@ -924,29 +930,30 @@ export class MasterCSS {
                 const sheet = this.style.sheet
 
                 let cssRuleIndex = 0
-                const getCssRuleIndex = (index: number) => {
+                const getCssRuleIndex = (index: number): void => {
                     const previousRule = this.rules[index]
                     if (previousRule) {
                         if (!previousRule.natives.length)
                             return getCssRuleIndex(index - 1)
 
                         const lastNative = previousRule.natives[previousRule.natives.length - 1]
-                        const lastNativeCssRule = lastNative.cssRule.parentRule ?? lastNative.cssRule
-                        for (let i = 0; i < sheet.cssRules.length; i++) {
-                            if (sheet.cssRules[i] === lastNativeCssRule) {
-                                cssRuleIndex = i + 1
-                                break
+                        const lastNativeCssRule = lastNative.cssRule?.parentRule ?? lastNative.cssRule
+                        if (sheet)
+                            for (let i = 0; i < sheet.cssRules.length; i++) {
+                                if (sheet.cssRules[i] === lastNativeCssRule) {
+                                    cssRuleIndex = i + 1
+                                    break
+                                }
                             }
-                        }
                     }
                 }
-                getCssRuleIndex(index - 1)
+                getCssRuleIndex(index as number - 1)
 
                 for (let i = 0; i < rule.natives.length;) {
                     try {
                         const native = rule.natives[i]
-                        sheet.insertRule(native.text, cssRuleIndex)
-                        native.cssRule = sheet.cssRules[cssRuleIndex++]
+                        sheet?.insertRule(native.text, cssRuleIndex)
+                        native.cssRule = sheet?.cssRules[cssRuleIndex++]
                         i++
                     } catch (error) {
                         console.error(error)
@@ -987,7 +994,7 @@ export class MasterCSS {
                             + '}'
                     }
 
-                    const keyframeRulesIndex = this.variablesNativeRules ? 1 : 0
+                    const keyframeRulesIndex = Object.keys(this.variablesNativeRules).length ? 1 : 0
                     let keyframeRule: Rule
                     if (this.hasKeyframesRule) {
                         (keyframeRule = this.rules[keyframeRulesIndex]).natives.push(nativeRule)
@@ -1006,7 +1013,7 @@ export class MasterCSS {
                     }
 
                     if (sheet) {
-                        let cssRule: CSSRule
+                        let cssRule: CSSRule | undefined
                         if (initializing) {
                             for (let i = 0; i < sheet.cssRules.length; i++) {
                                 const eachCSSRule = sheet.cssRules[i]
@@ -1023,7 +1030,7 @@ export class MasterCSS {
                         if (cssRule) {
                             nativeRule.cssRule = cssRule
                         } else {
-                            const cssRuleIndex = (this.variablesNativeRules ? Object.keys(this.variablesNativeRules).length : 0) + keyframeRule.natives.length - 1
+                            const cssRuleIndex = Object.keys(this.variablesNativeRules).length + keyframeRule.natives.length - 1
                             sheet.insertRule(nativeRule.text, cssRuleIndex)
                             nativeRule.cssRule = sheet.cssRules[cssRuleIndex]
                         }
@@ -1045,10 +1052,10 @@ export class MasterCSS {
                     variable.usage++
                 } else {
                     const addProperty = (theme: string, variableValue: VariableValue) => {
-                        let nativeRule = this.variablesNativeRules?.[theme]
+                        let nativeRule = this.variablesNativeRules[theme]
                         if (!nativeRule) {
                             let cssRule: CSSStyleRule
-                            let mediaConditionText: string
+                            let mediaConditionText: string | undefined
                             let selectorText: string
 
                             if (theme) {
@@ -1069,7 +1076,7 @@ export class MasterCSS {
                             }
 
                             if (sheet) {
-                                const newCSSRuleIndex = this.variablesNativeRules
+                                const newCSSRuleIndex = Object.keys(this.variablesNativeRules).length
                                     ? this.rules[0].natives.length
                                     : 0
                                 sheet.insertRule(
@@ -1084,7 +1091,7 @@ export class MasterCSS {
                                     : sheet.cssRules[newCSSRuleIndex]) as CSSStyleRule
                             } else {
                                 const styleMap = new Map()
-                                const style = Object.defineProperties(
+                                const style: CSSStyleDeclaration = Object.defineProperties(
                                     {} as CSSStyleDeclaration,
                                     {
                                         getPropertyValue: {
@@ -1148,18 +1155,15 @@ export class MasterCSS {
     }
 
     pushVariableNativeRule(theme: string, variableCSSRule: CSSStyleRule) {
-        if (!this.variablesNativeRules) {
+        if (!Object.keys(this.variablesNativeRules).length) {
             this.variablesNativeRules = {}
-            this.rules.splice(
-                0,
-                0,
-                {
-                    natives: [],
-                    get text() {
-                        return this.natives.map((eachNative) => eachNative.text).join('')
-                    }
-                } as Rule
-            )
+            const newRule = {
+                natives: [],
+                get text() {
+                    return this.natives.map((eachNative: any) => eachNative.text).join('')
+                }
+            }
+            this.rules.splice(0, 0, newRule as any)
         }
 
         let prefix = ''
@@ -1187,6 +1191,12 @@ export class MasterCSS {
 }
 
 declare global {
+    // @ts-expect-error
+    // eslint-disable-next-line no-var
+    var MasterCSS: typeof MasterCSS
+    // eslint-disable-next-line no-var
+    var masterCSSs: MasterCSS[]
+
     interface Window {
         MasterCSS: typeof MasterCSS
         masterCSSs: MasterCSS[]

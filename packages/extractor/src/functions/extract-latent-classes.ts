@@ -35,16 +35,14 @@ const splitStringByQuotation = (content: string) => {
     return blocks
 }
 
-const trimString = (content: string) => {
+const trimString = (content: string): string => {
     const originContent = content
-
     content = keepCompleteStringAndProcessContent(
         content,
         c => c
             .replace(/^[^:@~(]*(?<!@>?)=/, '')
             .replace(/[([{\\:#=.]+$/, '')
     )
-
     if (originContent === content || !content) {
         return content
     } else {
@@ -58,7 +56,7 @@ const findCompleteString = (content: string) => {
     return completeStrings
 }
 
-const replaceCompleteString = (content: string, completeStrings: string[]) => {
+const replaceCompleteString = (content: string, completeStrings: string[] | null) => {
     completeStrings?.forEach((completeString, index) => {
         content = content.replace(completeString, `COMPLETE-STRING--${index}--`)
     })
@@ -79,7 +77,7 @@ const keepCompleteStringAndProcessContent = (content: string, process: (content:
 const peelCompleteString = (content: string) => {
     const strings = new Set<string>()
     const stringRegx = /((?<!\\)["'`])((?:\\\1|(?:(?!\1))[\S\s])*)((?<!\\)\1)/g
-    let m: RegExpExecArray
+    let m: RegExpExecArray | null
     while ((m = stringRegx.exec(content)) !== null) {
         if (m.index === stringRegx.lastIndex) {
             stringRegx.lastIndex++
@@ -114,7 +112,7 @@ const checkToExclude = (content: string) => {
     const completeStrings = findCompleteString(content)
     const checkContent: string = replaceCompleteString(content, completeStrings)
     const groupRegx = /{(.*)}/
-    let m: RegExpExecArray
+    let m: RegExpExecArray | null
     while ((m = groupRegx.exec(checkContent)) !== null) {
         const groupClasses = m[1].split(';')
         return groupClasses.find(x => needExclude(x)) !== undefined

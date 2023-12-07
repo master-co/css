@@ -3,8 +3,9 @@ import type { Pattern } from 'fast-glob'
 import prettyHartime from 'pretty-hrtime'
 import { explorePathsSync } from '@techor/glob'
 import exploreConfig from 'explore-config'
-import { readFile, writeFile, writeFileSync } from 'fs'
+import { readFile, writeFileSync } from 'fs'
 import { brotliCompressSync } from 'zlib'
+// @ts-expect-error
 import bytes from 'bytes'
 import { render } from '@master/css-server'
 

@@ -3,6 +3,7 @@ import { START_SYMBOLS } from '../constants/start-symbol'
 import type { Rule, RuleDefinition } from '../rule'
 import { CSSDeclarations } from '../types/css-declarations'
 import { Layer } from '../layer'
+import { PropertiesHyphen } from 'csstype'
 
 export const BORDER_STYLES = ['none', 'auto', 'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
 
@@ -10,7 +11,7 @@ export const autofillSolidToValueComponent: RuleDefinition['transformValueCompon
     if (valueComponents.length < 2) return valueComponents
     const styleValueComponent = valueComponents.find((valueComponent) => {
         return valueComponent.type === 'string' && BORDER_STYLES.includes(valueComponent.value) ||
-            valueComponent.type === 'variable' && BORDER_STYLES.includes(valueComponent.variable.value)
+            valueComponent.type === 'variable' && BORDER_STYLES.includes(valueComponent.variable?.value)
     })
     if (!styleValueComponent) {
         valueComponents.push(
@@ -36,19 +37,20 @@ const rules = {
         },
         declare(value) {
             const declarations: CSSDeclarations = {}
-
             const addProp = (propertyName: string) => {
                 const indexOfColon = propertyName.indexOf(':')
                 if (indexOfColon !== -1) {
-                    declarations[propertyName.slice(0, indexOfColon)] = propertyName.slice(indexOfColon + 1)
+                    const propName = propertyName.slice(0, indexOfColon)
+                    declarations[propName] = propertyName.slice(indexOfColon + 1)
                 }
             }
             const handleRule = (rule: Rule) => {
                 const addProps = (cssText: string) => {
-                    const cssProperties = cssText.slice(cssEscape(rule.className).length).match(/\{(.*)\}/)[1].split(';')
-                    for (const eachCssProperty of cssProperties) {
-                        addProp(eachCssProperty)
-                    }
+                    const cssProperties = cssText.slice(cssEscape(rule.className).length).match(/\{(.*)\}/)?.[1].split(';')
+                    if (cssProperties)
+                        for (const eachCssProperty of cssProperties) {
+                            addProp(eachCssProperty)
+                        }
                 }
 
                 for (const eachNative of rule.natives) {
@@ -80,7 +82,7 @@ const rules = {
                 }
             }
 
-            const names = []
+            const names: string[] = []
             let currentName = ''
             const addName = () => {
                 if (currentName) {
@@ -123,10 +125,11 @@ const rules = {
                         break
                     } else if (char in START_SYMBOLS && (end !== '\'' && end !== '"')) {
                         i++
-                        analyze(START_SYMBOLS[char])
+                        analyze(START_SYMBOLS[char as keyof typeof START_SYMBOLS])
                     }
                 }
-            })(undefined)
+            })('')
+
             addName()
 
             for (const eachName of names) {
@@ -250,10 +253,10 @@ const rules = {
         match: /^(?:mx|margin-x):/,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'margin-left': value + unit,
-                'margin-right': value + unit
+                'margin-left': value,
+                'margin-right': value
             }
         },
         variables: ['spacing']
@@ -262,10 +265,10 @@ const rules = {
         match: /^(?:my|margin-y):/,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'margin-top': value + unit,
-                'margin-bottom': value + unit
+                'margin-top': value,
+                'margin-bottom': value
             }
         },
         variables: ['spacing']
@@ -324,10 +327,10 @@ const rules = {
         match: /^(?:px|padding-x):/,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'padding-left': value + unit,
-                'padding-right': value + unit
+                'padding-left': value,
+                'padding-right': value
             }
         },
         variables: ['spacing']
@@ -336,10 +339,10 @@ const rules = {
         match: /^(?:py|padding-y):/,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'padding-top': value + unit,
-                'padding-bottom': value + unit
+                'padding-top': value,
+                'padding-bottom': value
             }
         },
         variables: ['spacing']
@@ -475,10 +478,10 @@ const rules = {
     'box-decoration-break': {
         match: ['box-size', ['slice', 'clone']],
         layer: Layer.CoreNative,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'box-decoration-break': value + unit,
-                '-webkit-box-decoration-break': value + unit
+                'box-decoration-break': value,
+                '-webkit-box-decoration-break': value
             }
         }
     } as RuleDefinition,
@@ -609,14 +612,14 @@ const rules = {
     } as RuleDefinition,
     lines: {
         match: /^lines:/,
-        declare(value, unit) {
+        declare(value) {
             return {
                 overflow: 'hidden',
                 display: '-webkit-box',
                 'overflow-wrap': 'break-word',
                 'text-overflow': 'ellipsis',
                 '-webkit-box-orient': 'vertical',
-                '-webkit-line-clamp': value + unit
+                '-webkit-line-clamp': value
             }
         }
     } as RuleDefinition,
@@ -649,7 +652,7 @@ const rules = {
     } as RuleDefinition,
     'overflow-x': {
         layer: Layer.CoreNative,
-        declare(value, unit) {
+        declare(value) {
             return value === 'overlay'
                 ? { 'overflow-x': ['auto', value] }
                 : { 'overflow-x': value }
@@ -657,7 +660,7 @@ const rules = {
     } as RuleDefinition,
     'overflow-y': {
         layer: Layer.CoreNative,
-        declare(value, unit) {
+        declare(value) {
             return value === 'overlay'
                 ? { 'overflow-y': ['auto', value] }
                 : { 'overflow-y': value }
@@ -665,7 +668,7 @@ const rules = {
     } as RuleDefinition,
     overflow: {
         layer: Layer.CoreNativeShorthand,
-        declare(value, unit) {
+        declare(value) {
             return value === 'overlay'
                 ? { overflow: ['auto', value] }
                 : { overflow: value }
@@ -708,19 +711,19 @@ const rules = {
     } as RuleDefinition,
     'user-drag': {
         layer: Layer.CoreNative,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'user-drag': value + unit,
-                '-webkit-user-drag': value + unit
+                'user-drag': value,
+                '-webkit-user-drag': value
             }
         }
     } as RuleDefinition,
     'user-select': {
         layer: Layer.CoreNative,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'user-select': value + unit,
-                '-webkit-user-select': value + unit
+                'user-select': value,
+                '-webkit-user-select': value
             }
         }
     } as RuleDefinition,
@@ -733,13 +736,11 @@ const rules = {
         match: ['t(?:ext)?'],
         numeric: true,
         unit: 'rem',
-        declare(value, unit) {
+        declare(value) {
             const diff = .875
             return {
-                'font-size': value + unit,
-                'line-height': unit === 'em'
-                    ? value + diff + unit
-                    : `calc(${value}${unit} + ${diff}em)`
+                'font-size': value,
+                'line-height': `calc(${value} + ${diff}em)`
             }
         }
     } as RuleDefinition,
@@ -750,9 +751,9 @@ const rules = {
         variables: [
             'foreground'
         ],
-        declare(value, unit) {
+        declare(value) {
             return {
-                '-webkit-text-fill-color': value + unit
+                '-webkit-text-fill-color': value
             }
         }
     } as RuleDefinition,
@@ -761,9 +762,9 @@ const rules = {
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreNative,
-        declare(value, unit) {
+        declare(value) {
             return {
-                '-webkit-text-stroke-width': value + unit
+                '-webkit-text-stroke-width': value
             }
         },
     } as RuleDefinition,
@@ -774,18 +775,18 @@ const rules = {
         variables: [
             'foreground'
         ],
-        declare(value, unit) {
+        declare(value) {
             return {
-                '-webkit-text-stroke-color': value + unit
+                '-webkit-text-stroke-color': value
             }
         }
     } as RuleDefinition,
     'text-stroke': {
         unit: 'rem',
         layer: Layer.CoreNative,
-        declare(value, unit) {
+        declare(value) {
             return {
-                '-webkit-text-stroke': value + unit
+                '-webkit-text-stroke': value
             }
         }
     } as RuleDefinition,
@@ -931,10 +932,10 @@ const rules = {
         match: ['b(?:x|order-x(?:-color)?)'],
         layer: Layer.CoreShorthand,
         colored: true,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'border-left-color': value + unit,
-                'border-right-color': value + unit
+                'border-left-color': value,
+                'border-right-color': value
             }
         }
     } as RuleDefinition,
@@ -942,10 +943,10 @@ const rules = {
         match: ['b(?:y|order-y(?:-color)?)'],
         layer: Layer.CoreShorthand,
         colored: true,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'border-top-color': value + unit,
-                'border-bottom-color': value + unit
+                'border-top-color': value,
+                'border-bottom-color': value
             }
         }
     } as RuleDefinition,
@@ -979,10 +980,10 @@ const rules = {
         match: /^rt:/,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'border-top-left-radius': value + unit,
-                'border-top-right-radius': value + unit
+                'border-top-left-radius': value,
+                'border-top-right-radius': value
             }
         }
     } as RuleDefinition,
@@ -990,10 +991,10 @@ const rules = {
         match: /^rb:/,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'border-bottom-left-radius': value + unit,
-                'border-bottom-right-radius': value + unit
+                'border-bottom-left-radius': value,
+                'border-bottom-right-radius': value
             }
         }
     } as RuleDefinition,
@@ -1001,10 +1002,10 @@ const rules = {
         match: /^rl:/,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'border-top-left-radius': value + unit,
-                'border-bottom-left-radius': value + unit
+                'border-top-left-radius': value,
+                'border-bottom-left-radius': value
             }
         }
     } as RuleDefinition,
@@ -1012,10 +1013,10 @@ const rules = {
         match: /^rr:/,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'border-top-right-radius': value + unit,
-                'border-bottom-right-radius': value + unit
+                'border-top-right-radius': value,
+                'border-bottom-right-radius': value
             }
         }
     } as RuleDefinition,
@@ -1044,20 +1045,20 @@ const rules = {
     'border-x-style': {
         match: ['b(?:x|order-x(?:-style)?)', BORDER_STYLES],
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'border-left-style': value + unit,
-                'border-right-style': value + unit
+                'border-left-style': value,
+                'border-right-style': value
             }
         }
     } as RuleDefinition,
     'border-y-style': {
         match: ['b(?:y|order-y(?:-style)?)', BORDER_STYLES],
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'border-top-style': value + unit,
-                'border-bottom-style': value + unit
+                'border-top-style': value,
+                'border-bottom-style': value
             }
         }
     } as RuleDefinition,
@@ -1095,10 +1096,10 @@ const rules = {
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'border-left-width': value + unit,
-                'border-right-width': value + unit
+                'border-left-width': value,
+                'border-right-width': value
             }
         }
     } as RuleDefinition,
@@ -1107,10 +1108,10 @@ const rules = {
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'border-top-width': value + unit,
-                'border-bottom-width': value + unit
+                'border-top-width': value,
+                'border-bottom-width': value
             }
         }
     } as RuleDefinition,
@@ -1222,10 +1223,10 @@ const rules = {
     'background-clip': {
         match: ['(?:bg|background)', ['text']],
         layer: Layer.CoreNative,
-        declare(value, unit) {
+        declare(value) {
             return {
-                '-webkit-background-clip': value + unit,
-                'background-clip': value + unit
+                '-webkit-background-clip': value,
+                'background-clip': value
             }
         }
     } as RuleDefinition,
@@ -1275,10 +1276,10 @@ const rules = {
         match: /^bd:/,
         layer: Layer.CoreNative,
         colored: true,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'backdrop-filter': value + unit,
-                '-webkit-backdrop-filter': value + unit
+                'backdrop-filter': value,
+                '-webkit-backdrop-filter': value
             }
         }
     } as RuleDefinition,
@@ -1356,11 +1357,11 @@ const rules = {
     } as RuleDefinition,
     'grid-columns': {
         match: /^grid-cols:/,
-        declare(value, unit) {
+        declare(value) {
             return {
                 display: 'grid',
                 'grid-template-columns': 'repeat'
-                    + '(' + value + unit
+                    + '(' + value
                     + ','
                     + 'minmax'
                     + '(' + 0 + ',' + 1 + 'fr' + '))',
@@ -1385,12 +1386,12 @@ const rules = {
     } as RuleDefinition,
     'grid-rows': {
         match: /^grid-rows:/,
-        declare(value, unit) {
+        declare(value) {
             return {
                 display: 'grid',
                 'grid-auto-flow': 'column',
                 'grid-template-rows': 'repeat'
-                    + '(' + value + unit
+                    + '(' + value
                     + ','
                     + 'minmax'
                     + '(' + 0 + ',' + 1 + 'fr' + '))',
@@ -1603,10 +1604,10 @@ const rules = {
         match: /^(?:scroll-margin-x|scroll-mx):/,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'scroll-margin-left': value + unit,
-                'scroll-margin-right': value + unit
+                'scroll-margin-left': value,
+                'scroll-margin-right': value
             }
         },
         variables: ['spacing']
@@ -1615,10 +1616,10 @@ const rules = {
         match: /^(?:scroll-margin-y|scroll-my):/,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'scroll-margin-top': value + unit,
-                'scroll-margin-bottom': value + unit
+                'scroll-margin-top': value,
+                'scroll-margin-bottom': value
             }
         },
         variables: ['spacing']
@@ -1658,10 +1659,10 @@ const rules = {
         match: /^(?:scroll-padding-x|scroll-px):/,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'scroll-padding-left': value + unit,
-                'scroll-padding-right': value + unit
+                'scroll-padding-left': value,
+                'scroll-padding-right': value
             }
         },
         variables: ['spacing']
@@ -1670,10 +1671,10 @@ const rules = {
         match: /^(?:scroll-padding-y|scroll-py):/,
         unit: 'rem',
         layer: Layer.CoreShorthand,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'scroll-padding-top': value + unit,
-                'scroll-padding-bottom': value + unit
+                'scroll-padding-top': value,
+                'scroll-padding-bottom': value
             }
         },
         variables: ['spacing']
@@ -1730,10 +1731,10 @@ const rules = {
     } as RuleDefinition,
     'mask-image': {
         layer: Layer.CoreNative,
-        declare(value, unit) {
+        declare(value) {
             return {
-                'mask-image': value + unit,
-                '-webkit-mask-image': value + unit
+                'mask-image': value,
+                '-webkit-mask-image': value
             }
         }
     } as RuleDefinition

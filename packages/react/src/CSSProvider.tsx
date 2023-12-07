@@ -13,7 +13,7 @@ export function CSSProvider({ children, config, root }: {
 }) {
     const [runtimeCSS, setRuntimeCSS] = useState<RuntimeCSS>();
     (typeof window !== 'undefined' ? useLayoutEffect : useEffect)(() => {
-        let newRuntimeCSS: RuntimeCSS = globalThis.runtimeCSSs?.find((eachCSS) => eachCSS.root === root)
+        let newRuntimeCSS: RuntimeCSS | undefined = globalThis.runtimeCSSs?.find((eachCSS) => eachCSS.root === root)
         if (newRuntimeCSS) {
             setRuntimeCSS(newRuntimeCSS)
         } else if (!runtimeCSS) {

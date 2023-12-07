@@ -3,7 +3,10 @@ export function hexToRgb(hex: string) {
         hex = hex.slice(1)
     }
 
-    let r: number, g: number, b: number, a: number
+    let r: number | undefined
+    let g: number | undefined
+    let b: number | undefined
+    let a: number | undefined
     if (hex.length === 3 || hex.length === 4) {
         r = parseInt(hex[0] + hex[0], 16)
         g = parseInt(hex[1] + hex[1], 16)
@@ -15,6 +18,6 @@ export function hexToRgb(hex: string) {
         b = parseInt(hex.slice(4, 6), 16)
         a = (hex.length === 8) ? Math.round(parseInt(hex.slice(6, 8), 16) / 255 * 100) / 100 : 1
     }
-    
+
     return [r, g, b, a]
 }

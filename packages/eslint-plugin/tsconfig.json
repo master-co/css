@@ -3,7 +3,8 @@
     "compilerOptions": {
         "baseUrl": ".",
         "rootDir": "src",
-        "moduleResolution": "Node"
+        "moduleResolution": "Node",
+        "strict": false
     },
     "include": [
         "src/**/*"

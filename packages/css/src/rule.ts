@@ -14,20 +14,21 @@ export class Rule {
     readonly order: number = 0
     readonly layer: Layer = 0
     readonly stateToken: string
-    readonly declarations: CSSDeclarations
-    readonly colored: boolean = false
+    readonly declarations?: CSSDeclarations
 
-    animationNames: string[]
-    variableNames: string[]
+    animationNames?: string[]
+    variableNames?: string[]
 
     constructor(
         public readonly className: string,
-        public readonly definition: RuleDefinition = {},
+        RegisteredRule: RegisteredRule,
         public css: MasterCSS
     ) {
-        const { layer, unit, colored: configColored, analyze, transformValue, declare, transformValueComponents, create, order, id } = definition
-        this.order = order
-        this.layer = layer
+        Object.assign(this, RegisteredRule)
+        const { id, definition } = RegisteredRule
+        const { analyze, transformValue, declare, transformValueComponents, create, layer, unit, colored } = definition
+        this.layer = layer as Layer
+        this.colored = !!colored
         if (!definition.unit) definition.unit = ''
         if (!definition.separators) definition.separators = [',']
         const { scope, important, themeDriver } = css.config
@@ -39,10 +40,10 @@ export class Rule {
         // 1. value / selectorToken
         this.declarations = definition.declarations
         let stateToken: string
-        let prefixToken: string
-        this.colored = configColored
+        let prefixToken: string | undefined
 
         if (layer === Layer.Semantic) {
+            // TODO: id 使用其他方式傳遞
             stateToken = className.slice(id.length - 1)
         } else {
             let valueToken: string
@@ -54,7 +55,7 @@ export class Rule {
                 valueToken = className.slice(indexOfColon + 1)
             }
             this.valueComponents = []
-            stateToken = valueToken.slice(this.parseValue(this.valueComponents, 0, valueToken, unit))
+            stateToken = valueToken.slice(this.parseValue(this.valueComponents, 0, valueToken, unit, ''))
         }
 
         // 2. !important
@@ -131,7 +132,7 @@ export class Rule {
                 if (!vendor)
                     continue
 
-                const newUnspacedVendorSelectors = []
+                const newUnspacedVendorSelectors: string | any[] = []
                 for (const eachTransformedSelector of transformedSelectors) {
                     transformSelector(eachTransformedSelector, selectorValues, newUnspacedVendorSelectors, false)
                 }
@@ -142,7 +143,7 @@ export class Rule {
             }
 
             const insertVendorSelectors = (vendor: string, selectorTexts: string[]) => {
-                const groupedSelectorTexts = selectorTexts.reduce((arr, eachSuffixSelector) => {
+                const groupedSelectorTexts = selectorTexts.reduce((arr: string[], eachSuffixSelector) => {
                     arr.push(...spacedSelectorToken(eachSuffixSelector))
                     return arr
                 }, [])
@@ -214,7 +215,7 @@ export class Rule {
                 }
             } else {
                 for (const prefixSelectorVendor in this.vendorPrefixSelectors) {
-                    const suffixSelectorVendors = suffixSelectorVendorsByPrefixSelectorVendor[prefixSelectorVendor] = []
+                    const suffixSelectorVendors: string[] = suffixSelectorVendorsByPrefixSelectorVendor[prefixSelectorVendor] = []
                     if (Object.prototype.hasOwnProperty.call(this.vendorSuffixSelectors, prefixSelectorVendor)) {
                         suffixSelectorVendors.push(prefixSelectorVendor)
                     } else {
@@ -236,8 +237,8 @@ export class Rule {
                 ) {
                     this.direction = atToken
                 } else {
-                    let type: string
-                    let queryText: string
+                    let type = ''
+                    let queryText: string | undefined
 
                     const atRuleResult = atRuleRegExp.exec(atToken)
                     if (atRuleResult) {
@@ -248,7 +249,7 @@ export class Rule {
                             token: atToken,
                             features: {}
                         }
-                        const queryTexts = []
+                        const queryTexts: string[] = []
 
                         const analyzeToken = (typeOrFeatureToken: string) => {
                             if (
@@ -369,12 +370,10 @@ export class Rule {
             }
             newValue = this.resolveValue(this.valueComponents, unit, [])
             if (transformValue) {
-                newValue = transformValue.call(this, newValue, this.css.config)
+                newValue = transformValue.call(this, newValue)
             }
             if (declare) {
-                let value: string
-                let unit: string
-                this.declarations = declare.call(this, unit ? value : newValue, unit || '')
+                this.declarations = declare.call(this, newValue)
             } else if (id) {
                 this.declarations = {
                     [id]: newValue
@@ -382,7 +381,7 @@ export class Rule {
             }
         }
 
-        const propertiesText = []
+        const propertiesText: string[] = []
         for (const propertyName in this.declarations) {
             const push = (propertyText: string) => {
                 // animations
@@ -399,7 +398,7 @@ export class Rule {
                         if (!this.animationNames) {
                             this.animationNames = []
                         }
-                        this.animationNames.push(...animationNames)
+                        this.animationNames = animationNames
                     }
                 }
 
@@ -409,13 +408,13 @@ export class Rule {
             }
 
             const prefix = propertyName + ':'
-            const declation = this.declarations[propertyName]
-            if (typeof declation === 'object') {
-                for (const value of declation) {
+            const declarations = this.declarations[propertyName] as any
+            if (Array.isArray(declarations)) {
+                for (const value of declarations) {
                     push(prefix + value.toString())
                 }
             } else {
-                push(prefix + declation.toString())
+                push(prefix + declarations.toString())
             }
         }
 
@@ -440,10 +439,10 @@ export class Rule {
                                 : '')
                                 + (scope ? scope + ' ' : '')
                                 + eachPrefixText)
-                            .reduce((arr, eachPrefixText) => {
+                            .reduce((arr: string[], eachPrefixText) => {
                                 arr.push(
                                     suffixSelectors
-                                        .reduce((_arr, eachSuffixSelector) => {
+                                        .reduce((_arr: string[], eachSuffixSelector) => {
                                             _arr.push(eachPrefixText + '.' + cssEscape(name) + eachSuffixSelector)
                                             return _arr
                                         }, [])
@@ -502,7 +501,7 @@ export class Rule {
                         currentValue += eachValueComponent.name
                             + eachValueComponent.symbol
                             + this.resolveValue(eachValueComponent.children, functionDefinition?.unit ?? unit, bypassVariableNames)
-                            + START_SYMBOLS[eachValueComponent.symbol]
+                            + START_SYMBOLS[eachValueComponent.symbol as keyof typeof START_SYMBOLS]
                     }
                     break
                 // todo: 應挪到 parseValue 階段處理才能支援 variables: { x: 'calc(20vw-30px)' } 這種情況，並且解析上可能會比較合理、精簡
@@ -518,7 +517,7 @@ export class Rule {
                                 if (this.theme) {
                                     const themeVariable = variable.themes[this.theme] ?? variable
                                     if (themeVariable?.value) {
-                                        normalHandler(themeVariable)
+                                        normalHandler(themeVariable as any)
                                     }
                                 } else {
                                     if (!this.variableNames) {
@@ -538,7 +537,7 @@ export class Rule {
                                 handleVariable(
                                     (variable) => {
                                         const valueComponents: ValueComponent[] = []
-                                        this.parseValue(valueComponents, 0, variable.value as string, unit, undefined, undefined, [...bypassVariableNames, eachValueComponent.name])
+                                        this.parseValue(valueComponents, 0, variable.value as string, unit, '', undefined, [...bypassVariableNames, eachValueComponent.name])
                                         currentValue += this.resolveValue(
                                             valueComponents,
                                             unit,
@@ -584,7 +583,7 @@ export class Rule {
                     currentValue += (eachValueComponent.text || eachValueComponent.value)
                     break
                 case 'number':
-                    currentValue += eachValueComponent.value + eachValueComponent.unit
+                    currentValue += eachValueComponent.value + (eachValueComponent.unit || '')
                     break
                 default:
                     currentValue += eachValueComponent.value
@@ -603,8 +602,8 @@ export class Rule {
         i: number,
         value: string,
         unit: string,
-        endSymbol?: string,
-        parentFunctionName = undefined,
+        endSymbol: string,
+        parentFunctionName?: string,
         bypassVariableNames: string[] = []
     ) => {
         const root = parentFunctionName === undefined
@@ -616,7 +615,7 @@ export class Rule {
         const checkIsString = (value: string) => value === '\'' || value === '"'
         const isString = checkIsString(endSymbol)
         const separators = [',']
-        if (this.definition.separators.length) {
+        if (this.definition.separators?.length) {
             separators.push(...this.definition.separators)
         }
 
@@ -626,8 +625,8 @@ export class Rule {
                 let handled = false
                 if (!isVarFunction || currentValueComponents.length) {
                     const handleVariable = (variableName: string, alpha?: string) => {
-                        const variable = Object.prototype.hasOwnProperty.call(this.definition.resolvedVariables, variableName)
-                            ? this.definition.resolvedVariables[variableName]
+                        const variable = Object.prototype.hasOwnProperty.call(this.variables, variableName)
+                            ? this.variables[variableName]
                             : Object.prototype.hasOwnProperty.call(this.css.variables, variableName)
                                 ? this.css.variables[variableName]
                                 : undefined
@@ -684,7 +683,7 @@ export class Rule {
                 currentValueComponents.push(newValueComponent)
                 currentValue = ''
 
-                const functionDefinition = val === '(' && this.css.config.functions?.[functionName]
+                const functionDefinition = val === '(' ? this.css.config.functions?.[functionName] : undefined
                 if (!this.colored && functionDefinition?.colored) {
                     // @ts-ignore
                     this.colored = true
@@ -695,7 +694,7 @@ export class Rule {
                     ++i,
                     value,
                     functionDefinition?.unit ?? unit,
-                    START_SYMBOLS[val],
+                    START_SYMBOLS[val as keyof typeof START_SYMBOLS],
                     functionName || parentFunctionName || ''
                 )
             } else if ((val === '|' || val === ' ') && endSymbol !== '}' && (!isString || parentFunctionName === 'path')) {
@@ -746,7 +745,7 @@ export class Rule {
              */
             if (defaultUnit && !newUnit) {
                 if (defaultUnit === 'rem' || defaultUnit === 'em') {
-                    value = token / this.css.config.rootSize
+                    value = token / (this.css.config.rootSize || 1)
                 }
                 newUnit = defaultUnit || ''
             } else {
@@ -770,7 +769,7 @@ export class Rule {
                  */
                 if (!newUnit) {
                     if (defaultUnit === 'rem' || defaultUnit === 'em') {
-                        value = value / this.css.config.rootSize
+                        value = value / (this.css.config.rootSize || 1)
                     }
                     newUnit = defaultUnit || ''
                 }
@@ -794,35 +793,33 @@ export interface FunctionValueComponent { text?: string, token?: string, type: '
 export interface VariableValueComponent { text?: string, token?: string, type: 'variable', name: string, alpha?: string, fallback?: string, variable?: Variable }
 export interface SeparatorValueComponent { text?: string, type: 'separator', value: string }
 
-export interface Rule {
-    prefix?: string
-    token?: string
-    vendorPrefixSelectors?: Record<string, string[]>
-    vendorSuffixSelectors?: Record<string, string[]>
-    important?: boolean
-    media?: MediaQuery
-    direction?: string
-    theme?: string
-    unitToken?: string
-    hasWhere?: boolean
-    valueComponents?: Array<ValueComponent>
-    constructor: {
-        match?(
-            name: string,
-            matches: RegExp,
-            colors: Record<string, Record<string, string>>,
-            colorNames: string[]
-        ): RuleMeta
-    }
+export interface Rule extends RegisteredRule {
+    colored: boolean
+    prefix: string
+    token: string
+    vendorPrefixSelectors: Record<string, string[]>
+    vendorSuffixSelectors: Record<string, string[]>
+    important: boolean
+    media: MediaQuery
+    direction: string
+    theme: string
+    unitToken: string
+    hasWhere: boolean
+    valueComponents: Array<ValueComponent>
+}
+
+export interface RegisteredRule {
+    id: string
+    match?: RegExp
+    variables?: any
+    order: number
+    definition: RuleDefinition
 }
 
 export interface RuleDefinition {
-    id?: string
+    layer?: Layer
     match?: RegExp | [string, string[]?]
-    resolvedMatch?: RegExp
-    resolvedVariables?: any
     variables?: string[]
-    order?: number
     separators?: string[]
     shorthand?: string
     colored?: boolean
@@ -830,11 +827,10 @@ export interface RuleDefinition {
     unit?: any
     native?: boolean
     declarations?: CSSDeclarations
-    layer?: Layer,
     analyze?: (this: Rule, className: string) => [valueToken: string, prefixToken?: string]
     transformValue?(this: Rule, value: string): string
     transformValueComponents?(this: Rule, valueComponents: ValueComponent[]): ValueComponent[]
-    declare?(this: Rule, value: string, unit: string): CSSDeclarations
+    declare?(this: Rule, value: string): CSSDeclarations
     delete?(this: Rule, className: string): void
     create?(this: Rule, className: string): void
     insert?(this: Rule): void
@@ -855,13 +851,8 @@ export type MediaFeatureComponent = {
 
 export interface MediaQuery {
     token: string;
-    features?: {
+    features: {
         [key: string]: MediaFeatureComponent
     }
     type?: string;
-}
-
-export interface RuleMeta {
-    value?: [string, string | Record<string, string>]
-    config?: RuleDefinition
 }
