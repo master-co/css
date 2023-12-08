@@ -368,7 +368,7 @@ export class Rule {
             if (transformValueComponents) {
                 this.valueComponents = transformValueComponents.call(this, this.valueComponents)
             }
-            newValue = this.resolveValue(this.valueComponents, unit, [])
+            newValue = this.resolveValue(this.valueComponents, unit, [], false)
             if (transformValue) {
                 newValue = transformValue.call(this, newValue)
             }
@@ -475,7 +475,7 @@ export class Rule {
         }
     }
 
-    resolveValue = (valueComponents: ValueComponent[], unit: string, bypassVariableNames: string[]) => {
+    resolveValue = (valueComponents: ValueComponent[], unit: string, bypassVariableNames: string[], bypassParsing: boolean) => {
         const { functions } = this.css.config
 
         let currentValue = ''
@@ -484,23 +484,24 @@ export class Rule {
                 case 'function':
                     // eslint-disable-next-line no-case-declarations
                     const functionDefinition = functions && functions[eachValueComponent.name]
-                    if (functionDefinition?.transform) {
+                    if (functionDefinition?.transform && !eachValueComponent.bypassTransform) {
                         const result = functionDefinition.transform.call(
                             this,
                             this.resolveValue(
                                 eachValueComponent.children,
                                 functionDefinition.unit ?? unit,
-                                bypassVariableNames
+                                bypassVariableNames,
+                                bypassParsing || eachValueComponent.name === 'calc'
                             ),
                             bypassVariableNames
                         )
                         currentValue += typeof result === 'string'
                             ? result
-                            : this.resolveValue(result, functionDefinition?.unit ?? unit, bypassVariableNames)
+                            : this.resolveValue(result, functionDefinition?.unit ?? unit, bypassVariableNames, bypassParsing)
                     } else {
                         currentValue += eachValueComponent.name
                             + eachValueComponent.symbol
-                            + this.resolveValue(eachValueComponent.children, functionDefinition?.unit ?? unit, bypassVariableNames)
+                            + this.resolveValue(eachValueComponent.children, functionDefinition?.unit ?? unit, bypassVariableNames, bypassParsing)
                             + START_SYMBOLS[eachValueComponent.symbol as keyof typeof START_SYMBOLS]
                     }
                     break
@@ -537,11 +538,12 @@ export class Rule {
                                 handleVariable(
                                     (variable) => {
                                         const valueComponents: ValueComponent[] = []
-                                        this.parseValue(valueComponents, 0, variable.value as string, unit, '', undefined, [...bypassVariableNames, eachValueComponent.name])
+                                        this.parseValue(valueComponents, 0, variable.value as string, unit, '', undefined, bypassParsing, [...bypassVariableNames, eachValueComponent.name])
                                         currentValue += this.resolveValue(
                                             valueComponents,
                                             unit,
-                                            [...bypassVariableNames, eachValueComponent.name]
+                                            [...bypassVariableNames, eachValueComponent.name],
+                                            bypassParsing
                                         )
                                     },
                                     () => {
@@ -552,8 +554,12 @@ export class Rule {
                             case 'number':
                                 handleVariable(
                                     (variable) => {
-                                        const valueComponent = this.parseValueComponent(variable.value, unit) as NumericValueComponent
-                                        currentValue += valueComponent.value + (valueComponent.unit ?? '')
+                                        if (bypassParsing) {
+                                            currentValue += variable.value
+                                        } else {
+                                            const valueComponent = this.parseValueComponent(variable.value, unit) as NumericValueComponent
+                                            currentValue += valueComponent.value + (valueComponent.unit ?? '')
+                                        }
                                     },
                                     () => {
                                         currentValue += unit
@@ -604,6 +610,7 @@ export class Rule {
         unit: string,
         endSymbol: string,
         parentFunctionName?: string,
+        bypassParsing = false,
         bypassVariableNames: string[] = []
     ) => {
         const root = parentFunctionName === undefined
@@ -648,7 +655,11 @@ export class Rule {
                 }
 
                 if (!handled) {
-                    currentValueComponents.push(this.parseValueComponent(currentValue, unit))
+                    if (bypassParsing) {
+                        currentValueComponents.push({ type: 'string', value: currentValue })
+                    } else {
+                        currentValueComponents.push(this.parseValueComponent(currentValue, unit))
+                    }
                 }
 
                 currentValue = ''
@@ -695,7 +706,8 @@ export class Rule {
                     value,
                     functionDefinition?.unit ?? unit,
                     START_SYMBOLS[val as keyof typeof START_SYMBOLS],
-                    functionName || parentFunctionName || ''
+                    functionName || parentFunctionName || '',
+                    bypassParsing || functionName === 'calc'
                 )
             } else if ((val === '|' || val === ' ') && endSymbol !== '}' && (!isString || parentFunctionName === 'path')) {
                 parse()
@@ -789,7 +801,7 @@ export type ValueComponent =
 
 export interface StringValueComponent { text?: string, token?: string, type: 'string', value: string }
 export interface NumericValueComponent { text?: string, token?: string, type: 'number', value: number, unit?: string }
-export interface FunctionValueComponent { text?: string, token?: string, type: 'function', name: string, symbol: string, children: ValueComponent[] }
+export interface FunctionValueComponent { text?: string, token?: string, type: 'function', name: string, symbol: string, children: ValueComponent[], bypassTransform?: boolean }
 export interface VariableValueComponent { text?: string, token?: string, type: 'variable', name: string, alpha?: string, fallback?: string, variable?: Variable }
 export interface SeparatorValueComponent { text?: string, type: 'separator', value: string }
 

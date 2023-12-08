@@ -1,7 +1,7 @@
 import type { FunctionDefinition, FunctionDefinitions } from './'
-import type { Rule } from '../rule'
+import type { NumericValueComponent, Rule, StringValueComponent } from '../rule'
 
-const functions = {
+const functions: FunctionDefinitions = {
     $: {
         colored: true,
         transform(value) {
@@ -20,21 +20,75 @@ const functions = {
     calc: {
         transform(value, bypassVariableNames) {
             const valueComponents: Rule['valueComponents'] = []
-            const functions = this.css.config.functions as FunctionDefinitions
             let i = 0
-            const anaylze = (currentValueComponents: Rule['valueComponents'], bypassHandlingSeparator: boolean, bypassHandlingUnitForcely: boolean) => {
-                let bypassHandlingUnit = false
+            
+            const anaylzeDeeply = (
+                currentValueComponents: Rule['valueComponents'], 
+                bypassHandlingSeparator: boolean, 
+                parentBypassParsing: boolean,
+                parentUnitChecking: boolean
+            ) => {
+                const isChildHandler = valueComponents !== currentValueComponents
+                const unparsedValueComponents: StringValueComponent[] = []
+                let bypassParsing = false
+                let hasUnit = false
+                let currentHasUnit = false
+                let unitChecking = false
+                let childHasUnit: boolean | undefined = undefined
                 let current = ''
                 const clear = (separator: string, prefix = '', suffix = '') => {
+                    if (childHasUnit === false && separator !== ' ' && this.definition.unit) {
+                        childHasUnit = undefined
+                        if (!unitChecking) {
+                            pushUnitValueComponents()
+                        }
+                    }
+
                     if (current) {
-                        if (!bypassHandlingUnit && !bypassHandlingUnitForcely) {
-                            currentValueComponents.push(this.parseValueComponent(current, functions.calc.unit))
+                        if (!bypassParsing && !parentBypassParsing) {
+                            const valueComponent = this.parseValueComponent(current)
+                            if (
+                                !hasUnit
+                                && isNaN(+current)
+                                && valueComponent.type === 'number'
+                                && valueComponent.unit !== '%'
+                            ) {
+                                hasUnit = true
+                            }
+
+                            if (unitChecking) {
+                                if (isNaN(+current)) {
+                                    if (valueComponent.type === 'number') {
+                                        currentValueComponents.push(valueComponent)
+                                        if (valueComponent.unit !== '%') {
+                                            currentHasUnit = true
+                                        }
+                                    } else {
+                                        currentValueComponents.push(valueComponent)
+                                    }
+                                } else {
+                                    currentValueComponents.push({ type: 'number', value: +current })
+                                }
+                            } else {
+                                if (isChildHandler) {
+                                    const newValueComponent = { type: 'string', value: current } as const
+                                    unparsedValueComponents.push(newValueComponent)
+                                    currentValueComponents.push(newValueComponent)
+                                } else {
+                                    currentValueComponents.push(valueComponent)
+                                }
+                            }
                         } else {
                             currentValueComponents.push({ type: 'string', value: current })
                         }
                         current = ''
                     }
+
                     if (separator) {
+                        if (separator === '+' || separator === '-') {
+                            handleUnitChecking()
+                        }
+
                         if (prefix && value[i - 1] === ' ') {
                             prefix = ''
                         }
@@ -47,7 +101,26 @@ const functions = {
                             currentValueComponents.push({ type: 'separator', value: separator, text: prefix + separator + suffix })
                         }
                     }
-                    bypassHandlingUnit = false
+                    bypassParsing = false
+                }
+                const pushUnitValueComponents = () => {
+                    if (this.definition.unit === 'rem' || this.definition.unit ==='em') {
+                        currentValueComponents.push(
+                            { type: 'separator', value: '/', text: ' / ' },
+                            { type: 'number', value: this.css.config.rootSize as number }
+                        )
+                    }
+                    currentValueComponents.push(
+                        { type: 'separator', value: '*', text: ' * ' },
+                        { type: 'number', value: 1, unit: this.definition.unit }
+                    )
+                }
+                const handleUnitChecking = () => {
+                    if (unitChecking && !currentHasUnit && !parentUnitChecking && (!isChildHandler || hasUnit)) {
+                        pushUnitValueComponents()
+                    }
+                    unitChecking = false
+                    currentHasUnit = false
                 }
 
                 for (; i < value.length; i++) {
@@ -58,12 +131,12 @@ const functions = {
                             currentValueComponents.push({ type: 'string', value: symbolResult[1] })
                         }
                         const functionName = symbolResult ? current.slice(1) : current
-                        const newValueComponent: Rule['valueComponents'][0] = { type: 'function', name: functionName, symbol: char, children: [] }
+                        const newValueComponent: Rule['valueComponents'][0] = { type: 'function', name: functionName, symbol: char, children: [], bypassTransform: functionName === 'calc' }
                         currentValueComponents.push(newValueComponent)
                         current = ''
                         i++
-                        const isVarFunction = newValueComponent.name === '$' || newValueComponent.name === 'var'
-                        anaylze(
+                        const isVarFunction = functionName === '$' || functionName === 'var'
+                        childHasUnit = anaylzeDeeply(
                             newValueComponent.children,
                             functionName !== ''
                             && functionName !== 'calc'
@@ -71,11 +144,24 @@ const functions = {
                                 isVarFunction
                                 || Object.prototype.hasOwnProperty.call(functions, functionName)
                             ),
-                            bypassHandlingUnit || isVarFunction
+                            bypassParsing || isVarFunction || unitChecking && currentHasUnit,
+                            unitChecking
                         )
+                        if (!childHasUnit && functionName === '$') {
+                            childHasUnit = this.css.variables[(newValueComponent.children[0] as StringValueComponent).value]?.type === 'string'
+                        }
+                        if (childHasUnit) {
+                            hasUnit = true
+                            currentHasUnit = true
+                        }
                     } else if (char === ')') {
                         clear('')
-                        break
+                        if (hasUnit) {
+                            for (const eachUnparsedValueComponent of unparsedValueComponents) {
+                                Object.assign(eachUnparsedValueComponent, this.parseValueComponent(eachUnparsedValueComponent.value))
+                            }
+                        }
+                        return hasUnit
                     } else if (char === ',') {
                         clear(char, '', ' ')
                     } else if (char === ' ') {
@@ -98,11 +184,17 @@ const functions = {
                                 }
                                 break
                             case '*':
+                                if (this.definition.unit) {
+                                    unitChecking = true
+                                }
                                 clear(char, ' ', ' ')
                                 break
                             case '/':
+                                if (this.definition.unit) {
+                                    unitChecking = true
+                                }
                                 clear(char, ' ', ' ')
-                                bypassHandlingUnit = true
+                                bypassParsing = true
                                 break
                             default:
                                 current += char
@@ -111,10 +203,11 @@ const functions = {
                     }
                 }
                 clear('')
+                handleUnitChecking()
             }
-            anaylze(valueComponents, false, false)
+            anaylzeDeeply(valueComponents, false, false, false)
 
-            return 'calc(' + this.resolveValue(valueComponents, functions.calc.unit ?? this.definition.unit, bypassVariableNames) + ')'
+            return 'calc(' + this.resolveValue(valueComponents, functions.calc.unit ?? this.definition.unit, bypassVariableNames, true) + ')'
         }
     } as FunctionDefinition,
     translate: { unit: 'rem' },
