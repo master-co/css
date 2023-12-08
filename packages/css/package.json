@@ -56,15 +56,26 @@
             "require": "./dist/index.bundle.js",
             "import": "./dist/index.bundle.mjs",
             "types": "./dist/index.d.ts"
+        },
+        "./jest": {
+            "import": "./dist/jest.bundle.mjs",
+            "require": "./dist/jest.bundle.js",
+            "types": "./dist/jest.d.ts"
+        },
+        "./jest-globals": {
+            "import": "./dist/jest-globals.bundle.mjs",
+            "require": "./dist/jest-globals.bundle.js",
+            "types": "./dist/jest-globals.d.ts"
+        },
+        "./matchers": {
+            "import": "./dist/matchers/index.bundle.mjs",
+            "require": "./dist/matchers/index.bundle.js",
+            "types": "./dist/matchers/index.d.ts"
         }
     },
     "files": [
         "dist"
     ],
-    "bin": {
-        "mcss": "./dist/bin/index.bundle.js",
-        "mastercss": "./dist/bin/index.bundle.js"
-    },
     "publishConfig": {
         "access": "public"
     },
@@ -75,10 +86,13 @@
         "commander": "^11.0.0"
     },
     "devDependencies": {
+        "@jest/globals": "^29.7.0",
         "@techor/extend": "^2.5.4",
         "@techor/pack": "^2.5.4",
+        "@types/jest": "^29.5.11",
         "css-shared": "workspace:^",
         "csstype": "^3.1.2",
+        "expect": "^29.7.0",
         "puppeteer": "^21.0.1",
         "vite": "^4.2.1"
     }

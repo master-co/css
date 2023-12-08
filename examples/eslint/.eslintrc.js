@@ -14,7 +14,10 @@ module.exports = {
         }],
     },
     settings: {
-        "mdx/code-blocks": true,
+        'mdx/code-blocks': true,
+        '@master/css': {
+            config: 'examples/eslint/master.css.*'
+        }
     },
     overrides: [
         {

@@ -1,7 +1,7 @@
-import { testCSS, testProp } from './css'
-
+import { testProp } from './css'
+¸
 test('color', () => {
-    testCSS('color:current:hover', '.color\\:current\\:hover:hover{color:currentColor}')
+    expect('color:current:hover').toBeMasterCSSRule('.color\\:current\\:hover:hover{color:currentColor}')
     testProp('color:current', 'color:currentColor')
     testProp('color:rgb(255,255,255)', 'color:rgb(255,255,255)')
     testProp('fg:#fff', 'color:#fff')

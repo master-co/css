@@ -3,7 +3,7 @@ import stripAnsi from 'strip-ansi'
 
 export default function (child: SpawndChildProcess, doesDataMatch: (data: string) => any, onReady?: () => void): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        const handler = (data) => {
+        const handler = (data: any) => {
             const strippedData = stripAnsi(data.toString())
             if (doesDataMatch(strippedData)) {
                 child.stdout.off('data', handler)
@@ -11,7 +11,7 @@ export default function (child: SpawndChildProcess, doesDataMatch: (data: string
                 resolve(strippedData)
             }
         }
-        const errorHandler = (data) => {
+        const errorHandler = (data: any) => {
             const strippedData = stripAnsi(data.toString().replace(/(?:\r\n|\n|\r)/g, ''))
             if (strippedData) {
                 child.stdout.off('data', handler)

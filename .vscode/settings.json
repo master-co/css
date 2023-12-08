@@ -4,5 +4,14 @@
     "[yaml]": {
         "editor.insertSpaces": true,
         "editor.tabSize": 4
+    },
+    "runItOn": {
+        "commands": [
+            {
+                "match": "master\\.css\\..*$",
+                "isShellCommand": false,
+                "cmd": "eslint.restart"
+            }
+        ]
     }
 }

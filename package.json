@@ -21,9 +21,11 @@
         "url": "https://github.com/master-co/css.git"
     },
     "devDependencies": {
+        "@master/css": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-extractor.vite": "workspace:^",
         "@master/css-renderer": "workspace:^",
+        "@master/css-tester": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
         "@swc-node/jest": "^1.6.8",
         "@techor/fs": "^2.5.19",
@@ -33,8 +35,9 @@
         "@techor/pack": "^2.5.19",
         "@techor/repo": "^2.5.19",
         "@techor/version": "^2.5.19",
-        "@types/jest": "^29.5.2",
+        "@types/jest": "^29.5.8",
         "@types/node": "^20.4.0",
+        "@types/shuffle-array": "^1.0.5",
         "cross-env": "^7.0.3",
         "css-shared": "workspace:^",
         "eslint-plugin-react-hooks": "^4.6.0",
