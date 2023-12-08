@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { Rule, NativeRule, RuleDefinition, RegisteredRule } from './rule'
 import type { Config, AnimationDefinitions } from './config'
 import { config as defaultConfig } from './config'
@@ -6,6 +7,7 @@ import { Layer } from './layer'
 import { hexToRgb } from './utils/hex-to-rgb'
 import { flattenObject } from './utils/flatten-object'
 import { extendConfig } from './utils/extend-config'
+import './types/global'
 
 type VariableValue =
     { type: 'string', value: string }
@@ -1196,11 +1198,3 @@ export const masterCSSs: MasterCSS[] = [];
     globalThis.masterCSSs = masterCSSs
 })()
 
-declare global {
-    // @ts-ignore
-    // eslint-disable-next-line no-var
-    var MasterCSS: typeof MasterCSS
-    // @ts-ignore
-    // eslint-disable-next-line no-var
-    var masterCSSs: typeof masterCSSs
-}

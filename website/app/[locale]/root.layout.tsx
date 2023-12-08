@@ -6,13 +6,8 @@ import { RedirectsProvider } from 'websites/contexts/redirects'
 import redirects from '~/redirects.mjs'
 import { Analytics } from '@vercel/analytics/react'
 import config from '../../master.css'
-// production
 import CSSProvider from '@master/css.react/CSSProvider'
 import ThemeServiceProvider from '@master/css.react/ThemeServiceProvider'
-
-// local testing
-// import CSSProvider from '../../../packages/react/dist/CSSProvider'
-// import ThemeServiceProvider from '../../../packages/react/dist/ThemeServiceProvider'
 
 export default function RootLayout({
     children,

@@ -1,4 +1,3 @@
-import recommended from '../../../../../../packages/eslint-plugin/src/configs/recommended'
 import settings from '../../../../../../packages/eslint-plugin/src/settings'
 
 ## Usage [sr-only]
@@ -10,7 +9,7 @@ import settings from '../../../../../../packages/eslint-plugin/src/settings'
 ```
 The extended recommended configuration:
 <Code lang="js">
-    {JSON.stringify(recommended, null, 4)}
+    {JSON.stringify(require('../../../../../../packages/eslint-plugin/src/configs/recommended').default, null, 4)}
 </Code>
 
 ---

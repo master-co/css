@@ -35,7 +35,7 @@ export default () => <table>
                             </td>
                             <td>
                                 {
-                                    <code>{eachFunction.name || eachFunctionName}</code>
+                                    <code>{eachFunctionName}</code>
                                 }
                             </td>
                         </tr>

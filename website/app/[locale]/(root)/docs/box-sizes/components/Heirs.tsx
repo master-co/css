@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { rules } from '../../../../../../../packages/css/src'
+import { rules } from '@master/css'
 
 export default () => <>
     {

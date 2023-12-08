@@ -3,6 +3,7 @@ import { MasterCSS } from './core'
 import { SELECTOR_SYMBOLS } from './constants/selector-symbols'
 import { Rule } from './rule'
 import { config as defaultConfig } from './config'
+import './types/global'
 
 export class RuntimeCSS extends MasterCSS {
     readonly host: Element
@@ -416,22 +417,7 @@ export class RuntimeCSS extends MasterCSS {
     }
 }
 
-export const runtimeCSSs: RuntimeCSS[] = []
-
-declare global {
-    // @ts-ignore
-    // eslint-disable-next-line no-var
-    var RuntimeCSS: typeof RuntimeCSS
-    // @ts-ignore
-    // eslint-disable-next-line no-var
-    var masterCSSConfig: Config
-    // @ts-ignore
-    // eslint-disable-next-line no-var
-    var runtimeCSSs: typeof runtimeCSSs
-    // @ts-ignore
-    // eslint-disable-next-line no-var
-    var runtimeCSS: RuntimeCSS
-}
+export const runtimeCSSs: RuntimeCSS[] = [];
 
 (() => {
     globalThis.RuntimeCSS = RuntimeCSS
