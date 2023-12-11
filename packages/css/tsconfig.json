@@ -1,15 +1,14 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "baseUrl": ".",
-        "sourceRoot": "src",
+        "rootDir": "src",
         "outDir": "dist"
     },
     "include": [
-        "**/*"
+        "src/**/*",
+        "./setup-jest.ts"
     ],
     "exclude": [
-        "node_modules",
-        "dist"
+        "**/*.d.ts"
     ]
 }
