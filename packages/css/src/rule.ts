@@ -2,8 +2,8 @@
 import type { MasterCSS, Variable } from './core'
 import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'css-shared/utils/css-escape'
-import { CSSDeclarations } from './types/css-declarations'
 import { Layer } from './layer'
+import { PropertiesHyphen } from 'csstype'
 
 const atRuleRegExp = /^(media|supports|page|font-face|keyframes|counter-style|font-feature-values|property|layer)(?=\||{|\(|$)/
 
@@ -14,7 +14,7 @@ export class Rule {
     readonly order: number = 0
     readonly layer: Layer = 0
     readonly stateToken: string
-    readonly declarations?: CSSDeclarations
+    readonly declarations?: PropertiesHyphen
 
     animationNames?: string[]
     variableNames?: string[]
@@ -408,7 +408,7 @@ export class Rule {
             }
 
             const prefix = propertyName + ':'
-            const declarations = this.declarations[propertyName] as any
+            const declarations = this.declarations[propertyName as keyof PropertiesHyphen] as any
             if (Array.isArray(declarations)) {
                 for (const value of declarations) {
                     push(prefix + value.toString())
@@ -838,11 +838,11 @@ export interface RuleDefinition {
     numeric?: boolean
     unit?: any
     native?: boolean
-    declarations?: CSSDeclarations
+    declarations?: PropertiesHyphen
     analyze?: (this: Rule, className: string) => [valueToken: string, prefixToken?: string]
     transformValue?(this: Rule, value: string): string
     transformValueComponents?(this: Rule, valueComponents: ValueComponent[]): ValueComponent[]
-    declare?(this: Rule, value: string): CSSDeclarations
+    declare?(this: Rule, value: string): PropertiesHyphen
     delete?(this: Rule, className: string): void
     create?(this: Rule, className: string): void
     insert?(this: Rule): void

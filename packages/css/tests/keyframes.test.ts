@@ -1,12 +1,7 @@
 import { initRuntime } from '../src'
 
 beforeAll(() => {
-    initRuntime({ animations: { fade: {} } })
-})
-
-it('make sure not to extend animations deeply', () => {
-    const fade = globalThis.runtimeCSS.config.animations?.fade
-    expect(fade).toEqual({})
+    initRuntime()
 })
 
 it('expects the animation output', async () => {

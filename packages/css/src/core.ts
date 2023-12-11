@@ -2,12 +2,12 @@
 import { Rule, NativeRule, RuleDefinition, RegisteredRule } from './rule'
 import type { Config, AnimationDefinitions } from './config'
 import { config as defaultConfig } from './config'
-import { CSSDeclarations } from './types/css-declarations'
 import { Layer } from './layer'
 import { hexToRgb } from './utils/hex-to-rgb'
 import { flattenObject } from './utils/flatten-object'
 import { extendConfig } from './utils/extend-config'
 import './types/global'
+import { PropertiesHyphen } from 'csstype'
 
 type VariableValue =
     { type: 'string', value: string }
@@ -266,13 +266,13 @@ export class MasterCSS {
 
         if (animations) {
             for (const animationName in animations) {
-                const newValueByPropertyNameByKeyframeName: any = this.animations[animationName] = {}
-                const valueByPropertyNameByKeyframeName = animations[animationName]
-                for (const animationName in valueByPropertyNameByKeyframeName) {
-                    const newValueByPropertyName: any = newValueByPropertyNameByKeyframeName[animationName] = {}
-                    const valueByPropertyName = valueByPropertyNameByKeyframeName[animationName]
-                    for (const propertyName in valueByPropertyName) {
-                        newValueByPropertyName[propertyName] = valueByPropertyName[propertyName]
+                const eachAnimation: any = this.animations[animationName] = {}
+                const eachKeyframes = animations[animationName]
+                for (const eachKeyframeValue in eachKeyframes) {
+                    const newValueByPropertyName: any = eachAnimation[eachKeyframeValue] = {}
+                    const eachKeyframeDeclarations = eachKeyframes[eachKeyframeValue as 'from' | 'to' | `$(number)%`]
+                    for (const propertyName in eachKeyframeDeclarations) {
+                        newValueByPropertyName[propertyName] = eachKeyframeDeclarations[propertyName as keyof PropertiesHyphen]
                     }
                 }
             }
@@ -328,7 +328,7 @@ export class MasterCSS {
         if (semantics) {
             Object.entries(semantics)
                 .sort((a: any, b: any) => a[0].localeCompare(b[0]))
-                .forEach(([id, declarations]: [string, CSSDeclarations], index: number) => {
+                .forEach(([id, declarations]: [string, PropertiesHyphen], index: number) => {
                     this.RegisteredSemanticRules.push({
                         id: '.' + id,
                         match: new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'),

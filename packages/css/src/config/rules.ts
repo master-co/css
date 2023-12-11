@@ -1,7 +1,6 @@
 import cssEscape from 'css-shared/utils/css-escape'
 import { START_SYMBOLS } from '../constants/start-symbol'
 import type { Rule, RuleDefinition } from '../rule'
-import { CSSDeclarations } from '../types/css-declarations'
 import { Layer } from '../layer'
 import { PropertiesHyphen } from 'csstype'
 
@@ -36,7 +35,7 @@ const rules = {
             return [className.slice(i), className.slice(0, i)]
         },
         declare(value) {
-            const declarations: CSSDeclarations = {}
+            const declarations: any = {}
             const addProp = (propertyName: string) => {
                 const indexOfColon = propertyName.indexOf(':')
                 if (indexOfColon !== -1) {

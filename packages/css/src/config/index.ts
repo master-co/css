@@ -5,17 +5,15 @@ import animations from './animations'
 import variables from './variables'
 import rules from './rules'
 import functions from './functions'
-import { CSSDeclarations } from '../types/css-declarations'
+import type { PropertiesHyphen } from 'csstype'
 import type { Rule, RuleDefinition, ValueComponent } from '../rule'
 
 const config: Config = {
     mediaQueries,
     selectors,
-    // @ts-expect-error
     semantics,
     rules,
     functions,
-    // @ts-expect-error
     animations,
     variables,
     scope: '',
@@ -36,17 +34,16 @@ export {
     variables
 }
 
-type MasterCSSDeclarations = CSSDeclarations | { [key: string]: number }
 export type VariableValue = number | string | Array<number | string>
 export type VariableDefinition = { [key in '' | `@${string}`]?: VariableValue } & { [key: string]: VariableValue | VariableDefinition }
-export type AnimationDefinition = { [key in 'from' | 'to']?: MasterCSSDeclarations } & { [key: string]: MasterCSSDeclarations }
-export type AnimationDefinitions = { [key: string]: AnimationDefinition }
+export type CSSKeyframes = { [key in 'from' | 'to' | string]: PropertiesHyphen }
+export type AnimationDefinitions = { [key: string]: CSSKeyframes }
 export type SelectorDefinitions = { [key: string]: string | string[] | SelectorDefinitions }
 export type MediaQueryDefinitions = { [key: string]: number | string | MediaQueryDefinitions }
 export type StyleDefinitions = { [key: string]: string | StyleDefinitions }
 export type RuleDefinitions = { [key in keyof typeof rules | string]?: RuleDefinition }
 export type VariableDefinitions = { [key in keyof typeof rules]?: VariableDefinition } & { [key: string]: VariableDefinition | VariableValue }
-export type SemanticDefinitions = { [key in keyof typeof semantics]?: MasterCSSDeclarations } & { [key: string]: MasterCSSDeclarations }
+export type SemanticDefinitions = { [key in keyof typeof semantics]?: PropertiesHyphen } & { [key: string]: PropertiesHyphen }
 export interface FunctionDefinition {
     unit?: string
     colored?: boolean
