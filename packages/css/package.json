@@ -58,6 +58,10 @@
             "types": "./dist/index.d.ts"
         }
     },
+    "bin": {
+        "mcss": "./dist/bin/index.bundle.js",
+        "mastercss": "./dist/bin/index.bundle.js"
+    },
     "files": [
         "dist"
     ],
