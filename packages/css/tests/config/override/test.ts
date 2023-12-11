@@ -1,5 +1,4 @@
 import { Config, Layer } from '../../../src'
-import { testCSS } from '../../css'
 
 const customConfig: Config = {
     override: true,
@@ -15,6 +14,6 @@ const customConfig: Config = {
 }
 
 test('override', () => {
-    testCSS('font:16', '', customConfig)
-    testCSS('custom:16', '.custom\\:16{font-size:1.6rem}', customConfig)
+    expect(new MasterCSS(customConfig).create('font:16')).toBeUndefined()
+    expect(new MasterCSS(customConfig).create('custom:16')?.text).toBe('.custom\\:16{font-size:1.6rem}')
 })

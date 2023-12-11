@@ -27,28 +27,24 @@ css.text
 Add a new syntax class.
 <DocFn>
     {[
-        { name: 'syntax', type: 'string' },
+        { name: '...classNames', type: 'string[]' },
         { name: 'return', type: 'boolean' }
     ]}
 </DocFn>
 ```ts
-if (css.add('text:center')) {
-    console.log('added')
-} else {
-    console.log('not added')
-}
+css.add('text:center', ...)
 ```
 
 ### `.delete()`
 Remove an existing syntax class.
 <DocFn>
     {[
-        { name: 'syntax', type: 'string' },
+        { name: '...classNames', type: 'string[]' },
         { name: 'return', type: 'boolean' }
     ]}
 </DocFn>
 ```ts
-css.delete('text:center')
+css.delete('text:center', ...)
 ```
 
 ### `.refresh()`

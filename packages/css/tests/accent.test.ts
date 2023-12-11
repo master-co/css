@@ -1,6 +1,4 @@
-import { testProp } from './css'
-
 test('accent', () => {
-    testProp('accent:current', 'accent-color:currentColor')
-    // testProp('accent:transparent', 'accent-color:transparent')
+    expect(new MasterCSS().create('accent:current')?.text).toContain('accent-color:currentColor')
+    // expect(new MasterCSS().create('accent:transparent')?.text).toContain('accent-color:transparent')
 })

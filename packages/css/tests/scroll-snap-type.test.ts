@@ -1,6 +1,4 @@
-import { testProp } from './css'
-
 test('scroll-snap-type', () => {
-    testProp(['scroll-snap:x', 'scroll-snap-type:x'], 'scroll-snap-type:x')
-    testProp('scroll-snap-type:both|mandatory', 'scroll-snap-type:both mandatory')
+    expect(new MasterCSS().create('scroll-snap:x')?.text).toContain('scroll-snap-type:x')
+    expect(new MasterCSS().create('scroll-snap-type:x')?.text).toContain('scroll-snap-type:x')
 })

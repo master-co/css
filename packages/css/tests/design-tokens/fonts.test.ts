@@ -1,4 +1,4 @@
-import { MasterCSS, variables } from '../../src'
+import { variables } from '../../src'
 
 it('customizes fonts', () => {
     const css = new MasterCSS({

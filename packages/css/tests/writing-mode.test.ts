@@ -1,5 +1,3 @@
-import { testProp } from './css'
-
 test('writing', () => {
-    testProp('writing:rl', 'writing-mode:rl')
+    expect(new MasterCSS().create('writing:rl')?.text).toContain('writing-mode:rl')
 })

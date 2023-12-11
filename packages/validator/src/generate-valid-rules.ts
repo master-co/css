@@ -6,7 +6,7 @@ import validateCSS from './validate-css'
  * @argument options Options for creating a new Master CSS instance
  * @returns Valid rules
  */
-export default function createValidRules(
+export default function generateValidRules(
     syntax: string,
     options?: { css?: MasterCSS, config?: Config }
 ): Rule[] {
@@ -16,7 +16,7 @@ export default function createValidRules(
     } else {
         css = new MasterCSS(options?.config)
     }
-    const rules = css.create(syntax)
+    const rules = css.generate(syntax)
     if (rules.length) {
         for (const eachRule of rules) {
             if (validateCSS(eachRule.text).length) {

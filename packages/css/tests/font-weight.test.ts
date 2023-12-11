@@ -1,6 +1,4 @@
-import { testCSS, testProp } from './css'
-
 test('font-weight', () => {
-    testCSS('font:bolder', '.font\\:bolder{font-weight:bolder}')
-    testCSS('font:thin', '.font\\:thin{font-weight:100}')
+    expect(new MasterCSS().create('font:bolder')?.text).toBe('.font\\:bolder{font-weight:bolder}')
+    expect(new MasterCSS().create('font:thin')?.text).toBe('.font\\:thin{font-weight:100}')
 })

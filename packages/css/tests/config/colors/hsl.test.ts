@@ -1,5 +1,4 @@
 import MasterCSS, { Config } from '../../../src'
-import { testCSS } from '../../css'
 
 // color functions 使用該格式 "hsl(0deg 0% 0%/.5)".match(/([a-zA-Z]+)\((.*?)\)/) 提取 space 及 value
 // -> ['hsl(0deg 0% 0%/.5)', 'hsl', '0deg 0% 0%/.5', index: 0, input: 'hsl(0deg 0% 0%/.5)', groups: undefined]
@@ -10,15 +9,17 @@ import { testCSS } from '../../css'
  * 3. --primary: 0deg 0% 0%/.5
  */
 test('hsl()', () => {
-    testCSS('fg:primary', '.fg\\:primary{color:hsl(0deg 0% 0%/.5)}', {
+    expect(new MasterCSS({
         variables: { primary: 'hsl(0deg 0% 0%/.5)' }
-    })
+    }).create('fg:primary')?.text
+    ).toBe('.fg\\:primary{color:hsl(0deg 0% 0%/.5)}')
 })
 
 test('color/opacity to hsl(h s l/opacity / opacity) invalid rule', () => {
-    testCSS('fg:primary/.5', '.fg\\:primary\\/\\.5{color:hsl(0deg 0% 0%/.5/.5)}', {
+    expect(new MasterCSS({
         variables: { primary: 'hsl(0deg 0% 0%/.5)' }
-    })
+    }).create('fg:primary/.5')?.text
+    ).toBe('.fg\\:primary\\/\\.5{color:hsl(0deg 0% 0%/.5/.5)}')
 })
 
 describe('with themes', () => {
@@ -48,22 +49,22 @@ describe('with themes', () => {
     })
 
     it('color', () => {
-        testCSS('fg:primary', [
+        expect(new MasterCSS(config).add('fg:primary')?.text).toBe([
             ':root{--primary:0deg 0% 0%}',
             '.dark{--primary:0deg 0% 100%}',
             '.light{--primary:0deg 0% 58.82%}',
             '.chrisma{--primary:0deg 0% 0%/.5}',
             '.fg\\:primary{color:hsl(var(--primary))}'
-        ].join(''), config)
+        ].join(''))
     })
 
     it('color/.5', () => {
-        testCSS('fg:primary/.5', [
+        expect(new MasterCSS(config).add('fg:primary/.5')?.text).toBe([
             ':root{--primary:0deg 0% 0%}',
             '.dark{--primary:0deg 0% 100%}',
             '.light{--primary:0deg 0% 58.82%}',
             '.chrisma{--primary:0deg 0% 0%/.5}',
             '.fg\\:primary\\/\\.5{color:hsl(var(--primary)/.5)}'
-        ].join(''), config)
+        ].join(''))
     })
 })

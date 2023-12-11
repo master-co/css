@@ -1,18 +1,16 @@
-import { testCSS } from './css'
 import config from './config'
 
 test('semantics', () => {
-    testCSS('show', '.show{display:block}', config)
-    testCSS('gradient-text', '.gradient-text{-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text}')
-    testCSS('@my-animation', '@keyframes rotate{0%{transform:rotate(-360deg)}to{transform:none}}.\\@my-animation{animation:1s linear infinite rotate}', {
+    expect(new MasterCSS(config).create('show')?.text).toBe('.show{display:block}')
+    expect(new MasterCSS().create('gradient-text')?.text).toBe('.gradient-text{-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text}')
+    expect(new MasterCSS({
         semantics: {
             '@my-animation': {
                 animation: '1s linear infinite rotate'
             }
         }
-    }
-    )
-    testCSS('hide-text', '.hide-text{font-size:0px}', config)
-    testCSS('zero', '.zero{font-size:0px;height:0px}', config)
-    testCSS('full', '.full{width:100%;height:100%}')
+    }).add('@my-animation')?.text).toBe('@keyframes rotate{0%{transform:rotate(-360deg)}to{transform:none}}.\\@my-animation{animation:1s linear infinite rotate}')
+    expect(new MasterCSS(config).create('hide-text')?.text).toBe('.hide-text{font-size:0px}')
+    expect(new MasterCSS(config).create('zero')?.text).toBe('.zero{font-size:0px;height:0px}')
+    expect(new MasterCSS().create('full')?.text).toBe('.full{width:100%;height:100%}')
 })

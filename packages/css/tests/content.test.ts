@@ -1,7 +1,4 @@
-import { testCSS, testProp } from './css'
-
 test('content', () => {
-    // testCSS('content:\'foo\'', '.content\\:\\\'foo\\\'{content:\'foo\'}')
-    // testProp('content:\'foo\'')
-    testProp('content:\'fo\\\'o\'', 'content:\'fo\\\'o\'')
+    // expect(new MasterCSS().create('content:\'foo\'')?.text).toBe('.content\\:\\\'foo\\\'{content:\'foo\'}')
+    expect(new MasterCSS().create('content:\'fo\\\'o\'')?.text).toContain('content:\'fo\\\'o\'')
 })

@@ -140,7 +140,7 @@ export class RuntimeCSS extends MasterCSS {
                                     !(Object.prototype.hasOwnProperty.call(this.ruleBy, className))
                                     && !(Object.prototype.hasOwnProperty.call(this.styles, className))
                                 ) {
-                                    const currentRule = this.create(className)[0]
+                                    const currentRule = this.generate(className)[0]
                                     if (currentRule)
                                         return currentRule
                                 }

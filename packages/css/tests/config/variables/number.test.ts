@@ -1,20 +1,13 @@
-import { testCSS, testProp } from '../../css'
-
 test('number', () => {
-    testProp('m:x1', 'margin:1rem', {
+    expect(new MasterCSS({
         variables: {
             spacing: { x1: 16 }
         }
-    })
+    }).add('m:x1').text).toBe('.m\\:x1{margin:1rem}')
 })
 
 test('number with themes', () => {
-    testCSS('m:x1', [
-        ':root{--spacing-x1:16}',
-        '.dark{--spacing-x1:32}',
-        '.light{--spacing-x1:48}',
-        '.m\\:x1{margin:calc(var(--spacing-x1) / 16 * 1rem)}'
-    ].join(''), {
+    expect(new MasterCSS({
         variables: {
             spacing: {
                 x1: {
@@ -24,15 +17,15 @@ test('number with themes', () => {
                 }
             }
         }
-    })
+    }).add('m:x1').text).toBe([
+        ':root{--spacing-x1:16}',
+        '.dark{--spacing-x1:32}',
+        '.light{--spacing-x1:48}',
+        '.m\\:x1{margin:calc(var(--spacing-x1) / 16 * 1rem)}'
+    ].join(''))
 
     // 無單位屬性不需要 calc
-    testCSS('line-height:x1', [
-        ':root{--line-height-x1:16}',
-        '.dark{--line-height-x1:32}',
-        '.light{--line-height-x1:48}',
-        '.line-height\\:x1{line-height:var(--line-height-x1)}'
-    ].join(''), {
+    expect(new MasterCSS({
         variables: {
             'line-height': {
                 x1: {
@@ -42,24 +35,42 @@ test('number with themes', () => {
                 }
             }
         }
-    })
+    }).add('line-height:x1').text).toBe([
+        ':root{--line-height-x1:16}',
+        '.dark{--line-height-x1:32}',
+        '.light{--line-height-x1:48}',
+        '.line-height\\:x1{line-height:var(--line-height-x1)}'
+    ].join(''))
 })
 
 test('number using variable function', () => {
-    testProp('m:$(spacing-x1)', 'margin:1rem', {
+    expect(new MasterCSS({
         variables: {
             spacing: { x1: 16 }
         }
-    })
+    }).add('m:$(spacing-x1)').text).toBe('.m\\:\\$\\(spacing-x1\\){margin:1rem}')
 })
 
 test('number with themes using variable function', () => {
-    testCSS('m:$(spacing-x1)', [
+    expect(new MasterCSS({
+        variables: {
+            spacing: {
+                x1: {
+                    '': 16,
+                    '@dark': 32,
+                    '@light': 48
+                }
+            }
+        }
+    }).add('m:$(spacing-x1)').text).toBe([
         ':root{--spacing-x1:16}',
         '.dark{--spacing-x1:32}',
         '.light{--spacing-x1:48}',
         '.m\\:\\$\\(spacing-x1\\){margin:calc(var(--spacing-x1) / 16 * 1rem)}'
-    ].join(''), {
+    ].join(''))
+
+    // 無單位屬性不需要 calc
+    expect(new MasterCSS({
         variables: {
             spacing: {
                 x1: {
@@ -69,45 +80,32 @@ test('number with themes using variable function', () => {
                 }
             }
         }
-    })
-
-    // 無單位屬性不需要 calc
-    testCSS('line-height:$(spacing-x1)', [
+    }).add('line-height:$(spacing-x1)').text).toBe([
         ':root{--spacing-x1:16}',
         '.dark{--spacing-x1:32}',
         '.light{--spacing-x1:48}',
         '.line-height\\:\\$\\(spacing-x1\\){line-height:var(--spacing-x1)}'
-    ].join(''), {
-        variables: {
-            spacing: {
-                x1: {
-                    '': 16,
-                    '@dark': 32,
-                    '@light': 48
-                }
-            }
-        }
-    })
+    ].join(''))
 })
 
 test('variables', () => {
-    testCSS('m:$(spacing-x1)', '.m\\:\\$\\(spacing-x1\\){margin:1rem}', {
+    expect(new MasterCSS({
         variables: {
             spacing: { x1: 16, x2: 32 },
         }
-    })
+    }).create('m:$(spacing-x1)')?.text).toBe('.m\\:\\$\\(spacing-x1\\){margin:1rem}')
 })
 
 test('negative variables', () => {
-    testCSS('m:$(-spacing-x1)', '.m\\:\\$\\(-spacing-x1\\){margin:-1rem}', {
+    expect(new MasterCSS({
         variables: {
             spacing: { x1: 16, x2: 32 }
         }
-    })
+    }).create('m:$(-spacing-x1)')?.text).toBe('.m\\:\\$\\(-spacing-x1\\){margin:-1rem}')
 
-    testCSS('w:-11x', '.w\\:-11x{width:-3.75rem}', {
+    expect(new MasterCSS({
         variables: {
             width: { '11x': 60 }
         }
-    })
+    }).add('w:-11x').text).toBe('.w\\:-11x{width:-3.75rem}')
 })

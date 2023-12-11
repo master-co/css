@@ -1,4 +1,4 @@
-import { createValidRules } from '../src'
+import { generateValidRules } from '../src'
 import expectClassWithErrors from './utils/expect-class-with-errors'
 import expectClassWithoutErrors from './utils/expect-class-without-errors'
 import expectClassInvalid from './utils/expect-class-invalid'
@@ -19,10 +19,10 @@ it('validate valid classes', () => {
 })
 
 it('create rules by class', () => {
-    expect(createValidRules('text:center')).toHaveLength(1)
-    expect(createValidRules('text:cente')).toHaveLength(0)
+    expect(generateValidRules('text:center')).toHaveLength(1)
+    expect(generateValidRules('text:cente')).toHaveLength(0)
 })
 
 it('fairly irregular classes can be ignored very well', () => {
-    expect(createValidRules('shadow:rgba(45,43,37,0.05)|0|-1|0|0|inset,rgba(15,14,12,')).toHaveLength(0)
+    expect(generateValidRules('shadow:rgba(45,43,37,0.05)|0|-1|0|0|inset,rgba(15,14,12,')).toHaveLength(0)
 })

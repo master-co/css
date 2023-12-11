@@ -1,14 +1,14 @@
-import { expectOrderOfRules, testProp } from './css'
-
 it('validates gap rules', () => {
-    testProp('gap-x:16', 'column-gap:1rem')
-    testProp('gap-y:16', 'row-gap:1rem')
-    testProp('gap:16', 'gap:1rem')
+    expect(new MasterCSS().create('gap-x:16')?.text).toContain('column-gap:1rem')
+    expect(new MasterCSS().create('gap-y:16')?.text).toContain('row-gap:1rem')
+    expect(new MasterCSS().create('gap:16')?.text).toContain('gap:1rem')
 })
 
 it('checks gap order', () => {
-    expectOrderOfRules(
-        ['gap-x:0', 'gap:0', 'gap-y:0'],
-        ['gap:0', 'gap-x:0', 'gap-y:0']
-    )
+    expect(new MasterCSS().add('gap-x:16', 'gap:16', 'gap-y:16').rules)
+        .toMatchObject([
+            { className: 'gap:16' },
+            { className: 'gap-x:16' },
+            { className: 'gap-y:16' }
+        ])
 })

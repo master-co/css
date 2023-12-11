@@ -22,14 +22,14 @@ npm run test
 Taking the CSS project as an example, you can freely create a file like **aron.test.ts** in [packages/css/tests/contributions](https://github.com/master-co/css/tree/dev/beta/packages/css/tests/contributions) for unit testing:
 
 ```ts
-import { testProp, testCSS } from './css'
+import { MasterCSS } from '../src'
 
 it('should generated with `background-color:` instead of `background:`', () => {
-    testProp('bg:red', 'background-color:#d11a1e')
+    expect(new MasterCSS().create('bg:red')?.declarations).toStrictEqual({ 'background-color': '#d11a1e' })
 })
 
 it('should contain the `:hover` selector', () => {
-    testProp('fg:white:hover', '.f\\:white\\:hover:hover{color:#ffffff}')
+    expect(new MasterCSS().create('fg:white:hover')?.text).toBe('.f\\:white\\:hover:hover{color:#ffffff}')
 })
 ```
 

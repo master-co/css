@@ -1,17 +1,8 @@
-import { testCSS } from '../css'
-
 describe('@tve', () => {
     it('scope', () => {
-        testCSS(
-            'pt:2ex',
-            '.master-css .pt\\:2ex{padding-top:2ex}',
-            { scope: '.master-css' }
-        )
-
-        testCSS(
-            'pt:2ex@dark',
-            '.dark .master-css .pt\\:2ex\\@dark{padding-top:2ex}',
-            { scope: '.master-css' }
-        )
+        expect(new MasterCSS({ scope: '.master-css' }).add('pt:2ex').text)
+            .toBe('.master-css .pt\\:2ex{padding-top:2ex}')
+        expect(new MasterCSS({ scope: '.master-css' }).add('pt:2ex@dark').text)
+            .toBe('.dark .master-css .pt\\:2ex\\@dark{padding-top:2ex}')
     })
 })

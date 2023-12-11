@@ -1,6 +1,5 @@
 import { Config } from '../../src/config'
 import { extend } from '../../src'
-import { testCSS } from '../css'
 
 const buttonTokens = Object.freeze({
     primary: '$(button-primary)',
@@ -67,77 +66,51 @@ const config = extend(colorConfig, textConfig, buttonConfig)
 describe('jetsai', () => {
 
     test('button config', () => {
-        testCSS(
-            'bg:button-primary',
-            '.bg\\:button-primary,.btn-primary{background-color:rgb(34 66 163)}',
-            config
-        )
-        testCSS(
-            'bg:button-primary-hover',
-            '.bg\\:button-primary-hover{background-color:rgb(21 37 89)}',
-            config
-        )
-        testCSS(
-            'bg:button-primary-disabled',
-            '.bg\\:button-primary-disabled{background-color:rgb(205 224 247)}',
-            config
-        )
-        testCSS(
-            'bg:button-disabled',
-            '.bg\\:button-disabled{background-color:rgb(233 238 248)}',
-            config
-        )
-        testCSS(
-            'bg:button-background-hover',
-            '.bg\\:button-background-hover{background:button-background-hover}',
-            config
-        )
-        testCSS(
-            'btn-primary',
-            '.bg\\:button-primary,.btn-primary{background-color:rgb(34 66 163)}.t\\:text-on-color,.btn-primary{-webkit-text-fill-color:rgb(255 255 255)}.bg\\:button-primary-hover\\:hover:hover,.btn-primary:hover{background-color:rgb(21 37 89)}.bg\\:button-primary-disabled\\:disabled:disabled,.btn-primary:disabled{background-color:rgb(205 224 247)}.t\\:text-disabled\\:disabled:disabled,.btn-primary:disabled{-webkit-text-fill-color:rgb(146 151 161)}',
-            config
-        )
+        expect(new MasterCSS(config).add('bg:button-primary').text)
+        .toBe('.bg\\:button-primary,.btn-primary{background-color:rgb(34 66 163)}')
+
+        expect(new MasterCSS(config).add('bg:button-primary-hover').text)
+        .toBe('.bg\\:button-primary-hover{background-color:rgb(21 37 89)}')
+
+        expect(new MasterCSS(config).add('bg:button-primary-disabled').text)
+        .toBe('.bg\\:button-primary-disabled{background-color:rgb(205 224 247)}')
+
+        expect(new MasterCSS(config).add('bg:button-disabled').text)
+        .toBe('.bg\\:button-disabled{background-color:rgb(233 238 248)}')
+
+        expect(new MasterCSS(config).add('bg:button-background-hover').text)
+        .toBe('.bg\\:button-background-hover{background:button-background-hover}')
+
+        expect(new MasterCSS(config).add('btn-primary').text)
+        .toBe('.bg\\:button-primary,.btn-primary{background-color:rgb(34 66 163)}.t\\:text-on-color,.btn-primary{-webkit-text-fill-color:rgb(255 255 255)}.bg\\:button-primary-hover\\:hover:hover,.btn-primary:hover{background-color:rgb(21 37 89)}.bg\\:button-primary-disabled\\:disabled:disabled,.btn-primary:disabled{background-color:rgb(205 224 247)}.t\\:text-disabled\\:disabled:disabled,.btn-primary:disabled{-webkit-text-fill-color:rgb(146 151 161)}')
+
     })
 
     test('color config', () => {
-        testCSS(
-            'bg:blue200',
-            '.bg\\:blue200{background-color:rgb(205 224 247)}',
-            config
-        )
-        testCSS(
-            'bg:blue700',
-            '.bg\\:blue700{background-color:rgb(34 66 163)}',
-            config
-        )
-        testCSS(
-            'bg:blue900',
-            '.bg\\:blue900{background-color:rgb(21 37 89)}',
-            config
-        )
-        testCSS(
-            'bg:gray200',
-            '.bg\\:gray200{background-color:rgb(233 238 248)}',
-            config
-        )
-        testCSS(
-            'bg:gray500',
-            '.bg\\:gray500{background-color:rgb(146 151 161)}',
-            config
-        )
+        expect(new MasterCSS(config).add('bg:blue200').text)
+        .toBe('.bg\\:blue200{background-color:rgb(205 224 247)}')
+
+        expect(new MasterCSS(config).add('bg:blue700').text)
+        .toBe('.bg\\:blue700{background-color:rgb(34 66 163)}')
+
+        expect(new MasterCSS(config).add('bg:blue900').text)
+        .toBe('.bg\\:blue900{background-color:rgb(21 37 89)}')
+
+        expect(new MasterCSS(config).add('bg:gray200').text)
+        .toBe('.bg\\:gray200{background-color:rgb(233 238 248)}')
+
+        expect(new MasterCSS(config).add('bg:gray500').text)
+        .toBe('.bg\\:gray500{background-color:rgb(146 151 161)}')
+
     })
 
     test('text config', () => {
-        testCSS(
-            'bg:text-disabled',
-            '.bg\\:text-disabled{background-color:rgb(146 151 161)}',
-            config
-        )
-        testCSS(
-            'bg:text-on-color',
-            '.bg\\:text-on-color{background-color:rgb(255 255 255)}',
-            config
-        )
+        expect(new MasterCSS(config).add('bg:text-disabled').text)
+        .toBe('.bg\\:text-disabled{background-color:rgb(146 151 161)}')
+
+        expect(new MasterCSS(config).add('bg:text-on-color').text)
+        .toBe('.bg\\:text-on-color{background-color:rgb(255 255 255)}')
+
     })
 
 })

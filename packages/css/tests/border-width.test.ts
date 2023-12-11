@@ -1,18 +1,37 @@
-import { expectOrderOfRules, testProp } from './css'
-
 it('validates border-width rules', () => {
-    testProp(['b:16', 'border:16', 'border-width:16'], 'border-width:1rem')
-    testProp(['bb:16', 'border-bottom:16', 'border-bottom-width:16'], 'border-bottom-width:1rem')
-    testProp(['bt:16', 'border-top:16', 'border-top-width:16'], 'border-top-width:1rem')
-    testProp(['bl:16', 'border-left:16', 'border-left-width:16'], 'border-left-width:1rem')
-    testProp(['br:16', 'border-right:16', 'border-right-width:16'], 'border-right-width:1rem')
-    testProp(['bx:16', 'border-x:16', 'border-x-width:16'], 'border-left-width:1rem;border-right-width:1rem')
-    testProp('border:16|solid', 'border:1rem solid')
+    expect(new MasterCSS().create('b:16')?.text).toContain('border-width:1rem')
+    expect(new MasterCSS().create('border:16')?.text).toContain('border-width:1rem')
+    expect(new MasterCSS().create('border-width:16')?.text).toContain('border-width:1rem')
+
+    expect(new MasterCSS().create('bb:16')?.text).toContain('border-bottom-width:1rem')
+    expect(new MasterCSS().create('border-bottom:16')?.text).toContain('border-bottom-width:1rem')
+    expect(new MasterCSS().create('border-bottom-width:16')?.text).toContain('border-bottom-width:1rem')
+
+    expect(new MasterCSS().create('bt:16')?.text).toContain('border-top-width:1rem')
+    expect(new MasterCSS().create('border-top:16')?.text).toContain('border-top-width:1rem')
+    expect(new MasterCSS().create('border-top-width:16')?.text).toContain('border-top-width:1rem')
+
+    expect(new MasterCSS().create('bl:16')?.text).toContain('border-left-width:1rem')
+    expect(new MasterCSS().create('border-left:16')?.text).toContain('border-left-width:1rem')
+    expect(new MasterCSS().create('border-left-width:16')?.text).toContain('border-left-width:1rem')
+
+    expect(new MasterCSS().create('br:16')?.text).toContain('border-right-width:1rem')
+    expect(new MasterCSS().create('border-right:16')?.text).toContain('border-right-width:1rem')
+    expect(new MasterCSS().create('border-right-width:16')?.text).toContain('border-right-width:1rem')
+
+    expect(new MasterCSS().create('bx:16')?.text).toContain('border-left-width:1rem;border-right-width:1rem')
+    expect(new MasterCSS().create('border-x:16')?.text).toContain('border-left-width:1rem;border-right-width:1rem')
+    expect(new MasterCSS().create('border-x-width:16')?.text).toContain('border-left-width:1rem;border-right-width:1rem')
+
+    expect(new MasterCSS().create('border:16|solid')?.text).toContain('border:1rem solid')
 })
 
 it('checks border-width order', () => {
-    expectOrderOfRules(
-        ['bt:16', 'b:16', 'bl:16', 'bx:16'],
-        ['b:16', 'bx:16', 'bl:16', 'bt:16']
-    )
+    expect(new MasterCSS().add('bt:16', 'b:16', 'bl:16', 'bx:16').rules)
+        .toMatchObject([
+            { className: 'b:16' },
+            { className: 'bx:16' },
+            { className: 'bl:16' },
+            { className: 'bt:16' }
+        ])
 })

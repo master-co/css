@@ -1,6 +1,7 @@
-import { testProp } from './css'
-
 it('animation-iteration-count', () => {
-    testProp(['animation-iteration-count:infinite', '@iteration:infinite'], 'animation-iteration-count:infinite')
-    testProp(['animation-iteration-count:1', '@iteration:1'], 'animation-iteration-count:1')
+    expect(new MasterCSS().create('animation-iteration-count:infinite')?.declarations).toStrictEqual({ 'animation-iteration-count': 'infinite' })
+    expect(new MasterCSS().create('@iteration:infinite')?.declarations).toStrictEqual({ 'animation-iteration-count': 'infinite' })
+
+    expect(new MasterCSS().create('animation-iteration-count:1')?.declarations).toStrictEqual({ 'animation-iteration-count': '1' })
+    expect(new MasterCSS().create('@iteration:1')?.declarations).toStrictEqual({ 'animation-iteration-count': '1' })
 })

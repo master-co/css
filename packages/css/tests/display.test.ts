@@ -1,6 +1,4 @@
-import { testCSS } from './css'
-
 test('display', () => {
-    testCSS('flex', '.flex{display:flex}')
-    testCSS('flex@sm', '@media (min-width:834px){.flex\\@sm{display:flex}}')
+    expect(new MasterCSS().create('flex')?.text).toBe('.flex{display:flex}')
+    expect(new MasterCSS().create('flex@sm')?.text).toBe('@media (min-width:834px){.flex\\@sm{display:flex}}')
 })

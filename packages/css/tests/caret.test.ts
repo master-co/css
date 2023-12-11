@@ -1,6 +1,4 @@
-import { testProp } from './css'
-
 test('caret', () => {
-    testProp('caret:current', 'caret-color:currentColor')
-    testProp('caret:transparent', 'caret-color:transparent')
+    expect(new MasterCSS().create('caret:current')?.text).toContain('caret-color:currentColor')
+    expect(new MasterCSS().create('caret:transparent')?.text).toContain('caret-color:transparent')
 })

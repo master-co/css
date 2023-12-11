@@ -1,4 +1,3 @@
-import { MasterCSS } from '../../../src'
 import { config } from './master-css'
 
 it('config extends', () => {

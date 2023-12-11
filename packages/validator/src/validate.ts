@@ -22,7 +22,7 @@ export default function validate(
     } else {
         css = new MasterCSS(options?.config)
     }
-    const rules = css.create(syntax)
+    const rules = css.generate(syntax)
     if (rules.length) {
         const errors = []
         for (const eachRule of rules) {

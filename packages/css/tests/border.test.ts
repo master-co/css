@@ -1,64 +1,79 @@
-import { expectOrderOfRules, testCSS, testProp } from './css'
-
 test('border', () => {
-    testProp('border:current', 'border-color:currentColor')
-    testProp('border:transparent', 'border-color:transparent')
-    testProp('border:black', 'border-color:rgb(0 0 0)')
-    testProp('border:2|black', 'border:0.125rem rgb(0 0 0) solid')
-    testProp('border:1', 'border-width:0.0625rem')
-    testProp('border:dashed|black', 'border:dashed rgb(0 0 0)')
-    testProp('border:solid', 'border-style:solid')
-    testProp('border:1rem|solid', 'border:1rem solid')
-    testProp('border:thick|double|black', 'border:thick double rgb(0 0 0)')
-    testProp('border:none', 'border-style:none')
-    testProp('border:auto', 'border-style:auto')
-    testProp('border:unset', 'border:unset')
-    testProp('border:inherit', 'border:inherit')
-    testProp('border:initial', 'border:initial')
-    testProp('border:revert', 'border:revert')
-    testProp('border:revert-layer', 'border:revert-layer')
-    testProp('border:auto|1', 'border:auto 0.0625rem')
+    expect(new MasterCSS().create('border:current')?.text).toContain('border-color:currentColor')
+    expect(new MasterCSS().create('border:transparent')?.text).toContain('border-color:transparent')
+    expect(new MasterCSS().create('border:black')?.text).toContain('border-color:rgb(0 0 0)')
+    expect(new MasterCSS().create('border:2|black')?.text).toContain('border:0.125rem rgb(0 0 0) solid')
+    expect(new MasterCSS().create('border:1')?.text).toContain('border-width:0.0625rem')
+    expect(new MasterCSS().create('border:dashed|black')?.text).toContain('border:dashed rgb(0 0 0)')
+    expect(new MasterCSS().create('border:solid')?.text).toContain('border-style:solid')
+    expect(new MasterCSS().create('border:1rem|solid')?.text).toContain('border:1rem solid')
+    expect(new MasterCSS().create('border:thick|double|black')?.text).toContain('border:thick double rgb(0 0 0)')
+    expect(new MasterCSS().create('border:none')?.text).toContain('border-style:none')
+    expect(new MasterCSS().create('border:auto')?.text).toContain('border-style:auto')
+    expect(new MasterCSS().create('border:unset')?.text).toContain('border:unset')
+    expect(new MasterCSS().create('border:inherit')?.text).toContain('border:inherit')
+    expect(new MasterCSS().create('border:initial')?.text).toContain('border:initial')
+    expect(new MasterCSS().create('border:revert')?.text).toContain('border:revert')
+    expect(new MasterCSS().create('border:revert-layer')?.text).toContain('border:revert-layer')
+    expect(new MasterCSS().create('border:auto|1')?.text).toContain('border:auto 0.0625rem')
 })
 
 it('validates border rules', () => {
-    testProp(['b:16|solid', 'border:16|solid'], 'border:1rem solid')
-    testProp(['bt:16|solid', 'border-top:16|solid'], 'border-top:1rem solid')
-    testProp(['bb:16|solid', 'border-bottom:16|solid'], 'border-bottom:1rem solid')
-    testProp(['bl:16|solid', 'border-left:16|solid'], 'border-left:1rem solid')
-    testProp(['br:16|solid', 'border-right:16|solid'], 'border-right:1rem solid')
-    testProp(['bx:16|solid', 'border-x:16|solid'], 'border-left:1rem solid;border-right:1rem solid')
-    testProp(['by:16|solid', 'border-y:16|solid'], 'border-top:1rem solid;border-bottom:1rem solid')
-    testProp(['br:1px|solid|gray'], 'border-right:1px solid rgb(107 106 109)')
-    testProp(['br:1px|gray'], 'border-right:1px rgb(107 106 109) solid')
+    expect(new MasterCSS().create('b:16|solid')?.text).toContain('border:1rem solid')
+    expect(new MasterCSS().create('border:16|solid')?.text).toContain('border:1rem solid')
+
+    expect(new MasterCSS().create('bt:16|solid')?.text).toContain('border-top:1rem solid')
+    expect(new MasterCSS().create('border-top:16|solid')?.text).toContain('border-top:1rem solid')
+
+    expect(new MasterCSS().create('bb:16|solid')?.text).toContain('border-bottom:1rem solid')
+    expect(new MasterCSS().create('border-bottom:16|solid')?.text).toContain('border-bottom:1rem solid')
+
+    expect(new MasterCSS().create('bl:16|solid')?.text).toContain('border-left:1rem solid')
+    expect(new MasterCSS().create('border-left:16|solid')?.text).toContain('border-left:1rem solid')
+
+    expect(new MasterCSS().create('br:16|solid')?.text).toContain('border-right:1rem solid')
+    expect(new MasterCSS().create('border-right:16|solid')?.text).toContain('border-right:1rem solid')
+
+    expect(new MasterCSS().create('bx:16|solid')?.text).toContain('border-left:1rem solid;border-right:1rem solid')
+    expect(new MasterCSS().create('border-x:16|solid')?.text).toContain('border-left:1rem solid;border-right:1rem solid')
+
+    expect(new MasterCSS().create('by:16|solid')?.text).toContain('border-top:1rem solid;border-bottom:1rem solid')
+    expect(new MasterCSS().create('border-y:16|solid')?.text).toContain('border-top:1rem solid;border-bottom:1rem solid')
+
+    expect(new MasterCSS().create('br:1px|solid|gray')?.text).toContain('border-right:1px solid rgb(107 106 109)')
+
+    expect(new MasterCSS().create('br:1px|gray')?.text).toContain('border-right:1px rgb(107 106 109) solid')
 })
 
 it('checks border order', () => {
-    expectOrderOfRules(
-        ['bt:1|solid', 'b:1|solid', 'br:1|solid'],
-        ['b:1|solid', 'br:1|solid', 'bt:1|solid']
-    )
+    expect(new MasterCSS().add('bt:1|solid', 'b:1|solid', 'br:1|solid').rules)
+        .toMatchObject([
+            { className: 'b:1|solid' },
+            { className: 'br:1|solid' },
+            { className: 'bt:1|solid' }
+        ])
 })
 
 test('autofill solid', () => {
-    testProp('border:16|black', 'border:1rem rgb(0 0 0) solid')
-    testProp('border:16|black|solid', 'border:1rem rgb(0 0 0) solid')
-    testProp('border:16|black|line', 'border:1rem rgb(0 0 0) solid', { variables: { line: 'solid' } })
-    testCSS('border:16|line', [
-        '.light{--line:solid}',
-        '.dark{--line:dotted}',
-        '.border\\:16\\|line{border:1rem var(--line) solid}'
-    ], {
+    expect(new MasterCSS().create('border:16|black')?.text).toContain('border:1rem rgb(0 0 0) solid')
+    expect(new MasterCSS().create('border:16|black|solid')?.text).toContain('border:1rem rgb(0 0 0) solid')
+    expect(new MasterCSS({ variables: { line: 'solid' } }).create('border:16|black|line')?.text).toContain('border:1rem rgb(0 0 0) solid')
+    expect(new MasterCSS({
         variables: {
             line: { '@light': 'solid', '@dark': 'dotted' }
         }
-    })
-    testCSS('border:16|primary', [
-        '.light{--primary:0 0 0}',
-        '.dark{--primary:255 255 255}',
-        '.border\\:16\\|primary{border:1rem rgb(var(--primary)) solid}'
-    ], {
+    }).add('border:16|line').text).toBe(
+        '.light{--line:solid}' +
+        '.dark{--line:dotted}' +
+        '.border\\:16\\|line{border:1rem var(--line) solid}'
+    )
+    expect(new MasterCSS({
         variables: {
             primary: { '@light': '#000000', '@dark': '#ffffff' }
         }
-    })
+    }).add('border:16|primary').text).toBe(
+        '.light{--primary:0 0 0}' +
+        '.dark{--primary:255 255 255}' +
+        '.border\\:16\\|primary{border:1rem rgb(var(--primary)) solid}'
+    )
 })

@@ -419,54 +419,59 @@ export class MasterCSS {
     }
 
     /**
-     * Match check if Master CSS class syntax
-     * @param syntax class syntax
+     * Match check if Master CSS syntax
+     * @param className
      * @returns css text
      */
-    match(syntax: string): RegisteredRule | undefined {
+    match(className: string): RegisteredRule | undefined {
         // 1. rules
         for (const eachRegisteredRule of this.RegisteredRules) {
             if (
-                eachRegisteredRule.match?.test(syntax) ||
+                eachRegisteredRule.match?.test(className) ||
                 (
                     eachRegisteredRule.definition.layer === Layer.Native ||
                     eachRegisteredRule.definition.layer === Layer.NativeShorthand ||
                     eachRegisteredRule.definition.layer === Layer.CoreNative ||
                     eachRegisteredRule.definition.layer === Layer.CoreNativeShorthand
-                ) && syntax.startsWith(eachRegisteredRule.id + ':')
+                ) && className.startsWith(eachRegisteredRule.id + ':')
             ) {
                 return eachRegisteredRule
             }
         }
         // 2. semantic rules
         for (const EachRegisteredSemanticRule of this.RegisteredSemanticRules) {
-            if (EachRegisteredSemanticRule.match?.test(syntax)) {
+            if (EachRegisteredSemanticRule.match?.test(className)) {
                 return EachRegisteredSemanticRule
             }
         }
     }
 
     /**
-     * Create rules from class syntax
-     * @param syntax class syntax
+     * Generate rules from class name
+     * @param className
      * @returns Rule[]
      */
-    create(syntax: string): Rule[] {
-        const create = (eachSyntax: string) => {
-            if (Object.prototype.hasOwnProperty.call(this.ruleBy, eachSyntax))
-                return this.ruleBy[eachSyntax]
-
-            const RegistedRule = this.match(eachSyntax)
-            if (RegistedRule) {
-                return new Rule(eachSyntax, RegistedRule, this)
-            }
-        }
+    generate(className: string): Rule[] {
         return (
-            Object.prototype.hasOwnProperty.call(this.styles, syntax)
-                ? this.styles[syntax].map((eachSyntax) => create(eachSyntax))
-                : [create(syntax)]
+            Object.prototype.hasOwnProperty.call(this.styles, className)
+                ? this.styles[className].map((eachSyntax) => this.create(eachSyntax))
+                : [this.create(className)]
         )
             .filter(eachRule => eachRule && eachRule.text) as Rule[]
+    }
+
+    /**
+     * Create rule from given syntax
+     * @param syntax
+     * @returns Rule
+     */
+    create(syntax: string) {
+        if (Object.prototype.hasOwnProperty.call(this.ruleBy, syntax))
+            return this.ruleBy[syntax]
+        const RegistedRule = this.match(syntax)
+        if (RegistedRule) {
+            return new Rule(syntax, RegistedRule, this)
+        }
     }
 
     /**
@@ -520,17 +525,19 @@ export class MasterCSS {
         return this
     }
 
-    add(syntax: string): boolean {
-        const rules = this.create(syntax)
-        if (rules.length) {
-            this.insert(rules)
-            return true
-        } else {
-            return false
+    add(...classNames: string[]) {
+        for (const className of classNames) {
+            const rules = this.generate(className)
+            if (rules.length) {
+                for (const rule of rules) {
+                    this.insert(rule)
+                }
+            }
         }
+        return this
     }
 
-    delete(syntax: string) {
+    delete(...classNames: string[]) {
         /**
          * class name 從 DOM tree 中被移除，
          * 匹配並刪除對應的 rule
@@ -617,16 +624,18 @@ export class MasterCSS {
             rule.definition.delete?.call(rule, name)
         }
 
-        if (Object.prototype.hasOwnProperty.call(this.styles, syntax)) {
-            for (const eachClassName of this.styles[syntax]) {
-                if (!Object.prototype.hasOwnProperty.call(this.classesUsage, eachClassName)) {
-                    deleteRule(eachClassName)
+        for (const className of classNames) {
+            if (Object.prototype.hasOwnProperty.call(this.styles, className)) {
+                for (const eachClassName of this.styles[className]) {
+                    if (!Object.prototype.hasOwnProperty.call(this.classesUsage, eachClassName)) {
+                        deleteRule(eachClassName)
+                    }
                 }
-            }
 
-            delete this.ruleBy[syntax]
-        } else {
-            deleteRule(syntax)
+                delete this.ruleBy[className]
+            } else {
+                deleteRule(className)
+            }
         }
     }
 
@@ -645,332 +654,331 @@ export class MasterCSS {
     * 11. media width where selectors
     * 12. media width selectors
     */
-    insert(rules: Rule[]) {
-        for (const rule of rules) {
-            if (this.ruleBy[rule.className])
-                continue
+    insert(rule: Rule) {
+        if (this.ruleBy[rule.className])
+            return
 
-            let index: number | undefined
-            /**
-             * 必須按斷點值遞增，並透過索引插入，
-             * 以實現響應式先後套用的規則
-             * @example <1  <2  <3  ALL  >=1 >=2 >=3
-             * @description
-             */
-            const endIndex = this.rules.length - 1
-            const { media, order, priority, hasWhere, className } = rule
+        let index: number | undefined
+        /**
+         * 必須按斷點值遞增，並透過索引插入，
+         * 以實現響應式先後套用的規則
+         * @example <1  <2  <3  ALL  >=1 >=2 >=3
+         * @description
+         */
+        const endIndex = this.rules.length - 1
+        const { media, order, priority, hasWhere, className } = rule
 
-            const findIndex = (startIndex: number, stopCheck?: (rule: Rule) => any, matchCheck?: (rule: Rule) => any) => {
-                let i = startIndex
-                for (; i <= endIndex; i++) {
-                    const eachRule = this.rules[i]
-                    if (stopCheck?.(eachRule))
-                        return matchCheck
-                            ? -1
-                            : i - 1
-                    if (matchCheck?.(eachRule))
-                        return i
-                }
-
-                return matchCheck
-                    ? -1
-                    : i - 1
+        const findIndex = (startIndex: number, stopCheck?: (rule: Rule) => any, matchCheck?: (rule: Rule) => any) => {
+            let i = startIndex
+            for (; i <= endIndex; i++) {
+                const eachRule = this.rules[i]
+                if (stopCheck?.(eachRule))
+                    return matchCheck
+                        ? -1
+                        : i - 1
+                if (matchCheck?.(eachRule))
+                    return i
             }
 
-            let matchStartIndex: number | undefined
-            let matchEndIndex: number | undefined
-            if (media) {
-                const mediaStartIndex = this.rules.findIndex(eachRule => eachRule.media)
-                if (mediaStartIndex === -1) {
-                    index = endIndex + 1
-                } else {
-                    const { 'max-width': maxWidthFeature, 'min-width': minWidthFeature } = media.features
-                    if (maxWidthFeature || minWidthFeature) {
-                        const mediaWidthStartIndex = this.rules.findIndex(eachRule => eachRule.media?.features['max-width'] || eachRule.media?.features['min-width'])
-                        if (mediaWidthStartIndex === -1) {
-                            index = endIndex + 1
-                        } else {
-                            if (maxWidthFeature && minWidthFeature) {
-                                /**
-                                 * 範圍越小 ( 越限定 越侷限 ) 越優先，
-                                 * 按照範圍 max-width - min-width 遞減排序
-                                 * find 第一個所遇到同樣 feature 且範圍值比自己大的 rule，
-                                 * 並插入在該 rule 之後，讓自己優先被套用
-                                 */
-                                if (priority === -1) {
-                                    matchStartIndex = findIndex(
-                                        mediaWidthStartIndex,
-                                        eachRule => eachRule.priority !== -1,
-                                        eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width']
-                                    )
-                                    matchEndIndex = findIndex(
-                                        mediaWidthStartIndex,
-                                        eachRule => eachRule.priority !== -1
-                                    )
-                                } else {
-                                    matchStartIndex = findIndex(
-                                        mediaWidthStartIndex,
-                                        undefined,
-                                        eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1
-                                    )
-                                    matchEndIndex = endIndex
-                                }
+            return matchCheck
+                ? -1
+                : i - 1
+        }
 
-                                if (matchStartIndex !== -1) {
-                                    const range = maxWidthFeature.value - minWidthFeature.value
-
-                                    let i = matchEndIndex
-                                    const endI = matchStartIndex
-                                    matchStartIndex = undefined
-                                    for (; i >= endI; i--) {
-                                        const { 'max-width': eachMaxWidthFeature, 'min-width': eachMinWidthFeature } = this.rules[i].media.features
-                                        const eachRange = eachMaxWidthFeature.value - eachMinWidthFeature.value
-                                        if (eachRange < range) {
-                                            matchEndIndex = i - 1
-                                        } else if (eachRange === range) {
-                                            matchStartIndex = i
-                                        } else {
-                                            break
-                                        }
-                                    }
-                                }
-
-                                if (matchStartIndex !== -1 && matchStartIndex !== undefined) {
-                                    const range = maxWidthFeature.value - minWidthFeature.value
-                                    for (let i = matchEndIndex; i >= matchStartIndex; i--) {
-                                        const { 'max-width': eachMaxWidthFeature, 'min-width': eachMinWidthFeature } = this.rules[i].media.features
-                                        const eachRange = eachMaxWidthFeature.value - eachMinWidthFeature.value
-                                        if (eachRange < range) {
-                                            matchEndIndex = i - 1
-                                        } else if (eachRange > range) {
-                                            matchStartIndex = i + 1
-                                            break
-                                        }
-                                    }
-                                }
-                            } else if (minWidthFeature) {
-                                /**
-                                 * find 第一個所遇到同樣 feature 且值比自己大的 rule，
-                                 * 並插入在該 rule 之後，讓自己優先被套用
-                                 */
-                                if (priority === -1) {
-                                    matchStartIndex = findIndex(
-                                        mediaWidthStartIndex,
-                                        eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] || eachRule.priority !== -1,
-                                        eachRule => !eachRule.media.features['max-width'] && eachRule.media.features['min-width']
-                                    )
-                                    matchEndIndex = findIndex(
-                                        mediaWidthStartIndex,
-                                        eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] || eachRule.priority !== -1
-                                    )
-                                } else {
-                                    matchStartIndex = findIndex(
-                                        mediaWidthStartIndex,
-                                        eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1,
-                                        eachRule => !eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1
-                                    )
-                                    matchEndIndex = findIndex(
-                                        mediaWidthStartIndex,
-                                        eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1
-                                    )
-                                }
-
-                                if (matchStartIndex !== -1) {
-                                    for (let i = matchEndIndex; i >= matchStartIndex; i--) {
-                                        const value = this.rules[i].media.features['min-width'].value
-                                        if (value > minWidthFeature.value) {
-                                            matchEndIndex = i - 1
-                                        } else if (value < minWidthFeature.value) {
-                                            matchStartIndex = i + 1
-                                            break
-                                        }
-                                    }
-                                }
+        let matchStartIndex: number | undefined
+        let matchEndIndex: number | undefined
+        if (media) {
+            const mediaStartIndex = this.rules.findIndex(eachRule => eachRule.media)
+            if (mediaStartIndex === -1) {
+                index = endIndex + 1
+            } else {
+                const { 'max-width': maxWidthFeature, 'min-width': minWidthFeature } = media.features
+                if (maxWidthFeature || minWidthFeature) {
+                    const mediaWidthStartIndex = this.rules.findIndex(eachRule => eachRule.media?.features['max-width'] || eachRule.media?.features['min-width'])
+                    if (mediaWidthStartIndex === -1) {
+                        index = endIndex + 1
+                    } else {
+                        if (maxWidthFeature && minWidthFeature) {
+                            /**
+                             * 範圍越小 ( 越限定 越侷限 ) 越優先，
+                             * 按照範圍 max-width - min-width 遞減排序
+                             * find 第一個所遇到同樣 feature 且範圍值比自己大的 rule，
+                             * 並插入在該 rule 之後，讓自己優先被套用
+                             */
+                            if (priority === -1) {
+                                matchStartIndex = findIndex(
+                                    mediaWidthStartIndex,
+                                    eachRule => eachRule.priority !== -1,
+                                    eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width']
+                                )
+                                matchEndIndex = findIndex(
+                                    mediaWidthStartIndex,
+                                    eachRule => eachRule.priority !== -1
+                                )
                             } else {
-                                /**
-                                 * find 第一個所遇到同樣 feature 且值比自己大的 rule，
-                                 * 並插入在該 rule 之後，讓自己優先被套用
-                                 */
-                                if (priority === -1) {
-                                    matchStartIndex = findIndex(
-                                        mediaWidthStartIndex,
-                                        eachRule => eachRule.media.features['min-width'] || eachRule.priority !== -1,
-                                        eachRule => eachRule.media.features['max-width']
-                                    )
-                                    matchEndIndex = findIndex(
-                                        mediaWidthStartIndex,
-                                        eachRule => eachRule.media.features['min-width'] || eachRule.priority !== -1
-                                    )
-                                } else {
-                                    matchStartIndex = findIndex(
-                                        mediaWidthStartIndex,
-                                        eachRule => eachRule.media.features['min-width'] && eachRule.priority !== -1,
-                                        eachRule => eachRule.media.features['max-width'] && eachRule.priority !== -1
-                                    )
-                                    matchEndIndex = findIndex(
-                                        mediaWidthStartIndex,
-                                        eachRule => eachRule.media.features['min-width'] && eachRule.priority !== -1
-                                    )
-                                }
+                                matchStartIndex = findIndex(
+                                    mediaWidthStartIndex,
+                                    undefined,
+                                    eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1
+                                )
+                                matchEndIndex = endIndex
+                            }
 
-                                if (matchStartIndex !== -1) {
-                                    for (let i = matchEndIndex; i >= matchStartIndex; i--) {
-                                        const value = this.rules[i].media.features['max-width'].value
-                                        if (value < maxWidthFeature.value) {
-                                            matchEndIndex = i - 1
-                                        } else if (value > maxWidthFeature.value) {
-                                            matchStartIndex = i + 1
-                                            break
-                                        }
+                            if (matchStartIndex !== -1) {
+                                const range = maxWidthFeature.value - minWidthFeature.value
+
+                                let i = matchEndIndex
+                                const endI = matchStartIndex
+                                matchStartIndex = undefined
+                                for (; i >= endI; i--) {
+                                    const { 'max-width': eachMaxWidthFeature, 'min-width': eachMinWidthFeature } = this.rules[i].media.features
+                                    const eachRange = eachMaxWidthFeature.value - eachMinWidthFeature.value
+                                    if (eachRange < range) {
+                                        matchEndIndex = i - 1
+                                    } else if (eachRange === range) {
+                                        matchStartIndex = i
+                                    } else {
+                                        break
+                                    }
+                                }
+                            }
+
+                            if (matchStartIndex !== -1 && matchStartIndex !== undefined) {
+                                const range = maxWidthFeature.value - minWidthFeature.value
+                                for (let i = matchEndIndex; i >= matchStartIndex; i--) {
+                                    const { 'max-width': eachMaxWidthFeature, 'min-width': eachMinWidthFeature } = this.rules[i].media.features
+                                    const eachRange = eachMaxWidthFeature.value - eachMinWidthFeature.value
+                                    if (eachRange < range) {
+                                        matchEndIndex = i - 1
+                                    } else if (eachRange > range) {
+                                        matchStartIndex = i + 1
+                                        break
+                                    }
+                                }
+                            }
+                        } else if (minWidthFeature) {
+                            /**
+                             * find 第一個所遇到同樣 feature 且值比自己大的 rule，
+                             * 並插入在該 rule 之後，讓自己優先被套用
+                             */
+                            if (priority === -1) {
+                                matchStartIndex = findIndex(
+                                    mediaWidthStartIndex,
+                                    eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] || eachRule.priority !== -1,
+                                    eachRule => !eachRule.media.features['max-width'] && eachRule.media.features['min-width']
+                                )
+                                matchEndIndex = findIndex(
+                                    mediaWidthStartIndex,
+                                    eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] || eachRule.priority !== -1
+                                )
+                            } else {
+                                matchStartIndex = findIndex(
+                                    mediaWidthStartIndex,
+                                    eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1,
+                                    eachRule => !eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1
+                                )
+                                matchEndIndex = findIndex(
+                                    mediaWidthStartIndex,
+                                    eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1
+                                )
+                            }
+
+                            if (matchStartIndex !== -1) {
+                                for (let i = matchEndIndex; i >= matchStartIndex; i--) {
+                                    const value = this.rules[i].media.features['min-width'].value
+                                    if (value > minWidthFeature.value) {
+                                        matchEndIndex = i - 1
+                                    } else if (value < minWidthFeature.value) {
+                                        matchStartIndex = i + 1
+                                        break
+                                    }
+                                }
+                            }
+                        } else {
+                            /**
+                             * find 第一個所遇到同樣 feature 且值比自己大的 rule，
+                             * 並插入在該 rule 之後，讓自己優先被套用
+                             */
+                            if (priority === -1) {
+                                matchStartIndex = findIndex(
+                                    mediaWidthStartIndex,
+                                    eachRule => eachRule.media.features['min-width'] || eachRule.priority !== -1,
+                                    eachRule => eachRule.media.features['max-width']
+                                )
+                                matchEndIndex = findIndex(
+                                    mediaWidthStartIndex,
+                                    eachRule => eachRule.media.features['min-width'] || eachRule.priority !== -1
+                                )
+                            } else {
+                                matchStartIndex = findIndex(
+                                    mediaWidthStartIndex,
+                                    eachRule => eachRule.media.features['min-width'] && eachRule.priority !== -1,
+                                    eachRule => eachRule.media.features['max-width'] && eachRule.priority !== -1
+                                )
+                                matchEndIndex = findIndex(
+                                    mediaWidthStartIndex,
+                                    eachRule => eachRule.media.features['min-width'] && eachRule.priority !== -1
+                                )
+                            }
+
+                            if (matchStartIndex !== -1) {
+                                for (let i = matchEndIndex; i >= matchStartIndex; i--) {
+                                    const value = this.rules[i].media.features['max-width'].value
+                                    if (value < maxWidthFeature.value) {
+                                        matchEndIndex = i - 1
+                                    } else if (value > maxWidthFeature.value) {
+                                        matchStartIndex = i + 1
+                                        break
                                     }
                                 }
                             }
                         }
-                    } else {
-                        if (priority === -1) {
-                            matchStartIndex = mediaStartIndex
-                            matchEndIndex = findIndex(
-                                mediaStartIndex,
-                                eachRule => eachRule.media?.features['max-width'] || eachRule.media?.features['min-width'] || eachRule.priority !== -1
-                            )
-                        } else {
-                            matchStartIndex = findIndex(
-                                mediaStartIndex,
-                                eachRule => eachRule.media?.features['max-width'] || eachRule.media?.features['min-width'],
-                                eachRule => eachRule.priority !== -1
-                            )
-                            matchEndIndex = findIndex(
-                                mediaStartIndex,
-                                eachRule => eachRule.media?.features['max-width'] || eachRule.media?.features['min-width']
-                            )
-                        }
                     }
-                }
-            } else {
-                const findStartIndex = Object.keys(this.variablesNativeRules).length
-                    ? this.hasKeyframesRule
-                        ? 2
-                        : 1
-                    : this.hasKeyframesRule
-                        ? 1
-                        : 0
-
-                if (priority === -1) {
-                    matchStartIndex = findStartIndex
-                    matchEndIndex = findIndex(
-                        findStartIndex,
-                        eachRule => eachRule.media || eachRule.priority !== -1
-                    )
-                } else {
-                    matchStartIndex = findIndex(
-                        findStartIndex,
-                        eachRule => eachRule.media,
-                        eachRule => eachRule.priority !== -1
-                    )
-                    matchEndIndex = findIndex(
-                        findStartIndex,
-                        eachRule => eachRule.media
-                    )
-                }
-            }
-
-            if (index === undefined && matchEndIndex !== undefined && matchStartIndex !== undefined) {
-                if (matchStartIndex === -1) {
-                    index = matchEndIndex + 1
                 } else {
                     if (priority === -1) {
-                        for (let i = matchStartIndex; i <= matchEndIndex; i++) {
-                            const currentRule = this.rules[i]
-                            if (!hasWhere && currentRule.hasWhere)
-                                continue
-
-                            if (
-                                hasWhere && !currentRule.hasWhere
-                                || currentRule.order >= order
-                            ) {
-                                index = i
-                                break
-                            }
-                        }
+                        matchStartIndex = mediaStartIndex
+                        matchEndIndex = findIndex(
+                            mediaStartIndex,
+                            eachRule => eachRule.media?.features['max-width'] || eachRule.media?.features['min-width'] || eachRule.priority !== -1
+                        )
                     } else {
-                        for (let i = matchStartIndex; i <= matchEndIndex; i++) {
-                            const currentRule = this.rules[i]
-                            if (!hasWhere && currentRule.hasWhere)
-                                continue
+                        matchStartIndex = findIndex(
+                            mediaStartIndex,
+                            eachRule => eachRule.media?.features['max-width'] || eachRule.media?.features['min-width'],
+                            eachRule => eachRule.priority !== -1
+                        )
+                        matchEndIndex = findIndex(
+                            mediaStartIndex,
+                            eachRule => eachRule.media?.features['max-width'] || eachRule.media?.features['min-width']
+                        )
+                    }
+                }
+            }
+        } else {
+            const findStartIndex = Object.keys(this.variablesNativeRules).length
+                ? this.hasKeyframesRule
+                    ? 2
+                    : 1
+                : this.hasKeyframesRule
+                    ? 1
+                    : 0
 
-                            if (hasWhere && !currentRule.hasWhere) {
-                                index = i
-                                break
-                            }
+            if (priority === -1) {
+                matchStartIndex = findStartIndex
+                matchEndIndex = findIndex(
+                    findStartIndex,
+                    eachRule => eachRule.media || eachRule.priority !== -1
+                )
+            } else {
+                matchStartIndex = findIndex(
+                    findStartIndex,
+                    eachRule => eachRule.media,
+                    eachRule => eachRule.priority !== -1
+                )
+                matchEndIndex = findIndex(
+                    findStartIndex,
+                    eachRule => eachRule.media
+                )
+            }
+        }
 
-                            if (currentRule.priority < priority) {
-                                index = i
-                                break
-                            } else if (currentRule.priority === priority) {
-                                if (currentRule.order >= order) {
-                                    index = i
-                                    break
-                                }
-                            } else {
-                                index = i + 1
-                            }
+        if (index === undefined && matchEndIndex !== undefined && matchStartIndex !== undefined) {
+            if (matchStartIndex === -1) {
+                index = matchEndIndex + 1
+            } else {
+                if (priority === -1) {
+                    for (let i = matchStartIndex; i <= matchEndIndex; i++) {
+                        const currentRule = this.rules[i]
+                        if (!hasWhere && currentRule.hasWhere)
+                            continue
+
+                        if (
+                            hasWhere && !currentRule.hasWhere
+                            || currentRule.order >= order
+                        ) {
+                            index = i
+                            break
                         }
                     }
+                } else {
+                    for (let i = matchStartIndex; i <= matchEndIndex; i++) {
+                        const currentRule = this.rules[i]
+                        if (!hasWhere && currentRule.hasWhere)
+                            continue
 
-                    if (index === undefined) {
-                        index = matchEndIndex + 1
-                    }
-                }
-            }
+                        if (hasWhere && !currentRule.hasWhere) {
+                            index = i
+                            break
+                        }
 
-            this.rules.splice(index as number, 0, rule)
-            this.ruleBy[className] = rule
-
-            // 只在瀏覽器端運行
-            if (this.style) {
-                const sheet = this.style.sheet
-
-                let cssRuleIndex = 0
-                const getCssRuleIndex = (index: number): void => {
-                    const previousRule = this.rules[index]
-                    if (previousRule) {
-                        if (!previousRule.natives.length)
-                            return getCssRuleIndex(index - 1)
-
-                        const lastNative = previousRule.natives[previousRule.natives.length - 1]
-                        const lastNativeCssRule = lastNative.cssRule?.parentRule ?? lastNative.cssRule
-                        if (sheet)
-                            for (let i = 0; i < sheet.cssRules.length; i++) {
-                                if (sheet.cssRules[i] === lastNativeCssRule) {
-                                    cssRuleIndex = i + 1
-                                    break
-                                }
+                        if (currentRule.priority < priority) {
+                            index = i
+                            break
+                        } else if (currentRule.priority === priority) {
+                            if (currentRule.order >= order) {
+                                index = i
+                                break
                             }
+                        } else {
+                            index = i + 1
+                        }
                     }
                 }
-                getCssRuleIndex(index as number - 1)
 
-                for (let i = 0; i < rule.natives.length;) {
-                    try {
-                        const native = rule.natives[i]
-                        sheet?.insertRule(native.text, cssRuleIndex)
-                        native.cssRule = sheet?.cssRules[cssRuleIndex++]
-                        i++
-                    } catch (error) {
-                        console.error(error)
-                        rule.natives.splice(i, 1)
-                    }
+                if (index === undefined) {
+                    index = matchEndIndex + 1
                 }
             }
-
-            // variables
-            this.handleRuleWithVariableNames(rule)
-
-            // animations
-            this.handleRuleWithAnimationNames(rule)
-
-            rule.definition.insert?.call(rule)
         }
+
+        this.rules.splice(index as number, 0, rule)
+        this.ruleBy[className] = rule
+
+        // 只在瀏覽器端運行
+        if (this.style) {
+            const sheet = this.style.sheet
+
+            let cssRuleIndex = 0
+            const getCssRuleIndex = (index: number): void => {
+                const previousRule = this.rules[index]
+                if (previousRule) {
+                    if (!previousRule.natives.length)
+                        return getCssRuleIndex(index - 1)
+
+                    const lastNative = previousRule.natives[previousRule.natives.length - 1]
+                    const lastNativeCssRule = lastNative.cssRule?.parentRule ?? lastNative.cssRule
+                    if (sheet)
+                        for (let i = 0; i < sheet.cssRules.length; i++) {
+                            if (sheet.cssRules[i] === lastNativeCssRule) {
+                                cssRuleIndex = i + 1
+                                break
+                            }
+                        }
+                }
+            }
+            getCssRuleIndex(index as number - 1)
+
+            for (let i = 0; i < rule.natives.length;) {
+                try {
+                    const native = rule.natives[i]
+                    sheet?.insertRule(native.text, cssRuleIndex)
+                    native.cssRule = sheet?.cssRules[cssRuleIndex++]
+                    i++
+                } catch (error) {
+                    console.error(error)
+                    rule.natives.splice(i, 1)
+                }
+            }
+        }
+
+        // variables
+        this.handleRuleWithVariableNames(rule)
+
+        // animations
+        this.handleRuleWithAnimationNames(rule)
+
+        rule.definition.insert?.call(rule)
+
     }
 
     get text() {

@@ -133,7 +133,7 @@ const rules = {
             addName()
 
             for (const eachName of names) {
-                const rules = this.css.create(eachName)
+                const rules = this.css.generate(eachName)
                 if (rules.length) {
                     for (const eachRule of rules) {
                         handleRule(eachRule)

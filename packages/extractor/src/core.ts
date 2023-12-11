@@ -7,7 +7,7 @@ import { minimatch } from 'minimatch'
 import log, { chalk } from '@techor/log'
 import { extend } from '@techor/extend'
 import exploreConfig from 'explore-config'
-import { createValidRules } from '@master/css-validator'
+import { generateValidRules } from '@master/css-validator'
 import chokidar from 'chokidar'
 import { EventEmitter } from 'node:events'
 import cssEscape from 'css-shared/utils/css-escape'
@@ -161,9 +161,11 @@ export default class CSSExtractor extends EventEmitter {
         await Promise.all(
             latentClasses
                 .map(async (eachLatentClass) => {
-                    const validRules = createValidRules(eachLatentClass, { css: this.css })
+                    const validRules = generateValidRules(eachLatentClass, { css: this.css })
                     if (validRules.length) {
-                        this.css.insert(validRules)
+                        for (const validRule of validRules) {
+                            this.css.insert(validRule)
+                        }
                         validClasses.push(eachLatentClass)
                         this.validClasses.add(eachLatentClass)
                     } else {

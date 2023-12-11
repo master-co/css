@@ -1,5 +1,4 @@
-import { testProp } from './css'
-
 test('oreder', () => {
-    testProp(['order:1', 'o:1'], 'order:1')
+    expect(new MasterCSS().create('order:1')?.declarations).toStrictEqual({ order: '1' })
+    expect(new MasterCSS().create('o:1')?.declarations).toStrictEqual({ order: '1' })
 })

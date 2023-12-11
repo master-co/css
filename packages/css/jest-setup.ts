@@ -1,2 +1,1 @@
-import './src/jest-globals'
-
+import './src'

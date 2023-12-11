@@ -1,5 +1,3 @@
-import { testProp } from '../css'
-
 const config = {
     variables: {
         spacing: { x1: 16 }
@@ -7,12 +5,12 @@ const config = {
 }
 
 test('spacing', () => {
-    testProp('m:x1', 'margin:1rem', config)
-    testProp('mt:x1', 'margin-top:1rem', config)
-    testProp('scroll-mt:x1', 'scroll-margin-top:1rem', config)
-    testProp('p:x1', 'padding:1rem', config)
-    testProp('pt:x1', 'padding-top:1rem', config)
-    testProp('cx:x1', 'cx:16', config)
-    testProp('y:x1', 'y:16', config)
-    testProp('outline-offset:x1', 'outline-offset:1rem', config)
+    expect(new MasterCSS(config).create('m:x1')?.text).toContain('margin:1rem')
+    expect(new MasterCSS(config).create('mt:x1')?.text).toContain('margin-top:1rem')
+    expect(new MasterCSS(config).create('scroll-mt:x1')?.text).toContain('scroll-margin-top:1rem')
+    expect(new MasterCSS(config).create('p:x1')?.text).toContain('padding:1rem')
+    expect(new MasterCSS(config).create('pt:x1')?.text).toContain('padding-top:1rem')
+    expect(new MasterCSS(config).create('cx:x1')?.text).toContain('cx:16')
+    expect(new MasterCSS(config).create('y:x1')?.text).toContain('y:16')
+    expect(new MasterCSS(config).create('outline-offset:x1')?.text).toContain('outline-offset:1rem')
 })

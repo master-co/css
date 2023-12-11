@@ -17,7 +17,7 @@ export default function isClassValid(
     } else {
         css = new MasterCSS(options?.config)
     }
-    const rules = css.create(syntax)
+    const rules = css.generate(syntax)
     if (rules.length) {
         for (const eachRule of rules) {
             if (validateCSS(eachRule.text).length) {
