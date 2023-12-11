@@ -20,9 +20,6 @@ importers:
       '@master/css-renderer':
         specifier: workspace:^
         version: link:packages/renderer
-      '@master/css-tester':
-        specifier: workspace:^
-        version: link:packages/tester
       '@master/eslint-plugin-css':
         specifier: workspace:^
         version: link:packages/eslint-plugin
@@ -1323,15 +1320,6 @@ importers:
       '@tsconfig/svelte':
         specifier: ^3.0.0
         version: 3.0.0
-
-  packages/tester:
-    devDependencies:
-      '@jest/globals':
-        specifier: ^29.7.0
-        version: 29.7.0
-      expect:
-        specifier: ^29.7.0
-        version: 29.7.0
 
   packages/theme-service:
     devDependencies:
