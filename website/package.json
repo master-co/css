@@ -10,6 +10,7 @@
         "type-check": "tsc --noEmit"
     },
     "dependencies": {
+        "@firebase/firestore": "^4.3.2",
         "@master/css": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-language-service": "workspace:^",

@@ -8,7 +8,7 @@ import { l } from 'to-line'
 import { IconBallTennis, IconBell, IconBellRinging, IconCircle, IconCurrentLocation, IconFocusCentered, IconHandFinger, IconHeart, IconLoader, IconLoader2, IconLoaderQuarter, IconMapPin, IconMaximize, IconPointer, IconSquare, IconStar, IconUfo } from '@tabler/icons-react'
 
 export default () =>
-    <SyntaxTable value={syntaxes} noScroll previewClass={(eachClass: string) => {
+    <SyntaxTable value={syntaxes} previewClass={(eachClass: string) => {
         const className = 'app-icon-primary stroke:1 v:baseline my:-7 mr:12 ml:-2 r:2 contain:strict'
         if (eachClass.startsWith('@flash')) {
             return <IconStar className={l(eachClass, className)} />

@@ -1,0 +1,11 @@
+Using multiplier units determines the [spacing](/docs/spacing)/size scale and ensures visual consistency.
+```html
+<div class="**m:4x**"></div>
+```
+Generated CSS:
+```css
+.m\:4x {
+    margin: 1rem; /* 4x = 4*4 = 16px, 16px / 16 = 1rem */
+}
+```
+By default, the multiplier [base unit](/docs/configuration#baseunit) is 4.

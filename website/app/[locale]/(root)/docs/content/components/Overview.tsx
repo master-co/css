@@ -7,4 +7,4 @@ import syntaxes from '../syntaxes'
 import line from 'to-line'
 
 export default () =>
-    <SyntaxTable value={syntaxes} noScroll></SyntaxTable>
+    <SyntaxTable value={syntaxes}></SyntaxTable>

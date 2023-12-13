@@ -1,6 +1,28 @@
-## Overview [sr-only]
-Master CSS provides practical container/viewport sizes, `4xs` to `4xl`, and aliases for native box size values.
-
+## Using spacing scale [sr-only]
+The box size system is constructed using a [base unit](/docs/configuration#baseunit) of **4 pixels**. For visual consistency, you can use the multiplier unit `x` to apply box sizes with the same scale.
+```html
+<div class="**w:8x**">32px, width: 2rem</div>
+<div class="**h:16x**">64px, height: 4rem</div>
+...
+```
+<Reference />
+(x) Unlike traditional, there's no longer a need to define spacing scale one by one.
+```js name=master.css.js
+- export default {
+-     variables: {
+-         'box-size': {
+-             '1x': 4,
+-             '2x': 8,
+-             ...,
+-             '100x': 400
+-         }
+-     }
+- }
+```
+By default, Master provides practical container/viewport sizes, `4xs` to `4xl`, and aliases for native box size values.
+```html
+<div class="**w:md**">1024px, width: 64rem</div>
+```
 <details>
     <summary>View the default variables</summary>
     <div>
@@ -9,11 +31,6 @@ Master CSS provides practical container/viewport sizes, `4xs` to `4xl`, and alia
         </Code>
     </div>
 </details>
-
-Apply the defined `box-size` variables using the inherited rules <Heirs />.
-```html
-<div class="**max-w:md** **w:full**">…</div>
-```
 
 ---
 
@@ -29,7 +46,7 @@ export default {
     }
 }
 ```
-Apply it using the inherited syntax.
+Apply the defined `box-size` variables using the inherited rules <Heirs />.
 ```html
 <div class="**max-w:desktop**">…</div>
 ```

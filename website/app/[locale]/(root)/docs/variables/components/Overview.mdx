@@ -6,13 +6,13 @@ export default {
         'font-family': {
             sans: 'Inter'
          },
-        sizing: { md: 1024 },
-        spacing: { x1: 2 },
+        'box-size': { md: 1024 },
+        spacing: { sm: 10 },
         primary: '#000000'
     }
 }
 ```
 Apply custom variables using ambiguous shorthand:
 ```html
-<div class="**font:sans** **max-w:md** **m:x1** **bg:primary**">…</div>
+<div class="**font:sans** **max-w:md** **m:sm** **bg:primary**">…</div>
 ```

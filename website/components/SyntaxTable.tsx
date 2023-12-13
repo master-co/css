@@ -14,7 +14,7 @@ export default function SyntaxTable({ title, value, children, previewClass, ...p
     const content = useMemo(() => children?.(selectedClassName), [children, selectedClassName])
     return (
         <>
-            <DocTable {...props} className={children ? 'mb:30' : 'mb:50'}>
+            <DocTable {...props} className={children ? 'mb:30' : 'mb:50'} scrollY={424}>
                 <thead>
                     <tr>
                         <th className="sticky bg:base top:0 z:1">{title || 'Class'}</th>

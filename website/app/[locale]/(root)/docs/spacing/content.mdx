@@ -1,0 +1,68 @@
+## Using spacing scale [sr-only]
+The spacing system is constructed using a [base unit](/docs/configuration#baseunit) of **4 pixels**. For visual consistency, you can use the multiplier unit `x` to apply spacing with the same scale.
+```html
+<div class="**m:1x**">4px, margin: 0.25rem</div>
+<div class="**p:2x**">8px, padding: 0.5rem</div>
+<div class="**gap:3x**">12px, gap: 0.75rem</div>
+...
+```
+<Reference />
+For other common spacing, `0`, `1`, `2`, ..., we tend to use unitless tokens:
+```html
+<div class="m:**0**">0px, margin: 0rem</div>
+<div class="p:**1**">1px, padding: 0.0625rem</div>
+<div class="gap:**2**">2px, gap: 0.125rem</div>
+...
+```
+(x) Unlike traditional, there's no longer a need to define spacing scale one by one.
+```js name=master.css.js
+- export default {
+-     variables: {
+-         spacing: {
+-             '1x': 4,
+-             '2x': 8,
+-             ...,
+-             '100x': 400
+-         }
+-     }
+- }
+```
+
+---
+
+## Basic usage
+### Add a spacing
+Customize your spacing [variables](/docs/variables), in `xs~xl`.
+```js name=master.css.js
+export default {
+    variables: {
+        spacing: {
++            md: 20
+        }
+    }
+}
+```
+Apply the defined `spacing` variables using the inherited rules <Heirs />.
+```html
+<div class="**mt:md** **p:md**">…</div>
+```
+<details>
+    <summary>View the unit test</summary>
+    <div>
+        <Code lang="ts">
+            {require('!!raw-loader!../../../../../../packages/css/tests/config/variables/spacing.test.ts').default}
+        </Code>
+    </div>
+</details>
+(x) Do not use numerical values as tokens.
+```js
+export default {
+    variables: {
+        spacing: {
+-            1: 4,
+-            2: 8
+        }
+    }
+}
+```
+It can be confused with the [unitless values](/docs/style-declarations#unit-value-conversion).

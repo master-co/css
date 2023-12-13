@@ -15,21 +15,15 @@
         </div>
     </DemoPanel>
 </Demo>
-There are three default [font family](/docs/font-family) variables, `sans`, `serif`, and `mono`, to facilitate your use as fallbacks when adding custom fonts.
-
+By default, Master provides three font family variables, `sans`, `serif`, and `mono`, to facilitate your use as fallbacks when adding custom fonts.
 <details>
     <summary>View the default variables</summary>
     <div>
         <Code lang="js">
-            {JSON.stringify(require('@master/css').variables, null, 4)}
+            {JSON.stringify(require('@master/css').variables['font-family'], null, 4)}
         </Code>
     </div>
 </details>
-
-Apply the defined `font-family` variables using the inherited rules <Heirs />. For example, presetting the global fonts in `html <body>`:
-```html
-<body class="**font:sans** **font:mono_:where(code,pre)** font-feature:'salt'">…</body>
-```
 
 ---
 
@@ -48,7 +42,10 @@ export default {
     }
 }
 ```
-
+Apply the defined `font-family` variables using the inherited rules <Heirs />. For example, presetting the global fonts in `html <body>`:
+```html
+<body class="**font:sans** **font:mono_:where(code,pre)** font-feature:'salt'">…</body>
+```
 
 ---
 

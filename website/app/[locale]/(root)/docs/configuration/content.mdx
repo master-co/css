@@ -123,6 +123,20 @@ And you will set the font size of the root to `62.5%`:
 <html class="font:62.5%">
 ```
 
+### `.baseUnit`
+This base unit determines the size scale and ensures visual consistency across products.
+<DocProp defaultValue="4" types={['number']} />
+For example, with the default `baseUnit: 4`, the size scale `1x, 2x, …` will be `4, 8, …`.
+```html
+<div class="m:4x"></div>
+```
+Generated CSS:
+```css
+.m\:4x {
+    margin: 1rem; /* 4x = 4*4 = 16px, 16px / 16 = 1rem */
+}
+```
+
 ### `.scope`
 Limit the generated CSS rules to a specific scope with CSS selectors.
 <DocProp defaultValue="''" types={['string']} />
