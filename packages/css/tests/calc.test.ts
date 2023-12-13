@@ -19,4 +19,6 @@ it('calc', () => {
     expect(new MasterCSS().create('w:calc((6+2*(3+5*min(3rem,5)))/5*2)')?.text).toContain('width:calc((0.375rem + 2 * (0.1875rem + 5 * min(3rem, 0.3125rem))) / 5 * 2)')
     expect(new MasterCSS().create('w:calc((6+3+min(3rem,5))')?.text).toContain('width:calc((0.375rem + 0.1875rem + min(3rem, 0.3125rem)))')
     expect(new MasterCSS().create('lh:calc((6+3+min(3,5))')?.text).toContain('line-height:calc((6 + 3 + min(3, 5)))')
+    expect(new MasterCSS().create('w:calc((6x+8x+min(3x,5x))')?.text).toContain('width:calc((24 + 32 + min(12, 20) / 16 * 1rem) / 16 * 1rem)')
+    expect(new MasterCSS().create('lh:calc((6x+8x+min(3x,5x))')?.text).toContain('line-height:calc((24 + 32 + min(12, 20)))')
 })

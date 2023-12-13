@@ -13,6 +13,7 @@ it('checks margin order', () => {
 
 test('margin', () => {
     expect(new MasterCSS().create('ml:16')?.text).toContain('margin-left:1rem')
+    expect(new MasterCSS().create('ml:4x')?.text).toContain('margin-left:1rem')
     expect(new MasterCSS().create('mr:16')?.text).toContain('margin-right:1rem')
     expect(new MasterCSS().create('mt:16')?.text).toContain('margin-top:1rem')
     expect(new MasterCSS().create('mb:16')?.text).toContain('margin-bottom:1rem')

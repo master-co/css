@@ -18,6 +18,7 @@ const config: Config = {
     variables,
     scope: '',
     rootSize: 16,
+    baseUnit: 4,
     override: false,
     important: false,
     themeDriver: 'class'
@@ -60,6 +61,7 @@ export interface Config {
     variables?: VariableDefinitions
     rules?: RuleDefinitions
     rootSize?: number
+    baseUnit?: number
     scope?: string
     important?: boolean
     override?: boolean

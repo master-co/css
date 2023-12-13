@@ -1,5 +1,6 @@
 import type { FunctionDefinition, FunctionDefinitions } from './'
-import type { NumericValueComponent, Rule, StringValueComponent } from '../rule'
+import type { Rule, StringValueComponent } from '../rule'
+import { BASE_UNIT_REGEX } from '../constants/base-unit-regex'
 
 const functions: FunctionDefinitions = {
     $: {
@@ -26,7 +27,8 @@ const functions: FunctionDefinitions = {
                 currentValueComponents: Rule['valueComponents'], 
                 bypassHandlingSeparator: boolean, 
                 parentBypassParsing: boolean,
-                parentUnitChecking: boolean
+                parentUnitChecking: boolean,
+                isVarFunction: boolean
             ) => {
                 const isChildHandler = valueComponents !== currentValueComponents
                 const unparsedValueComponents: StringValueComponent[] = []
@@ -45,6 +47,13 @@ const functions: FunctionDefinitions = {
                     }
 
                     if (current) {
+                        if (!isVarFunction) {
+                            const result = BASE_UNIT_REGEX.exec(current)
+                            if (result) {
+                                current = (+result[1] * (this.css.config.baseUnit ?? 1)).toString()
+                            }
+                        }
+
                         if (!bypassParsing && !parentBypassParsing) {
                             const valueComponent = this.parseValueComponent(current)
                             if (
@@ -81,6 +90,7 @@ const functions: FunctionDefinitions = {
                         } else {
                             currentValueComponents.push({ type: 'string', value: current })
                         }
+
                         current = ''
                     }
 
@@ -145,7 +155,8 @@ const functions: FunctionDefinitions = {
                                 || Object.prototype.hasOwnProperty.call(functions, functionName)
                             ),
                             bypassParsing || isVarFunction || unitChecking && currentHasUnit,
-                            unitChecking
+                            unitChecking,
+                            isVarFunction
                         )
                         if (!childHasUnit && functionName === '$') {
                             childHasUnit = this.css.variables[(newValueComponent.children[0] as StringValueComponent).value]?.type === 'string'
@@ -205,7 +216,7 @@ const functions: FunctionDefinitions = {
                 clear('')
                 handleUnitChecking()
             }
-            anaylzeDeeply(valueComponents, false, false, false)
+            anaylzeDeeply(valueComponents, false, false, false, false)
 
             return 'calc(' + this.resolveValue(valueComponents, functions.calc.unit ?? this.definition.unit, bypassVariableNames, true) + ')'
         }

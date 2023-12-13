@@ -4,6 +4,7 @@ import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'css-shared/utils/css-escape'
 import { Layer } from './layer'
 import { PropertiesHyphen } from 'csstype'
+import { BASE_UNIT_REGEX } from './constants/base-unit-regex'
 
 const atRuleRegExp = /^(media|supports|page|font-face|keyframes|counter-style|font-feature-values|property|layer)(?=\||{|\(|$)/
 
@@ -655,6 +656,12 @@ export class Rule {
                 }
 
                 if (!handled) {
+                    if (!isVarFunction) {
+                        const result = BASE_UNIT_REGEX.exec(currentValue)
+                        if (result) {
+                            currentValue = (+result[1] * (this.css.config.baseUnit ?? 1)).toString()
+                        }
+                    }
                     if (bypassParsing) {
                         currentValueComponents.push({ type: 'string', value: currentValue })
                     } else {
