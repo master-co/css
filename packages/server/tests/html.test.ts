@@ -12,3 +12,15 @@ it('render <html>', () => {
         '</html>'
     ].join(''))
 })
+
+it('should not render the new style element', () => {
+    expect(render([
+        '<html class="bg:white">',
+        '<head><style id="master"></style></head>',
+        '</html>'
+    ].join('')).html).toEqual([
+        '<html class="bg:white">',
+        '<head><style id="master">.bg\\:white{background-color:rgb(255 255 255)}</style></head>',
+        '</html>'
+    ].join(''))
+})

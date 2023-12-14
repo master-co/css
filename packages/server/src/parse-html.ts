@@ -26,13 +26,12 @@ export default function parseHTML(html: string): {
                 case 'head':
                     headElement = element
                     break
-                case 'style':
-                    if (element.attribs.id === 'master')
-                        styleElement = element
-                    break
                 default:
                     break
             }
+        } else if (element.type === 'style') {
+            if (element.attribs.id === 'master')
+                styleElement = element
         }
 
         if (element.attribs.class) {
