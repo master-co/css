@@ -31,10 +31,11 @@ export default async function DocHeader({ children, ...props }: any) {
                 <IconChevronDown className="1emx1em mr:-3 stroke:1.5" />
             </label>
             {links.map(({ Icon, fullName, ...eachLink }: any) => <HeaderNav className="hide@<md" key={eachLink.name} {...eachLink}>{$(eachLink.name)}</HeaderNav>)}
-            <DiscussionsIconButton className="app-header-icon hide@<md ml:auto" projectId="css" />
-            <GitHubIconButton className="app-header-icon hide@<md" projectId="css" />
+            <TwitterIconButton className="app-header-icon hide@<md ml:auto" />
             <DiscordIconButton className="app-header-icon hide@<md" />
-            <TwitterIconButton className="app-header-icon hide@<md" />
+            <DiscussionsIconButton className="app-header-icon hide@<md" projectId="css" />
+            <GitHubIconButton className="app-header-icon hide@<md" projectId="css" />
+            <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>
             <LanguageButton className="app-header-icon hide@<md" locale={props.locale} />
             <ThemeButton className="app-header-icon hide@<md mr:-12" />
             <DocMenuButton className="app-header-icon hide@md mr:-20" locale={props.locale} dict={await collectDictionary(props.locale, docMenuDict)} />
