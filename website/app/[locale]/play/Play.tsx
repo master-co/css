@@ -549,7 +549,7 @@ export default function Play(props: any) {
                         {dict['Sharing ...']}
                     </span>}
                 </ShareButton>}
-                {(shareId || shareable) && <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>}
+                {(shareId || shareable) && <div className='hide@<md bg:white/.1@dark bg:slate/.2@light h:1em mx:15 w:1'></div>}
                 <Link className="app-header-icon hide@<md" href={getSearchPath('layout', layout ? '' : '2')}>
                     <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path className={clsx(
@@ -583,7 +583,7 @@ export default function Play(props: any) {
                     </svg>
                 </Link>
                 <span className='hide'>{layout}</span>
-                <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>
+                <div className='hide@<md bg:white/.1@dark bg:slate/.2@light h:1em mx:15 w:1'></div>
                 {/* preview: desktop */}
                 <Link className="app-header-icon hide@<md" href={getSearchPath('preview', '')}>
                     <IconDeviceDesktop width="22" height="22" className={clsx(
@@ -606,7 +606,7 @@ export default function Play(props: any) {
                     )} />
                 </Link>
                 <span className='hide'>{preview}</span>
-                <div className='hide@<md bg:white/.1@dark bg:slate-90@light h:1em mx:15 w:1'></div>
+                <div className='hide@<md bg:white/.1@dark bg:slate/.2@light h:1em mx:15 w:1'></div>
                 <LanguageButton className="app-header-icon hide@<md" locale={props.locale} />
                 <ThemeButton className="app-header-icon hide@<md mr:-12"
                     onChange={(theme: string) => {

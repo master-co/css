@@ -80,46 +80,8 @@ export default {
 
 ---
 
-## Foreground
-### Create text colors
-Create accessible color variables for titles, descriptions, icons, and other body text.
-```js name=master.css.js
-export default {
-    variables: {
-+        text: {
-+            netural: '$(slate-70)',
-+            strong: '$(slate-95)',
-+            dim: '$(slate-30)'
-+        }
-    }
-}
-```
-Use [color](/docs/color) syntax to give the title text a strong color:
-```html
-<h1 class="**fg:text-strong**">page title</h1>
-```
-Use [color](/docs/color) syntax to give the paragraph text a netural color:
-```html
-<p class="**fg:text-netural**">paragraph text</p>
-```
-Use [stroke](/docs/stroke) syntax to set the icon stroke to a netural color:
-```html
-<svg class="**stroke:text-netural**">icon</svg>
-```
-You can apply them using any color-related syntax.
-
-| Token             | Description                                                                                                                       |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| `text-accent`     | Accent color emphasizes active links and states, strongly contrasting the background.                                             |
-| `text-neutral`    | Soft color, a foreground color harmonizing with the background.                                                                   |
-| `text-strong`     | Strong color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background.     |
-| `text-dim`        | Dim color, a foreground color that contrasts slightly with the background.                                                        |
-| `text-{color}`    | Other accessible text foreground colors.                                                                                          |
-
----
-
-## Background
-### Create background colors
+## Adding collectively
+### Background colors
 Create color variables for backgrounds in apps, panels, cards, and more.
 ```js name=master.css.js
 export default {
@@ -137,3 +99,38 @@ Use [background-color](/docs/background-color) syntax to set the app background 
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
 | `neutral`         | The background color for apps...                                                                                                  |
 | `fade`            | The background color for panels...                                                                                                |
+
+### Foreground colors
+Create accessible foreground color variables for titles, descriptions, icons, and other body text.
+```js name=master.css.js
+export default {
+    variables: {
++        foreground: {
++            netural: '$(slate-70)',
++            strong: '$(slate-95)',
++            dim: '$(slate-30)'
++        }
+    }
+}
+```
+Use [color](/docs/color) syntax to give the title text a strong color:
+```html
+<h1 class="**fg:strong**">page title</h1>
+```
+Use [color](/docs/color) syntax to give the paragraph text a netural color:
+```html
+<p class="**fg:netural**">paragraph text</p>
+```
+Use [stroke](/docs/stroke) syntax to set the icon stroke to a netural color:
+```html
+<svg class="**stroke:netural**">icon</svg>
+```
+Apply the defined `foreground` variables using the inherited rules <ForegroundHeirs />.
+
+| Token             | Description                                                                                                                       |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `foreground-accent`     | Accent color emphasizes active links and states, strongly contrasting the background.                                             |
+| `foreground-neutral`    | Soft color, a foreground color harmonizing with the background.                                                                   |
+| `foreground-strong`     | Strong color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background.     |
+| `foreground-dim`        | Dim color, a foreground color that contrasts slightly with the background.                                                        |
+| `foreground-{color}`    | Other accessible text foreground colors.                                                                                          |
