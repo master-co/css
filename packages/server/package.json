@@ -50,6 +50,6 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "node-html-parser": "^6.1.11"
+        "htmlparser2": "^9.0.0"
     }
 }

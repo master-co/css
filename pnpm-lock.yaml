@@ -1587,9 +1587,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../css
-      node-html-parser:
-        specifier: ^6.1.11
-        version: 6.1.11
+      htmlparser2:
+        specifier: ^9.0.0
+        version: 9.0.0
 
   packages/server.nitro:
     dependencies:
@@ -17391,6 +17391,7 @@ packages:
   /he@1.2.0:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
+    dev: true
 
   /header-generator@2.1.45:
     resolution: {integrity: sha512-5XuR/aUJDXBap73A10lennFicUM69gSw0Ir3bTvIljwM3UZeF852oB7JnQdVuZSGKGatC3lVrl5Eo6IkJlDIKA==}
@@ -21962,13 +21963,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
-
-  /node-html-parser@6.1.11:
-    resolution: {integrity: sha512-FAgwwZ6h0DSDWxfD0Iq1tsDcBCxdJB1nXpLPPxX8YyVWzbfCjKWEzaynF4gZZ/8hziUmp7ZSaKylcn0iKhufUQ==}
-    dependencies:
-      css-select: 5.1.0
-      he: 1.2.0
-    dev: false
 
   /node-int64@0.4.0:
     resolution: {integrity: sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw==}
