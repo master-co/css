@@ -6,7 +6,14 @@ import { parse, type HTMLElement } from 'node-html-parser'
  */
 export default function parseHTML(html: string): { classes: string[], root: HTMLElement } {
     const classes: string[] = []
-    const root = parse(html, { comment: true })
+    const root = parse(html, { 
+        comment: true, 
+        blockTextElements: {
+            script: true,
+            noscript: true,
+            style: true
+        }
+    })
     root.querySelectorAll('[class]').forEach(element => {
         const className = element.getAttribute('class')
         if (className) {
