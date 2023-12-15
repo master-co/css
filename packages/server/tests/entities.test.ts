@@ -8,11 +8,11 @@ it('should not encode entities', () => {
     )
 })
 
-it('should not decode entities', () => {
+it('should decode class entities', () => {
     expect(render(
-        `<div class="{content:'\`';fg:fade}_code:before"></div>`
+        `<div class="mt:0&gt;div"></div>`
     ).html).toEqual([
-        '<style id="master">.\\{content\\:\\\'\\`\\\'\\;fg\\:fade\\}_code\\:before code:before{content:\'`\';color:fade}</style>',
-        `<div class="{content:'\`';fg:fade}_code:before"></div>`
+        '<style id="master">.mt\\:0\\>div>div{margin-top:0rem}</style>',
+        `<div class="mt:0&gt;div"></div>`
     ].join(''))
 })
