@@ -1,0 +1,46 @@
+## Overview [sr-only]
+
+---
+
+## Using the animations API
+Master CSS keyframes work by parsing the `animation` and `animation-name` component values and generating the corresponding CSS keyframe into the stylesheet.
+
+For example, apply the custom `animation1` using the [animation](/docs/animation) syntax:
+```html
+<div class="**@animation1|.5s**"></div>
+```
+Next, compare the differences between **Master CSS** and **traditional CSS** in defining CSS keyframes.
+
+(x) Customizing your keyframes the traditional way causes bloated CSS files.
+```css name=main.css
++ @keyframes animation1 { … }
++ @keyframes animation2 { … }
++ …
+```
+This works fine, but even if you only used one `animation1` of the keyframes, the other unused ones would still be included in the final output and runtime style sheet.
+
+(o) Customize your keyframes using the Master CSS [animations API](/docs/animations).
+```js name=master.css.js
+export default {
+    animations: {
++        animation1: { … },
++        animation2: { … },
++        …
+    }
+}
+```
+It generates CSS according to the syntax `@animation1|.5s` you apply:
+```css
+@keyframes animation1 { … }
+
+.\@animation1\|\.5s {
+    animation: animation1 .5s
+}
+```
+
+Even though there are thousands of predefined keyframes, `animation1`, `animation2`, …, they are not included in the final stylesheet like traditional CSS.
+
+---
+
+## Using the variables API
+...
