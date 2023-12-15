@@ -81,21 +81,21 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS runtime engine
-            Import `master.css.ts` into the entry file `main.ts` to enable the runtime engine.  
+            Import `master.css.ts` into the entry file `main.ts` to enable the runtime engine.
         </StepL>
         <StepR>
             ```ts name=main.ts
             …
             +   import { initRuntime } from '@master/css';
             +   import config from 'master.css';
-            
+
             +   initRuntime(config)
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Avoid flash of unstyled content
+            ### <StepNum />Prevent flash of unstyled content
             Add `css display: 'none'` in `html <html>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) caused by the runtime engine not yet injecting CSS rules.
         </StepL>
         <StepR>

@@ -9,10 +9,10 @@ import dynamic from 'next/dynamic'
 
 const PageContent = dynamic(() => import('websites/components/PageContent'))
 
-export default async function Layout({ children, params, toc, $hideLeftSide, ...props }: any) {
+export default async function Layout({ children, params, toc, prose, $hideLeftSide, ...props }: any) {
     return <>
         <DocMain $hideRightSide={!toc} $hideLeftSide={$hideLeftSide}>
-            <Article className={l({ 'max-w:sm_:where(p)': !toc })}>
+            <Article className={l({ 'max-w:sm_:where(p)': !toc })} prose={prose}>
                 <ArticleHeader locale={params.locale} metadata={props.metadata} {...props} />
                 {children}
             </Article>

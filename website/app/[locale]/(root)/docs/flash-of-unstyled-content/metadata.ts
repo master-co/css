@@ -1,7 +1,7 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Avoid flash of unstyled content',
+    title: 'Preventing flash of unstyled content',
     description: 'Improve the page loading experience and ensure seamless rendering of content.',
     category: 'Production Optimization',
     other: {

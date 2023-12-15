@@ -24,7 +24,7 @@ export default async function Layout(props: any) {
             {props.metadata.authors && <ListAuthors className="center-content gap:30 mt:50">{props.metadata.authors}</ListAuthors>}
         </div>
         <main className='app-doc-main max-w:sm'>
-            <Article className="mb:80 mt:0>:first" h2Big>
+            <Article className="mb:80 mt:0>:first" prose>
                 {props.children}
             </Article>
         </main>
