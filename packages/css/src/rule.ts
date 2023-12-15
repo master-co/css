@@ -56,7 +56,7 @@ export class Rule {
                 valueToken = className.slice(indexOfColon + 1)
             }
             this.valueComponents = []
-            stateToken = valueToken.slice(this.parseValue(this.valueComponents, 0, valueToken, unit, ''))
+            stateToken = valueToken.slice(this.parseValue(this.valueComponents, 0, valueToken, unit, '', undefined, false, (id === 'animation' || id === 'animation-name') ? Object.keys(this.css.animations) : []))
         }
 
         // 2. !important

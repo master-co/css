@@ -46,3 +46,20 @@ test('mediaQueries', () => {
         '@media (min-width: 600px){.f\\:12\\@min-600{font-size:0.75rem}}'
     )
 })
+
+test('animations', () => {
+    expect(new MasterCSS({
+        variables: {
+            float: '#000000'
+        },
+        animations: {
+            float: {
+                '0%': { transform: 'none' },
+                '50%': { transform: 'translateY(-1.25rem)' },
+                to: { transform: 'none' }
+            },
+        }
+    }).add('@float|.5s').text).toBe(
+        '@keyframes float{0%{transform:none}50%{transform:translateY(-1.25rem)}to{transform:none}}.\\@float\\|\\.5s{animation:float .5s}'
+    )
+})
