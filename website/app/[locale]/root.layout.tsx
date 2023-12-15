@@ -8,6 +8,7 @@ import { Analytics } from '@vercel/analytics/react'
 import config from '../../master.css'
 import CSSProvider from '@master/css.react/CSSProvider'
 import ThemeServiceProvider from '@master/css.react/ThemeServiceProvider'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 export default function RootLayout({
     children,
@@ -42,6 +43,7 @@ export default function RootLayout({
                     </CSSProvider>
                 </ThemeServiceProvider>
                 <Analytics />
+                <SpeedInsights />
             </body>
         </html>
     )

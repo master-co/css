@@ -20,6 +20,7 @@
         "@master/eslint-plugin-css": "workspace:^",
         "@master/normal.css": "workspace:^",
         "@monaco-editor/react": "^4.6.0",
+        "@vercel/speed-insights": "^1.0.2",
         "accept-language": "^3.0.18",
         "cheerio": "1.0.0-rc.12",
         "clone-deep": "^4.0.1",
