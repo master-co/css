@@ -38,7 +38,7 @@ export default function parseHTML(html: string): {
             classes.push(
                 ...element.attribs.class
                     .split(' ')
-                    /**
+                    /*
                      * The framework will encode attribute values ​​when rendering HTML to prevent XSS,
                      * so we must decode it for correct CSS selectors.
                      * https://github.com/facebook/react/issues/27836
