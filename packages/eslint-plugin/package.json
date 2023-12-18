@@ -1,8 +1,8 @@
 {
     "name": "@master/eslint-plugin-css",
     "scripts": {
-        "build": "techor pack \"src/**/*.ts\"",
-        "dev": "pnpm run build --watch --no-declare",
+        "build": "techor pack \"src/**/*.ts\" --declare",
+        "dev": "pnpm run build --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
@@ -41,7 +41,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "explore-config": "^2.5.19",
+        "explore-config": "^2.5.20",
         "synckit": "^0.8.5"
     },
     "devDependencies": {

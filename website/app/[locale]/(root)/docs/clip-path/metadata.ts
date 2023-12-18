@@ -4,7 +4,9 @@ const metadata: Metadata = {
     title: 'Clip Path',
     description: 'Style syntax for creating a clipping region.',
     category: 'Shape',
-    unfinished: true
+    unfinished: true,
+    canIUseLink: 'https://caniuse.com/?search=clip-path',
+    mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path'
 }
 
 export default metadata

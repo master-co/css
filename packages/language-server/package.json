@@ -1,8 +1,8 @@
 {
     "name": "@master/css-language-server",
     "scripts": {
-        "build": "techor pack --platform node",
-        "dev": "pnpm run build --watch --no-declare",
+        "build": "techor pack --platform node --declare",
+        "dev": "pnpm run build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
         "test": "jest"
@@ -13,7 +13,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-language-service": "workspace:^",
-        "explore-config": "^2.5.19",
+        "explore-config": "^2.5.20",
         "js-beautify": "^1.14.7",
         "minimatch": "^9.0.1",
         "vscode-languageserver": "^7.0.0",

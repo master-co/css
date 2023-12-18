@@ -1,8 +1,8 @@
 {
     "name": "@master/css-validator",
     "scripts": {
-        "build": "techor pack --platform node",
-        "dev": "pnpm run build --watch --no-declare",
+        "build": "techor pack --platform node --declare",
+        "dev": "pnpm run build --watch",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
         "test": "jest --forceExit --detectOpenHandles"

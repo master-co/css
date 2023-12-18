@@ -1,35 +1,43 @@
 import Article from 'websites/components/Article'
 import ArticleHeader from 'websites/components/ArticleHeader'
-import CanIUseButton from 'websites/components/CanIUseButton'
-import MdnButton from 'websites/components/MdnButton'
-import { l } from 'to-line'
+import canIUseImg from '~/public/images/caniuse.favicon.png'
+import mdnImg from '~/public/images/mdnwebdocs.png'
 import DocMain from '../components/DocMain'
 import DocFooter from '../components/DocFooter'
 import PageNavs from 'websites/components/PageNavs'
 import pages from '../app/[locale]/(root)/pages'
-import dynamic from 'next/dynamic'
-
-const PageContent = dynamic(() => import('websites/components/PageContent'))
+import PageContent from 'websites/components/PageContent'
+import Link from 'websites/components/Link'
+import Image from 'next/image'
 
 export default async function Layout(props: any) {
     const { children, params, toc } = props
-    const { mdn = true, canIUse = true, ...metadata } = props.metadata
+    const { mdnLink, canIUseLink, ...metadata } = props.metadata
     return <>
         <DocMain>
             <Article>
-                <ArticleHeader locale={params.locale} metadata={metadata} titleBig={true} />
+                <ArticleHeader locale={params.locale} metadata={metadata} titleBig />
                 {children}
             </Article>
             <PageNavs locale={params.locale} metadata={props.metadata} pages={pages} />
             <DocFooter locale={params.locale} title={metadata.title} />
         </DocMain>
         {toc && <PageContent locale={params.locale}
-            start={
+            start={(canIUseLink || mdnLink) &&
                 <>
-                    {canIUse && <CanIUseButton src={canIUse} title={metadata.title} className="r:2" width="24" height="24" />}
-                    {mdn && <MdnButton src={mdn} title={metadata.title} className="r:2" width="24" height="24" />}
-                </>
-            }>
+                    {
+                        canIUseLink &&
+                        <Link href={canIUseLink} rel="noreferrer noopener" target="_blank" className="inline-flex content:none::after overflow:hidden r:2">
+                            <Image src={canIUseImg} width={24} height={24} alt="Can I use ?" />
+                        </Link>
+                    }
+                    {
+                        mdnLink &&
+                        <Link href={mdnLink} rel="noreferrer noopener" target="_blank" className="inline-flex content:none::after overflow:hidden r:2">
+                            <Image src={mdnImg} width={24} height={24} alt="Can I use ?" />
+                        </Link>
+                    }
+                </>}>
             {toc}
         </PageContent>}
     </>

@@ -1,8 +1,8 @@
 {
     "name": "@master/css-renderer",
     "scripts": {
-        "build": "techor pack \"src/**/*.ts\" --platform node",
-        "dev": "pnpm run build --watch --no-declare",
+        "build": "techor pack \"src/**/*.ts\" --platform node --declare",
+        "dev": "pnpm run build --watch",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
         "test": "jest"
@@ -44,10 +44,10 @@
     },
     "dependencies": {
         "@master/css-server": "workspace:^",
-        "@techor/glob": "^2.5.19",
-        "@techor/log": "^2.5.19",
+        "@techor/glob": "^2.5.20",
+        "@techor/log": "^2.5.20",
         "bytes": "^3.1.2",
-        "explore-config": "^2.5.19",
+        "explore-config": "^2.5.20",
         "pretty-hrtime": "^1.0.3"
     },
     "devDependencies": {

@@ -1,8 +1,8 @@
 {
     "name": "@master/css-extractor.vite",
     "scripts": {
-        "build": "techor pack --platform node",
-        "dev": "pnpm run build --watch --no-declare",
+        "build": "techor pack --platform node --declare",
+        "dev": "pnpm run build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
         "test": "jest --workerThreads"

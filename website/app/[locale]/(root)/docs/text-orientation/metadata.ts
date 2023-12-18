@@ -4,7 +4,9 @@ const metadata: Metadata = {
     title: 'Text Orientation',
     description: 'Style syntax for setting orientation of the text characters in a line.',
     category: 'Text',
-    unfinished: true
+    unfinished: true,
+    canIUseLink: 'https://caniuse.com/?search=text-orientation',
+    mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/text-orientation'
 }
 
 export default metadata

@@ -5,9 +5,7 @@ import DocMain from '../components/DocMain'
 import DocFooter from '../components/DocFooter'
 import { l } from 'to-line'
 import pages from '../app/[locale]/(root)/pages'
-import dynamic from 'next/dynamic'
-
-const PageContent = dynamic(() => import('websites/components/PageContent'))
+import PageContent from 'websites/components/PageContent'
 
 export default async function Layout({ children, params, toc, prose, $hideLeftSide, ...props }: any) {
     return <>

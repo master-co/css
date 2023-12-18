@@ -1,8 +1,8 @@
 {
     "name": "@master/css-extractor",
     "scripts": {
-        "build": "techor pack --platform node",
-        "dev": "pnpm run build --watch --no-declare",
+        "build": "techor pack --platform node --declare",
+        "dev": "pnpm run build --watch",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
         "test": "jest --workerThreads"
@@ -67,11 +67,11 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "@techor/extend": "^2.5.19",
-        "@techor/glob": "^2.5.19",
-        "@techor/log": "^2.5.19",
+        "@techor/extend": "^2.5.20",
+        "@techor/glob": "^2.5.20",
+        "@techor/log": "^2.5.20",
         "chokidar": "^3.5.3",
-        "explore-config": "^2.5.19",
+        "explore-config": "^2.5.20",
         "minimatch": "^9.0.1"
     },
     "devDependencies": {

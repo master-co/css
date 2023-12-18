@@ -4,8 +4,9 @@ const metadata: Metadata = {
     title: 'Text Stroke',
     description: 'Style syntax for setting the width and color of strokes for text characters.',
     category: 'Text',
-    mdn: '-webkit-text-stroke',
-    unfinished: true
+    unfinished: true,
+    canIUseLink: 'https://caniuse.com/?search=-webkit-text-stroke',
+    mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-text-stroke'
 }
 
 export default metadata

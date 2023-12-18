@@ -1,8 +1,8 @@
 {
     "name": "@master/css-server",
     "scripts": {
-        "build": "techor pack \"./src/**/*.ts\" --platform node",
-        "dev": "pnpm run build --watch --no-declare",
+        "build": "techor pack \"./src/**/*.ts\" --platform node --declare",
+        "dev": "pnpm run build --watch",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
         "test": "jest"

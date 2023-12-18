@@ -4,8 +4,9 @@ const metadata: Metadata = {
     title: 'Text Stroke Color',
     description: 'Style syntax for setting the color of the stroke for text characters.',
     category: 'Text',
-    mdn: '-webkit-text-stroke-color',
-    unfinished: true
+    unfinished: true,
+    canIUseLink: 'https://caniuse.com/?search=-webkit-text-stroke-color',
+    mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-text-stroke-color'
 }
 
 export default metadata

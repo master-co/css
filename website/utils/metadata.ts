@@ -1,8 +1,8 @@
-import extend from '@techor/extend';
-import type { Metadata, ResolvingMetadata } from 'next';
-import type { Locale } from 'websites/i18n.config';
-import type { Props } from 'websites/types/Props';
-import { queryDictionary } from 'websites/dictionaries';
+import extend from '@techor/extend'
+import type { Metadata, ResolvingMetadata } from 'next'
+import type { Locale } from 'websites/i18n.config'
+import type { Props } from 'websites/types/Props'
+import { queryDictionary } from 'websites/dictionaries'
 
 export async function generate(
     metadata: Metadata | Record<string, any>,
