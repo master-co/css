@@ -21,6 +21,7 @@ export async function generate(
         description: ogDescription,
         locale: params?.locale as Locale,
     }
+    delete requestedSearchParams.openGraph
     if (requestedSearchParams.authors) {
         requestedSearchParams.authors = JSON.stringify(requestedSearchParams.authors)
     }

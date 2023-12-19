@@ -1,16 +1,16 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 
-import type { Metadata } from 'next';
-import type { Author } from 'next/dist/lib/metadata/types/metadata-types';
-import type { Props } from '../../../types/Props';
+import type { Metadata } from 'next'
+import type { Author } from 'next/dist/lib/metadata/types/metadata-types'
+import type { Props } from '../../../types/Props'
 
-import { ImageResponse } from 'next/og';
-import authors from '../../../data/authors';
-import { queryDictionary } from '../../../dictionaries';
+import { ImageResponse } from 'next/og'
+import authors from '../../../data/authors'
+import { queryDictionary } from '../../../dictionaries'
 import stringWidth from 'string-width'
 import fs from 'fs'
-import path from 'path';
+import path from 'path'
 import mime from 'mime-types'
 
 export default async function create({
@@ -56,8 +56,8 @@ export default async function create({
     ]
 
     const readImage = (filename: string) => {
-        const extname = path.extname(filename);
-        const mimeType = mime.lookup(extname);
+        const extname = path.extname(filename)
+        const mimeType = mime.lookup(extname)
         return `data:${mimeType};base64,` + fs.readFileSync(filename, { encoding: 'base64' })
     }
 

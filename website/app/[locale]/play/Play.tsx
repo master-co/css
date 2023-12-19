@@ -334,7 +334,7 @@ export default function Play(props: any) {
         const databaseShareItem = generateDatabaseShareItem(shareItem)
         const newShareId = await writeShareItem({
             ...databaseShareItem,
-            createdAt: new Date().getTime()
+            createdAt: new Date().toISOString()
         })
         const newSharePathname = `${props.locale === i18n.defaultLocale ? '' : `/${props.locale}`}/play/${newShareId}${window.location.search}`
         setShareId(newShareId)
