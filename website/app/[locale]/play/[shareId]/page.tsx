@@ -22,11 +22,14 @@ export async function generateMetadata(props: any, parent: any) {
     if (data.exists()) {
         shareItem = data.data() as PlayShare
     }
+    const dateTime = dayjs(shareItem?.createdAt)
     return generate({
         ...metadata,
-        category: shareItem?.createdAt
-            ? dayjs(shareItem?.createdAt).format('MMMM D YYYY HH:mm:ss A')
-            : props.params.shareId,
+        openGraph: {
+            title: `Play #${props.params.shareId}`,
+            description: shareItem?.createdAt ? `${dateTime.format('MMMM D YYYY')}, at ${dateTime.format('hh:mm:ss A')}` : metadata.description
+        },
+        category: `v${shareItem?.version}`,
     }, props, parent)
 }
 
