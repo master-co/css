@@ -1,23 +1,20 @@
-## Overview [sr-only]
 
 ---
 
-## Using the animations API
-Master CSS keyframes work by parsing the `animation` and `animation-name` component values and generating the corresponding CSS keyframe into the stylesheet.
-
-For example, apply the custom `animation1` using the [animation](/docs/animation) syntax:
-```html
-<div class="**@animation1|.5s**"></div>
-```
-Next, compare the differences between **Master CSS** and **traditional CSS** in defining CSS keyframes.
-
-(x) Customizing your keyframes the traditional way causes bloated CSS files.
+## Bloated CSS keyframes
+(!) Defining animation keyframes the traditional way causes bloated CSS files.
 ```css name=main.css
-+ @keyframes animation1 { … }
-+ @keyframes animation2 { … }
-+ …
+@keyframes animation1 { … }
+@keyframes animation2 { … }
+…
+.animation1 {
+    animation: animation1 .5s
+}
 ```
 This works fine, but even if you only used one `animation1` of the keyframes, the other unused ones would still be included in the final output and runtime style sheet.
+
+### Using animations API
+Master CSS [animations](/docs/animations) work by parsing the `animation` and `animation-name` component values and generating the corresponding CSS keyframe into the stylesheet.
 
 (o) Customize your keyframes using the Master CSS [animations API](/docs/animations).
 ```js name=master.css.js
@@ -29,7 +26,11 @@ export default {
     }
 }
 ```
-It generates CSS according to the syntax `@animation1|.5s` you apply:
+For example, apply the custom `animation1` using the [animation](/docs/animation) syntax:
+```html
+<div class="**@animation1|.5s**"></div>
+```
+It only generates CSS according to the syntax `@animation1|.5s` you apply:
 ```css
 @keyframes animation1 { … }
 
@@ -42,5 +43,14 @@ Even though there are thousands of predefined keyframes, `animation1`, `animatio
 
 ---
 
-## Using the variables API
+## Bloated CSS variables
+### Using variables API
 ...
+
+---
+
+## Benefits
+By minifying CSS, the browser enhances performance and improves related metrics:
+1. **Faster Loading Time**: Less CSS means smaller file sizes, resulting in faster page loading times. This is crucial for improving user experience and SEO rankings, as search engines like Google typically prefer pages that load quickly.
+2. **Reduced Network Bandwidth Usage**: Less CSS code reduces the network bandwidth consumption from the server to the browser. This is particularly beneficial for users on mobile devices and slow-speed networks.
+3. **Improved Performance**: Reducing CSS code can lower the rendering and parsing costs for browsers. This helps enhance the page's performance, especially on low-end devices and older browser versions.
