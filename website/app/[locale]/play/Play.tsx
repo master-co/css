@@ -109,8 +109,7 @@ export default function Play(props: any) {
     const generateDatabaseShareItem = useCallback((target: any) => ({
         files: target.files,
         dependencies: template?.dependencies,
-        version,
-        createdAt: new Date().getTime()
+        version
     }), [template?.dependencies, version])
 
     const [strignifiedPrevShareItem, setStrignifiedPrevShareItem] = useState(JSON.stringify(generateDatabaseShareItem(shareItem)))
@@ -331,7 +330,10 @@ export default function Play(props: any) {
         }
         setSharing(true)
         const databaseShareItem = generateDatabaseShareItem(shareItem)
-        const newShareId = await writeShareItem(databaseShareItem)
+        const newShareId = await writeShareItem({
+            ...databaseShareItem,
+            createdAt: new Date().getTime()
+        })
         const newSharePathname = `${props.locale === i18n.defaultLocale ? '' : `/${props.locale}`}/play/${newShareId}${window.location.search}`
         setShareId(newShareId)
         setStrignifiedPrevShareItem(JSON.stringify(databaseShareItem))
