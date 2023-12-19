@@ -60,7 +60,6 @@ const functions: FunctionDefinitions = {
                                 !hasUnit
                                 && isNaN(+current)
                                 && valueComponent.type === 'number'
-                                && valueComponent.unit !== '%'
                             ) {
                                 hasUnit = true
                             }
@@ -69,9 +68,7 @@ const functions: FunctionDefinitions = {
                                 if (isNaN(+current)) {
                                     if (valueComponent.type === 'number') {
                                         currentValueComponents.push(valueComponent)
-                                        if (valueComponent.unit !== '%') {
-                                            currentHasUnit = true
-                                        }
+                                        currentHasUnit = true
                                     } else {
                                         currentValueComponents.push(valueComponent)
                                     }
@@ -157,9 +154,10 @@ const functions: FunctionDefinitions = {
                             bypassParsing || isVarFunction || unitChecking && currentHasUnit,
                             unitChecking,
                             isVarFunction
-                        )
+                        ) || functionName === 'var'
                         if (!childHasUnit && functionName === '$') {
-                            childHasUnit = this.css.variables[(newValueComponent.children[0] as StringValueComponent).value]?.type === 'string'
+                            const variableType = this.css.variables[(newValueComponent.children[0] as StringValueComponent).value]?.type
+                            childHasUnit = !variableType || variableType === 'string'
                         }
                         if (childHasUnit) {
                             hasUnit = true
