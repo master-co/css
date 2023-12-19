@@ -1,16 +1,13 @@
-## Issue [sr-only]
+import foucImage from '~/public/images/fouc.avif'
 
 Upon accessing the page, the browser starts rendering the document. However, the page styles may not be loaded yet, causing a [FOUC (flash of unstyled content)](https://en.wikipedia.org/wiki/Flash_of_unstyled_content).
 <figure>
-    <Image src="/images/fouc.avif" alt="flash of unstyled content" width="500" height="468" />
+    <Image src={foucImage} placeholder="blur" alt="flash of unstyled content" width="500" height="468" />
     <figcaption>A simulated example of FOUC. At left is the front page without styles. At right is the same page with styles applied. ( [web.dev](https://web.dev/preload-scanner) )</figcaption>
 </figure>
 
 The unstyled state can occur in a flash if the browser doesn't block rendering while a stylesheet is downloaded and processed.
 
----
-
-## Solutions
 ### Prevent premature rendering
 When you [pre-render](/docs/rendering-modes/progressive-rendering) the page, the required styles will be included during the page load. FOUC occurs when using only [runtime rendering](/docs/rendering-modes/runtime-rendering).
 

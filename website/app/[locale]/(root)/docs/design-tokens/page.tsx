@@ -13,7 +13,7 @@ export async function generateMetadata(props: any, parent: any) {
 
 export default async function Page(props: any) {
     return (
-        <Layout {...props} metadata={metadata} toc={toc} titleBig={false}>
+        <Layout {...props} metadata={metadata} toc={toc}>
             <Content />
         </Layout >
     )

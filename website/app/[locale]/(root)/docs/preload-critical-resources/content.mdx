@@ -1,15 +1,9 @@
-## Issue [sr-only]
-
 (!|) The browser loads the runtime engine only after downloading and parsing the stylesheet.
-<Image src="/images/no-preload-network.png" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
-
+<Image src={require('~/public/images/no-preload-network.png')} placeholder="blur" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
 It may experience defers in downloading and initializing until the first contentful paint if the [runtime engine](/docs/rendering-modes/runtime-rendering) hasn't been preloaded.
 
----
-
-## Solutions
-### Preload critical engine
-(o) Use `html <link rel="preload" …>` to preload the runtime engine.
+### Preload runtime engine
+(o) Use `html <link rel="preload" …>` to preload the critical resources.
 
 ```html
 <!DOCTYPE html>
@@ -25,7 +19,7 @@ It may experience defers in downloading and initializing until the first content
 <small>For build tools, it requires implementing code splitting and preloading the JavaScript module with the runtime engine.</small>
 
 Now the runtime engine is preloaded, so the download happens in parallel with the stylesheet:
-<Image src="/images/preload-network.png" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
+<Image src={require('~/public/images/preload-network.png')} placeholder="blur" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
 
 You are telling the browser that you would like to fetch it sooner than the browser would otherwise discover it.
 

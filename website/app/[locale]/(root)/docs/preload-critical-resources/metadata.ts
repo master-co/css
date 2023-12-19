@@ -1,7 +1,7 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Preload critical resources',
+    title: 'Preloading critical resources',
     description: 'The runtime engine plays a crucial role in the initial display of a page.',
     category: 'Production Optimization',
     other: {

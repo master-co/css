@@ -68,7 +68,7 @@ const processCssText = (name: string | Record<string, any>) => {
         ? name[0]
         : name)
     // `size` -> 9999999999
-    target = target.replace(/`size`/g, '1600')
+    target = target.replace(/`size`/g, '160000000')
     const classes = target.split(' ')
     const css = new MasterCSS()
     classes.forEach((eachClass: string) => css.add(eachClass))
@@ -79,5 +79,5 @@ const processCssText = (name: string | Record<string, any>) => {
         .replace(/@keyframes\s+[\w-]+\s*{\s*([\s\S]*{[\s\S]*?})*\s*}/g, '')
         .replace(/.*{([\s\S]*?)}.*/g, '$1')
         .replace(/`(.*?)`/g, `_PLACEHOLDER_$1_PLACEHOLDER_`)
-        .replace(/(1600|100)/g, '`size`')
+        .replace(/(160000000|10000000)/g, '`size`')
 }
