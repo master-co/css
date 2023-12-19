@@ -5,9 +5,30 @@ import firebaseConfig from 'websites/firebase-config'
 import { initializeApp } from '@firebase/app'
 import { getFirestore, doc, getDoc } from '@firebase/firestore/lite'
 import docMenuDict from '~/components/docMenuDict'
+import metadata from '../metadata'
+import { generate } from '~/utils/metadata'
+import dayjs from 'dayjs'
 
 export const dynamic = 'force-static'
 export const revalidate = false
+
+export async function generateMetadata(props: any, parent: any) {
+    const app = initializeApp(firebaseConfig)
+    const db = getFirestore(app)
+    const { shareId } = props.params
+    const shareItemRef = doc(db, `sandbox/${shareId}`)
+    const data = await getDoc(shareItemRef)
+    let shareItem
+    if (data.exists()) {
+        shareItem = data.data() as PlayShare
+    }
+    return generate({
+        ...metadata,
+        category: shareItem?.createdAt
+            ? dayjs(shareItem?.createdAt).format('MMMM D YYYY HH:mm:ss A')
+            : props.params.shareId,
+    }, props, parent)
+}
 
 export default async function Page(props: any) {
     const app = initializeApp(firebaseConfig)

@@ -109,7 +109,8 @@ export default function Play(props: any) {
     const generateDatabaseShareItem = useCallback((target: any) => ({
         files: target.files,
         dependencies: template?.dependencies,
-        version
+        version,
+        createdAt: new Date().getTime()
     }), [template?.dependencies, version])
 
     const [strignifiedPrevShareItem, setStrignifiedPrevShareItem] = useState(JSON.stringify(generateDatabaseShareItem(shareItem)))
@@ -747,6 +748,7 @@ export interface PlayShare {
     dependencies: PlayShareDependencies
     version: string
     links: string[]
+    createdAt: number
 }
 
 export interface PlayShareFile {

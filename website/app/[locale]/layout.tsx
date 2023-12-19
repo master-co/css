@@ -1,11 +1,7 @@
 import { Viewport } from 'next'
 
 export const metadata = {
-    metadataBase: new URL(process.env.HOST as string),
-    title: {
-        template: '%s - Master CSS',
-        default: 'Master CSS'
-    }
+    metadataBase: new URL(process.env.HOST as string)
 }
 
 export const viewport: Viewport = {
