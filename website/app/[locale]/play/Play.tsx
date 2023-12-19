@@ -87,6 +87,7 @@ export default function Play(props: any) {
     const [sharing, setSharing] = useState(false)
     const [version, setVersion] = useState(props.shareItem?.version ?? latestMasterCSSVersion)
     const [generatedCSSText, setGeneratedCSSText] = useState('')
+    const [generatedCSSSize, setGeneratedCSSSize] = useState('0KB')
     const template = useMemo(() => templates.find((eachTemplate) => eachTemplate.version === version), [version])
     const [previewErrorEvent, setPreviewErrorEvent] = useState<any>()
     const layout = useMemo(() => searchParams.get('layout'), [searchParams])
@@ -288,6 +289,7 @@ export default function Play(props: any) {
                 case 'cssUpdate':
                     // eslint-disable-next-line no-case-declarations
                     const cssText = content ? beautifyCSS(content) : ''
+                    setGeneratedCSSSize(Math.round(new TextEncoder().encode(content).length / 1024 * 100) / 100 + 'KB')
                     setGeneratedCSSText(cssText)
                     break
                 case 'error':
@@ -718,19 +720,24 @@ export default function Play(props: any) {
                             sandbox="allow-popups-to-escape-sandbox allow-scripts allow-popups allow-forms allow-same-origin allow-pointer-lock allow-top-navigation allow-modals"
                             srcDoc={previewHTML}
                         />
-                        <Editor
-                            wrapperProps={{ className: clsx({ 'hide!': preview !== 'css' }) }}
-                            height="100%"
-                            width="100%"
-                            theme={'vs-' + themeService?.current}
-                            defaultValue={generatedCSSText}
-                            value={generatedCSSText}
-                            language="css"
-                            options={{
-                                ...editorOptions,
-                                readOnly: true
-                            }}
-                        />
+                        <div className={clsx('flex flex:col h:full', { 'hide!': preview !== 'css' })}>
+                            <div className='flex align-items:center justify-content:space-between bb:1|divider h:48 px:30 flex:0|0|auto font:12'>
+                                <div>Generated CSS</div>
+                                <div className="fg:fade">{generatedCSSSize}</div>
+                            </div>
+                            <Editor
+                                height="100%"
+                                width="100%"
+                                theme={'vs-' + themeService?.current}
+                                defaultValue={generatedCSSText}
+                                value={generatedCSSText}
+                                language="css"
+                                options={{
+                                    ...editorOptions,
+                                    readOnly: true
+                                }}
+                            />
+                        </div>
                         {previewErrorEvent &&
                             <div className="abs full bg:red-10@dark bg:red-95@light fg:red-75@dark fg:red@light inset:0 p:50">
                                 <h2 className="font:20">Error at line {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
