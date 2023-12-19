@@ -162,18 +162,20 @@ export default function Play(props: any) {
         let bodyInnerHTML = ''
 
         const appendFile = (eachFile: PlayShareFile) => {
+            if (!eachFile) {
+                eachFile = template?.files.find(({ title }: any) => title === eachFile.title) as PlayShareFile
+            }
             const content = eachFile.content
             if (!content) {
                 return
             }
-            const eachTemplateFile: any = template?.files.find(({ title }: any) => title === eachFile.title)
-            switch (eachTemplateFile?.language) {
+            switch (eachFile.language) {
                 case 'html':
                     bodyInnerHTML += content
                     return
                 case 'javascript':
                     // eslint-disable-next-line no-case-declarations
-                    let eachScriptHTML = getScriptHTML({ ...eachTemplateFile, text: content })
+                    let eachScriptHTML = getScriptHTML({ ...eachFile, text: content })
                     if (eachFile.name === 'master.css.js') {
                         eachScriptHTML = eachScriptHTML
                             .replace(/(export default|export const config =)/, 'window.masterCSSConfig =')
@@ -181,7 +183,7 @@ export default function Play(props: any) {
                     headInnerHTML += eachScriptHTML
                     break
                 case 'css':
-                    headInnerHTML += getStyleHTML({ ...eachTemplateFile, text: content })
+                    headInnerHTML += getStyleHTML({ ...eachFile, text: content })
                     break
             }
         }
@@ -218,7 +220,7 @@ export default function Play(props: any) {
             </head>
             <body>${bodyInnerHTML}</body>
         </html>`
-    }, [shareItem?.dependencies?.scripts, shareItem?.dependencies?.styles, shareItem.files, shareItem?.links, template?.files])
+    }, [shareItem, template?.files])
 
     const tabFile: { id: string, language: string, content: string, readOnly: boolean, name: string, title: string } = useMemo(() => {
         switch (tab) {
