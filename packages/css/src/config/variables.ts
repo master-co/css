@@ -37,7 +37,7 @@ const variables = {
             'serif'
         ]
     },
-    'box-size': {
+    screen: {
         '4xs': 360,
         '3xs': 480,
         '2xs': 600,
@@ -49,6 +49,8 @@ const variables = {
         '2xl': 1600,
         '3xl': 1920,
         '4xl': 2560,
+    },
+    size: {
         full: '100%',
         fit: 'fit-content',
         max: 'max-content',

@@ -412,10 +412,10 @@ export class Rule {
             const declarations = this.declarations[propertyName as keyof PropertiesHyphen] as any
             if (Array.isArray(declarations)) {
                 for (const value of declarations) {
-                    push(prefix + value.toString())
+                    push(prefix + String(value))
                 }
             } else {
-                push(prefix + declarations.toString())
+                push(prefix + String(declarations))
             }
         }
 
@@ -556,10 +556,10 @@ export class Rule {
                                 handleVariable(
                                     (variable) => {
                                         if (bypassParsing) {
-                                            currentValue += variable.text = variable.value
+                                            currentValue += eachValueComponent.text = variable.value
                                         } else {
                                             const valueComponent = this.parseValueComponent(variable.value, unit) as NumericValueComponent
-                                            currentValue += variable.text = valueComponent.value + (valueComponent.unit ?? '')
+                                            currentValue += eachValueComponent.text = valueComponent.value + (valueComponent.unit ?? '')
                                         }
                                     },
                                     () => {
@@ -574,7 +574,7 @@ export class Rule {
                                 const alpha = eachValueComponent.alpha ? '/' + eachValueComponent.alpha : ''
                                 handleVariable(
                                     (variable) => {
-                                        currentValue += variable.text = `${variable['space']}(${variable.value}${alpha})`
+                                        currentValue += eachValueComponent.text = `${variable['space']}(${variable.value}${alpha})`
                                     },
                                     () => {
                                         currentValue += eachValueComponent.text = `${variable.space}(var(--${eachValueComponent.name})${alpha})`
@@ -659,7 +659,7 @@ export class Rule {
                     if (!isVarFunction) {
                         const result = BASE_UNIT_REGEX.exec(currentValue)
                         if (result) {
-                            currentValue = (+result[1] * (this.css.config.baseUnit ?? 1)).toString()
+                            currentValue = String(+result[1] * (this.css.config.baseUnit ?? 1))
                         }
                     }
                     if (bypassParsing) {

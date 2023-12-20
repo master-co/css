@@ -18,7 +18,6 @@ export type Variable = Omit<VariableValue, 'value' | 'space'> & {
     value?: any,
     space?: any,
     usage?: number,
-    text?: string,
     themes?: { [theme: string]: VariableValue }
 }
 
@@ -123,7 +122,7 @@ export class MasterCSS {
                                 ...variableValue,
                                 value: slashIndex === -1
                                     ? variableValue.value + ' / ' + (alpha.startsWith('0.') ? alpha.slice(1) : alpha)
-                                    : (variableValue.value.slice(0, slashIndex + 2) + (+variableValue.value.slice(slashIndex + 2) * +alpha).toString().slice(1))
+                                    : (variableValue.value.slice(0, slashIndex + 2) + String(+variableValue.value.slice(slashIndex + 2) * +alpha).slice(1))
                             }
                         }
 
@@ -1146,7 +1145,7 @@ export class MasterCSS {
 
                         const propertyName = '--' + eachVariableName
                         if (!initializing || !(nativeRule.cssRule as CSSStyleRule).style.getPropertyValue(propertyName)) {
-                            (nativeRule.cssRule as CSSStyleRule).style.setProperty(propertyName, variableValue.value.toString())
+                            (nativeRule.cssRule as CSSStyleRule).style.setProperty(propertyName, String(variableValue.value))
                         }
                     }
                     if (variable.value) {
