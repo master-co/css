@@ -198,6 +198,11 @@ Preset the maximum width of media-related elements to the parent container to ma
 </Code>
 Browsers default these elements to `inline` display. `block` can be centered using common tricks like `margin: auto`.
 
+For media that needs to overflow the container, you can cancel the maximum width by selecting descendants:
+```html
+<article class="**max-w:none_:where(img)**">…</article>
+```
+
 ---
 
 ## Using syntax
