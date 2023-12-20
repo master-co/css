@@ -374,7 +374,7 @@ export class Rule {
                 newValue = transformValue.call(this, newValue)
             }
             if (declare) {
-                this.declarations = declare.call(this, newValue)
+                this.declarations = declare.call(this, newValue, this.valueComponents)
             } else if (id) {
                 this.declarations = {
                     [id]: newValue
@@ -496,11 +496,11 @@ export class Rule {
                             ),
                             bypassVariableNames
                         )
-                        currentValue += typeof result === 'string'
+                        currentValue += eachValueComponent.text = typeof result === 'string'
                             ? result
                             : this.resolveValue(result, functionDefinition?.unit ?? unit, bypassVariableNames, bypassParsing)
                     } else {
-                        currentValue += eachValueComponent.name
+                        currentValue += eachValueComponent.text = eachValueComponent.name
                             + eachValueComponent.symbol
                             + this.resolveValue(eachValueComponent.children, functionDefinition?.unit ?? unit, bypassVariableNames, bypassParsing)
                             + START_SYMBOLS[eachValueComponent.symbol as keyof typeof START_SYMBOLS]
@@ -540,7 +540,7 @@ export class Rule {
                                     (variable) => {
                                         const valueComponents: ValueComponent[] = []
                                         this.parseValue(valueComponents, 0, variable.value as string, unit, '', undefined, bypassParsing, [...bypassVariableNames, eachValueComponent.name])
-                                        currentValue += this.resolveValue(
+                                        currentValue += eachValueComponent.text = this.resolveValue(
                                             valueComponents,
                                             unit,
                                             [...bypassVariableNames, eachValueComponent.name],
@@ -548,7 +548,7 @@ export class Rule {
                                         )
                                     },
                                     () => {
-                                        currentValue += `var(--${eachValueComponent.name})`
+                                        currentValue += eachValueComponent.text = `var(--${eachValueComponent.name})`
                                     }
                                 )
                                 break
@@ -556,14 +556,14 @@ export class Rule {
                                 handleVariable(
                                     (variable) => {
                                         if (bypassParsing) {
-                                            currentValue += variable.value
+                                            currentValue += variable.text = variable.value
                                         } else {
                                             const valueComponent = this.parseValueComponent(variable.value, unit) as NumericValueComponent
-                                            currentValue += valueComponent.value + (valueComponent.unit ?? '')
+                                            currentValue += variable.text = valueComponent.value + (valueComponent.unit ?? '')
                                         }
                                     },
                                     () => {
-                                        currentValue += unit
+                                        currentValue += eachValueComponent.text = unit
                                             ? `calc(var(--${eachValueComponent.name}) / 16 * 1rem)`
                                             : `var(--${eachValueComponent.name})`
                                     }
@@ -574,26 +574,26 @@ export class Rule {
                                 const alpha = eachValueComponent.alpha ? '/' + eachValueComponent.alpha : ''
                                 handleVariable(
                                     (variable) => {
-                                        currentValue += `${variable['space']}(${variable.value}${alpha})`
+                                        currentValue += variable.text = `${variable['space']}(${variable.value}${alpha})`
                                     },
                                     () => {
-                                        currentValue += `${variable.space}(var(--${eachValueComponent.name})${alpha})`
+                                        currentValue += eachValueComponent.text = `${variable.space}(var(--${eachValueComponent.name})${alpha})`
                                     }
                                 )
                                 break
                         }
                     } else {
-                        currentValue += `var(--${eachValueComponent.name}${(eachValueComponent.fallback ? ',' + eachValueComponent.fallback : '')})`
+                        currentValue += eachValueComponent.text = `var(--${eachValueComponent.name}${(eachValueComponent.fallback ? ',' + eachValueComponent.fallback : '')})`
                     }
                     break
                 case 'separator':
-                    currentValue += (eachValueComponent.text || eachValueComponent.value)
+                    currentValue += eachValueComponent.text ? eachValueComponent.text : (eachValueComponent.text = eachValueComponent.value)
                     break
                 case 'number':
-                    currentValue += eachValueComponent.value + (eachValueComponent.unit || '')
+                    currentValue += eachValueComponent.text = eachValueComponent.value + (eachValueComponent.unit || '')
                     break
                 default:
-                    currentValue += eachValueComponent.value
+                    currentValue += eachValueComponent.text = eachValueComponent.value
                     break
             }
         }
@@ -849,7 +849,7 @@ export interface RuleDefinition {
     analyze?: (this: Rule, className: string) => [valueToken: string, prefixToken?: string]
     transformValue?(this: Rule, value: string): string
     transformValueComponents?(this: Rule, valueComponents: ValueComponent[]): ValueComponent[]
-    declare?(this: Rule, value: string): PropertiesHyphen
+    declare?(this: Rule, value: string, valueComponents: ValueComponent[]): PropertiesHyphen
     delete?(this: Rule, className: string): void
     create?(this: Rule, className: string): void
     insert?(this: Rule): void

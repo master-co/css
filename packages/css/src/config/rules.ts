@@ -422,51 +422,51 @@ const rules = {
         layer: Layer.CoreNative,
         variables: ['box-size']
     } as RuleDefinition,
-    box: {
-        match: /^(?:(?:max|min|clamp|calc)\(.+\)|[0-9]+[a-z]*?)x(?:(?:max|min|clamp|calc)\(.+\)|[0-9]+[a-z]*?)/,
+    size: {
+        match: /^size:/,
         layer: Layer.CoreShorthand,
         unit: 'rem',
-        separators: ['x'],
-        analyze(className: string) {
-            return [className]
-        },
-        declare(value) {
-            const [width, height] = value.split(' x ')
+        declare(value, valueComponents) {
+            const length = valueComponents.length
             return {
-                width,
-                height
+                width: length === 1
+                    ? valueComponents[0].text
+                    : valueComponents[0].text,
+                height: length === 1
+                    ? valueComponents[0].text
+                    : valueComponents[2].text
             }
         }
     } as RuleDefinition,
-    'min-box': {
+    'min-size': {
         match: /^min:/,
         layer: Layer.CoreShorthand,
         unit: 'rem',
-        separators: ['x'],
-        analyze(className: string) {
-            return [className.slice(4)]
-        },
-        declare(value) {
-            const [width, height] = value.split(' x ')
+        declare(value, valueComponents) {
+            const length = valueComponents.length
             return {
-                'min-width': width,
-                'min-height': height
+                'min-width': length === 1
+                    ? valueComponents[0].text
+                    : valueComponents[0].text,
+                'min-height': length === 1
+                    ? valueComponents[0].text
+                    : valueComponents[2].text
             }
         }
     } as RuleDefinition,
-    'max-box': {
+    'max-size': {
         match: /^max:/,
         layer: Layer.CoreShorthand,
         unit: 'rem',
-        separators: ['x'],
-        analyze(className: string) {
-            return [className.slice(4)]
-        },
-        declare(value) {
-            const [width, height] = value.split(' x ')
+        declare(value, valueComponents) {
+            const length = valueComponents.length
             return {
-                'max-width': width,
-                'max-height': height
+                'max-width': length === 1
+                    ? valueComponents[0].text
+                    : valueComponents[0].text,
+                'max-height': length === 1
+                    ? valueComponents[0].text
+                    : valueComponents[2].text
             }
         }
     } as RuleDefinition,

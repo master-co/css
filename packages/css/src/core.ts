@@ -18,6 +18,7 @@ export type Variable = Omit<VariableValue, 'value' | 'space'> & {
     value?: any,
     space?: any,
     usage?: number,
+    text?: string,
     themes?: { [theme: string]: VariableValue }
 }
 
