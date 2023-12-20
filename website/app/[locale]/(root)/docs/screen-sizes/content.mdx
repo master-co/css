@@ -1,0 +1,39 @@
+## Default [sr-only]
+<Reference />
+<details>
+    <summary>View the default variables</summary>
+    <div>
+        <Code lang="js">
+            {JSON.stringify(require('@master/css').variables.screen, null, 4)}
+        </Code>
+    </div>
+</details>
+Apply the default screen variables using size-related syntax.
+```html
+<div class="**w:screen-sm** **max-w:screen-lg**">…</div>
+```
+
+---
+
+## Basic usage
+### Add a screen size
+Customize your screen size tokens by defining [variables](/docs/variables).
+```js name=master.css.js
+export default {
+    variables: {
+        screen: {
++            desktop: 1280
+        }
+    }
+}
+```
+Apply the defined `screen` variables anywhere.
+```html
+<div class="**max-w:screen-desktop** mx:auto">…</div>
+```
+
+### Create a responsive container
+Fixed element width to a screen size as a responsive container.
+```html
+<div class="**max-w:screen-sm@sm** **max-w:screen-md@md** **max-w:screen-lg@lg** …">…</div>
+```
