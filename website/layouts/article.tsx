@@ -14,7 +14,7 @@ export default async function Layout(props: any) {
     return <>
         <DocHeader locale={props.params.locale} contained />
         <GridsBg className="abs h:352 left:0 top:97 top:60@lg w:full z:-1" />
-        <div className='max-w:md mb:-20 mt:180 mx:auto'>
+        <div className='max-w:screen-md mb:-20 mt:180 mx:auto'>
             <div className='fg:accent font:semibold mb:10 text:center'>
                 {props.metadata.date && <TimeAgo timestamp={props.metadata.date} locale={props.params.locale} />}
             </div>
@@ -24,7 +24,7 @@ export default async function Layout(props: any) {
             <p className='text:18 fg:fade max-w:800 mt:3x mx:auto text:center'>{$(props.metadata.description)}</p>
             {props.metadata.authors && <ListAuthors className="center-content gap:30 mt:50">{props.metadata.authors}</ListAuthors>}
         </div>
-        <main className='app-doc-main max-w:sm'>
+        <main className='app-doc-main max-w:screen-sm'>
             <Article className="mb:80 mt:0>:first" prose>
                 {props.children}
             </Article>

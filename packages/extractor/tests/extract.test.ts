@@ -100,24 +100,19 @@ test('media', () => {
 
 test('wxh', () => {
     expect(extractLatentClasses(`
-        1920x1080
-        1024pxx786px
-        min:40x80
+        min:40|80
         min:calc(100vw-60)xcalc(100vh-100px)
         calc(100vw-60)x20rem
         15pxxcalc(100vh-100px)
         calc(100vw-60)xcalc(100vh-100px)
-        class="logo 172x172"
+        class="logo"
     `)).toEqual([
-        '1920x1080',
-        '1024pxx786px',
-        'min:40x80',
+        'min:40|80',
         'min:calc(100vw-60)xcalc(100vh-100px)',
         'calc(100vw-60)x20rem',
         '15pxxcalc(100vh-100px)',
         'calc(100vw-60)xcalc(100vh-100px)',
-        'logo',
-        '172x172'
+        'logo'
     ])
 })
 

@@ -524,7 +524,7 @@ export default function Play(props: any) {
                             </option>
                         } */}
                     </select>
-                    <IconChevronDown className="1emx1em mr:-3 stroke:1.5" />
+                    <IconChevronDown className="size:1em mr:-3 stroke:1.5" />
                 </label>
                 {links?.map(({ fullName, Icon, ...eachLink }: any, index) =>
                     <HeaderNav className={clsx('hide@<md', index === links.length - 1 && 'mr:auto')} key={eachLink.name} {...eachLink} onClick={(event: any) => {

@@ -6,7 +6,7 @@ export default {
         'font-family': {
             sans: 'Inter'
          },
-        'box-size': { md: 1024 },
+        screen: { desktop: 1280 },
         spacing: { sm: 10 },
         primary: '#000000'
     }
@@ -14,5 +14,5 @@ export default {
 ```
 Apply custom variables using ambiguous shorthand:
 ```html
-<div class="**font:sans** **max-w:md** **m:sm** **bg:primary**">…</div>
+<div class="**font:sans** **max-w:screen-desktop** **m:sm** **bg:primary**">…</div>
 ```

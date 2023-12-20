@@ -22,7 +22,7 @@ export default async function Page(props: any) {
     const $ = await queryDictionary(props.params.locale)
     return <>
         <DocHeader contained locale={props.params.locale} />
-        <main className='app-doc-main max-w:xl'>
+        <main className='app-doc-main max-w:screen-xl'>
             <Article className="mb:80" prose>
                 <div className='gap:50|25 grid-cols:4'>
                     {allBlogMetadata.concat(allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata)
