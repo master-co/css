@@ -83,8 +83,8 @@ We've built various Master CSS core functionality/integration packages:
 - [Vue](https://github.com/master-co/css/tree/beta/packages/vue) - Integrate Master CSS the Vue.js way
 
 ##### Progressive Rendering
+- [Server](https://github.com/master-co/css/tree/beta/packages/server) - Generate Master CSS text from markup on the server
 - [Renderer](https://github.com/master-co/css/tree/beta/packages/renderer) - Pre-renders and injects HTML-required CSS
-- [Nitro Server](https://github.com/master-co/css/tree/beta/packages/server.nitro) - Integrate Master CSS Pre-rendering the Nitro way
 
 ##### Static Extraction
 - [Extractor](https://github.com/master-co/css/tree/beta/packages/extractor) - Master CSS static extractor for various raw text extraction.
@@ -100,10 +100,9 @@ We've built various Master CSS core functionality/integration packages:
 - [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) - Master CSS Language Service for Visual Studio Code Extension
 
 ##### Others
-- [Normal CSS](https://github.com/master-co/css/tree/beta/packages/normal.css) - Normalize the browser's styles
-- [Theme Service](https://github.com/master-co/css/tree/beta/packages/theme-service) - A CSS theme-switching service for Master CSS
-- [🚧 Class Variant](https://github.com/master-co/css/tree/beta/packages/class-variant) - Create reusable, extensible, and customizable style class variants
-- 🚧 Resolve Class - Conditionally apply classes and trim it to a non-wrap string
+- [Normal CSS](https://beta.css.master.co/docs/global-styles) - Normalize the browser's styles
+- [Theme Service](https://beta.css.master.co/docs/theme-service) - A CSS theme-switching service for Master CSS
+- [Class Variant](https://beta.css.master.co/docs/class-variant) - Create reusable, extensible, and customizable style class variants
 
 ## Community
 The Master CSS community can be found here:
