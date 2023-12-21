@@ -10,7 +10,7 @@ import PageContent from 'websites/components/PageContent'
 export default async function Layout({ children, params, toc, prose, $hideLeftSide, ...props }: any) {
     return <>
         <DocMain $hideRightSide={!toc} $hideLeftSide={$hideLeftSide}>
-            <Article className={l({ 'max-w:sm_:where(p)': !toc })} prose={prose}>
+            <Article className={l({ 'max-w:screen-sm_:where(p)': !toc })} prose={prose}>
                 <ArticleHeader locale={params.locale} metadata={props.metadata} {...props} />
                 {children}
             </Article>

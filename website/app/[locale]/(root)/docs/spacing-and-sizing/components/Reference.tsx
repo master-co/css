@@ -24,7 +24,7 @@ export default () => {
                                 <td>{row.px}</td>
                                 <td>{row.value}</td>
                                 <td>
-                                    <div className='bg-stripe-pink inline-block h:1em v:middle' style={{ width: row.value }}></div>
+                                    <div className='bg:primary inline-block h:1em v:middle' style={{ width: row.value }}></div>
                                 </td>
                             </tr>
                         ))

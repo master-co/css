@@ -10,7 +10,7 @@ export default async function Layout(props: any) {
             metadata={metadata}
             toc={props.toc}
         >
-            <p className='text:18 max-w:800'>It&#39;s flexible — can be runtime, zero-runtime, or even both.</p>
+            <p className='text:18 max-w:screen-sm'>It&#39;s flexible — can be runtime, zero-runtime, or even both.</p>
             {!props.hideTabs && <Tabs className="mb:30">
                 <Tab href='/docs/rendering-modes'>{$('Compare')}</Tab>
                 <Tab href='/docs/rendering-modes/progressive-rendering'>{$('Progressive Rendering')} 🚧</Tab>
