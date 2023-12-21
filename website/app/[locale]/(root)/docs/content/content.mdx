@@ -28,7 +28,7 @@ Is it not very kind to use `\00a0` in markup?
 export default {
     variables: {
         content: {
-+            external: ' ↗' 
++            external: ' ↗'
         }
     }
 }
@@ -41,7 +41,7 @@ Apply your custom fonts:
 ---
 
 ## Conditionally apply
-Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
+Apply styles based on different states using [selectors](/docs/state-selectors) and [conditional queries](/docs/conditional-queries).
 ```html
 <div class="content:normal**:hover** content:normal**@sm** content:normal**@dark** content:normal**@print**">…</div>
 ```
