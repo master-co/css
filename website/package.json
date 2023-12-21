@@ -19,8 +19,6 @@
         "@master/eslint-config-css": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
         "@master/normal.css": "workspace:^",
-        "@mdx-js/loader": "^2.3.0",
-        "@mdx-js/react": "^2.3.0",
         "@monaco-editor/react": "^4.6.0",
         "@next/mdx": "^14.0.4",
         "@vercel/speed-insights": "^1.0.2",
