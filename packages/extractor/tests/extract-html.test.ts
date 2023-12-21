@@ -4,14 +4,14 @@ it('extract latent classes from html', () => {
     const content = `
         <!DOCTYPE html>
         <html lang="en">
-        
+
         <head>
             <meta charset="UTF-8" />
             <link rel="icon" type="image/svg+xml" href="/vite.svg" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <title>Master CSS Static Extraction in Vite</title>
         </head>
-        
+
         <body>
             <div id="app">
                 <div>
@@ -20,7 +20,7 @@ it('extract latent classes from html', () => {
                             <img src="/vite.svg" class="logo" alt="Vite logo" />
                         </a>
                         <a href="https://css.master.co" target="_blank">
-                            <img src="/master.svg" class="logo 172x172" alt="Master logo" />
+                            <img src="/master.svg" class="logo size:172" alt="Master logo" />
                         </a>
                     </div>
                     <h1
@@ -39,7 +39,7 @@ it('extract latent classes from html', () => {
             </div>
             <script type="module" src="src/main.ts"></script>
         </body>
-        
+
         </html>
     `
     expect(
@@ -63,7 +63,7 @@ it('extract latent classes from html', () => {
             '_blank',
             'logo',
             'Vite',
-            '172x172',
+            'size:172',
             'Master',
             'font:sans',
             'ls:-.25',

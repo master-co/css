@@ -45,7 +45,7 @@ export class MyElement extends LitElement {
           <img src=${litLogo} class="logo" alt="Vite logo" />
         </a>
         <a href="https://css.master.co" target="_blank">
-          <img src=${masterLogo} class="logo 172x172" alt="Master logo" />
+          <img src=${masterLogo} class="logo size:172|172" alt="Master logo" />
         </a>
       </div>
       <slot></slot>

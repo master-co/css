@@ -9,8 +9,8 @@ export default ({ className }: any) => {
     return (
         <>
             <Demo>
-                <IconRotateClockwise className="48x48 stroke:.5 stroke:dim" strokeDasharray={1.5} />
-                <IconRotateClockwise className={l(className, 'app-icon-primary stroke:.5 48x48')} />
+                <IconRotateClockwise className="size:12x stroke:.5 stroke:dim" strokeDasharray={1.5} />
+                <IconRotateClockwise className={l(className, 'app-icon-primary stroke:.5 size:12x')} />
             </Demo>
             <Code lang="html">{`
                 <svg class="**${className}**">…</svg>

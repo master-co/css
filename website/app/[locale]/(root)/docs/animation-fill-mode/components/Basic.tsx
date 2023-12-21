@@ -24,16 +24,16 @@ export default ({ className }: any) => {
                 <div className='grid-cols:3'>
                     <div>
                         <div className='font:10 text:center'>from</div>
-                        <IconCar className={l(className, 'stroke:.5 stroke:dim 48x48')} strokeDasharray={1.5} />
+                        <IconCar className={l(className, 'stroke:.5 stroke:dim size:12x')} strokeDasharray={1.5} />
                     </div>
                     <div>
                         <div className='font:10 text:center'>origin</div>
-                        <IconCar className={l(className, 'stroke:.5 stroke:dim 48x48 mr:-48 mb:-48')} />
-                        <IconCar className={l(className, 'app-icon-primary stroke:.5 48x48 @delay:1s!', targetClassName)} />
+                        <IconCar className={l(className, 'stroke:.5 stroke:dim size:12x mr:-48 mb:-48')} />
+                        <IconCar className={l(className, 'app-icon-primary stroke:.5 size:12x @delay:1s!', targetClassName)} />
                     </div>
                     <div>
                         <div className='font:10 text:center'>to</div>
-                        <IconCar className={l(className, 'stroke:.5 stroke:dim 48x48')} strokeDasharray={1.5} />
+                        <IconCar className={l(className, 'stroke:.5 stroke:dim size:12x')} strokeDasharray={1.5} />
                     </div>
                 </div>
             </Demo>
