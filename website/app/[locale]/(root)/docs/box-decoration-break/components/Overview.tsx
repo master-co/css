@@ -5,7 +5,6 @@ import Code from 'websites/components/Code'
 import SyntaxTable from '~/components/SyntaxTable'
 import syntaxes from '../syntaxes'
 import clsx from 'clsx'
-import BoxDecorationSpan from './BoxDecorationSpan'
 import Basic from './Basic'
 
 export default () =>
