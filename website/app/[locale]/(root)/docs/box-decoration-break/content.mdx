@@ -5,31 +5,18 @@
 
 ## Basic usage
 ### Slice
-Use `box:slice` to apply the background, border, border-image, box-shadow, clip-page, margin, and padding to the box as if it were one continuous fragment.
-<Demo>
-    <div className="w:150">
-        <span className="box:slice r:10 p:10 bg:indigo fg:white t:20">This text breaks across multiple lines.</span>
-    </div>
-</Demo>
-```html
-<span class="**box:slice**">This text breaks across multiple lines.</span>
-```
+Use `box-decoration:slice` to apply the background, border, border-image, box-shadow, clip-page, margin, and padding to the box as if it were one continuous fragment.
+<Basic className="box-decoration:slice" />
 
 ### Clone
-Use `box:clone` to apply the background, border, border-image, box-shadow, clip-page, margin, and padding to each fragment independently.
-<Demo>
-    <div className="w:150">
-        <span className="box:clone r:10 p:10 bg:indigo fg:white t:20">This text breaks across multiple lines.</span>
-    </div>
-</Demo>
-```html
-<span class="**box:clone**">This text breaks across multiple lines.</span>
-```
+Use `box-decoration:clone` to apply the background, border, border-image, box-shadow, clip-page, margin, and padding to each fragment independently.
+<Basic className="box-decoration:clone" />
+
 ---
 
 ## Conditionally apply
 Apply styles in [different states](/docs/states-and-queries) using selectors, media queries, etc.
 ```html
-<div class="box:slice**:hover** box:slice**@sm** box:slice**@dark** box:slice**@print**">…</div>
+<div class="box-decoration:slice**:hover** box-decoration:slice**@sm** box-decoration:slice**@dark** box-decoration:slice**@print**">…</div>
 ```
 
