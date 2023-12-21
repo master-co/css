@@ -373,7 +373,6 @@ const rules = {
     } as RuleDefinition,
     // flex
     'flex-basis': {
-        variables: ['size'],
         unit: 'rem',
         layer: Layer.CoreNative,
     } as RuleDefinition,
@@ -401,26 +400,22 @@ const rules = {
     width: {
         match: /^w:/,
         unit: 'rem',
-        layer: Layer.CoreNative,
-        variables: ['size']
+        layer: Layer.CoreNative
     } as RuleDefinition,
     height: {
         match: /^h:/,
         unit: 'rem',
-        layer: Layer.CoreNative,
-        variables: ['size']
+        layer: Layer.CoreNative
     } as RuleDefinition,
     'min-width': {
         match: /^min-w:/,
         unit: 'rem',
-        layer: Layer.CoreNative,
-        variables: ['size']
+        layer: Layer.CoreNative
     } as RuleDefinition,
     'min-height': {
         match: /^min-h:/,
         unit: 'rem',
-        layer: Layer.CoreNative,
-        variables: ['size']
+        layer: Layer.CoreNative
     } as RuleDefinition,
     size: {
         match: /^size:/,
@@ -442,7 +437,6 @@ const rules = {
         match: /^min:/,
         layer: Layer.CoreShorthand,
         unit: 'rem',
-        variables: ['size'],
         declare(value, valueComponents) {
             const length = valueComponents.length
             return {
@@ -459,7 +453,6 @@ const rules = {
         match: /^max:/,
         layer: Layer.CoreShorthand,
         unit: 'rem',
-        variables: ['size'],
         declare(value, valueComponents) {
             const length = valueComponents.length
             return {
@@ -477,7 +470,7 @@ const rules = {
         layer: Layer.CoreNative
     } as RuleDefinition,
     'box-decoration-break': {
-        match: ['size', ['slice', 'clone']],
+        match: ['box-decoration', ['slice', 'clone']],
         layer: Layer.CoreNative,
         declare(value) {
             return {
@@ -627,14 +620,12 @@ const rules = {
     'max-height': {
         match: /^max-h:/,
         unit: 'rem',
-        layer: Layer.CoreNative,
-        variables: ['size']
+        layer: Layer.CoreNative
     } as RuleDefinition,
     'max-width': {
         match: /^max-w:/,
         unit: 'rem',
-        layer: Layer.CoreNative,
-        variables: ['size']
+        layer: Layer.CoreNative
     } as RuleDefinition,
     opacity: {
         layer: Layer.CoreNative,
@@ -1402,16 +1393,14 @@ const rules = {
     } as RuleDefinition,
     'grid-auto-columns': {
         match: /^grid-auto-cols:/,
-        layer: Layer.CoreNative,
-        variables: ['size']
+        layer: Layer.CoreNative
     } as RuleDefinition,
     'grid-auto-flow': {
         match: /^grid-flow:/,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'grid-auto-rows': {
-        layer: Layer.CoreNative,
-        variables: ['size']
+        layer: Layer.CoreNative
     } as RuleDefinition,
     'grid-template-areas': {
         layer: Layer.CoreNative
@@ -1419,13 +1408,11 @@ const rules = {
     'grid-template-columns': {
         match: /^grid-template-cols:/,
         layer: Layer.CoreNative,
-        unit: 'rem',
-        variables: ['size']
+        unit: 'rem'
     } as RuleDefinition,
     'grid-template-rows': {
         layer: Layer.CoreNative,
-        unit: 'rem',
-        variables: ['size']
+        unit: 'rem'
     } as RuleDefinition,
     'grid-template': {
         layer: Layer.CoreNativeShorthand
