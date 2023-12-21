@@ -59,9 +59,9 @@ const virtualCSSFilepath = path.join(__dirname, '.virtual/master.css')
 let child: SpawndChildProcess
 
 beforeAll(() => {
-    fs.writeFileSync(HTMLFilepath, originHTMLText)
-    fs.writeFileSync(optionsFilepath, originOptionsText)
-    fs.writeFileSync(configFilepath, originConfigText)
+    fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w+' })
+    fs.writeFileSync(optionsFilepath, originOptionsText, { flag: 'w+' })
+    fs.writeFileSync(configFilepath, originConfigText, { flag: 'w+' })
 
     child = spawnd('tsx ../../../css/src/bin extract -w', { shell: true, cwd: __dirname })
 }, 120000)
