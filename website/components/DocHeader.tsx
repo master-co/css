@@ -28,7 +28,7 @@ export default async function DocHeader({ children, ...props }: any) {
             <label className='app-header-nav hide@<md rel gap:5 ml:30'>
                 v{version}
                 <DocVersionSelect version={version} />
-                <IconChevronDown className="size:1em mr:-3 stroke:1.5" />
+                <IconChevronDown className="mr:-3 size:1em stroke:1.5" />
             </label>
             {links.map(({ Icon, fullName, ...eachLink }: any) => <HeaderNav className="hide@<md" key={eachLink.name} {...eachLink}>{$(eachLink.name)}</HeaderNav>)}
             <TwitterIconButton className="app-header-icon hide@<md ml:auto" />

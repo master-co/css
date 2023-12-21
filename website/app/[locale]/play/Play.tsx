@@ -524,7 +524,7 @@ export default function Play(props: any) {
                             </option>
                         } */}
                     </select>
-                    <IconChevronDown className="size:1em mr:-3 stroke:1.5" />
+                    <IconChevronDown className="mr:-3 size:1em stroke:1.5" />
                 </label>
                 {links?.map(({ fullName, Icon, ...eachLink }: any, index) =>
                     <HeaderNav className={clsx('hide@<md', index === links.length - 1 && 'mr:auto')} key={eachLink.name} {...eachLink} onClick={(event: any) => {
@@ -721,7 +721,7 @@ export default function Play(props: any) {
                             srcDoc={previewHTML}
                         />
                         <div className={clsx('flex flex:col h:full', { 'hide!': preview !== 'css' })}>
-                            <div className='flex align-items:center justify-content:space-between bb:1|divider h:48 px:30 flex:0|0|auto font:12'>
+                            <div className='flex align-items:center bb:1|divider flex:0|0|auto font:12 h:48 justify-content:space-between px:30'>
                                 <div>Generated CSS</div>
                                 <div className="fg:fade">{generatedCSSSize}</div>
                             </div>
