@@ -1,6 +1,6 @@
 export const code1 = `<p class="**padding-top:1rem** **padding-bottom:1rem** **padding-left:2rem** **padding-right:2rem** **border-width:.0625rem** **border-color:red** **border-style:solid**">`
 export const code2 = `<p class="**padding:16|32** **border:1|solid|red**">`
-export const code3 = `<p class="**p:16|32** **b:1|solid|red**">`
+export const code3 = `<p class="**p:16|32** **b:1|red**">`
 
 Syntax: <code><span className="token value mcss language-mcss"><span className="token Mroot"><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">|</span><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">|</span><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">…</span></span></span></span></span></code>
 
@@ -19,7 +19,7 @@ Inherit native CSS shorthands to reduce the frequency of duplication of style na
     {code3}
 </Code>
 
-You can't use CSS whitespace in class attributes because it's used to separate different class names, use instead:
+You can't use CSS whitespace in class attributes because it's used to separate different class names; use instead:
 
 (o) Use `|` delimiters instead of whitespaces between CSS parameter values.
 ```html
