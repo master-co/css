@@ -7,7 +7,7 @@ import { l } from 'to-line'
 import contrast from 'get-contrast'
 import { snackbar } from 'websites/utils/snackbar'
 
-export default () => <div className="gap:25|10 grid-cols:6 grid-cols:13@sm my:40">
+export default () => <div className="gap:5x|2x grid-cols:6 grid-cols:12@sm my:10x">
     {Object.keys(variables)
         // @ts-ignore todo fix this
         .filter((variableName) => ['slate', 'gray', 'brown', 'orange', 'gold', 'yellow', 'grass', 'green', 'beryl', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'crimson', 'red'].includes(variableName))
@@ -17,18 +17,17 @@ export default () => <div className="gap:25|10 grid-cols:6 grid-cols:13@sm my:40
                 <Fragment key={colorName}>
                     <div className={l`font:12 font:semibold capitalize white-space:pre-line lh:1.5`}>{colorName}</div>
                     {Object.keys(eachColors)
-                        .filter((level: any) => [5, 10, 20, 30, 40, 50, 55, 60, 70, 80, 90, 95].includes(+level))
+                        .filter((level: any) => [5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95].includes(+level))
                         .map((level: any) => {
                             const color = eachColors[level]
                             const backgroundHex = level === 100 ? '#000000' : color === 0 ? '#ffffff' : color
                             const ratio = Math.round(contrast.ratio(backgroundHex, '#ffffff') * 10) / 10
                             return (
                                 <div key={color + level}>
-                                    <div className="center-content flex cursor:pointer font:12 h:40 ls:.5 r:5 w:full"
+                                    <div className="center-content flex aspect:3/2 cursor:pointer ls:.5 outline-offset:-1 outline:1|solid outline:divider r:1x w:full"
                                         style={{
                                             backgroundColor: backgroundHex,
-                                            color: ratio > 4.5 ? '#fff' : '#000',
-                                            boxShadow: 'inset 0 0 1px rgba(255,255,255,.3)'
+                                            color: ratio > 4.5 ? '#fff' : '#000'
                                         }}
                                         onClick={() => {
                                             snackbar(
@@ -40,7 +39,7 @@ export default () => <div className="gap:25|10 grid-cols:6 grid-cols:13@sm my:40
                                         {/* <div className="info invisible lh:1">#{color}</div> */}
                                     </div>
                                     <code className="block font:12 mt:8">{level}</code>
-                                    <code className="block fg:neutral font:10 mt:4">{color}</code>
+                                    <code className="block fg:fade font:10 font:regular mt:4">{color}</code>
                                     {/* <code className="block mt:4 font:10 fg:neutral">{ratio}</code> */}
                                 </div>
                             )
