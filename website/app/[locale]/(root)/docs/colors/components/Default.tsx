@@ -7,15 +7,17 @@ import { l } from 'to-line'
 import contrast from 'get-contrast'
 import { snackbar } from 'websites/utils/snackbar'
 
-export default () => <div className="gap:5x|2x grid-cols:6 grid-cols:12@sm my:10x">
+export default () => <div className="gap-y:8x gap-y:5x@sm grid-cols:1 my:10x">
     {Object.keys(variables)
         // @ts-ignore todo fix this
         .filter((variableName) => ['slate', 'gray', 'brown', 'orange', 'gold', 'yellow', 'grass', 'green', 'beryl', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'crimson', 'red'].includes(variableName))
         .map((colorName: string) => {
             const eachColors = (variables as any)[colorName]
             return (
-                <Fragment key={colorName}>
-                    <div className={l`font:12 font:semibold capitalize white-space:pre-line lh:1.5`}>{colorName}</div>
+                <div className="gap-x:2x gap-y:3x gap-y:5x@sm grid-cols:6 grid-cols:12@sm" key={colorName}>
+                    <div className="capitalize font:12 font:semibold grid-col-span:6@<sm lh:1.5 white-space:pre-line">
+                        {colorName}
+                    </div>
                     {Object.keys(eachColors)
                         .filter((level: any) => [5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95].includes(+level))
                         .map((level: any) => {
@@ -44,7 +46,7 @@ export default () => <div className="gap:5x|2x grid-cols:6 grid-cols:12@sm my:10
                                 </div>
                             )
                         })}
-                </Fragment>
+                </div>
             )
         })}
 </div>
