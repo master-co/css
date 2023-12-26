@@ -1,0 +1,58 @@
+{
+    "name": "@master/css.nuxt",
+    "scripts": {
+        "build": "nuxt-module-build build --stub",
+        "dev": "nuxi dev playground",
+        "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+        "lint": "eslint .",
+        "test": "vitest run"
+    },
+    "type": "module",
+    "license": "MIT",
+    "description": "Integrate Master CSS Progressive Rendering in Nuxt way",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://css.master.co/docs/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/css.nuxt"
+    },
+    "keywords": [
+        "nitro",
+        "vue",
+        "server",
+        "hooks",
+        "css",
+        "nuxt",
+        "mastercss",
+        "server-side-rendering",
+        "ssr"
+    ],
+    "sideEffects": false,
+    "main": "./dist/module.cjs",
+    "types": "./dist/types.d.ts",
+    "files": [
+        "dist"
+    ],
+    "dependencies": {
+        "@nuxt/kit": "^3.8.2",
+        "@master/css-server": "workspace:^",
+        "explore-config": "^2.5.20"
+    },
+    "devDependencies": {
+        "@nuxt/devtools": "latest",
+        "@nuxt/eslint-config": "^0.2.0",
+        "@nuxt/module-builder": "^0.5.4",
+        "@nuxt/schema": "^3.8.2",
+        "@nuxt/test-utils": "^3.8.1",
+        "@types/node": "^20.10.3",
+        "changelogen": "^0.5.5",
+        "eslint": "^8.55.0",
+        "nuxt": "^3.8.2",
+        "vitest": "^0.33.0"
+    }
+}
