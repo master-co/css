@@ -1,10 +1,10 @@
-import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
-import { queryDictionary } from 'websites/dictionaries'
+import Tabs, { Tab } from 'websites/components/Tabs'
+import { getDictionary } from 'websites/dictionaries'
 import DocLayout from '~/layouts/doc'
 import LogoSvg from '~/public/images/build-tools/webpack.svg?inlineSvg'
 
 export default async function Layout(props: any) {
-    const $ = await queryDictionary(props.params.locale)
+    const $ = getDictionary(props.params.locale)
     return (
         <DocLayout {...props}
             metadata={{
@@ -13,10 +13,7 @@ export default async function Layout(props: any) {
                 category: 'Installation'
             }}
             backOnClickCategory='/docs/installation'
-            icon={{
-                Element: LogoSvg,
-                class: 'w:100'
-            }}
+            icon={<LogoSvg width={100} />}
             titleBig
         >
             <Tabs className="mb:30">

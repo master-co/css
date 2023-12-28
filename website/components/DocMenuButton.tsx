@@ -14,11 +14,12 @@ import DocVersionSelect from './DocVersionSelect'
 import version from '~/version'
 import LanguageSelect from 'websites/components/LanguageSelect'
 import { nameOfLocale } from 'websites/i18n.config.mjs'
+import { getDictionary } from '../../../../dictionaries'
 
-export default function DocMenuButton({ dict, ...props }: any) {
+export default function DocMenuButton(props: any) {
     const [opened, setOpened] = useState(false)
     const themeService = useThemeService()
-    const t = (text: string) => dict?.[text] || text
+    const $ = getDictionary(props.locale)
     return (
         <>
             <MenuButton {...props} opened={opened} onClick={() => setOpened(!opened)} />
@@ -29,12 +30,12 @@ export default function DocMenuButton({ dict, ...props }: any) {
                             <Link className={clsx('flex ai:center w:full', { 'fg:dim': disabled })} {...eachLink} disabled={disabled} key={eachLink.name} onClick={!disabled && (() => setOpened(false))}>
                                 <Icon className={clsx('fill:dim/.2 ml:20 mr:12', disabled ? 'fg:dim' : 'fg:fade')} stroke="1" width="26" height="26" />
                                 <div className={clsx('flex ai:center bb:1|divider flex:1 h:48', { 'fg:major': !disabled })}>
-                                    {t(fullName || eachLink.name)}
+                                    {$(fullName || eachLink.name)}
                                     {!disabled && <IconChevronRight className="fg:dim ml:auto mr:12" stroke="1.3" />}
                                 </div>
                             </Link>
                         )}
-                        <div className='font:14 m:40|20|10|20'>{t('Community')}</div>
+                        <div className='font:14 m:40|20|10|20'>{$('Community')}</div>
                         <Link className="flex ai:center w:full" href="https://github.com/master-co/css" onClick={() => setOpened(false)}>
                             <IconBrandGithub className="fg:fade fill:dim/.2 ml:20 mr:12" stroke="1" width="26" height="26" />
                             <div className="flex ai:center bb:1|divider fg:major flex:1 h:48">
@@ -45,7 +46,7 @@ export default function DocMenuButton({ dict, ...props }: any) {
                         <Link className="flex ai:center w:full" href="https://github.com/master-co/css/discussions" onClick={() => setOpened(false)}>
                             <IconMessages className="fg:fade fill:dim/.2 ml:20 mr:12" stroke="1" width="26" height="26" />
                             <div className="flex ai:center bb:1|divider fg:major flex:1 h:48">
-                                {t('Discussions')}
+                                {$('Discussions')}
                                 <IconArrowUpRight className="fg:dim ml:auto mr:12" stroke="1.3" />
                             </div>
                         </Link>
@@ -63,11 +64,11 @@ export default function DocMenuButton({ dict, ...props }: any) {
                                 <IconArrowUpRight className="fg:dim ml:auto mr:12" stroke="1.3" />
                             </div>
                         </Link>
-                        <div className='font:14 m:40|20|10|20'>{t('System')}</div>
+                        <div className='font:14 m:40|20|10|20'>{$('System')}</div>
                         <label className="flex ai:center w:full">
                             <IconVersions className="fg:fade fill:dim/.2 ml:20 mr:12" stroke="1" width="26" height="26" />
                             <div className="flex ai:center bb:1|divider fg:major flex:1 h:48">
-                                {t('Version')}
+                                {$('Version')}
                                 <div className='flex rel ai:center ml:auto'>
                                     <div className="capitalize fg:fade ml:auto mr:12">{version}</div>
                                     <DocVersionSelect version={version} />
@@ -78,7 +79,7 @@ export default function DocMenuButton({ dict, ...props }: any) {
                         <label className="flex ai:center w:full">
                             <IconLanguage className="fg:fade fill:dim/.2 ml:20 mr:12" stroke="1" width="26" height="26" />
                             <div className="flex ai:center bb:1|divider fg:major flex:1 h:48">
-                                {t('Language')}
+                                {$('Language')}
                                 <div className='flex rel ai:center ml:auto'>
                                     <LanguageSelect locale={props.locale}>
                                         {(currentLocale: keyof typeof nameOfLocale) =>
@@ -92,7 +93,7 @@ export default function DocMenuButton({ dict, ...props }: any) {
                         <label className="flex ai:center w:full">
                             <ThemeIcon className="fg:fade fill:dim/.2 ml:20 mr:12" stroke="1" width="26" height="26" />
                             <div className="flex ai:center bb:1|divider fg:major flex:1 h:48">
-                                {t('Theme')}
+                                {$('Theme')}
                                 <div className='flex rel ai:center ml:auto'>
                                     <div className="capitalize fg:fade ml:auto mr:12">{themeService?.value}</div>
                                     <ThemeSelect />

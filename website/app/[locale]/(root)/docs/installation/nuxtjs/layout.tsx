@@ -1,10 +1,10 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
-import { queryDictionary } from 'websites/dictionaries'
+import { getDictionary } from 'websites/dictionaries'
 import DocLayout from '~/layouts/doc'
-import NuxtjsSvg from '~/public/images/frameworks/nuxtjs.svg?inlineSvg'
+import LogoSvg from '~/public/images/frameworks/nuxtjs.svg?inlineSvg'
 
 export default async function Layout(props: any) {
-    const $ = await queryDictionary(props.params.locale)
+    const $ = getDictionary(props.params.locale)
     return (
         <DocLayout {...props}
             metadata={{
@@ -13,10 +13,7 @@ export default async function Layout(props: any) {
                 category: 'Installation'
             }}
             backOnClickCategory='/docs/installation'
-            icon={{
-                Element: NuxtjsSvg,
-                class: 'w:105'
-            }}
+            icon={<LogoSvg width={105} />}
             titleBig
         >
             <Tabs className="mb:30">

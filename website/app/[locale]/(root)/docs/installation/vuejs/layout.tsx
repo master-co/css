@@ -1,10 +1,10 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
-import { queryDictionary } from 'websites/dictionaries'
+import { getDictionary } from 'websites/dictionaries'
 import DocLayout from '~/layouts/doc'
 import LogoSvg from '~/public/images/frameworks/vuejs.svg?inlineSvg'
 
-export default async function Layout(props: any) {
-    const $ = await queryDictionary(props.params.locale)
+export default function Layout(props: any) {
+    const $ = getDictionary(props.params.locale)
     return (
         <DocLayout {...props}
             metadata={{
@@ -13,10 +13,7 @@ export default async function Layout(props: any) {
                 category: 'Installation'
             }}
             backOnClickCategory='/docs/installation'
-            icon={{
-                Element: LogoSvg,
-                class: 'w:64'
-            }}
+            icon={<LogoSvg width={64} />}
             titleBig
         >
             <Tabs className="mb:30">
