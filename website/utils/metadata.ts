@@ -4,11 +4,11 @@ import type { Locale } from 'websites/i18n.config'
 import type { Props } from 'websites/types/Props'
 import { getDictionary } from 'websites/dictionaries'
 
-export async function generate(
+export function generate(
     metadata: Metadata | Record<string, any>,
     { params, searchParams }: Props,
     parent: ResolvingMetadata
-): Promise<Metadata> {
+): Metadata {
     const $ = getDictionary(params?.locale)
     const title = $(metadata.title)
     const description = $(metadata.description)

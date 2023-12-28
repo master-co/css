@@ -1,3 +1,5 @@
+'use client'
+
 import '../globals.css'
 import { getPreInitScript } from 'theme-service'
 import { Locale } from 'websites/i18n.config'
