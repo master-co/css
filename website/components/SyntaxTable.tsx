@@ -12,6 +12,44 @@ import MasterCSS from '@master/css'
 export default function SyntaxTable({ title, value, children, previewClass, scrollY, ...props }: any) {
     const [selectedClassName, setSelectedClassName] = useState(props.default)
     const content = useMemo(() => children?.(selectedClassName), [children, selectedClassName])
+    const rows = useMemo(() =>
+        value.map((eachName: string, index: number) => {
+            const isArrayClassNames = Array.isArray(eachName)
+            const isClickableItem = isArrayClassNames
+                ? !eachName.find((eachInnerName) => eachInnerName.includes('`'))
+                : !eachName.includes('`')
+            const targetClassName = isArrayClassNames ? eachName[0] : eachName
+            const cssText = processCssText(eachName)
+            return (
+                <tr key={eachName} onClick={
+                    isClickableItem ? () => {
+                        if (isClickableItem) {
+                            snackbar('Class copied <code class="font:90% font:semibold ls:-.5">' + targetClassName + '</code>')
+                            navigator.clipboard.writeText(targetClassName)
+                            // improve perf
+                            setTimeout(() => {
+                                setSelectedClassName(targetClassName)
+                            })
+                        }
+                    } : undefined
+                } className={line({ 'cursor:pointer': isClickableItem && !targetClassName.includes('cursor') }, targetClassName.includes('cursor') ? targetClassName : '')}>
+                    <td>
+                        {previewClass && !isArrayClassNames && previewClass(targetClassName)}
+                        {(isArrayClassNames ? eachName : [eachName]).map((eachInnerName: string, i, array) => (
+                            <Fragment key={eachInnerName}>
+                                <InlineCode lang="mcss">{eachInnerName}</InlineCode>
+                                {(i !== array.length - 1) && <code className="fg:slate-90! fg:gray!@dark"> / </code>}
+                            </Fragment>
+                        ))}
+                    </td>
+                    <td>
+                        {eachName && cssText &&
+                            <InlineCode lang="css" className="fg:neutral white-space:pre">{cssText}</InlineCode>
+                        }
+                    </td>
+                </tr>
+            )
+        }), [value, previewClass])
     return (
         <>
             <DocTable {...props} className={children ? 'mb:30' : 'mb:50'} scrollY={scrollY !== undefined ? scrollY : 424}>
@@ -22,40 +60,7 @@ export default function SyntaxTable({ title, value, children, previewClass, scro
                     </tr>
                 </thead>
                 <tbody>
-                    {value.map((eachName: string, index: number) => {
-                        const isArrayClassNames = Array.isArray(eachName)
-                        const isClickableItem = isArrayClassNames
-                            ? !eachName.find((eachInnerName) => eachInnerName.includes('`'))
-                            : !eachName.includes('`')
-                        const targetClassName = isArrayClassNames ? eachName[0] : eachName
-                        const cssText = processCssText(eachName)
-                        return (
-                            <tr key={eachName} onClick={
-                                isClickableItem ? () => {
-                                    if (isClickableItem) {
-                                        snackbar('Class copied <code class="font:90% font:semibold ls:-.5">' + targetClassName + '</code>')
-                                        navigator.clipboard.writeText(targetClassName)
-                                        setSelectedClassName(targetClassName)
-                                    }
-                                } : undefined
-                            } className={line({ 'cursor:pointer': isClickableItem && !targetClassName.includes('cursor') }, targetClassName.includes('cursor') ? targetClassName : '')}>
-                                <td>
-                                    {previewClass && !isArrayClassNames && previewClass(targetClassName)}
-                                    {(isArrayClassNames ? eachName : [eachName]).map((eachInnerName: string, i, array) => (
-                                        <Fragment key={eachInnerName}>
-                                            <InlineCode lang="mcss">{eachInnerName}</InlineCode>
-                                            {(i !== array.length - 1) && <code className="fg:slate-90! fg:gray!@dark"> / </code>}
-                                        </Fragment>
-                                    ))}
-                                </td>
-                                <td>
-                                    {eachName && cssText &&
-                                        <InlineCode lang="css" className="fg:neutral white-space:pre">{cssText}</InlineCode>
-                                    }
-                                </td>
-                            </tr>
-                        )
-                    })}
+                    {rows}
                 </tbody>
             </DocTable>
             {content}
