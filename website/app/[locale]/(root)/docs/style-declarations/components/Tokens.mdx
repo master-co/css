@@ -11,19 +11,7 @@ Applying certain property values ​​is often not so concise in class attribut
     {code2}
 </Code>
 
+import VariablesOverview from '../../variables/components/Overview.mdx'
+
 By default, Master CSS uses predefined variables to simplify native values. You can customize [variables](/docs/variables) to implement your design system, for example:
-```js name=master.css.js
-export default {
-    variables: {
-        width: {
-            sm: 16,
-            md: 32,
-            …
-        }
-    }
-}
-```
-Apply them:
-```html
-<div class="width:**sm** font:**md**">
-```
+<VariablesOverview />
