@@ -1,9 +1,6 @@
-'use client'
-
 import '../globals.css'
 import { getPreInitScript } from 'theme-service'
 import { Locale } from 'websites/i18n.config'
-import { l } from 'to-line'
 import { RedirectsProvider } from 'websites/contexts/redirects'
 import redirects from '~/redirects.mjs'
 import { Analytics } from '@vercel/analytics/react'
@@ -11,8 +8,9 @@ import config from '../../master.css'
 import CSSProvider from '@master/css.react/CSSProvider'
 import ThemeServiceProvider from '@master/css.react/ThemeServiceProvider'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import clsx from 'clsx'
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
     params,
     bodyAttrs,
@@ -35,8 +33,9 @@ export default function RootLayout({
                         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
                     </>
                 }
+                <style id="master" dangerouslySetInnerHTML={{ __html: '' }} suppressHydrationWarning />
             </head>
-            <body {...bodyAttrs} className={l(bodyAttrs?.className, 'font:sans font:mono_:where(code,kbd,samp) overflow:hidden|overlay fg:neutral bg:slate-50/.2_:where(::selection)')}>
+            <body {...bodyAttrs} className={clsx(bodyAttrs?.className, 'bg:slate-50/.2_:where(::selection) fg:neutral font:mono_:where(code,kbd,samp) font:sans overflow-x:hidden')}>
                 <ThemeServiceProvider options={{ default: 'system' }}>
                     <CSSProvider config={config}>
                         <RedirectsProvider value={redirects}>
