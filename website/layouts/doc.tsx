@@ -1,5 +1,3 @@
-'use client'
-
 import Article from 'websites/components/Article'
 import ArticleHeader from 'websites/components/ArticleHeader'
 import PageNavs from 'websites/components/PageNavs'

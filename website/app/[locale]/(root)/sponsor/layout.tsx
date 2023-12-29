@@ -1,12 +1,13 @@
-import DocHeader from '~/components/DocHeader'
-import DocSidebar from 'websites/components/DocSidebar'
-import { pageCategories } from '../pages'
+'use client'
 
-export default async function Layout(props: any) {
+import DocHeader from '~/components/DocHeader'
+import DocSidebar from '~/components/DocSidebar'
+
+export default function Layout(props: any) {
     const { children, params } = props
     return <>
         <DocHeader locale={params.locale} contained />
-        <DocSidebar locale={params.locale} pageCategories={pageCategories} />
+        <DocSidebar locale={params.locale} />
         {children}
     </>
 }

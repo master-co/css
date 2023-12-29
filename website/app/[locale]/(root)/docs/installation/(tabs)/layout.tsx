@@ -1,5 +1,3 @@
-'use client'
-
 import Tabs, { Tab } from 'websites/components/Tabs'
 import { getDictionary } from 'websites/dictionaries'
 import DocLayout from '~/layouts/doc'

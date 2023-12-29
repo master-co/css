@@ -1,5 +1,3 @@
-'use client'
-
 import { GridsBg } from 'websites/components/GridsBg'
 import Article from 'websites/components/Article'
 import DocHeader from '~/components/DocHeader'
