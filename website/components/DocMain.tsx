@@ -1,3 +1,5 @@
+'use client'
+
 import { styled } from '@master/css.react'
 
 const DocMain = styled.main(

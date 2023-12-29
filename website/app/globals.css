@@ -1,7 +1,4 @@
-/* @import '@master/normal.css'; */
 @import '@master/normal.css';
-@import '~/public/fonts/inter';
-@import '~/public/fonts/fira-code';
 
 .demo,
 .grids-bg {

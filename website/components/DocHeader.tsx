@@ -12,12 +12,10 @@ import DiscordIconButton from 'websites/components/DiscordIconButton'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Logotype } from '~/components/Logotype'
 import DocVersionSelect from './DocVersionSelect'
-import { collectDictionary, getDictionary } from 'websites/dictionaries'
+import { getDictionary } from 'websites/dictionaries'
 import version from '~/version'
 import Link from 'websites/components/Link'
 import DocMenuButton from './DocMenuButton'
-import docMenuDict from './docMenuDict'
-import SearchButton from 'websites/components/SearchButton'
 
 export default function DocHeader({ children, ...props }: any) {
     const $ = getDictionary(props.locale)

@@ -1,14 +1,15 @@
 'use client'
 
-import { l } from 'to-line'
-import LogotypeAtDark from 'websites/svgs/master-css.logotype@dark.svg?inlineSvg'
-import LogotypeAtLight from 'websites/svgs/master-css.logotype@light.svg?inlineSvg'
+import clsx from 'clsx'
+import Image from 'next/image'
+import LogotypeAtDark from 'websites/svgs/master-css.logotype@dark.svg'
+import LogotypeAtLight from 'websites/svgs/master-css.logotype@light.svg'
 
 export function Logotype({ className, ...props }: any) {
     return (
         <>
-            <LogotypeAtDark {...props} className={l(className, 'hide@light')} />
-            <LogotypeAtLight {...props} className={l(className, 'hide@dark')} />
+            <Image src={LogotypeAtDark} alt="Master CSS logotype" {...props} className={clsx(className, 'hide@light')} loading="eager" />
+            <Image src={LogotypeAtLight} alt="Master CSS dark logotype"{...props} className={clsx(className, 'hide@dark')} loading="eager" />
         </>
     )
 }
