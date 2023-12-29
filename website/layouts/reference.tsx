@@ -1,3 +1,5 @@
+'use client'
+
 import Article from 'websites/components/Article'
 import ArticleHeader from 'websites/components/ArticleHeader'
 import canIUseImg from '~/public/images/caniuse.favicon.png'

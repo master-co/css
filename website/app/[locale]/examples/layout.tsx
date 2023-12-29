@@ -13,11 +13,11 @@ export async function generateStaticParams() {
     return i18n.locales.map((locale: any) => ({ locale }))
 }
 
-export default async function Layout(props: {
+export default async function Layout({ children, params }: {
     children: JSX.Element,
     params: { locale: Locale }
 }) {
     return (
-        <RootLayout {...props} />
+        <RootLayout locale={params.locale}>{children}</RootLayout>
     )
 }
