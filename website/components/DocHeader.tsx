@@ -1,3 +1,5 @@
+'use client'
+
 import links from '../links'
 import Header from 'websites/components/Header'
 import HeaderNav from 'websites/components/HeaderNav'
@@ -10,15 +12,15 @@ import DiscordIconButton from 'websites/components/DiscordIconButton'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Logotype } from '~/components/Logotype'
 import DocVersionSelect from './DocVersionSelect'
-import { collectDictionary, queryDictionary } from 'websites/dictionaries'
+import { collectDictionary, getDictionary } from 'websites/dictionaries'
 import version from '~/version'
 import Link from 'websites/components/Link'
 import DocMenuButton from './DocMenuButton'
 import docMenuDict from './docMenuDict'
 import SearchButton from 'websites/components/SearchButton'
 
-export default async function DocHeader({ children, ...props }: any) {
-    const $ = await queryDictionary(props.locale)
+export default function DocHeader({ children, ...props }: any) {
+    const $ = getDictionary(props.locale)
     return (
         <Header {...props} >
             {/* <SearchButton locale={props.locale} dict={await collectDictionary(props.locale, ['Searching …', 'Search ⌘ K …'])} /> */}
@@ -38,7 +40,7 @@ export default async function DocHeader({ children, ...props }: any) {
             <div className='hide@<md bg:white/.1@dark bg:slate/.2@light h:1em mx:15 w:1'></div>
             <LanguageButton className="app-header-icon hide@<md" locale={props.locale} />
             <ThemeButton className="app-header-icon hide@<md mr:-12" />
-            <DocMenuButton className="app-header-icon hide@md mr:-20" locale={props.locale} dict={await collectDictionary(props.locale, docMenuDict)} />
+            <DocMenuButton className="app-header-icon hide@md mr:-20" locale={props.locale} />
         </Header>
     )
 }

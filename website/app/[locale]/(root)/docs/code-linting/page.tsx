@@ -1,7 +1,7 @@
 import metadata from './metadata'
 import Content from './content.mdx'
 import { generate } from '~/utils/metadata'
-import { queryDictionary } from 'websites/dictionaries'
+import { getDictionary } from 'websites/dictionaries'
 import DocLayout from '~/layouts/doc'
 import ESLintSvg from '~/public/icons/eslint.svg?inlineSvg'
 
@@ -13,12 +13,9 @@ export async function generateMetadata(props: any, parent: any) {
 }
 
 export default async function Page(props: any) {
-    const $ = await queryDictionary(props.params.locale)
+    const $ = getDictionary(props.params.locale)
     return (
-        <DocLayout {...props} metadata={metadata} titleBig icon={{
-            Element: ESLintSvg,
-            class: 'w:90'
-        }}>
+        <DocLayout {...props} metadata={metadata} titleBig icon={<ESLintSvg width={90} />}>
             <Content />
         </DocLayout >
     )

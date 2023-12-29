@@ -1,7 +1,7 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
-import { queryDictionary } from 'websites/dictionaries'
+import { getDictionary } from 'websites/dictionaries'
 import DocLayout from '~/layouts/doc'
-import SvelteSvg from '~/public/images/frameworks/svelte.svg?inlineSvg'
+import LogoSvg from '~/public/images/frameworks/svelte.svg?inlineSvg'
 
 export const metadata = {
     title: 'Set up Master CSS in Svelte',
@@ -9,16 +9,13 @@ export const metadata = {
     category: 'Installation'
 }
 
-export default async function Layout(props: any) {
-    const $ = await queryDictionary(props.params.locale)
+export default function Layout(props: any) {
+    const $ = getDictionary(props.params.locale)
     return (
         <DocLayout {...props}
             metadata={metadata}
             backOnClickCategory='/docs/installation'
-            icon={{
-                Element: SvelteSvg,
-                class: 'w:64'
-            }}
+            icon={<LogoSvg width={64} />}
             titleBig
         >
             <Tabs className="mb:30">

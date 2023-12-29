@@ -2,14 +2,14 @@ import extend from '@techor/extend'
 import type { Metadata, ResolvingMetadata } from 'next'
 import type { Locale } from 'websites/i18n.config'
 import type { Props } from 'websites/types/Props'
-import { queryDictionary } from 'websites/dictionaries'
+import { getDictionary } from 'websites/dictionaries'
 
-export async function generate(
+export function generate(
     metadata: Metadata | Record<string, any>,
     { params, searchParams }: Props,
     parent: ResolvingMetadata
-): Promise<Metadata> {
-    const $ = await queryDictionary(params?.locale)
+): Metadata {
+    const $ = getDictionary(params?.locale)
     const title = $(metadata.title)
     const description = $(metadata.description)
     const category = $(metadata.category)

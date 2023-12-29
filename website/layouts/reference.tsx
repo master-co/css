@@ -1,3 +1,5 @@
+'use client'
+
 import Article from 'websites/components/Article'
 import ArticleHeader from 'websites/components/ArticleHeader'
 import canIUseImg from '~/public/images/caniuse.favicon.png'
@@ -10,7 +12,7 @@ import PageContent from 'websites/components/PageContent'
 import Link from 'websites/components/Link'
 import Image from 'next/image'
 
-export default async function Layout(props: any) {
+export default function Layout(props: any) {
     const { children, params, toc } = props
     const { mdnLink, canIUseLink, ...metadata } = props.metadata
     return <>
