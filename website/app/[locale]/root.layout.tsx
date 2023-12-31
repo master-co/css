@@ -25,7 +25,7 @@ export default async function RootLayout({ children, locale, bodyClassName, styl
                     </>
                 }
             </head>
-            <body className={clsx(bodyClassName, '{font:mono;font-feature:normal}_:where(code,kbd,samp) bg:slate-50/.2_:where(::selection) fg:neutral font-feature:"salt" font:sans overflow-x:hidden')}>
+            <body className={clsx(bodyClassName, '{font:mono;font-feature:normal}_:where(code,kbd,samp) bg:slate-50/.2_:where(::selection) fg:neutral font-feature:\'salt\' font:sans overflow-x:hidden')}>
                 <Client>{children}</Client>
             </body>
         </html>

@@ -1,5 +1,6 @@
 import { DomHandler, Parser } from 'htmlparser2'
 import type { ChildNode, Element } from 'domhandler'
+import decodeHTML from './decode-html'
 
 /**
  * @param html
@@ -35,22 +36,13 @@ export default function parseHTML(html: string): {
         }
 
         if (element.attribs.class) {
-            classes.push(
-                ...element.attribs.class
-                    .split(' ')
-                    /*
-                     * The framework will encode attribute values ​​when rendering HTML to prevent XSS,
-                     * so we must decode it for correct CSS selectors.
-                     * https://github.com/facebook/react/issues/27836
-                     */
-                    .map((className) => className
-                        .replace(/&amp;/g, '&')
-                        .replace(/&apos;/g, '\'')
-                        .replace(/&quot;/g, '"')
-                        .replace(/&lt;/g, '<')
-                        .replace(/&gt;/g, '>')
-                    )
-            )
+            element.attribs.class
+                .split(' ')
+                .forEach((className) => {
+                    className = decodeHTML(className)
+                    if (!classes.includes(className))
+                        classes.push(className)
+                })
         }
     })
 

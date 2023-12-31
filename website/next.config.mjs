@@ -9,11 +9,11 @@ import withBundleAnalyzer from 'websites/with-bundle-analyzer.mjs'
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
-    // eslint: {
-    //     // Warning: This allows production builds to successfully complete even if
-    //     // your project has ESLint errors.
-    //     ignoreDuringBuilds: true,
-    // },
+    eslint: {
+        // Warning: This allows production builds to successfully complete even if
+        // your project has ESLint errors.
+        ignoreDuringBuilds: true,
+    },
     experimental: {
         /**
          * 解決 JavaScript heap out of memory 問題

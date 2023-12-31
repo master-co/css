@@ -8,11 +8,20 @@ it('should not encode entities', () => {
     )
 })
 
-it('should decode class entities', () => {
+test('>', () => {
     expect(render(
         `<div class="mt:0&gt;div"></div>`
     ).html).toEqual([
         '<style id="master">.mt\\:0\\>div>div{margin-top:0rem}</style>',
         `<div class="mt:0&gt;div"></div>`
+    ].join(''))
+})
+
+test('\'', () => {
+    expect(render(
+        `<div class="font-feature:'salt'"></div>`
+    ).html).toEqual([
+        `<style id="master">.font-feature\\:\\'salt\\'{font-feature-settings:'salt'}</style>`,
+        `<div class="font-feature:'salt'"></div>`
     ].join(''))
 })
