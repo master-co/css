@@ -12,7 +12,7 @@ export default async function Layout({ children, params }: {
     params: { locale: Locale }
 }) {
     return (
-        <RootLayout locale={params.locale} bodyClassName='bg:base' style={{ display: 'none' }}>
+        <RootLayout locale={params.locale} bodyClassName='bg:neutral' style={{ display: 'none' }}>
             <>
                 <link as="script" rel="preload" href="/monaco-editor/vs/loader.js" />
                 <link as="script" rel="preload" href="/monaco-editor/vs/editor/editor.main.js" />

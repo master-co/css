@@ -38,8 +38,8 @@ export default function Page(props: any) {
                                         height={270}
                                         alt={eachBlogMetadata.title} />
                                     <div className='text:12 fg:accent font:medium mt:10'>{formattedDate}</div>
-                                    <div className='text:18 fg:major font:semibold'>{eachBlogMetadata.title}</div>
-                                    <div className='text:14 fg:major font:regular'>{eachBlogMetadata.description}</div>
+                                    <div className='text:18 fg:strong font:semibold'>{eachBlogMetadata.title}</div>
+                                    <div className='text:14 fg:strong font:regular'>{eachBlogMetadata.description}</div>
                                 </Link>
                             )
                         })}

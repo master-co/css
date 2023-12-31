@@ -58,7 +58,7 @@ Select and style elements using `:first`, `:last`, `:odd`, `:even`, and `:nth(N)
                     <img className="round object:cover" src={furniture.url} width="56" height="56" alt="avatar" quality={'0'} />
                     <div className="flex flex:col flex:1 py:10">
                         <div className="flex align-items:center">
-                            <div className="text:14 capitalize fg:major">{furniture.name}</div>
+                            <div className="text:14 capitalize fg:strong">{furniture.name}</div>
                         </div>
                         <div className="text:12 m:0 fg:neutral">{furniture.intro}</div>
                     </div>
@@ -78,7 +78,7 @@ Style controls using `:valid`, `:invalid`, `:required` based on form validations
 
 (type) Try typing `co` as a valid email address
 <Demo>
-    <input type="email" className="b:red-55:invalid b:green-55:valid b:1|solid|divider outline:0 h:48 font:14 px:16 bg:panel r:5 max-w:300" defaultValue="aron@master." />
+    <input type="email" className="b:red-55:invalid b:green-55:valid b:1|solid|frame outline:0 h:48 font:14 px:16 bg:panel r:5 max-w:300" defaultValue="aron@master." />
 </Demo>
 ```html
 <input class="b:red-55**:invalid** b:green-55**:valid** b:1|solid …" type="email" />
@@ -91,7 +91,7 @@ Style controls using `:valid`, `:invalid`, `:required` based on form validations
 Attach pseudo-elements to an element using `::before` and `::after`.
 <Demo $py={0}>
     <DemoPanel>
-        <q className="italic fg:major font:medium font:18">Be the change you wish to see in the world.</q>
+        <q className="italic fg:strong font:medium font:18">Be the change you wish to see in the world.</q>
     </DemoPanel>
 </Demo>
 ```html

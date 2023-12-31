@@ -26,7 +26,7 @@ export default () => <div className="gap-y:8x gap-y:5x@sm grid-cols:1 my:10x">
                             const ratio = Math.round(contrast.ratio(backgroundHex, '#ffffff') * 10) / 10
                             return (
                                 <div key={color + level}>
-                                    <div className="center-content flex aspect:3/2 cursor:pointer ls:.5 outline-offset:-1 outline:1|solid outline:divider r:1x w:full"
+                                    <div className="center-content flex aspect:3/2 cursor:pointer ls:.5 outline-offset:-1 outline:1|solid outline:frame r:1x w:full"
                                         style={{
                                             backgroundColor: backgroundHex,
                                             color: ratio > 4.5 ? '#fff' : '#000'

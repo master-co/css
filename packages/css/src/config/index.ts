@@ -36,7 +36,7 @@ export {
 }
 
 export type VariableValue = number | string | Array<number | string>
-export type VariableDefinition = { [key in '' | `@${string}`]?: VariableValue } & { [key: string]: VariableValue | VariableDefinition }
+export type VariableDefinition = { [key in '' | `@${string}` | string]?: VariableValue | VariableDefinition }
 export type CSSKeyframes = { [key in 'from' | 'to' | string]: PropertiesHyphen }
 export type AnimationDefinitions = { [key: string]: CSSKeyframes }
 export type SelectorDefinitions = { [key: string]: string | string[] | SelectorDefinitions }

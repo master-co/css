@@ -15,7 +15,7 @@ Use the `ping` animation to indicate that the shop is open.
 <Demo $py={0}>
     <div className="app-panel rel">
         <Image src="/images/vegetable-salad-in-bowls.jpg" width="400" height="250" className="aspect:400/250 untouchable" alt="vegetable salad in bowls" />
-        <div className="fg:major abs bottom:0 w:full p:50|35|30|35 gradient(0deg,base|0%,base/0|100%)">
+        <div className="fg:strong abs bottom:0 w:full p:50|35|30|35 gradient(0deg,base|0%,base/0|100%)">
             <svg className="inline-block fill:green-75 size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
                 <circle className="@ping|1s|infinite transform:center" cx="4" cy="4" r="4" />
                 <circle cx="4" cy="4" r="4" />
@@ -45,7 +45,7 @@ Use the counterclockwise `rotate` animation to indicate that data is being resto
             <path d="M19.37 15.1l0 .01"></path>
             <path d="M19.94 11l0 .01"></path>
         </svg>
-        <div className="ml:10 font:14 font:medium fg:major">Restoring ...</div>
+        <div className="ml:10 font:14 font:medium fg:strong">Restoring ...</div>
     </div>
 </Demo>
 ```html
@@ -78,7 +78,7 @@ Use the `fade` animation on SVG paths with regular delays to create a loading sp
             <path className="@fade|1s|ease-out|reverse|infinite|.75s" d="M7.75 16.25l-2.15 2.15"></path>
             <path className="@fade|1s|ease-out|reverse|infinite|.875s" d="M6 12l-3 0"></path>
         </svg>
-        <div className="ml:10 font:14 font:medium fg:major">Loading ...</div>
+        <div className="ml:10 font:14 font:medium fg:strong">Loading ...</div>
     </div>
 </Demo>
 ```html

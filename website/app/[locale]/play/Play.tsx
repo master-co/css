@@ -645,10 +645,10 @@ export default function Play(props: any) {
                         layout === '5' && 'hide!@md',
                         {
                             'full!@<md': tab !== 'Preview',
-                            'br:1|divider': !layout,
-                            'bl:1|divider': layout === '2',
-                            'bb:1|divider': layout === '3',
-                            'bt:1|divider': layout === '4'
+                            'br:1|frame': !layout,
+                            'bl:1|frame': layout === '2',
+                            'bb:1|frame': layout === '3',
+                            'bt:1|frame': layout === '4'
                         }
                     )}
                     width={tab === 'Preview' ? '' : width}
@@ -709,7 +709,7 @@ export default function Play(props: any) {
                         className={clsx(
                             'full',
                             {
-                                'max-w:100% max-h:100% outline:1|divider': responsive
+                                'max-w:100% max-h:100% outline:1|frame': responsive
                             }
                         )}
                         showHeight={true}
@@ -721,7 +721,7 @@ export default function Play(props: any) {
                             srcDoc={previewHTML}
                         />
                         <div className={clsx('flex flex:col h:full', { 'hide!': preview !== 'css' })}>
-                            <div className='flex align-items:center bb:1|divider flex:0|0|auto font:12 h:48 justify-content:space-between px:30'>
+                            <div className='flex align-items:center bb:1|frame flex:0|0|auto font:12 h:48 justify-content:space-between px:30'>
                                 <div>Generated CSS</div>
                                 <div className="fg:fade">{generatedCSSSize}</div>
                             </div>

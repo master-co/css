@@ -12,7 +12,7 @@ export default {
                 '@light': '$(gold-75)',
                 '@dark': '$(gold-80)'
             },
-            major: {
+            strong: {
                 '@light': '$(slate-10)',
                 '@dark': '$(gray-80)'
             },
@@ -27,7 +27,7 @@ export default {
         },
         panel: {
             '@light': '$(white)',
-            '@dark': '$(gray-25)'
+            '@dark': '$(gray-10)'
         },
         frame: {
             '@light': '$(slate-60)/.2',

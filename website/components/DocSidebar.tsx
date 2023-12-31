@@ -30,11 +30,7 @@ export default function DocSidebar(props: any) {
             direction:rtl
         `}>
             <div className="direction:ltr p:0|15|20|15">
-                <div className="
-                    flex sticky@lg untouchable align-items:center bg:linear-gradient(180deg,base|0%,base|calc(100%-2rem),transparent|100%)@lg mb:-30 pb:30 pt:20 top:20
-                    top:0@lg
-                    z:1
-                ">
+                <div className="flex sticky@lg untouchable align-items:center gradient(180deg,neutral|0%,neutral|calc(100%-2rem),transparent|100%)@lg mb:-30 pb:30 pt:20 top:20 top:0@lg z:1">
                     <SearchButton className="pointer-events:auto" locale={props.locale} />
                 </div>
                 <div className={l(
@@ -46,7 +42,7 @@ export default function DocSidebar(props: any) {
                         fg:fade_.app-nav
                         contain:content:where(.app-nav,h4)
                         {flex;min-h:32;px:15;rel;align-items:center}_:where(h4,.app-nav)
-                        {pt:0;fg:major;mt:30;font:semibold;text:12}_:where(h4)
+                        {pt:0;fg:strong;mt:30;font:semibold;text:12}_:where(h4)
                         pb:50
                     `
                 )}>
