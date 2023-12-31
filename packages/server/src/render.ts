@@ -11,7 +11,7 @@ import serialize from 'dom-serializer'
 export default function render(html: string, config?: Config): {
     html: string,
     css?: MasterCSS,
-    classes?: string[],
+    classes: string[],
     nodes: ChildNode[],
     htmlElement: Element | null,
     headElement: Element | null,
