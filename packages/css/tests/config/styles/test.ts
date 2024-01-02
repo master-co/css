@@ -20,8 +20,8 @@ test('styles', () => {
             }
         },
         styles: {
-            'highlight-numbers': '{content:counter(lineNumber);inline-block;counter-increment:lineNumber;pr:16;text:right;ml:-5;fg:lightr;w:30;font:80%}_.highlight-line:before'
+            'highlight-numbers': '{content:counter(lineNumber);inline-block;counter-increment:lineNumber;pr:16;text:right;ml:-5;fg:lighter;w:30;font:80%}_.highlight-line:before'
         }
     }).add('highlight-numbers').text)
-        .toBe('.light{--fader:236 237 241}.dark{--fader:107 106 109}.\\{content\\:counter\\(lineNumber\\)\\;inline-block\\;counter-increment\\:lineNumber\\;pr\\:16\\;text\\:right\\;ml\\:-5\\;fg\\:lightr\\;w\\:30\\;font\\:80\\%\\}_\\.highlight-line\\:before .highlight-line:before,.highlight-numbers .highlight-line:before{content:counter(lineNumber);display:inline-block;counter-increment:lineNumber;padding-right:1rem;text-align:right;margin-left:-0.3125rem;color:rgb(var(--fader));width:1.875rem;font-size:80%}')
+        .toBe('.light{--fader:236 237 241}.dark{--fader:107 106 109}.\\{content\\:counter\\(lineNumber\\)\\;inline-block\\;counter-increment\\:lineNumber\\;pr\\:16\\;text\\:right\\;ml\\:-5\\;fg\\:lighter\\;w\\:30\\;font\\:80\\%\\}_\\.highlight-line\\:before .highlight-line:before,.highlight-numbers .highlight-line:before{content:counter(lineNumber);display:inline-block;counter-increment:lineNumber;padding-right:1rem;text-align:right;margin-left:-0.3125rem;color:rgb(var(--fader));width:1.875rem;font-size:80%}')
 })

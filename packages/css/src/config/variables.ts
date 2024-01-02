@@ -220,7 +220,7 @@ const variables = {
         '@light': '$(white)',
         '@dark': '$(gray-95)'
     },
-    'fade': {
+    'light': {
         '@light': '$(slate-5)',
         '@dark': '$(gray-90)'
     },

@@ -24,7 +24,7 @@ export default function SyntaxTable({ title, value, children, previewClass, scro
                 <tr key={eachName} onClick={
                     isClickableItem ? () => {
                         if (isClickableItem) {
-                            snackbar('Class copied <code class="font:90% font:semibold ls:-.5">' + targetClassName + '</code>')
+                            snackbar('<code class="font:90% font:semibold ls:-.5">' + targetClassName + '</code> copied')
                             navigator.clipboard.writeText(targetClassName)
                             // improve perf
                             setTimeout(() => {
