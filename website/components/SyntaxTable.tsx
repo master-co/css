@@ -38,7 +38,7 @@ export default function SyntaxTable({ title, value, children, previewClass, scro
                         {(isArrayClassNames ? eachName : [eachName]).map((eachInnerName: string, i, array) => (
                             <Fragment key={eachInnerName}>
                                 <InlineCode lang="mcss">{eachInnerName}</InlineCode>
-                                {(i !== array.length - 1) && <code className="fg:slate-90! fg:gray!@dark"> / </code>}
+                                {(i !== array.length - 1) && <code className="fg:dim"> / </code>}
                             </Fragment>
                         ))}
                     </td>
@@ -77,12 +77,20 @@ const processCssText = (name: string | Record<string, any>) => {
     const classes = target.split(' ')
     const css = new MasterCSS()
     classes.forEach((eachClass: string) => css.add(eachClass))
-    let text = css.text
-    if (!text) return
-    text = beautifyCSS(text)
-    return text?.replace(/\..*(?:\\}|\\}\\\))(?={.*:[^}]*})/, '')
-        .replace(/@keyframes\s+[\w-]+\s*{\s*([\s\S]*{[\s\S]*?})*\s*}/g, '')
-        .replace(/.*{([\s\S]*?)}.*/g, '$1')
-        .replace(/`(.*?)`/g, `_PLACEHOLDER_$1_PLACEHOLDER_`)
-        .replace(/(160000000|10000000)/g, '`size`')
+    if (!css.rules.length) return
+    return beautifyCSS(
+        convertDeclarationsToCSS(css.rules[0].declarations)
+    )
+}
+
+function convertDeclarationsToCSS(obj: any) {
+    let cssText = ''
+
+    for (const property in obj) {
+        if (Object.hasOwn(obj, property)) {
+            cssText += `${property}: ${obj[property]};\n`
+        }
+    }
+
+    return cssText
 }

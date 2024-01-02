@@ -33,6 +33,9 @@
 ### Arbitrary properties
 <ArbitraryProperties />
 
+### Variable properties
+<Variables />
+
 ### Group
 <GroupSyntax />
 
@@ -41,33 +44,58 @@
 
 ---
 
-## Variables
-### Native
-<Variables />
-### Custom variables
-<Tokens />
+## Values
+### Decimal
+<Decimal />
+
+### Negative
+<Negative />
+
+### Hexadecimal color
+Change the text color of an element using the hexadecimal color code.
+<Demo>
+    <div className="fg:#175fe9 font:56 font:heavy">Aa</div>
+</Demo>
+```html
+<p class="**fg:#175fe9**">Aa</p>
+```
 
 ---
 
-## Units and Values
+## Units
 <Units />
 
-### Unit value conversion
+### Unit conversion
 <UnitConversion />
 
-### Unit value sensing
+### Unit sensing
 <UnitSensing />
 
 ### Multiplier units
 <MultiplierUnits />
 
-### Decimal values
-<Decimal />
-
-### Negative values
-<Negative />
-
 ---
 
 ## Functions
 <Functions />
+
+### Variables
+<Tokens />
+
+### RGB color
+Change the text color of an element using the RGB color code.
+<Demo>
+    <div className="fg:rgb(23,95,233) font:56 font:heavy">Aa</div>
+</Demo>
+```html
+<p class="**fg:rgb(23,95,233)**">Aa</p>
+```
+
+### HSL color
+Change the text color of an element using the HSL color code.
+<Demo>
+    <div className="fg:hsl(219|83%|50%) font:56 font:heavy">Aa</div>
+</Demo>
+```html
+<p class="**fg:hsl(219|83%|50%)**">Aa</p>
+```

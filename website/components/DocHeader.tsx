@@ -35,7 +35,7 @@ export default function DocHeader({ children, ...props }: any) {
             <DiscordIconButton className="app-header-icon hide@<md" />
             <DiscussionsIconButton className="app-header-icon hide@<md" projectId="css" />
             <GitHubIconButton className="app-header-icon hide@<md" projectId="css" />
-            <div className='hide@<md bg:white/.1@dark bg:slate/.2@light h:1em mx:15 w:1'></div>
+            <div className='hide@<md bg:divider h:1em mx:15 w:1'></div>
             <LanguageButton className="app-header-icon hide@<md" locale={props.locale} />
             <ThemeButton className="app-header-icon hide@<md mr:-12" />
             <DocMenuButton className="app-header-icon hide@md mr:-20" locale={props.locale} />

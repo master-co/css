@@ -9,7 +9,7 @@ import { IconBallTennis, IconBell, IconBellRinging, IconCircle, IconCurrentLocat
 
 export default () =>
     <SyntaxTable value={syntaxes} scrollY={false} previewClass={(eachClass: string) => {
-        const className = 'app-icon-primary stroke:1 v:baseline my:-7 mr:12 ml:-2 r:2 contain:strict'
+        const className = 'app-icon-primary stroke:1 v:top mr:3x ml:-2 contain:strict'
         if (eachClass.startsWith('@flash')) {
             return <IconStar className={l(eachClass, className)} />
         }
