@@ -11,7 +11,7 @@ it('expects the animation output', async () => {
     p.classList.add('@fade|1s')
     document.body.append(p)
     await new Promise(resolve => setTimeout(resolve, 100))
-    expect(globalThis.runtimeCSS.text).toContain('.\\@fade\\|1s{animation:fade 1s}')
+    expect(globalThis.runtimeCSS.text).toContain('.\\@fade\\|1s{animation:light 1s}')
 })
 
 it('expects the keyframe output', async () => {

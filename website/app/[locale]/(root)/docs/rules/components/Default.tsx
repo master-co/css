@@ -22,7 +22,7 @@ const Default = () => <table>
                                 {
                                     eachRule.unit
                                         ? <code className='fg:code-pink'>{eachRule.unit}</code>
-                                        : <span className='fg:dim'>-</span>
+                                        : <span className='fg:lightest'>-</span>
                                 }
                             </td>
                             <td>
@@ -32,7 +32,7 @@ const Default = () => <table>
                                             <DotJoin>{Object.keys(eachRule.variables).filter(x => Number.isNaN(+x))}</DotJoin>
                                         </code>
                                     )
-                                    : <span className='fg:dim'>-</span>}
+                                    : <span className='fg:lightest'>-</span>}
                             </td>
                         </tr>
                     )

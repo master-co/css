@@ -109,8 +109,8 @@ test('colors', () => {
                 '@dark': '#333333'
             }
         }
-    }).add('{block;fg:fade}_:where(p)_code:before').text)
-        .toBe('.light{--fade:204 204 204}.dark{--fade:51 51 51}.\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{display:block;color:rgb(var(--fade))}')
+    }).add('{block;fg:light}_:where(p)_code:before').text)
+        .toBe('.light{--fade:204 204 204}.dark{--fade:51 51 51}.\\{block\\;fg\\:light\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{display:block;color:rgb(var(--fade))}')
 
     expect(new MasterCSS({
         variables: {
@@ -166,8 +166,8 @@ test('colors', () => {
     expect(new MasterCSS(config).add('bg:code/.5').text)
         .toBe('.dark{--code:251 224 157}.light{--code:220 160 0}.bg\\:code\\/\\.5{background-color:rgb(var(--code)/.5)}')
 
-    expect(new MasterCSS(config).add('bg:fade-light').text)
-        .toBe('.light{--fade-light:108 118 147}.bg\\:fade-light{background-color:rgb(var(--fade-light))}')
+    expect(new MasterCSS(config).add('bg:light-light').text)
+        .toBe('.light{--fade-light:108 118 147}.bg\\:light-light{background-color:rgb(var(--fade-light))}')
 
 })
 

@@ -38,7 +38,7 @@ export default function SyntaxTable({ title, value, children, previewClass, scro
                         {(isArrayClassNames ? eachName : [eachName]).map((eachInnerName: string, i, array) => (
                             <Fragment key={eachInnerName}>
                                 <InlineCode lang="mcss">{eachInnerName}</InlineCode>
-                                {(i !== array.length - 1) && <code className="fg:dim"> / </code>}
+                                {(i !== array.length - 1) && <code className="fg:lightest"> / </code>}
                             </Fragment>
                         ))}
                     </td>
@@ -79,7 +79,7 @@ const processCssText = (name: string | Record<string, any>) => {
     classes.forEach((eachClass: string) => css.add(eachClass))
     if (!css.rules.length) return
     return beautifyCSS(
-        convertDeclarationsToCSS(css.rules[0].declarations)
+        convertDeclarationsToCSS(css.rules[css.rules.length - 1].declarations)
     )
 }
 

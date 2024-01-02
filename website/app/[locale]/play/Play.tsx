@@ -561,7 +561,7 @@ export default function Play(props: any) {
                     <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path className={clsx(
                             '~transform|.2s',
-                            (!layout || layout === '2') ? 'fill:accent/.15' : 'fill:dim/.2',
+                            (!layout || layout === '2') ? 'fill:accent/.15' : 'fill:text-lightest/.2',
                             { 'translate(12,4)': !layout }
                         )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -573,7 +573,7 @@ export default function Play(props: any) {
                     <svg className={clsx({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate(90)')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path className={clsx(
                             '~transform|.2s',
-                            (layout === '3' || layout === '4') ? 'fill:accent/.15' : 'fill:dim/.2',
+                            (layout === '3' || layout === '4') ? 'fill:accent/.15' : 'fill:text-lightest/.2',
                             { 'translate(12,4)': layout === '3' }
                         )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -586,7 +586,7 @@ export default function Play(props: any) {
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                         <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
                         <path d="M4 9l16 0"></path>
-                        <rect className={layout === '5' ? 'fill:accent/.15' : 'fill:dim/.2'} width="16" height="11" stroke='none' transform="translate(4 9)" />
+                        <rect className={layout === '5' ? 'fill:accent/.15' : 'fill:text-lightest/.2'} width="16" height="11" stroke='none' transform="translate(4 9)" />
                     </svg>
                 </Link>
                 <span className='hide'>{layout}</span>
@@ -595,21 +595,21 @@ export default function Play(props: any) {
                 <Link className="app-header-icon hide@<md" href={getSearchPath('preview', '')}>
                     <IconDeviceDesktop width="22" height="22" className={clsx(
                         'stroke:1.3 stroke:current',
-                        !preview ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
+                        !preview ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
                     )} />
                 </Link>
                 {/* preview: responsive */}
                 <Link className="app-header-icon hide@<md" href={getSearchPath('preview', 'responsive')}>
                     <IconDeviceMobile width="22" height="22" className={clsx(
                         'stroke:1.3 stroke:current',
-                        responsive ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
+                        responsive ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
                     )} />
                 </Link>
                 {/* preview: css */}
                 <Link className="app-header-icon hide@<md" href={getSearchPath('preview', 'css')}>
                     <IconBrandCss3 width="22" height="22" className={clsx(
                         'stroke:1.3 stroke:current',
-                        preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:dim/.2'
+                        preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
                     )} />
                 </Link>
                 <span className='hide'>{preview}</span>
@@ -723,7 +723,7 @@ export default function Play(props: any) {
                         <div className={clsx('flex flex:col h:full', { 'hide!': preview !== 'css' })}>
                             <div className='flex align-items:center bb:1|frame flex:0|0|auto font:12 h:48 justify-content:space-between px:30'>
                                 <div>Generated CSS</div>
-                                <div className="fg:fade">{generatedCSSSize}</div>
+                                <div className="fg:light">{generatedCSSSize}</div>
                             </div>
                             <Editor
                                 height="100%"

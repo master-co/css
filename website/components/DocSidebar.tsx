@@ -39,7 +39,7 @@ export default function DocSidebar(props: any) {
                         {w:4;h:4;abs;inset:0;my:auto;round}_svg
                         bg:slate-70_.app-nav:hover_svg
                         bg:primary_.app-nav.active_svg
-                        fg:fade_.app-nav
+                        fg:light_.app-nav
                         contain:content:where(.app-nav,h4)
                         {flex;min-h:32;px:15;rel;align-items:center}_:where(h4,.app-nav)
                         {pt:0;fg:strong;mt:30;font:semibold;text:12}_:where(h4)

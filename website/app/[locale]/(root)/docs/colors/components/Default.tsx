@@ -41,7 +41,7 @@ export default () => <div className="gap-y:8x gap-y:5x@sm grid-cols:1 my:10x">
                                         {/* <div className="info invisible lh:1">#{color}</div> */}
                                     </div>
                                     <code className="block font:12 mt:8">{level}</code>
-                                    <code className="block fg:fade font:10 font:regular mt:4">{color}</code>
+                                    <code className="block fg:light font:10 font:regular mt:4">{color}</code>
                                     {/* <code className="block mt:4 font:10 fg:neutral">{ratio}</code> */}
                                 </div>
                             )

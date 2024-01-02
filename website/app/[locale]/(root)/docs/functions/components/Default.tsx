@@ -30,7 +30,7 @@ export default () => <table>
                                 {
                                     eachFunction.unit
                                         ? <code className='fg:code-pink'>{eachFunction.unit}</code>
-                                        : <span className='fg:dim'>-</span>
+                                        : <span className='fg:lightest'>-</span>
                                 }
                             </td>
                             <td>
