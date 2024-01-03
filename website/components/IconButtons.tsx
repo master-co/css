@@ -16,7 +16,7 @@ export default ({ children, className, url }: any) =>
                 disabled={item.disabled}
                 rel="noreferrer noopener">
                 <item.Logo className={clsx('square w:40%', item.class)} />
-                <div className={clsx('font:10 mt:10', item.name.length < 17 && 'font:12@sm')}>{item.name}</div>
+                <div className={clsx('font:10 mt:10', item.name.length < 17 && 'font:12@sm', item.disabled && 'fg:lightest')}>{item.name}</div>
             </Link>
         )
     }</div >

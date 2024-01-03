@@ -25,7 +25,7 @@ export default function DocMenuButton(props: any) {
             <MenuButton {...props} opened={opened} onClick={() => setOpened(!opened)} />
             {opened &&
                 <Portal>
-                    <div className="fixed @fade|.3s bd:blur(25) bg:neutral/.9 bottom:0 overflow-y:auto overscroll-behavior:contain pb:80 pt:20 top:49 top:61@lg w:full z:1050">
+                    <div className="fixed @fade|.3s bd:blur(25) bg:base/.9 bottom:0 overflow-y:auto overscroll-behavior:contain pb:80 pt:20 top:49 top:61@lg w:full z:1050">
                         {links.map(({ Icon, disabled, fullName, ...eachLink }: any) =>
                             <Link className={clsx('flex ai:center w:full', { 'fg:lightest': disabled })} {...eachLink} disabled={disabled} key={eachLink.name} onClick={!disabled && (() => setOpened(false))}>
                                 <Icon className={clsx('fill:text-lightest/.2 ml:20 mr:12', disabled ? 'fg:lightest' : 'fg:light')} stroke="1" width="26" height="26" />

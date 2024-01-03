@@ -52,11 +52,11 @@ export default function SyntaxTable({ title, value, children, previewClass, scro
         }), [value, previewClass])
     return (
         <>
-            <DocTable {...props} className={children ? 'mb:30' : 'mb:50'} scrollY={scrollY !== undefined ? scrollY : 424}>
+            <DocTable {...props} className={children ? 'mb:30' : 'mb:12x'} scrollY={scrollY !== undefined ? scrollY : 424}>
                 <thead>
                     <tr>
-                        <th className="sticky bg:neutral top:0 z:1">{title || 'Class'}</th>
-                        <th className="sticky bg:neutral top:0 z:2">Declarations</th>
+                        <th className="sticky bg:base top:0 z:1">{title || 'Class'}</th>
+                        <th className="sticky bg:base top:0 z:2">Declarations</th>
                     </tr>
                 </thead>
                 <tbody>

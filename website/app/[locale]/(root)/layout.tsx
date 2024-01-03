@@ -18,6 +18,6 @@ export default async function Layout({ children, params }: {
     params: { locale: Locale }
 }) {
     return (
-        <RootLayout bodyClassName='bg:neutral' locale={params.locale}>{children}</RootLayout>
+        <RootLayout bodyClassName='bg:base' locale={params.locale}>{children}</RootLayout>
     )
 }

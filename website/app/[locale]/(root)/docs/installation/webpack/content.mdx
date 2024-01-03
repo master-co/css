@@ -123,13 +123,13 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS runtime engine
-            Create `src/index.js` file and import Master CSS into it.  
+            Create `src/index.js` file and import Master CSS into it.
         </StepL>
         <StepR>
             ```js name=src/index.js
             +   import { initRuntime } from '@master/css';
             +   import config from '../master.css.js';
-            
+
             +   initRuntime(config);
             ```
         </StepR>
@@ -176,7 +176,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         </body>
         </html>
         ```
-        <p className="mt:50">Open your browser to watch the changes.</p>
+        <p className="mt:12x">Open your browser to watch the changes.</p>
         <HelloWorld url="localhost:3000" />
     </Step>
 </StepSection>

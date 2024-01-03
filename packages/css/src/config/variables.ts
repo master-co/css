@@ -210,16 +210,16 @@ const variables = {
             '@dark': '$(red-30)'
         }
     },
-    'neutral': {
+    'base': {
         '@light': '$(white)',
         '@dark': '$(gray-95)'
     },
-    'light': {
+    'canvas': {
         '@light': '$(slate-5)',
         '@dark': '$(gray-90)'
     },
-    'lighter': {
-        '@light': '$(slate-10)',
+    'surface': {
+        '@light': '$(white)',
         '@dark': '$(gray-80)'
     },
     'white': '#ffffff',
@@ -249,10 +249,7 @@ const variables = {
         '5': '#f8f9fb',
         '10': '#eff2f9',
         '20': '#c8d0e3',
-        '30': {
-            '@light': '#9fabc5',
-            '@dark': '#9fabc6'
-        },
+        '30': '#9fabc6',
         '40': '#7c8cab',
         '50': '#5f7395',
         '60': '#455572',
@@ -272,15 +269,9 @@ const variables = {
         '30': '#e7976e',
         '40': '#da7c4d',
         '50': '#cc6633',
-        '60': {
-            '@light': '#b55325',
-            '@dark': '#b65325'
-        },
+        '60': '#b65325',
         '70': '#9d4119',
-        '80': {
-            '@light': '#833110',
-            '@dark': '#833111'
-        },
+        '80': '#833111',
         '90': '#692007',
         '95': '#431304',
         '': {
@@ -343,10 +334,7 @@ const variables = {
         '5': '#f5ffe5',
         '10': '#f5ffd6',
         '20': '#d1fb8d',
-        '30': {
-            '@light': '#acec45',
-            '@dark': '#acec46'
-        },
+        '30': '#acec46',
         '40': '#91d91a',
         '50': '#77c012',
         '60': '#61a60c',
@@ -580,6 +568,7 @@ const variables = {
             '@dark': '$(red-50)'
         }
     }
+
 }
 
 export default variables

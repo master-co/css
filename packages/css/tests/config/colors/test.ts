@@ -166,7 +166,7 @@ test('colors', () => {
     expect(new MasterCSS(config).add('bg:code/.5').text)
         .toBe('.dark{--code:251 224 157}.light{--code:220 160 0}.bg\\:code\\/\\.5{background-color:rgb(var(--code)/.5)}')
 
-    expect(new MasterCSS(config).add('bg:light-light').text)
+    expect(new MasterCSS(config).add('bg:canvas-light').text)
         .toBe('.light{--fade-light:108 118 147}.bg\\:light-light{background-color:rgb(var(--fade-light))}')
 
 })
