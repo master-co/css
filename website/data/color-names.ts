@@ -1,0 +1,22 @@
+export default [
+    'gray',
+    'slate',
+    'brown',
+    'orange',
+    'amber',
+    'yellow',
+    'lime',
+    'green',
+    'beryl',
+    'teal',
+    'cyan',
+    'sky',
+    'blue',
+    'indigo',
+    'violet',
+    'purple',
+    'fuchsia',
+    'pink',
+    'crimson',
+    'red'
+]

@@ -4,7 +4,7 @@ import { rules } from '@master/css'
 export default () => <>
     {
         Object.keys(rules)
-            .filter((ruleName) => (rules as any)[ruleName].variables?.find((variable: string) => variable.includes('foreground')))
+            .filter((ruleName) => (rules as any)[ruleName].variables?.find((variable: string) => variable.includes('text')))
             .map((ruleName, index, arr) =>
                 <Fragment key={ruleName}>
                     <code>{ruleName}</code>

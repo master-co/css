@@ -80,8 +80,8 @@ export default {
 
 ---
 
-## Adding collectively
-### Background colors
+## Custom guide
+### Surface colors
 Create color variables for backgrounds in apps, panels, cards, and more.
 ```js name=master.css.js
 export default {
@@ -98,24 +98,22 @@ Use [background-color](/docs/background-color) syntax to set the app background 
 | Token             | Description                                                                                                                       |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
 | `neutral`         | The background color for apps...                                                                                                  |
-| `fade`            | The background color for panels...                                                                                                |
+| `light`            | The background color for panels...                                                                                                |
 
-### Foreground colors
+### Text colors
 Create accessible foreground color variables for titles, descriptions, icons, and other body text.
 ```js name=master.css.js
 export default {
     variables: {
-+        foreground: {
-+            netural: '$(slate-70)',
-+            strong: '$(slate-95)',
-+            dim: '$(slate-30)'
++        text: {
++            primary: '$(blue-60)'
 +        }
     }
 }
 ```
 Use [color](/docs/color) syntax to give the title text a strong color:
 ```html
-<h1 class="**fg:strong**">page title</h1>
+<h1 class="**fg:primary**">page title</h1>
 ```
 Use [color](/docs/color) syntax to give the paragraph text a netural color:
 ```html
@@ -125,12 +123,12 @@ Use [stroke](/docs/stroke) syntax to set the icon stroke to a netural color:
 ```html
 <svg class="**stroke:netural**">icon</svg>
 ```
-Apply the defined `foreground` variables using the inherited rules <ForegroundHeirs />.
+Apply the defined `text` variables using the inherited rules <TextHeirs />.
 
 | Token             | Description                                                                                                                       |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| `foreground-accent`     | Accent color emphasizes active links and states, strongly contrasting the background.                                             |
-| `foreground-neutral`    | Soft color, a foreground color harmonizing with the background.                                                                   |
-| `foreground-strong`     | Strong color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background.     |
-| `foreground-dim`        | Dim color, a foreground color that contrasts slightly with the background.                                                        |
-| `foreground-{color}`    | Other accessible text foreground colors.                                                                                          |
+| `text-accent`     | Accent color emphasizes active links and states, strongly contrasting the background.                                             |
+| `text-neutral`    | Soft color, a foreground color harmonizing with the background.                                                                   |
+| `text-strong`     | Strong color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background.     |
+| `text-lightest`   | Dim color, a foreground color that contrasts slightly with the background.                                                        |
+| `text-{color}`    | Other accessible text foreground colors.                                                                                          |

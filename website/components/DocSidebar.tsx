@@ -36,8 +36,8 @@ export default function DocSidebar(props: any) {
                 <div className={l(
                     `
                         {lines:1;break-word}_.app-nav_span
-                        {w:4;h:4;abs;inset:0;my:auto;round}_svg
-                        bg:slate-70_.app-nav:hover_svg
+                        {size:1x;abs;inset:0;my:auto;round}_svg
+                        bg:text-lightest_.app-nav:hover_svg
                         bg:primary_.app-nav.active_svg
                         fg:light_.app-nav
                         contain:content:where(.app-nav,h4)
