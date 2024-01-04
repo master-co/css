@@ -691,7 +691,7 @@ export default function Play(props: any) {
                         />
                     </div>
                 </Resizable>
-                <div className={clsx('rel bg:gray-10@dark bg:slate-95@light flex:1|1|auto overflow:hidden', {
+                <div className={clsx('rel bg:canvas flex:1|1|auto overflow:hidden', {
                     'flex jc:center p:32': responsive,
                     'pt:64': responsive && layout !== '3',
                     'pb:64': responsive && layout === '3',

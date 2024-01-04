@@ -9,18 +9,13 @@ Add your color variables using hex codes and extend the defaults.
 ```js name=master.css.js
 export default {
     variables: {
-+        primary: '#0e61fe',
-+        secondary: '#8a3ffc'
++        primary: '#0e61fe'
     }
 }
 ```
 Apply them using color-related syntax like [`fg:`](/docs/color).
 ```html
-<div class="**fg:primary** …">
-<div class="**fg:secondary** …">
-<div class="**fg:accent** …">
-<div class="**fg:strong** …">
-<div class="**fg:neutral** …">
+<div class="**fg:primary**">…</div>
 ```
 
 ### Add an alias
@@ -28,7 +23,7 @@ Create an alias for a color to link its value to an existing color. This allows 
 ```js name=master.css.js
 export default {
     variables: {
-+        primary: '$(blue-60)'
++        secondary: '$(blue-60)'
     }
 }
 ```
@@ -80,25 +75,16 @@ export default {
 
 ---
 
-## Custom guide
-### Surface colors
-Create color variables for backgrounds in apps, panels, cards, and more.
-```js name=master.css.js
-export default {
-    variables: {
-+       neutral: '$(white)',
-+       fade: '$(slate-5)'
-    }
-}
-```
-Use [background-color](/docs/background-color) syntax to set the app background color:
-```html
-<body class="**bg:base**">…</body>
-```
+## Custom reference
 | Token             | Description                                                                                                                       |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| `neutral`         | The background color for apps...                                                                                                  |
-| `light`            | The background color for panels...                                                                                                |
+| `base`            | The background color for apps, modals, ...                                                                                        |
+| `light`           | The background color for panels...                                                                                                |
+| `text-accent`     | Accent color emphasizes active links and states, strongly contrasting the background.                                             |
+| `text-neutral`    | Soft color, a foreground color harmonizing with the background.                                                                   |
+| `text-strong`     | Strong color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background.     |
+| `text-lightest`   | Dim color, a foreground color that contrasts slightly with the background.                                                        |
+| `text-{color}`    | Other accessible text foreground colors.                                                                                          |
 
 ### Text colors
 Create accessible foreground color variables for titles, descriptions, icons, and other body text.
@@ -125,10 +111,17 @@ Use [stroke](/docs/stroke) syntax to set the icon stroke to a netural color:
 ```
 Apply the defined `text` variables using the inherited rules <TextHeirs />.
 
-| Token             | Description                                                                                                                       |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| `text-accent`     | Accent color emphasizes active links and states, strongly contrasting the background.                                             |
-| `text-neutral`    | Soft color, a foreground color harmonizing with the background.                                                                   |
-| `text-strong`     | Strong color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background.     |
-| `text-lightest`   | Dim color, a foreground color that contrasts slightly with the background.                                                        |
-| `text-{color}`    | Other accessible text foreground colors.                                                                                          |
+### Surface colors
+Create color variables for backgrounds in apps, panels, cards, and more.
+```js name=master.css.js
+export default {
+    variables: {
++       base: '$(white)',
++       fade: '$(slate-5)'
+    }
+}
+```
+Use [background-color](/docs/background-color) syntax to set the app background color:
+```html
+<body class="**bg:base**">…</body>
+```

@@ -30,7 +30,7 @@ export default function DocSidebar(props: any) {
             direction:rtl
         `}>
             <div className="direction:ltr p:0|15|20|15">
-                <div className="flex sticky@lg untouchable align-items:center gradient(180deg,neutral|0%,neutral|calc(100%-2rem),transparent|100%)@lg mb:-30 pb:30 pt:20 top:20 top:0@lg z:1">
+                <div className="flex sticky@lg untouchable align-items:center gradient(180deg,base|0%,base|calc(100%-2rem),transparent|100%)@lg mb:-30 pb:30 pt:20 top:20 top:0@lg z:1">
                     <SearchButton className="pointer-events:auto" locale={props.locale} />
                 </div>
                 <div className={l(
