@@ -12,5 +12,5 @@ it('basic extract', async () => {
         }
     `, { flag: 'w' })
     await action([], { cwd: __dirname })
-    expect(readFileSync(join(__dirname, '.virtual/master.css')).toString()).toMatch(/(fg\\:primary|m\\:50|text\\:center|font\\:sans|font\\:heavy|font\\:48)/)
+    expect(readFileSync(join(__dirname, '.virtual/master.css')).toString()).toMatch(/(fg\\:primary|m\\:12x|text\\:center|font\\:sans|font\\:heavy|font\\:48)/)
 })

@@ -24,7 +24,7 @@ export default () => <CodeTabs>
             +    <script src="https://cdn.master.co/css@beta"></script>
             </head>
             <body>
-                <h1 class="**fg:primary** **font:40** **font:heavy** **italic** **m:50** **text:center**">Hello World</h1>
+                <h1 class="**fg:primary** **font:40** **font:heavy** **italic** **m:12x** **text:center**">Hello World</h1>
             </body>
             </html>
         `
@@ -51,7 +51,7 @@ export default () => <CodeTabs>
             +    </script>
             </head>
             <body>
-                <h1 class="**fg:primary** **font:40** **font:heavy** **italic** **m:50** **text:center**">Hello World</h1>
+                <h1 class="**fg:primary** **font:40** **font:heavy** **italic** **m:12x** **text:center**">Hello World</h1>
             </body>
             </html>
         `

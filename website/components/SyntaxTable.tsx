@@ -19,7 +19,7 @@ export default function SyntaxTable({ title, value, children, previewClass, scro
                 ? !eachName.find((eachInnerName) => eachInnerName.includes('`'))
                 : !eachName.includes('`')
             const targetClassName = isArrayClassNames ? eachName[0] : eachName
-            const cssText = processCssText(eachName)
+            const { text } = generateCSS(eachName)
             return (
                 <tr key={eachName} onClick={
                     isClickableItem ? () => {
@@ -43,8 +43,8 @@ export default function SyntaxTable({ title, value, children, previewClass, scro
                         ))}
                     </td>
                     <td>
-                        {eachName && cssText &&
-                            <InlineCode lang="css" className="fg:neutral white-space:pre">{cssText}</InlineCode>
+                        {eachName && text &&
+                            <InlineCode lang="css" className="fg:neutral white-space:pre">{text}</InlineCode>
                         }
                     </td>
                 </tr>
@@ -68,7 +68,7 @@ export default function SyntaxTable({ title, value, children, previewClass, scro
     )
 }
 
-const processCssText = (name: string | Record<string, any>) => {
+const generateCSS = (name: string | Record<string, any>) => {
     let target = (Array.isArray(name)
         ? name[0]
         : name)
@@ -77,10 +77,14 @@ const processCssText = (name: string | Record<string, any>) => {
     const classes = target.split(' ')
     const css = new MasterCSS()
     classes.forEach((eachClass: string) => css.add(eachClass))
-    if (!css.rules.length) return
-    return beautifyCSS(
-        convertDeclarationsToCSS(css.rules[css.rules.length - 1].declarations)
-    )
+    if (!css.rules.length) {
+        throw new Error(`Class "${name}" not found`)
+    }
+    const declarations = css.rules[css.rules.length - 1].declarations
+    return {
+        text: convertDeclarationsToCSS(declarations),
+        declarations
+    }
 }
 
 function convertDeclarationsToCSS(obj: any) {

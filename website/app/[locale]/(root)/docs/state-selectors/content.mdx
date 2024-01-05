@@ -35,17 +35,10 @@ Style elements with different interactive appearances on `:hover`, `:active`, an
 
 (click) Try clicking the button to see states change
 <Demo>
-    <button className="bg:indigo-55 bg:indigo-57:hover bg:indigo-59:active outline:indigo-55/.3|3|solid:focus ~outline-width|.1s px:18 h:40 font:14 font:semibold fg:white r:4 inline-flex align-items:center">Submit</button>
+    <button className="bg:indigo bg:pink:hover bg:purple:active px:18 h:40 font:14 font:semibold fg:white r:4 inline-flex align-items:center">Submit</button>
 </Demo>
 ```html
-<button class="
-    bg:indigo-55
-    **bg:indigo-56:hover**
-    **bg:indigo-58:active**
-    **outline:indigo-55/.3|3|solid:focus** …
-">
-    Submit
-</button>
+<button class="bg:indigo bg:pink**:hover** bg:purple**:active**">Submit</button>
 ```
 
 ### First, last, even
@@ -54,7 +47,7 @@ Select and style elements using `:first`, `:last`, `:odd`, `:even`, and `:nth(N)
     <DemoPanel $p={0} className="w:full max-w:360">
         <ul className="list-style:none p:20|0 m:0">
             {furnitures.map((furniture, index) =>
-                <li className="bb:0:last bg:canvas/.05:even bb:1|solid|slate-90 b:gray-28!@dark px:25 flex align-items:center my:0 gap:12" key={index}>
+                <li className="bb:0:last bg:slate-5:even@light bg:gray-90:even@dark bb:1|frame px:25 flex align-items:center my:0 gap:12" key={index}>
                     <img className="round object:cover" src={furniture.url} width="56" height="56" alt="avatar" quality={'0'} />
                     <div className="flex flex:col flex:1 py:10">
                         <div className="flex align-items:center">
@@ -69,7 +62,7 @@ Select and style elements using `:first`, `:last`, `:odd`, `:even`, and `:nth(N)
 </Demo>
 ```html
 <ul class="…">
-    <li class="bg:slate/.1**:even** …">…</li>
+    <li class="bg:slate-5**:even**@light bg:gray-90**:even**@dark …">…</li>
 </ul>
 ```
 
@@ -78,10 +71,10 @@ Style controls using `:valid`, `:invalid`, `:required` based on form validations
 
 (type) Try typing `co` as a valid email address
 <Demo>
-    <input type="email" className="b:red-55:invalid b:green-55:valid b:1|solid|frame outline:0 h:48 font:14 px:16 bg:panel r:5 max-w:300" defaultValue="aron@master." />
+    <input type="email" className="b:red:invalid b:green:valid b:1|frame outline:0 h:48 font:14 px:16 bg:panel r:5 max-w:300" defaultValue="aron@master." />
 </Demo>
 ```html
-<input class="b:red-55**:invalid** b:green-55**:valid** b:1|solid …" type="email" />
+<input class="b:red**:invalid** b:green**:valid** b:1|solid …" type="email" />
 ```
 
 ---
@@ -105,7 +98,7 @@ Beautify the scrollbar of an element using `::scrollbar`, `::scrollbar-thumb`, `
 
 (hover) Try scrolling horizontally and interact with the scroll bar
 <Demo $py={0} $px={0}>
-    <div className="h:6::scrollbar bg:gray/.2::scrollbar-thumb overflow-x:auto p:40">
+    <div className="size:6::scrollbar bg:gray/.2::scrollbar-thumb overflow-x:auto p:40">
         <div className='flex w:max'>
             {animals.map((animal) =>
                 <div key={animal.name}>
@@ -116,7 +109,7 @@ Beautify the scrollbar of an element using `::scrollbar`, `::scrollbar-thumb`, `
     </div>
 </Demo>
 ```html
-<div class="h:6**::scrollbar** bg:gray/.2**::scrollbar-thumb** overflow-x:auto …">
+<div class="size:6**::scrollbar** bg:gray/.2**::scrollbar-thumb** overflow-x:auto …">
 ```
 
 ---

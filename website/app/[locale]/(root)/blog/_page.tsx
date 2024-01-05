@@ -26,7 +26,7 @@ export default function Page(props: any) {
         <DocHeader contained locale={props.params.locale} />
         <main className='app-doc-main max-w:screen-xl'>
             <Article className="mb:80" prose>
-                <div className='gap:50|25 grid-cols:4'>
+                <div className='gap:12x|25 grid-cols:4'>
                     {allBlogMetadata.concat(allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata)
                         .map((eachBlogMetadata: any, index: number) => {
                             const formattedDate = dayjs(eachBlogMetadata.date).format('ddd, MMMM D YYYY')

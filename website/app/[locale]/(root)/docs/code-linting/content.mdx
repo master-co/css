@@ -140,13 +140,13 @@ The class you added may collide with existing classes due to human error or havi
 ```
 It can also detect whether declarations with the same selector and media query state collide!
 
-(!) <span className="text:warning">"m:40@sm" applies the same CSS declarations as "m:50@sm".</span><br/><span className="text:warning">"m:50@sm" applies the same CSS declarations as "m:40@sm".</span>
+(!) <span className="text:warning">"m:40@sm" applies the same CSS declarations as "m:12x@sm".</span><br/><span className="text:warning">"m:12x@sm" applies the same CSS declarations as "m:40@sm".</span>
 ```html
-<div class="m:40@sm m:50@sm">…</div>
+<div class="m:40@sm m:12x@sm">…</div>
 ```
 (o) Fix this @master/css/class-collision problem by removing other colliding classes.
 ```html
-<div class="m:50@sm">…</div>
+<div class="m:12x@sm">…</div>
 ```
 
 ### Supports JS utilities

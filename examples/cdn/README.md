@@ -85,7 +85,7 @@
     <script src="https://cdn.master.co/css@beta"></script>
 </head>
 <body>
-    <h1 class="font:40 font:heavy italic m:50 text:center">Hello World</h1>
+    <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
 </body>
 </html>
 ```

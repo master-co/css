@@ -1,10 +1,12 @@
 'use client'
 
-import Demo from 'websites/components/Demo'
-import Code from 'websites/components/Code'
 import SyntaxTable from '~/components/SyntaxTable'
 import syntaxes from '../syntaxes'
-import line from 'to-line'
+import clsx from 'clsx'
 
 export default () =>
-    <SyntaxTable value={syntaxes}></SyntaxTable>
+    <SyntaxTable value={syntaxes} previewClass={(className: string) => {
+        return (
+            <span className={clsx('font:16 font:medium mr:3x v:top', className)}>Aa</span>
+        )
+    }}></SyntaxTable>

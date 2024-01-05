@@ -43,7 +43,7 @@ export default function DocSidebar(props: any) {
                         contain:content:where(.app-nav,h4)
                         {flex;min-h:32;px:15;rel;align-items:center}_:where(h4,.app-nav)
                         {pt:0;fg:strong;mt:30;font:semibold;text:12}_:where(h4)
-                        pb:50
+                        pb:12x
                     `
                 )}>
                     {pageCategories.map((eachPageCategory: any) => (

@@ -8,7 +8,7 @@ const metadata: Metadata = {
         subject: 'Migration'
     },
     order: 5,
-    unfinished: true
+    disabled: true
 }
 
 export default metadata

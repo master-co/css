@@ -4,7 +4,7 @@
 Simplify the native syntax using the derived symbol and multi-style shorthand.
 ```html
 -<div class="animation:light|1s">
-+<div class="@fade|1s">
++<div class="@fade|1s">Recommanded
 ```
 
 ---
@@ -15,8 +15,8 @@ Use the `ping` animation to indicate that the shop is open.
 <Demo $py={0}>
     <div className="app-panel rel">
         <Image src="/images/vegetable-salad-in-bowls.jpg" width="400" height="250" className="aspect:400/250 untouchable" alt="vegetable salad in bowls" />
-        <div className="fg:strong abs bottom:0 w:full p:50|35|30|35 gradient(0deg,base|0%,base/0|100%)">
-            <svg className="inline-block fill:green-75 size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
+        <div className="fg:strong abs bottom:0 w:full p:12x|35|30|35 gradient(0deg,base|0%,base/0|100%)">
+            <svg className="inline-block fill:green-40 size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
                 <circle className="@ping|1s|infinite transform:center" cx="4" cy="4" r="4" />
                 <circle cx="4" cy="4" r="4" />
             </svg>
@@ -26,7 +26,7 @@ Use the `ping` animation to indicate that the shop is open.
     </div>
 </Demo>
 ```html
-<svg class="inline-block fill:green-75 size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
+<svg class="inline-block fill:green-40 size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
     <circle class="**@ping|1s|infinite** transform:center" cx="4" cy="4" r="4" />
     <circle cx="4" cy="4" r="4" />
 </svg>

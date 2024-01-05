@@ -21,7 +21,6 @@ export default () => <div className="gap-y:8x gap-y:5x@sm grid-cols:1 my:10x">
                         .filter((level: any) => [5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95].includes(+level))
                         .map((level: any) => {
                             const color = eachColors[level]
-                            console.log(color)
                             const backgroundHex = level === 100 ? '#000000' : color === 0 ? '#ffffff' : color
                             return (
                                 <div key={color + level}>

@@ -5,7 +5,7 @@
 
 ## Basic usage
 ### Add a color
-Add your color variables using hex codes and extend the defaults.
+Add color variables using hex codes and extend the defaults.
 ```js name=master.css.js
 export default {
     variables: {
@@ -48,13 +48,9 @@ Apply them using color-related syntax like [`fill:`](/docs/fill).
 ```html
 <svg class="**fill:primary-20** …">20</svg>
 ```
-(i) Default shade `''` will automatically inherit shade `50` if not specified.
-```html
-<svg class="**fill:primary** …">50</svg>
-```
 
 ### Override default colors
-Access the same key as the preset to override the default color.
+(!) Access the same key as the preset to override the default color.
 ```js name=master.css.js
 export default {
     variables: {
@@ -62,12 +58,12 @@ export default {
     }
 }
 ```
-(o) Use `brand-*` to avoid conflicts with presets and make Master CSS colors always consistent.
+(o) Use `app-*` to avoid conflicts with defaults and make Master colors always consistent.
 ```js name=master.css.js
 export default {
     variables: {
-+        brand: {
-+            blue: '#4589ff' // brand-blue
++        app: {
++            blue: '#4589ff' // app-blue
 +        }
     }
 }
@@ -75,49 +71,73 @@ export default {
 
 ---
 
-## Custom reference
-| Token             | Description                                                                                                                       |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| `base`            | The background color for apps, modals, ...                                                                                        |
-| `light`           | The background color for panels...                                                                                                |
-| `text-accent`     | Accent color emphasizes active links and states, strongly contrasting the background.                                             |
-| `text-neutral`    | Soft color, a foreground color harmonizing with the background.                                                                   |
-| `text-strong`     | Strong color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background.     |
-| `text-lightest`   | Dim color, a foreground color that contrasts slightly with the background.                                                        |
-| `text-{color}`    | Other accessible text foreground colors.                                                                                          |
-
-### Text colors
-Create accessible foreground color variables for titles, descriptions, icons, and other body text.
+## Advanced usage
+### Add colors by theme
+Add color variables based on different themes.
 ```js name=master.css.js
 export default {
     variables: {
-+        text: {
-+            primary: '$(blue-60)'
++        primary: {
++            '@light': '$(yellow-40)',
++            '@dark': '$(yellow-50)'
 +        }
     }
 }
 ```
-Use [color](/docs/color) syntax to give the title text a strong color:
+Set the theme, `light` or `dark`, to apply color variables.
+```html
+<div class="**light**">
+    <div class="bg:**primary**">…</div>
+</div>
+```
+
+<details>
+    <summary>View the unit test</summary>
+    <div>
+        <Code lang="ts">
+            {require('!!raw-loader!../../../../../../packages/css/tests/docs/add-colors-by-theme.test.ts').default}
+        </Code>
+    </div>
+</details>
+
+---
+
+## Custom references
+### Using text color tokens
+| Token             | Description                                                                                                                       |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `text-accent`     | Accent color emphasizes active links and states, strongly contrasting the background.                                             |
+| `text-strong`     | Strong color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background.     |
+| `text-neutral`    | Soft color, a foreground color harmonizing with the background.                                                                   |
+| `text-light`      | Light color, a foreground color contrasting slightly with the background.                                                         |
+| `text-lighter`    | Lighter color, a foreground color contrasting slightly with the background.                                                       |
+| `text-lightest`   | Dim color, a foreground color contrasting slightly with the background.                                                           |
+
+Create foreground color variables for titles, descriptions, icons, and other body text.
+```js name=master.css.js
+export default {
+    variables: {
+        text: {
++            primary: '$(blue-60)'
+        }
+    }
+}
+```
+Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
 ```html
 <h1 class="**fg:primary**">page title</h1>
 ```
-Use [color](/docs/color) syntax to give the paragraph text a netural color:
-```html
-<p class="**fg:netural**">paragraph text</p>
-```
-Use [stroke](/docs/stroke) syntax to set the icon stroke to a netural color:
-```html
-<svg class="**stroke:netural**">icon</svg>
-```
-Apply the defined `text` variables using the inherited rules <TextHeirs />.
 
-### Surface colors
+### Using surface color tokens
+| Token             | Description                                                                                                                       |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `base`            | The background color for apps, modals, ...                                                                                        |
+
 Create color variables for backgrounds in apps, panels, cards, and more.
 ```js name=master.css.js
 export default {
     variables: {
-+       base: '$(white)',
-+       fade: '$(slate-5)'
++        base: '$(white)'
     }
 }
 ```
