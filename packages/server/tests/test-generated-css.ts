@@ -8,5 +8,5 @@ export default function testGeneratedCSS(templatePath: string, config: any, gene
             config
         ).css?.text
     )
-        .toContain(readFileSync(generatedCSSPath).toString())
+        .toEqual(readFileSync(generatedCSSPath).toString())
 }

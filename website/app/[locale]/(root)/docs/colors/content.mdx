@@ -5,14 +5,60 @@
 
 ## Basic usage
 ### Add a color
-Add color variables using hexadecimal codes and extend the defaults.
+Add color variables using `#000`, `rgb(0 0 0)`, or `hsl(0 0% 0%)`.
 <Code lang="js" name="master.css.js">{require('!!raw-loader!../../../../../../packages/server/tests/add-a-color/config.js').default}</Code>
-Apply it using color-related syntax like [`fg:`](/docs/color).
+Apply it using color-related syntax and even change the opacity.
 <Code lang="html">{require('!!raw-loader!../../../../../../packages/server/tests/add-a-color/template.html').default}</Code>
 <details>
     <summary>View the generated CSS</summary>
     <div>
         <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/add-a-color/generated.css').default}</Code>
+    </div>
+</details>
+
+(i) If a color is used only once in all markups, you can optionally not abstract it into a token.
+```html
+<button class="bg:#ceb195">Milk Tea</button>
+```
+
+### Add a color with opacity
+Add color variables with opacity using `#00000080`, `rgb(0 0 0/.5)`, or `hsl(0 0% 0%/.5)`.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!../../../../../../packages/server/tests/add-a-color-with-opacity/config.js').default}</Code>
+Apply it using color-related syntax like [`fg:`](/docs/color).
+<Code lang="html">{require('!!raw-loader!../../../../../../packages/server/tests/add-a-color-with-opacity/template.html').default}</Code>
+<details>
+    <summary>View the generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/add-a-color-with-opacity/generated.css').default}</Code>
+    </div>
+</details>
+(x) Color variables with opacity cannot use `/alpha` to change the opacity.
+```html
+<div class="fg:**primary/.5**">…</div>
+```
+
+### Add an alias
+Create an alias for a color to link its value to an existing color.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!../../../../../../packages/server/tests/add-an-alias/config.js').default}</Code>
+Apply it using color-related syntax.
+<Code lang="html">{require('!!raw-loader!../../../../../../packages/server/tests/add-an-alias/template.html').default}</Code>
+<details>
+    <summary>View the generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/add-an-alias/generated.css').default}</Code>
+    </div>
+</details>
+For example, say you have multiple color variables referencing the same color token. If that color needs updating, you would only need to update the source instead of manually updating every instance of the color.
+
+### Add an alias with opacity
+Create an alias for a color with opacity to link its value to an existing color.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!../../../../../../packages/server/tests/add-an-alias-with-opacity/config.js').default}</Code>
+Apply it using color-related syntax like [`fg:`](/docs/color).
+<Code lang="html">{require('!!raw-loader!../../../../../../packages/server/tests/add-an-alias-with-opacity/template.html').default}</Code>
+<details>
+    <summary>View the generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/add-an-alias-with-opacity/generated.css').default}</Code>
     </div>
 </details>
 
@@ -34,21 +80,18 @@ Apply it using color-related syntax like [`fill:`](/docs/fill).
 <svg class="**fill:primary-20** …">20</svg>
 ```
 
-### Add an alias
-Create an alias for a color to link its value to an existing color. This allows you to implement [design tokens](/docs/design-tokens) and makes managing design updates more efficient.
-<Code lang="js" name="master.css.js">{require('!!raw-loader!../../../../../../packages/server/tests/add-an-alias/config.js').default}</Code>
-Apply it using color-related syntax.
-<Code lang="html">{require('!!raw-loader!../../../../../../packages/server/tests/add-an-alias/template.html').default}</Code>
+### Add colors by theme
+Add color variables based on different themes.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!../../../../../../packages/server/tests/add-colors-by-theme/config.js').default}</Code>
+Set the theme to `.light` or `.dark` to apply the target theme colors.
+<Code lang="html">{require('!!raw-loader!../../../../../../packages/server/tests/add-colors-by-theme/template.html').default}</Code>
 <details>
     <summary>View the generated CSS</summary>
     <div>
-        <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/add-an-alias/generated.css').default}</Code>
+        <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/add-colors-by-theme/generated.css').default}</Code>
     </div>
 </details>
-
-For example, say you have multiple color variables referencing the same color token. If that color needs updating, you would only need to update the source instead of manually updating every instance of the color.
-
-This is similar to [Figma's variables](https://help.figma.com/hc/en-us/articles/15145852043927-Create-and-manage-variables).
+Unless you apply a theme other than `@light` or `@dark`, you usually do not need to give the `''` fallback.
 
 ### Override default colors
 (!) Access the same key as the preset to override default colors, like `blue-5` ~ `blue-95`.
@@ -74,55 +117,43 @@ Apply custom colors for the current application.
 
 ---
 
-## Advanced usage
-### Add colors by theme
-Add color variables based on different themes.
-<Code lang="js" name="master.css.js">{require('!!raw-loader!../../../../../../packages/server/tests/add-colors-by-theme/config.js').default}</Code>
-Set the theme to `.light` or `.dark` to apply the target theme colors.
-<Code lang="html">{require('!!raw-loader!../../../../../../packages/server/tests/add-colors-by-theme/template.html').default}</Code>
-<details>
-    <summary>View the generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/add-colors-by-theme/generated.css').default}</Code>
-    </div>
-</details>
-
-### Add theme colors with a fallback color
-
----
-
 ## Custom references
-### Using text color tokens
+### Text colors
 | Token             | Description                                                                                                                       |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| `text-accent`     | Accent color emphasizes active navigations and states, strongly contrasting the background.                                             |
 | `text-strong`     | Strong color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background.     |
 | `text-neutral`    | Soft color, a foreground color harmonizing with the background.                                                                   |
 | `text-light`      | Light color, a foreground color contrasting slightly with the background.                                                         |
 | `text-lighter`    | Lighter color, a foreground color contrasting slightly with the background.                                                       |
 | `text-lightest`   | Dim color, a foreground color contrasting slightly with the background.                                                           |
 
-Create foreground color variables for titles, descriptions, icons, and other body text.
+Add foreground color variables for titles, descriptions, icons, and other body text.
 ```js name=master.css.js
 export default {
     variables: {
         text: {
-+            primary: '$(blue-60)'
++            primary: '#000'
         }
     }
 }
 ```
 Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
 ```html
-<h1 class="**fg:primary**">page title</h1>
+<h1 class="fg:**primary**">page title</h1>
+```
+To apply `variables.primary` instead of `variables.text.primary`, you can use `$(primary)`:
+```html
+<p class="fg:**$(primary)**">…</p>
 ```
 
-### Using surface color tokens
+See all the available [text and foreground colors](/docs/color).
+
+### Background colors
 | Token             | Description                                                                                                                       |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
 | `base`            | The background color for apps, modals, ...                                                                                        |
 
-Create color variables for backgrounds in apps, panels, cards, and more.
+Add color variables for backgrounds in apps, panels, cards, and more.
 ```js name=master.css.js
 export default {
     variables: {

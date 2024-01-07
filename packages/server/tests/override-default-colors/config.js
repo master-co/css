@@ -1,6 +1,6 @@
 export default {
     variables: {
-/*+*/    app: {
+/*+*/   app: {
 /*+*/       blue: '#4589ff' // app-blue
 /*+*/   }
     }
