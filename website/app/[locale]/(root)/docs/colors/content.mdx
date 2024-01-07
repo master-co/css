@@ -5,31 +5,16 @@
 
 ## Basic usage
 ### Add a color
-Add color variables using hex codes and extend the defaults.
-```js name=master.css.js
-export default {
-    variables: {
-+        primary: '#0e61fe'
-    }
-}
-```
-Apply them using color-related syntax like [`fg:`](/docs/color).
-```html
-<div class="**fg:primary**">…</div>
-```
-
-### Add an alias
-Create an alias for a color to link its value to an existing color. This allows you to implement [design tokens](/docs/design-tokens) and makes managing design updates more efficient.
-```js name=master.css.js
-export default {
-    variables: {
-+        secondary: '$(blue-60)'
-    }
-}
-```
-For example, say you have multiple color variables referencing the same color token. If that color needs updating, you would only need to update the source instead of manually updating every instance of the color.
-
-This is similar to [Figma's variables](https://help.figma.com/hc/en-us/articles/15145852043927-Create-and-manage-variables).
+Add color variables using hexadecimal codes and extend the defaults.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!../../../../../../packages/server/tests/add-a-color/config.js').default}</Code>
+Apply it using color-related syntax like [`fg:`](/docs/color).
+<Code lang="html">{require('!!raw-loader!../../../../../../packages/server/tests/add-a-color/template.html').default}</Code>
+<details>
+    <summary>View the generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/add-a-color/generated.css').default}</Code>
+    </div>
+</details>
 
 ### Add color shades
 Sets multiple shades for a single color.
@@ -44,13 +29,29 @@ export default {
     }
 }
 ```
-Apply them using color-related syntax like [`fill:`](/docs/fill).
+Apply it using color-related syntax like [`fill:`](/docs/fill).
 ```html
 <svg class="**fill:primary-20** …">20</svg>
 ```
 
+### Add an alias
+Create an alias for a color to link its value to an existing color. This allows you to implement [design tokens](/docs/design-tokens) and makes managing design updates more efficient.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!../../../../../../packages/server/tests/add-an-alias/config.js').default}</Code>
+Apply it using color-related syntax.
+<Code lang="html">{require('!!raw-loader!../../../../../../packages/server/tests/add-an-alias/template.html').default}</Code>
+<details>
+    <summary>View the generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/add-an-alias/generated.css').default}</Code>
+    </div>
+</details>
+
+For example, say you have multiple color variables referencing the same color token. If that color needs updating, you would only need to update the source instead of manually updating every instance of the color.
+
+This is similar to [Figma's variables](https://help.figma.com/hc/en-us/articles/15145852043927-Create-and-manage-variables).
+
 ### Override default colors
-(!) Access the same key as the preset to override the default color.
+(!) Access the same key as the preset to override default colors, like `blue-5` ~ `blue-95`.
 ```js name=master.css.js
 export default {
     variables: {
@@ -58,47 +59,35 @@ export default {
     }
 }
 ```
-(o) Use `app-*` to avoid conflicts with defaults and make Master colors always consistent.
-```js name=master.css.js
-export default {
-    variables: {
-+        app: {
-+            blue: '#4589ff' // app-blue
-+        }
-    }
-}
-```
+
+(o) Use `app-*` to avoid conflicts with defaults and keep `blue-*` colors consistent.
+
+<Code lang="js" name="master.css.js">{require('!!raw-loader!../../../../../../packages/server/tests/override-default-colors/config.js').default}</Code>
+Apply custom colors for the current application.
+<Code lang="html">{require('!!raw-loader!../../../../../../packages/server/tests/override-default-colors/template.html').default}</Code>
+<details>
+    <summary>View the generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/override-default-colors/generated.css').default}</Code>
+    </div>
+</details>
 
 ---
 
 ## Advanced usage
 ### Add colors by theme
 Add color variables based on different themes.
-```js name=master.css.js
-export default {
-    variables: {
-+        primary: {
-+            '@light': '$(yellow-40)',
-+            '@dark': '$(yellow-50)'
-+        }
-    }
-}
-```
-Set the theme, `light` or `dark`, to apply color variables.
-```html
-<div class="**light**">
-    <div class="bg:**primary**">…</div>
-</div>
-```
-
+<Code lang="js" name="master.css.js">{require('!!raw-loader!../../../../../../packages/server/tests/add-colors-by-theme/config.js').default}</Code>
+Set the theme to `.light` or `.dark` to apply the target theme colors.
+<Code lang="html">{require('!!raw-loader!../../../../../../packages/server/tests/add-colors-by-theme/template.html').default}</Code>
 <details>
-    <summary>View the unit test</summary>
+    <summary>View the generated CSS</summary>
     <div>
-        <Code lang="ts">
-            {require('!!raw-loader!../../../../../../packages/css/tests/docs/add-colors-by-theme.test.ts').default}
-        </Code>
+        <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/add-colors-by-theme/generated.css').default}</Code>
     </div>
 </details>
+
+### Add theme colors with a fallback color
 
 ---
 
@@ -106,7 +95,7 @@ Set the theme, `light` or `dark`, to apply color variables.
 ### Using text color tokens
 | Token             | Description                                                                                                                       |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| `text-accent`     | Accent color emphasizes active links and states, strongly contrasting the background.                                             |
+| `text-accent`     | Accent color emphasizes active navigations and states, strongly contrasting the background.                                             |
 | `text-strong`     | Strong color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background.     |
 | `text-neutral`    | Soft color, a foreground color harmonizing with the background.                                                                   |
 | `text-light`      | Light color, a foreground color contrasting slightly with the background.                                                         |

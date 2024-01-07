@@ -18,12 +18,13 @@ Using abbreviations depends on team conventions or personal habits. Not every st
 export const code3 = `<div class="**width:32** **height:32** **border-radius:5** **z-index:10** **margin-top:1** **margin-bottom:1** **padding-left:1** **padding-right:1**">`
 export const code4 = `<div class="**w:32** **h:32** **r:5** **z:10** **mt:1** **mb:1** **pl:1** **pr:1**">`
 export const code5 = `<div class="w:32 h:32 r:5 z:10 **my:1** **px:1**">`
+export const code6 = `<div class="**size:32** r:5 z:10 my:1 px:1">`
 
 <Code lang="html">
     {code3}
 </Code>
 
-(o) Uses abbreviations common to the math field and CSS utility libraries. <Dropped p1={code3} p2={code4} target="class" />
+(o) Use abbreviations common to the math field and CSS utility libraries. <Dropped p1={code3} p2={code4} target="class" />
 <Code lang="html">
     {code4}
 </Code>
@@ -37,5 +38,10 @@ export const code5 = `<div class="w:32 h:32 r:5 z:10 **my:1** **px:1**">`
 - Coordinates: `x` axis, `y` axis, `z` axis.
 - Spacing: `m` margin, `p` padding.
 - Directions: `t` top, `b` bottom, `l` left, `r` right.
+
+(o) Use `mcss size:w|h` to simplify it further! <Dropped p1={code3} p2={code6} target="class" />
+<Code lang="html">
+    {code6}
+</Code>
 
 Utilizing abbreviations can significantly reduce template markup and provide greater flexibility and faster iteration.
