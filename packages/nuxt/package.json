@@ -39,6 +39,9 @@
     "files": [
         "dist"
     ],
+    "publishConfig": {
+        "access": "public"
+    },
     "dependencies": {
         "@master/css-server": "workspace:^",
         "@master/css.vue": "workspace:^",
