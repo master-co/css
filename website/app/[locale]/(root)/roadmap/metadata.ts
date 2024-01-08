@@ -2,8 +2,8 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Roadmap',
-    description: 'Currently in rc and moving towards release candidate.',
-    date: '2023-12-19T15:04:56.712Z',
+    description: 'Currently in release candidate and moving towards stable.',
+    date: '2024-01-08T15:16:18.864Z',
     category: 'v2.0'
 }
 

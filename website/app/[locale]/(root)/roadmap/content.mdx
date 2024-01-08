@@ -5,41 +5,34 @@ import version from '~/version';
 
 ---
 
-## Current
-1. <del>Alpha － 2.0.0-alpha.80</del>
-2. **Beta － [{version}](https://github.com/master-co/css/releases)** <svg className="ml:5 inline-block v:middle fill:green-75 size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><circle className="@ping|1s|infinite transform:center" cx="4" cy="4" r="4" /><circle cx="4" cy="4" r="4" /></svg>
-3. Release Candidate － 2.0.0-rc.1
-4. Stable － 2.0.0
+## Release phases
+Now that we're **at the release candidate**, we can more accurately estimate arrival times based on the task at hand:
+
+- **Master CSS v2.0**
+    1. <del>Alpha － 2.0.0-alpha.80</del>
+    2. <del>Beta － 2.0.0-beta.215</del>
+    3. **Release Candidate** － <svg className="mr:1x inline-block v:middle fill:green size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><circle className="@ping|1s|infinite transform:center" cx="4" cy="4" r="4" /><circle cx="4" cy="4" r="4" /></svg> [{version}](https://github.com/master-co/css/releases)
+    4. Stable － April 2024
+- **Master UI v1.0**
+    1. Alpha - ?
+    2. Beta - ?
+    3. Release Candidate - ?
+    4. Stable － August 2024
+- **Master UI Pro v1.0** － December 2024
+
+Since the syntax and API of Master CSS are expected to be in use for many years, even though v2 is nearing completion, it will take us some time to validate its market acceptance and solidify its foundation.
+
+At this stage, **Master CSS is nearly stable**, which means there will be no further breaking changes.
 
 ---
 
-## Beta
-This phase will encompass completing all [core features and breaking changes](https://github.com/master-co/css/milestone/4), providing a solid foundation for v2.
-### 🟠 Color palette
-See the issue [#171](https://github.com/master-co/css/issues/171).
-
-Humans perceive different lightness for different color shades in the current color palette, which can lead to visual inconsistencies in the UI.
-
-We'll refactor on a visually consistent general palette based on intuition.
-
-It's expected to be the **final breaking change** during the rc stage.
-
-### 🟠 Configuration APIs
-We may check whether each property, parameter, and external API needs to be improved when writing configuration-related documents.
-
-This work is critical to the popularity of third-party plugin authoring for Master CSS, and breaking configuration changes will not be made in the future unless necessary.
-
----
-
-## Release Candidate
-At this stage, **Master CSS is stable**, which means there will be no further breaking changes. We'll refine the documentation and complete tasks for the upcoming v2.
-
-### 🟠 Documentation
+## Current tasks
+### 🟠 Improving documentation
 Initially, the v1 docs were rushed into release, making its content rather rudimentary and potentially challenging to comprehend.
 
 Our goal for our upcoming v2 docs is to present a comprehensive and elegantly crafted syntax document. This enables developers to grasp the intricacies of CSS effortlessly, thus enhancing understanding through our meticulous documentation.
 <details>
-    <summary>See all documentation</summary>
+    <summary>View the states of all the documents</summary>
     <div>
         <table>
             <Documents category='Getting Started' first />
@@ -87,51 +80,29 @@ Our goal for our upcoming v2 docs is to present a comprehensive and elegantly cr
     </div>
 </details>
 
-### 🟢 Master CSS ESLint
-Released in [v2.0.0-rc.175](https://github.com/master-co/css/releases/tag/v2.0.0-rc.175). Check out the new [documentation](/docs/code-linting).
-
-### ⚪️ Master CSS Language Service
+### ⚪️ Refactoring Master CSS Language Service
 {/* See the related [issues](https://github.com/master-co/css/issues?q=is%3Aopen+label%3A%22language+service%22+milestone%3A%222.0+%28+RC+%29%22). */}
 🚧 The detailed content is under planning.
 
-### ⚪️ Homepage redesign
+### 🟠 Redesigning homepage
 Redesign the homepage according to the features of v2.
+
+### 🟢 New Master CSS ESLint
+🎉 Released. Check out the [Code Linting](/docs/code-linting) documentation.
 
 ---
 
 ## FAQs
 <details>
-    <summary>When is v2 expected to arrive?</summary>
-    <div className='b:1|frame p:3x|8x r:1x mt:2x'>
-        Throughout the Beta phase, Master CSS v2.0 introduced many essential functions, services, and framework compatibility enhancements. Many of these underwent refactoring as part of the development journey or were fine-tuned in response to valuable input from the community.
-
-        Since the syntax and API of Master CSS are expected to be in use for many years, even though v2 is nearing completion, it will take us some time to validate its market acceptance and solidify its foundation.
-
-        Now that we're **at the end of rc**, we can more accurately estimate arrival times based on the task at hand:
-
-        - **Master CSS v2.0**
-            - Release Candidate － December 2023
-            - Stable － April 2024
-        - **Master UI v1.0** － August 2024
-        - **Master UI Pro v1.0** － December 2024
-    </div>
-</details>
-<details>
-    <summary>Is it stable enough for now?</summary>
-    <div className='b:1|frame p:3x|8x r:1x mt:2x'>
-        Only one breaking change remains during the rc, [Color Palette](#-color-palette). If you don't mind or are not affected by it, you can start using Master CSS in production!
-    </div>
-</details>
-<details>
     <summary>How to keep track of the latest updates?</summary>
-    <div className='b:1|frame p:3x|8x r:1x mt:2x'>
+    <div className='bg:canvas b:1|frame p:3x|8x r:1x mt:2x'>
         - [GitHub Releases](https://github.com/master-co/css/releases) － We've beautified the release changelog, which notes any version and package detailed changes.
         - [Docs - Discord Channel](https://discord.com/channels/917780624314613760/1144544204979175626) － We'll post the latest documentation updates in the #docs channel in the Master discord server.
     </div>
 </details>
 <details>
     <summary>How to prevent version change conflicts?</summary>
-    <div className='b:1|frame p:3x|8x r:1x mt:2x'>
+    <div className='bg:canvas b:1|frame p:3x|8x r:1x mt:2x'>
         When using a CDN in production, pining the current version to avoid potential conflicts due to version changes is strongly recommended, like so:
         <Code lang="html">
         {
@@ -142,7 +113,7 @@ Redesign the homepage according to the features of v2.
 </details>
 <details>
     <summary>Where is the source code of the documentation?</summary>
-    <div className='b:1|frame p:3x|8x r:1x mt:2x'>
+    <div className='bg:canvas b:1|frame p:3x|8x r:1x mt:2x'>
         The official [documentation is now open source](https://github.com/master-co/css/tree/rc/website/app/%5Blocale%5D/(root)/docs); welcome to contribute your expertise.
     </div>
 </details>
