@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">Integrate Master CSS Progressive Rendering in Nitro way</p>
+<p align="center">Integrate Master CSS in Nuxt way</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">
@@ -20,11 +20,11 @@
             <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
         </picture>
     </a>
-    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-server.nitro">
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css.nuxt">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-server.nitro?color=212022&label=%20&logo=npm&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-server.nitro?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-server.nitro?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.nuxt?color=212022&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.nuxt?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css.nuxt?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
         </picture>
     </a>
     <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -53,4 +53,4 @@
 </div>
 
 ## Documentation
-Check out the official [documentation](https://beta.css.master.co/docs/installation/nuxt).
+Check out the official [documentation](https://beta.css.master.co/docs/installation/nuxtjs).
