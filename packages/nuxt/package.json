@@ -40,9 +40,9 @@
         "dist"
     ],
     "dependencies": {
-        "@nuxt/kit": "^3.8.2",
-        "@master/css.vue": "workspace:^",
         "@master/css-server": "workspace:^",
+        "@master/css.vue": "workspace:^",
+        "@nuxt/kit": "^3.8.2",
         "explore-config": "^2.5.20"
     },
     "devDependencies": {
@@ -55,6 +55,7 @@
         "changelogen": "^0.5.5",
         "eslint": "^8.55.0",
         "nuxt": "^3.8.2",
-        "vitest": "^0.33.0"
+        "vitest": "^0.33.0",
+        "vue": "^3.4.5"
     }
 }
