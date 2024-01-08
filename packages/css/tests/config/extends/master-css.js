@@ -6,16 +6,16 @@ const config = {
     ],
     variables:  {
         first: {
-            '@dark': '$(blue-80)'
+            '@dark': '$(black)'
         },
         second: {
-            '@dark': '$(blue-30)'
+            '@dark': '$(black)'
         },
         third: {
-            '': '$(blue-30)'
+            '': '$(black)'
         },
         fourth: {
-            '@dark': '$(blue-50)'
+            '@dark': '$(black)'
         }
     }
 }

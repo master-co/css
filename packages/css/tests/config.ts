@@ -3,7 +3,7 @@ export default {
         btn: 'font:14 h:40 text:center bg:primary@light fg:white@light font:semibold@light bg:white@dark fg:primary@dark font:medium@dark',
         blue: {
             btn: {
-                '': 'btn bg:blue f:20@light'
+                '': 'btn f:20@light'
             }
         }
     },
@@ -16,7 +16,7 @@ export default {
             wide: .4
         },
         border:  {
-            'inputborder': '2|solid|red'
+            'inputborder': '2|solid|black'
         },
         'box-shadow': {
             x2: '0 25px 50px -12px rgb(0 0 0 / 25%)'
@@ -26,21 +26,21 @@ export default {
             md: 20
         },
         primary: {
-            '': '$(blue-50)',
-            '@light': '#ebbb40',
-            '@dark': '#fbe09d',
+            '': '$(black)',
+            '@light': '$(black)',
+            '@dark': '$(white)',
             code: {
-                '': '#777777',
-                '@dark': '$(gray)'
+                '': '$(black)',
+                '@dark': '$(white)'
             },
             stage: {
                 '1': {
-                    '': '#999999',
-                    '@light': '#888888',
-                    '@dark': '#AAAAAA'
+                    '': '$(white)',
+                    '@light': '$(black)',
+                    '@dark': '$(white)'
                 }
             },
-            alpha: '$(blue-50)/.1',
+            alpha: '$(white)/.1',
             rgb1: 'rgb(0, 0, 0)',
             rgb2: 'rgb(0 0 0)',
             rgb3: 'rgb(0 0 0/.5)',
@@ -49,20 +49,20 @@ export default {
         },
         input: '#123456',
         accent: {
-            '@light': '$(gold-70)',
-            '@dark': '#fbe09d'
+            '@light': '$(black)',
+            '@dark': '$(white)'
         },
         major: {
-            '@light': '$(slate-10)',
-            '@dark': '$(gray-80)'
+            '@light': '$(black)',
+            '@dark': '$(white)'
         },
         content: {
-            '@light': '$(slate-30)',
-            '@dark': '$(gray-60)'
+            '@light': '$(black)',
+            '@dark': '$(white)'
         },
         fade: {
-            '@light': '$(slate-55)',
-            '@dark': '$(gray-60)'
+            '@light': '$(black)',
+            '@dark': '$(white)'
         },
         code: '$(accent)',
         'fade-light': {

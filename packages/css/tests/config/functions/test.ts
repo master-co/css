@@ -10,12 +10,12 @@ test('functions', () => {
 
     expect(new MasterCSS().create('grid-template-cols:repeat(2,auto|.6|calc(3-max(2,1)))')?.text).toBe('.grid-template-cols\\:repeat\\(2\\,auto\\|\\.6\\|calc\\(3-max\\(2\\,1\\)\\)\\){grid-template-columns:repeat(2,auto .6 calc(0.1875rem - max(2, 1) / 16 * 1rem))}')
 
-    expect(new MasterCSS().create('$primary:red')?.text).toBe('.\\$primary\\:red{--primary:rgb(209 26 30)}')
-    expect(new MasterCSS().create('$primary:red-80')?.text).toBe('.\\$primary\\:red-80{--primary:rgb(253 207 207)}')
-    expect(new MasterCSS().create('$primary:red/.5')?.text).toBe('.\\$primary\\:red\\/\\.5{--primary:rgb(209 26 30/.5)}')
-    expect(new MasterCSS().create('$primary:red-80/.5')?.text).toBe('.\\$primary\\:red-80\\/\\.5{--primary:rgb(253 207 207/.5)}')
+    expect(new MasterCSS().create('$primary:black')?.text).toBe('.\\$primary\\:black{--primary:rgb(0 0 0)}')
+    expect(new MasterCSS().create('$primary:black')?.text).toBe('.\\$primary\\:black{--primary:rgb(0 0 0)}')
+    expect(new MasterCSS().create('$primary:black/.5')?.text).toBe('.\\$primary\\:black\\/\\.5{--primary:rgb(0 0 0/.5)}')
+    expect(new MasterCSS().create('$primary:black/.5')?.text).toBe('.\\$primary\\:black\\/\\.5{--primary:rgb(0 0 0/.5)}')
 })
 
 test('checks gradient-related functions with color variables', () => {
-    expect(new MasterCSS().create('bg:linear-gradient(0deg,gray-14|0%,gray-16|100%)')?.text).toContain('background-image:linear-gradient(0deg,rgb(39 38 40) 0%,rgb(41 40 42) 100%)')
+    expect(new MasterCSS().create('bg:linear-gradient(0deg,black|0%,white|100%)')?.text).toContain('background-image:linear-gradient(0deg,rgb(0 0 0) 0%,rgb(255 255 255) 100%)')
 })

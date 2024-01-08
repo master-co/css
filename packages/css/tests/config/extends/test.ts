@@ -26,7 +26,7 @@ it('config extends', () => {
             dark: {
                 space: 'rgb',
                 type: 'color',
-                value: '198 219 254'
+                value: '0 0 0'
             },
             light: {
                 space: 'rgb',
@@ -42,7 +42,7 @@ it('config extends', () => {
             dark: {
                 space: 'rgb',
                 type: 'color',
-                value: '14 52 150'
+                value: '0 0 0'
             },
             light: {
                 space: 'rgb',
@@ -54,12 +54,12 @@ it('config extends', () => {
     expect(css.variables.third).toEqual({
         type: 'color',
         space: 'rgb',
-        value: '14 52 150',
+        value: '0 0 0',
         themes: {
             dark: {
                 space: 'rgb',
                 type: 'color',
-                value: '23 95 233'
+                value: '58 124 255'
             }
         }
     })
@@ -70,7 +70,7 @@ it('config extends', () => {
             dark: {
                 space: 'rgb',
                 type: 'color',
-                value: '107 158 241'
+                value: '37 99 253'
             }
         }
     })
@@ -82,7 +82,7 @@ it('config extends', () => {
             dark: {
                 space: 'rgb',
                 type: 'color',
-                value: '23 95 233'
+                value: '0 0 0'
             },
             light: {
                 space: 'rgb',

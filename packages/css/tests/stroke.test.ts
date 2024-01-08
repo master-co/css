@@ -4,5 +4,5 @@ test('stroke-width', () => {
 
 test('stroke-color', () => {
     expect(new MasterCSS().create('stroke:current')?.text).toContain('stroke:currentColor')
-    expect(new MasterCSS().create('stroke:red')?.text).toContain('stroke:rgb(209 26 30)')
+    expect(new MasterCSS().create('stroke:black')?.text).toContain('stroke:rgb(0 0 0)')
 })

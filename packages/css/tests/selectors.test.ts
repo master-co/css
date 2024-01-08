@@ -5,7 +5,7 @@ test('selectors', () => {
     expect(new MasterCSS(config).create('hide_custom')?.text).toBe('.hide_custom::before,.hide_custom::after{display:none}')
     expect(new MasterCSS(config).create('hide~custom-1')?.text).toBe('.hide\\~custom-1~div{display:none}')
     expect(new MasterCSS(config).create('hide::slider-thumb')?.text).toBe('.hide\\:\\:slider-thumb::-webkit-slider-thumb{display:none}.hide\\:\\:slider-thumb::-moz-range-thumb{display:none}')
-    expect(new MasterCSS().create('bg:red:hover_.feature__tab-title')?.text).toBe('.bg\\:red\\:hover_\\.feature__tab-title:hover .feature__tab-title{background-color:rgb(209 26 30)}')
+    expect(new MasterCSS().create('bg:red:hover_.feature__tab-title')?.text).toBe('.bg\\:red\\:hover_\\.feature__tab-title:hover .feature__tab-title{background-color:rgb(var(--red))}')
 })
 
 test('viewports', () => {

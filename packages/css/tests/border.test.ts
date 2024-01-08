@@ -40,9 +40,9 @@ it('validates border rules', () => {
     expect(new MasterCSS().create('by:16|solid')?.text).toContain('border-top:1rem solid;border-bottom:1rem solid')
     expect(new MasterCSS().create('border-y:16|solid')?.text).toContain('border-top:1rem solid;border-bottom:1rem solid')
 
-    expect(new MasterCSS().create('br:1px|solid|gray')?.text).toContain('border-right:1px solid rgb(107 106 109)')
+    expect(new MasterCSS().create('br:1px|solid|black')?.text).toContain('border-right:1px solid rgb(0 0 0)')
 
-    expect(new MasterCSS().create('br:1px|gray')?.text).toContain('border-right:1px rgb(107 106 109) solid')
+    expect(new MasterCSS().create('br:1px|black')?.text).toContain('border-right:1px rgb(0 0 0) solid')
 })
 
 it('checks border order', () => {
