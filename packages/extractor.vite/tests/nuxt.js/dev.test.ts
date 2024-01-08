@@ -66,7 +66,7 @@ if (!process.env.GITHUB_ACTIONS) {
         const newBtnClassNameSelector = '.' + cssEscape(newBtnClassName)
         fs.writeFileSync(templatePath, templateContent.replace(/class="([^"]+)"/, `class="${newBtnClassName}"`))
         fs.writeFileSync(masterCSSConfigPath, `
-            export default { styles: { '${newBtnClassName}': 'bg:pink' } }
+            export default { styles: { '${newBtnClassName}': 'bg:black' } }
         `)
         await page.waitForNetworkIdle()
         const cssText = await page.evaluate(() => document.querySelector('[data-vite-dev-id$=".virtual/master.css"]')?.textContent)
