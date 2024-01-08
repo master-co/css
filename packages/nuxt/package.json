@@ -5,7 +5,8 @@
         "dev": "nuxi dev playground",
         "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
         "lint": "eslint .",
-        "test": "vitest run"
+        "test": "vitest run",
+        "postinstall": "nuxt prepare"
     },
     "type": "module",
     "license": "MIT",
