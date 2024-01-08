@@ -1,5 +1,4 @@
 import { defineNuxtModule, addServerPlugin, createResolver } from '@nuxt/kit'
-import exploreConfig from 'explore-config'
 import { name } from '../package.json'
 
 export default defineNuxtModule<{ config?: string }>({
@@ -12,7 +11,8 @@ export default defineNuxtModule<{ config?: string }>({
 
         nuxt.hook('nitro:config', (config) => {
             config.virtual = config.virtual || {}
-            config.virtual['#master-css-config'] = `export default ${JSON.stringify(exploreConfig(options.config ?? 'master.css.*', { cwd: nuxt.options.srcDir }))}`
+            config.virtual['#master-css-nuxt-plugin-options'] = `export default ${JSON.stringify(options)}`
+            config.virtual['#nuxt-options'] = `export default { srcDir: '${nuxt.options.srcDir}' }`
         })
 
         addServerPlugin(resolve('./runtime/plugin'))
