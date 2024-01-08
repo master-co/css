@@ -13,7 +13,7 @@ export default async function Layout(props: any) {
                 category: 'Installation'
             }}
             backOnClickCategory='/docs/installation'
-            icon={<LogoSvg width={105} />}
+            icon={<LogoSvg width={90} />}
             titleBig
         >
             <Tabs className="mb:30">
