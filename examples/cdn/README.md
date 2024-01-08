@@ -13,7 +13,7 @@
 <p align="center">Master CSS Runtime CDN out of the box in the browser</p>
 
 <p align="center">
-    <a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
+    <a aria-label="overview" href="https://github.com/master-co/css/tree/rc">
         <picture>
             <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=212022&style=for-the-badge">
             <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=f6f7f8&style=for-the-badge">
@@ -57,9 +57,9 @@
     </a>
     <a aria-label="Github Actions" href="https://github.com/1aron/repo/actions/workflows/release.yml">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=beta&label=%20&message=twitter&color=212022&logo=githubactions&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=beta&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
-            <img alt="Github release actions" src="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=beta&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&message=twitter&color=212022&logo=githubactions&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+            <img alt="Github release actions" src="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
         </picture>
     </a>
 </p>
@@ -72,9 +72,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="preload" as="script" href="https://cdn.master.co/css@beta">
-    <link rel="preload" as="style" href="https://cdn.master.co/normal.css@beta">
-    <link rel="stylesheet" href="https://cdn.master.co/normal.css@beta">
+    <link rel="preload" as="script" href="https://cdn.master.co/css@rc">
+    <link rel="preload" as="style" href="https://cdn.master.co/normal.css@rc">
+    <link rel="stylesheet" href="https://cdn.master.co/normal.css@rc">
     <script>
         window.masterCSSConfig = {
             variables: {
@@ -82,7 +82,7 @@
             }
         }
     </script>
-    <script src="https://cdn.master.co/css@beta"></script>
+    <script src="https://cdn.master.co/css@rc"></script>
 </head>
 <body>
     <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
@@ -93,4 +93,4 @@
 
 
 ## Documentation
-Check out the official [documentation](https://beta.css.master.co/docs/installation/cdn).
+Check out the official [documentation](https://rc.css.master.co/docs/installation/cdn).

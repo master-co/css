@@ -14,4 +14,4 @@
 </div>
 
 ## Documentation
-Check out the official [documentation](https://beta.css.master.co/docs/installation/nuxtjs/static-extraction).
+Check out the official [documentation](https://rc.css.master.co/docs/installation/nuxtjs/static-extraction).

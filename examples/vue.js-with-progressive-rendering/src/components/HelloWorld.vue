@@ -9,7 +9,7 @@ const count = ref(0)
         <a href="https://vitejs.dev" target="_blank">
             <img src="../assets/vue.svg" class="logo" alt="Vite logo" />
         </a>
-        <a href="https://beta.css.master.co" target="_blank">
+        <a href="https://rc.css.master.co" target="_blank">
             <img src="../assets/master.svg" class="logo scale(2)" alt="Master logo" />
         </a>
     </div>

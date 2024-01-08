@@ -10,7 +10,7 @@ import type { File } from '@google-cloud/storage'
 import { default as i18n } from 'websites/i18n.config.mjs'
 
 const currentBranch = getCurrentGitBranch()
-const DOMAINS: { name: string, units: Record<string, string> }[] = [{ name: 'https://beta.css.master.co', units: { 'docs': 'installation' } }]
+const DOMAINS: { name: string, units: Record<string, string> }[] = [{ name: 'https://rc.css.master.co', units: { 'docs': 'installation' } }]
 const TEXT_TAGS = ['p', 'span', 'h1', 'h2', 'h3', 'h4', 'li', 'a', 'code', 'mark']
 const SELF_CLOSING_TAGS = ['path', 'area', 'base', 'img', 'hr', 'br', 'col', 'embed', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr']
 const BYPASS_TAGS = ['svg']

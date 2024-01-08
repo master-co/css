@@ -5,7 +5,7 @@ const links = [
     { name: 'Play', href: '/play', Icon: IconSourceCode },
     { name: 'Roadmap', href: '/roadmap', Icon: IconRoad },
     // { name: 'Blog', href: '/blog', disabled: true, Icon: IconWriting },
-    { name: 'Components', href: '/components', Icon: IconComponents, disabled: true },
+    // { name: 'Components', href: '/components', Icon: IconComponents, disabled: true },
     // { name: 'Templates', href: '/templates', disabled: true }
 ]
 

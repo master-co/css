@@ -12,7 +12,7 @@ export default {
             description: 'Avoid applying classes with the same CSS declaration',
             category: 'Stylistic Issues',
             recommended: false,
-            url: 'https://beta.css.master.co/docs/code-linting#class-collision-detection',
+            url: 'https://rc.css.master.co/docs/code-linting#class-collision-detection',
         },
         messages: {
             collisionClass: '{{message}}',

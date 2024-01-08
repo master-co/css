@@ -14,7 +14,7 @@ export default {
     …
 }
 ```
-Configuration fields that are not specified will fall back to [default configuration](https://github.com/master-co/css/tree/beta/packages/css/src/config).
+Configuration fields that are not specified will fall back to [default configuration](https://github.com/master-co/css/tree/rc/packages/css/src/config).
 
 ### `.animations`
 Customizing animation [animations](/docs/animations) for your design system.
@@ -89,14 +89,14 @@ Generated CSS:
 ```
 
 ### `.override`
-Customize your configuration to override all [default configuration](https://github.com/master-co/css/tree/beta/packages/css/src/config), default `false` to extend.
+Customize your configuration to override all [default configuration](https://github.com/master-co/css/tree/rc/packages/css/src/config), default `false` to extend.
 <DocProp defaultValue="false" types={['boolean']} />
 ```js name=master.css.js
 export default {
 +    override: true
 }
 ```
-We've carefully preset some [configurations](https://github.com/master-co/css/tree/beta/packages/css/src/config") to enhance the syntax; usually, you'll extend it.
+We've carefully preset some [configurations](https://github.com/master-co/css/tree/rc/packages/css/src/config") to enhance the syntax; usually, you'll extend it.
 
 ### `.rootSize`
 Specify the conversion factor for `rem` and `em`.

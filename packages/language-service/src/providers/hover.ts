@@ -61,7 +61,7 @@ function getCssHoverInfo(instance: string) {
                     ...(originalCssProperty?.references ?? []),
                     {
                         name: 'Master Reference',
-                        url: `https://beta.css.master.co/docs/${fullKey}`
+                        url: `https://rc.css.master.co/docs/${fullKey}`
                     }
                 ]
             }

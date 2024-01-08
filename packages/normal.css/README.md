@@ -13,7 +13,7 @@
 <p align="center">Normalize the browser's styles ~500B</p>
 
 <p align="center">
-    <a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
+    <a aria-label="overview" href="https://github.com/master-co/css/tree/rc">
         <picture>
             <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=212022&style=for-the-badge">
             <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=f6f7f8&style=for-the-badge">
@@ -57,9 +57,9 @@
     </a>
      <a aria-label="Github Actions" href="https://github.com/1aron/repo/actions/workflows/release.yml">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=beta&label=%20&message=twitter&color=212022&logo=githubactions&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=beta&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
-            <img alt="Github release actions" src="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=beta&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&message=twitter&color=212022&logo=githubactions&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
+            <img alt="Github release actions" src="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">
         </picture>
     </a>
 </p>
@@ -85,7 +85,7 @@
 [View the source code](https://github.com/master-co/normal.css/blob/main/src/index.scss)
 
 ## Documentation
-For the full documentation, check out the [Preset Global Styles - Master CSS](https://beta.css.master.co/docs/global-styles)
+For the full documentation, check out the [Preset Global Styles - Master CSS](https://rc.css.master.co/docs/global-styles)
 
 ## Installation
 ```sh
@@ -104,7 +104,7 @@ Import into your global CSS entry file like `styles.css`:
 
 <br>
 
-<a aria-label="overview" href="https://github.com/master-co/css/tree/beta">
+<a aria-label="overview" href="https://github.com/master-co/css/tree/rc">
     <picture>
         <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=212022&style=for-the-badge">
         <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/%E2%AC%85%20back-%20?color=f6f7f8&style=for-the-badge">

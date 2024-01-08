@@ -11,7 +11,7 @@ export default {
             description: 'Detect syntax errors early when writing classes',
             category: 'Stylistic Issues',
             recommended: false,
-            url: 'https://beta.css.master.co/docs/code-linting#syntax-error-checks',
+            url: 'https://rc.css.master.co/docs/code-linting#syntax-error-checks',
         },
         messages: {
             invalidClass: '{{message}}',

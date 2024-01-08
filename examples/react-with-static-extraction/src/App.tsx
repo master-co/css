@@ -10,7 +10,7 @@ function App() {
                 <a href="https://reactjs.org" target="_blank">
                     <img src={reactLogo} className="logo react" alt="React logo" />
                 </a>
-                <a href="https://beta.css.master.co" target="_blank">
+                <a href="https://rc.css.master.co" target="_blank">
                     <img src={masterLogo} className="logo master scale(1.6)" alt="Master logo" />
                 </a>
             </div>

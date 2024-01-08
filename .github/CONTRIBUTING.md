@@ -19,7 +19,7 @@ npm run test
 ```
 
 ### Contributing your test cases
-Taking the CSS project as an example, you can freely create a file like **aron.test.ts** in [packages/css/tests/contributions](https://github.com/master-co/css/tree/dev/beta/packages/css/tests/contributions) for unit testing:
+Taking the CSS project as an example, you can freely create a file like **aron.test.ts** in [packages/css/tests/contributions](https://github.com/master-co/css/tree/dev/rc/packages/css/tests/contributions) for unit testing:
 
 ```ts
 import { MasterCSS } from '../src'
@@ -39,7 +39,7 @@ Add @1aron tests
 ```
 
 ## Linting
-Follow the [Aron's ESLint Preset](https://github.com/1aron/aronrepo/tree/beta/packages/eslint-config)
+Follow the [Aron's ESLint Preset](https://github.com/1aron/aronrepo/tree/rc/packages/eslint-config)
 ```bash
 npm run lint
 ```
@@ -55,7 +55,7 @@ npm run type-check
 ```
 
 ## Commit Checking
-Follow the [Aron's Conventional Commits](https://github.com/1aron/aronrepo/tree/beta/packages/conventional-commits)
+Follow the [Aron's Conventional Commits](https://github.com/1aron/aronrepo/tree/rc/packages/conventional-commits)
 ```bash
 npm run commit-check
 ```
