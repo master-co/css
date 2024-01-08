@@ -49,19 +49,20 @@ export default function DocSidebar(props: any) {
                     {pageCategories.map((eachPageCategory: any) => (
                         <Fragment key={eachPageCategory.name}>
                             <h4>{$(eachPageCategory.name)}</h4>
-                            {eachPageCategory.pages.map((eachPage: any) => (
-                                <Link activeClassName="active font:semibold"
-                                    ambiguous
-                                    href={eachPage.pathname}
-                                    className="app-nav"
-                                    scrollIntoView
-                                    disabled={eachPage.metadata.disabled}
-                                    unfinished={eachPage.metadata.unfinished}
-                                    key={eachPage.pathname}>
-                                    {!eachPage.metadata.disabled && <svg></svg>}
-                                    {$(eachPage.metadata.other?.subject || eachPage.metadata.title)}
-                                </Link>
-                            ))}
+                            {eachPageCategory.pages
+                                .map((eachPage: any) => (
+                                    <Link activeClassName="active font:semibold"
+                                        ambiguous
+                                        href={eachPage.pathname}
+                                        className="app-nav"
+                                        scrollIntoView
+                                        disabled={eachPage.metadata.disabled}
+                                        unfinished={eachPage.metadata.unfinished}
+                                        key={eachPage.pathname}>
+                                        {!eachPage.metadata.disabled && <svg></svg>}
+                                        {$(eachPage.metadata.other?.subject || eachPage.metadata.title)}
+                                    </Link>
+                                ))}
                         </Fragment>
                     ))}
                 </div>
