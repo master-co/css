@@ -807,7 +807,7 @@ const rules = {
         match: /^~property:/,
         layer: Layer.CoreNative
     } as RuleDefinition,
-    'transitionTiming-function': {
+    'transition-timing-function': {
         match: /^~easing:/,
         layer: Layer.CoreNative
     } as RuleDefinition,
@@ -1315,11 +1315,11 @@ const rules = {
         layer: Layer.CoreNative
     } as RuleDefinition,
     'grid-column-start': {
-        match: /^grid-col-start:/,
+        match: /^grid-col(?:umn)?-start:/,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'grid-column-end': {
-        match: /^grid-col-end:/,
+        match: /^grid-col(?:umn)?-end:/,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'grid-column': {
@@ -1332,7 +1332,7 @@ const rules = {
         }
     } as RuleDefinition,
     'grid-columns': {
-        match: /^grid-cols:/,
+        match: /^grid-col(?:umn)?s:/,
         declare(value) {
             return {
                 display: 'grid',

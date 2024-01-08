@@ -1,3 +1,3 @@
-const syntaxes = [['$`key`:`value`']]
+const syntaxes = [['$custom:`value`']]
 
 export default syntaxes

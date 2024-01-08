@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['transition-timing-function:`function`,`…`', '~easing:`function`,`…`'],
+    ['~easing:`function`,`…`'],
     ['~easing:ease'],
     ['~easing:ease-in'],
     ['~easing:ease-out'],

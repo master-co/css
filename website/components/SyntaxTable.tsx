@@ -2,11 +2,9 @@
 
 import DocTable from 'websites/components/DocTable'
 import { Fragment, useMemo, useState } from 'react'
-import { beautifyCSS } from 'websites/utils/beautifyCSS'
 import line from 'to-line'
 import { snackbar } from 'websites/utils/snackbar'
 import InlineCode from 'websites/components/InlineCode'
-import dedent from 'ts-dedent'
 import MasterCSS from '@master/css'
 
 export default function SyntaxTable({ title, value, children, previewClass, scrollY, ...props }: any) {
@@ -73,14 +71,21 @@ const generateCSS = (name: string | Record<string, any>) => {
         ? name[0]
         : name)
     // `size` -> 9999999999
-    target = target.replace(/`size`/g, '160000000')
+    target = target
+        .replace(/`size`/g, '160000000')
+        .replace(/`value`/g, 'var(--value)')
     const classes = target.split(' ')
     const css = new MasterCSS()
     classes.forEach((eachClass: string) => css.add(eachClass))
     if (!css.rules.length) {
         throw new Error(`Class "${name}" not found`)
     }
-    const declarations = css.rules[css.rules.length - 1].declarations
+    const declarations = css.rules[css.rules.length - 1].declarations as any
+    for (const declarationName in declarations) {
+        if (typeof declarations[declarationName] === 'string')
+            declarations[declarationName] = declarations[declarationName]
+                .replace(/var\(--value\)/g, '`value`')
+    }
     return {
         text: convertDeclarationsToCSS(declarations),
         declarations
