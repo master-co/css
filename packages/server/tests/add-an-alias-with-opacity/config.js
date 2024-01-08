@@ -1,5 +1,6 @@
 export default {
     variables: {
-/*+*/   secondary: '$(blue-60)/.5'
+/*+*/   primary: '$(black)/.5',    //  <─┐
+/*+*/   secondary: '$(primary)/.5' //  ──┘  linked to primary
     }
 }

@@ -46,7 +46,7 @@ it('checks that different input sources should have the same output', () => {
 
 it('checks style declarations', () => {
     const input = [
-        'font:12', 'font:32@md', 'font:24@sm', 'm:32', 'block', 'px:16', 'bg:blue:hover', 'round', 'mb:48'
+        'font:12', 'font:32@md', 'font:24@sm', 'm:32', 'block', 'px:16', 'bg:blue-60:hover', 'round', 'mb:48'
     ]
     const output = [
         { className: 'block' },
@@ -55,7 +55,7 @@ it('checks style declarations', () => {
         { className: 'px:16' },
         { className: 'font:12' },
         { className: 'mb:48' },
-        { className: 'bg:blue:hover' },
+        { className: 'bg:blue-60:hover' },
         { className: 'font:24@sm' },
         { className: 'font:32@md' }
     ]

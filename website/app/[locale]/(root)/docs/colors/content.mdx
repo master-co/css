@@ -61,6 +61,7 @@ Apply it using color-related syntax like [`fg:`](/docs/color).
         <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/add-an-alias-with-opacity/generated.css').default}</Code>
     </div>
 </details>
+As shown above, creating an alias `secondary` linked to an existing alias `primary` with opacity `/.5` is possible, and the opacity will be multiplied `0.5 * 0.5 = 0.25`.
 
 ### Add color shades
 Sets multiple shades for a single color.
@@ -83,7 +84,7 @@ Apply it using color-related syntax like [`fill:`](/docs/fill).
 ### Add colors by theme
 Add color variables based on different themes.
 <Code lang="js" name="master.css.js">{require('!!raw-loader!../../../../../../packages/server/tests/add-colors-by-theme/config.js').default}</Code>
-Set the theme to `.light` or `.dark` to apply the target theme colors.
+Using modes for variables, you can access a single source of truth and simplify the markup.
 <Code lang="html">{require('!!raw-loader!../../../../../../packages/server/tests/add-colors-by-theme/template.html').default}</Code>
 <details>
     <summary>View the generated CSS</summary>
@@ -91,7 +92,7 @@ Set the theme to `.light` or `.dark` to apply the target theme colors.
         <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/add-colors-by-theme/generated.css').default}</Code>
     </div>
 </details>
-Unless you apply a theme other than `@light` or `@dark`, you usually do not need to give the `''` fallback.
+By default, theme variables [drive](/docs/configuration#themedriver) inheritance by adding `.light` or `.dark` to the parent element.
 
 ### Override default colors
 (!) Access the same key as the preset to override default colors, like `blue-5` ~ `blue-95`.
