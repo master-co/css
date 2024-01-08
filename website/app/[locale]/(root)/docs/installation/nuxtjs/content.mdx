@@ -21,7 +21,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             ```bash name=Terminal
             npx degit master-co/css/examples/nuxt.js-with-progressive-rendering __my-project__
             cd __my-project__
-            npm install @master/css.vue@beta @master/css-server.nitro@beta
+            npm install @master/css.nuxt@beta @master/css.vue@beta @master/css-server@beta
             npm install
             npm run dev
             ```
@@ -50,11 +50,11 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install Master CSS Vue and Server Nitro into your project via package managers.
+            Install Master CSS Nuxt into your project via package managers.
         </StepL>
         <StepR>
             ```install
-            **@master/css.vue@beta** **@master/css-server.nitro@beta**
+            **@master/css.nuxt@beta**
             ```
         </StepR>
     </Step>
@@ -96,16 +96,15 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         <StepL>
             ### <StepNum />Set up CSS pre-rendering
             All CSS rules are pre-rendered and injected into HTML on the server side or at build time.
-            - Create `server/plugins/css-server.ts` file
-            - Create a Master CSS Server Nitro plugin
+            - Add a `@master/css.nuxt` to the nuxt modules
         </StepL>
         <StepR>
-            ```ts name=server/plugins/css-server.ts
-            +import { createCSSServerPlugin } from '@master/css-server.nitro'
-            +// @ts-expect-error allowImportingTsExtensions
-            +import config from '../../master.css.ts'
-
-            +export default createCSSServerPlugin({ config })
+            ```ts name=nuxt.config.ts
+            export default defineNuxtConfig({
+                modules: [
+            +        '@master/css.nuxt'
+                ]
+            })
             ```
         </StepR>
     </Step>

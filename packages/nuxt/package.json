@@ -40,6 +40,7 @@
     ],
     "dependencies": {
         "@nuxt/kit": "^3.8.2",
+        "@master/css.vue": "workspace:^",
         "@master/css-server": "workspace:^",
         "explore-config": "^2.5.20"
     },

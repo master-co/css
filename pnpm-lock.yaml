@@ -1242,6 +1242,9 @@ importers:
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
+      '@master/css.vue':
+        specifier: workspace:^
+        version: link:../vue
       '@nuxt/kit':
         specifier: ^3.8.2
         version: 3.8.2(rollup@3.29.4)
