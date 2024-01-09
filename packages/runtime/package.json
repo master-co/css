@@ -1,0 +1,55 @@
+{
+    "name": "@master/css-runtime",
+    "scripts": {
+        "build": "techor pack --declare",
+        "dev": "pnpm run build --watch",
+        "test": "jest",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint src"
+    },
+    "license": "MIT",
+    "description": "Run the Master CSS right in the browser",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://css.master.co/docs/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/runtime"
+    },
+    "keywords": [
+        "utility",
+        "css",
+        "lightweight",
+        "mastercss",
+        "master",
+        "runtime",
+        "cdn"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.bundle.js",
+    "jsnext:main": "./dist/index.bundle.mjs",
+    "esnext": "./dist/index.bundle.mjs",
+    "module": "./dist/index.bundle.mjs",
+    "browser": "./dist/iife.bundle.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./dist/index.bundle.js",
+            "import": "./dist/index.bundle.mjs",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@master/css": "workspace:^"
+    }
+}
