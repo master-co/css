@@ -22,7 +22,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
             ```bash name=Terminal
             npx degit master-co/css/examples/webpack-with-runtime-rendering __my-project__
             cd __my-project__
-            npm install @master/css@rc
+            npm install @master/css-runtime@rc
             npm install
             npm run dev
             ```
@@ -57,7 +57,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         </StepL>
         <StepR>
             ```install
-            **@master/css@rc**
+            **@master/css-runtime@rc**
             ```
         </StepR>
     </Step>
@@ -127,10 +127,10 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         </StepL>
         <StepR>
             ```js name=src/index.js
-            +   import { initRuntime } from '@master/css';
+            +   import { initCSSRuntime } from '@master/css-runtime';
             +   import config from '../master.css.js';
 
-            +   initRuntime(config);
+            +   initCSSRuntime(config);
             ```
         </StepR>
     </Step>

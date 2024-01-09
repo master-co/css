@@ -22,7 +22,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
             ```bash name=Terminal
             npx degit master-co/css/examples/astro-with-runtime-rendering __my-project__
             cd __my-project__
-            npm install @master/css@rc
+            npm install @master/css-runtime@rc
             npm install
             npm run dev
             ```
@@ -55,7 +55,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         </StepL>
         <StepR>
             ```install
-            **@master/css@rc**
+            **@master/css-runtime@rc**
             ```
         </StepR>
     </Step>
@@ -84,10 +84,10 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
                 <head>
                     …
             +        <script>
-            +            import { initRuntime } from "@master/css";
+            +            import { initCSSRuntime } from "@master/css";
             +            import config from "../../master.css";
 
-            +            initRuntime(config);
+            +            initCSSRuntime(config);
             +        </script>
                 </head>
                 …

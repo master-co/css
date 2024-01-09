@@ -22,7 +22,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
             ```bash name=Terminal
             npx degit master-co/css/examples/angular-with-runtime-rendering __my-project__
             cd __my-project__
-            npm install @master/css@rc
+            npm install @master/css-runtime@rc
             npm install
             npm run dev
             ```
@@ -63,7 +63,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
         </StepL>
         <StepR>
             ```install
-            **@master/css@rc**
+            **@master/css-runtime@rc**
             ```
         </StepR>
     </Step>
@@ -87,10 +87,10 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
             ```ts name=src/main.ts
                import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
                import { AppModule } from './app/app.module';
-            +   import { initRuntime } from '@master/css';
+            +   import { initCSSRuntime } from '@master/css-runtime';
             +   import config from '../master.css';
 
-            +   initRuntime(config);
+            +   initCSSRuntime(config);
 
                platformBrowserDynamic().bootstrapModule(AppModule)
                    .catch(err => console.error(err));

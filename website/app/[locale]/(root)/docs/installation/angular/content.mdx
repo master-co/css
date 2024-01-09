@@ -20,7 +20,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             ```bash name=Terminal
             npx degit master-co/css/examples/angular-with-progressive-rendering __my-project__
             cd __my-project__
-            npm install @master/css@rc @master/css-server@rc
+            npm install @master/css-runtime@rc @master/css-server@rc
             npm install
             npm run dev
             ```
@@ -53,7 +53,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         </StepL>
         <StepR>
             ```install
-            **@master/css@rc** **@master/css-server@rc**
+            **@master/css-runtime@rc** **@master/css-server@rc**
             ```
         </StepR>
     </Step>
@@ -79,10 +79,10 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             ```ts name=src/main.ts
             import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
             import { AppModule } from './app/app.module';
-            +import { initRuntime } from '@master/css';
+            +import { initCSSRuntime } from '@master/css-runtime';
             +import config from '../master.css';
 
-            +initRuntime(config);
+            +initCSSRuntime(config);
 
             platformBrowserDynamic().bootstrapModule(AppModule)
                 .catch(err => console.error(err));
