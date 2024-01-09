@@ -3,19 +3,19 @@ const configure = require('semantic-release-config-techor/configure')
 module.exports = configure({
     assets: [
         {
-            path: 'packages/css/dist/runtime.browser.bundle.js',
-            name: 'runtime-css.js',
-            label: 'runtime-css.js'
+            path: 'packages/css/dist/index.bundle.js',
+            name: 'css-${nextRelease.gitTag}.js',
+            label: 'css-${nextRelease.gitTag}.js'
         },
         {
-            path: 'packages/css/dist/index.bundle.js',
-            name: 'master-css.js',
-            label: 'master-css.js'
+            path: 'packages/runtime/dist/iife.bundle.js',
+            name: 'runtime-${nextRelease.gitTag}.js',
+            label: 'runtime-${nextRelease.gitTag}.js'
         },
         {
             path: 'packages/normal.css/dist/index.css',
-            name: 'master-normal.css',
-            label: 'master-normal.css'
+            name: 'normal-${nextRelease.gitTag}.css',
+            label: 'normal-${nextRelease.gitTag}.css'
         }
     ]
 })

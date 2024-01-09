@@ -1,18 +1,18 @@
 <script lang="ts">
     import { onMount, type ComponentType } from "svelte";
     import { Fragment } from "@master/css.svelte";
-    import type { CSSProvider as CSSProviderType } from "@master/css.svelte";
+    import type { CSSRuntimeProvider as CSSProviderType } from "@master/css.svelte";
     import Header from "./Header.svelte";
     import "./styles.css";
 
-    let CSSProvider: ComponentType<CSSProviderType> = Fragment as any;
+    let CSSRuntimeProvider: ComponentType<CSSProviderType> = Fragment as any;
 
     onMount(async () => {
-        CSSProvider = (await import("@master/css.svelte")).CSSProvider;
+        CSSRuntimeProvider = (await import("@master/css.svelte")).CSSRuntimeProvider;
     });
 </script>
 
-<svelte:component this={CSSProvider} config={import("../../master.css")}>
+<svelte:component this={CSSRuntimeProvider} config={import("../../master.css")}>
     <div class="app">
         <Header />
 

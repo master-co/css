@@ -1,10 +1,10 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
-import { initRuntime } from '@master/css';
+import { initCSSRuntime } from '@master/css-runtime';
 import config from '../master.css';
 
-initRuntime(config);
+initCSSRuntime(config);
 
 bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));

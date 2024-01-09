@@ -14,7 +14,7 @@
         "vue": "^3.2.47"
     },
     "devDependencies": {
-        "@master/css": "workspace:^",
+        "@master/css-runtime": "workspace:^",
         "@master/css-extractor.vite": "workspace:^",
         "@tsconfig/node18": "^2.0.1",
         "@types/node": "^18.16.17",

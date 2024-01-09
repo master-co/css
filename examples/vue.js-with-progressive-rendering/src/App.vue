@@ -2,11 +2,11 @@
 <script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
 import { defineAsyncComponent } from 'vue'
-const CSSProvider = defineAsyncComponent(async () => (await import('@master/css.vue')).CSSProvider)
+const CSSRuntimeProvider = defineAsyncComponent(async () => (await import('@master/css.vue')).CSSRuntimeProvider)
 </script>
 
 <template>
-    <CSSProvider :config="import('../master.css')">
+    <CSSRuntimeProvider :config="import('../master.css')">
         <HelloWorld />
-    </CSSProvider>
+    </CSSRuntimeProvider>
 </template>

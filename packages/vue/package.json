@@ -48,10 +48,10 @@
             "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
         },
-        "./CSSProvider": {
-            "require": "./dist/CSSProvider.js",
-            "import": "./dist/CSSProvider.mjs",
-            "types": "./dist/CSSProvider.d.ts"
+        "./CSSRuntimeProvider": {
+            "require": "./dist/CSSRuntimeProvider.js",
+            "import": "./dist/CSSRuntimeProvider.mjs",
+            "types": "./dist/CSSRuntimeProvider.d.ts"
         },
         "./ThemeServiceProvider": {
             "require": "./dist/ThemeServiceProvider.js",
@@ -69,8 +69,8 @@
             ".": [
                 "./dist/index.d.ts"
             ],
-            "CSSProvider": [
-                "./dist/CSSProvider.d.ts"
+            "CSSRuntimeProvider": [
+                "./dist/CSSRuntimeProvider.d.ts"
             ],
             "ThemeServiceProvider": [
                 "./dist/ThemeServiceProvider.d.ts"
@@ -87,7 +87,7 @@
         "vue": ">= 3.0.0"
     },
     "dependencies": {
-        "@master/css": "workspace:^",
+        "@master/css-runtime": "workspace:^",
         "@techor/one-liner": "^2.2.10",
         "class-variant": "workspace:^",
         "theme-service": "workspace:^",

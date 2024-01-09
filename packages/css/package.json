@@ -45,14 +45,9 @@
     "jsnext:main": "./dist/index.bundle.mjs",
     "esnext": "./dist/index.bundle.mjs",
     "module": "./dist/index.bundle.mjs",
-    "browser": "./dist/runtime.browser.bundle.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "browser": {
-                "import": "./dist/index.bundle.mjs",
-                "types": "./dist/runtime.browser.d.ts"
-            },
             "require": "./dist/index.bundle.js",
             "import": "./dist/index.bundle.mjs",
             "types": "./dist/index.d.ts"

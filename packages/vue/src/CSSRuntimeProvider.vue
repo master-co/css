@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
-import { RuntimeCSS, type Config } from '@master/css'
+import type { Config } from '@master/css'
+import CSSRuntime from '@master/css-runtime'
 import { onMounted, onBeforeUnmount, ref, provide } from 'vue'
 
 const props = defineProps<{
@@ -8,19 +9,19 @@ const props = defineProps<{
     root?: Document | ShadowRoot
 }>()
 
-const runtimeCSS = ref()
-const newRuntimeCSS = ref()
+const cssRuntime = ref()
+const newCSSRuntime = ref()
 
 onMounted(() => {
     if (typeof window === 'undefined') { return }
-    if (!runtimeCSS.value) {
+    if (!cssRuntime.value) {
         const init = (resolvedConfig: Config | undefined) => {
-            const existingRuntimeCSS = (globalThis as any).runtimeCSSs.find((eachCSS: RuntimeCSS) => eachCSS.root === props.root)
-            if (existingRuntimeCSS) {
-                runtimeCSS.value = existingRuntimeCSS
+            const existingCSSRuntime = (globalThis as any).cssRuntimes.find((eachCSS: CSSRuntime) => eachCSS.root === props.root)
+            if (existingCSSRuntime) {
+                cssRuntime.value = existingCSSRuntime
             } else {
-                newRuntimeCSS.value = new RuntimeCSS(props.root, resolvedConfig).observe()
-                runtimeCSS.value = newRuntimeCSS.value
+                newCSSRuntime.value = new CSSRuntime(props.root, resolvedConfig).observe()
+                cssRuntime.value = newCSSRuntime.value
             }
         }
 
@@ -32,18 +33,18 @@ onMounted(() => {
         } else {
             init(props.config)
         }
-    } else if (!runtimeCSS.value.observing) {
-        runtimeCSS.value.observe(props.root)
+    } else if (!cssRuntime.value.observing) {
+        cssRuntime.value.observe(props.root)
     }
 })
 
 onBeforeUnmount(() => {
-    if (runtimeCSS.value && newRuntimeCSS) {
-        newRuntimeCSS.value?.destroy()
+    if (cssRuntime.value && newCSSRuntime) {
+        newCSSRuntime.value?.destroy()
     }
 })
 
-provide('css', runtimeCSS)
+provide('css', cssRuntime)
 
 </script>
 

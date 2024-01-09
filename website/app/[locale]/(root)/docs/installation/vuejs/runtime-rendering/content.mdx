@@ -73,19 +73,19 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
         <StepL>
             ### <StepNum />Set up CSS runtime engine
             - Import your custom configuration `master.css.ts`
-            - Initialize the runtime engine using `CSSProvider`
+            - Initialize the runtime engine using `CSSRuntimeProvider`
         </StepL>
         <StepR>
             ```html name=src/App.vue
             <script setup lang="ts">
-            +import { CSSProvider } from '@master/css.vue'
+            +import { CSSRuntimeProvider } from '@master/css.vue'
             +import config from '../master.css'
             </script>
 
             <template>
-            +    <CSSProvider :config="config">
+            +    <CSSRuntimeProvider :config="config">
                     …
-            +    </CSSProvider>
+            +    </CSSRuntimeProvider>
             </template>
             ```
         </StepR>
@@ -119,9 +119,9 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
         ```html name=src/App.vue
         …
         <template>
-            <CSSProvider :config="config">
+            <CSSRuntimeProvider :config="config">
                 <h1 class="**font:40** **font:heavy** **italic** **m:12x** **text:center**">Hello World</h1>
-            </CSSProvider>
+            </CSSRuntimeProvider>
         </template>
         ```
         <p className="mt:12x">Open your browser to watch the changes.</p>

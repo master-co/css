@@ -73,7 +73,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
         <StepL>
             ### <StepNum />Set up CSS runtime engine
             - Import your custom configuration `master.css.ts`
-            - Initialize the runtime engine using `CSSProvider`
+            - Initialize the runtime engine using `CSSRuntimeProvider`
             - Add `css display: none` in `html <html>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content)
         </StepL>
         <StepR>
@@ -82,14 +82,14 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
             import ReactDOM from 'react-dom/client'
             import App from './App'
             import './index.css'
-            +import { CSSProvider } from '@master/css.react'
+            +import { CSSRuntimeProvider } from '@master/css.react'
             +import config from '../master.css'
 
             ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                 <React.StrictMode>
-            +        <CSSProvider config={config}>
+            +        <CSSRuntimeProvider config={config}>
                         <App />
-            +        </CSSProvider>
+            +        </CSSRuntimeProvider>
                 </React.StrictMode>,
             )
             ```

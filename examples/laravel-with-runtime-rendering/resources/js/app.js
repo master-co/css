@@ -1,5 +1,5 @@
 import './bootstrap'
-import { initRuntime } from '@master/css'
+import { initCSSRuntime } from '@master/css-runtime'
 import config from '../../master.css'
 
-initRuntime(config)
+initCSSRuntime(config)

@@ -6,11 +6,11 @@ The easiest way to use Master CSS from scratch is to initialize the [runtime eng
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install Master CSS into your project via package managers.
+            Install Master CSS Runtime into your project via package managers.
         </StepL>
         <StepR>
             ```install
-            **@master/css@rc**
+            **@master/css-runtime@rc**
             ```
         </StepR>
     </Step>
@@ -32,10 +32,10 @@ The easiest way to use Master CSS from scratch is to initialize the [runtime eng
         </StepL>
         <StepR>
             ```js name=main.js
-            + import { initRuntime } from '@master/css'
+            + import { initCSSRuntime } from '@master/css-runtime'
             + import config from './master.css'
 
-            + initRuntime(config)
+            + initCSSRuntime(config)
             ```
         </StepR>
     </Step>

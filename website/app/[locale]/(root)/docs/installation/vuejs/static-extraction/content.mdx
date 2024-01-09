@@ -117,9 +117,9 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         ```html name=src/App.vue
         …
         <template>
-            <CSSProvider :config="config">
+            <CSSRuntimeProvider :config="config">
                 <h1 class="**font:40** **font:heavy** **italic** **m:12x** **text:center**">Hello World</h1>
-            </CSSProvider>
+            </CSSRuntimeProvider>
         </template>
         ```
         <p className="mt:12x">Open your browser to watch the changes.</p>

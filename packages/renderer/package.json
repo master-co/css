@@ -44,10 +44,10 @@
     },
     "dependencies": {
         "@master/css-server": "workspace:^",
-        "@techor/glob": "^2.5.22",
-        "@techor/log": "^2.5.22",
+        "@techor/glob": "^2.5.23",
+        "@techor/log": "^2.5.23",
         "bytes": "^3.1.2",
-        "explore-config": "^2.5.22",
+        "explore-config": "^2.5.23",
         "pretty-hrtime": "^1.0.3"
     },
     "devDependencies": {

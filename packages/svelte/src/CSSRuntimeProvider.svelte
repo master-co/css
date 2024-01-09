@@ -1,23 +1,24 @@
 <script lang="ts">
-    import { RuntimeCSS, type Config } from "@master/css";
+    import type { Config } from "@master/css";
+    import CSSRuntime from "@master/css-runtime";
     import { onMount, setContext } from "svelte";
     import { writable } from "svelte/store";
-    import { cssSymbol } from "./css";
+    import { cssRuntimeSymbol } from "./css-runtime";
     export let config: Config | Promise<Config> | Promise<any>;
     export let root: Document | ShadowRoot | undefined = undefined;
-    const runtimeCSS = writable<RuntimeCSS>();
+    const cssRuntime = writable<CSSRuntime>();
     onMount(() => {
-        let newRuntimeCSS: RuntimeCSS;
-        if (!$runtimeCSS) {
+        let newCSSRuntime: CSSRuntime;
+        if (!$cssRuntime) {
             const init = (resolvedConfig?: Config) => {
-                const existingRuntimeCSS = (globalThis as any).runtimeCSSs.find(
-                    (eachCSS: RuntimeCSS) => eachCSS.root === root
+                const existingCSSRuntime = (globalThis as any).cssRuntimes.find(
+                    (eachCSS: CSSRuntime) => eachCSS.root === root
                 );
-                if (existingRuntimeCSS) {
-                    runtimeCSS.set(existingRuntimeCSS);
+                if (existingCSSRuntime) {
+                    cssRuntime.set(existingCSSRuntime);
                 } else {
-                    newRuntimeCSS = new RuntimeCSS(root, resolvedConfig).observe();
-                    runtimeCSS.set(newRuntimeCSS);
+                    newCSSRuntime = new CSSRuntime(root, resolvedConfig).observe();
+                    cssRuntime.set(newCSSRuntime);
                 }
             };
             if (config instanceof Promise) {
@@ -32,14 +33,14 @@
             } else {
                 init(config);
             }
-        } else if (!$runtimeCSS.observing) {
-            $runtimeCSS.observe();
+        } else if (!$cssRuntime.observing) {
+            $cssRuntime.observe();
         }
         return () => {
-            newRuntimeCSS?.destroy();
+            newCSSRuntime?.destroy();
         };
     });
-    setContext(cssSymbol, runtimeCSS);
+    setContext(cssRuntimeSymbol, cssRuntime);
 </script>
 
 <slot />

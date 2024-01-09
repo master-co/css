@@ -88,8 +88,8 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS runtime engine
-            Register Master CSS with official `CSSProvider` and provide instance context.
-            1. Use `next/dynamic` to load `CSSProvider`
+            Register Master CSS with official `CSSRuntimeProvider` and provide instance context.
+            1. Use `next/dynamic` to load `CSSRuntimeProvider`
             2. Dynamic `js import('../master.css')`
             3. Add `css display: 'none'` in `html <html>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) during development
 
@@ -103,7 +103,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                         lang: 'tsx',
                         code: `
                             import './globals.css'
-                            +import { CSSProvider } from '@master/css.react'
+                            +import { CSSRuntimeProvider } from '@master/css.react'
                             +import config from '../master.css'
 
                             export const metadata = {
@@ -115,9 +115,9 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                                 return (
                             +        <html lang="en" style={process.env.NODE_ENV === 'development' ? { display: 'none' } : undefined}>
                                         <body>
-                            +               <CSSProvider config={config}>
+                            +               <CSSRuntimeProvider config={config}>
                                                 {children}
-                            +               </CSSProvider>
+                            +               </CSSRuntimeProvider>
                                         </body>
                                     </html>
                                 )
@@ -132,13 +132,13 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                             import type { AppProps } from 'next/app'
                             +import dynamic from 'next/dynamic'
 
-                            +const CSSProvider = dynamic(() => import('@master/css.react').then((m) => m.CSSProvider))
+                            +const CSSRuntimeProvider = dynamic(() => import('@master/css.react').then((m) => m.CSSRuntimeProvider))
 
                             export default function App({ Component, pageProps }: AppProps) {
                                 return (
-                            +        <CSSProvider config={import('../master.css')}>
+                            +        <CSSRuntimeProvider config={import('../master.css')}>
                             +            <Component {...pageProps} />
-                            +        </CSSProvider>
+                            +        </CSSRuntimeProvider>
                                 )
                             }
                         `

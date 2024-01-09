@@ -13,7 +13,7 @@
         "react-dom": "^18.2.0"
     },
     "devDependencies": {
-        "@master/css": "workspace:^",
+        "@master/css-runtime": "workspace:^",
         "@master/css-extractor.vite": "workspace:^",
         "@types/react": "^18.0.37",
         "@types/react-dom": "^18.0.11",

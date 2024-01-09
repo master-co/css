@@ -1,11 +1,11 @@
 <script>
-    import { CSSProvider } from "@master/css.svelte";
+    import { CSSRuntimeProvider } from "@master/css.svelte";
     import config from "../../master.css";
     import Header from "./Header.svelte";
     import "./styles.css";
 </script>
 
-<CSSProvider config={config}>
+<CSSRuntimeProvider config={config}>
     <div class="app">
         <Header />
 
@@ -20,7 +20,7 @@
             </p>
         </footer>
     </div>
-</CSSProvider>
+</CSSRuntimeProvider>
 
 <style>
     .app {

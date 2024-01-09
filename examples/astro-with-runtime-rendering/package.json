@@ -12,6 +12,6 @@
     },
     "dependencies": {
         "astro": "^2.8.3",
-        "@master/css": "workspace:^"
+        "@master/css-runtime": "workspace:^"
     }
 }

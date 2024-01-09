@@ -1,6 +1,5 @@
 // core
 export { MasterCSS, MasterCSS as default } from './core'
-export { RuntimeCSS } from './runtime'
 export { Rule } from './rule'
 export type { NativeRule, MediaFeatureComponent, MediaQuery } from './rule'
 
@@ -12,8 +11,6 @@ export { Layer } from './layer'
 
 // functions
 export { default as extend } from '@techor/extend'
-export { default as fillColorScale } from './functions/fill-color-scale'
-export { default as initRuntime } from './functions/init-runtime'
 export { default as reorderForReadableClasses } from './functions/reorder-for-readable-classes'
 
 // config

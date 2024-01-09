@@ -9,7 +9,7 @@
         "preview": "pnpm run build && vite preview"
     },
     "dependencies": {
-        "@master/css": "workspace:^",
+        "@master/css-runtime": "workspace:^",
         "@master/css.react": "workspace:^",
         "react": "^18.2.0",
         "react-dom": "^18.2.0"

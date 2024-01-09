@@ -47,7 +47,7 @@
         "svelte": ">= 3.0.0"
     },
     "dependencies": {
-        "@master/css": "workspace:^",
+        "@master/css-runtime": "workspace:^",
         "theme-service": "workspace:^"
     },
     "devDependencies": {

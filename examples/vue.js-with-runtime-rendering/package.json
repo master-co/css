@@ -11,7 +11,7 @@
         "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
     },
     "dependencies": {
-        "@master/css": "workspace:^",
+        "@master/css-runtime": "workspace:^",
         "@master/css.vue": "workspace:^",
         "vue": "^3.3.4"
     },

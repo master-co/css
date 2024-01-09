@@ -89,8 +89,8 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS runtime engine
-            Register Master CSS with official `CSSProvider` and provide instance context.
-            1. Register the `CSSProvider`
+            Register Master CSS with official `CSSRuntimeProvider` and provide instance context.
+            1. Register the `CSSRuntimeProvider`
             2. Import the config `../master.css`
             3. Add `css display: 'none'` in `html <html>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content)
         </StepL>
@@ -102,7 +102,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                         lang: 'tsx',
                         code: `
                             import './globals.css'
-                            +import { CSSProvider } from '@master/css.react'
+                            +import { CSSRuntimeProvider } from '@master/css.react'
                             +import config from '../master.css'
 
                             export const metadata = {
@@ -114,9 +114,9 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                                 return (
                             +        <html lang="en" style={{ display: 'none' }}>
                                         <body>
-                            +               <CSSProvider config={config}>
+                            +               <CSSRuntimeProvider config={config}>
                                                 {children}
-                            +               </CSSProvider>
+                            +               </CSSRuntimeProvider>
                                         </body>
                                     </html>
                                 )
@@ -129,14 +129,14 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                         code: `
                             import '../styles/globals.css'
                             import type { AppProps } from 'next/app'
-                            +import { CSSProvider } from '@master/css.react'
+                            +import { CSSRuntimeProvider } from '@master/css.react'
                             +import config from '../master.css'
 
                             export default function App({ Component, pageProps }: AppProps) {
                                 return (
-                            +        <CSSProvider config={config}>
+                            +        <CSSRuntimeProvider config={config}>
                             +            <Component {...pageProps} />
-                            +        </CSSProvider>
+                            +        </CSSRuntimeProvider>
                                 )
                             }
                         `

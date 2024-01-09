@@ -1,5 +1,5 @@
 import './globals.css'
-import { CSSProvider } from '@master/css.react'
+import { CSSRuntimeProvider } from '@master/css.react'
 import config from '../master.css'
 
 export const metadata = {
@@ -15,9 +15,9 @@ export default function RootLayout({
     return (
         <html lang="en" style={{ display: 'none' }}>
             <body>
-                <CSSProvider config={config}>
+                <CSSRuntimeProvider config={config}>
                     {children}
-                </CSSProvider>
+                </CSSRuntimeProvider>
             </body>
         </html>
     )

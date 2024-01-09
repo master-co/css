@@ -1,4 +1,4 @@
-import { initRuntime } from '@master/css'
+import { initCSSRuntime } from '@master/css-runtime'
 import config from '../master.css.js'
 
-initRuntime(config)
+initCSSRuntime(config)

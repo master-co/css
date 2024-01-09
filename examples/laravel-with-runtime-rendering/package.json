@@ -12,6 +12,6 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
-        "@master/css": "workspace:^"
+        "@master/css-runtime": "workspace:^"
     }
 }

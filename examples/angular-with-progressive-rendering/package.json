@@ -21,7 +21,7 @@
     "@angular/platform-server": "^17.0.0",
     "@angular/router": "^17.0.0",
     "@angular/ssr": "^17.0.0",
-    "@master/css": "workspace:^",
+    "@master/css-runtime": "workspace:^",
     "@master/css-server": "workspace:^",
     "express": "^4.18.2",
     "rxjs": "~7.8.0",

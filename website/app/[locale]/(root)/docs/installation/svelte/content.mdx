@@ -75,7 +75,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             ### <StepNum />Allow configuration file
             Add `./master.css.ts` to the `server.fs.allow` section in `vite.config.ts` to be allowed by the server file system.
 
-            (x) Accessing files outside this directory list that aren't imported from an allowed file will result in a 403.
+            Accessing files outside this directory list that aren't imported from an allowed file will result in a 403.
         </StepL>
         <StepR>
             ```ts name=vite.config.ts
@@ -108,17 +108,17 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             <script lang="ts">
             +    import { onMount, type ComponentType } from "svelte";
             +    import { Fragment } from "@master/css.svelte";
-            +    import type { CSSProvider as CSSProviderType } from "@master/css.svelte";
+            +    import type { CSSRuntimeProvider as CSSProviderType } from "@master/css.svelte";
                 …
 
-            +    let CSSProvider: ComponentType<CSSProviderType> = Fragment as any;
+            +    let CSSRuntimeProvider: ComponentType<CSSProviderType> = Fragment as any;
 
             +    onMount(async () => {
-            +        CSSProvider = (await import("@master/css.svelte")).CSSProvider;
+            +        CSSRuntimeProvider = (await import("@master/css.svelte")).CSSRuntimeProvider;
             +    });
             </script>
 
-            +<svelte:component this={CSSProvider} config={import('../../master.css')}>
+            +<svelte:component this={CSSRuntimeProvider} config={import('../../master.css')}>
                 <slot />
             +</svelte:component>
             ```
