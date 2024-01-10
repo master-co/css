@@ -3,7 +3,6 @@
     "scripts": {
         "build": "pnpm run \"/^build:/\"",
         "build:iife": "techor pack \"src/iife.ts\" --outfile \"dist/iife.bundle.js\" --bundle --format iife --no-external --no-clean",
-        "build:browser-esm": "techor pack \"src/index.ts\" --outfile \"dist/browser.bundle.mjs\" --bundle --format esm --no-external --no-clean",
         "build:esm": "techor pack \"src/index.ts\" --outfile \"dist/index.bundle.mjs\" --bundle --format esm --no-clean",
         "build:cjs": "techor pack \"src/index.ts\" --outfile \"dist/index.bundle.js\" --bundle --format cjs --no-clean",
         "build:type": "tsc --emitDeclarationOnly --declaration --outDir dist",
@@ -43,10 +42,6 @@
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "browser": {
-                "import": "./dist/browser.bundle.mjs",
-                "default": "./dist/iife.bundle.js"
-            },
             "require": "./dist/index.bundle.js",
             "import": "./dist/index.bundle.mjs",
             "types": "./dist/index.d.ts"
