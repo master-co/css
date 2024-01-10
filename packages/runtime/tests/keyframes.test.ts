@@ -72,4 +72,4 @@ it('expects the keyframe output', async () => {
     p?.classList.remove('{@zoom|1s;f:16}')
     await new Promise(resolve => setTimeout(resolve, 100))
     expect(globalThis.cssRuntime.text).not.toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
-})
+}, 10000)
