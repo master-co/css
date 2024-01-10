@@ -23,7 +23,7 @@ export default {
     ],
     dependencies: {
         styles: [
-            { src: '/cdn/normal.css@' + latestMasterCSSVersion }
+            { src: 'https://cdn.master.co/normal.css@' + latestMasterCSSVersion }
         ],
         scripts: [
             {
@@ -33,19 +33,19 @@ export default {
                     const { name, content } = event.data;
                     switch (name) {
                         case 'master.css.js':
-                            const runtimeCSS = window.runtimeCSS;
-                            if (runtimeCSS) {
+                            const cssRuntime = window.cssRuntime;
+                            if (cssRuntime) {
                                 eval(content.replace(/(export default|export const config =)/, 'config ='));
-                                runtimeCSS.refresh(config);
+                                cssRuntime.refresh(config);
                             };
                     }
                 })
             `},
-            { src: '/cdn/css@' + latestMasterCSSVersion }
+            { src: 'https://cdn.master.co/css-runtime@' + latestMasterCSSVersion }
         ]
     },
     links: [
-        { rel: 'preload', as: 'style', href: '/cdn/normal.css@' + latestMasterCSSVersion },
-        { rel: 'preload', as: 'script', href: '/cdn/css@' + latestMasterCSSVersion }
+        { rel: 'preload', as: 'style', href: 'https://cdn.master.co/normal.css@' + latestMasterCSSVersion },
+        { rel: 'preload', as: 'script', href: 'https://cdn.master.co/css-runtime@' + latestMasterCSSVersion }
     ]
 }

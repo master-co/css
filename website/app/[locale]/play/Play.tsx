@@ -213,8 +213,7 @@ export default function Play(props: any) {
 
         return dedent`<html>
             <head>
-                <link rel="stylesheet" href="/fonts/fira-code.css">
-                <link rel="stylesheet" href="/fonts/inter.css">
+                <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=block" rel="stylesheet" />
                 <script>${previewHandlerScriptText}</script>
                 <style>body { font-family: Inter var, Noto Sans TC, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" }</style>
                 ${headInnerHTML}
