@@ -65,13 +65,13 @@
     },
     "dependencies": {
         "@master/normal.css": "workspace:^",
-        "@techor/fs": "^2.5.4",
-        "@techor/log": "^2.5.4",
+        "@techor/fs": "^2.5.24",
+        "@techor/log": "^2.5.24",
         "commander": "^11.0.0"
     },
     "devDependencies": {
-        "@techor/extend": "^2.5.4",
-        "@techor/pack": "^2.5.4",
+        "@techor/extend": "^2.5.24",
+        "@techor/pack": "^2.5.24",
         "@types/jest": "^29.5.11",
         "css-shared": "workspace:^",
         "csstype": "^3.1.2",

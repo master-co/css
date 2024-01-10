@@ -46,7 +46,7 @@
         "@master/css-server": "workspace:^",
         "@master/css.vue": "workspace:^",
         "@nuxt/kit": "^3.8.2",
-        "explore-config": "^2.5.23"
+        "explore-config": "^2.5.24"
     },
     "devDependencies": {
         "@nuxt/devtools": "latest",

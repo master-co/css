@@ -91,7 +91,7 @@
         "@techor/one-liner": "^2.2.10",
         "class-variant": "workspace:^",
         "theme-service": "workspace:^",
-        "@techor/extend": "^2.5.4"
+        "@techor/extend": "^2.5.24"
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^4.2.3",

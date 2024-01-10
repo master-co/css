@@ -1,8 +1,12 @@
 {
     "name": "@master/css-runtime",
     "scripts": {
-        "build": "techor pack --declare",
-        "dev": "pnpm run build --watch",
+        "build": "pnpm run \"/^build:/\"",
+        "build:iife": "techor pack \"src/iife.ts\" --outfile \"dist/iife.bundle.js\" --bundle --format iife --no-external",
+        "build:browser-esm": "techor pack \"src/index.ts\" --outfile \"dist/browser.bundle.mjs\" --bundle --declare --format esm --no-external",
+        "build:esm": "techor pack \"src/index.ts\" --outfile \"dist/index.bundle.mjs\" --bundle --declare --format esm",
+        "build:cjs": "techor pack \"src/index.ts\" --outfile \"dist/index.bundle.js\" --bundle --declare --format cjs",
+        "dev": "pnpm build --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
@@ -38,6 +42,11 @@
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
+            "browser": {
+                "import": "./dist/browser.bundle.mjs",
+                "default": "./dist/iife.bundle.js",
+                "types": "./dist/browser.d.ts"
+            },
             "require": "./dist/index.bundle.js",
             "import": "./dist/index.bundle.mjs",
             "types": "./dist/index.d.ts"

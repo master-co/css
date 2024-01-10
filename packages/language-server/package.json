@@ -13,7 +13,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-language-service": "workspace:^",
-        "explore-config": "^2.5.23",
+        "explore-config": "^2.5.24",
         "js-beautify": "^1.14.7",
         "minimatch": "^9.0.1",
         "vscode-languageserver": "^7.0.0",
