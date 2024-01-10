@@ -40,9 +40,9 @@ export default () => <CodeTabs>
                 <meta name="viewport" content="width=device-width, initial-scale=1">
                 <link rel="stylesheet" href="https://cdn.master.co/normal.css@rc">
                 <link rel="preload" as="style" href="https://cdn.master.co/normal.css@rc">
-                <link rel="modulepreload" href="https://cdn.master.co/css-runtime@rc">
+                <link rel="modulepreload" href="https://cdn.master.co/css-runtime@rc/+esm">
             +    <script type="module">
-            +        import { initCSSRuntime } from 'https://cdn.master.co/css-runtime@rc'
+            +        import { initCSSRuntime } from 'https://cdn.master.co/css-runtime@rc/+esm'
             +        initCSSRuntime({
             +            variables: {
             +                primary: '#000000'
