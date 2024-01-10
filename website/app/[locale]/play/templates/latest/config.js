@@ -8,14 +8,6 @@ export default {
             primary: {
                 '@light': '$(gold-75)',
                 '@dark': '$(gold-80)'
-            },
-            strong: {
-                '@light': '$(slate-10)',
-                '@dark': '$(gray-80)'
-            },
-            neutural: {
-                '@light': '$(slate-30)',
-                '@dark': '$(gray-60)'
             }
         },
         primary: {
