@@ -14,7 +14,6 @@ export default function SyntaxTable({ title, value, children, scrollY, ...props 
             if (previewCodeElement) {
                 previewCodeElement.classList.remove('text:underline')
             } else {
-                console.log(tbodyRef.current?.querySelector('.language-mcss'))
                 tbodyRef.current?.querySelector('.language-mcss.text\\:underline')?.classList.remove('text:underline')
             }
             codeElement.classList.add('text:underline')

@@ -15,7 +15,7 @@ export default () => {
                     </SyntaxTr>)
                 }
             </SyntaxTable>
-            <SyntaxPreview className={previewSyntax}></SyntaxPreview>
+            <SyntaxPreview className={previewSyntax} />
         </>
     )
 }
