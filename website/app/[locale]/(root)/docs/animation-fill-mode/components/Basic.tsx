@@ -15,7 +15,7 @@ export default ({ className }: any) => {
     useEffect(() => {
         setTargetClassName('')
         setTimeout(() => {
-            setTargetClassName('@example-slide|3s')
+            setTargetClassName('@slide-to-right|3s')
         })
     }, [className])
     return (
@@ -37,33 +37,7 @@ export default ({ className }: any) => {
                     </div>
                 </div>
             </Demo>
-            <CodeTabs>
-                {[
-                    {
-                        name: 'example.html', lang: 'html',
-                        code: `
-                            <svg class="**${className}** @example-slide|3s @delay:1s!">…</svg>
-                        `,
-                    },
-                    {
-                        name: 'master.css.js', lang: 'js',
-                        code: `
-                            export default {
-                                animations: {
-                                    'example-slide': {
-                                        from: {
-                                            transform: 'translateX(-100%)'
-                                        },
-                                        to: {
-                                            transform: 'translateX(100%)'
-                                        }
-                                    }
-                                }
-                            }
-                        `,
-                    }
-                ]}
-            </CodeTabs>
+            <Code lang="html">{`<svg class="**${className}** @slide-to-right|3s @delay:1s!">…</svg>`}</Code>
         </>
     )
 }
