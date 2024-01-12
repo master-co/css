@@ -2,7 +2,7 @@ import SyntaxTable from '~/components/SyntaxTable'
 import syntaxes from '../syntaxes'
 import clsx from 'clsx'
 import SyntaxTr from '~/components/SyntaxTr'
-import Preview from './Preview'
+import SyntaxPreview from './SyntaxPreview'
 
 export default () => {
     const previewSyntax = 'fg:blue'
@@ -15,7 +15,7 @@ export default () => {
                     </SyntaxTr>)
                 }
             </SyntaxTable>
-            <Preview className={previewSyntax}></Preview>
+            <SyntaxPreview className={previewSyntax}></SyntaxPreview>
         </>
     )
 }

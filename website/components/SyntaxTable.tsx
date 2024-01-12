@@ -1,17 +1,21 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import DocTable from 'websites/components/DocTable'
 import { snackbar } from '../../../../utils/snackbar'
 
 export default function SyntaxTable({ title, value, children, scrollY, ...props }: any) {
     const [previewCodeElement, setPreviewCodeElement] = useState<HTMLElement | null>(null)
+    const tbodyRef = useRef<HTMLTableSectionElement>(null)
     const copySyntax = useCallback((event: any) => {
-        const codeElement = event.target.closest('.language-mcss')
+        const codeElement = event.target.closest('.language-mcss:not(.invalid)')
         const textContent = codeElement?.textContent
         if (textContent) {
             if (previewCodeElement) {
                 previewCodeElement.classList.remove('text:underline')
+            } else {
+                console.log(tbodyRef.current?.querySelector('.language-mcss'))
+                tbodyRef.current?.querySelector('.language-mcss.text\\:underline')?.classList.remove('text:underline')
             }
             codeElement.classList.add('text:underline')
             setPreviewCodeElement(codeElement)
@@ -29,7 +33,7 @@ export default function SyntaxTable({ title, value, children, scrollY, ...props 
                         <th className="sticky bg:base top:0 z:2">Declarations</th>
                     </tr>
                 </thead>
-                <tbody onClick={copySyntax} className="text:underline_.language-mcss:not(.invalid):hover">
+                <tbody ref={tbodyRef} onClick={copySyntax} className="text:underline_.language-mcss:not(.invalid):hover">
                     {children}
                 </tbody>
             </DocTable>
