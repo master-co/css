@@ -1,5 +1,3 @@
-'use client'
-
 import syntaxes from '../syntaxes'
 import SyntaxTable from '~/components/SyntaxTable'
 import SyntaxTr from '~/components/SyntaxTr'
