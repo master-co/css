@@ -1,13 +1,20 @@
 'use client'
 
-import Demo from 'websites/components/Demo'
-import Code from 'websites/components/Code'
-import SyntaxTable from '~/components/SyntaxTable'
 import syntaxes from '../syntaxes'
-import clsx from 'clsx'
-import Basic from './Basic'
+import SyntaxTable from '~/components/SyntaxTable'
+import SyntaxTr from '~/components/SyntaxTr'
+import SyntaxPreview from './SyntaxPreview'
 
-export default () =>
-    <SyntaxTable value={syntaxes} default="box-decoration:slice">
-        {(className: string) => <Basic className={className} />}
-    </SyntaxTable>
+export default () => {
+    const previewSyntax = 'box-decoration:slice'
+    return (
+        <>
+            <SyntaxTable>
+                {syntaxes.map((syntax) =>
+                    <SyntaxTr value={syntax} key={syntax} previewSyntax={previewSyntax}></SyntaxTr>)
+                }
+            </SyntaxTable>
+            <SyntaxPreview className={previewSyntax} />
+        </>
+    )
+}

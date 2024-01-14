@@ -1,7 +1,5 @@
 'use client'
 
-import Basic from './Basic'
-import Code from 'websites/components/Code'
 import syntaxes from '../syntaxes'
 import SyntaxTable from '~/components/SyntaxTable'
 import SyntaxTr from '~/components/SyntaxTr'

@@ -21,7 +21,7 @@ export default function SyntaxTr({ value, children, previewSyntax }: any) {
             </td>
             <td>
                 {value && text &&
-                    <InlineCode lang="css" value="fg:neutral white-space:pre">{text}</InlineCode>
+                    <InlineCode lang="css" className="fg:neutral white-space:pre">{text}</InlineCode>
                 }
             </td>
         </tr>
