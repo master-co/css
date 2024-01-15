@@ -1,11 +1,12 @@
 {
     "name": "@master/css.nuxt",
     "scripts": {
-        "build": "nuxt prepare && nuxt-module-build build --stub",
-        "dev": "nuxt prepare && nuxi dev playground",
+        "build": "nuxt-module-build build",
+        "dev": "nuxi dev playground",
+        "dev:build": "nuxi build playground",
         "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
         "lint": "eslint .",
-        "test": "nuxt prepare && vitest run"
+        "test": "vitest run"
     },
     "type": "module",
     "license": "MIT",
@@ -19,7 +20,7 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/css.nuxt"
+        "directory": "packages/nuxt"
     },
     "keywords": [
         "nitro",
@@ -51,7 +52,7 @@
     "dependencies": {
         "@master/css-server": "workspace:^",
         "@master/css.vue": "workspace:^",
-        "@nuxt/kit": "^3.8.2",
+        "@nuxt/kit": "^3.9.1",
         "explore-config": "^2.5.24"
     },
     "devDependencies": {
@@ -63,8 +64,8 @@
         "@types/node": "^20.10.3",
         "changelogen": "^0.5.5",
         "eslint": "^8.55.0",
-        "nuxt": "^3.8.2",
-        "vitest": "^0.33.0",
-        "vue": "^3.4.5"
+        "nuxt": "^3.9.1",
+        "vitest": "^1.2.0",
+        "vue": "^3.4.13"
     }
 }
