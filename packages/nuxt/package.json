@@ -1,8 +1,8 @@
 {
     "name": "@master/css.nuxt",
     "scripts": {
-        "build": "nuxt-module-build build",
-        "dev": "nuxi dev playground",
+        "build": "nuxt-module-build prepare && nuxt-module-build build",
+        "dev": "nuxt-module-build prepare && nuxi dev playground",
         "dev:build": "nuxi build playground",
         "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
         "lint": "eslint .",
