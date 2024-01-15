@@ -1,16 +1,18 @@
-'use client'
-
-import Code from 'websites/components/Code'
-import SyntaxTable from '~/components/SyntaxTable'
 import syntaxes from '../syntaxes'
-import Basic from './Basic'
+import SyntaxTable from '~/components/SyntaxTable'
+import SyntaxTr from '~/components/SyntaxTr'
+import SyntaxPreview from './SyntaxPreview'
 
-export default () =>
-    <SyntaxTable value={syntaxes} default="text:left">
-        {(className: any) => <>
-            <Basic className={className} />
-            <Code lang="html">{`
-                <p class="**${className}**">Lorem ipsum dolor sit amet …</p>
-            `}</Code>
-        </>}
-    </SyntaxTable>
+export default () => {
+    const previewSyntax = 'text:left'
+    return (
+        <>
+            <SyntaxTable>
+                {syntaxes.map((syntax) =>
+                    <SyntaxTr value={syntax} key={syntax} previewSyntax={previewSyntax}></SyntaxTr>)
+                }
+            </SyntaxTable>
+            <SyntaxPreview className={previewSyntax} />
+        </>
+    )
+}
