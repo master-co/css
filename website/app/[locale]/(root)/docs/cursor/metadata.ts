@@ -4,7 +4,6 @@ const metadata: Metadata = {
     title: 'Cursor',
     description: 'Style syntax for setting the mouse cursor style.',
     category: 'Appearance',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=cursor',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/cursor'
 }
