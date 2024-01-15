@@ -4,11 +4,12 @@
  * https://github.com/facebook/react/issues/27836
  */
 export default function decodeHTML(html: string) {
-    return html.replace(/&(amp|apos|#x27|quot|lt|gt);/g, (match, entity) => {
+    return html.replace(/&(amp|apos|#39|#x27|quot|lt|gt);/g, (match, entity) => {
         switch (entity) {
             case 'amp':
                 return '&'
             case 'apos':
+            case '#39':
             case '#x27':
                 return '\''
             case 'quot':
