@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['animation:`name`|`duration`|`…`', '@`name`|`duration`|`…`'],
+    ['@`name`|`duration`|`…`'],
     '@fade|1s|infinite',
     '@fade|1s|infinite|reverse',
     '@ping|1s|infinite',

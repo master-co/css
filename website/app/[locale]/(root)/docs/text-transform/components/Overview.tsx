@@ -1,12 +1,15 @@
-'use client'
-
-import SyntaxTable from '~/components/SyntaxTable'
 import syntaxes from '../syntaxes'
-import clsx from 'clsx'
+import SyntaxTable from '~/components/SyntaxTable'
+import SyntaxTr from '~/components/SyntaxTr'
 
-export default () =>
-    <SyntaxTable value={syntaxes} previewClass={(className: string) => {
-        return (
-            <span className={clsx('font:16 font:medium mr:3x v:top', className)}>Aa</span>
-        )
-    }}></SyntaxTable>
+export default () => {
+    return (
+        <>
+            <SyntaxTable>
+                {syntaxes.map((syntax) =>
+                    <SyntaxTr value={syntax} key={syntax}></SyntaxTr>)
+                }
+            </SyntaxTable>
+        </>
+    )
+}

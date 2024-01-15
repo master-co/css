@@ -1,6 +1,6 @@
 const syntaxes = [
     ['text-transform:`transform`'],
-    ['text-transform:none'],
+    'text-transform:none',
     'capitalize',
     'uppercase',
     'lowercase',

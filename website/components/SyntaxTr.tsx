@@ -47,6 +47,7 @@ const generateCSS = (name: string | Record<string, any>) => {
         if (typeof declarations[declarationName] === 'string')
             declarations[declarationName] = declarations[declarationName]
                 .replace(/var\(--value\)/g, '`value`')
+                .replace(/10000000rem/g, '`size`rem')
     }
     return {
         text: convertDeclarationsToCSS(declarations),

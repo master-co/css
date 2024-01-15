@@ -1,38 +1,34 @@
-'use client'
-
-import Demo from 'websites/components/Demo'
-import Code from 'websites/components/Code'
 import SyntaxTable from '~/components/SyntaxTable'
 import syntaxes from '../syntaxes'
-import { l } from 'to-line'
 import { IconBallTennis, IconBell, IconBellRinging, IconCircle, IconCurrentLocation, IconFocusCentered, IconHandFinger, IconHeart, IconLoader, IconLoader2, IconLoaderQuarter, IconMapPin, IconMaximize, IconPointer, IconSquare, IconStar, IconUfo } from '@tabler/icons-react'
+import clsx from 'clsx'
+import SyntaxTr from '~/components/SyntaxTr'
 
-export default () =>
-    <SyntaxTable value={syntaxes} scrollY={false} previewClass={(eachClass: string) => {
-        const className = 'app-icon-primary stroke:1 v:top mr:3x ml:-2 contain:strict'
-        if (eachClass.startsWith('@flash')) {
-            return <IconStar className={l(eachClass, className)} />
-        }
-        if (eachClass.startsWith('@heart')) {
-            return <IconHeart className={l(eachClass, className)} />
-        }
-        if (eachClass.startsWith('@pulse')) {
-            return <IconHandFinger className={l(eachClass, className)} />
-        }
-        if (eachClass.startsWith('@zoom')) {
-            return <IconMaximize className={l(eachClass, className)} />
-        }
-        if (eachClass.startsWith('@jump')) {
-            return <IconBallTennis className={l(eachClass, className)} />
-        }
-        if (eachClass.startsWith('@shake')) {
-            return <IconBell className={l(eachClass, className)} />
-        }
-        if (eachClass.startsWith('@rotate')) {
-            return <IconLoader className={l(eachClass, className)} />
-        }
-        if (eachClass.startsWith('@float')) {
-            return <IconUfo className={l(eachClass, className)} />
-        }
-        return <IconCircle className={l(eachClass, className)} />
-    }}></SyntaxTable>
+export default () => {
+    const previewSyntax = ''
+    return (
+        <SyntaxTable scrollY={0}>
+            {syntaxes.map((syntax) => {
+                return (
+                    <SyntaxTr value={syntax} key={syntax} previewSyntax={previewSyntax}>
+                        {typeof syntax === 'string' && {
+                            '@fade|1s|infinite': <IconCircle className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            '@fade|1s|infinite|reverse': <IconCircle className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            '@ping|1s|infinite': <IconCircle className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            '@flash|1s|infinite': <IconStar className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            '@heart|1s|infinite': <IconHeart className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            '@jump|1s|infinite': <IconBallTennis className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            '@pulse|1s|infinite': <IconHandFinger className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            '@rotate|1s|infinite|linear': <IconLoader className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            '@rotate|1s|infinite|linear|reverse': <IconLoader className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            '@shake|1s|infinite': <IconBell className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            '@zoom|1s|infinite': <IconMaximize className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            '@float|3s|ease-in-out|infinite': <IconUfo className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />
+                        }[syntax]}
+                    </SyntaxTr>
+                )
+            }
+            )}
+        </SyntaxTable>
+    )
+}
