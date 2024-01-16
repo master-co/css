@@ -4,7 +4,13 @@ type Param<T> = string
     | string[]
     | Record<string, boolean>
     | [string, { [key in keyof T]?: T[key] }]
-    | { [key in keyof T]?: T[key] extends boolean | undefined ? string : Record<string, string> }
+    | { 
+        [key in keyof T]?: T[key] extends string | undefined
+            ? Record<string, string>
+            : T[key] extends boolean | undefined
+                ? string
+                : (Record<string, string> | string)
+    }
     | ((valueByProp: T) => any)
 type ReturnType<T> = { default?: Partial<T> } & ((valueByProp?: T) => string)
 
