@@ -78,4 +78,6 @@ const nextConfig = {
     }
 }
 
-export default withBundleAnalyzer(withMDX(nextConfig))
+export default withBundleAnalyzer(withMDX(nextConfig), {
+    enabled: process.env.ANALYZE === 'true',
+})

@@ -2,8 +2,10 @@ import '../globals.css'
 import { getPreInitScript } from 'theme-service'
 import { Locale } from 'websites/i18n.config'
 import clsx from 'clsx'
-import Client from './client'
 import { HTMLAttributes } from 'react'
+import dynamic from 'next/dynamic'
+
+const Client = dynamic(() => import('./client'))
 
 export default async function RootLayout({ children, locale, bodyClassName, style }: {
     children: JSX.Element,

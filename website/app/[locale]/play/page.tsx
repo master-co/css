@@ -1,4 +1,4 @@
-import docMenuDict from '~/components/docMenuDict'
+import docMenuDict from '~/data/docMenuDict'
 import Play from './Play'
 import { collectDictionary } from 'websites/dictionaries'
 
