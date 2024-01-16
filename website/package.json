@@ -23,7 +23,6 @@
         "@next/mdx": "^14.0.4",
         "@vercel/speed-insights": "^1.0.2",
         "accept-language": "^3.0.18",
-        "cheerio": "1.0.0-rc.12",
         "clone-deep": "^4.0.1",
         "monaco-editor": "^0.45.0",
         "monaco-editor-textmate": "^4.0.0",

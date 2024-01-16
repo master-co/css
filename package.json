@@ -53,6 +53,10 @@
         "ts-jest": "^29.1.1",
         "ts-node": "^10.9.1",
         "tsx": "^3.12.7",
-        "turbo": "^1.10.15"
+        "turbo": "^1.10.15",
+        "@google-cloud/storage": "^7.7.0",
+        "@types/node-fetch": "^2.6.10",
+        "cheerio": "^1.0.0-rc.12",
+        "firebase-admin": "^11.11.1"
     }
 }
