@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['scroll-snap:`value`'],
+    ['scroll-snap-align:`value`'],
     'scroll-snap:center',
     'scroll-snap:end',
     'scroll-snap:start',
