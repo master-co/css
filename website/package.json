@@ -30,5 +30,8 @@
         "next": "14.0.4",
         "theme-service": "workspace:^",
         "websites": "workspace:../../.."
+    },
+    "devDependencies": {
+        "@builder.io/partytown": "^0.8.2"
     }
 }

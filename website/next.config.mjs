@@ -15,6 +15,7 @@ const nextConfig = {
         ignoreDuringBuilds: true,
     },
     experimental: {
+        nextScriptWorkers: true,
         /**
          * 解決 JavaScript heap out of memory 問題
          */

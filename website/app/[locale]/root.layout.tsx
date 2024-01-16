@@ -14,7 +14,7 @@ export default async function RootLayout({ children, locale, bodyClassName, styl
     bodyClassName?: string
 }) {
     return (
-        <html lang={locale} style={process.env.NODE_ENV === 'development' ? { display: 'none' } : undefined}>
+        <html lang={locale} style={process.env.NODE_ENV === 'development' ? { display: 'none' } : style}>
             <head>
                 <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
                 <script dangerouslySetInnerHTML={{ __html: getPreInitScript({ default: 'system' }) }}></script>
