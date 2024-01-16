@@ -6,7 +6,7 @@ import fetch from 'node-fetch'
 import path from 'path'
 import fs from 'fs'
 import zlib from 'zlib'
-import githubToken from '../../../tokens/github'
+import githubToken from 'websites/tokens/github'
 // require() of ES Module C:\Users\bg012\master\websites\i18n.config.mjs not supported
 // import i18n from '../../../i18n.config.mjs'
 
