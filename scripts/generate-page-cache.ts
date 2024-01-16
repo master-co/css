@@ -6,7 +6,6 @@ import fetch from 'node-fetch'
 import path from 'path'
 import fs from 'fs'
 import zlib from 'zlib'
-import githubToken from 'websites/tokens/github'
 // require() of ES Module C:\Users\bg012\master\websites\i18n.config.mjs not supported
 // import i18n from '../../../i18n.config.mjs'
 
@@ -83,26 +82,9 @@ const name = `${currentBranch === 'main' ? '' : currentBranch + '.'}css.master.c
 const file = bucket.file(name) as any as File
 
 (async () => {
-    let sha = ''
-
-    try {
-        const result = await fetch(
-            `https://api.github.com/repos/master-co/css/commits/${currentBranch}`,
-            {
-                headers: { Authorization: 'Bearer ' + githubToken }
-            })
-        if (result.status === 200) {
-            const json = await result.json();
-            sha = json.sha
-        }
-    } catch (err) {
-        console.error(err)
-    }
-    if (!sha) {
-        console.error('Failed to get latest commit.')
-        return
-    }
+    const sha = process.env.GITHUB_SHA
     console.log('sha: '+ sha)
+    console.log('file name: ' + name)
     
     try {
         if (
@@ -117,7 +99,6 @@ const file = bucket.file(name) as any as File
         console.error('Failed to check file metadata.')
         return
     }
-    console.log('file name: ' + name);
 
     const data: Record<string, { title: string, category: string, description: string, nodes: { text: string, id: string }[], disabled: boolean }> = {}
     const nullData: Record<string, boolean> = {}

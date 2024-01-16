@@ -119,9 +119,6 @@ importers:
       turbo:
         specifier: ^1.10.15
         version: 1.11.3
-      websites:
-        specifier: workspace:../..
-        version: link:../..
 
   examples/angular-with-progressive-rendering:
     dependencies:
