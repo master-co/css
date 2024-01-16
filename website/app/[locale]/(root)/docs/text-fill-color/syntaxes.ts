@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['text:`color`'],
+    ['text-fill-color:`color`'],
     'text:current',
     'text:transparent'
 ]

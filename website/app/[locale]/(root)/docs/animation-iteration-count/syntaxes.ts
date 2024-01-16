@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['@iteration-count:`value`|`…`'],
+    ['@iteration:`value`'],
     '@iteration:infinite'
 ]
 
