@@ -1,3 +1,5 @@
-const syntaxes = [['columns:`value`', 'cols:`value`'], ['cols:`count`|`width`']]
+const syntaxes = [
+    ['cols:`value`']
+]
 
 export default syntaxes

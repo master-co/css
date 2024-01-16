@@ -1,3 +1,5 @@
-const syntaxes = [['stroke-width:`size`', 'stroke:`size`']]
+const syntaxes = [
+    ['stroke:`size`']
+]
 
 export default syntaxes

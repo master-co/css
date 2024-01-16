@@ -1,3 +1,5 @@
-const syntaxes = [['line-height:`size`', 'lh:`size`']]
+const syntaxes = [
+    ['line-height:`size`']
+]
 
 export default syntaxes

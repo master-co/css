@@ -1,3 +1,5 @@
-const syntaxes = [['transition-property:`value`,`…`'], ['~property:`value`,`…`']]
+const syntaxes = [
+    ['~property:`value`,`…`']
+]
 
 export default syntaxes

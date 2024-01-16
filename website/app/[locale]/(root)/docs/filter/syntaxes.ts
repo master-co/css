@@ -1,6 +1,6 @@
 const syntaxes = [
     ['filter:`value`|`value`|`…`'],
-    ['filter:none'],
+    'filter:none',
     ['filter:url(`svg`)'],
     ['blur(`value`)'],
     ['brightness(`value`)'],

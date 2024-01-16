@@ -1,3 +1,5 @@
-const syntaxes = [['text-stroke-width:`value`', 'text-stroke:`value`']]
+const syntaxes = [
+    ['text-stroke:`value`']
+]
 
 export default syntaxes

@@ -1,3 +1,5 @@
-const syntaxes = [['animation-name:`name`,`…`', '@name:`name`,`…`']]
+const syntaxes = [
+    ['@name:`name`,`…`']
+]
 
 export default syntaxes

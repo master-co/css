@@ -1,3 +1,5 @@
-const syntaxes = [['animation-duration:`milliSeconds`,`…`', '@duration:`milliSeconds`,`…`']]
+const syntaxes = [
+    ['@duration:`milliSeconds`,`…`']
+]
 
 export default syntaxes

@@ -1,3 +1,5 @@
-const syntaxes = [['letter-spacing:`value`', 'ls:`value`']]
+const syntaxes = [
+    ['letter-spacing:`value`']
+]
 
 export default syntaxes

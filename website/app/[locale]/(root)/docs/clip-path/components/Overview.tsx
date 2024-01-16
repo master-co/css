@@ -5,7 +5,7 @@ import SyntaxTr from '~/components/SyntaxTr'
 export default () => {
     return (
         <>
-            <SyntaxTable>
+            <SyntaxTable scrollY={0}>
                 {syntaxes.map((syntax) =>
                     <SyntaxTr value={syntax} key={syntax}></SyntaxTr>)
                 }

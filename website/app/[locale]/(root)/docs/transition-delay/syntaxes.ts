@@ -1,3 +1,5 @@
-const syntaxes = [['transition-delay:`milliSeconds`,`…`'], ['~delay:`milliSeconds`,`…`']]
+const syntaxes = [
+    ['~delay:`milliSeconds`,`…`']
+]
 
 export default syntaxes

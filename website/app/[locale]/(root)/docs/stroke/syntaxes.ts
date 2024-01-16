@@ -1,3 +1,5 @@
-const syntaxes = [['stroke:`color`'], ['stroke:#`hex`'], ['stroke:rgb(`rgb`)'], ['stroke:hsl(`hsl`)']]
+const syntaxes = [
+    ['stroke:`color`']
+]
 
 export default syntaxes

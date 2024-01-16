@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['list-style-image:url(`…`)', 'list-style:url(`…`)'],
+    ['list-style:url(`…`)'],
     ['list-style:linear-gradient(`…`)'],
     ['list-style:radial-gradient(`…`)'],
     ['list-style:repeating-linear-gradient(`…`)'],

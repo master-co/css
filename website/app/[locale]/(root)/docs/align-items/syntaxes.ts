@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['align-items:`align`', 'ai:`align`'],
+    ['align-items:`align`'],
     'align-items:normal',
     'align-items:baseline',
     'align-items:center',

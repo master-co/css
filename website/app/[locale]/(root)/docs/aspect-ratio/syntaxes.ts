@@ -1,3 +1,7 @@
-const syntaxes = [['aspect-ratio:`ratio`', 'aspect:`ratio`'], ['square'], ['video']]
+const syntaxes = [
+    ['aspect:`ratio`'],
+    'square',
+    'video'
+]
 
 export default syntaxes

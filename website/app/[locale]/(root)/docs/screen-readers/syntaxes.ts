@@ -1,3 +1,3 @@
-const syntaxes = [['sr-only']]
+const syntaxes = ['sr-only']
 
 export default syntaxes

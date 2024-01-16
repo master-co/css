@@ -1,9 +1,9 @@
 const syntaxes = [
     ['flex-basis:`basis`'],
-    ['flex-basis:full'],
-    ['flex-basis:fit'],
-    ['flex-basis:max'],
-    ['flex-basis:max'],
+    'flex-basis:full',
+    'flex-basis:fit',
+    'flex-basis:max',
+    'flex-basis:max',
     ['flex-basis:3xs', 'flex-basis:360'],
     ['flex-basis:2xs', 'flex-basis:480'],
     ['flex-basis:xs', 'flex-basis:600'],

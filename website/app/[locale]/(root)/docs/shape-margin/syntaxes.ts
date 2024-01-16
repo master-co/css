@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['shape-margin:`size`', 'shape:`size`']
+    ['shape-margin:`size`']
 ]
 
 export default syntaxes

@@ -1,3 +1,5 @@
-const syntaxes = [['outline:`style`'], ['outline:`color`|`style`'], ['outline:`style`|`width`'], ['outline:`color`|`style`|`width`']]
+const syntaxes = [
+    ['outline:`value`']
+]
 
 export default syntaxes

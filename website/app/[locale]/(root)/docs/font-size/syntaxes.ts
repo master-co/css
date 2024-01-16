@@ -1,3 +1,5 @@
-const syntaxes = [['font-size:`size`', 'font:`size`', 'f:`size`']]
+const syntaxes = [
+    ['font-size:`size`']
+]
 
 export default syntaxes

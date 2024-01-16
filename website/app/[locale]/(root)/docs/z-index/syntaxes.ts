@@ -1,3 +1,5 @@
-const syntaxes = [['z-index:`value`', 'z:`value`']]
+const syntaxes = [
+    ['z:`value`']
+]
 
 export default syntaxes

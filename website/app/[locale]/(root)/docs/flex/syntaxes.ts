@@ -1,3 +1,5 @@
-const syntaxes = [['flex:`basis`'], ['flex:`grow`'], ['flex:`grow`|`basis`'], ['flex:`grow`|`shrink`|`basis`']]
+const syntaxes = [
+    ['flex:`value`']
+]
 
 export default syntaxes
