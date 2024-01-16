@@ -17,9 +17,8 @@ jobs:
           with:
               node-version: 18.17.0
         - run: pnpm install
-        - run: pnpm ts-node scripts/generate-page-cache.ts
+        - run: pnpm exec tsx scripts/generate-page-cache.ts
           env:
             FIREBASE_PRIVATE_KEY_ID: ${{ secrets.FIREBASE_PRIVATE_KEY_ID }}
             FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
             LOCALE: ${{ github.event.inputs.locale }}
-            
