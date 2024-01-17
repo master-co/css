@@ -1,7 +1,7 @@
 import Demo from 'websites/components/Demo'
 import DemoPanel from 'websites/components/DemoPanel'
 import Image from 'next/image'
-import { l } from 'to-line'
+import clsx from 'clsx'
 import Code from 'websites/components/Code'
 
 export default ({ className }: any) => {
@@ -9,7 +9,7 @@ export default ({ className }: any) => {
         <>
             <Demo $py={0}>
                 <DemoPanel>
-                    <Image className={l(className, 'r:8 object:cover mt:6 mb:16', {
+                    <Image className={clsx(className, 'r:8 object:cover mt:6 mb:16', {
                         'mr:30': className === 'float:left',
                         'ml:30': className === 'float:right'
                     })} src="/images/blur.png" width={160} height={90} alt="Float Image" />

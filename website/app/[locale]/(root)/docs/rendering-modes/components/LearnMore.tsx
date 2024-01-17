@@ -1,9 +1,9 @@
 import Link from 'websites/components/Link'
-import { l } from 'to-line'
+import clsx from 'clsx'
 
 export default (props: any) => {
     return (
-        <Link {...props} className={l(`
+        <Link {...props} className={clsx(`
             font:14 font:semibold px:15 h:44 my:10 center-content flex text-decoration:none! r:5
         `, {
             'bg:primary fg:text-primary b:1 b:black/.1@light b:white/.2@dark': !props.disabled,

@@ -1,12 +1,12 @@
 import { allPages } from '../../pages'
 import Link from 'websites/components/Link'
-import { l } from 'to-line'
+import clsx from 'clsx'
 
 export default function Documents({ category, first }: any) {
     return <>
         <thead>
             <tr>
-                <th colSpan={2} className={l({ 'pt:30': !first })}>{category}</th>
+                <th colSpan={2} className={clsx({ 'pt:30': !first })}>{category}</th>
             </tr>
         </thead>
         <tbody>
@@ -21,7 +21,7 @@ export default function Documents({ category, first }: any) {
                                         ? '🚧'
                                         : (metadata as any).disabled ? '⚪️' : '🟢'
                                 }</span>
-                                <span className={l({ 'text:underline': !(metadata as any).disabled })}>{metadata.other?.subject || metadata.title}</span>
+                                <span className={clsx({ 'text:underline': !(metadata as any).disabled })}>{metadata.other?.subject || metadata.title}</span>
                             </Link>
                         </td>
                         <td><span className='lines:1'>{metadata.description}</span></td>

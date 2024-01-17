@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'websites/components/Link'
 import toSlug from 'websites/utils/toSlug'
-import { l } from 'to-line'
+import clsx from 'clsx'
 
 export default function Backers({ backers }: any) {
     return <div className="gap:8 grid-cols:6 grid-cols:8@2xs grid-cols:10@xs grid-cols:14@sm grid-cols:18@md">
@@ -21,7 +21,7 @@ export default function Backers({ backers }: any) {
                 </>
             return (
                 href
-                    ? <Link key={'backer-' + i} href={href} className={l(className, 'scale(1.1):hover ~transform|.2s')}><Avatar /></Link>
+                    ? <Link key={'backer-' + i} href={href} className={clsx(className, 'scale(1.1):hover ~transform|.2s')}><Avatar /></Link>
                     : <div key={'backer-' + i} className={className}><Avatar /></div>
             )
         })}

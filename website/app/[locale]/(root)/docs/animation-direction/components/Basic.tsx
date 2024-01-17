@@ -1,12 +1,12 @@
 import Demo from 'websites/components/Demo'
 import DemoPanel from 'websites/components/DemoPanel'
 import Image from 'next/image'
-import { l } from 'to-line'
+import clsx from 'clsx'
 import { IconRefresh, IconRotate, IconRotateClockwise } from '@tabler/icons-react'
 import Code from 'websites/components/Code'
 
 export default ({ className }: any) => {
-    const iconClassName = l(className, 'app-icon-primary stroke:.5 size:12x @rotate|1s|linear|infinite')
+    const iconClassName = clsx(className, 'app-icon-primary stroke:.5 size:12x @rotate|1s|linear|infinite')
     return (
         <>
             <Demo>
