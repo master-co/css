@@ -22,10 +22,5 @@
     "include": [
         "shared/**/*.ts",
         "**/tests/**/*"
-    ],
-    "ts-node": {
-      "compilerOptions": {
-        "module": "commonjs"
-      }
-    }
+    ]
 }
