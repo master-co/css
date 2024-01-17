@@ -2,9 +2,10 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
 
 <StaticExtractionIntro img={{
     href: "https://svelte.se.rc.css.master.co",
-    src: "/images/svelte-dev.png",
+    ...require('~/public/images/svelte-dev.png').default,
+    dark: require('~/public/images/svelte-dev@dark.png').default,
     alt: 'Svelte and Master CSS',
-    width: 665, height: 400, hasDark: true }} />
+    width: 665, height: 400 }} />
 
 ---
 

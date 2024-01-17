@@ -2,9 +2,10 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
 
 <StaticExtractionIntro img={{
     href: "https://nuxtjs.se.rc.css.master.co",
-    src: "/images/nuxtjs-dev.png",
+    ...require('~/public/images/nuxtjs-dev.png').default,
+    dark: require('~/public/images/nuxtjs-dev@dark.png').default,
     alt: 'Nuxt.js and Master CSS',
-    width: 665, height: 400, hasDark: true }} />
+    width: 665, height: 400 }} />
 
 ---
 

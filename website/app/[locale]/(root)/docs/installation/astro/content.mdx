@@ -1,9 +1,8 @@
 import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRenderingIntro.mdx'
 
 <RuntimeRenderingIntro img={{
-
     href: "https://astro.rr.rc.css.master.co",
-    src: "/images/astro-dev.png",
+    ...require('~/public/images/astro-dev.png').default,
     alt: 'Astro and Master CSS',
     width: 665, height: 400 }} />
 

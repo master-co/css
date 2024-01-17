@@ -2,9 +2,10 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
 
 <ProgressiveRenderingIntro img={{
     href: "https://vuejs.pr.rc.css.master.co",
-    src: "/images/vuejs-dev.png",
+    ...require('~/public/images/vuejs-dev.png').default,
+    dark: require('~/public/images/vuejs-dev@dark.png').default,
     alt: 'Vue.js and Master CSS',
-    width: 665, height: 400, hasDark: true }} />
+    width: 665, height: 400 }} />
 
 ---
 

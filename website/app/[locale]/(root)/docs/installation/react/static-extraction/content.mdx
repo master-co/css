@@ -2,9 +2,10 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
 
 <StaticExtractionIntro img={{
     href: "https://react.se.rc.css.master.co",
-    src: "/images/react-dev.png",
+    ...require('~/public/images/react-dev.png').default,
+    dark: require('~/public/images/react-dev@dark.png').default,
     alt: 'Vite and Master CSS',
-    width: 665, height: 400, hasDark: true }} />
+    width: 665, height: 400 }} />
 
 ---
 

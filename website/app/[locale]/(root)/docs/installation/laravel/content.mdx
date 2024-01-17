@@ -1,10 +1,10 @@
 import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRenderingIntro.mdx'
 
 <RuntimeRenderingIntro img={{
-
-    src: "/images/laravel-dev.png",
+    ...require('~/public/images/laravel-dev.png').default,
+    dark: require('~/public/images/laravel-dev@dark.png').default,
     alt: 'Laravel and Master CSS',
-    width: 665, height: 400, hasDark: true }} />
+    width: 665, height: 400 }} />
 
 ---
 

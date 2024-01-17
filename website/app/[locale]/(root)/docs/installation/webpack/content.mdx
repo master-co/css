@@ -1,11 +1,11 @@
 import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRenderingIntro.mdx'
 
 <RuntimeRenderingIntro img={{
-
     href: "https://webpack.rr.rc.css.master.co",
-    src: "/images/webpack-dev.png",
+    ...require('~/public/images/webpack-dev.png').default,
+    dark: require('~/public/images/webpack-dev@dark.png').default,
     alt: 'Webpack and Master CSS',
-    width: 665, height: 400, hasDark: true }} />
+    width: 665, height: 400 }} />
 
 ---
 

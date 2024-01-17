@@ -1,9 +1,10 @@
 import ProgressiveRenderingIntro from '../../rendering-modes/components/ProgressiveRenderingIntro.mdx'
 
 <ProgressiveRenderingIntro img={{
-    src: "/images/angular-dev.png",
+    ...require('~/public/images/angular-dev.png').default,
+    dark: require('~/public/images/angular-dev@dark.png').default,
     alt: 'Angular and Master CSS',
-    width: 665, height: 400, hasDark: true }} />
+    width: 665, height: 400 }} />
 
 ---
 

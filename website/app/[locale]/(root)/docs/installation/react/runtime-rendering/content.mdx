@@ -1,11 +1,11 @@
 import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRenderingIntro.mdx'
 
 <RuntimeRenderingIntro img={{
-
     href: "https://react.rr.rc.css.master.co",
-    src: "/images/react-dev.png",
+    ...require('~/public/images/react-dev.png').default,
+    dark: require('~/public/images/react-dev@dark.png').default,
     alt: 'Vite and Master CSS',
-    width: 665, height: 400, hasDark: true }} />
+    width: 665, height: 400 }} />
 
 ---
 

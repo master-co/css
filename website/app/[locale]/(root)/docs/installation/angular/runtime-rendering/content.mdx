@@ -1,11 +1,11 @@
 import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRenderingIntro.mdx'
 
 <RuntimeRenderingIntro img={{
-
     href: "https://angular.rr.rc.css.master.co",
-    src: "/images/angular-dev.png",
+    ...require('~/public/images/angular-dev.png').default,
+    dark: require('~/public/images/angular-dev@dark.png').default,
     alt: 'Angular and Master CSS',
-    width: 665, height: 400, hasDark: true }} />
+    width: 665, height: 400 }} />
 
 ---
 

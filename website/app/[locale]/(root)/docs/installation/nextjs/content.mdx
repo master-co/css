@@ -2,9 +2,10 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
 
 <ProgressiveRenderingIntro img={{
     href: "https://nextjs.pr.rc.css.master.co",
-    src: "/images/nextjs-dev.png",
+    ...require('~/public/images/nextjs-dev.png').default,
+    dark: require('~/public/images/nextjs-dev@dark.png').default,
     alt: 'Next.js and Master CSS',
-    width: 665, height: 400, hasDark: true }} />
+    width: 665, height: 400 }} />
 
 ---
 

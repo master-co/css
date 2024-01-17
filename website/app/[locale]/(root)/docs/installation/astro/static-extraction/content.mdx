@@ -2,7 +2,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
 
 <StaticExtractionIntro img={{
     href: "https://astro.se.rc.css.master.co",
-    src: "/images/astro-dev.png",
+    ...require('~/public/images/astro-dev.png').default,
     alt: 'Astro and Master CSS',
     width: 665, height: 400 }} />
 

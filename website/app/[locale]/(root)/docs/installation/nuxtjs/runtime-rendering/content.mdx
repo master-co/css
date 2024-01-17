@@ -1,11 +1,11 @@
 import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRenderingIntro.mdx'
 
 <RuntimeRenderingIntro img={{
-
     href: "https://nuxtjs.rr.rc.css.master.co",
-    src: "/images/nuxtjs-dev.png",
+    ...require('~/public/images/nuxtjs-dev.png').default,
+    dark: require('~/public/images/nuxtjs-dev@dark.png').default,
     alt: 'Nuxt.js and Master CSS',
-    width: 665, height: 400, hasDark: true }} />
+    width: 665, height: 400 }} />
 
 ---
 

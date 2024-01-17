@@ -2,9 +2,10 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
 
 <RuntimeRenderingIntro img={{
     href: "https://vite.rr.rc.css.master.co",
-    src: "/images/vite-dev.png",
+    ...require('~/public/images/vite-dev.png').default,
+    dark: require('~/public/images/vite-dev@dark.png').default,
     alt: 'Vite and Master CSS',
-    width: 665, height: 400, hasDark: true }} />
+    width: 665, height: 400 }} />
 
 ---
 

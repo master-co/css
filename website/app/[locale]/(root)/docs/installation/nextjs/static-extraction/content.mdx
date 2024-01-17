@@ -2,9 +2,10 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
 
 <StaticExtractionIntro img={{
     href: "https://nextjs.se.rc.css.master.co",
-    src: "/images/nextjs-dev.png",
+    ...require('~/public/images/nextjs-dev.png').default,
+    dark: require('~/public/images/nextjs-dev@dark.png').default,
     alt: 'Next.js and Master CSS',
-    width: 665, height: 400, hasDark: true }} />
+    width: 665, height: 400 }} />
 
 ---
 
