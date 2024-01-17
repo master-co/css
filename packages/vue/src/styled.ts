@@ -191,8 +191,8 @@ function handle<K extends string | VNode, E extends object = object>(tag: K, tag
                                 newAttrs[key] = attrs[key]
                             }
                         }
-
-                        return h(tag, { ...props, ...newAttrs, class: clsx(classNames, attrs.class) }, slots.default?.())
+                        // as any -> Argument of type 'unknown' is not assignable to parameter of type 'ClassValue'
+                        return h(tag, { ...props, ...newAttrs, class: clsx(classNames, attrs.class as any) }, slots.default?.())
                     }
                 }
             ) as any as MasterComponent<any, E>
