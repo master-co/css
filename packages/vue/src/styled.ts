@@ -1,15 +1,15 @@
 import { h, defineComponent, type VNode } from 'vue'
 import cv from 'class-variant'
-import line from '@techor/one-liner'
 import { extend } from '@techor/extend'
+import clsx from 'clsx'
 
-type IfEquals<X, Y, A=X, B=never> = (<T>() => T extends X ? 1 : 2) extends (<T>() => T extends Y ? 1 : 2) 
-    ? A 
+type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends (<T>() => T extends Y ? 1 : 2)
+    ? A
     : B
 type WritableKeys<T> = {
     [P in keyof T]-?: IfEquals<
-        { [Q in P]: T[P];}, 
-        { -readonly [Q in P]: T[P] }, 
+        { [Q in P]: T[P]; },
+        { -readonly [Q in P]: T[P] },
         P
     >
 }[keyof T];
@@ -24,21 +24,21 @@ type BaseType<E> = string
     | Record<string, boolean>
     | (
         E extends Array<any>
-            ? never
-            : [string, { [key in keyof E]?: E[key] }]
-                | { [key in keyof E]?: E[key] extends boolean | undefined ? string : Record<string, string> }
+        ? never
+        : [string, { [key in keyof E]?: E[key] }]
+        | { [key in keyof E]?: E[key] extends boolean | undefined ? string : Record<string, string> }
     )
 type BaseLoopType<E> = BaseType<E> | Array<BaseType<E>>
 type TagParams = Array<[TemplateStringsArray, any[]]>;
 type ParamType<K extends HTMLElementTagNameKeys | VNode, E extends object = object> = ((props: MasterComponentProps<K, E>) => BaseLoopType<MasterComponentProps<K, E>> | undefined) | BaseLoopType<MasterComponentProps<K, E>>
 type ParamsType<K extends HTMLElementTagNameKeys | VNode, E extends object = object> = Array<ParamType<K, E>>;
-type MasterComponentProps<K extends HTMLElementTagNameKeys | VNode, E extends object = object> = 
+type MasterComponentProps<K extends HTMLElementTagNameKeys | VNode, E extends object = object> =
     Partial<E>
     & { className?: BaseLoopType<E> | undefined, [key: string]: any }
     & (
-        K extends HTMLElementTagNameKeys 
-            ? Partial<Omit<WritableObject<HTMLElementTagNameMap[K]>, 'className'>>
-            : object
+        K extends HTMLElementTagNameKeys
+        ? Partial<Omit<WritableObject<HTMLElementTagNameMap[K]>, 'className'>>
+        : object
     )
 type MasterComponent<K extends HTMLElementTagNameKeys | VNode, E extends object = object> = ((props: MasterComponentProps<K, E>) => any) & { setup?: any, tag?: K, params: TagParams };
 type ReturnType<K extends HTMLElementTagNameKeys | VNode, E extends object = object> = <F extends TemplateStringsArray | MasterComponent<any> | VNode | BaseType<E>>(
@@ -67,8 +67,8 @@ export const styled: {
     // @ts-ignore
     ((firstParam, ...params) => {
         return (
-            Array.isArray(firstParam) && 'raw' in firstParam 
-            || typeof firstParam !== 'object' 
+            Array.isArray(firstParam) && 'raw' in firstParam
+            || typeof firstParam !== 'object'
             || !('setup' in firstParam) && !('__v_isVNode' in firstParam)
         )
             ? styled.div(firstParam as any, ...params)
@@ -97,7 +97,7 @@ function handle<K extends string | VNode, E extends object = object>(tag: K, tag
                         let valuesByProp: Record<string, string | Record<string, string>>
                         const unhandledTagParams: TagParams = []
                         const mergedProps = Object.assign({}, typeof tag === 'string' ? {} : tag.props, attrs)
-                        
+
                         const handleParam = (param: any) => {
                             switch (typeof param) {
                                 case 'object':
@@ -192,7 +192,7 @@ function handle<K extends string | VNode, E extends object = object>(tag: K, tag
                             }
                         }
 
-                        return h(tag, { ...props, ...newAttrs, class: line(classNames, attrs.class) }, slots.default?.())
+                        return h(tag, { ...props, ...newAttrs, class: clsx(classNames, attrs.class) }, slots.default?.())
                     }
                 }
             ) as any as MasterComponent<any, E>

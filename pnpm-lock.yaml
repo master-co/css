@@ -1434,12 +1434,12 @@ importers:
       '@techor/extend':
         specifier: ^2.5.24
         version: 2.5.24
-      '@techor/one-liner':
-        specifier: ^2.2.10
-        version: 2.5.17
       class-variant:
         specifier: workspace:^
         version: link:../class-variant
+      clsx:
+        specifier: ^2.1.0
+        version: 2.1.0
       theme-service:
         specifier: workspace:^
         version: link:../theme-service
@@ -8731,11 +8731,6 @@ packages:
       js-yaml: 4.1.0
     dev: true
 
-  /@techor/one-liner@2.5.17:
-    resolution: {integrity: sha512-k6qFQUgYJou9JU57oBdzANLNxKfrwoT9pCqV3dpNQPIT0UMZVMM1n4NVH5rz2dCooNF1gSyiQriJjs9n1+xdaw==}
-    deprecated: Use https://www.npmjs.com/package/clsx
-    dev: false
-
   /@techor/pack@2.5.24:
     resolution: {integrity: sha512-Vmjq+AOmOuCH8L6UVJAmUmPMYhZBcrm6TJS18cc8YggvRCoGf09G2SSgeDq3OA4tHskzT1r86s7jDK9/SPA86g==}
     dependencies:
@@ -10041,7 +10036,7 @@ packages:
     peerDependencies:
       vite: ^3.0.0 || ^4.0.0
     dependencies:
-      vite: 4.5.1(@types/node@18.19.5)(less@4.2.0)(sass@1.69.5)(terser@5.24.0)
+      vite: 4.5.1(@types/node@20.10.7)(less@4.2.0)(sass@1.69.5)(terser@5.24.0)
     dev: true
 
   /@vitejs/plugin-react@4.2.1(vite@4.5.1):

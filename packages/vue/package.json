@@ -88,10 +88,10 @@
     },
     "dependencies": {
         "@master/css-runtime": "workspace:^",
-        "@techor/one-liner": "^2.2.10",
+        "@techor/extend": "^2.5.24",
         "class-variant": "workspace:^",
-        "theme-service": "workspace:^",
-        "@techor/extend": "^2.5.24"
+        "clsx": "^2.1.0",
+        "theme-service": "workspace:^"
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^4.2.3",
