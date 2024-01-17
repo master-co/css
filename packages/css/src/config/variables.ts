@@ -154,27 +154,27 @@ const variables = {
             '@dark': '$(yellow-40)'
         },
         'lime': {
-            '@light': '$(lime-60)',
+            '@light': '$(lime-70)',
             '@dark': '$(lime-40)'
         },
         'green': {
-            '@light': '$(green-60)',
+            '@light': '$(green-70)',
             '@dark': '$(green-40)'
         },
         'beryl': {
-            '@light': '$(beryl-60)',
+            '@light': '$(beryl-70)',
             '@dark': '$(beryl-40)'
         },
         'teal': {
-            '@light': '$(teal-60)',
+            '@light': '$(teal-70)',
             '@dark': '$(teal-40)'
         },
         'cyan': {
-            '@light': '$(cyan-60)',
+            '@light': '$(cyan-70)',
             '@dark': '$(cyan-40)'
         },
         'sky': {
-            '@light': '$(sky-60)',
+            '@light': '$(sky-70)',
             '@dark': '$(sky-30)'
         },
         'blue': {
@@ -233,7 +233,7 @@ const variables = {
         '10': '#efeef0',
         '20': '#cdccce',
         '30': '#a2a1a3',
-        '40': '#89888A',
+        '40': '#89888a',
         '50': '#737274',
         '60': '#585759',
         '70': '#444345',
