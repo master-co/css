@@ -1,0 +1,91 @@
+**Tailwind CSS** is a utility-first CSS framework that empowers you to select corresponding values for your requirements from a plethora of defined constraints, such as `text-sm`, `pt-4`, `lg:w-9`, and more.
+
+**Master CSS** is a markup-driven CSS language with smart syntax that allows you to construct your user interface using structured and native CSS-like syntax, such as `font:14`, `pt:16`, `w:36@md`, instead of referencing tables or relying on memory.
+
+Our syntax concepts draw inspiration from [Sass](https://sass-lang.com) and [TypeScript](https://www.typescriptlang.org).
+
+---
+
+## Property differences
+
+Master provides various structured property types such as **semantics**, **abbreviations**, **shorthands**, and **symbols**, as well as automatic conversion of property unit values. For detailed usage, please refer to [Style Declarations](/docs/style-declarations).
+
+### Colon instead of dash
+
+Use a colon `:`, similar to native CSS, to separate property names from values, rather than a dash `-`.
+
+```html
+- <p class="text-center"></p>
++ <p class="text:center"></p>
+```
+
+### Delimiter instead of underscore
+To avoid conflicts with spaces in `class="a b"`, use the delimiter `|` to separate parameters within property values, instead of an underscore `_`.
+```html
+- <div class="shadow-[0_1px_2px_-3px_rgba(0,0,0,0.3)]"></div>
++ <div class="shadow:0|1|2|-3|rgba(0,0,0,.3)"></div>
+```
+You can observe that the reduced contrast of the delimiter `|`, as highlighted in Master's [syntax highlighting](/docs/language-service) above, is intentional to provide a smoother visual appearance that closely resembles native CSS's whitespace separator ` `:
+```css
+div { box-shadow: 0rem** **0.0625rem** **0.125rem** **-0.1875rem** **rgba(0,0,0,.3) }
+```
+We believe that `|` conveys a stronger separation meaning than `_`.
+
+### Non-abstract unit value
+In Tailwind, identical values for different properties may have different constraint values. For example, `border-4` sets to `4px`, while `m-4` sets to `1rem`.
+
+Master automatically converts units according to the characteristics of different properties and input values, making styles more predictable.
+```html
+- <div class="p-4">`4` means `1rem` in Tailwind</div>
++ <div class="p:16">16px to 1rem</div>
++ <div class="p:1rem">equal</div>
++ <div class="p:4x">equal</div>
+```
+Whether to use `1/2` to represent `50%` depends on your preference, for example, when setting `height:`.
+```html
+- <div class="h-1/2"></div>
++ <div class="h:1/2"></div>
++ <div class="h:50%">equal</div>
+```
+Let's consider another example with `border-radius`.
+```html
+- <div class="rounded-md">`md` means `0.375rem` in Tailwind</div>
++ <div class="r:6"></div>
++ <div class="r:.375rem">equal</div>
+```
+
+If you don't prefer the abbreviated notation like `p:`, `r:`, you can use the full names, such as `padding:`, `border-radius:`.
+
+### Decimal or percentage
+
+Equivalent to native `opacity: 0.2;`.
+
+```html
+- <div class="opacity-20">`20` means `0.2` in Tailwind</div>
++ <div class="opacity:.2"></div>
++ <div class="opacity:0.2">equal</div>
+```
+
+You can use decimals or percentages to adjust the opacity of colors.
+
+```html
+- <div class="bg-sky-500/75"></div>
++ <div class="bg:sky-50/.75"></div>
++ <div class="bg:sky-50/75%">equal</div>
+```
+
+---
+
+## 🚧 Selector differences
+
+---
+
+## 🚧 Styles instead of @apply
+
+---
+
+## 🚧 Configuration
+
+---
+
+## 🚧 More powerful features

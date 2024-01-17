@@ -15,7 +15,7 @@ import mime from 'mime-types'
 
 export default async function create({
     metadata,
-    title,
+    title = metadata?.title as string,
     description,
     size = { width: 1200, height: 630 },
     icon,
