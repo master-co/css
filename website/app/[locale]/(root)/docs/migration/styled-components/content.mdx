@@ -1,0 +1,28 @@
+## Overview [sr-only]
+
+```jsx name=App.jsx
+-import styled, { css } from 'styled-components'
++import { styled } from '@master/css.react'
+
+-const Button = styled.a`
+-    display: inline-block;
+-    border-radius: 3px;
+-    padding: 0.5rem 0;
+-    margin: 0.5rem 1rem;
+-    width: 11rem;
+-    background: transparent;
+-    ${props => props.primary && css`
+-        background: white;
+-        color: black;
+-    `}
+-`
+
++const Button = styled.a(
++    'inline-block r:3 py:8 m:8|16 w:176 bg:transparent',
++    { primary: 'bg:white fg:black' }
++)
+
+return (
+    <Button primary>Submit</Button>
+)
+```
