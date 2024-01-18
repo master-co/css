@@ -17,6 +17,7 @@ export default async function Page(props: any) {
     return (
         <Layout {...props}
             metadata={metadata}
+            titleBig
             backOnClickCategory='/docs/code-linting'
             icon={<LogoSvg width={72} />}
         >

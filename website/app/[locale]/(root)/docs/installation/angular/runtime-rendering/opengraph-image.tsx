@@ -11,5 +11,5 @@ export default (props: Props) => create({
     props,
     metadata,
     title: 'Runtime Rendering',
-    icon: <Icon width="256" />
+    icon: <Icon width="180" />
 })

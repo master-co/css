@@ -11,5 +11,5 @@ export default (props: Props) => create({
     props,
     metadata,
     title: 'Master CSS ESLint',
-    icon: <Icon width="192" />
+    icon: <Icon width="180" />
 })

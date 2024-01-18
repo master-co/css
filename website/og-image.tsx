@@ -219,9 +219,8 @@ export default async function create({
                 {icon &&
                     <div style={{
                         display: 'flex',
-                        justifyItems: 'center',
+                        justifyContent: 'center',
                         alignItems: 'center',
-                        height: '100%',
                         flex: '0 0 280px'
                     }}>
                         {icon}
