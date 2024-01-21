@@ -1,0 +1,166 @@
+The upgrade guide will only mention changes and partial new features in this article.
+
+---
+
+## Setup changes
+### Rendering on browser
+The Master CSS Runtime has been separated from the `@master/css` package and is now available as `@master/css-runtime`.
+#### General installation
+```js
+-import { init } from '@master/css';
++import { initCSSRuntime } from '@master/css-runtime'
++import config from './master.css' // your custom master css config
+
+-init()
++initCSSRuntime(config)
+```
+To fully step in, check out the [General Installation](/docs/installation/general) documentation.
+
+#### Using CDNs
+```html
+-<script src="https://cdn.master.co/css"></script>
++<script src="https://cdn.master.co/css-runtime@rc"></script>
+```
+To fully step in, check out the [Using CDNs](/docs/installation/cdn) documentation.
+
+### Pre-rendering on server
+The Master CSS Renderer has been separated from the `@master/css` package and is now available as `@master/css-server`.
+```js name=server.js
+import * as express from 'express'
+-import { Style, StyleSheet } from '@master/css'
+-import { render } from '@master/css/render'
++import { render } from '@master/css-server'
+
+app.get('/', function(req, res) {
+    res.render('index.html', (error, html) => {
+        if (err) console.log(err)
+-        return render(html, { StyleSheet }).html
++        return render(html).html
+    })
+})
+```
+Learn how to enable Master CSS progressive rendering in frameworks with [guides](/docs/installation).
+
+### Integrating with Nuxt Module
+Integrate Master CSS progressive rendering into your Nuxt.js project using the new `@master/css.nuxt` package.
+```ts name=nuxt.config.ts
+export default defineNuxtConfig({
+    modules: [
+        '@master/css.nuxt'
+    ]
+})
+```
+Check out the complete [Nuxt.js](/docs/installation/nuxtjs) installation guide.
+
+---
+
+## Configuration changes
+### Using new custom variables
+Deprecate extended `colors` and `values` ​​in favor of the new `config.variables`.
+```js name=master.css.js
+-import { Style } from '@master/css'
+
+-Style.extend('colors', {
+-   primary: '#000000'
+-})
+
+-Style.extend('values', {
+-   'spacing-md': 20
+-})
+
++export default {
++    variables: {
++        primary: '#000000',
++        spacing: {
++            md: 20
++        }
++    }
++}
+```
+Apply the variables:
+```html
+<div class="fg:primary mt:md"></div>
+```
+To learn more, check out topics related to variables:
+- [Colors](/docs/colors)
+- [Fonts](/docs/fonts)
+- [Screen Sizes](/docs/screen-sizes)
+- [Spacing & Sizing](/docs/spacing-and-sizing)
+- [Variables](/docs/variables)
+
+### Using new custom animations
+In v2, you can apply the [default animations](/docs/animations) out of the box:
+```html
+<div class="**@ping|1s|infinite**"></div>
+```
+We built in commonly used animations, and the `@master/keyframes.css` package is deprecated.
+```css name=main.css
+-@import '@master/keyframes.css';
+```
+To customize keyframes, check out the [Animations](/docs/animations) documentation.
+
+### Using abstract styles
+Deprecate extended `classes` ​​in favor of `config.styles`.
+```js name=master.css.js
+-import { Style } from '@master/css'
+
+-Style.extend('classes', {
+-   btn: '…'
+-})
+
++export default {
++    styles: {
++        btn: '…'
++    }
++}
+```
+Apply the style:
+```html
+<button class="btn"></button>
+```
+To learn more, check out the [Styles](/docs/styles) documentation.
+
+### Merging media queries
+Deprecate extended `breakpoints` and `mediaQueries` ​​in favor of `config.mediaQueries`.
+```js name=master.css.js
+-import { Style } from '@master/css'
+
+-Style.extend('breakpoints', {
+-   laptop: '1024px'
+-})
+
+-Style.extend('mediaQueries', {
+-   watch: '(max-device-width:42mm) and (min-device-width:38mm)'
+-})
+
++export default {
++    mediaQueries: {
++        laptop: 1024,
++        watch: '(max-device-width:42mm) and (min-device-width:38mm)'
++    }
++}
+```
+To learn more, check out the [Media Queries](/docs/media-queries) documentation.
+
+### Unknown tokens as themes
+Deprecated `colorSchemes` and considered unknown media query tokens as themes.
+```js name=master.css.js
+- import { Style } from '@master/css'
+
+- Style.colorSchemes.push('ocean');
+```
+Apply a custom `ocean` theme:
+```html
+<div class="bg:cyan-50**@ocean**"></div>
+```
+
+---
+
+## Syntax changes
+### `font:color` -> `fg:color`
+The color property in CSS generally refers to the foreground color of elements such as text and borders. It is more appropriate to use `color:` or the acronym `fg:` for this purpose.
+```html
+-<p class="font:blue-60"></p>
++<p class="fg:blue-60"></p>
+```
+
