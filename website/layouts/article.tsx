@@ -15,7 +15,7 @@ export default function Layout(props: any) {
     // const formattedDate = dayjs(date).format('dddd, MMMM D YYYY')
     return <>
         <DocHeader locale={props.params.locale} contained />
-        <GridsBg className="abs h:352 left:0 top:97 top:60@lg w:full z:-1" />
+        <GridsBg className="abs h:352 left:0 top:97 top:60@md w:full z:-1" />
         <div className='max-w:screen-md mb:-20 mt:180 mx:auto'>
             <div className='fg:accent font:semibold mb:10 text:center'>
                 {props.metadata.date && <TimeAgo timestamp={props.metadata.date} locale={props.params.locale} />}
