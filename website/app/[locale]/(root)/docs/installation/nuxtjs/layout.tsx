@@ -1,10 +1,10 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
-import { getDictionary } from 'websites/dictionaries'
+import { getTranslation } from '~/i18n'
 import DocLayout from '~/layouts/doc'
 import LogoSvg from '~/public/images/frameworks/nuxtjs.svg?inlineSvg'
 
 export default async function Layout(props: any) {
-    const $ = getDictionary(props.params.locale)
+    const $ = await getTranslation(props.params.locale)
     return (
         <DocLayout {...props}
             metadata={{

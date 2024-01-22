@@ -16,7 +16,7 @@ export const dynamic = 'force-static'
 export const revalidate = false
 
 export async function generateMetadata(props: any, parent: any) {
-    return generate(metadata, props, parent)
+    return await generate(metadata, props, parent)
 }
 
 export default function Page(props: any) {

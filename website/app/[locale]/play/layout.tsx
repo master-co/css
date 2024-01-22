@@ -5,7 +5,7 @@ import Script from 'next/script'
 import i18n from '~/i18n.config.mjs'
 
 export async function generateMetadata(props: any, parent: any) {
-    return generate(metadata, props, parent)
+    return await generate(metadata, props, parent)
 }
 
 export default async function Layout({ children, params }: {

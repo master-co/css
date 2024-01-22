@@ -3,7 +3,7 @@
 import { NextRequest } from 'next/server'
 import type { Metadata } from 'next'
 import type { Author } from 'next/dist/lib/metadata/types/metadata-types'
-import { getDictionary } from 'websites/dictionaries'
+import { getTranslation } from '~/i18n'
 import stringWidth from 'string-width'
 import create from '~/og-image'
 
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest, props: any) {
         category: searchParams.get('category'),
         authors: JSON.parse(searchParams.get('authors') || '[]'),
     }
-    const $ = getDictionary(locale)
+    const $ = await getTranslation(locale)
     title = $(title || metadata?.openGraph?.title).replace(' - Master CSS', '') as string
     description = $(description || metadata?.openGraph?.description) as string
     if (stringWidth(description) > 110) {

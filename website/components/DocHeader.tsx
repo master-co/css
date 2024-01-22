@@ -12,13 +12,13 @@ import DiscordIconButton from 'websites/components/DiscordIconButton'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Logotype } from '~/components/Logotype'
 import DocVersionSelect from './DocVersionSelect'
-import { getDictionary } from 'websites/dictionaries'
 import version from '~/version'
 import Link from 'websites/components/Link'
 import DocMenuButton from './DocMenuButton'
+import { useTranslation } from 'websites/contexts/i18n'
 
 export default function DocHeader({ children, ...props }: any) {
-    const $ = getDictionary(props.locale)
+    const $ = useTranslation()
     return (
         <Header {...props} >
             <Link href={'/'} className="mx:auto@<md">

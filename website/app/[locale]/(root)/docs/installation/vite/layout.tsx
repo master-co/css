@@ -1,10 +1,10 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
-import { getDictionary } from 'websites/dictionaries'
+import { getTranslation } from '~/i18n'
 import DocLayout from '~/layouts/doc'
 import LogoSvg from '~/public/images/build-tools/vite.svg?inlineSvg'
 
-export default function Layout(props: any) {
-    const $ = getDictionary(props.params.locale)
+export default async function Layout(props: any) {
+    const $ = await getTranslation(props.params.locale)
     return (
         <DocLayout {...props}
             metadata={{

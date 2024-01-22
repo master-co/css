@@ -13,15 +13,15 @@ import { useThemeService } from '@master/css.react'
 import DocVersionSelect from './DocVersionSelect'
 import version from '~/version'
 import LanguageSelect from 'websites/components/LanguageSelect'
-import { getDictionary } from 'websites/dictionaries'
 import { useLocale } from 'websites/contexts/locale'
 import i18n from '~/i18n.config.mjs'
+import { useTranslation } from 'websites/contexts/i18n'
 
 export default function DocMenuButton(props: any) {
     const [opened, setOpened] = useState(false)
     const themeService = useThemeService()
     const locale = useLocale()
-    const $ = getDictionary(props.locale)
+    const $ = useTranslation()
     return (
         <>
             <MenuButton {...props} opened={opened} onClick={() => setOpened(!opened)} />

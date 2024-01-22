@@ -23,7 +23,7 @@ export async function generateMetadata(props: any, parent: any) {
         shareItem = data.data() as PlayShare
     }
     const dateTime = dayjs(shareItem?.createdAt)
-    return generate({
+    return await generate({
         ...metadata,
         openGraph: {
             title: `Play #${props.params.shareId}`,
