@@ -3,7 +3,7 @@ import { Metadata } from 'websites/types/Metadata'
 const metadata: Metadata = {
     title: 'Place Self',
     description: 'Style syntax for setting align-self and justify-self at the same time.',
-    category: 'Grid And Flexbox',
+    category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=place-self',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/place-self'

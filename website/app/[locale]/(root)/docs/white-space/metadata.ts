@@ -3,7 +3,7 @@ import { Metadata } from 'websites/types/Metadata'
 const metadata: Metadata = {
     title: 'White Space',
     description: 'Style syntax for controlling how whitespace and line breaks within an element are handled.',
-    category: 'Typography',
+    category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=white-space',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/white-space'

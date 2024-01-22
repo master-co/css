@@ -3,7 +3,7 @@ import { Metadata } from 'websites/types/Metadata'
 const metadata: Metadata = {
     title: 'Variable',
     description: 'CSS variables defined specific values to be reused throughout a document.',
-    category: 'Variable',
+    category: 'Syntax',
     mdn: 'Using_CSS_custom_properties',
     canIUse: 'CSS Custom Properties',
     unfinished: true,
