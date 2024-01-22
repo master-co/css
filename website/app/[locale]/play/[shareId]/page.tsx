@@ -1,10 +1,8 @@
 import Play, { PlayShare } from '../Play'
 import { notFound } from 'next/navigation'
-import { collectDictionary } from 'websites/dictionaries'
 import firebaseConfig from 'websites/firebase-config'
 import { initializeApp } from '@firebase/app'
 import { getFirestore, doc, getDoc } from '@firebase/firestore/lite'
-import docMenuDict from '~/data/docMenuDict'
 import metadata from '../metadata'
 import { generate } from '~/utils/metadata'
 import dayjs from 'dayjs'
@@ -46,12 +44,7 @@ export default async function Page(props: any) {
     if (data.exists()) {
         shareItem = data.data() as PlayShare
         return (
-            <Play shareItem={shareItem} shareId={shareId} locale={locale} dict={await collectDictionary(locale, [
-                ...docMenuDict,
-                'Sharing ...',
-                'Share'
-            ])}
-            />
+            <Play shareItem={shareItem} shareId={shareId} />
         )
     } else {
         notFound()

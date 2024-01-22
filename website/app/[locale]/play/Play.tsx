@@ -34,6 +34,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'websites/components/Link'
 import Editor, { type Monaco } from '@monaco-editor/react'
 import DocMenuButton from '~/components/DocMenuButton'
+import { useLocale } from 'websites/contexts/locale'
+import { useTranslation } from 'websites/contexts/i18n'
 
 const ShareButton = dynamic(() => import('./components/ShareButton'))
 
@@ -72,7 +74,8 @@ const editorHTMLOptions: any = {
 }
 
 export default function Play(props: any) {
-    const { dict } = props
+    const $ = useTranslation()
+    const locale = useLocale()
     const router = useRouter()
     const themeService = useThemeService()
     const searchParams = useSearchParams()
@@ -119,8 +122,8 @@ export default function Play(props: any) {
         if (typeof window === 'undefined') {
             return ''
         }
-        return `${props.locale === i18n.defaultLocale ? '' : `/${props.locale}`}/play/${shareId}${window.location.search}`
-    }, [props.locale, shareId])
+        return `${locale === i18n.defaultLocale ? '' : `/${locale}`}/play/${shareId}${window.location.search}`
+    }, [locale, shareId])
 
     useEffect(() => {
         if (prevVersionRef.current !== version) {
@@ -337,14 +340,14 @@ export default function Play(props: any) {
             ...databaseShareItem,
             createdAt: new Date().toISOString()
         })
-        const newSharePathname = `${props.locale === i18n.defaultLocale ? '' : `/${props.locale}`}/play/${newShareId}${window.location.search}`
+        const newSharePathname = `${locale === i18n.defaultLocale ? '' : `/${locale}`}/play/${newShareId}${window.location.search}`
         setShareId(newShareId)
         setStrignifiedPrevShareItem(JSON.stringify(databaseShareItem))
         setShareable(false)
         setSharing(false)
         copyShareLink(newSharePathname)
         router.push(newSharePathname)
-    }, [copyShareLink, generateDatabaseShareItem, props.locale, router, shareItem, shareable])
+    }, [copyShareLink, generateDatabaseShareItem, locale, router, shareItem, shareable])
 
     const responsive = useMemo(() => {
         return preview === 'responsive'
@@ -534,7 +537,7 @@ export default function Play(props: any) {
                             }
                         }
                     }}>
-                        {dict[eachLink.name] || eachLink.name}
+                        {$(eachLink.name)}
                     </HeaderNav>
                 )}
                 {(shareId && !shareable) &&
@@ -551,9 +554,7 @@ export default function Play(props: any) {
                     </button>}
                 {/* share button */}
                 {shareable && <ShareButton className={clsx('hide@<md', sharing ? 'app-header-nav' : 'app-header-icon')} disabled={sharing} onClick={share}>
-                    {sharing && <span className="ml:10">
-                        {dict['Sharing ...']}
-                    </span>}
+                    {sharing && <span className="ml:10">{$('Sharing ...')}</span>}
                 </ShareButton>}
                 {(shareId || shareable) && <div className='hide@<md bg:divider h:1em mx:15 w:1'></div>}
                 <Link className="app-header-icon hide@<md" href={getSearchPath('layout', layout ? '' : '2')}>
@@ -613,7 +614,7 @@ export default function Play(props: any) {
                 </Link>
                 <span className='hide'>{preview}</span>
                 <div className='hide@<md bg:divider h:1em mx:15 w:1'></div>
-                <LanguageButton className="app-header-icon hide@<md" locale={props.locale} />
+                <LanguageButton className="app-header-icon hide@<md" locale={locale} />
                 <ThemeButton className="app-header-icon hide@<md mr:-12"
                     onChange={(theme: string) => {
                         previewIframeRef?.current?.contentWindow?.postMessage({
@@ -621,7 +622,7 @@ export default function Play(props: any) {
                         }, window.location.origin)
                     }}
                 />
-                <DocMenuButton className="app-header-icon hide@md mr:-12" locale={props.locale} dict={dict} />
+                <DocMenuButton className="app-header-icon hide@md mr:-12" />
             </Header >
             <div
                 className={clsx(
