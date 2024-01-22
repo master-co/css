@@ -3,8 +3,8 @@
 <details>
     <summary>View the default variables</summary>
     <div>
-        <Code lang="js">
-            {JSON.stringify(require('@master/css').variables.screen, null, 4)}
+        <Code lang="js" beautify>
+            {`export default { variables: { screen: ${JSON.stringify(require('@master/css').variables.screen)}} }`}
         </Code>
     </div>
 </details>
