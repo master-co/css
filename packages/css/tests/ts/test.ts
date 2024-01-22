@@ -7,6 +7,6 @@ it('init by tsconfig.json', () => {
     const configFilepath = resolve(__dirname, 'master.css.ts')
     rm(configFilepath)
     execSync('tsx ../../dist/bin/index.bundle.js init', { cwd: __dirname, stdio: 'inherit' })
-    expect(readFileSync(configFilepath, 'utf-8').toString()).toBe(require('../../src/master.css.ts.txt'))
+    expect(readFileSync(configFilepath, 'utf-8').normalize()).toEqual(require('../../src/master.css.ts.txt').normalize())
     rm(configFilepath)
 })
