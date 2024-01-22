@@ -1,8 +1,10 @@
 import Tabs, { Tab } from 'websites/components/Tabs'
 import DocLayout from '~/layouts/doc'
 import metadata from './metadata'
+import { createTranslation } from '~/i18n'
 
-export default function Layout(props: any) {
+export default async function Layout(props: any) {
+    const $ = await createTranslation(props.params.locale)
     return (
         <DocLayout {...props} metadata={metadata}>
             <Tabs className="mb:30">

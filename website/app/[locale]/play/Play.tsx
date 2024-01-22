@@ -739,7 +739,7 @@ export default function Play(props: any) {
                             />
                         </div>
                         {previewErrorEvent &&
-                            <div className="abs full bg:red-10@dark bg:red-95@light fg:red-75@dark fg:red@light inset:0 p:12x">
+                            <div className="abs full bg:red-95@dark bg:red-5@light fg:red inset:0 p:12x">
                                 <h2 className="font:20">Error at line {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
                                 <div className="bg:black/.2@dark bg:red-90@light font:14 font:medium my:20 p:15|20 r:5">
                                     {previewErrorEvent.message}

@@ -12,7 +12,7 @@ const nextConfig = {
     eslint: {
         // Warning: This allows production builds to successfully complete even if
         // your project has ESLint errors.
-        ignoreDuringBuilds: true,
+        ignoreDuringBuilds: process.env.VERCEL_CI ? false : true,
     },
     experimental: {
         nextScriptWorkers: true,

@@ -7,7 +7,7 @@ import useRewritedPathname from 'websites/uses/rewrited-pathname'
 export default function BackerTiers() {
     const pathname = useRewritedPathname()
     const [selectedTier, setSelectedTier] = useState<any>()
-    const openCollectiveRedirectUrl = 'https://docs.master.co' + pathname.replace('donate', 'sponsor')
+    const openCollectiveRedirectUrl = 'https://docs.master.co' + pathname?.replace('donate', 'sponsor')
     const backerTiers: {
         name: string
         description?: string

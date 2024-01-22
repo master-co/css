@@ -3,7 +3,7 @@ import syntaxes from '../syntaxes'
 import clsx from 'clsx'
 import SyntaxTr from '~/components/SyntaxTr'
 import SyntaxPreview from './SyntaxPreview'
-import { IconArrowBarBoth, IconArrowBarDown, IconArrowBarLeft, IconArrowBarRight, IconArrowBarUp, IconArrowDownBar, IconArrowDownLeft, IconArrowDownRight, IconArrowLeftBar, IconArrowRightBar, IconArrowUpBar, IconArrowUpLeft, IconArrowUpRight, IconArrowsDiagonal, IconArrowsDiagonal2, IconArrowsHorizontal, IconArrowsMove, IconArrowsVertical, IconArticle, IconCursorText, IconHandFinger, IconHandGrab, IconHandStop, IconLoader, IconPlus, IconPointer, IconPointerCancel, IconPointerPlus, IconPointerQuestion, IconShare3, IconZoomIn, IconZoomOut } from '@tabler/icons-react'
+import { IconArrowBarBoth, IconArrowDownBar, IconArrowDownLeft, IconArrowDownRight, IconArrowLeftBar, IconArrowRightBar, IconArrowUpBar, IconArrowUpLeft, IconArrowUpRight, IconArrowsDiagonal, IconArrowsDiagonal2, IconArrowsHorizontal, IconArrowsMove, IconArrowsVertical, IconArticle, IconCursorText, IconHandFinger, IconHandGrab, IconHandStop, IconLoader, IconPlus, IconPointer, IconPointerCancel, IconPointerPlus, IconPointerQuestion, IconShare3, IconZoomIn, IconZoomOut } from '@tabler/icons-react'
 
 export default () => {
     const previewSyntax = 'cursor:pointer'

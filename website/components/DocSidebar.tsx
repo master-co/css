@@ -7,7 +7,8 @@ import { pageCategories } from '~/app/[locale]/(root)/pages'
 export default async function DocSidebar(props: any) {
     const $ = await createTranslation(props.locale)
     return (
-        <aside id="sidebar" className="scrollbar fixed hide@print hide@<md invisible:not(:hover)::scrollbar-thumb invisible:not(:hover)::scrollbar bd:blur(25)@<md bg:transparent!::scrollbar bg:gray-10/.9@<md@dark bg:white/.8@<md direction:rtl h:calc(100%-6rem-1px) h:calc(100%-3.75rem)@md left:max(0px,calc(50%-45.3125rem)) overflow-y:overlay!@supports(overflow:overlay) overflow-y:auto overscroll-behavior:contain top:97 top:60@md w:full w:260@md w:300@xl z:1050@<md">
+        // eslint-disable-next-line @master/css/class-validation
+        <aside id="sidebar" className="scrollbar fixed hide@print hide@<md invisible:not(:hover)::scrollbar invisible:not(:hover)::scrollbar-thumb bd:blur(25)@<md bg:transparent!::scrollbar bg:gray-10/.9@<md@dark bg:white/.8@<md direction:rtl h:calc(100%-6rem-1px) h:calc(100%-3.75rem)@md left:max(0px,calc(50%-45.3125rem)) overflow-y:overlay!@supports(overflow:overlay) overflow-y:auto overscroll-behavior:contain top:97 top:60@md w:full w:260@md w:300@xl z:1050@<md">
             <div className="direction:ltr p:0|15|20|15">
                 <div className="flex sticky@md untouchable align-items:center gradient(180deg,base|0%,base|calc(100%-2rem),transparent|100%)@md mb:-30 pb:30 pt:20 top:20 top:0@md z:1">
                     <SearchButton className="pointer-events:auto" locale={props.locale} />

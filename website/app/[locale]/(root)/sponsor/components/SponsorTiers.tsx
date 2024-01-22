@@ -8,7 +8,7 @@ import useRewritedPathname from 'websites/uses/rewrited-pathname'
 export default function SponsorTiers() {
     const pathname = useRewritedPathname()
     const [selectedTier, setSelectedTier] = useState<any>()
-    const sponsorTiers = getSponsorTiers(pathname)
+    const sponsorTiers = getSponsorTiers(pathname || '')
 
     return <div className="gap:15 grid-cols:2 grid-cols:4@sm">
         {sponsorTiers.map((eachSponsorTier) => (

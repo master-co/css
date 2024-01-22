@@ -10,7 +10,7 @@ export default ({ className }: any) => {
         <>
             <Demo>
                 <IconRotateClockwise className="size:12x stroke:.5 stroke:text-lightest" strokeDasharray={1.5} />
-                <IconRotateClockwise className={clsx(className, 'app-icon-primary stroke:.5 size:12x')} />
+                <IconRotateClockwise className={clsx(className, 'app-icon-primary size:12x stroke:.5')} />
             </Demo>
             <Code lang="html">{`
                 <svg class="**${className}**">…</svg>

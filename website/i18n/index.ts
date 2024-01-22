@@ -1,6 +1,8 @@
-const dictionaries: Record<string, Promise<any>> = {
-    en: import('./en.json'),
-    tw: import('./tw.json'),
+import 'server-only'
+
+const dictionaries: { [key: string]: () => Promise<any> } = {
+    en: () => import('./en.json').then((module) => module.default),
+    tw: () => import('./tw.json').then((module) => module.default),
 }
 
 export async function createTranslation(locale: string): Promise<(text: any) => string> {
@@ -8,6 +10,9 @@ export async function createTranslation(locale: string): Promise<(text: any) => 
     return (text: any) => (translations)[text || ''] || text
 }
 
-export async function importTranslations(locale: string): Promise<any> {
-    return (await dictionaries[locale]).default
+export const importTranslations = async (locale: string) => {
+    if (!locale) {
+        throw new Error('locale is required')
+    }
+    return dictionaries[locale as keyof typeof dictionaries]()
 }

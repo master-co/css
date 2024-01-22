@@ -17,11 +17,11 @@ const Default = () => <table>
                     const eachRule = rules[eachRuleName]
                     return (
                         <tr key={eachRuleName}>
-                            <td><code className='fg:code-blue'>{eachRuleName}</code></td>
+                            <td><code className='fg:blue'>{eachRuleName}</code></td>
                             <td>
                                 {
                                     eachRule.unit
-                                        ? <code className='fg:code-pink'>{eachRule.unit}</code>
+                                        ? <code className='fg:pink'>{eachRule.unit}</code>
                                         : <span className='fg:lightest'>-</span>
                                 }
                             </td>

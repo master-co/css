@@ -4,7 +4,7 @@ const btn = cv(
     `rounded font:semibold`,
     {
         intent: {
-            primary: 'bg:blue bg:blue-55:hover fg:white',
+            primary: 'bg:blue bg:blue-60:hover fg:white',
             secondary: 'bg:white bg:slate-90:hover fg:slate-30',
         },
         size: {

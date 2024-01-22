@@ -6,7 +6,7 @@ import { IconRefresh, IconRotate, IconRotateClockwise } from '@tabler/icons-reac
 import Code from 'websites/components/Code'
 
 export default ({ className }: any) => {
-    const iconClassName = clsx(className, 'app-icon-primary stroke:.5 size:12x @rotate|1s|linear|infinite')
+    const iconClassName = clsx(className, 'app-icon-primary @rotate|1s|linear|infinite size:12x stroke:.5')
     return (
         <>
             <Demo>

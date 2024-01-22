@@ -17,8 +17,8 @@ const LayerReference = () => <table>
                     const each = Layer[eachName]
                     return (
                         <tr key={eachName}>
-                            <td><code className='fg:code-blue'>{eachName}</code></td>
-                            <td><code className='fg:code-blue'>{each}</code></td>
+                            <td><code className='fg:blue'>{eachName}</code></td>
+                            <td><code className='fg:blue'>{each}</code></td>
                         </tr>
                     )
                 })

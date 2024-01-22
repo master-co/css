@@ -12,9 +12,9 @@ export default function DonationModal() {
     const searchParams = useSearchParams()
 
     useEffect(() => {
-        let orderId = searchParams.get('orderId')
-        const orderIdV2 = searchParams.get('orderIdV2')
-        const status = searchParams.get('status')
+        let orderId = searchParams?.get('orderId')
+        const orderIdV2 = searchParams?.get('orderIdV2')
+        const status = searchParams?.get('status')
 
         let platform = null
         if (orderId && orderIdV2 && status) {

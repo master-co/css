@@ -29,7 +29,7 @@ export default () => <table>
                             <td>
                                 {
                                     eachFunction.unit
-                                        ? <code className='fg:code-pink'>{eachFunction.unit}</code>
+                                        ? <code className='fg:pink'>{eachFunction.unit}</code>
                                         : <span className='fg:lightest'>-</span>
                                 }
                             </td>

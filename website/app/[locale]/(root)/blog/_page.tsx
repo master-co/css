@@ -21,7 +21,7 @@ export async function generateMetadata(props: any, parent: any) {
 
 export default function Page(props: any) {
     return <>
-        <DocHeader contained locale={props.params.locale} />
+        <DocHeader contained />
         <main className='app-doc-main max-w:screen-xl'>
             <Article className="mb:80" prose>
                 <div className='gap:12x|25 grid-cols:4'>
@@ -31,7 +31,7 @@ export default function Page(props: any) {
                             return (
                                 <Link href="/blog/v2" className={clsx('text-decoration:none!', { 'grid-col-span:2 flex flex:col': index < 2 })} key={eachBlogMetadata.date}>
                                     <Image src="/images/gold-pattern.jpg"
-                                        className={clsx('aspect:16/9 r:5 h:auto w:full flex:1')}
+                                        className={clsx('aspect:16/9 flex:1 h:auto r:5 w:full')}
                                         width={480}
                                         height={270}
                                         alt={eachBlogMetadata.title} />
