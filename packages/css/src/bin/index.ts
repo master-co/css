@@ -3,9 +3,12 @@
 import { Command } from 'commander'
 import path from 'path'
 import fs from 'fs'
-import { CONFIG_ESM_TEXT } from '../constants/config-esm-text'
-import { CONFIG_TEXT } from '../constants/config-text'
-import { CONFIG_TS_TEXT } from '../constants/config-ts-text'
+// @ts-expect-error
+import CONFIG_TEXT from '../master.css.js.txt'
+// @ts-expect-error
+import CONFIG_ESM_TEXT from '../master.css.mjs.txt'
+// @ts-expect-error
+import CONFIG_TS_TEXT from '../master.css.ts.txt'
 import log from '@techor/log'
 import { readJSONFileSync } from '@techor/fs'
 
@@ -96,5 +99,7 @@ program.command('extract')
             }
         }
     })
+
+console.log(program.parse)
 
 program.parse()
