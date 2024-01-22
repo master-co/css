@@ -1,4 +1,4 @@
-import i18n from 'websites/i18n.config.mjs'
+import i18n from './i18n.config.mjs'
 
 const redirects = [
     { source: '/docs', destination: '/docs/installation', permanent: false },

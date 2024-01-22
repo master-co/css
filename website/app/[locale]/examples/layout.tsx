@@ -1,6 +1,5 @@
-import { Locale } from 'websites/i18n.config'
 import RootLayout from '../root.layout'
-import i18n from 'websites/i18n.config.mjs'
+import i18n from '~/i18n.config.mjs'
 
 export const metadata = {
     title: {
@@ -15,7 +14,7 @@ export async function generateStaticParams() {
 
 export default async function Layout({ children, params }: {
     children: JSX.Element,
-    params: { locale: Locale }
+    params: { locale: typeof i18n.locales[number] }
 }) {
     return (
         <RootLayout locale={params.locale}>{children}</RootLayout>

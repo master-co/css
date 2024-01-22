@@ -1,4 +1,4 @@
-import i18n, { hreflangOfLocale } from 'websites/i18n.config.mjs'
+import i18n from '~/i18n.config.mjs'
 import pages from '../[locale]/(root)/pages'
 
 export function GET(request: Request) {
@@ -10,7 +10,7 @@ export function GET(request: Request) {
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
             ${pages.map(eachPage => `<url>
                 <loc>${baseUrl + eachPage.pathname.slice(1)}</loc>
-                ${i18n.locales.map((eachLocale) => `<xhtml:link rel="alternate" hreflang="${(hreflangOfLocale as any)[eachLocale] ?? eachLocale}" href="${baseUrl}${eachLocale === i18n.defaultLocale ? '' : '/' + eachLocale}${eachPage.pathname.slice(1)}"/>`).join('\n')}
+                ${i18n.locales.map((eachLocale) => `<xhtml:link rel="alternate" hreflang="${(i18n.hreflangOfLocale as any)[eachLocale] ?? eachLocale}" href="${baseUrl}${eachLocale === i18n.defaultLocale ? '' : '/' + eachLocale}${eachPage.pathname.slice(1)}"/>`).join('\n')}
             </url>`).join('\n')}
         </urlset>`,
         {

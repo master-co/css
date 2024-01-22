@@ -1,8 +1,8 @@
 import extend from '@techor/extend'
 import type { Metadata, ResolvingMetadata } from 'next'
-import type { Locale } from 'websites/i18n.config'
 import type { Props } from 'websites/types/Props'
 import { getDictionary } from 'websites/dictionaries'
+import i18n from '~/i18n.config.mjs'
 
 export function generate(
     metadata: Metadata | Record<string, any>,
@@ -19,7 +19,7 @@ export function generate(
         ...metadata as any,
         title: ogTitle,
         description: ogDescription,
-        locale: params?.locale as Locale,
+        locale: params?.locale as typeof i18n['locales'][number],
     }
     delete requestedSearchParams.openGraph
     if (requestedSearchParams.authors) {

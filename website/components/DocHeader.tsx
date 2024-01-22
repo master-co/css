@@ -21,7 +21,6 @@ export default function DocHeader({ children, ...props }: any) {
     const $ = getDictionary(props.locale)
     return (
         <Header {...props} >
-            {/* <SearchButton locale={props.locale} dict={await collectDictionary(props.locale, ['Searching …', 'Search ⌘ K …'])} /> */}
             <Link href={'/'} className="mx:auto@<md">
                 {<Logotype height="19" />}
             </Link>

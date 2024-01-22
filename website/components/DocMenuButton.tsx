@@ -13,12 +13,14 @@ import { useThemeService } from '@master/css.react'
 import DocVersionSelect from './DocVersionSelect'
 import version from '~/version'
 import LanguageSelect from 'websites/components/LanguageSelect'
-import { nameOfLocale } from 'websites/i18n.config.mjs'
-import { getDictionary } from '../../../../dictionaries'
+import { getDictionary } from 'websites/dictionaries'
+import { useLocale } from 'websites/contexts/locale'
+import i18n from '~/i18n.config.mjs'
 
 export default function DocMenuButton(props: any) {
     const [opened, setOpened] = useState(false)
     const themeService = useThemeService()
+    const locale = useLocale()
     const $ = getDictionary(props.locale)
     return (
         <>
@@ -81,10 +83,8 @@ export default function DocMenuButton(props: any) {
                             <div className="flex ai:center bb:1|frame fg:strong flex:1 h:48">
                                 {$('Language')}
                                 <div className='flex rel ai:center ml:auto'>
-                                    <LanguageSelect locale={props.locale}>
-                                        {(currentLocale: keyof typeof nameOfLocale) =>
-                                            <div className="capitalize fg:light ml:auto mr:12">{nameOfLocale[currentLocale]}</div>
-                                        }
+                                    <LanguageSelect>
+                                        <div className="capitalize fg:light ml:auto mr:12">{i18n.nameOfLocale[locale as keyof typeof i18n.nameOfLocale]}</div>
                                     </LanguageSelect>
                                     <IconSelector className="fg:lightest mr:12" stroke="1.3" />
                                 </div>

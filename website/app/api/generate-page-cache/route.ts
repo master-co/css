@@ -1,6 +1,6 @@
 import getCurrentGitBranch from 'current-git-branch'
 import githubToken from 'websites/tokens/github'
-import i18n from 'websites/i18n.config.mjs'
+import i18n from '~/i18n.config.mjs'
 import token from 'websites/tokens/api'
 
 const currentBranch = getCurrentGitBranch()

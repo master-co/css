@@ -1,8 +1,8 @@
-import { Locale } from 'websites/i18n.config'
 import RootLayout from '../root.layout'
 import metadata from './metadata'
 import { generate } from '~/utils/metadata'
 import Script from 'next/script'
+import i18n from '~/i18n.config.mjs'
 
 export async function generateMetadata(props: any, parent: any) {
     return generate(metadata, props, parent)
@@ -10,7 +10,7 @@ export async function generateMetadata(props: any, parent: any) {
 
 export default async function Layout({ children, params }: {
     children: JSX.Element,
-    params: { locale: Locale }
+    params: { locale: typeof i18n['locales'][number] }
 }) {
     return (
         <RootLayout locale={params.locale} bodyClassName='bg:base' style={{ display: 'none' }}>
