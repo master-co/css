@@ -1,3 +1,4 @@
+import { importTranslations } from '~/i18n'
 import RootLayout from '../root.layout'
 import i18n from '~/i18n.config.mjs'
 
@@ -17,6 +18,6 @@ export default async function Layout({ children, params }: {
     params: { locale: typeof i18n.locales[number] }
 }) {
     return (
-        <RootLayout bodyClassName='bg:base' locale={params.locale}>{children}</RootLayout>
+        <RootLayout bodyClassName='bg:base' locale={params.locale} translations={await importTranslations(params.locale)}>{children}</RootLayout>
     )
 }
