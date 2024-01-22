@@ -124,7 +124,7 @@ Result:
 ## CLI
 Scan source files, extract syntax classes, generate CSS rules, and output as a CSS file.
 ```bash name=Terminal
-npx mcss **extract** …
+npx @master/css **extract** …
 ```
 Requires `@master/css-extractor` to be installed.
 
@@ -134,25 +134,25 @@ The command runs according to the preset [extractor options](#options).
 Explicitly specify sources to scan, ignoring [`options.include`](/docs/extractor#include) and [`options.exclude`](/docs/extractor#exclude) restrictions.
 <DocProp defaultValue="undefined" types={['FastGlobPattern[]']} />
 ```bash name=Terminal
-npx mcss extract **index.html** **main.js**
+npx @master/css extract **index.html** **main.js**
 ```
 If no sources are specified, by default, all directories of your current project will be scanned according to [`options.include`](/docs/extractor#include) and [`options.exclude`](/docs/extractor#exclude).
 ```bash name=Terminal
-npx mcss extract
+npx @master/css extract
 ```
 
 ### `-o, --output <path>`
 Watch for file changes and build continuously.
 <DocProp defaultValue="'master.css'" types={['string']} />
 ```bash name=Terminal
-npx mcss extract **--output master.css**
+npx @master/css extract **--output master.css**
 ```
 
 ### `--options <path>`
 Specifies the source of the extractor options.
 <DocProp defaultValue="'master.css-extractor.*'" types={['string']} />
 ```bash name=Terminal
-npx mcss extract **--option dir/master.css-extractor.js**
+npx @master/css extract **--option dir/master.css-extractor.js**
 ```
 
 ### `-v, --verbose`
@@ -160,12 +160,12 @@ Verbose logging.
 <DocProp defaultValue="1" types={['number']} />
 Set to `0` to silence the terminal.
 ```bash name=Terminal
-npx mcss extract **--verbose 0**
+npx @master/css extract **--verbose 0**
 ```
 
 ### `-w, --watch`
 Watch for file changes and build continuously.
 <DocProp defaultValue="false" types={['boolean']} />
 ```bash name=Terminal
-npx mcss extract **--watch**
+npx @master/css extract **--watch**
 ```

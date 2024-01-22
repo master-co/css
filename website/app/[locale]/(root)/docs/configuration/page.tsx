@@ -1,4 +1,4 @@
-import Layout from './Layout'
+import Layout from '~/layouts/reference'
 import metadata from './metadata'
 /* @ts-expect-error toc */
 import Content, { toc } from './content.mdx'

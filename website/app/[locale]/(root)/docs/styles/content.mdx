@@ -3,10 +3,38 @@
 
 ---
 
-## Basic usage
-🚧
+## Project structure
+### Split configuration into files
+Typically, frameworks or standard directory structures come with a `styles/` folder for CSS files, and we recommend placing your custom styles there.
 
----
+(i) Whether to split into multiple files depends on how many abstract styles you have.
+```treeview
+styles/
+|-- btn.css.js
+|-- card.css.js
+master.css.js
+```
+Create a `styles/btn.js` file and export the class names in the following standard format to enjoy [language service](/docs/language-service) highlighting and auto-suggestion.
+```js name=styles/btn.css.js
+/** @type {import('@master/css').Config} */
+export default {
+    styles: {
+        btn: {
+            '': 'font:14 text:center h:40 p:10|15',
+            primary: 'bg:primary fg:white',
+            outline: 'b:1|solid|slate-90'
+        }
+    }
+}
+```
 
-## Customization
-🚧
+Extend `styles/btn.js` in `master.css.js`.
+
+```js name=master.css.js
+/** @type {import('@master/css').Config} */
+export default {
+    extends: [
+        require('./styles/btn.css')
+    ]
+}
+```

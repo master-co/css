@@ -1,6 +1,6 @@
 ## CLI
 ```bash name=Terminal
-npx mcss **render** …
+npx @master/css **render** …
 ```
 Requires `@master/css-renderer` to be installed.
 
@@ -8,23 +8,23 @@ Requires `@master/css-renderer` to be installed.
 The path in glob patterns of the source of the HTML file
 <DocProp defaultValue="undefined" types={['FastGlobPattern[]']} />
 ```bash name=Terminal
-npx mcss render **index.html** **main.js**
+npx @master/css render **index.html** **main.js**
 ```
 If no sources are specified, by default, all directories of your current project will be scanned according to [`options.include`](/docs/extractor#include) and [`options.exclude`](/docs/extractor#exclude).
 ```bash name=Terminal
-npx mcss render
+npx @master/css render
 ```
 
 ### `-c, --config <path>`
 The source path of the Master CSS [configuration](/docs/configuration).
 <DocProp defaultValue="'master.css.*'" types={['string']} />
 ```bash name=Terminal
-npx mcss render **--config dir/master.css.js**
+npx @master/css render **--config dir/master.css.js**
 ```
 
 ### `-a, --analyze`
 Analyze injected CSS and HTML size ( brotli ) without writing to file
 <DocProp defaultValue="false" types={['boolean']} />
 ```bash name=Terminal
-npx mcss render **--analyze**
+npx @master/css render **--analyze**
 ```

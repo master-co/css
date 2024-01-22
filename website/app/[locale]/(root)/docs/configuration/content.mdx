@@ -5,17 +5,70 @@ import KeyframesOverview from '../animations/components/Overview.mdx'
 import MediaQueriesOverview from '../media-queries/components/Overview.mdx'
 import SelectorsOverview from '../selectors/components/Overview.mdx'
 import FunctionsOverview from '../functions/components/Overview.mdx'
-import ColorsOverview from '../colors/components/Overview.mdx'
 import StylesOverview from '../styles/components/Overview.mdx'
 
-```js name=master.css.js
-/** @type {import('@master/css').Config} */
-export default {
-    …
-}
-```
-Configuration fields that are not specified will fall back to [default configuration](https://github.com/master-co/css/tree/rc/packages/css/src/config).
+## Setup [sr-only]
 
+```bash name=Terminal
+npx @master/css init
+```
+It generates a top-level configuration file `master.css.{js,mjs,ts}` based on the characteristics of your project.
+
+### `--esm`
+Specify creating a `master.css.mjs` file in ECMAScript Modules format. If `package.json` is set `"type": "module"` will be enabled automatically.
+<DocProp defaultValue="false" types={['boolean']} />
+```bash name=Terminal
+npx @master/css init **--esm**
+```
+<details>
+    <summary>View the generated file</summary>
+    <div>
+        <Code lang="js" name="master.css.mjs">
+            {require('!!raw-loader!../../../../../../packages/css/src/master.css.mjs.txt').default}
+        </Code>
+    </div>
+</details>
+
+### `--cjs`
+Specify creating a `master.css.js` file in CommonJS format.
+<DocProp defaultValue="false" types={['boolean']} />
+```bash name=Terminal
+npx @master/css init **--cjs**
+```
+<details>
+    <summary>View the generated file</summary>
+    <div>
+        <Code lang="js" name="master.css.js">
+            {require('!!raw-loader!../../../../../../packages/css/src/master.css.js.txt').default}
+        </Code>
+    </div>
+</details>
+
+### `--ts`
+Specify creating a `master.css.ts` file in TypeScript format. Automatically enabled if `tsconfig.json` exists.
+<DocProp defaultValue="false" types={['boolean']} />
+```bash name=Terminal
+npx @master/css init **--ts**
+```
+<details>
+    <summary>View the generated file</summary>
+    <div>
+        <Code lang="js" name="master.css.ts">
+            {require('!!raw-loader!../../../../../../packages/css/src/master.css.ts.txt').default}
+        </Code>
+    </div>
+</details>
+
+### `-o, --override`
+Override the existing Master CSS config file.
+<DocProp defaultValue="false" types={['boolean']} />
+```bash name=Terminal
+npx @master/css init **--override**
+```
+
+---
+
+## Options
 ### `.animations`
 Customizing animation [animations](/docs/animations) for your design system.
 <KeyframesOverview />
@@ -48,9 +101,6 @@ Customizing abstract [styles](/docs/styles) for your design system.
 Customizing [variables](/docs/variables) for your design tokens.
 <VariablesOverview />
 
----
-
-## Settings
 ### `.extends`
 Extend custom or external configuration.
 <DocProp defaultValue="undefined" types={["any[]"]} />
