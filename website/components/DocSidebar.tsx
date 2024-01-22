@@ -1,11 +1,11 @@
 import { Fragment } from 'react'
 import SearchButton from 'websites/components/SearchButton'
-import { getTranslation } from '~/i18n'
+import { createTranslation } from '~/i18n'
 import Link from 'websites/components/Link'
 import { pageCategories } from '~/app/[locale]/(root)/pages'
 
 export default async function DocSidebar(props: any) {
-    const $ = await getTranslation(props.locale)
+    const $ = await createTranslation(props.locale)
     return (
         <aside id="sidebar" className="scrollbar fixed hide@print hide@<md invisible:not(:hover)::scrollbar-thumb invisible:not(:hover)::scrollbar bd:blur(25)@<md bg:transparent!::scrollbar bg:gray-10/.9@<md@dark bg:white/.8@<md direction:rtl h:calc(100%-6rem-1px) h:calc(100%-3.75rem)@md left:max(0px,calc(50%-45.3125rem)) overflow-y:overlay!@supports(overflow:overlay) overflow-y:auto overscroll-behavior:contain top:97 top:60@md w:full w:260@md w:300@xl z:1050@<md">
             <div className="direction:ltr p:0|15|20|15">

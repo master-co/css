@@ -5,12 +5,12 @@ import Article from 'websites/components/Article'
 import DocHeader from '~/components/DocHeader'
 import DocFooter from '~/components/DocFooter'
 import ListAuthors from 'websites/components/ListAuthors'
-import { getTranslation } from '~/i18n'
+import { createTranslation } from '~/i18n'
 import dayjs from 'dayjs'
 import TimeAgo from 'websites/components/TimeAgo'
 
 export default async function Layout(props: any) {
-    const $ = await getTranslation(props.params.locale)
+    const $ = await createTranslation(props.params.locale)
     const date = new Date(props.metadata.date)
     // const formattedDate = dayjs(date).format('dddd, MMMM D YYYY')
     return <>

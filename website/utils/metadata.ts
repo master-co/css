@@ -1,7 +1,7 @@
 import extend from '@techor/extend'
 import type { Metadata, ResolvingMetadata } from 'next'
 import type { Props } from 'websites/types/Props'
-import { getTranslation } from '~/i18n'
+import { createTranslation } from '~/i18n'
 import i18n from '~/i18n.config.mjs'
 
 export async function generate(
@@ -9,7 +9,7 @@ export async function generate(
     { params }: Props,
     parent: ResolvingMetadata
 ): Promise<Metadata> {
-    const $ = await getTranslation(params?.locale)
+    const $ = await createTranslation(params?.locale)
     const title = $(metadata.title)
     const description = $(metadata.description)
     const category = $(metadata.category)

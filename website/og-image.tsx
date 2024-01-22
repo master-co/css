@@ -7,7 +7,7 @@ import type { Props } from '../../../types/Props'
 
 import { ImageResponse } from 'next/og'
 import authors from '../../../data/authors'
-import { getTranslation } from '~/i18n'
+import { createTranslation } from '~/i18n'
 import stringWidth from 'string-width'
 import fs from 'fs'
 import path from 'path'
@@ -78,7 +78,7 @@ export default async function create({
         Monting: readImage(montingFilename),
     }
 
-    const $ = await getTranslation(props.params?.locale)
+    const $ = await createTranslation(props.params?.locale)
     title = $(title || metadata?.openGraph?.title).replace(' - Master CSS', '') as string
     description = $(description || metadata?.openGraph?.description || metadata?.description) as string
     const authorNames = metadata?.authors as Author[] || []

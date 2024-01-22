@@ -3,7 +3,7 @@ const dictionaries: Record<string, Promise<any>> = {
     tw: import('./tw.json'),
 }
 
-export async function getTranslation(locale: string): Promise<(text: any) => string> {
+export async function createTranslation(locale: string): Promise<(text: any) => string> {
     const translations = await importTranslations(locale)
     return (text: any) => (translations)[text || ''] || text
 }
