@@ -1509,15 +1509,6 @@ importers:
       '@tabler/icons-react':
         specifier: ^2.46.0
         version: 2.46.0(react@18.2.0)
-      '@types/node':
-        specifier: ^20
-        version: 20.11.5
-      '@types/react':
-        specifier: ^18
-        version: 18.2.48
-      '@types/react-dom':
-        specifier: ^18
-        version: 18.2.18
       '@vercel/speed-insights':
         specifier: ^1.0.2
         version: 1.0.7(next@14.1.0)(react@18.2.0)
@@ -1527,9 +1518,6 @@ importers:
       clone-deep:
         specifier: ^4.0.1
         version: 4.0.1
-      eslint:
-        specifier: ^8
-        version: 8.56.0
       eslint-config-next:
         specifier: ^14.1.0
         version: 14.1.0(eslint@8.56.0)(typescript@5.3.3)
@@ -1554,9 +1542,6 @@ importers:
       theme-service:
         specifier: workspace:^
         version: link:../packages/theme-service
-      typescript:
-        specifier: ^5
-        version: 5.3.3
       websites:
         specifier: workspace:../../..
         version: link:../../..
@@ -1564,6 +1549,21 @@ importers:
       '@builder.io/partytown':
         specifier: ^0.8.2
         version: 0.8.2
+      '@types/node':
+        specifier: ^20
+        version: 20.11.5
+      '@types/react':
+        specifier: ^18
+        version: 18.2.48
+      '@types/react-dom':
+        specifier: ^18
+        version: 18.2.18
+      eslint:
+        specifier: ^8
+        version: 8.56.0
+      typescript:
+        specifier: ^5
+        version: 5.3.3
 
 packages:
 
