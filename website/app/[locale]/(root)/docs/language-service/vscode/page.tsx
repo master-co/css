@@ -1,4 +1,3 @@
-import Layout from '../layout'
 import metadata from './metadata'
 import Content from './content.mdx'
 import { generate } from '~/utils/metadata'
