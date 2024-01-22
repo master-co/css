@@ -17,7 +17,7 @@ export default ({ children, className, url }: any) =>
                 disabled={item.disabled}
                 rel="noreferrer noopener">
                 {item.Logo.src
-                    ? <Image src={item.Logo} alt={item.name} width={48} height={48} className='w:40%' />
+                    ? <Image className={clsx('square w:40%', item.class)} src={item.Logo} alt={item.name} width={48} height={48} />
                     : <item.Logo className={clsx('square w:40%', item.class)} />
                 }
                 <div className={clsx('font:10 mt:10', item.name.length < 17 && 'font:12@sm', item.disabled && 'fg:lightest')}>{item.name}</div>
