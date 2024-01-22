@@ -5,7 +5,7 @@
         "dev": "pnpm run build --watch",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
-        "test": "jest --workerThreads"
+        "test": "jest"
     },
     "license": "MIT",
     "description": "Master CSS static extractor for various raw text",

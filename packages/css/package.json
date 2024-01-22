@@ -76,7 +76,6 @@
         "@types/jest": "^29.5.11",
         "css-shared": "workspace:^",
         "csstype": "^3.1.2",
-        "jest-text-transformer": "^1.0.4",
         "puppeteer": "^21.0.1",
         "vite": "^4.2.1"
     }
