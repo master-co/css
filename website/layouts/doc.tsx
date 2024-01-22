@@ -13,10 +13,10 @@ export default function Layout({ children, params, toc, prose, $hideLeftSide, ..
     return <>
         <DocMain $hideRightSide={!toc} $hideLeftSide={$hideLeftSide}>
             <Article className={clsx({ 'max-w:screen-sm_:where(p)': !toc })} prose={prose}>
-                <ArticleHeader locale={params.locale} metadata={props.metadata} {...props} />
+                <ArticleHeader metadata={props.metadata} {...props} />
                 {children}
             </Article>
-            <PageNavs locale={params.locale} metadata={props.metadata} pages={pages} />
+            <PageNavs metadata={props.metadata} pages={pages} />
             <DocFooter locale={params.locale} title={props.metadata.title} editors={props.metadata.authors} />
         </DocMain>
         {toc && <PageContent locale={params.locale}>{toc}</PageContent>}

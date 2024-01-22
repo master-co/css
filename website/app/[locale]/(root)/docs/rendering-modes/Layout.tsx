@@ -1,10 +1,8 @@
 import Tabs, { Tab } from 'websites/components/Tabs'
-import { getDictionary } from 'websites/dictionaries'
 import DocLayout from '~/layouts/doc'
 import metadata from './metadata'
 
 export default function Layout(props: any) {
-    const $ = getDictionary(props.params.locale)
     return (
         <DocLayout {...props}
             metadata={metadata}

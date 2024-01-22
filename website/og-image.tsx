@@ -69,7 +69,6 @@ export default async function create({
     const montingFilename = path.join(process.cwd(), 'public/images/authors/monting.jpg')
     const coverBgFilename = path.join(process.cwd(), 'public/images/cover-bg.jpg')
     const cssLogoTypeFilename = path.join(process.cwd(), 'public/images/css-logotype@light.png')
-
     const authorImageURLs: any = {
         Aron: readImage(aronFilename),
         Joy: readImage(joyFilename),

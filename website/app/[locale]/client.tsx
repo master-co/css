@@ -11,15 +11,15 @@ import ThemeServiceProvider from '@master/css.react/ThemeServiceProvider'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import i18n from '~/i18n.config.mjs'
 
-export default function Client(props: any) {
+export default function Client({ children, locale, translations }: any) {
     return (
         <>
             <ThemeServiceProvider options={{ default: 'system' }}>
                 <CSSRuntimeProvider config={config}>
                     <RedirectsProvider value={redirects}>
-                        <I18nProvider value={i18n}>
-                            <LocaleProvider value={props.locale}>
-                                {props.children}
+                        <I18nProvider value={{ ...i18n, translations }}>
+                            <LocaleProvider value={locale}>
+                                {children}
                             </LocaleProvider>
                         </I18nProvider>
                     </RedirectsProvider>

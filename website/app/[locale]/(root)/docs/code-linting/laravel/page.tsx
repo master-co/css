@@ -3,7 +3,6 @@ import metadata from './metadata'
 import Content from './content.mdx'
 import { generate } from '~/utils/metadata'
 import LogoSvg from '~/public/images/frameworks/laravel.svg?inlineSvg'
-import { getDictionary } from 'websites/dictionaries'
 
 export const dynamic = 'force-static'
 export const revalidate = false
@@ -13,7 +12,6 @@ export async function generateMetadata(props: any, parent: any) {
 }
 
 export default async function Page(props: any) {
-    const $ = getDictionary(props.params.locale)
     return (
         <Layout {...props}
             metadata={metadata}

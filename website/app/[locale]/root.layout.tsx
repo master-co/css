@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import { HTMLAttributes } from 'react'
 import dynamic from 'next/dynamic'
 import i18n from '~/i18n.config.mjs'
+import { importTranslations } from '~/i18n'
 
 const Client = dynamic(() => import('./client'))
 
@@ -22,7 +23,9 @@ export default async function RootLayout({ children, locale, bodyClassName, styl
                 {locale === 'tw' && <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=block" rel="stylesheet" />}
             </head>
             <body className={clsx(bodyClassName, '{font:mono;font-feature:normal}_:where(code,kbd,samp) bg:slate-50/.2_:where(::selection) fg:neutral font-feature:\'salt\' font:sans overflow-x:hidden')}>
-                <Client locale={locale}>{children}</Client>
+                <Client locale={locale} translations={await importTranslations(locale)}>
+                    {children}
+                </Client>
             </body>
         </html>
     )

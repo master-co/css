@@ -18,10 +18,10 @@ export default function Layout(props: any) {
     return <>
         <DocMain>
             <Article>
-                <ArticleHeader locale={params.locale} metadata={metadata} titleBig />
+                <ArticleHeader metadata={metadata} titleBig />
                 {children}
             </Article>
-            <PageNavs locale={params.locale} metadata={props.metadata} pages={pages} />
+            <PageNavs metadata={props.metadata} pages={pages} />
             <DocFooter locale={params.locale} title={metadata.title} />
         </DocMain>
         {toc && <PageContent locale={params.locale}

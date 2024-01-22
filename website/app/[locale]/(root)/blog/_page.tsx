@@ -3,7 +3,6 @@
 import Article from 'websites/components/Article'
 import DocHeader from '~/components/DocHeader.jsx'
 import DocFooter from '~/components/DocFooter.jsx'
-import { getDictionary } from 'websites/dictionaries'
 // @ts-expect-error
 import allBlogMetadata from './*/metadata.js'
 import Image from 'next/image'
@@ -21,7 +20,6 @@ export async function generateMetadata(props: any, parent: any) {
 }
 
 export default function Page(props: any) {
-    const $ = getDictionary(props.params.locale)
     return <>
         <DocHeader contained locale={props.params.locale} />
         <main className='app-doc-main max-w:screen-xl'>
