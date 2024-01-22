@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Clip Path',
-    description: 'Style syntax for creating a clipping region.',
+    description: 'Creating a clipping region.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=clip-path',

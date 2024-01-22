@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Background Attachment',
-    description: 'Style syntax for setting whether position of background image is fixed when scrolling.',
+    description: 'Setting whether position of background image is fixed when scrolling.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=background-attachment',

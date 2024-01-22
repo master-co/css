@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Font Feature Settings',
-    description: 'Style syntax for controling advanced typographic features in OpenType fonts.',
+    description: 'Controling advanced typographic features in OpenType fonts.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=font-feature-settings',

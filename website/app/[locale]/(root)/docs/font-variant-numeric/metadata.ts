@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Font Variant Numeric',
-    description: 'Style syntax for controlling the usage of alternate glyphs for numbers, fractions, and ordinal markers.',
+    description: 'Controlling the usage of alternate glyphs for numbers, fractions, and ordinal markers.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=font-variant-numeric',

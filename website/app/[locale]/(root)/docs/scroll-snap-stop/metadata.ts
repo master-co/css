@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Scroll Snap Stop',
-    description: 'Style syntax for setting whether scroll container is pass over snap positions.',
+    description: 'Setting whether scroll container is pass over snap positions.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=scroll-snap-stop',

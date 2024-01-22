@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Scroll Snap Type',
-    description: 'Style syntax for setting how strictly snap points are enforced on the scroll container.',
+    description: 'Setting how strictly snap points are enforced on the scroll container.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=scroll-snap-type',

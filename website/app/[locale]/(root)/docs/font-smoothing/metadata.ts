@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Font Smoothing',
-    description: 'Style syntax for controlling the font smoothing of an element.',
+    description: 'Controlling the font smoothing of an element.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=font-smoothing',

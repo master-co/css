@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Scroll Snap Align',
-    description: 'Style syntax for setting the scroll snap position.',
+    description: 'Setting the scroll snap position.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=scroll-snap-align',

@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'White Space',
-    description: 'Style syntax for controlling how whitespace and line breaks within an element are handled.',
+    description: 'Controlling how whitespace and line breaks within an element are handled.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=white-space',

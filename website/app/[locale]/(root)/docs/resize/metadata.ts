@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Resize',
-    description: 'Style syntax for setting whether an element is resizable.',
+    description: 'Setting whether an element is resizable.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=resize',

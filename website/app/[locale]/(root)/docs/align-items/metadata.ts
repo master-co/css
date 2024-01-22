@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Align Items',
-    description: 'Style syntax for controlling how items are aligned along its cross axis.',
+    description: 'Controlling how items are aligned along its cross axis.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=align-items',

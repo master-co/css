@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Writing Mode',
-    description: 'Style syntax for setting different writing mode.',
+    description: 'Setting different writing mode.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=writing-mode',

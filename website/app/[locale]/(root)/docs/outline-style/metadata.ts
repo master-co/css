@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Outline Style',
-    description: 'Style syntax for setting the style of an element\'s outline.',
+    description: 'Setting the style of an element\'s outline.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=outline-style',

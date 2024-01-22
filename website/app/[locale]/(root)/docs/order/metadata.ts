@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Order',
-    description: 'Style syntax for changing the order of item in flex or grid container.',
+    description: 'Changing the order of item in flex or grid container.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=order',

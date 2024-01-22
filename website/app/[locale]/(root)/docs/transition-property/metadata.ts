@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Transition Property',
-    description: 'Style syntax for setting the CSS properties to which a transition effect should be applied.',
+    description: 'Setting the CSS properties to which a transition effect should be applied.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=transition-property',

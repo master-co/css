@@ -107,13 +107,13 @@ You can also restrict teams to using [configuration](/docs/configuration) to cre
 ```
 (o) Fix this @master/css/class-validation problem using the Master CSS syntax.
 ```html
-<button class="inline-flex px:15">…</button>
+<button class="inline-flex px:4x">…</button>
 ```
 (o) Or create the custom style `btn` using the [styles](/docs/styles) configuration.
 ```js name=master.css.js
 export default {
     styles: {
-+        btn: 'inline-flex px:15'
++        btn: 'inline-flex px:4x'
     }
 }
 ```

@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Will Change',
-    description: 'Style syntax for setting how an element is expected to change in the browser.',
+    description: 'Setting how an element is expected to change in the browser.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=will-change',

@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Grid Auto Rows',
-    description: 'Style syntax for setting the size of the grid rows.',
+    description: 'Setting the size of the grid rows.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=grid-auto-rows',

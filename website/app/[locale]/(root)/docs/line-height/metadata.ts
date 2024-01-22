@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Line Height',
-    description: 'Style syntax for setting the height of a line box.',
+    description: 'Setting the height of a line box.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=line-height',

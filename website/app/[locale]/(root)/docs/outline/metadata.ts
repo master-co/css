@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Outline',
-    description: 'Style syntax for setting all the outline properties at once.',
+    description: 'Setting all the outline properties at once.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=outline',

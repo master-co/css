@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Text Decoration',
-    description: 'Style syntax for setting the appearance of decorative lines on text.',
+    description: 'Setting the appearance of decorative lines on text.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=text-decoration',

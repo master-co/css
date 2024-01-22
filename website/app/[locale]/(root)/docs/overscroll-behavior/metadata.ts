@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Overscroll Behavior',
-    description: 'Style syntax for setting what a browser does when reaching the boundary of a scrolling area.',
+    description: 'Setting what a browser does when reaching the boundary of a scrolling area.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=overscroll-behavior',

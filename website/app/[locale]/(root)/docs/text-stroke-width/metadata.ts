@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Text Stroke Width',
-    description: 'Style syntax for setting the width of the stroke for text characters.',
+    description: 'Setting the width of the stroke for text characters.',
     category: 'Syntax',
     mdn: '-webkit-text-stroke-width',
     unfinished: true,

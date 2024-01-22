@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Shape Outside',
-    description: 'Style syntax for setting a shape around which adjacent inline content should wrap.',
+    description: 'Setting a shape around which adjacent inline content should wrap.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=shape-outside',

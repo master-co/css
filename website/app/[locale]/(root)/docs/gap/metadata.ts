@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Gap',
-    description: 'Style syntax for setting the gutters between rows and columns.',
+    description: 'Setting the gutters between rows and columns.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=gap',

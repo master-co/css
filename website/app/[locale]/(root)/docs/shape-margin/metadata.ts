@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Shape Margin',
-    description: 'Style syntax for setting a margin for a CSS shape.',
+    description: 'Setting a margin for a CSS shape.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=shape-margin',

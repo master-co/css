@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Position',
-    description: 'Style syntax for setting an element is positioned in a document.',
+    description: 'Setting an element is positioned in a document.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=position',

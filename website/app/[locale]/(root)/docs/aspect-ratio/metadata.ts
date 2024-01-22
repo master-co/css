@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Aspect Ratio',
-    description: 'Style syntax for setting the ratio for the box.',
+    description: 'Setting the ratio for the box.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=aspect-ratio',

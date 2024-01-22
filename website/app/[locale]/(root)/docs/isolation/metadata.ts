@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Isolation',
-    description: 'Style syntax for controlling whether an element should create a new stacking context.',
+    description: 'Controlling whether an element should create a new stacking context.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=isolation',

@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'User Drag',
-    description: 'Style syntax for controlling whether the user can drag element.',
+    description: 'Controlling whether the user can drag element.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=user-drag',

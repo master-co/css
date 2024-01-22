@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Max Width',
-    description: 'Style syntax for setting the maximum width of an element.',
+    description: 'Setting the maximum width of an element.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=max-width',

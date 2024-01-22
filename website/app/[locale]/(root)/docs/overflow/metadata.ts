@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Overflow',
-    description: 'Style syntax for controlling the desired behavior for an element\'s overflow.',
+    description: 'Controlling the desired behavior for an element\'s overflow.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=overflow',

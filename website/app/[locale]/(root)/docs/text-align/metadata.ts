@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Text Align',
-    description: 'Style syntax for setting the text alignment of an element.',
+    description: 'Setting the text alignment of an element.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=text-align',

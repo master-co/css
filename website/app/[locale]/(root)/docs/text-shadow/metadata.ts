@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Text Shadow',
-    description: 'Style syntax for adding shadows to text.',
+    description: 'Adding shadows to text.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=text-shadow',

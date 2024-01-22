@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Transition Timing Function',
-    description: 'Style syntax for setting speed curve of the transition effect.',
+    description: 'Setting speed curve of the transition effect.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=transition-timing-function',

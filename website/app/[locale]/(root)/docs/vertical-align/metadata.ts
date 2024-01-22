@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Vertical Align',
-    description: 'Style syntax for setting vertical alignment.',
+    description: 'Setting vertical alignment.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=vertical-align',

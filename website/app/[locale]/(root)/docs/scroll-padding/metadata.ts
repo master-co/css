@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Scroll Padding',
-    description: 'Style syntax for setting the scroll padding of an element.',
+    description: 'Setting the scroll padding of an element.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=scroll-padding',

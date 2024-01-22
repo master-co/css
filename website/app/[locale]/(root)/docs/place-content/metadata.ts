@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Place Content',
-    description: 'Style syntax for setting align-content and justify-content at the same time.',
+    description: 'Setting align-content and justify-content at the same time.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=place-content',

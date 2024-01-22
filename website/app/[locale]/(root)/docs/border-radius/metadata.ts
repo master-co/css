@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Border Radius',
-    description: 'Style syntax for setting radius of an element’s corners.',
+    description: 'Setting radius of an element’s corners.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=border-radius',

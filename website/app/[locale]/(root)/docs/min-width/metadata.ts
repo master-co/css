@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Min Width',
-    description: 'Style syntax for setting the minimum width of an element.',
+    description: 'Setting the minimum width of an element.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=min-width',

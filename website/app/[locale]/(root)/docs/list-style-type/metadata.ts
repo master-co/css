@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'List Style Type',
-    description: 'Style syntax for setting the style of the list item marker.',
+    description: 'Setting the style of the list item marker.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=list-style-type',

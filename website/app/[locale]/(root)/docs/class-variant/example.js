@@ -9,7 +9,7 @@ const btn = cv(
         },
         size: {
             sm: 'text:14 px:8 py:5',
-            md: 'text:16 px:15 py:10'
+            md: 'text:16 px:4x py:10'
         }
     },
     ['uppercase', { intent: 'primary', size: 'md' }],

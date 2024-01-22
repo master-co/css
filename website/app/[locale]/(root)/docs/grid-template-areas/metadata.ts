@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Grid Template Areas',
-    description: 'Style syntax for setting areas in the grid container',
+    description: 'Setting areas in the grid container',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=grid-template-areas',

@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Box Shadow',
-    description: 'Style syntax for adding shadow effects around an element.',
+    description: 'Adding shadow effects around an element.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=box-shadow',

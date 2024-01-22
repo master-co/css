@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Caret Color',
-    description: 'Style syntax for setting the color of the cursor in text input.',
+    description: 'Setting the color of the cursor in text input.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=caret-color',

@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Stroke',
-    description: 'Style syntax for setting the outline color of an SVG shape.',
+    description: 'Setting the outline color of an SVG shape.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=stroke',

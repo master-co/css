@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Stroke Width',
-    description: 'Style syntax for setting the width of the stroke to be applied to the SVG shape.',
+    description: 'Setting the width of the stroke to be applied to the SVG shape.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=background',

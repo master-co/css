@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Text Overflow',
-    description: 'Style syntax for handling how hidden overflow content.',
+    description: 'Handling how hidden overflow content.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=text-overflow',

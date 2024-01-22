@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'List Style Position',
-    description: 'Style syntax for setting the position of the list item marker.',
+    description: 'Setting the position of the list item marker.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=list-style-position',

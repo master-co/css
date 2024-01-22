@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Letter Spacing',
-    description: 'Style syntax for setting the spacing between text characters.',
+    description: 'Setting the spacing between text characters.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=letter-spacing',

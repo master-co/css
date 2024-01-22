@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Shape Image Threshold',
-    description: 'Style syntax for setting the alpha channel threshold for a CSS shape.',
+    description: 'Setting the alpha channel threshold for a CSS shape.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=shape-image-threshold',

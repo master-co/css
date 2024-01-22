@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Text Rendering',
-    description: 'Style syntax for setting what to optimize when rendering text.',
+    description: 'Setting what to optimize when rendering text.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=text-rendering',

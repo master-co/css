@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Animation Delay',
-    description: 'Style syntax for setting a time to delay before beginning to perform the animation.',
+    description: 'Setting a time to delay before beginning to perform the animation.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=animation-delay',

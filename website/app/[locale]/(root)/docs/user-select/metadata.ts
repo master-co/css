@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'User Select',
-    description: 'Style syntax for controlling whether the user can select text.',
+    description: 'Controlling whether the user can select text.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=user-select',

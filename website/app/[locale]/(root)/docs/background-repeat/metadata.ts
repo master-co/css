@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Background Repeat',
-    description: 'Style syntax for setting how background images are repeated.',
+    description: 'Setting how background images are repeated.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=background-repeat',

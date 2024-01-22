@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Font Size',
-    description: 'Style syntax for setting the font size of elements.',
+    description: 'Setting the font size of elements.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=font-size',

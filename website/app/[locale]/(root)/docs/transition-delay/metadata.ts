@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Transition Delay',
-    description: 'Style syntax for setting a time to delay before starting transition.',
+    description: 'Setting a time to delay before starting transition.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=transition-delay',

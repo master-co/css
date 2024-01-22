@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Text Stroke',
-    description: 'Style syntax for setting the width and color of strokes for text characters.',
+    description: 'Setting the width and color of strokes for text characters.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=-webkit-text-stroke',

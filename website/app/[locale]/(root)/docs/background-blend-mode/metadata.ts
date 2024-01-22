@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Background Blend Mode',
-    description: 'Style syntax for setting how an element\'s background images should blend with the background color.',
+    description: 'Setting how an element\'s background images should blend with the background color.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=background-blend-mode',

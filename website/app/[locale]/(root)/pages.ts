@@ -18,7 +18,7 @@ const categoryOrder = [
     'Design Variables',
     'Configuration',
     'Production Optimization',
-    'Enhanced Service',
+    'API Reference',
     'API Reference',
     'CLI Reference',
 ]

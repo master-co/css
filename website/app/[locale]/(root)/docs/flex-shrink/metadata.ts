@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Flex Shrink',
-    description: 'Style syntax for setting how flex items shrink.',
+    description: 'Setting how flex items shrink.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=flex-shrink',

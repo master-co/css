@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Grid Auto Flow',
-    description: 'Style syntax for controlling how auto-placed items get inserted in the grid.',
+    description: 'Controlling how auto-placed items get inserted in the grid.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=grid-auto-flow',

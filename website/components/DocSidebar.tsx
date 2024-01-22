@@ -15,7 +15,7 @@ export default function DocSidebar(props: any) {
                 <div className="flex sticky@md untouchable align-items:center gradient(180deg,base|0%,base|calc(100%-2rem),transparent|100%)@md mb:-30 pb:30 pt:20 top:20 top:0@md z:1">
                     <SearchButton className="pointer-events:auto" locale={props.locale} />
                 </div>
-                <div className="{flex;min-h:32;px:15;rel;align-items:center}_:where(h4,.app-nav) {pt:0;fg:strong;mt:30;font:semibold;text:12}_:where(h4) {lines:1;break-word}_.app-nav_span {size:1x;abs;inset:0;my:auto;round}_svg bg:text-lightest_.app-nav:hover_svg bg:primary_.app-nav.active_svg contain:content:where(.app-nav,h4) fg:light_.app-nav pb:12x">
+                <div className="{flex;min-h:8x;px:4x;rel;align-items:center}_:where(h4,.app-nav) {pt:0;fg:strong;mt:6x;font:semibold;text:12}_:where(h4) {lines:1;break-word}_.app-nav_span {size:1x;abs;inset:0;my:auto;round}_svg bg:text-lightest_.app-nav:hover_svg bg:primary_.app-nav.active_svg contain:content:where(.app-nav,h4) fg:light_.app-nav pb:12x">
                     {pageCategories.map((eachPageCategory: any) => (
                         <Fragment key={eachPageCategory.name}>
                             <h4>{$(eachPageCategory.name)}</h4>

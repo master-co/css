@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Appearance',
-    description: 'Style syntax for controlling the native appearance of UI controls.',
+    description: 'Controlling the native appearance of UI controls.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=appearance',

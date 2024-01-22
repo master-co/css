@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Background',
-    description: 'Style syntax for setting all background style properties at once.',
+    description: 'Setting all background style properties at once.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=background',

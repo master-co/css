@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Grid',
-    description: 'Style syntax for setting layout of grid system.',
+    description: 'Setting layout of grid system.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=grid',

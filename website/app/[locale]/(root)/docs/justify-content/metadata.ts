@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Justify Content',
-    description: 'Style syntax for controlling how items are aligned along its main axis.',
+    description: 'Controlling how items are aligned along its main axis.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=justify-content',

@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Flex Wrap',
-    description: 'Style syntax for setting how flex items wrap.',
+    description: 'Setting how flex items wrap.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=flex-wrap',

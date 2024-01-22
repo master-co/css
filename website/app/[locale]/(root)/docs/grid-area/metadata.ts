@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Grid Area',
-    description: 'Style syntax for setting a size and location within a grid.',
+    description: 'Setting a size and location within a grid.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=grid-area',

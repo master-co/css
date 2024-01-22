@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Place Items',
-    description: 'Style syntax for setting align-items and justify-items at the same time.',
+    description: 'Setting align-items and justify-items at the same time.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=place-items',

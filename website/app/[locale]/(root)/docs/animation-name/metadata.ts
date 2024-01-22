@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Animation Name',
-    description: 'Style syntax for setting the names of the animation.',
+    description: 'Setting the names of the animation.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=animation-name',

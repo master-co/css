@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Text Underline Offset',
-    description: 'Style syntax for setting the distance of a text decoration line from its original position.',
+    description: 'Setting the distance of a text decoration line from its original position.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=text-underline-offset',

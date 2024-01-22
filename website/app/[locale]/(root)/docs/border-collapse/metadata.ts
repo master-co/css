@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Border Collapse',
-    description: 'Style syntax for setting whether table cell have shared or separate borders.',
+    description: 'Setting whether table cell have shared or separate borders.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=border-collapse',

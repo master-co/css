@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Touch Action',
-    description: 'Style syntax for setting how an element\'s region can be manipulated by a touchscreen user.',
+    description: 'Setting how an element\'s region can be manipulated by a touchscreen user.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=touch-action',

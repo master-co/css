@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Border Width',
-    description: 'Style syntax for setting the width of an element’s border.',
+    description: 'Setting the width of an element’s border.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=border-width',

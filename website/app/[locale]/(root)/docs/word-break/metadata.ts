@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Word Break',
-    description: 'Style syntax for setting whether words should break.',
+    description: 'Setting whether words should break.',
     category: 'Syntax',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=word-break',
