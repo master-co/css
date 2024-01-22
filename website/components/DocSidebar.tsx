@@ -1,8 +1,5 @@
-'use client'
-
 import { Fragment } from 'react'
 import SearchButton from 'websites/components/SearchButton'
-import clsx from 'clsx'
 import { getDictionary } from 'websites/dictionaries'
 import Link from 'websites/components/Link'
 import { pageCategories } from '~/app/[locale]/(root)/pages'
