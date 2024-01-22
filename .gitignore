@@ -61,10 +61,9 @@ testem.log
 .DS_Store
 Thumbs.db
 
-packages/css/**/*master.css.*
-packages/css/**/*master.*
-packages/extractor/**/*master.css-extractor.*
-packages/extractor/**/*master.css.*
+packages/css/tests/**/*master.css.*
+packages/extractor/tests/**/*master.css-extractor.*
+packages/extractor/tests/**/*master.css.*
 packages/extractor.vite/tests/vite/index.html
 packages/extractor.vite/tests/vite/master.css.*
 packages/extractor.webpack/tests/webpack/src/index.html
