@@ -1,7 +1,7 @@
 {
     "private": true,
     "scripts": {
-        "postinstall": "husky install",
+        "postinstall": "pnpm dlx husky install",
         "build": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" build",
         "build:examples": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./examples/*\" --parallel build",
         "check": "pnpm run commit-check && pnpm run build && pnpm --filter \"./packages/*\" --parallel run \"/^(test|lint|type-check)/\"",

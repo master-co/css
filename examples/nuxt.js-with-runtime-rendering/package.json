@@ -2,11 +2,10 @@
     "name": "nuxt.js-with-runtime-rendering",
     "private": true,
     "scripts": {
-        "build": "nuxt build",
-        "dev": "nuxt dev",
-        "generate": "nuxt generate",
-        "preview": "nuxt preview",
-        "postinstall": "nuxt prepare"
+        "build": "nuxt prepare && nuxt build",
+        "dev": "nuxt prepare && nuxt dev",
+        "generate": "nuxt prepare && nuxt generate",
+        "preview": "nuxt prepare && nuxt preview"
     },
     "dependencies": {
         "@master/css-runtime": "workspace:^",
