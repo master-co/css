@@ -54,7 +54,7 @@ Check out the complete [Nuxt.js](/docs/installation/nuxtjs) installation guide.
 
 ---
 
-## Configuration changes
+## Introducing configuration
 ### Using new custom variables
 Deprecate extended `colors` and `values` ​​in favor of the new `config.variables`.
 ```js name=master.css.js
@@ -81,7 +81,7 @@ Apply the variables:
 ```html
 <div class="fg:primary mt:md"></div>
 ```
-To learn more, check out topics related to variables:
+To learn more, check out:
 - [Colors](/docs/colors)
 - [Fonts](/docs/fonts)
 - [Screen Sizes](/docs/screen-sizes)
@@ -157,10 +157,50 @@ Apply a custom `ocean` theme:
 ---
 
 ## Syntax changes
-### `font:color` -> `fg:color`
+### Renamed `font:color` to `fg:color`
 The color property in CSS generally refers to the foreground color of elements such as text and borders. It is more appropriate to use `color:` or the acronym `fg:` for this purpose.
 ```html
 -<p class="font:blue-60"></p>
 +<p class="fg:blue-60"></p>
 ```
 
+### Default colors are based on themes
+In v1, the default value for `color` was linked to `color-50`. In v2, the default colors have been updated to align with the Master Design System theme colors, which are determined by variable themes like `light` or `dark`.
+```html
+-<p class="fg:blue"></p>
++<div class="light">
++    <p class="fg:blue">No longer equal to `blue-50`.</p>
++</div>
+```
+
+To learn more, check out:
+- [Color](/docs/color) for text and foreground colors
+- [Colors](/docs/colors) for default colors and color variables
+
+---
+
+## Major changes
+### Removed color mid-values
+v2 no longer supports 1 to 99 shades for each color.
+```html
+-<div class="bg:blue-1"></div>
+-<div class="bg:blue-2"></div>
+<div class="bg:blue-10"></div>
+...
+-<div class="bg:blue-98"></div>
+-<div class="bg:blue-99"></div>
+```
+Initially, we wanted to support a wide range of colors through the LAB color model to provide flexibility, but its color gamut was limited.
+
+The good news is that this significantly improves runtime performance, as the number of colors per color is reduced from 99 (1~99) to 11 (5-95).
+
+### Refactoring colors
+Following the above, we found that each color had to rely on visual adjustments after going through the design system and component construction.
+
+See the [Colors](/docs/colors) documentation.
+
+Also, we inverted the colors, which was probably the most painful change from v1 to v2.
+```html
+-<div class="bg:blue-60"></div>
++<div class="bg:blue-40"></div>
+```
