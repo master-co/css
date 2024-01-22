@@ -49,6 +49,7 @@
         "jest-text-transformer": "^1.0.4",
         "nanoid": "^4.0.2",
         "nodemon": "^2.0.22",
+        "normalize-newline": "^4.1.0",
         "pretty-ms": "^8.0.0",
         "shuffle-array": "^1.0.1",
         "spawnd": "^9.0.0",
