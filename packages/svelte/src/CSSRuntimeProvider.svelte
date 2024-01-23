@@ -11,7 +11,7 @@
         let newCSSRuntime: CSSRuntime;
         if (!$runtimeCSS) {
             const init = (resolvedConfig?: Config) => {
-                const existingCSSRuntime = (globalThis as any).cssRuntimes.find(
+                const existingCSSRuntime = (globalThis as any).runtimeCSSs.find(
                     (eachCSS: CSSRuntime) => eachCSS.root === root
                 );
                 if (existingCSSRuntime) {

@@ -14,12 +14,12 @@ export function CSSRuntimeProvider({ children, config, root }: {
 }) {
     const [runtimeCSS, setCSSRuntime] = useState<CSSRuntime>();
     (typeof window !== 'undefined' ? useLayoutEffect : useEffect)(() => {
-        let newCSSRuntime: CSSRuntime | undefined = globalThis.cssRuntimes?.find((eachCSS) => eachCSS.root === root)
+        let newCSSRuntime: CSSRuntime | undefined = globalThis.runtimeCSSs?.find((eachCSS) => eachCSS.root === root)
         if (newCSSRuntime) {
             setCSSRuntime(newCSSRuntime)
         } else if (!runtimeCSS) {
             const init = (resolvedConfig?: Config) => {
-                const existingCSS = globalThis.cssRuntimes.find((eachCSS) => eachCSS.root === root)
+                const existingCSS = globalThis.runtimeCSSs.find((eachCSS) => eachCSS.root === root)
                 if (existingCSS) {
                     setCSSRuntime(existingCSS)
                 } else {

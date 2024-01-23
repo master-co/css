@@ -22,7 +22,7 @@ export class CSSRuntime extends MasterCSS {
             this.container = this.root as CSSRuntime['container']
             this.host = (this.root as ShadowRoot).host
         }
-        cssRuntimes.push(this)
+        runtimeCSSs.push(this)
     }
 
     /**
@@ -32,7 +32,7 @@ export class CSSRuntime extends MasterCSS {
      */
     observe(options: MutationObserverInit = { subtree: true, childList: true }) {
         if (this.observing || !this.root) return this
-        if (cssRuntimes.find((eachRuntimeCSS) => eachRuntimeCSS !== this && eachRuntimeCSS.root === this.root)) {
+        if (runtimeCSSs.find((eachRuntimeCSS) => eachRuntimeCSS !== this && eachRuntimeCSS.root === this.root)) {
             console.warn('Cannot observe the same root element repeatedly.')
             return this
         }
@@ -410,14 +410,14 @@ export class CSSRuntime extends MasterCSS {
 
     destroy() {
         this.disconnect()
-        cssRuntimes.splice(cssRuntimes.indexOf(this), 1)
+        runtimeCSSs.splice(runtimeCSSs.indexOf(this), 1)
         return this
     }
 }
 
-export const cssRuntimes: CSSRuntime[] = [];
+export const runtimeCSSs: CSSRuntime[] = [];
 
 (() => {
     globalThis.CSSRuntime = CSSRuntime
-    globalThis.cssRuntimes = cssRuntimes
+    globalThis.runtimeCSSs = runtimeCSSs
 })()

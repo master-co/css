@@ -16,7 +16,7 @@ onMounted(() => {
     if (typeof window === 'undefined') { return }
     if (!runtimeCSS.value) {
         const init = (resolvedConfig: Config | undefined) => {
-            const existingCSSRuntime = (globalThis as any).cssRuntimes.find((eachCSS: CSSRuntime) => eachCSS.root === props.root)
+            const existingCSSRuntime = (globalThis as any).runtimeCSSs.find((eachCSS: CSSRuntime) => eachCSS.root === props.root)
             if (existingCSSRuntime) {
                 runtimeCSS.value = existingCSSRuntime
             } else {

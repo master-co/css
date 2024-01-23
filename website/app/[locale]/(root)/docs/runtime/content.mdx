@@ -81,7 +81,7 @@ css.reset()
 ```
 
 ### `.destroy()`
-Destroy and remove the current instance from `globalThis.cssRuntimes`.
+Destroy and remove the current instance from `globalThis.runtimeCSSs`.
 <DocFn>
     {[ { name: 'return', type: 'this' } ]}
 </DocFn>
@@ -96,7 +96,7 @@ css.reset()
 Record the registered root `document` Runtime CSS instance; the field will be recorded only after executing `js css.observe()`.
 <DocProp defaultValue="undefined" types={['CSSRuntime']} />
 
-### `globalThis.cssRuntimes`
+### `globalThis.runtimeCSSs`
 All objects instantiated via `js new CSSRuntime()`.
 <DocProp defaultValue="[]" types={['CSSRuntime[]']} />
 
