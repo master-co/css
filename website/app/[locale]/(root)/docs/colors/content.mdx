@@ -115,24 +115,3 @@ Apply custom colors for the current application.
         <Code lang="css" beautify>{require('!!raw-loader!../../../../../../packages/server/tests/override-default-colors/generated.css').default}</Code>
     </div>
 </details>
-
----
-
-## Custom references
-### Background colors
-| Token             | Description                                                                                                                       |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| `base`            | The background color for apps, modals, ...                                                                                        |
-
-Add color variables for backgrounds in apps, panels, cards, and more.
-```js name=master.css.js
-export default {
-    variables: {
-+        base: '$(white)'
-    }
-}
-```
-Use [background-color](/docs/background-color) syntax to set the app background color:
-```html
-<body class="**bg:base**">…</body>
-```
