@@ -1,9 +1,18 @@
 ## Overview [sr-only]
 <Overview/>
 
+---
+
+## Basic usage
+### With opacity
+Add the suffix `/alpha` to change the opacity of any color.
+<Basic className="bg:pink/.15" />
+
+---
+
 ## Conditionally apply
 Apply styles based on different states using [selectors](/docs/state-selectors) and [conditional queries](/docs/conditional-queries).
 ```html
-<div class="background-color:light-10**:hover** background-color:light-10**@sm** background-color:light-10**@dark** background-color:light-10**@print**">…</div>
+<div class="bg:slate-10**:hover** bg:slate-10**@sm** bg:slate-10**@dark** bg:slate-10**@print**">…</div>
 ```
 

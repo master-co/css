@@ -7,7 +7,7 @@ export default function SyntaxTr({ value, children, previewSyntax }: any) {
     const { text } = generateCSS(value)
     return (
         <tr key={value}>
-            <td>
+            <td className='white-space:nowrap'>
                 {children}
                 {(Array.isArray(value) ? value : [value]).map((eachInnerName: string, i, array) => (
                     <Fragment key={eachInnerName}>
