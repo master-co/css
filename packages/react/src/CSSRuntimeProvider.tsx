@@ -1,10 +1,10 @@
 'use client'
 
 import type { Config } from '@master/css'
-import { CSSRuntime } from '@master/css-runtime'
+import { RuntimeCSS } from '@master/css-runtime'
 import { useEffect, useLayoutEffect, createContext, useContext, useState } from 'react'
 
-export const CSSRuntimeContext = createContext<CSSRuntime | undefined>(undefined)
+export const CSSRuntimeContext = createContext<RuntimeCSS | undefined>(undefined)
 export const useCSSRuntime = () => useContext(CSSRuntimeContext)
 
 export function CSSRuntimeProvider({ children, config, root }: {
@@ -12,9 +12,9 @@ export function CSSRuntimeProvider({ children, config, root }: {
     config?: Config | Promise<any>,
     root?: Document | ShadowRoot
 }) {
-    const [runtimeCSS, setCSSRuntime] = useState<CSSRuntime>();
+    const [runtimeCSS, setCSSRuntime] = useState<RuntimeCSS>();
     (typeof window !== 'undefined' ? useLayoutEffect : useEffect)(() => {
-        let newCSSRuntime: CSSRuntime | undefined = globalThis.runtimeCSSs?.find((eachCSS) => eachCSS.root === root)
+        let newCSSRuntime: RuntimeCSS | undefined = globalThis.runtimeCSSs?.find((eachCSS) => eachCSS.root === root)
         if (newCSSRuntime) {
             setCSSRuntime(newCSSRuntime)
         } else if (!runtimeCSS) {
@@ -23,7 +23,7 @@ export function CSSRuntimeProvider({ children, config, root }: {
                 if (existingCSS) {
                     setCSSRuntime(existingCSS)
                 } else {
-                    newCSSRuntime = new CSSRuntime(root, resolvedConfig).observe()
+                    newCSSRuntime = new RuntimeCSS(root, resolvedConfig).observe()
                     setCSSRuntime(newCSSRuntime)
                 }
             }

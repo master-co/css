@@ -5,9 +5,9 @@ The `Runtime` extends the `MasterCSS` and only works in the browser environment.
 
 Create a Master Runtime CSS instance with your custom [configuration](/docs/configuration):
 ```ts
-import { CSSRuntime } from '@master/css-runtime'
+import { RuntimeCSS } from '@master/css-runtime'
 
-const runtimeCSS = new CSSRuntime(config)
+const runtimeCSS = new RuntimeCSS(config)
 ```
 
 ### `.root`
@@ -94,14 +94,14 @@ css.reset()
 ## Global
 ### `globalThis.runtimeCSS`
 Record the registered root `document` Runtime CSS instance; the field will be recorded only after executing `js css.observe()`.
-<DocProp defaultValue="undefined" types={['CSSRuntime']} />
+<DocProp defaultValue="undefined" types={['RuntimeCSS']} />
 
 ### `globalThis.runtimeCSSs`
-All objects instantiated via `js new CSSRuntime()`.
-<DocProp defaultValue="[]" types={['CSSRuntime[]']} />
+All objects instantiated via `js new RuntimeCSS()`.
+<DocProp defaultValue="[]" types={['RuntimeCSS[]']} />
 
-### `globalThis.CSSRuntime`
-<DocProp defaultValue="CSSRuntime" types={['typeof CSSRuntime']} />
+### `globalThis.RuntimeCSS`
+<DocProp defaultValue="RuntimeCSS" types={['typeof RuntimeCSS']} />
 
 ---
 
@@ -121,7 +121,7 @@ const css = initCSSRuntime()
 ```
 Equivalent to:
 ```ts
-import { CSSRuntime } from '@master/css-runtime'
+import { RuntimeCSS } from '@master/css-runtime'
 
-const runtimeCSS = new CSSRuntime().observe()
+const runtimeCSS = new RuntimeCSS().observe()
 ```

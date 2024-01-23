@@ -1,12 +1,12 @@
-import { CSSRuntime } from './core'
+import { RuntimeCSS } from './core'
 import type { Config } from '@master/css'
 
 /**
- * Initialize a new CSSRuntime instance and observe the target root
+ * Initialize a new RuntimeCSS instance and observe the target root
  * @param config master css config
  * @param targetRoot target root to observe
  * @returns master css instance
  */
-export default function initCSSRuntime(config?: Config): CSSRuntime {
-    return new CSSRuntime(document, config).observe()
+export default function initCSSRuntime(config?: Config): RuntimeCSS {
+    return new RuntimeCSS(document, config).observe()
 }

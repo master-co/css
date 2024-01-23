@@ -3,7 +3,7 @@ import type { Rule, Config } from '@master/css'
 
 import './types/global'
 
-export class CSSRuntime extends MasterCSS {
+export class RuntimeCSS extends MasterCSS {
     readonly host: Element
     readonly observing = false
     readonly container: HTMLElement | ShadowRoot
@@ -19,7 +19,7 @@ export class CSSRuntime extends MasterCSS {
             this.container = document.head
             this.host = document.documentElement
         } else {
-            this.container = this.root as CSSRuntime['container']
+            this.container = this.root as RuntimeCSS['container']
             this.host = (this.root as ShadowRoot).host
         }
         runtimeCSSs.push(this)
@@ -415,9 +415,9 @@ export class CSSRuntime extends MasterCSS {
     }
 }
 
-export const runtimeCSSs: CSSRuntime[] = [];
+export const runtimeCSSs: RuntimeCSS[] = [];
 
 (() => {
-    globalThis.CSSRuntime = CSSRuntime
+    globalThis.RuntimeCSS = RuntimeCSS
     globalThis.runtimeCSSs = runtimeCSSs
 })()

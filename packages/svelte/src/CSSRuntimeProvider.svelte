@@ -1,23 +1,23 @@
 <script lang="ts">
     import type { Config } from "@master/css";
-    import CSSRuntime from "@master/css-runtime";
+    import RuntimeCSS from "@master/css-runtime";
     import { onMount, setContext } from "svelte";
     import { writable } from "svelte/store";
     import { cssRuntimeSymbol } from "./css-runtime";
     export let config: Config | Promise<Config> | Promise<any>;
     export let root: Document | ShadowRoot | undefined = undefined;
-    const runtimeCSS = writable<CSSRuntime>();
+    const runtimeCSS = writable<RuntimeCSS>();
     onMount(() => {
-        let newCSSRuntime: CSSRuntime;
+        let newCSSRuntime: RuntimeCSS;
         if (!$runtimeCSS) {
             const init = (resolvedConfig?: Config) => {
                 const existingCSSRuntime = (globalThis as any).runtimeCSSs.find(
-                    (eachCSS: CSSRuntime) => eachCSS.root === root
+                    (eachCSS: RuntimeCSS) => eachCSS.root === root
                 );
                 if (existingCSSRuntime) {
                     runtimeCSS.set(existingCSSRuntime);
                 } else {
-                    newCSSRuntime = new CSSRuntime(root, resolvedConfig).observe();
+                    newCSSRuntime = new RuntimeCSS(root, resolvedConfig).observe();
                     runtimeCSS.set(newCSSRuntime);
                 }
             };

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import type { Config } from '@master/css'
-import CSSRuntime from '@master/css-runtime'
+import RuntimeCSS from '@master/css-runtime'
 import { onMounted, onBeforeUnmount, ref, provide } from 'vue'
 
 const props = defineProps<{
@@ -16,11 +16,11 @@ onMounted(() => {
     if (typeof window === 'undefined') { return }
     if (!runtimeCSS.value) {
         const init = (resolvedConfig: Config | undefined) => {
-            const existingCSSRuntime = (globalThis as any).runtimeCSSs.find((eachCSS: CSSRuntime) => eachCSS.root === props.root)
+            const existingCSSRuntime = (globalThis as any).runtimeCSSs.find((eachCSS: RuntimeCSS) => eachCSS.root === props.root)
             if (existingCSSRuntime) {
                 runtimeCSS.value = existingCSSRuntime
             } else {
-                newCSSRuntime.value = new CSSRuntime(props.root, resolvedConfig).observe()
+                newCSSRuntime.value = new RuntimeCSS(props.root, resolvedConfig).observe()
                 runtimeCSS.value = newCSSRuntime.value
             }
         }
