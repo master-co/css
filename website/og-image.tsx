@@ -77,7 +77,6 @@ export default async function create({
         Lola: readImage(lolaFilename),
         Monting: readImage(montingFilename),
     }
-
     const $ = await createTranslation(props.params?.locale)
     title = $(title || metadata?.openGraph?.title).replace(' - Master CSS', '') as string
     description = $(description || metadata?.openGraph?.description || metadata?.description) as string

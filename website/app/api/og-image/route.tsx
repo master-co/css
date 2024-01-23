@@ -32,6 +32,11 @@ export async function GET(req: NextRequest, props: any) {
         metadata,
         title,
         description,
-        props
+        props: {
+            ...props,
+            params: {
+                locale
+            }
+        }
     })
 }

@@ -79,7 +79,15 @@ Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
 -<p class="text:pink">text-fill-color properity</p>
 +<p class="fg:pink">color properity</p>
 ```
-(i) You can use `$(blue)` to apply `variables.blue` instead of `variables.text.blue`:
+
+### Apply text color to any syntax
+Besides inheriting the above rules, you can use `text-*` to access global text color variables in other syntax.
+```html
+<svg class="stroke:**text-light**"></svg>
+```
+
+### Escape inherited text colors
+Use `$(blue)` to apply `variables.blue` instead of `variables.text.blue`.
 ```html
 <p class="fg:**$(blue)**">…</p>
 ```
@@ -98,7 +106,7 @@ export default {
     }
 }
 ```
-Apply it:
+Apply the custom color:
 ```html
 <p class="fg:**primary**"></p>
 ```
