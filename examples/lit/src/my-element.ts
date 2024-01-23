@@ -14,7 +14,7 @@ import config from '../master.css'
 @customElement('my-element')
 export class MyElement extends LitElement {
 
-    cssRuntime: CSSRuntime | undefined
+    runtimeCSS: CSSRuntime | undefined
 
     /**
      * Copy for the read the docs hint.
@@ -30,13 +30,13 @@ export class MyElement extends LitElement {
 
     connectedCallback() {
         super.connectedCallback()
-        this.cssRuntime = new CSSRuntime(this.shadowRoot, config)
+        this.runtimeCSS = new CSSRuntime(this.shadowRoot, config)
             .observe()
     }
 
     disconnectedCallback() {
         super.disconnectedCallback()
-        this.cssRuntime?.destroy()
+        this.runtimeCSS?.destroy()
     }
 
     render() {

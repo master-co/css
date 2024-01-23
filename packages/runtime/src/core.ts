@@ -15,7 +15,7 @@ export class CSSRuntime extends MasterCSS {
         super(customConfig)
         if (!root) this.root = document
         if (this.root === document) {
-            (globalThis as any).cssRuntime = this
+            (globalThis as any).runtimeCSS = this
             this.container = document.head
             this.host = document.documentElement
         } else {

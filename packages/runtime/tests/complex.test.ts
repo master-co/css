@@ -14,7 +14,7 @@ it('css count class add', async () => {
     document.body.append(p1)
     p1.classList.add('italic')
     await new Promise(resolve => setTimeout(resolve, 100))
-    expect(globalThis.cssRuntime.classesUsage).toEqual({
+    expect(globalThis.runtimeCSS.classesUsage).toEqual({
         'block': 1,
         'font:bold': 1,
         'italic': 1
@@ -24,8 +24,8 @@ it('css count class add', async () => {
 it('css count class complicated example', async () => {
     document.body.innerHTML = readFileSync(resolve(__dirname, './complex.html'), 'utf-8').toString()
     await new Promise(resolve => setTimeout(resolve, 100))
-    expect(Object.keys(globalThis.cssRuntime.classesUsage).length).toBeTruthy()
+    expect(Object.keys(globalThis.runtimeCSS.classesUsage).length).toBeTruthy()
     document.body.innerHTML = ''
     await new Promise(resolve => setTimeout(resolve, 100))
-    expect(globalThis.cssRuntime.classesUsage).toEqual({})
+    expect(globalThis.runtimeCSS.classesUsage).toEqual({})
 }, 15000)

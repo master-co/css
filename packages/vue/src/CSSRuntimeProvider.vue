@@ -9,19 +9,19 @@ const props = defineProps<{
     root?: Document | ShadowRoot
 }>()
 
-const cssRuntime = ref()
+const runtimeCSS = ref()
 const newCSSRuntime = ref()
 
 onMounted(() => {
     if (typeof window === 'undefined') { return }
-    if (!cssRuntime.value) {
+    if (!runtimeCSS.value) {
         const init = (resolvedConfig: Config | undefined) => {
             const existingCSSRuntime = (globalThis as any).cssRuntimes.find((eachCSS: CSSRuntime) => eachCSS.root === props.root)
             if (existingCSSRuntime) {
-                cssRuntime.value = existingCSSRuntime
+                runtimeCSS.value = existingCSSRuntime
             } else {
                 newCSSRuntime.value = new CSSRuntime(props.root, resolvedConfig).observe()
-                cssRuntime.value = newCSSRuntime.value
+                runtimeCSS.value = newCSSRuntime.value
             }
         }
 
@@ -33,18 +33,18 @@ onMounted(() => {
         } else {
             init(props.config)
         }
-    } else if (!cssRuntime.value.observing) {
-        cssRuntime.value.observe(props.root)
+    } else if (!runtimeCSS.value.observing) {
+        runtimeCSS.value.observe(props.root)
     }
 })
 
 onBeforeUnmount(() => {
-    if (cssRuntime.value && newCSSRuntime) {
+    if (runtimeCSS.value && newCSSRuntime) {
         newCSSRuntime.value?.destroy()
     }
 })
 
-provide('css', cssRuntime)
+provide('css', runtimeCSS)
 
 </script>
 

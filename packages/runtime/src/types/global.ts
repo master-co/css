@@ -5,6 +5,6 @@ import type { CSSRuntime as _CSSRuntime } from '../core'
 declare global {
     var CSSRuntime: typeof _CSSRuntime
     var cssRuntimes: _CSSRuntime[]
-    var cssRuntime: _CSSRuntime
+    var runtimeCSS: _CSSRuntime
     var masterCSSConfig: Config
 }

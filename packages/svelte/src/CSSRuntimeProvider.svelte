@@ -6,19 +6,19 @@
     import { cssRuntimeSymbol } from "./css-runtime";
     export let config: Config | Promise<Config> | Promise<any>;
     export let root: Document | ShadowRoot | undefined = undefined;
-    const cssRuntime = writable<CSSRuntime>();
+    const runtimeCSS = writable<CSSRuntime>();
     onMount(() => {
         let newCSSRuntime: CSSRuntime;
-        if (!$cssRuntime) {
+        if (!$runtimeCSS) {
             const init = (resolvedConfig?: Config) => {
                 const existingCSSRuntime = (globalThis as any).cssRuntimes.find(
                     (eachCSS: CSSRuntime) => eachCSS.root === root
                 );
                 if (existingCSSRuntime) {
-                    cssRuntime.set(existingCSSRuntime);
+                    runtimeCSS.set(existingCSSRuntime);
                 } else {
                     newCSSRuntime = new CSSRuntime(root, resolvedConfig).observe();
-                    cssRuntime.set(newCSSRuntime);
+                    runtimeCSS.set(newCSSRuntime);
                 }
             };
             if (config instanceof Promise) {
@@ -33,14 +33,14 @@
             } else {
                 init(config);
             }
-        } else if (!$cssRuntime.observing) {
-            $cssRuntime.observe();
+        } else if (!$runtimeCSS.observing) {
+            $runtimeCSS.observe();
         }
         return () => {
             newCSSRuntime?.destroy();
         };
     });
-    setContext(cssRuntimeSymbol, cssRuntime);
+    setContext(cssRuntimeSymbol, runtimeCSS);
 </script>
 
 <slot />

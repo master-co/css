@@ -7,35 +7,35 @@ Create a Master Runtime CSS instance with your custom [configuration](/docs/conf
 ```ts
 import { CSSRuntime } from '@master/css-runtime'
 
-const cssRuntime = new CSSRuntime(config)
+const runtimeCSS = new CSSRuntime(config)
 ```
 
 ### `.root`
 Observe the root element.
 <DocProp defaultValue="document" types={['Document', 'ShadowRoot']} />
 ```ts
-cssRuntime.root
+runtimeCSS.root
 ```
 
 ### `.host`
 Observe the root's host element, usually `js this.root.host` or `js document.documentElement`.
 <DocProp defaultValue="auto" types={['Element']} readonly />
 ```ts
-cssRuntime.host
+runtimeCSS.host
 ```
 
 ### `.container`
 Container for inserting style `html <style>`.
 <DocProp defaultValue="auto" types={['HTMLElement', 'ShadowRoot']} readonly />
 ```ts
-cssRuntime.host
+runtimeCSS.host
 ```
 
 ### `.observing`
 Observation state. `js true` after `js .observe()`; `js false` after `js .disconnect()`.
 <DocProp defaultValue="auto" types={['boolean']} readonly />
 ```ts
-cssRuntime.observing
+runtimeCSS.observing
 ```
 
 ### `.observe()`
@@ -44,7 +44,7 @@ Observe the `class` attribute changes of `js this.root` and all descendant eleme
     {[ { name: 'return', type: 'this' } ]}
 </DocFn>
 ```ts
-cssRuntime.observe()
+runtimeCSS.observe()
 ```
 
 ### `.disconnect()`
@@ -56,7 +56,7 @@ Cancel the previous `.observe()` of `js this.root`.
     ]}
 </DocFn>
 ```ts
-cssRuntime.disconnect()
+runtimeCSS.disconnect()
 ```
 
 ### `.refresh()`
@@ -92,7 +92,7 @@ css.reset()
 ---
 
 ## Global
-### `globalThis.cssRuntime`
+### `globalThis.runtimeCSS`
 Record the registered root `document` Runtime CSS instance; the field will be recorded only after executing `js css.observe()`.
 <DocProp defaultValue="undefined" types={['CSSRuntime']} />
 
@@ -123,5 +123,5 @@ Equivalent to:
 ```ts
 import { CSSRuntime } from '@master/css-runtime'
 
-const cssRuntime = new CSSRuntime().observe()
+const runtimeCSS = new CSSRuntime().observe()
 ```

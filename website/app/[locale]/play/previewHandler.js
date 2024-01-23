@@ -4,14 +4,14 @@ let prevCSSText = ''
 let prevHtmlContent = ''
 
 const updateCSSText = (force) => {
-    let cssRuntime;
+    let runtimeCSS;
     let cssText;
-    if (cssRuntime = window.cssRuntime || window.runtimeCSS || window.MasterCSS && window.MasterCSS.root) {
-        cssText = cssRuntime.text
-    } else if (cssRuntime = window.MasterStyleSheet && window.MasterStyleSheet.root) {
-        cssText = cssRuntime.styles.map(({ text }) => text).join('');
+    if (runtimeCSS = window.runtimeCSS || window.runtimeCSS || window.MasterCSS && window.MasterCSS.root) {
+        cssText = runtimeCSS.text
+    } else if (runtimeCSS = window.MasterStyleSheet && window.MasterStyleSheet.root) {
+        cssText = runtimeCSS.styles.map(({ text }) => text).join('');
     }
-    if (cssRuntime) {
+    if (runtimeCSS) {
         if (prevCSSText !== cssText || force) {
             prevCSSText = cssText
             parent.postMessage(
