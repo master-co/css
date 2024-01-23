@@ -1,7 +1,7 @@
 import { mediaQueries } from '@master/css'
 import InlineCode from 'websites/components/InlineCode'
 import DocTable from 'websites/components/DocTable'
-import descriptions from '../../screen-sizes/descriptions'
+import descriptions from '../../screens/descriptions'
 
 export default () =>
     <DocTable>

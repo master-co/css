@@ -1,8 +1,8 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Screen Sizes',
-    description: 'The screen sizes are derived from common display resolutions.',
+    title: 'Screens',
+    description: 'Customizing screens and breakpoints or starting with the official design system.',
     category: 'Design Variables'
 }
 

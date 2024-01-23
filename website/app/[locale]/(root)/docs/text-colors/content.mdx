@@ -1,12 +1,10 @@
-import textColors from '~/data/text-colors'
-
 ## Default [sr-only]
 | Variable Token                                    | Keywords                                                                  |
 |---------------------------------------------------|---------------------------------------------------------------------------|
 | <Aa className="fg:strong" />`text-strong`         | page titles, subheadings, emphasized fields                               |
 | <Aa className="fg:neutral" />`text-neutral`       | body text, descriptions, and general content                              |
-| <Aa className="fg:light" />`text-light`           | light color                                                               |
-| <Aa className="fg:lighter" />`text-lighter`       | lighter color                                                             |
+| <Aa className="fg:light" />`text-light`           | light color, icons                                                        |
+| <Aa className="fg:lighter" />`text-lighter`       | lighter color, icons                                                      |
 | <Aa className="fg:lightest" />`text-lightest`     | dim color, placeholder, disabled text                                     |
 | <Aa className="fg:gray" />`text-gray`             | -                                                                         |
 | <Aa className="fg:slate" />`text-slate`           | -                                                                         |
@@ -26,7 +24,7 @@ import textColors from '~/data/text-colors'
 | <Aa className="fg:purple" />`text-purple`         | -                                                                         |
 | <Aa className="fg:fuchsia" />`text-fuchsia`       | -                                                                         |
 | <Aa className="fg:pink" />`text-pink`             | -                                                                         |
-| <Aa className="fg:crimson" />`text-crimson`       | errors, danger text, remove icons                                         |
+| <Aa className="fg:crimson" />`text-crimson`       | -                                                                         |
 | <Aa className="fg:red" />`text-red`               | errors, danger text, remove icons                                         |
 
 <details>
@@ -38,26 +36,20 @@ import textColors from '~/data/text-colors'
     </div>
 </details>
 
-By default, theme modes drive text variables meticulously adjusted in light and dark modes.
+By default, theme modes [drive](/docs/configuration#themedriver) text variables meticulously adjusted in light and dark modes.
 <Demo $py={0} $px={0}>
-    <div class="light w:1/2">
-        <div className="bg:base overflow:hidden">
-            <div className="abs top:4x left:4x fg:lighter font:12">light</div>
-            <div className="fg:yellow fit font:heavy font:96 translateX(50%) float:right py:8x">A</div>
-        </div>
-    </div>
-    <div class="dark w:1/2">
-        <div className="bg:base dark overflow:hidden">
-            <div className="abs top:4x right:4x fg:lighter font:12">dark</div>
-            <div className="fg:yellow fit font:heavy font:96 translateX(-50%) float:left py:8x">A</div>
-        </div>
-    </div>
+    <DemoLight>
+        <div className="fg:yellow font:heavy font:96">A</div>
+    </DemoLight>
+    <DemoDark>
+        <div className="fg:yellow font:heavy font:96">A</div>
+    </DemoDark>
 </Demo>
 ```html
-<div class="**light** w:1/2">
+<div class="**light**">
     <span class="fg:yellow">A</span>
 </div>
-<div class="**dark** w:1/2">
+<div class="**dark**">
     <span class="fg:yellow">A</span>
 </div>
 ```

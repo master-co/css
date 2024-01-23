@@ -1,10 +1,10 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Colors',
-    description: 'Customizing color variables or starting with the crafted palette.',
+    title: 'Base Colors',
+    description: 'Customizing base color variables or starting with the official design system.',
     category: 'Design Variables',
-    order: 1
+    order: 2
 }
 
 export default metadata

@@ -20,7 +20,7 @@ test('normal function', () => {
         ({ intent, size }) => intent && size && 'font:semibold',
         ({ color }) => color && `color:${color}`
     )
-     
+
     normalBtn.default = {
         intent: 'primary',
         size: 'sm'
@@ -49,7 +49,7 @@ test('literal function', () => {
         ${({ intent, size }) => intent && size && 'font:semibold'}
         color:${({ color }) => color}
     `
-     
+
     literalBtn.default = {
         intent: 'primary',
         size: 'sm'

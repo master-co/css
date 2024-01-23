@@ -1,0 +1,90 @@
+## Default [sr-only]
+| Variable Token                                    | Keywords                                                                  |
+|---------------------------------------------------|---------------------------------------------------------------------------|
+| <Bg className="bg:base" />`base`                  | background for page, modal                                                |
+| <Bg className="bg:gray" />`gray`                  | -                                                                         |
+| <Bg className="bg:slate" />`slate`                | -                                                                         |
+| <Bg className="bg:brown" />`brown`                | -                                                                         |
+| <Bg className="bg:orange" />`orange`              | -                                                                         |
+| <Bg className="bg:amber" />`amber`                | -                                                                         |
+| <Bg className="bg:yellow" />`yellow`              | -                                                                         |
+| <Bg className="bg:lime" />`lime`                  | -                                                                         |
+| <Bg className="bg:green" />`green`                | success, pay                                                              |
+| <Bg className="bg:beryl" />`beryl`                | -                                                                         |
+| <Bg className="bg:teal" />`teal`                  | -                                                                         |
+| <Bg className="bg:cyan" />`cyan`                  | -                                                                         |
+| <Bg className="bg:sky" />`sky`                    | -                                                                         |
+| <Bg className="bg:blue" />`blue`                  | -                                                                         |
+| <Bg className="bg:indigo" />`indigo`              | -                                                                         |
+| <Bg className="bg:violet" />`violet`              | -                                                                         |
+| <Bg className="bg:purple" />`purple`              | -                                                                         |
+| <Bg className="bg:fuchsia" />`fuchsia`            | -                                                                         |
+| <Bg className="bg:pink" />`pink`                  | -                                                                         |
+| <Bg className="bg:crimson" />`crimson`            | -                                                                         |
+| <Bg className="bg:red" />`red`                    | delete, remove, danger                                                    |
+
+By default, theme modes [drive](/docs/configuration#themedriver) base color variables meticulously adjusted in light and dark modes.
+<Demo $py={0} $px={0}>
+    <DemoLight>
+        <div className="bg:yellow aspect:5/1 size:full|48 r:1x"></div>
+    </DemoLight>
+    <DemoDark>
+        <div className="bg:yellow aspect:5/1 size:full|48 r:1x"></div>
+    </DemoDark>
+</Demo>
+```html
+<div class="**light**">
+    <div class="bg:yellow"></div>
+</div>
+<div class="**dark**">
+    <div class="bg:yellow"></div>
+</div>
+```
+
+---
+
+## Basic usage
+### Apply a base color
+By default, all base colors are set at the top level of variables and accessed as a global variable.
+```html
+<html class="**light**">
+-    <body class="bg:$(base)">equals</body>
++    <body class="bg:base"></body>
+</html>
+```
+
+---
+
+## Customization
+### Add a base color
+Add a color to the base variables group.
+```js name=master.css.js
+export default {
+    variables: {
++        primary: '#000'
+    }
+}
+```
+Apply the custom color:
+```html
+<p class="bg:**primary**"></p>
+```
+See the [Color Customization](/docs/colors#customization) documentation to learn more about color variable behavior.
+
+---
+
+## Use cases
+### Create a delete button
+<Demo $py={0}>
+    <DemoPanel>
+        <div className='text:20 font:semibold fg:strong'>Delete Project</div>
+        <div className='text:14 mt:1x'>The project will be permanently deleted, including its products and teams. <span className="fg:red font:medium">This action is irreversible and can not be undone.</span></div>
+        <div className="flex justify-content:space-between mt:5x pt:5x bt:1|dashed|frame">
+            <p className="text:12 m:0">Learn more about the [disclaimer](#)</p>
+            <button className='bg:red font:14 font:semibold fg:white h:32 r:1x px:3x float:right'>Delete</button>
+        </div>
+    </DemoPanel>
+</Demo>
+```html
+<button class="**bg:red** fg:white …">Delete</button>
+```
