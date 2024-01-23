@@ -1,5 +1,5 @@
 ## Default [sr-only]
-| Variable Token                                    | Keywords                                                                  |
+| Token                                             | Keywords                                                                  |
 |---------------------------------------------------|---------------------------------------------------------------------------|
 | <small>Semantic</small>                                                                                                       |
 | <Aa className="fg:strong" />`text-strong`         | page titles, subheadings, emphasized fields                               |
@@ -29,15 +29,6 @@
 | <Aa className="fg:crimson" />`text-crimson`       | passionate, intense, powerful                                             |
 | <Aa className="fg:red" />`text-red`               | bold, energetic, attention-grabbing                                       |
 
-<details>
-    <summary>View the default variables</summary>
-    <div>
-        <Code lang="js" beautify>
-            {`export default { variables: { text: ${JSON.stringify(require('@master/css').variables.text)}} }`}
-        </Code>
-    </div>
-</details>
-
 By default, theme modes [drive](/docs/configuration#themedriver) text variables meticulously adjusted in light and dark modes.
 <Demo $py={0} $px={0}>
     <DemoLight>
@@ -55,6 +46,7 @@ By default, theme modes [drive](/docs/configuration#themedriver) text variables 
     <span class="fg:yellow">A</span>
 </div>
 ```
+[View the default variables on GitHub](https://github.com/master-co/css/blob/rc/packages/css/src/config/variables.ts)
 
 ---
 
