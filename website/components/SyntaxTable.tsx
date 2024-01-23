@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react'
 import DocTable from 'websites/components/DocTable'
 import { snackbar } from '../../../../utils/snackbar'
 
-export default function SyntaxTable({ title, value, children, scrollY, ...props }: any) {
+export default function SyntaxTable({ title, value, children, scrollY, addedLabels, ...props }: any) {
     const [previewCodeElement, setPreviewCodeElement] = useState<HTMLElement | null>(null)
     const [shouldSelected, setShouldSelected] = useState<boolean | undefined>()
     const tbodyRef = useRef<HTMLTableSectionElement>(null)
@@ -34,11 +34,12 @@ export default function SyntaxTable({ title, value, children, scrollY, ...props 
     }, [previewCodeElement, shouldSelected])
     return (
         <>
-            <DocTable {...props} className={children ? 'mb:30' : 'mb:12x'} scrollY={scrollY !== undefined ? scrollY : 424}>
+            <DocTable {...props} className="mb:8x" scrollY={scrollY !== undefined ? scrollY : 424}>
                 <thead>
                     <tr>
                         <th className="sticky bg:base top:0 z:1">{title || 'Class'}</th>
-                        <th className="sticky bg:base top:0 z:2">Declarations</th>
+                        <th className="sticky bg:base top:0 z:1">Declarations</th>
+                        {addedLabels && addedLabels.map((label: string) => <th key={label} className="sticky bg:base top:0 z:1">{label}</th>)}
                     </tr>
                 </thead>
                 <tbody ref={tbodyRef} onClick={copySyntax} className="text:underline_.language-mcss:not(.invalid):hover">
