@@ -3,7 +3,7 @@
 
 ---
 
-## Customizing colors
+## Customization
 ### Add a color
 Add color variables using `#000`, `rgb(0 0 0)`, or `hsl(0 0% 0%)`.
 <Code lang="js" name="master.css.js">{require('!!raw-loader!../../../../../../packages/server/tests/add-a-color/config.js').default}</Code>
@@ -119,36 +119,6 @@ Apply custom colors for the current application.
 ---
 
 ## Custom references
-### Text colors
-| Token             | Description                                                                                                                       |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| `text-strong`     | Strong color, used for main titles, subheadings, or slightly emphasized fields, creating a high contrast with the background.     |
-| `text-neutral`    | Soft color, a foreground color harmonizing with the background.                                                                   |
-| `text-light`      | Light color, a foreground color contrasting slightly with the background.                                                         |
-| `text-lighter`    | Lighter color, a foreground color contrasting slightly with the background.                                                       |
-| `text-lightest`   | Dim color, a foreground color contrasting slightly with the background.                                                           |
-
-Add foreground color variables for titles, descriptions, icons, and other body text.
-```js name=master.css.js
-export default {
-    variables: {
-        text: {
-+            primary: '#000'
-        }
-    }
-}
-```
-Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
-```html
-<h1 class="fg:**primary**">page title</h1>
-```
-To apply `variables.primary` instead of `variables.text.primary`, you can use `$(primary)`:
-```html
-<p class="fg:**$(primary)**">…</p>
-```
-
-See all the available [text and foreground colors](/docs/color).
-
 ### Background colors
 | Token             | Description                                                                                                                       |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------|

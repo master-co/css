@@ -1,2 +1,105 @@
+import textColors from '~/data/text-colors'
+
 ## Default [sr-only]
-<Overview/>
+| Variable Token                                    | Keywords                                                                  |
+|---------------------------------------------------|---------------------------------------------------------------------------|
+| <Aa className="fg:strong" />`text-strong`         | page titles, subheadings, emphasized fields                               |
+| <Aa className="fg:neutral" />`text-neutral`       | body text, descriptions, and general content                              |
+| <Aa className="fg:light" />`text-light`           | light color                                                               |
+| <Aa className="fg:lighter" />`text-lighter`       | lighter color                                                             |
+| <Aa className="fg:lightest" />`text-lightest`     | dim color, placeholder, disabled text                                     |
+| <Aa className="fg:gray" />`text-gray`             | -                                                                         |
+| <Aa className="fg:slate" />`text-slate`           | -                                                                         |
+| <Aa className="fg:brown" />`text-brown`           | -                                                                         |
+| <Aa className="fg:orange" />`text-orange`         | warnings                                                                  |
+| <Aa className="fg:amber" />`text-amber`           | -                                                                         |
+| <Aa className="fg:yellow" />`text-yellow`         | -                                                                         |
+| <Aa className="fg:lime" />`text-lime`             | -                                                                         |
+| <Aa className="fg:green" />`text-green`           | success                                                                   |
+| <Aa className="fg:beryl" />`text-beryl`           | -                                                                         |
+| <Aa className="fg:teal" />`text-teal`             | -                                                                         |
+| <Aa className="fg:cyan" />`text-cyan`             | -                                                                         |
+| <Aa className="fg:sky" />`text-sky`               | -                                                                         |
+| <Aa className="fg:blue" />`text-blue`             | information, links.                                                       |
+| <Aa className="fg:indigo" />`text-indigo`         | -                                                                         |
+| <Aa className="fg:violet" />`text-violet`         | -                                                                         |
+| <Aa className="fg:purple" />`text-purple`         | -                                                                         |
+| <Aa className="fg:fuchsia" />`text-fuchsia`       | -                                                                         |
+| <Aa className="fg:pink" />`text-pink`             | -                                                                         |
+| <Aa className="fg:crimson" />`text-crimson`       | errors, danger text, and remove icons.                                    |
+| <Aa className="fg:red" />`text-red`               | errors, danger text, and remove icons.                                    |
+
+<details>
+    <summary>View the default variables</summary>
+    <div>
+        <Code lang="js" beautify>
+            {`export default { variables: { text: ${JSON.stringify(require('@master/css').variables.text)}} }`}
+        </Code>
+    </div>
+</details>
+
+By default, theme modes drive text variables meticulously adjusted in light and dark modes.
+<Demo $py={0} $px={0}>
+    <div class="light w:1/2">
+        <div className="bg:base overflow:hidden">
+            <div className="abs top:4x left:4x fg:lighter font:12">light</div>
+            <div className="fg:yellow fit font:heavy font:96 translateX(50%) float:right py:4x">A</div>
+        </div>
+    </div>
+    <div class="dark w:1/2">
+        <div className="bg:base dark overflow:hidden">
+            <div className="abs top:4x right:4x fg:lighter font:12">dark</div>
+            <div className="fg:yellow fit font:heavy font:96 translateX(-50%) float:left py:4x">A</div>
+        </div>
+    </div>
+</Demo>
+```html
+<div class="**light** w:1/2">
+    <span class="fg:yellow">A</span>
+</div>
+<div class="**dark** w:1/2">
+    <span class="fg:yellow">A</span>
+</div>
+```
+
+---
+
+## Basic usage
+### Apply a text color
+Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
+```html
+<html class="**light**">
+-    <body class="fg:$(text-neutral)">equals</body>
+-    <body class="fg:text-neutral">equals</body>
++    <body class="fg:neutral"></body>
+</html>
+```
+(!) Typically, we set the [foreground color](/docs/color) of elements using `fg:color` rather than the [text-specific](/docs/text-fill-color) `text:color`.
+```html
+-<p class="text:pink">text-fill-color properity</p>
++<p class="fg:pink">color properity</p>
+```
+(i) You can use `$(blue)` to apply `variables.blue` instead of `variables.text.blue`:
+```html
+<p class="fg:**$(blue)**">…</p>
+```
+
+---
+
+## Customization
+### Add a text color
+Add a color to the text variables group.
+```js name=master.css.js
+export default {
+    variables: {
+        text: {
++            primary: '#000'
+        }
+    }
+}
+```
+Apply it:
+```html
+<p class="fg:**primary**"></p>
+```
+See the [Color Customization](/docs/colors#customization) documentation to learn more about color variable behavior.
