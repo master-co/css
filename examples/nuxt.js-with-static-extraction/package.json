@@ -11,6 +11,6 @@
         "@master/css-runtime": "workspace:^",
         "@master/css-extractor.vite": "workspace:^",
         "@types/node": "^18",
-        "nuxt": "^3.5.2"
+        "nuxt": "^3.9.3"
     }
 }
