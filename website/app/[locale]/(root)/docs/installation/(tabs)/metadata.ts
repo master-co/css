@@ -7,7 +7,7 @@ const metadata: Metadata = {
     other: {
         subject: 'Installation'
     },
-    order: 1
+    order: 2
 }
 
 export default metadata

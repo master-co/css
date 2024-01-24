@@ -7,7 +7,7 @@ const metadata: Metadata = {
     other: {
         subject: 'Code Linting'
     },
-    order: 3,
+    order: 4,
     openGraph: {
         description: 'An ESLint plugin enforcing a consistent coding style for Master CSS.'
     },

@@ -50,8 +50,8 @@ export default function BackerTiers() {
         {backerTiers.map((eachBackerTier) => (
             <button key={eachBackerTier.name} className="app-object app-object-interactive flex:col@<lg gap:20 p:25|30 r:5" onClick={() => setSelectedTier(eachBackerTier)}>
                 <div className="font:48">{eachBackerTier.icon}</div>
-                <div className='flex:1'>
-                    <div className="text:16 uppercase::first-letter font:semibold">{eachBackerTier.name}</div>
+                <div className='flex:1 text:left'>
+                    <div className="text:16 uppercase::first-letter fg:strong font:semibold">{eachBackerTier.name}</div>
                     {eachBackerTier.amount && (
                         <div className="text:14 font:bold">
                             {eachBackerTier.amount}

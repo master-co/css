@@ -8,7 +8,7 @@ const metadata: Metadata = {
         subject: 'Language Service'
     },
     unfinished: true,
-    order: 2
+    order: 3
 }
 
 export default metadata
