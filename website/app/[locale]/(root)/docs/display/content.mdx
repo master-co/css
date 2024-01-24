@@ -5,7 +5,7 @@
 ### Block & Inline
 Use `block`, `inline`, and `inline-block` to set the flow of elements.
 <Demo $py={0}>
-    <div className='bg:white@light bg:gray-20@dark p:30'>
+    <div className='bg:float p:8x'>
         <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             <span className="box block! bg:slate-95!@light">
@@ -46,7 +46,7 @@ import aron from '~/public/images/authors/aron.jpg'
 ### Flex
 Use `flex` to create a block-level flex container.
 <Demo>
-    <div className="flex gap:12 ai:center bg:white@light bg:gray-20@dark p:8|20 r:10">
+    <div className="flex gap:12 ai:center bg:float p:8|20 r:10">
         <Image src={aron} alt="avatar" className="object:cover round h:auto" width="64" height="64" />
         <div>
             <div className="text:14 font:medium font:gray-88@dark capitalize">aron</div>
@@ -67,7 +67,7 @@ Use `flex` to create a block-level flex container.
 ### Inline Flex
 Use `inline-flex` to create an inline-level flex container.
 <Demo $py={0}>
-    <div className='bg:white@light bg:gray-20@dark p:30'>
+    <div className='bg:float p:8x'>
         <p className="font:16 lh:1.75rem">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             Nulla et elit dictum, tempor augue quis, rhoncus enim. Nunc lacinia, velit vel convallis tincidunt, ante nisi maximus nunc, at aliquam nisi lectus in mauris. Nam eros sem, ullamcorper nec mollis nec, imperdiet a metus. Nunc pulvinar tortor ipsum,
@@ -246,7 +246,7 @@ Use `contents` to make the element&rsquo;s children like direct children of the 
 ### Flow Root
 Use `flow-root` to create a block-level element that establishes a new block formatting context.
 {<Demo $py={0}>
-    <div className="bg:white@light bg:gray-20@dark p:30 w:full">
+    <div className="bg:float p:8x w:full">
         <div className="w:full flow-root bg-stripe-pink">
             <Image src="/images/blur.png" className="r:8 object:cover my:0 mr:30 float:left" width={160} height={90} alt="Float Image" />
             <p className="my:0">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
