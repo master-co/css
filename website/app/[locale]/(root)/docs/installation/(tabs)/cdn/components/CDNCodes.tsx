@@ -15,7 +15,7 @@ export default () => <CodeTabs>
                 <link rel="preload" as="style" href="https://cdn.master.co/normal.css@rc">
                 <link rel="stylesheet" href="https://cdn.master.co/normal.css@rc">
                 <script>
-                    window.masterCSSConfig = {
+                    window.runtimeCSSConfig = {
                         variables: {
                             primary: '#000000'
                         }

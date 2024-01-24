@@ -182,7 +182,7 @@ export default function Play(props: any) {
                     let eachScriptHTML = getScriptHTML({ ...eachFile, text: content })
                     if (eachFile.name === 'master.css.js') {
                         eachScriptHTML = eachScriptHTML
-                            .replace(/(export default|export const config =)/, 'window.masterCSSConfig =')
+                            .replace(/(export default|export const config =)/, 'window.runtimeCSSConfig =')
                     }
                     headInnerHTML += eachScriptHTML
                     break
