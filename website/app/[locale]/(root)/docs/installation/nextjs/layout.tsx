@@ -1,6 +1,6 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
 import { createTranslation } from '~/i18n'
-import DocLayout from '~/layouts/doc'
+import DocLayout from '~/layouts/reference'
 import LogoSvg from '~/public/images/frameworks/nextjs.svg?inlineSvg'
 
 export default async function Layout(props: any) {
@@ -16,7 +16,7 @@ export default async function Layout(props: any) {
             icon={<LogoSvg width={100} className="invert(1)@dark" />}
             titleBig
         >
-            <Tabs className="mb:30">
+            <Tabs className="mb:8x">
                 <Tab href='/docs/installation/nextjs'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>
                 <Tab href='/docs/installation/nextjs/runtime-rendering'>{$('Runtime Rendering')}</Tab>
                 <Tab href='/docs/installation/nextjs/static-extraction'>{$('Static Extraction')}</Tab>

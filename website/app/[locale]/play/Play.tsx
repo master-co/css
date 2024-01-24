@@ -556,7 +556,7 @@ export default function Play(props: any) {
                 {shareable && <ShareButton className={clsx('hide@<md', sharing ? 'app-header-nav' : 'app-header-icon')} disabled={sharing} onClick={share}>
                     {sharing && <span className="ml:10">{$('Sharing ...')}</span>}
                 </ShareButton>}
-                {(shareId || shareable) && <div className='hide@<md bg:divider h:1em mx:15 w:1'></div>}
+                {(shareId || shareable) && <div className='hide@<md bg:divider h:1em mx:4x w:1'></div>}
                 <Link className="app-header-icon hide@<md" href={getSearchPath('layout', layout ? '' : '2')}>
                     <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path className={clsx(
@@ -590,7 +590,7 @@ export default function Play(props: any) {
                     </svg>
                 </Link>
                 <span className='hide'>{layout}</span>
-                <div className='hide@<md bg:divider h:1em mx:15 w:1'></div>
+                <div className='hide@<md bg:divider h:1em mx:4x w:1'></div>
                 {/* preview: desktop */}
                 <Link className="app-header-icon hide@<md" href={getSearchPath('preview', '')}>
                     <IconDeviceDesktop width="22" height="22" className={clsx(
@@ -613,7 +613,7 @@ export default function Play(props: any) {
                     )} />
                 </Link>
                 <span className='hide'>{preview}</span>
-                <div className='hide@<md bg:divider h:1em mx:15 w:1'></div>
+                <div className='hide@<md bg:divider h:1em mx:4x w:1'></div>
                 <LanguageButton className="app-header-icon hide@<md" locale={locale} />
                 <ThemeButton className="app-header-icon hide@<md mr:-12"
                     onChange={(theme: string) => {

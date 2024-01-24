@@ -2,7 +2,7 @@ import metadata from './metadata'
 import Content from './content.mdx'
 import { generate } from '~/utils/metadata'
 import { createTranslation } from '~/i18n'
-import DocLayout from '~/layouts/doc'
+import DocLayout from '~/layouts/reference'
 
 export const dynamic = 'force-static'
 export const revalidate = false

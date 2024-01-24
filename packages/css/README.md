@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">A markup-driven CSS language with enhanced syntax</p>
+<p align="center">The CSS language/framework for rapidly building modern and high-performance websites</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">

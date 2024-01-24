@@ -1,7 +1,7 @@
 import metadata from './metadata'
 import Content from './content.mdx'
 import { generate } from '~/utils/metadata'
-import DocLayout from '~/layouts/doc'
+import DocLayout from '~/layouts/reference'
 import ESLintSvg from '~/public/icons/eslint.svg?inlineSvg'
 
 export const dynamic = 'force-static'

@@ -12,7 +12,7 @@ import clsx from 'clsx'
 export default function Layout({ children, params, toc, prose, $hideLeftSide, ...props }: any) {
     return <>
         <DocMain $hideRightSide={!toc} $hideLeftSide={$hideLeftSide}>
-            <Article className={clsx({ 'max-w:screen-sm_:where(p)': !toc })} prose={prose}>
+            <Article className={clsx({ 'max-w:screen-sm_:where(p)': !toc })} prose>
                 <ArticleHeader metadata={props.metadata} {...props} />
                 {children}
             </Article>

@@ -12,30 +12,28 @@ import PageContent from 'websites/components/PageContent'
 import Link from 'websites/components/Link'
 import Image from 'next/image'
 
-export default function Layout(props: any) {
-    const { children, params, toc } = props
-    const { mdnLink, canIUseLink, ...metadata } = props.metadata
+export default function Layout({ children, params, toc, $hideLeftSide, ...props }: any) {
     return <>
-        <DocMain>
+        <DocMain $hideRightSide={!toc} $hideLeftSide={$hideLeftSide}>
             <Article>
-                <ArticleHeader metadata={metadata} titleBig />
+                <ArticleHeader metadata={props.metadata} titleBig />
                 {children}
             </Article>
             <PageNavs metadata={props.metadata} pages={pages} />
-            <DocFooter locale={params.locale} title={metadata.title} />
+            <DocFooter locale={params.locale} title={props.metadata.title} />
         </DocMain>
         {toc && <PageContent locale={params.locale}
-            start={(canIUseLink || mdnLink) &&
+            start={(props.metadata.canIUseLink || props.metadata.mdnLink) &&
                 <>
                     {
-                        canIUseLink &&
-                        <Link href={canIUseLink} rel="noreferrer noopener" target="_blank" className="inline-flex content:none::after overflow:hidden r:2">
+                        props.metadata.canIUseLink &&
+                        <Link href={props.metadata.canIUseLink} rel="noreferrer noopener" target="_blank" className="inline-flex content:none::after overflow:hidden r:2">
                             <Image src={canIUseImg} width={24} height={24} alt="Can I use ?" />
                         </Link>
                     }
                     {
-                        mdnLink &&
-                        <Link href={mdnLink} rel="noreferrer noopener" target="_blank" className="inline-flex content:none::after overflow:hidden r:2">
+                        props.metadata.mdnLink &&
+                        <Link href={props.metadata.mdnLink} rel="noreferrer noopener" target="_blank" className="inline-flex content:none::after overflow:hidden r:2">
                             <Image src={mdnImg} width={24} height={24} alt="Can I use ?" />
                         </Link>
                     }

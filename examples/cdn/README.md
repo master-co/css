@@ -72,7 +72,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="preload" as="script" href="https://cdn.master.co/css@rc">
+    <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc">
     <link rel="preload" as="style" href="https://cdn.master.co/normal.css@rc">
     <link rel="stylesheet" href="https://cdn.master.co/normal.css@rc">
     <script>
@@ -82,7 +82,7 @@
             }
         }
     </script>
-    <script src="https://cdn.master.co/css@rc"></script>
+    <script src="https://cdn.master.co/css-runtime@rc"></script>
 </head>
 <body>
     <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
