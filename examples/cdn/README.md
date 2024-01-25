@@ -76,7 +76,7 @@
     <link rel="preload" as="style" href="https://cdn.master.co/normal.css@rc">
     <link rel="stylesheet" href="https://cdn.master.co/normal.css@rc">
     <script>
-        window.runtimeCSSConfig = {
+        window.masterCSSConfig = {
             variables: {
                 primary: '#000000'
             }

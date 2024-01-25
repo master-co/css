@@ -6,5 +6,5 @@ declare global {
     var RuntimeCSS: typeof _CSSRuntime
     var runtimeCSSs: _CSSRuntime[]
     var runtimeCSS: _CSSRuntime
-    var runtimeCSSConfig: Config
+    var masterCSSConfig: Config
 }
