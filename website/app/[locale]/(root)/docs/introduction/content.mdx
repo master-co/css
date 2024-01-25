@@ -1,32 +1,90 @@
+## What is Master CSS? [sr-only]
+### A CSS language
+Master CSS is a [markup-driven](/docs/markup-driven) CSS language with smart rules allowing you to write familiar CSS using concise syntax within HTML.
 
----
+Under the hood, Master CSS automatically adds [vendor prefixes](/docs/browser-support), smartly [ordering CSS rules](/docs/markup-driven#smart-rule-ordering), and more. This allows you to focus on building your website rather than spending time writing and maintaining CSS rules.
 
-## What is Master CSS?
-Master CSS is a **CSS language** and **CSS framework** for rapidly building modern and high-performance websites.
-
-### Markup-driven language
-Master CSS is a markup-driven CSS language with smart rules allowing you to write familiar CSS using concise syntax within HTML.
-
-The following example uses a convenient [runtime CDN](/docs/installation/cdn):
-<Demo>
-    <h1 className="fg:strong font:40 font:heavy m:4x text:center">Hello World</h1>
+<Demo $py={0}>
+    <h1 className="fg:blue fg:red:hover font:32 font:40@sm font:heavy m:10x text:center">Hello World</h1>
 </Demo>
-```html
+```html name=hero.html
+<!-- Master CSS Runtime CDN -->
 <script src="https://cdn.master.co/css-runtime@rc"></script>
 ...
-<h1 class="**fg:strong** **font:40** **font:heavy** **m:4x** **text:center**">Hello World</h1>
+<h1 class="**fg:blue** **fg:red:hover** **font:32** **font:40@sm** **font:heavy** **m:10x** **text:center**">
+    Hello World
+</h1>
 ```
+You can [declare styles](/docs/style-declarations) through the `class` attribute, providing [selector states](/docs/state-selectors), and even base them on [conditional queries](/docs/conditional-queries). There's no need to write any inline style sheets, including creating external CSS files; just add syntax classes in your HTML.
 
-### All-in-one framework
+[Try the above example online](/play/j72b86pssanu)
+
+In addition to atomic, you can write semantics by configuring [styles](/docs/styles).
+
+Whether you're a solo developer or part of a large team, Master CSS can help you build interactive, dynamic, fast, and beautiful websites.
 
 ---
 
-## Features
+## Main features
+Overview of some of the main features of Master CSS:
+
+### Rendering Modes
+Master CSS provides three [rendering modes](/docs/rendering-modes): [Progressive Rendering](/docs/rendering-modes/progressive-rendering), [Runtime Rendering](/docs/rendering-modes/runtime-rendering), and [Static Extraction](/docs/rendering-modes/static-extraction). You can choose according to project scale and application scenarios to meet your current business requirements.
 
 ---
 
-## Essential Reading
+## Performance and benchmarks
+In its infancy, Master CSS focused on building a CSS engine for production browser runtimes, so we concentrate on performance such as syntax parsing, rule generation, cache sharing, and even browser rendering.
+
+Master CSS doesn't use heavy-duty build tools like [PostCSS](https://postcss.org), [Autoprefixer](https://github.com/postcss/autoprefixer), or any CSS minifiers, and includes these optimizations in the early stages of rule generation.
+
+### Fastest page loading
+
+import TailwindCSSLogo from 'websites/svgs/tailwindcss.svg?inlineSvg'
+import BootstrapCSSLogo from 'websites/svgs/bootstrap.svg?inlineSvg'
+import MasterCSSLogo from 'websites/svgs/Master'
+
+<div className="grid-cols:1 gap:3x my:6x bl:1|divider">
+    <div className="flex flex-wrap:nowrap align-items:center gap:10 ml:-1">
+        <div className='bg:cyan b:1|frame h:24 rr:1x' style={{ width: '50%' }} />
+        <TailwindCSSLogo width={24} height={24} />
+        <b className="fg:cyan">321 KB</b>
+        <small>50 KB brotil</small>
+    </div>
+    <div className="flex flex-wrap:nowrap align-items:center gap:10 ml:-1">
+        <div className='bg:purple b:1|frame h:24 rr:1x' style={{ width: 'calc(50% - (321 - 294) / 321 * 50%)' }} />
+        <BootstrapCSSLogo width={24} height={24} />
+        <b className="fg:purple">294 KB</b>
+        <small>47 KB brotil</small>
+    </div>
+    <div className="flex flex-wrap:nowrap align-items:center gap:10 ml:-1">
+        <div className='bg:yellow b:1|frame h:24 rr:1x' style={{ width: 'calc(50% - (321 - 20) / 321 * 50%)' }} />
+        <MasterCSSLogo width={24} height={24} />
+        <b className="fg:yellow">20 KB</b>
+        <small>4 KB brotil</small>
+    </div>
+</div>
+
+<details>
+    <summary className='text:14'>A real-world [critical CSS](https://web.dev/articles/extract-critical-css) benchmark against the Tailwind CSS, Bootstrap CSS, and Master CSS official documentation.</summary>
+    <div>
+        - Tailwind CSS in [tailwindcss.com/docs/404](https://tailwindcss.com/docs/404)
+        - Bootstrap CSS in [getbootstrap.com/docs/404](https://getbootstrap.com/docs/404)
+        - Master CSS in [rc.css.master.co/docs/404](https://rc.css.master.co/docs/404)
+    </div>
+</details>
+
+
+---
+
+## Essential knowledge
+
+---
+
+## Document usage guide
 
 ---
 
 ## Join our community
+If you have any questions related to Master CSS, you're always welcome to ask our community on [GitHub Discussions](https://github.com/master-co/css/discussions), [Discord](https://discord.com/invite/sZNKpAAAw6), and [Twitter](https://twitter.com/mastercorg).
+

@@ -90,7 +90,7 @@ Then, use the abstract class as before:
 ## Generate CSS based on markup
 <GeneratedCSSBasedOnMarkup />
 
-### Smart rule sorting
+### Smart rule ordering
 How is CSS rule order and priority handled?
 
 "Center-align the homepage headline when the viewport width `>=1280px`, and align right when `>=1024px`."
@@ -136,8 +136,8 @@ Not only that, but we also align rules with your expectations when using selecto
 ### Unit-sensed conversions
 In web development, UI design is typically measured using pixels (px). However, to ensure a browser-friendly website, you must convert pixels to REM (Root Em) units to scale website elements across different devices and screen sizes, providing a consistent appearance and excellent user experience.
 
-(!) Look up the `rem` value corresponding to `24px` from the table.
-| px  | 12    | 14    | 16    | 18p   | 20    | 22    | 24    | 26    | 28    |
+(!) Look up the `1.5rem` value corresponding to `24px` from the table.
+| px  | 12    | 14    | 16    | 18    | 20    | 22    | 24    | 26    | 28    |
 | --- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
 | rem | 0.75  | 0.875 | 1     | 1.125 | 1.25  | 1.375 | 1.5   | 1.625 | 1.75  |
 
@@ -175,7 +175,7 @@ This not only improves productivity but also simplifies syntax markup in class a
 
 ---
 
-## Humanize
+## Humanize and low learning curve
 "I'd need to learn a new language to use Master CSS."
 
 Rest assured, the Master CSS syntax is based on native CSS, positioned very similarly to [SASS](https://sass-lang.com). You can begin by writing familiar native-ish CSS and gradually incorporate our enhancements and syntactic sugar over time.
@@ -225,7 +225,7 @@ It can be [stateful and selectable](/docs/selectors):
 <!-- Use simplified :first instead of :nth-child to set pink background -->
 <div class="bg:pink:first">
 ```
-It can be [responsive](/docs/viewports) and [conditional](/docs/media-queries):
+It can be [responsive](/docs/responsive-design) and [conditional](/docs/media-queries):
 ```html
 <!-- Set width to 50rem, when screen width >=1024 -->
 <div class="width:800@>=1024">

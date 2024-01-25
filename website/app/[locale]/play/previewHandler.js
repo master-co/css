@@ -6,9 +6,14 @@ let prevHtmlContent = ''
 const updateCSSText = (force) => {
     let runtimeCSS;
     let cssText;
-    if (runtimeCSS = window.runtimeCSS || window.runtimeCSS || window.MasterCSS && window.MasterCSS.root) {
+    if (
+        runtimeCSS = window.runtimeCSS || window.cssRuntime || window.MasterCSS && window.MasterCSS.root
+    ) {
         cssText = runtimeCSS.text
-    } else if (runtimeCSS = window.MasterStyleSheet && window.MasterStyleSheet.root) {
+    } else if (
+        // support v1
+        runtimeCSS = window.MasterStyleSheet && window.MasterStyleSheet.root
+    ) {
         cssText = runtimeCSS.styles.map(({ text }) => text).join('');
     }
     if (runtimeCSS) {
