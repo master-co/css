@@ -1,7 +1,7 @@
 {
     "name": "@master/css.nuxt",
     "scripts": {
-        "build": "nuxt-module-build prepare && nuxt-module-build build",
+        "build": "nuxt-module-build prepare",
         "dev": "nuxt-module-build prepare && nuxi dev playground",
         "dev:build": "nuxi build playground",
         "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
@@ -35,16 +35,11 @@
     ],
     "sideEffects": false,
     "exports": {
-        ".": {
-            "types": "./dist/types.d.ts",
-            "import": "./dist/module.mjs",
-            "require": "./dist/module.cjs"
-        }
+        ".": "./src/module.ts"
     },
-    "main": "./dist/module.cjs",
-    "types": "./dist/types.d.ts",
+    "main": "./src/module.ts",
     "files": [
-        "dist"
+        "src"
     ],
     "publishConfig": {
         "access": "public"
@@ -52,20 +47,21 @@
     "dependencies": {
         "@master/css-server": "workspace:^",
         "@master/css.vue": "workspace:^",
-        "@nuxt/kit": "^3.9.1",
-        "explore-config": "^2.5.24"
+        "@nuxt/kit": "^3.9.3",
+        "@techor/log": "^2.5.24",
+        "fast-glob": "^3.3.2"
     },
     "devDependencies": {
         "@nuxt/devtools": "latest",
         "@nuxt/eslint-config": "^0.2.0",
-        "@nuxt/module-builder": "^0.5.4",
-        "@nuxt/schema": "^3.8.2",
-        "@nuxt/test-utils": "^3.9.0",
-        "@types/node": "^20.10.3",
+        "@nuxt/module-builder": "^0.5.5",
+        "@nuxt/schema": "^3.9.3",
+        "@nuxt/test-utils": "^3.10.0",
+        "@types/node": "^20.11.6",
         "changelogen": "^0.5.5",
-        "eslint": "^8.55.0",
-        "nuxt": "^3.8.2",
-        "vitest": "^1.2.0",
-        "vue": "^3.4.13"
+        "eslint": "^8.56.0",
+        "nuxt": "^3.9.3",
+        "vitest": "^1.2.1",
+        "vue": "^3.4.15"
     }
 }

@@ -5,4 +5,5 @@
 </template>
 
 <script setup>
+import './master.css'
 </script>
