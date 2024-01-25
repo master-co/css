@@ -1,4 +1,5 @@
 ## What is Master CSS? [sr-only]
+
 ### A CSS language
 Master CSS is a [markup-driven](/docs/markup-driven) CSS language with smart rules allowing you to write familiar CSS using concise syntax within HTML.
 
@@ -15,13 +16,12 @@ Under the hood, Master CSS automatically adds [vendor prefixes](/docs/browser-su
     Hello World
 </h1>
 ```
-You can [declare styles](/docs/style-declarations) through the `class` attribute, providing [selector states](/docs/state-selectors), and even base them on [conditional queries](/docs/conditional-queries). There's no need to write any inline style sheets, including creating external CSS files; just add syntax classes in your HTML.
+You can [declare styles](/docs/style-declarations) through the `class` attribute, attaching [selector states](/docs/state-selectors), and even base them on [conditional queries](/docs/conditional-queries). There's no need to write any inline style sheets, including creating external CSS files; just add syntax classes in your HTML.
 
-[Try the above example online](/play/j72b86pssanu)
+Whether writing atomic classes `text:center` or [abstract styles](/docs/styles) `btn`, Master CSS does both, and you can choose which one to use based on the characteristics of your project.
 
-In addition to atomic, you can write semantics by configuring [styles](/docs/styles).
-
-Whether you're a solo developer or part of a large team, Master CSS can help you build interactive, dynamic, fast, and beautiful websites.
+### A CSS framework
+Whether you're a solo developer or part of a large team, Master CSS can help you build interactive, dynamic, fastest, and beautiful websites.
 
 ---
 
@@ -29,16 +29,21 @@ Whether you're a solo developer or part of a large team, Master CSS can help you
 Overview of some of the main features of Master CSS:
 
 ### Rendering Modes
-Master CSS provides three [rendering modes](/docs/rendering-modes): [Progressive Rendering](/docs/rendering-modes/progressive-rendering), [Runtime Rendering](/docs/rendering-modes/runtime-rendering), and [Static Extraction](/docs/rendering-modes/static-extraction). You can choose according to project scale and application scenarios to meet your current business requirements.
+Master CSS provides three [rendering modes](/docs/rendering-modes), which you can choose according to project scale and application scenarios to meet your current business requirements.
+
+1. [Progressive Rendering](/docs/rendering-modes/progressive-rendering) scans the rendered HTML ahead of time, server-side or at build time, generates the corresponding CSS rules for each page, and lazy loads the runtime engine to keep track of the dynamic class names.
+2. [Runtime Rendering](/docs/rendering-modes/runtime-rendering) observes changes in DOM class names at browser runtime, generates corresponding CSS rules, and injects them into the running style sheet.
+3. [Static Extraction](/docs/rendering-modes/static-extraction) integrates build tools to scan project source code, extract class names, generate CSS rules, and write them into a virtual CSS module.
 
 ---
 
 ## Performance and benchmarks
-In its infancy, Master CSS focused on building a CSS engine for production browser runtimes, so we concentrate on performance such as syntax parsing, rule generation, cache sharing, and even browser rendering.
+Initially, Master CSS was intended to create a CSS engine for production browser runtimes, so we concentrated on performance such as syntax parsing, rule generation, cache sharing, and even browser rendering.
 
 Master CSS doesn't use heavy-duty build tools like [PostCSS](https://postcss.org), [Autoprefixer](https://github.com/postcss/autoprefixer), or any CSS minifiers, and includes these optimizations in the early stages of rule generation.
 
-### Fastest page loading
+### Fastest loading with minimal CSS
+The real-world [critical CSS](https://web.dev/articles/extract-critical-css) benchmark for Tailwind CSS, Bootstrap CSS, and Master CSS official documentation sites.
 
 import TailwindCSSLogo from 'websites/svgs/tailwindcss.svg?inlineSvg'
 import BootstrapCSSLogo from 'websites/svgs/bootstrap.svg?inlineSvg'
@@ -66,14 +71,13 @@ import MasterCSSLogo from 'websites/svgs/Master'
 </div>
 
 <details>
-    <summary className='text:14'>A real-world [critical CSS](https://web.dev/articles/extract-critical-css) benchmark against the Tailwind CSS, Bootstrap CSS, and Master CSS official documentation.</summary>
+    <summary>View this benchmark detail</summary>
     <div>
         - Tailwind CSS in [tailwindcss.com/docs/404](https://tailwindcss.com/docs/404)
         - Bootstrap CSS in [getbootstrap.com/docs/404](https://getbootstrap.com/docs/404)
         - Master CSS in [rc.css.master.co/docs/404](https://rc.css.master.co/docs/404)
     </div>
 </details>
-
 
 ---
 
