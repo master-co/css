@@ -16,7 +16,7 @@ export default function Layout({ children, params, toc, $hideLeftSide, ...props 
     return <>
         <DocMain $hideRightSide={!toc} $hideLeftSide={$hideLeftSide}>
             <Article>
-                <ArticleHeader metadata={props.metadata} titleBig />
+                <ArticleHeader {...props} metadata={props.metadata} titleBig />
                 {children}
             </Article>
             <PageNavs metadata={props.metadata} pages={pages} />
