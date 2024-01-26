@@ -26,6 +26,8 @@ export default defineNuxtModule<{ config?: string }>({
                 config.virtual['#master-css-config'] = `export default {}`
             }
         })
+        // Fix: Package import specifier "#master-css-config" is not defined in package
+        nuxt.options.build.transpile.push(resolve('./runtime/css-server'))
         addServerPlugin(resolve('./runtime/css-server'))
     }
 })

@@ -1,7 +1,7 @@
 {
     "name": "@master/css.nuxt",
     "scripts": {
-        "build": "nuxt-module-build prepare",
+        "build": "nuxt-module-build prepare && nuxt-module-build",
         "dev": "nuxt-module-build prepare && nuxi dev playground",
         "dev:build": "nuxi build playground",
         "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
@@ -35,11 +35,16 @@
     ],
     "sideEffects": false,
     "exports": {
-        ".": "./src/module.ts"
+        ".": {
+            "types": "./dist/module.d.ts",
+            "import": "./dist/module.mjs",
+            "require": "./dist/module.cjs"
+        }
     },
-    "main": "./src/module.ts",
+    "main": "./dist/module.cjs",
+    "types": "./dist/module.d.ts",
     "files": [
-        "src"
+        "dist"
     ],
     "publishConfig": {
         "access": "public"
