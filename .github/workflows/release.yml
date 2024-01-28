@@ -7,17 +7,18 @@ on:
 
 jobs:
     release:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - uses: pnpm/action-setup@v2
               with:
                   version: 8
-            - uses: actions/setup-node@v3
+            - uses: actions/setup-node@v4
               with:
-                  node-version: 18.17.0
+                  node-version: 20
                   cache: "pnpm"
             - run: pnpm install
+            - run: pnpm install semantic-release-config-techor
             - run: pnpm run build
             - uses: lewagon/wait-on-check-action@v1.3.1
               with:
