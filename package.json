@@ -14,7 +14,7 @@
     },
     "packageManager": "pnpm@8.6.10",
     "engines": {
-        "node": "^18.17.0"
+        "node": "^20"
     },
     "repository": {
         "type": "git",
@@ -30,11 +30,8 @@
         "@swc-node/jest": "^1.6.8",
         "@techor/fs": "^2.5.24",
         "@techor/glob": "^2.5.24",
-        "@techor/jest": "^2.5.24",
         "@techor/jest-dom": "^2.5.24",
-        "@techor/pack": "^2.5.24",
         "@techor/repo": "^2.5.24",
-        "@techor/version": "^2.5.24",
         "@types/jest": "^29.5.8",
         "@types/node": "^20.4.0",
         "@types/node-fetch": "^2.6.10",
@@ -44,7 +41,6 @@
         "css-shared": "workspace:^",
         "fast-glob": "^3.2.12",
         "firebase-admin": "^11.11.1",
-        "jest": "^29.6.1",
         "jest-extended": "^4.0.0",
         "jest-text-transformer": "^1.0.4",
         "nanoid": "^4.0.2",
@@ -56,7 +52,9 @@
         "strip-ansi": "^7.1.0",
         "ts-dedent": "^2.2.0",
         "ts-jest": "^29.1.1",
-        "tsx": "^3.12.7",
-        "turbo": "^1.10.15"
+        "tsx": "^3.12.7"
+    },
+    "resolutions": {
+        "@semantic-release/commit-analyzer": "11.0.0"
     }
 }
