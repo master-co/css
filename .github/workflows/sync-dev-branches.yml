@@ -8,7 +8,7 @@ jobs:
     sync:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Techor Actions
               uses: 1aron/techor@v2.5.17
               with:
