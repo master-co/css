@@ -89,7 +89,8 @@ async function fetchAndCalculateCSS({ name, url }) {
 }
 
 const inputs = JSON.parse(readFileSync(resolve(__dirname, './inputs.json')).toString())
-const results = await Promise.all(inputs.map((site) => fetchAndCalculateCSS(site)))
+const results = (await Promise.all(inputs.map((site) => fetchAndCalculateCSS(site))))
+    .sort((a, b) => b.totalCSSSize - a.totalCSSSize)
 const masterCSSResult = results.find((result) => result.name === 'Master CSS')
 
 results.forEach((result) => {
@@ -106,7 +107,7 @@ log``
 log`Total of page critical CSS (raw):`
 log``
 results.forEach((output) => {
-    log`📄 ${output.name} ${filesize(output.totalCSSSize, fileSizeOptions)} is **${(output.totalCSSSize / masterCSSResult.totalCSSSize).toFixed(1)}x** larger than Master CSS = Internal ${filesize(output.totalInternalCSSSize, fileSizeOptions)} + External ${filesize(output.totalExternalCSSSize, fileSizeOptions)}`
+    log`📄 ${output.name}\t\t${filesize(output.totalCSSSize, fileSizeOptions)}\t**${(output.totalCSSSize / masterCSSResult.totalCSSSize).toFixed(1)}x**\tInternal ${filesize(output.totalInternalCSSSize, fileSizeOptions)}\tExternal ${filesize(output.totalExternalCSSSize, fileSizeOptions)}`
 })
 
 log``
@@ -116,7 +117,7 @@ log``
 log`Total of page critical CSS (brotli):`
 log``
 results.forEach((output) => {
-    log`📄 ${output.name} ${filesize(output.totalCSSBrotliSize, fileSizeOptions)} is **${(output.totalCSSBrotliSize / masterCSSResult.totalCSSBrotliSize).toFixed(1)}x** larger than Master CSS = Internal ${filesize(output.totalInternalCSSBrotliSize, fileSizeOptions)} + External ${filesize(output.totalExternalCSSSize, fileSizeOptions)}`
+    log`📄 ${output.name}\t\t${filesize(output.totalCSSBrotliSize, fileSizeOptions)}\t**${(output.totalCSSBrotliSize / masterCSSResult.totalCSSBrotliSize).toFixed(1)}x**\tInternal ${filesize(output.totalInternalCSSBrotliSize, fileSizeOptions)}\tExternal ${filesize(output.totalExternalCSSBrotliSize, fileSizeOptions)}`
 })
 
 log``
