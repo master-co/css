@@ -1,21 +1,20 @@
 # Contributing to Master CSS
-
-## Developing
-Split a new terminal and run `npm run dev` in the project root to watch all packages change and build:
 ```bash
-npm run dev
+pnpm install
+```
+
+Run `pnpm build` in the project root to build all packages:
+```bash
+pnpm build
 ```
 Split a new terminal and switch to the target directory for testing to avoid running tests from other packages:
 ```bash
-cd packages/target
-```
-```bash
-npm run test -- --watch
+cd packages/css
 ```
 
 ## Testing
 ```bash
-npm run test
+pnpm test -- --watch
 ```
 
 ### Contributing your test cases
@@ -39,35 +38,35 @@ Add @1aron tests
 ```
 
 ## Linting
-Follow the [Aron's ESLint Preset](https://github.com/1aron/aronrepo/tree/rc/packages/eslint-config)
+Follow the [Techor ESLint Preset](https://github.com/1aron/techor/tree/main/packages/eslint-config)
 ```bash
-npm run lint
+pnpm lint
 ```
 
 To automatically fix any violations in your code:
 ```
-npm run lint -- --fix
+pnpm lint -- --fix
 ```
 
 ## Type Checking
 ```bash
-npm run type-check
+pnpm type-check
 ```
 
 ## Commit Checking
-Follow the [Aron's Conventional Commits](https://github.com/1aron/aronrepo/tree/rc/packages/conventional-commits)
+Follow the [Techor Conventional Commits](https://github.com/1aron/techor/tree/main/packages/conventional-commits)
 ```bash
-npm run commit-check
+pnpm commit-check
 ```
 
 ## Checking
-You have to pass `npm run check` before submitting a pull request.
+You have to pass `pnpm check` before submitting a pull request.
 ```bash
-npm run check
+pnpm check
 ```
 The command includes all of the following checks:
 
 ## Building
 ```
-npm run build
+pnpm build
 ```
