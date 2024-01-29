@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const fileSizeOptions = { spacer: '', round: 0 }
+const fileSizeOptions = { round: 0 }
 
 async function fetchWithBrotli(url) {
     try {
@@ -105,7 +105,7 @@ log``
 log`Total of page critical CSS (raw):`
 log``
 results.forEach((output) => {
-    log`📄 ${output.name} ${filesize(output.totalCSSSize, fileSizeOptions)} is **${(output.totalCSSSize / masterCSSResult.totalCSSSize).toFixed(0)}x** larger than Master CSS = Internal ${filesize(output.totalInternalCSSSize, fileSizeOptions)} + External ${filesize(output.totalExternalCSSSize, fileSizeOptions)}`
+    log`📄 ${output.name} ${filesize(output.totalCSSSize, fileSizeOptions)} is **${(output.totalCSSSize / masterCSSResult.totalCSSSize).toFixed(1)}x** larger than Master CSS = Internal ${filesize(output.totalInternalCSSSize, fileSizeOptions)} + External ${filesize(output.totalExternalCSSSize, fileSizeOptions)}`
 })
 
 log``
@@ -115,7 +115,7 @@ log``
 log`Total of page critical CSS (brotli):`
 log``
 results.forEach((output) => {
-    log`📄 ${output.name} ${filesize(output.totalCSSBrotliSize, fileSizeOptions)} is **${(output.totalCSSBrotliSize / masterCSSResult.totalCSSBrotliSize).toFixed(0)}x** larger than Master CSS = Internal ${filesize(output.totalInternalCSSBrotliSize, fileSizeOptions)} + External ${filesize(output.totalExternalCSSSize, fileSizeOptions)}`
+    log`📄 ${output.name} ${filesize(output.totalCSSBrotliSize, fileSizeOptions)} is **${(output.totalCSSBrotliSize / masterCSSResult.totalCSSBrotliSize).toFixed(1)}x** larger than Master CSS = Internal ${filesize(output.totalInternalCSSBrotliSize, fileSizeOptions)} + External ${filesize(output.totalExternalCSSSize, fileSizeOptions)}`
 })
 
 log``

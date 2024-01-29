@@ -3,7 +3,7 @@
 ### A CSS language
 Master CSS is a [markup-driven](/docs/markup-driven) CSS language with smart rules allowing you to write familiar CSS using concise syntax within HTML.
 
-Under the hood, Master CSS automatically adds [vendor prefixes](/docs/browser-support), smartly [ordering CSS rules](/docs/markup-driven#smart-rule-ordering), and more. This allows you to focus on building your website rather than spending time writing and maintaining CSS rules.
+Under the hood, Master CSS automatically adds [vendor prefixes](/docs/browser-support), smartly [ordering CSS rules](/docs/markup-driven#smart-rule-ordering), and more. This allows you to focus on building your website rather than spending a lot of effort writing and maintaining CSS rules.
 
 <Demo $py={0}>
     <h1 className="fg:blue fg:red:hover font:32 font:40@sm font:heavy m:10x text:center">Hello World</h1>
@@ -25,7 +25,7 @@ Whether you're a solo developer or part of a large team, Master CSS can help you
 
 ---
 
-## 🚧 Main features
+## Main features
 Overview of some of the main features of Master CSS:
 
 ### Rendering Modes
@@ -35,6 +35,8 @@ Master CSS provides three [rendering modes](/docs/rendering-modes), which you ca
 2. [Runtime Rendering](/docs/rendering-modes/runtime-rendering) observes changes in DOM class names at browser runtime, generates corresponding CSS rules, and injects them into the running style sheet.
 3. [Static Extraction](/docs/rendering-modes/static-extraction) integrates build tools to scan project source code, extract class names, generate CSS rules, and write them into a virtual CSS module.
 
+### 🚧 Code Linting
+
 ---
 
 ## Performance and benchmarks
@@ -42,42 +44,11 @@ Initially, Master CSS was intended to create a CSS engine for production browser
 
 Master CSS doesn't use heavy-duty build tools like [PostCSS](https://postcss.org), [Autoprefixer](https://github.com/postcss/autoprefixer), or any CSS minifiers, and includes these optimizations in the early stages of rule generation.
 
-### Fastest loading with minimal CSS
-The real-world [critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) benchmark for Tailwind CSS, Bootstrap, and Master CSS official documentation sites.
+### Minimal CSS on the market
+This is a real-world [critical CSS benchmark](https://github.com/master-co/css/tree/rc/benchmarks/critical-css-for-docs-sites) against well-known official documentation websites.
+<CriticalCSSForDocsSitesBenchmark />
 
-import TailwindCSSLogo from 'websites/svgs/tailwindcss.svg?inlineSvg'
-import BootstrapLogo from 'websites/svgs/bootstrap.svg?inlineSvg'
-import MasterCSSLogo from 'websites/svgs/Master'
-
-<div className="grid-cols:1 gap:3x my:6x bl:1|divider">
-    <div className="flex flex-wrap:nowrap align-items:center gap:10 ml:-1">
-        <div className='bg:cyan b:1|frame h:24 rr:1x' style={{ width: '50%' }} />
-        <TailwindCSSLogo width={24} height={24} />
-        <b className="fg:cyan">321 KB</b>
-        <small>50 KB brotil</small>
-    </div>
-    <div className="flex flex-wrap:nowrap align-items:center gap:10 ml:-1">
-        <div className='bg:purple b:1|frame h:24 rr:1x' style={{ width: 'calc(50% - (321 - 294) / 321 * 50%)' }} />
-        <BootstrapLogo width={24} height={24} />
-        <b className="fg:purple">294 KB</b>
-        <small>47 KB brotil</small>
-    </div>
-    <div className="flex flex-wrap:nowrap align-items:center gap:10 ml:-1">
-        <div className='bg:yellow b:1|frame h:24 rr:1x' style={{ width: 'calc(50% - (321 - 20) / 321 * 50%)' }} />
-        <MasterCSSLogo width={24} height={24} />
-        <b className="fg:yellow">20 KB</b>
-        <small>4 KB brotil</small>
-    </div>
-</div>
-
-<details>
-    <summary>View this benchmark detail</summary>
-    <div>
-        - Tailwind CSS in [tailwindcss.com/docs/404](https://tailwindcss.com/docs/404)
-        - Bootstrap in [getbootstrap.com/docs/404](https://getbootstrap.com/docs/404)
-        - Master CSS in [rc.css.master.co/docs/404](https://rc.css.master.co/docs/404)
-    </div>
-</details>
+[Reducing critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) will improve page loading speed, browser rendering performance, and memory usage.
 
 ---
 

@@ -1,3 +1,3 @@
 import { styled } from '@master/css.react'
 
-export default styled.div`grid-cols:1 gap:3x bl:1|divider`
+export default styled.div`bl:1|divider gap:3x grid-cols:1`

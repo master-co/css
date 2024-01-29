@@ -1,6 +1,5 @@
 [
     { "name": "Next.js", "url": "https://nextjs.org/docs" },
-    { "name": "Nuxt.js", "url": "https://nuxt.com/docs" },
     { "name": "React", "url": "https://react.dev/learn" },
     { "name": "Vue.js", "url": "https://vuejs.org/guide/introduction" },
     { "name": "Angular", "url": "https://angular.dev/overview" },

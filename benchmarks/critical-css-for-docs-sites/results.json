@@ -15,9 +15,9 @@
                 "brotliSize": 3723
             },
             {
-                "url": "/_next/static/css/01930e4e4003c21d.css?dpl=dpl_6Qir2sLFUSLWxJxpLbUBoZRU9wXc",
-                "size": 58329,
-                "brotliSize": 9125
+                "url": "/_next/static/css/cf520b02431a21ec.css?dpl=dpl_6Qir2sLFUSLWxJxpLbUBoZRU9wXc",
+                "size": 5638,
+                "brotliSize": 1265
             },
             {
                 "url": "/_next/static/css/76457e19b00e2234.css?dpl=dpl_6Qir2sLFUSLWxJxpLbUBoZRU9wXc",
@@ -30,14 +30,14 @@
                 "brotliSize": 3996
             },
             {
+                "url": "/_next/static/css/01930e4e4003c21d.css?dpl=dpl_6Qir2sLFUSLWxJxpLbUBoZRU9wXc",
+                "size": 58329,
+                "brotliSize": 9125
+            },
+            {
                 "url": "/_next/static/css/f01c4353b73e12fe.css?dpl=dpl_6Qir2sLFUSLWxJxpLbUBoZRU9wXc",
                 "size": 77332,
                 "brotliSize": 13910
-            },
-            {
-                "url": "/_next/static/css/cf520b02431a21ec.css?dpl=dpl_6Qir2sLFUSLWxJxpLbUBoZRU9wXc",
-                "size": 5638,
-                "brotliSize": 1265
             }
         ],
         "internals": [
@@ -45,80 +45,6 @@
                 "tag": "<style>",
                 "size": 96,
                 "brotliSize": 52
-            }
-        ]
-    },
-    {
-        "name": "Nuxt.js",
-        "url": "https://nuxt.com/docs",
-        "totalCSSSize": 740751,
-        "totalCSSBrotliSize": 60844,
-        "totalInternalCSSSize": 737793,
-        "totalInternalCSSBrotliSize": 60236,
-        "totalExternalCSSSize": 2958,
-        "totalExternalCSSBrotliSize": 608,
-        "externals": [
-            {
-                "url": "/_nuxt/entry.2vE_GeZe.css",
-                "size": 207,
-                "brotliSize": 92
-            },
-            {
-                "url": "/_nuxt/Ads.mVM5AdrY.css",
-                "size": 2751,
-                "brotliSize": 516
-            }
-        ],
-        "internals": [
-            {
-                "tag": "<style id=\"nuxt-ui-colors\">",
-                "size": 803,
-                "brotliSize": 243
-            },
-            {
-                "tag": "<style id=\"nuxt-ui-variables\">",
-                "size": 200,
-                "brotliSize": 114
-            },
-            {
-                "tag": "<style>",
-                "size": 1056,
-                "brotliSize": 261
-            },
-            {
-                "tag": "<style>",
-                "size": 731276,
-                "brotliSize": 58770
-            },
-            {
-                "tag": "<style>",
-                "size": 448,
-                "brotliSize": 202
-            },
-            {
-                "tag": "<style>",
-                "size": 1188,
-                "brotliSize": 166
-            },
-            {
-                "tag": "<style>",
-                "size": 256,
-                "brotliSize": 92
-            },
-            {
-                "tag": "<style>",
-                "size": 2360,
-                "brotliSize": 275
-            },
-            {
-                "tag": "<style>",
-                "size": 66,
-                "brotliSize": 45
-            },
-            {
-                "tag": "<style>",
-                "size": 140,
-                "brotliSize": 68
             }
         ]
     },
