@@ -19,7 +19,7 @@ async function fetchWithBrotli(url) {
                 'Accept-Encoding': 'br'
             }
         })
-        return response;
+        return response
     } catch (error) {
         if (error.response.status === 404) {
             return error.response
@@ -28,12 +28,12 @@ async function fetchWithBrotli(url) {
 }
 
 async function fetchAndCalculateCSS({ name, url }) {
-    const response = await fetchWithBrotli(url);
-    const $ = cheerio.load(response.data.toString());
-    const domain = response.request.protocol + '//' + response.request.host;
+    const response = await fetchWithBrotli(url)
+    const $ = cheerio.load(response.data.toString())
+    const domain = response.request.protocol + '//' + response.request.host
     let totalInternalCSSSize = 0
     let totalInternalCSSBrotliSize = 0
-    let totalExternalCSSSize = 0;
+    let totalExternalCSSSize = 0
     let totalExternalCSSBrotliSize = 0
     let externals = []
     let internals = []
@@ -71,7 +71,7 @@ async function fetchAndCalculateCSS({ name, url }) {
             size: styleSize,
             brotliSize: styleBrotliSize
         })
-    });
+    })
 
     return {
         name,
@@ -83,7 +83,8 @@ async function fetchAndCalculateCSS({ name, url }) {
         totalExternalCSSSize,
         totalExternalCSSBrotliSize,
         externals,
-        internals
+        internals,
+        date: new Date().toISOString()
     }
 }
 

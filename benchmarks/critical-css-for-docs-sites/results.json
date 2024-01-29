@@ -46,7 +46,8 @@
                 "size": 96,
                 "brotliSize": 52
             }
-        ]
+        ],
+        "date": "2024-01-29T03:51:16.140Z"
     },
     {
         "name": "React",
@@ -64,7 +65,8 @@
                 "brotliSize": 15976
             }
         ],
-        "internals": []
+        "internals": [],
+        "date": "2024-01-29T03:51:15.998Z"
     },
     {
         "name": "Vue.js",
@@ -82,7 +84,8 @@
                 "brotliSize": 21082
             }
         ],
-        "internals": []
+        "internals": [],
+        "date": "2024-01-29T03:51:16.365Z"
     },
     {
         "name": "Angular",
@@ -181,7 +184,8 @@
                 "size": 1883,
                 "brotliSize": 507
             }
-        ]
+        ],
+        "date": "2024-01-29T03:51:16.716Z"
     },
     {
         "name": "Bootstrap",
@@ -209,7 +213,8 @@
                 "brotliSize": 7332
             }
         ],
-        "internals": []
+        "internals": [],
+        "date": "2024-01-29T03:51:18.010Z"
     },
     {
         "name": "Tailwind CSS",
@@ -227,15 +232,16 @@
                 "brotliSize": 37021
             }
         ],
-        "internals": []
+        "internals": [],
+        "date": "2024-01-29T03:51:17.367Z"
     },
     {
         "name": "Master CSS",
         "url": "https://rc.css.master.co/docs",
         "totalCSSSize": 30674,
-        "totalCSSBrotliSize": 6553,
+        "totalCSSBrotliSize": 6557,
         "totalInternalCSSSize": 28435,
-        "totalInternalCSSBrotliSize": 5706,
+        "totalInternalCSSBrotliSize": 5710,
         "totalExternalCSSSize": 2239,
         "totalExternalCSSBrotliSize": 847,
         "externals": [
@@ -249,7 +255,7 @@
             {
                 "tag": "<style>",
                 "size": 7080,
-                "brotliSize": 430
+                "brotliSize": 434
             },
             {
                 "tag": "<style id=\"master\">",
@@ -266,6 +272,7 @@
                 "size": 19,
                 "brotliSize": 23
             }
-        ]
+        ],
+        "date": "2024-01-29T03:51:16.924Z"
     }
 ]
