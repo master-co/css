@@ -1,0 +1,10 @@
+{
+    "type": "module",
+    "dependencies": {
+        "@techor/log": "^2.6.3",
+        "axios": "^1.6.7",
+        "cheerio": "0.22.0",
+        "filesize": "^10.1.0",
+        "pretty-bytes": "^6.1.1"
+    }
+}
