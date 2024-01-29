@@ -60,49 +60,10 @@
 </div>
 
 ## Documentation
-Visit [rc.css.master.co](https://rc.css.master.co) to view the full documentation
+Visit [rc.css.master.co](https://rc.css.master.co) to view the full documentation.
 
 ## Getting Started
-Check out the [official guides](https://rc.css.master.co/docs) to get started with Master CSS, or walk through the [examples](https://github.com/master-co/css/tree/rc/examples) for a quick overview of integrating with your framework.
-
-## Rendering Modes
-Master CSS provides various [rendering modes](https://rc.css.master.co/docs/rendering-modes), allowing you to choose according to the characteristics and needs of different projects.
-
-- [Progressive Rendering](https://rc.css.master.co/docs/rendering-modes/progressive-rendering) - Scan the requested HTML on the server side, generate CSS rules, and enable runtime engine on the browser side
-- [Runtime Rendering](https://rc.css.master.co/docs/rendering-modes/runtime-rendering) - Observe the DOM tree, manipulate CSS rules according to the changed class name, and synchronize to the running style sheet at runtime
-- [Static Extraction](https://rc.css.master.co/docs/rendering-modes/static-extraction) - Scan source files for class names at build time, extract class names, and generate CSS files/virtual modules, then import them in the entry file
-
-## Ecosystem
-We've built various Master CSS core functionality/integration packages:
-
-- [CSS](https://github.com/master-co/css/tree/rc/packages/css) - The core of Master CSS, including the runtime engine
-
-##### Frameworks
-- [React](https://github.com/master-co/css/tree/rc/packages/react) - Integrate Master CSS the React way
-- [Svelte](https://github.com/master-co/css/tree/rc/packages/svelte) - Integrate Master CSS the Svelte way
-- [Vue](https://github.com/master-co/css/tree/rc/packages/vue) - Integrate Master CSS the Vue.js way
-
-##### Progressive Rendering
-- [Server](https://github.com/master-co/css/tree/rc/packages/server) - Generate Master CSS text from markup on the server
-- [Renderer](https://github.com/master-co/css/tree/rc/packages/renderer) - Pre-renders and injects HTML-required CSS
-
-##### Static Extraction
-- [Extractor](https://github.com/master-co/css/tree/rc/packages/extractor) - Master CSS static extractor for various raw text extraction.
-- [Vite](https://github.com/master-co/css/tree/rc/packages/extractor.vite) - Integrate Master CSS Static Extraction in Vite way
-- [Webpack](https://github.com/master-co/css/tree/rc/packages/extractor.webpack) - Integrate Master CSS Static Extraction in Webpack way
-
-##### Validation
-- [Validator](https://github.com/master-co/css/tree/rc/packages/validator) for Master CSS class syntax
-
-##### Language
-- [Server](https://github.com/master-co/css/tree/rc/packages/language-server) - The core of the Master CSS language server
-- [Service](https://github.com/master-co/css/tree/rc/packages/language-service) - The core of the Master CSS language service
-- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-language-service) - Master CSS Language Service for Visual Studio Code Extension
-
-##### Others
-- [Normal CSS](https://rc.css.master.co/docs/global-styles) - Normalize the browser's styles
-- [Theme Service](https://rc.css.master.co/docs/theme-service) - A CSS theme-switching service for Master CSS
-- [Class Variant](https://rc.css.master.co/docs/class-variant) - Create reusable, extensible, and customizable style class variants
+Check out the [official guides](https://rc.css.master.co/docs) to get started with Master CSS.
 
 ## Community
 The Master CSS community can be found here:
