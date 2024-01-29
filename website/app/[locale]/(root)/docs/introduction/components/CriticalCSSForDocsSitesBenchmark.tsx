@@ -23,12 +23,12 @@ export default () => (
                         return (
                             <Bar key={result.name}>
                                 {/* eslint-disable-next-line @master/css/class-validation */}
-                                <BarShape className={`bg:${brand.color || 'text-lightest'}`} style={{ width: `calc(50% - (${maxTotalCSSSize} - ${result.totalCSSSize}) / ${maxTotalCSSSize} * 50%)` }} />
+                                <BarShape className={`bg:${brand.color || 'text-lightest'}`} width={`calc(50% - (${maxTotalCSSSize} - ${result.totalCSSSize}) / ${maxTotalCSSSize} * 50%)`} animated />
                                 <Image src={brand.src} width={24} height={24} alt={result.name} className={clsx('mx:0', brand.className)} />
                                 {/* eslint-disable-next-line @master/css/class-validation */}
                                 <b className={`fg:${brand.color || 'text-lightest'}`}>{filesize(result.totalCSSSize, fileSizeOptions)}</b>
                                 {/* @ts-expect-error masterCSSResult?.totalCSSSize */}
-                                {result.name !== 'Master CSS' && <small className='flex:1'><span className='hide@<sm'>{result.name}</span> {(result?.totalCSSSize / masterCSSResult?.totalCSSSize).toFixed(1)}x larger</small>}
+                                {result.name !== 'Master CSS' && <small className='flex:1'><span className='hide@<sm'>{result.name}, </span> {(result?.totalCSSSize / masterCSSResult?.totalCSSSize).toFixed(1)}x larger</small>}
                             </Bar>
                         )
                     })}

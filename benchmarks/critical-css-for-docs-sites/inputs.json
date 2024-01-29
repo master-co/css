@@ -1,9 +1,34 @@
 [
-    { "name": "Next.js", "url": "https://nextjs.org/docs" },
-    { "name": "React", "url": "https://react.dev/learn" },
-    { "name": "Vue.js", "url": "https://vuejs.org/guide/introduction" },
-    { "name": "Angular", "url": "https://angular.dev/overview" },
-    { "name": "Bootstrap", "url": "https://getbootstrap.com/docs/5.3/getting-started/introduction" },
-    { "name": "Tailwind CSS", "url": "https://tailwindcss.com/docs" },
-    { "name": "Master CSS", "url": "https://rc.css.master.co/docs" }
+    {
+        "name": "Material UI",
+        "url": "https://mui.com/material-ui/getting-started"
+    },
+    {
+        "name": "Next.js",
+        "url": "https://nextjs.org/docs"
+    },
+    {
+        "name": "React",
+        "url": "https://react.dev/learn"
+    },
+    {
+        "name": "Vue.js",
+        "url": "https://vuejs.org/guide/introduction"
+    },
+    {
+        "name": "Angular",
+        "url": "https://angular.dev/overview"
+    },
+    {
+        "name": "Bootstrap",
+        "url": "https://getbootstrap.com/docs/5.3/getting-started/introduction"
+    },
+    {
+        "name": "Tailwind CSS",
+        "url": "https://tailwindcss.com/docs"
+    },
+    {
+        "name": "Master CSS",
+        "url": "https://rc.css.master.co/docs"
+    }
 ]

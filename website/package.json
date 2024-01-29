@@ -30,17 +30,18 @@
         "monaco-editor-textmate": "^4.0.0",
         "monaco-textmate": "^3.0.1",
         "next": "14.1.0",
-        "theme-service": "workspace:^",
-        "websites": "workspace:../../..",
         "react": "^18",
-        "react-dom": "^18"
+        "react-dom": "^18",
+        "react-intersection-observer": "^9.5.3",
+        "theme-service": "workspace:^",
+        "websites": "workspace:../../.."
     },
     "devDependencies": {
         "@builder.io/partytown": "^0.8.2",
-        "typescript": "^5",
         "@types/node": "^20",
         "@types/react": "^18",
         "@types/react-dom": "^18",
-        "eslint": "^8"
+        "eslint": "^8",
+        "typescript": "^5"
     }
 }

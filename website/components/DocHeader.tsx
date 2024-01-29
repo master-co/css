@@ -24,7 +24,7 @@ export default function DocHeader({ children, ...props }: any) {
             <Link href={'/'} className="mx:auto@<md">
                 {<Logotype height="19" />}
             </Link>
-            <label className='app-header-nav hide@<md rel gap:5 ml:30'>
+            <label className='app-header-nav hide@<md rel font:medium gap:5 ml:30'>
                 v{version}
                 <DocVersionSelect version={version} />
                 <IconChevronDown className="mr:-3 size:1em stroke:1.5" />

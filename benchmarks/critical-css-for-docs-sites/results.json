@@ -16,7 +16,7 @@
             }
         ],
         "internals": [],
-        "date": "2024-01-29T07:32:09.889Z"
+        "date": "2024-01-29T07:48:32.243Z"
     },
     {
         "name": "Bootstrap",
@@ -29,14 +29,14 @@
         "totalExternalCSSBrotliSize": 32734,
         "externals": [
             {
-                "url": "https://cdn.jsdelivr.net/npm/@docsearch/css@3",
-                "size": 13536,
-                "brotliSize": 2707
-            },
-            {
                 "url": "/docs/5.3/dist/css/bootstrap.min.css",
                 "size": 232945,
                 "brotliSize": 22695
+            },
+            {
+                "url": "https://cdn.jsdelivr.net/npm/@docsearch/css@3",
+                "size": 13536,
+                "brotliSize": 2707
             },
             {
                 "url": "/docs/5.3/assets/css/docs.css",
@@ -45,7 +45,7 @@
             }
         ],
         "internals": [],
-        "date": "2024-01-29T07:32:09.931Z"
+        "date": "2024-01-29T07:48:32.721Z"
     },
     {
         "name": "Angular",
@@ -145,7 +145,7 @@
                 "brotliSize": 507
             }
         ],
-        "date": "2024-01-29T07:32:09.025Z"
+        "date": "2024-01-29T07:48:31.284Z"
     },
     {
         "name": "Next.js",
@@ -195,7 +195,112 @@
                 "brotliSize": 52
             }
         ],
-        "date": "2024-01-29T07:32:08.514Z"
+        "date": "2024-01-29T07:48:30.721Z"
+    },
+    {
+        "name": "Material UI",
+        "url": "https://mui.com/material-ui/getting-started",
+        "totalCSSSize": 182928,
+        "totalCSSBrotliSize": 19677,
+        "totalInternalCSSSize": 93891,
+        "totalInternalCSSBrotliSize": 9012,
+        "totalExternalCSSSize": 89037,
+        "totalExternalCSSBrotliSize": 10665,
+        "externals": [
+            {
+                "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap",
+                "size": 2149,
+                "brotliSize": 283
+            },
+            {
+                "url": "/_next/static/css/d8a595bcef52ba81.css",
+                "size": 86888,
+                "brotliSize": 10382
+            }
+        ],
+        "internals": [
+            {
+                "tag": "<style>",
+                "size": 166,
+                "brotliSize": 116
+            },
+            {
+                "tag": "<style>",
+                "size": 166,
+                "brotliSize": 128
+            },
+            {
+                "tag": "<style>",
+                "size": 866,
+                "brotliSize": 161
+            },
+            {
+                "tag": "<style>",
+                "size": 1099,
+                "brotliSize": 178
+            },
+            {
+                "tag": "<style>",
+                "size": 598,
+                "brotliSize": 189
+            },
+            {
+                "tag": "<style id=\"material-icon-font\">",
+                "size": 0,
+                "brotliSize": 1
+            },
+            {
+                "tag": "<style id=\"font-awesome-css\">",
+                "size": 0,
+                "brotliSize": 1
+            },
+            {
+                "tag": "<style>",
+                "size": 734,
+                "brotliSize": 338
+            },
+            {
+                "tag": "<style>",
+                "size": 36,
+                "brotliSize": 40
+            },
+            {
+                "tag": "<style>",
+                "size": 39,
+                "brotliSize": 43
+            },
+            {
+                "tag": "<style>",
+                "size": 90187,
+                "brotliSize": 7812
+            },
+            {
+                "tag": "<style id=\"app-search\">",
+                "size": 0,
+                "brotliSize": 1
+            },
+            {
+                "tag": "<style id=\"prismjs\">",
+                "size": 0,
+                "brotliSize": 1
+            },
+            {
+                "tag": "<style>",
+                "size": 0,
+                "brotliSize": 1
+            },
+            {
+                "tag": "<style id=\"jss-server-side\">",
+                "size": 0,
+                "brotliSize": 1
+            },
+            {
+                "tag": "<style id=\"insertion-point-jss\">",
+                "size": 0,
+                "brotliSize": 1
+            }
+        ],
+        "date": "2024-01-29T07:48:31.542Z"
     },
     {
         "name": "Vue.js",
@@ -214,7 +319,7 @@
             }
         ],
         "internals": [],
-        "date": "2024-01-29T07:32:08.625Z"
+        "date": "2024-01-29T07:48:30.934Z"
     },
     {
         "name": "React",
@@ -233,15 +338,15 @@
             }
         ],
         "internals": [],
-        "date": "2024-01-29T07:32:08.296Z"
+        "date": "2024-01-29T07:48:30.570Z"
     },
     {
         "name": "Master CSS",
         "url": "https://rc.css.master.co/docs",
         "totalCSSSize": 30111,
-        "totalCSSBrotliSize": 6297,
+        "totalCSSBrotliSize": 6302,
         "totalInternalCSSSize": 28430,
-        "totalInternalCSSBrotliSize": 5681,
+        "totalInternalCSSBrotliSize": 5686,
         "totalExternalCSSSize": 1681,
         "totalExternalCSSBrotliSize": 616,
         "externals": [
@@ -255,7 +360,7 @@
             {
                 "tag": "<style>",
                 "size": 7080,
-                "brotliSize": 421
+                "brotliSize": 426
             },
             {
                 "tag": "<style id=\"master\">",
@@ -273,6 +378,6 @@
                 "brotliSize": 23
             }
         ],
-        "date": "2024-01-29T07:32:09.290Z"
+        "date": "2024-01-29T07:48:31.574Z"
     }
 ]
