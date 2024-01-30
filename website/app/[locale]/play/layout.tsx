@@ -1,4 +1,4 @@
-import RootLayout from '../root.layout'
+import RootLayout from '../../root.layout'
 import metadata from './metadata'
 import { generate } from '~/utils/metadata'
 import Script from 'next/script'
