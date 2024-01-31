@@ -11,6 +11,7 @@ import clsx from 'clsx'
 const maxTotalCSSSize = Math.max(...results.map((result) => result.totalCSSSize))
 const maxTotalCSSBrotliSize = Math.max(...results.map((result) => result.totalCSSBrotliSize))
 const masterCSSResult = results.find((result) => result.name === 'Master CSS')
+const maxWidth = 60
 
 export default () => (
     <Segments>
@@ -23,20 +24,20 @@ export default () => (
                             {results
                                 .sort((a, b) => b.totalCSSSize - a.totalCSSSize)
                                 .map((result) => {
-                                    const brand = brands[result.name as keyof typeof brands] as any
+                                    const brand = brands.find((brand) => brand.name === result.name)
                                     return (
                                         <Bar key={result.name}
-                                            color={brand.color}
+                                            color={brand?.color}
                                             value={result.totalCSSSize / 1000}
                                             max={maxTotalCSSSize / 1000}
-                                            width='60%'
+                                            width={maxWidth + '%'}
                                             suffix='kB'
                                             animated
-                                            icon={<Image src={brand.src} width={24} height={24} alt={result.name} className={clsx('mx:0', brand.className)} />}>
+                                            icon={<Image src={brand?.src} width={24} height={24} alt={result.name} className={clsx('mx:0', brand?.className)} />}>
                                             {/* @ts-expect-error masterCSSResult?.totalCSSSize */}
                                             {result.name !== 'Master CSS' && <div className='flex:1 font:12'><span className='hide@<sm'>{result.name}, </span> {(result?.totalCSSSize / masterCSSResult?.totalCSSSize).toFixed(1)}x larger</div>}
                                             {result.name === 'Master CSS' && (
-                                                <div className='flex:1 font:12'>Page {(result?.internals[1].size / 1000).toFixed(1)} kB + Font {(result?.internals[0].size / 1000).toFixed(1)} kB + Normalize {(result?.externals[0].size / 1000).toFixed(1)} kB</div>
+                                                <div className='flex:1 font:12'>( Main {(result?.internals[1].size / 1000).toFixed(1)} kB + Font {(result?.internals[0].size / 1000).toFixed(1)} kB + Normalize {(result?.externals[0].size / 1000).toFixed(1)} kB )</div>
                                             )}
                                         </Bar>
                                     )
@@ -54,21 +55,21 @@ export default () => (
                             {results
                                 .sort((a, b) => b.totalCSSBrotliSize - a.totalCSSBrotliSize)
                                 .map((result) => {
-                                    const brand = brands[result.name as keyof typeof brands] as any
+                                    const brand = brands.find((brand) => brand.name === result.name)
                                     return (
                                         <Bar key={result.name}
-                                            color={brand.color}
+                                            color={brand?.color}
                                             value={result.totalCSSBrotliSize / 1000}
                                             max={maxTotalCSSBrotliSize / 1000}
-                                            width='60%'
+                                            width={maxTotalCSSBrotliSize / maxTotalCSSSize * maxWidth + '%'}
                                             suffix='kB'
                                             animated
-                                            icon={<Image src={brand.src} width={24} height={24} alt={result.name} className={clsx('mx:0', brand.className)} />}>
+                                            icon={<Image src={brand?.src} width={24} height={24} alt={result.name} className={clsx('mx:0', brand?.className)} />}>
                                             {/* @ts-expect-error masterCSSResult?.totalCSSSize */}
-                                            {result.name !== 'Master CSS' && <div className='flex:1 font:12'><span className='hide@<sm'>{result.name}, </span> {(result?.totalCSSBrotliSize / masterCSSResult?.totalCSSBrotliSize).toFixed(1)}x larger</div>}
+                                            {result.name !== 'Master CSS' && <div className='flex:1 font:12'>{result.name}, {(result?.totalCSSBrotliSize / masterCSSResult?.totalCSSBrotliSize).toFixed(1)}x larger</div>}
                                             {result.name === 'Master CSS' && (
-                                                <div className='flex:1 font:12'>Page {(result?.internals[1].brotliSize / 1000).toFixed(1)} kB + Font {(result?.internals[0].brotliSize / 1000).toFixed(1)} kB + Normalize {(result?.externals[0].brotliSize / 1000).toFixed(1)} kB</div>
-                                                )}
+                                                <div className='flex:1 font:12'>( Main {(result?.internals[1].brotliSize / 1000).toFixed(1)} kB + Font {(result?.internals[0].brotliSize / 1000).toFixed(1)} kB + Normalize {(result?.externals[0].brotliSize / 1000).toFixed(1)} kB )</div>
+                                            )}
                                         </Bar>
                                     )
                                 })}

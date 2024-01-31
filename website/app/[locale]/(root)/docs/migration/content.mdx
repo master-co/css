@@ -1,8 +1,8 @@
-import migrations from 'websites/data/migrations'
+import brands from 'websites/data/brands'
 
 ---
 
 ## Guides
 <IconButtons url="/docs/migration">
-    {migrations}
+    {brands.filter(({ name }) => ['v1.0', 'Tailwind CSS', 'Bootstrap', 'Styled Components', 'Emotion', 'CSS', 'Sass'].includes(name))}
 </IconButtons>

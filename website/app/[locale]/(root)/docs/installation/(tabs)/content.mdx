@@ -1,22 +1,20 @@
-import frameworks from 'websites/data/frameworks'
-import buildTools from 'websites/data/build-tools'
-import cdns from 'websites/data/cdns'
+import brands from 'websites/data/brands'
 
 Installation guides for popular frameworks and build tools integrated with [rendering modes](/docs/rendering-modes) of Master CSS.
 
 ## Web frameworks
 <IconButtons url="/docs/installation">
-    {frameworks}
+    {brands.filter(({ name }) => ['Next.js', 'Svelte', 'Nuxt.js', 'Laravel', 'Astro', 'Remix', 'Blazor', 'React', 'Vue.js', 'Angular'].includes(name))}
 </IconButtons>
 
 ## Build tools
 <IconButtons url="/docs/installation">
-    {buildTools}
+    {brands.filter(({ name }) => ['Vite', 'Webpack'].includes(name))}
 </IconButtons>
 
-## CDNs
+## CDN providers
 <IconButtons url="/docs/installation">
-    {cdns}
+    {brands.filter(({ name }) => ['esm.sh'].includes(name))}
 </IconButtons>
 
 ---

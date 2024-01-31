@@ -46,17 +46,11 @@ import Features, { Feature } from 'websites/components/Features'
 
 ---
 
-import frameworks from 'websites/data/frameworks'
-import languages from 'websites/data/languages'
-import editors from 'websites/data/editors'
+import brands from 'websites/data/brands'
 
-## Installation guides
+## Guides
 <IconButtons url="/docs/code-linting">
-    {[
-        ...frameworks.filter(({ name }) => ['React', 'Vue.js', 'Angular', 'Svelte', 'Laravel'].includes(name)),
-        ...languages.filter(({ name }) => ['HTML'].includes(name)),
-        ...editors.filter(({ name }) => ['Visual Studio Code'].includes(name)),
-    ]}
+    {brands.filter(({ name }) => ['React', 'Vue.js', 'Angular', 'Svelte', 'Laravel', 'HTML', 'Visual Studio Code'].includes(name))}
 </IconButtons>
 
 ---
