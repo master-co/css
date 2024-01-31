@@ -1827,6 +1827,9 @@ importers:
       react:
         specifier: ^18
         version: 18.2.0
+      react-countup:
+        specifier: ^6.5.0
+        version: 6.5.0(react@18.2.0)
       react-dom:
         specifier: ^18
         version: 18.2.0(react@18.2.0)
@@ -13857,6 +13860,10 @@ packages:
       typescript: 5.3.3
     dev: true
 
+  /countup.js@2.8.0:
+    resolution: {integrity: sha512-f7xEhX0awl4NOElHulrl4XRfKoNH3rB+qfNSZZyjSZhaAoUk6elvhH+MNxMmlmuUJ2/QNTWPSA7U4mNtIAKljQ==}
+    dev: false
+
   /crawlee@3.7.2:
     resolution: {integrity: sha512-Ro8NaqcyHpncdA5ZEhYXFP6bzIw0udjnSxhjmranAg/kXpgU6onZhbCyfCRI9CWc+xKI3XawqHZ5BdMd3r4HxA==}
     engines: {node: '>=16.0.0'}
@@ -25079,6 +25086,15 @@ packages:
       minimist: 1.2.8
       strip-json-comments: 2.0.1
     optional: true
+
+  /react-countup@6.5.0(react@18.2.0):
+    resolution: {integrity: sha512-26JFHbUHsHxu8SetkJwWVIUEkaNnrj4P9msxNGC8tS4hGr1bngRzbwtJYOgXD2G/ItjaKJ3JfYKd85sw7qRVeA==}
+    peerDependencies:
+      react: '>= 16.3.0'
+    dependencies:
+      countup.js: 2.8.0
+      react: 18.2.0
+    dev: false
 
   /react-dom@18.2.0(react@18.2.0):
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
