@@ -8,7 +8,7 @@
         "test": "jest"
     },
     "license": "MIT",
-    "description": "Generate Master CSS text from markup on the server",
+    "description": "Render Master CSS on the server side",
     "author": "Aoyue Design LLC.",
     "funding": "https://css.master.co/docs/donate",
     "homepage": "https://css.master.co",

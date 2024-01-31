@@ -9,6 +9,11 @@
     "description": "Master CSS Language Service",
     "author": "Aoyue Design LLC.",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/language-service"
+    },
     "dependencies": {
         "@babel/parser": "^7.22.7",
         "@master/css": "workspace:^",

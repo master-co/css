@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">Validator for Master CSS class syntax</p>
+<p align="center">Validate Master CSS syntax</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">

@@ -10,6 +10,11 @@
     "description": "Master CSS Language Server",
     "author": "Aoyue Design LLC.",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/language-server"
+    },
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-language-service": "workspace:^",

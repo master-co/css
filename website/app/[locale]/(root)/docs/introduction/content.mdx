@@ -1,27 +1,34 @@
-## What is Master CSS? [sr-only]
 
-### A CSS language
+---
+
+## What is Master CSS?
+The CSS language and framework for rapidly building modern and high-performance websites.
+
+Whether you're a solo developer or part of a large team, Master CSS can help you build interactive, dynamic, fastest, and beautiful websites.
+
+### The CSS language
 Master CSS is a [markup-driven](/docs/markup-driven) CSS language with smart rules allowing you to write familiar CSS using concise syntax within HTML.
 
 Under the hood, Master CSS automatically adds [vendor prefixes](/docs/browser-support), smartly [ordering CSS rules](/docs/markup-driven#smart-rule-ordering), and more. This allows you to focus on building your website rather than spending a lot of effort writing and maintaining CSS rules.
 
 <Demo $py={0}>
-    <h1 className="fg:blue fg:red:hover font:32 font:40@sm font:heavy m:10x text:center">Hello World</h1>
+    <h1 className="fg:indigo fg:red:hover font:32 font:40@sm font:heavy m:10x text:center">Hello World</h1>
 </Demo>
 ```html name=hero.html
-<!-- Master CSS Runtime CDN -->
-<script src="https://cdn.master.co/css-runtime@rc"></script>
-...
-<h1 class="**fg:blue** **fg:red:hover** **font:32** **font:40@sm** **font:heavy** **m:10x** **text:center**">
+<h1 class="**fg:indigo** **fg:red:hover** **font:32** **font:40@sm** **font:heavy** **m:10x** **text:center**">
     Hello World
 </h1>
+...
+<script src="https://cdn.master.co/css-runtime@rc"></script><!-- Runtime CDN -->
 ```
-You can [declare styles](/docs/style-declarations) through the `class` attribute, attaching [selector states](/docs/state-selectors), and even base them on [conditional queries](/docs/conditional-queries). There's no need to write any inline style sheets, including creating external CSS files; just add syntax classes in your HTML.
+[Declaring styles](/docs/style-declarations) through the `class` attribute, attaching [selector states](/docs/state-selectors), and even base them on [conditional queries](/docs/conditional-queries). There's no need to write any inline style sheets, including creating external CSS files; just add syntax classes in your HTML.
 
-Whether writing atomic classes `text:center` or [abstract styles](/docs/styles) `btn`, Master CSS does both, and you can choose which one to use based on the characteristics of your project.
+You can write atomic classes `text:center` or [abstract styles](/docs/styles) `btn` based on the characteristics of your project and team.
 
-### 🚧 A CSS framework
-Whether you're a solo developer or part of a large team, Master CSS can help you build interactive, dynamic, fastest, and beautiful websites.
+### The CSS framework
+Master CSS is a standalone CSS framework that provides various packages and solutions to expedite the development, including integrations for popular JavaScript frameworks, [code linting](#code-linting) for unifying team style, [language service](#language-service) to enhance the developer experience, [configuration](/docs/configuration) API for design systems, and [more](#main-features).
+<Packages />
+Is the framework you're using not mentioned above? Check out the official [installation guides](/docs/installation).
 
 ---
 
@@ -35,11 +42,13 @@ Master CSS provides three [rendering modes](/docs/rendering-modes), which you ca
 2. [Runtime Rendering](/docs/rendering-modes/runtime-rendering) observes changes in DOM class names at browser runtime, generates corresponding CSS rules, and injects them into the running style sheet.
 3. [Static Extraction](/docs/rendering-modes/static-extraction) integrates build tools to scan project source code, extract class names, generate CSS rules, and write them into a virtual CSS module.
 
+### 🚧 Design System
+### 🚧 Syntax Highlighting
 ### 🚧 Code Linting
 
 ---
 
-## Performance and benchmarks
+## Benchmarks
 Initially, Master CSS was intended to create a CSS engine for production browser runtimes, so we concentrated on performance such as syntax parsing, rule generation, cache sharing, and even browser rendering.
 
 Master CSS doesn't use heavy-duty build tools like [PostCSS](https://postcss.org), [Autoprefixer](https://github.com/postcss/autoprefixer), or any CSS minifiers, and includes these optimizations in the early stages of rule generation.
@@ -48,11 +57,11 @@ Master CSS doesn't use heavy-duty build tools like [PostCSS](https://postcss.org
 This is a real-world benchmark of critical CSS on page load for well-known official documentation websites.
 <CriticalCSSForDocsSitesBenchmark />
 
-[Reducing critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) will improve page loading speed, browser rendering performance, and memory usage.
+Reducing [critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) can improve page loading speed, browser rendering performance, and SEO metrics.
 
 ---
 
-## 🚧 Comprehensive comparison
+## 🚧 Tech comparisons
 {/* <DocTable className="font:14_p overflow-x:auto {px:30;mx:-30}@<sm">
     <thead>
         <tr>
@@ -387,10 +396,16 @@ This is a real-world benchmark of critical CSS on page load for well-known offic
 
 ---
 
-## 🚧 Document usage guide
+## 🚧 Documentation guide
 
 ---
 
 ## Join our community
-If you have any questions related to Master CSS, you're always welcome to ask our community on [GitHub Discussions](https://github.com/master-co/css/discussions), [Discord](https://discord.com/invite/sZNKpAAAw6), and [Twitter](https://twitter.com/mastercorg).
+If you have questions about Master CSS, you're always welcome to ask our community on:
+
+- [GitHub Discussions](https://github.com/master-co/css/discussions): Ask questions and share insights.
+- [Discord](https://discord.com/invite/sZNKpAAAw6): Join real-time conversations with humans.
+- [Twitter](https://twitter.com/mastercorg): Stay updated on Master CSS
+
+We're here to support your CSS journey!
 

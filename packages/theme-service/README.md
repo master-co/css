@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">A CSS theme-switching service for Master CSS.</p>
+<p align="center">Lightweight CSS theme switching.</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/theme-service/releases">

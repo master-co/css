@@ -8,7 +8,7 @@
         "lint": "eslint src"
     },
     "license": "MIT",
-    "description": "A CSS theme-switching service for Master CSS",
+    "description": "Lightweight CSS theme switching",
     "author": "Aoyue Design LLC.",
     "funding": "https://css.master.co/docs/donate",
     "homepage": "https://rc.css.master.co/docs/theme-service",

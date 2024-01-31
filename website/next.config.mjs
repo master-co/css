@@ -15,7 +15,6 @@ const nextConfig = {
         ignoreDuringBuilds: process.env.VERCEL_CI ? false : true,
     },
     experimental: {
-        nextScriptWorkers: true,
         /**
          * 解決 JavaScript heap out of memory 問題
          */

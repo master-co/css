@@ -1,8 +1,9 @@
 import DocHeader from '~/components/DocHeader'
 import DocSidebar from '~/components/DocSidebar'
 
-export default function Layout(props: any) {
-    const { children } = props
+export const dynamic = 'force-static'
+
+export default async function Layout({ children }: any) {
     return <>
         <DocHeader contained />
         <DocSidebar />

@@ -7,7 +7,7 @@
         "type-check": "tsc --noEmit"
     },
     "license": "MIT",
-    "description": "Integration of Master CSS in Svelte",
+    "description": "Integrate Master CSS in Svelte way",
     "author": "Aoyue Design LLC.",
     "funding": "https://css.master.co/docs/donate",
     "homepage": "https://css.master.co",

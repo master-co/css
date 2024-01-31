@@ -177,6 +177,27 @@ To learn more, check out:
 - [Color](/docs/color) for text and foreground colors
 - [Colors](/docs/colors) for default colors and color variables
 
+### Accessing variables
+In v1, `$(key)` equals `var(--key)`.
+```html
+<div class="content:$(key)">var(--key)</div>
+```
+In v2, `$(key)` accesses `config.variables.key` and falls back to `var(--key)` if not found.
+```js name=master.css.js
+export default {
+    variables: {
+        key: '"`"'
+    }
+}
+```
+```html
+<div class="content:**$(key)**">"`"</div>
+```
+If you want to access native CSS variables not defined in `config specifically. variables`, use `var(--key)`.
+```html
+<div class="content:**var(--key)**">var(--key)</div>
+```
+
 ---
 
 ## Major changes

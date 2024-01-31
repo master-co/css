@@ -14,12 +14,12 @@ export default async function NotFound() {
     locale = i18n.locales.find((eachLocale) => eachLocale === locale) || 'en'
     const $ = await createTranslation(locale)
     return (
-        <RootLayout bodyClassName='bg:base' locale={locale} translations={await importTranslations(locale)}>
+        <RootLayout bodyClassName='bg:base' locale={locale} translations={await importTranslations(locale)} style={{ display: 'none' }}>
             <DocHeader contained />
             <div className="center-content flex flex:col min-h:100dvh pt:50 pt:60@md px:10x">
-                <h3 className='fg:accent font:18 ls:.01em mb:5x text:center'>404</h3>
+                <h3 className='fg:accent font:18 ls:.01em mb:5x mt:12x text:center'>404</h3>
                 <h1 className='fg:strong font:32 font:48@sm font:extrabold lh:1.2 ls:-.4 mt:0 text:center'>{$('This page does not exist')}</h1>
-                <div className='p:4x|2x'>
+                <div className='mb:12x p:4x|2x'>
                     <p className='text:18 fg:light'>{$('Sorry, the page cannot be found. Please try searching for other content.')}</p>
                     <SearchButton className="rounded b:1|frame lh:3rem min-w:60x mt:10x mx:auto pointer-events:auto px:6x" />
                 </div>

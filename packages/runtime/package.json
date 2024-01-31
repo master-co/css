@@ -12,7 +12,7 @@
         "lint": "eslint src"
     },
     "license": "MIT",
-    "description": "Run the Master CSS right in the browser",
+    "description": "Run Master CSS right in the browser",
     "author": "Aoyue Design LLC.",
     "funding": "https://css.master.co/docs/donate",
     "homepage": "https://css.master.co",

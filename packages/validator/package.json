@@ -8,7 +8,7 @@
         "test": "jest --forceExit --detectOpenHandles"
     },
     "license": "MIT",
-    "description": "Validator for Master CSS class syntax",
+    "description": "Validate Master CSS syntax",
     "author": "Aoyue Design LLC.",
     "funding": "https://css.master.co/docs/donate",
     "homepage": "https://css.master.co",

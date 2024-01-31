@@ -16,15 +16,6 @@ export default async function Layout({ children, params }: {
     return (
         <RootLayout locale={params.locale} translations={await importTranslations(params.locale)} bodyClassName='bg:base' style={{ display: 'none' }}>
             <>
-                <Script src="/monaco-editor/vs/loader.js" strategy="worker" />
-                <Script src="/monaco-editor/vs/editor/editor.main.js" strategy="worker" />
-                <Script src="/monaco-editor/vs/editor/editor.main.nls.js" strategy="worker" />
-                <Script src="/monaco-editor/vs/basic-languages/html/html.js" strategy="worker" />
-                <Script src="/monaco-editor/vs/language/html/htmlMode.js" strategy="worker" />
-                <Script src="/monaco-editor/vs/language/html/htmlWorker.js" strategy="worker" />
-                <Script src="/monaco-editor/vs/basic-languages/javascript/javascript.js" strategy="worker" />
-                <Script src="/monaco-editor/vs/language/typescript/tsMode.js" strategy="worker" />
-                <Script src="/monaco-editor/vs/base/worker/workerMain.js" strategy="worker" />
                 {children}
             </>
         </RootLayout>

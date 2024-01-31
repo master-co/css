@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">Generate Master CSS text from markup on the server</p>
+<p align="center">Render Master CSS on the server side</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">
