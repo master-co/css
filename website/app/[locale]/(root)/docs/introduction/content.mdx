@@ -92,7 +92,7 @@ This feature is included in the [Master CSS Language Service](/docs/language-ser
 ## Benchmarks
 Initially, Master CSS was intended to create a CSS engine for production browser runtimes, so we concentrated on performance such as syntax parsing, rule generation, cache sharing, and even browser rendering.
 
-Master CSS doesn't use heavy-duty build tools like [PostCSS](https://postcss.org), [Autoprefixer](https://github.com/postcss/autoprefixer), or any CSS minifiers, as these rules are generated with optimization.
+Master CSS doesn't use heavy-duty build tools like PostCSS, Autoprefixer, or any CSS minifiers, as these rules are generated with optimization.
 
 ### Minimal CSS on the market
 This is a real-world benchmark of critical CSS on page load for well-known official documentation websites.
@@ -438,13 +438,23 @@ Reducing [critical CSS](https://web.dev/articles/codelab-extract-and-inline-crit
 
 ---
 
-## 🚧 Documentation guide
+## How to use documentation
+A few notes on using these documents:
 
-#### Hover preview
+1. Get an overview of almost all the documents via the navigation on the left side of the screen, and there are only a few categories.
+2. On the right side, you'll see a table of contents that makes navigating between page sections easier.
+3. Click the search box on the left side or use the shortcut <KeyCap>Ctrl+K</KeyCap> or <KeyCap>Command+K</KeyCap> to search the entire site.
+4. Every class name in the document can preview the generated CSS rules by hovering.
+    ```html
+    <div class="**hidden@<sm&>md**">Try hovering over the class</div>
+    ```
 
-```html
-<div class="hide@<md">...</div>
-```
+Also, you can use the official [Master CSS Play](/play) to edit, preview, view the generated size, and even share your design online.
+
+<figure>
+    <Image src={require('~/public/images/play.png').default} placeholder="blur" alt="Master CSS Play" className="b:1|frame r:2x" />
+    <figcaption>A real-time code editor for Master CSS</figcaption>
+</figure>
 
 ---
 
@@ -458,3 +468,7 @@ If you have questions about Master CSS, you're always welcome to ask our communi
 We're here to support your Master CSS journey!
 
 <StarUs />
+
+---
+
+## Start your Master CSS journey

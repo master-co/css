@@ -18,9 +18,8 @@ const categoryOrder = [
     'Design Variables',
     'Configuration',
     'Production Optimization',
-    'API Reference',
-    'API Reference',
-    'CLI Reference',
+    'Syntax',
+    'API Reference'
 ]
 
 let pages: { metadata: Metadata, pathname: string }[] = metadataForList.map((eachMetadata: Metadata) => {

@@ -10,12 +10,14 @@ export default function Bar({ className, width, animated, children, color = 'tex
         <div ref={ref} className={clsx('flex align-items:center flex-wrap:nowrap gap:10 ml:-1', className)}>
             {/* eslint-disable-next-line @master/css/class-validation */}
             <svg height="24" xmlns="http://www.w3.org/2000/svg" style={{ width: inView ? `calc(${width} - (${max} - ${value}) / ${max} * ${width})` : width }} className={clsx(className, animated && '~width|2s|ease-out will-change:width')}>
+                {/* eslint-disable-next-line @master/css/class-validation */}
                 <rect x="-4" y="0" height="24" width="100%" rx="4" ry="4" className={clsx(`fill:${color}`, 'stroke:1 stroke:frame calc(100%+4)')} />
             </svg>
             {icon}
             {/* eslint-disable-next-line @master/css/class-validation */}
             <b className={`fg:${color} white-space:nowrap`}>
-                <CountUp start={max}
+                <CountUp
+                    start={max}
                     end={inView && value}
                     duration={2}
                     prefix={prefix && (prefix + ' ')}
