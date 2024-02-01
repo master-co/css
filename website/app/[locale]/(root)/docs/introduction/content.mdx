@@ -36,11 +36,27 @@ Is the framework you're using not mentioned above? Check out the official [insta
 Overview of some of the main features of Master CSS:
 
 ### Rendering Modes
-Master CSS provides three [rendering modes](/docs/rendering-modes), which you can choose according to project scale and application scenarios to meet your current business requirements.
+Master CSS provides three [rendering modes](/docs/rendering-modes), and you can choose according to project scale and application scenarios to meet your business needs.
 
-1. [Progressive Rendering](/docs/rendering-modes/progressive-rendering) scans the rendered HTML ahead of time, server-side or at build time, generates the corresponding CSS rules for each page, and lazy loads the runtime engine to keep track of the dynamic class names.
-2. [Runtime Rendering](/docs/rendering-modes/runtime-rendering) observes changes in DOM class names at browser runtime, generates corresponding CSS rules, and injects them into the running style sheet.
-3. [Static Extraction](/docs/rendering-modes/static-extraction) integrates build tools to scan project source code, extract class names, generate CSS rules, and write them into a virtual CSS module.
+One of the most unique, [progressive rendering](/docs/rendering-modes/progressive-rendering) works by pre-rendering the critical CSS based on the document's class names and deferring the loading of the [runtime](/docs/rendering-modes/runtime-rendering) engine for any future dynamic class names.
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    …
+    <style id="master">
++        .block {
++            display: block;
++        }
+    </style>
+    <script src="https://cdn.master.co/css-runtime@rc" defer></script>
+</head>
+<body>
+    <h1 class="**block**">Hello World</h1>
+</body>
+</html>
+```
+This ensures the page generates the [ultra-lightweight CSS](#minimal-css-on-the-market) and the fastest first-page render.
 
 ### 🚧 Design System
 ### 🚧 Syntax Highlighting
@@ -408,5 +424,6 @@ If you have questions about Master CSS, you're always welcome to ask our communi
 - [Discord](https://discord.com/invite/sZNKpAAAw6): Join real-time conversations with humans.
 - [Twitter](https://twitter.com/mastercorg): Stay updated on Master CSS
 
-We're here to support your CSS journey!
+We're here to support your Master CSS journey!
 
+<StarUs />
