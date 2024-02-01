@@ -56,10 +56,34 @@ One of the most unique, [progressive rendering](/docs/rendering-modes/progressiv
 </body>
 </html>
 ```
-This ensures the page generates the [ultra-lightweight CSS](#minimal-css-on-the-market) and the fastest first-page render.
+This ensures the page generates the [ultra-lightweight CSS](#minimal-css-on-the-market) and the fastest first-page render, unlike traditionally bundling styles across the entire application.
 
-### 🚧 Design System
-### 🚧 Syntax Highlighting
+### Design System
+Master CSS has built-in a neutral design system, Master Design System, including simplified syntax aliases, a crafted [color palette](/docs/colors), visually beautiful [color tokens](/docs/base-colors), universal responsive [breakpoints](/docs/responsive-design), 4 pixels base of [spacing and sizing](/docs/spacing-and-sizing), dark [modes](/docs/variables-and-modes), and more.
+
+import TextColorsOverview from '../text-colors/components/Overview.mdx'
+
+<TextColorsOverview />
+All features are implemented through powerful [configuration](/docs/configuration), and you can build your design system on top of it or use it as a quick starting point.
+
+### Syntax Highlighting
+Master CSS is the first language to highlight class names fully, making identifying their properties, appearance, and state faster.
+
+(!) Do you find writing utility classes sometimes seem lengthy or hard to read?
+<Demo $py={0}>
+    <DemoPanel>
+        <code className="font:16@sm token language-html">
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>sm:hover:bg-[#ceb195] …<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+        </code>
+    </DemoPanel>
+</Demo>
+(o) Light up your class names in markup from now on!
+<Demo $py={0}>
+    <DemoPanel>
+        <InlineCode lang="html" className="font:16@sm">{'<div class="bg:#ceb195:hover@sm …">'}</InlineCode>
+    </DemoPanel>
+</Demo>
+
 ### 🚧 Code Linting
 
 ---
@@ -67,7 +91,7 @@ This ensures the page generates the [ultra-lightweight CSS](#minimal-css-on-the-
 ## Benchmarks
 Initially, Master CSS was intended to create a CSS engine for production browser runtimes, so we concentrated on performance such as syntax parsing, rule generation, cache sharing, and even browser rendering.
 
-Master CSS doesn't use heavy-duty build tools like [PostCSS](https://postcss.org), [Autoprefixer](https://github.com/postcss/autoprefixer), or any CSS minifiers, and includes these optimizations in the early stages of rule generation.
+Master CSS doesn't use heavy-duty build tools like [PostCSS](https://postcss.org), [Autoprefixer](https://github.com/postcss/autoprefixer), or any CSS minifiers, as these rules are generated with optimization.
 
 ### Minimal CSS on the market
 This is a real-world benchmark of critical CSS on page load for well-known official documentation websites.
@@ -78,7 +102,7 @@ Reducing [critical CSS](https://web.dev/articles/codelab-extract-and-inline-crit
 
 ---
 
-## 🚧 Tech comparisons
+## 🚧 Comparisons
 {/* <DocTable className="font:14_p overflow-x:auto {px:30;mx:-30}@<sm">
     <thead>
         <tr>
