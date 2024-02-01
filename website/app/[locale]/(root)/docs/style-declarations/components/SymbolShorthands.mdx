@@ -1,7 +1,7 @@
 export const code1 = `<div class="**animation:fade|1s|ease** **transition:opacity|3s**">`
 export const code2 = `<div class="**@fade|1s|ease** **~opacity|3s**">`
 
-Syntax: <code><span className="token value mcss language-mcss"><span className="token Mroot"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> → <code><span className="token value mcss language-mcss"><span className="token Mroot"><span className="token Mkey">symbol</span><span className="token Mvalueroot"><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
+Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> → <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">symbol</span><span className="token Mvalueroot"><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
 
 Use `~` and `@` as derivative symbols for `transition` and `animation` to make class declarations more elegant.
 <Code lang="html">
@@ -16,7 +16,7 @@ Use `~` and `@` as derivative symbols for `transition` and `animation` to make c
 export const code3 = `<div class="**animation-name:fade** **transition-property:transform**">`
 export const code4 = `<div class="**@name:fade** **~property:transform**">`
 
-Related properties also work: <code><span className="token value mcss language-mcss"><span className="token Mroot"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> → <code><span className="token value mcss language-mcss"><span className="token Mroot"><span className="token Mkey">symbolname</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
+Related properties also work: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> → <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">symbolname</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
 <Code lang="html">
     {code3}
 </Code>

@@ -19,7 +19,7 @@ export default () => <table>
                         <tr key={eachFunctionName}>
                             <td>
                                 <code className="token language-mcss">
-                                    <span className="token Mroot">
+                                    <span className="token mcss">
                                         <span className="token Mvalueroot">
                                             <span className="token Mvalue">{eachFunctionName}<span className="token Mbracket">(</span>…<span className="token Mbracket">)</span></span>
                                         </span>
