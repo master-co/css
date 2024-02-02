@@ -3,7 +3,7 @@ import cheerio from 'cheerio'
 import { brotliCompressSync } from 'zlib'
 import log from '@techor/log'
 import { filesize } from 'filesize'
-import { readFileSync, writeFile } from 'fs'
+import { readFileSync, writeFileSync } from 'fs'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -11,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const fileSizeOptions = { round: 0 }
 
-async function fetchWithBrotli(url) {
+async function fetchWithBrotli(url: string) {
     try {
         const response = await axios.get(url, {
             responseType: 'arraybuffer',
@@ -20,14 +20,14 @@ async function fetchWithBrotli(url) {
             }
         })
         return response
-    } catch (error) {
+    } catch (error: any) {
         if (error.response.status === 404) {
             return error.response
         }
     }
 }
 
-async function fetchAndCalculateCSS({ name, url }) {
+async function fetchAndCalculateCSS({ name, url }: any) {
     const response = await fetchWithBrotli(url)
     const $ = cheerio.load(response.data.toString())
     const domain = response.request.protocol + '//' + response.request.host
@@ -35,8 +35,8 @@ async function fetchAndCalculateCSS({ name, url }) {
     let totalInternalCSSBrotliSize = 0
     let totalExternalCSSSize = 0
     let totalExternalCSSBrotliSize = 0
-    let externals = []
-    let internals = []
+    const externals: any[] = []
+    const internals: any[] = []
 
     await Promise.all(
         // Get all external CSS links
@@ -89,7 +89,7 @@ async function fetchAndCalculateCSS({ name, url }) {
 }
 
 const inputs = JSON.parse(readFileSync(resolve(__dirname, './inputs.json')).toString())
-const results = (await Promise.all(inputs.map((site) => fetchAndCalculateCSS(site))))
+const results = (await Promise.all(inputs.map((site: any) => fetchAndCalculateCSS(site))))
     .sort((a, b) => b.totalCSSSize - a.totalCSSSize)
 const masterCSSResult = results.find((result) => result.name === 'Master CSS')
 
@@ -122,4 +122,4 @@ results.forEach((output) => {
 
 log``
 
-writeFile(resolve(__dirname, './results.json'), JSON.stringify(results, null, 4), (err) => { })
+writeFileSync(resolve(__dirname, './results.json'), JSON.stringify(results, null, 4))

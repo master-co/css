@@ -6,6 +6,7 @@ module.exports = async function action(specifiedSourcePaths: string[], options?:
     watch?: boolean,
     output?: string,
     verbose?: number,
+    export?: boolean,
     cwd?: string,
     options?: string | string[] | Options
 }): Promise<CSSExtractor> {
@@ -24,7 +25,7 @@ module.exports = async function action(specifiedSourcePaths: string[], options?:
             }
         }
         options.output = output
-        options.verbose = +(verbose || 0) || options.verbose
+        options.verbose = verbose ? +verbose : options.verbose
     })
     extractor.init()
     const insert = async () => {
@@ -60,7 +61,11 @@ module.exports = async function action(specifiedSourcePaths: string[], options?:
                 log.t`Restart watching source changes`
             })
             .on('change', () => {
-                extractor.export()
+                if (options?.export) {
+                    extractor.export()
+                } else {
+                    console.log(extractor.css.text)
+                }
             })
             .on('watchClose', () => {
                 log``
@@ -70,7 +75,11 @@ module.exports = async function action(specifiedSourcePaths: string[], options?:
     } else {
         await extractor.prepare()
         await insert()
-        extractor.export()
+        if (options?.export) {
+            extractor.export()
+        } else {
+            console.log(extractor.css.text)
+        }
     }
     return extractor
 }

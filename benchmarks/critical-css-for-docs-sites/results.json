@@ -2,21 +2,21 @@
     {
         "name": "Tailwind CSS",
         "url": "https://tailwindcss.com/docs",
-        "totalCSSSize": 321434,
-        "totalCSSBrotliSize": 37021,
+        "totalCSSSize": 321546,
+        "totalCSSBrotliSize": 36990,
         "totalInternalCSSSize": 0,
         "totalInternalCSSBrotliSize": 0,
-        "totalExternalCSSSize": 321434,
-        "totalExternalCSSBrotliSize": 37021,
+        "totalExternalCSSSize": 321546,
+        "totalExternalCSSBrotliSize": 36990,
         "externals": [
             {
-                "url": "/_next/static/css/bbf119a844f476b1.css",
-                "size": 321434,
-                "brotliSize": 37021
+                "url": "/_next/static/css/fc4f9366fc459aca.css",
+                "size": 321546,
+                "brotliSize": 36990
             }
         ],
         "internals": [],
-        "date": "2024-01-29T07:48:32.243Z"
+        "date": "2024-02-02T12:40:42.281Z"
     },
     {
         "name": "Bootstrap",
@@ -45,23 +45,173 @@
             }
         ],
         "internals": [],
-        "date": "2024-01-29T07:48:32.721Z"
+        "date": "2024-02-02T12:40:42.886Z"
+    },
+    {
+        "name": "Next.js",
+        "url": "https://nextjs.org/docs",
+        "totalCSSSize": 184196,
+        "totalCSSBrotliSize": 32535,
+        "totalInternalCSSSize": 96,
+        "totalInternalCSSBrotliSize": 52,
+        "totalExternalCSSSize": 184100,
+        "totalExternalCSSBrotliSize": 32483,
+        "externals": [
+            {
+                "url": "/_next/static/css/4d789076a07f75d2.css?dpl=dpl_Bde4LFW3CvdJmNaLVS2PoMFFUrBD",
+                "size": 21596,
+                "brotliSize": 3746
+            },
+            {
+                "url": "/_next/static/css/17340964d00ffa89.css?dpl=dpl_Bde4LFW3CvdJmNaLVS2PoMFFUrBD",
+                "size": 19633,
+                "brotliSize": 3996
+            },
+            {
+                "url": "/_next/static/css/76457e19b00e2234.css?dpl=dpl_Bde4LFW3CvdJmNaLVS2PoMFFUrBD",
+                "size": 1572,
+                "brotliSize": 417
+            },
+            {
+                "url": "/_next/static/css/cf520b02431a21ec.css?dpl=dpl_Bde4LFW3CvdJmNaLVS2PoMFFUrBD",
+                "size": 5638,
+                "brotliSize": 1265
+            },
+            {
+                "url": "/_next/static/css/cb0a513d5f6e9d2b.css?dpl=dpl_Bde4LFW3CvdJmNaLVS2PoMFFUrBD",
+                "size": 58329,
+                "brotliSize": 9149
+            },
+            {
+                "url": "/_next/static/css/f01c4353b73e12fe.css?dpl=dpl_Bde4LFW3CvdJmNaLVS2PoMFFUrBD",
+                "size": 77332,
+                "brotliSize": 13910
+            }
+        ],
+        "internals": [
+            {
+                "tag": "<style>",
+                "size": 96,
+                "brotliSize": 52
+            }
+        ],
+        "date": "2024-02-02T12:40:40.876Z"
+    },
+    {
+        "name": "Material UI",
+        "url": "https://mui.com/material-ui/getting-started",
+        "totalCSSSize": 181348,
+        "totalCSSBrotliSize": 19669,
+        "totalInternalCSSSize": 93108,
+        "totalInternalCSSBrotliSize": 9023,
+        "totalExternalCSSSize": 88240,
+        "totalExternalCSSBrotliSize": 10646,
+        "externals": [
+            {
+                "url": "/_next/static/css/857d637ba0686aae.css",
+                "size": 86091,
+                "brotliSize": 10363
+            },
+            {
+                "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap",
+                "size": 2149,
+                "brotliSize": 283
+            }
+        ],
+        "internals": [
+            {
+                "tag": "<style>",
+                "size": 166,
+                "brotliSize": 116
+            },
+            {
+                "tag": "<style>",
+                "size": 166,
+                "brotliSize": 128
+            },
+            {
+                "tag": "<style>",
+                "size": 866,
+                "brotliSize": 161
+            },
+            {
+                "tag": "<style>",
+                "size": 1099,
+                "brotliSize": 178
+            },
+            {
+                "tag": "<style>",
+                "size": 598,
+                "brotliSize": 189
+            },
+            {
+                "tag": "<style id=\"material-icon-font\">",
+                "size": 0,
+                "brotliSize": 1
+            },
+            {
+                "tag": "<style id=\"font-awesome-css\">",
+                "size": 0,
+                "brotliSize": 1
+            },
+            {
+                "tag": "<style>",
+                "size": 758,
+                "brotliSize": 349
+            },
+            {
+                "tag": "<style>",
+                "size": 36,
+                "brotliSize": 40
+            },
+            {
+                "tag": "<style>",
+                "size": 39,
+                "brotliSize": 43
+            },
+            {
+                "tag": "<style>",
+                "size": 89380,
+                "brotliSize": 7812
+            },
+            {
+                "tag": "<style id=\"app-search\">",
+                "size": 0,
+                "brotliSize": 1
+            },
+            {
+                "tag": "<style id=\"prismjs\">",
+                "size": 0,
+                "brotliSize": 1
+            },
+            {
+                "tag": "<style>",
+                "size": 0,
+                "brotliSize": 1
+            },
+            {
+                "tag": "<style id=\"jss-server-side\">",
+                "size": 0,
+                "brotliSize": 1
+            },
+            {
+                "tag": "<style id=\"insertion-point-jss\">",
+                "size": 0,
+                "brotliSize": 1
+            }
+        ],
+        "date": "2024-02-02T12:40:41.606Z"
     },
     {
         "name": "Angular",
         "url": "https://angular.dev/overview",
-        "totalCSSSize": 191260,
-        "totalCSSBrotliSize": 27713,
+        "totalCSSSize": 126788,
+        "totalCSSBrotliSize": 19044,
         "totalInternalCSSSize": 62316,
         "totalInternalCSSBrotliSize": 10375,
-        "totalExternalCSSSize": 128944,
-        "totalExternalCSSBrotliSize": 17338,
+        "totalExternalCSSSize": 64472,
+        "totalExternalCSSBrotliSize": 8669,
         "externals": [
-            {
-                "url": "styles-YNMM5RFA.css",
-                "size": 64472,
-                "brotliSize": 8669
-            },
             {
                 "url": "styles-YNMM5RFA.css",
                 "size": 64472,
@@ -145,208 +295,53 @@
                 "brotliSize": 507
             }
         ],
-        "date": "2024-01-29T07:48:31.284Z"
-    },
-    {
-        "name": "Next.js",
-        "url": "https://nextjs.org/docs",
-        "totalCSSSize": 184200,
-        "totalCSSBrotliSize": 32488,
-        "totalInternalCSSSize": 96,
-        "totalInternalCSSBrotliSize": 52,
-        "totalExternalCSSSize": 184104,
-        "totalExternalCSSBrotliSize": 32436,
-        "externals": [
-            {
-                "url": "/_next/static/css/d8c33088f00bdc21.css?dpl=dpl_6Qir2sLFUSLWxJxpLbUBoZRU9wXc",
-                "size": 21600,
-                "brotliSize": 3723
-            },
-            {
-                "url": "/_next/static/css/76457e19b00e2234.css?dpl=dpl_6Qir2sLFUSLWxJxpLbUBoZRU9wXc",
-                "size": 1572,
-                "brotliSize": 417
-            },
-            {
-                "url": "/_next/static/css/cf520b02431a21ec.css?dpl=dpl_6Qir2sLFUSLWxJxpLbUBoZRU9wXc",
-                "size": 5638,
-                "brotliSize": 1265
-            },
-            {
-                "url": "/_next/static/css/17340964d00ffa89.css?dpl=dpl_6Qir2sLFUSLWxJxpLbUBoZRU9wXc",
-                "size": 19633,
-                "brotliSize": 3996
-            },
-            {
-                "url": "/_next/static/css/01930e4e4003c21d.css?dpl=dpl_6Qir2sLFUSLWxJxpLbUBoZRU9wXc",
-                "size": 58329,
-                "brotliSize": 9125
-            },
-            {
-                "url": "/_next/static/css/f01c4353b73e12fe.css?dpl=dpl_6Qir2sLFUSLWxJxpLbUBoZRU9wXc",
-                "size": 77332,
-                "brotliSize": 13910
-            }
-        ],
-        "internals": [
-            {
-                "tag": "<style>",
-                "size": 96,
-                "brotliSize": 52
-            }
-        ],
-        "date": "2024-01-29T07:48:30.721Z"
-    },
-    {
-        "name": "Material UI",
-        "url": "https://mui.com/material-ui/getting-started",
-        "totalCSSSize": 182928,
-        "totalCSSBrotliSize": 19677,
-        "totalInternalCSSSize": 93891,
-        "totalInternalCSSBrotliSize": 9012,
-        "totalExternalCSSSize": 89037,
-        "totalExternalCSSBrotliSize": 10665,
-        "externals": [
-            {
-                "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap",
-                "size": 2149,
-                "brotliSize": 283
-            },
-            {
-                "url": "/_next/static/css/d8a595bcef52ba81.css",
-                "size": 86888,
-                "brotliSize": 10382
-            }
-        ],
-        "internals": [
-            {
-                "tag": "<style>",
-                "size": 166,
-                "brotliSize": 116
-            },
-            {
-                "tag": "<style>",
-                "size": 166,
-                "brotliSize": 128
-            },
-            {
-                "tag": "<style>",
-                "size": 866,
-                "brotliSize": 161
-            },
-            {
-                "tag": "<style>",
-                "size": 1099,
-                "brotliSize": 178
-            },
-            {
-                "tag": "<style>",
-                "size": 598,
-                "brotliSize": 189
-            },
-            {
-                "tag": "<style id=\"material-icon-font\">",
-                "size": 0,
-                "brotliSize": 1
-            },
-            {
-                "tag": "<style id=\"font-awesome-css\">",
-                "size": 0,
-                "brotliSize": 1
-            },
-            {
-                "tag": "<style>",
-                "size": 734,
-                "brotliSize": 338
-            },
-            {
-                "tag": "<style>",
-                "size": 36,
-                "brotliSize": 40
-            },
-            {
-                "tag": "<style>",
-                "size": 39,
-                "brotliSize": 43
-            },
-            {
-                "tag": "<style>",
-                "size": 90187,
-                "brotliSize": 7812
-            },
-            {
-                "tag": "<style id=\"app-search\">",
-                "size": 0,
-                "brotliSize": 1
-            },
-            {
-                "tag": "<style id=\"prismjs\">",
-                "size": 0,
-                "brotliSize": 1
-            },
-            {
-                "tag": "<style>",
-                "size": 0,
-                "brotliSize": 1
-            },
-            {
-                "tag": "<style id=\"jss-server-side\">",
-                "size": 0,
-                "brotliSize": 1
-            },
-            {
-                "tag": "<style id=\"insertion-point-jss\">",
-                "size": 0,
-                "brotliSize": 1
-            }
-        ],
-        "date": "2024-01-29T07:48:31.542Z"
+        "date": "2024-02-02T12:40:41.174Z"
     },
     {
         "name": "Vue.js",
         "url": "https://vuejs.org/guide/introduction",
-        "totalCSSSize": 124222,
-        "totalCSSBrotliSize": 21082,
+        "totalCSSSize": 120079,
+        "totalCSSBrotliSize": 20455,
         "totalInternalCSSSize": 0,
         "totalInternalCSSBrotliSize": 0,
-        "totalExternalCSSSize": 124222,
-        "totalExternalCSSBrotliSize": 21082,
+        "totalExternalCSSSize": 120079,
+        "totalExternalCSSBrotliSize": 20455,
         "externals": [
             {
-                "url": "/assets/style.63Gb9O0n.css",
-                "size": 124222,
-                "brotliSize": 21082
+                "url": "/assets/style.-Y8Z6kcm.css",
+                "size": 120079,
+                "brotliSize": 20455
             }
         ],
         "internals": [],
-        "date": "2024-01-29T07:48:30.934Z"
+        "date": "2024-02-02T12:40:40.984Z"
     },
     {
         "name": "React",
         "url": "https://react.dev/learn",
-        "totalCSSSize": 109102,
-        "totalCSSBrotliSize": 15976,
+        "totalCSSSize": 109086,
+        "totalCSSBrotliSize": 15966,
         "totalInternalCSSSize": 0,
         "totalInternalCSSBrotliSize": 0,
-        "totalExternalCSSSize": 109102,
-        "totalExternalCSSBrotliSize": 15976,
+        "totalExternalCSSSize": 109086,
+        "totalExternalCSSBrotliSize": 15966,
         "externals": [
             {
-                "url": "/_next/static/css/b02537d7c16facbd.css",
-                "size": 109102,
-                "brotliSize": 15976
+                "url": "/_next/static/css/16d8aaa2d0dfe092.css",
+                "size": 109086,
+                "brotliSize": 15966
             }
         ],
         "internals": [],
-        "date": "2024-01-29T07:48:30.570Z"
+        "date": "2024-02-02T12:40:40.665Z"
     },
     {
         "name": "Master CSS",
         "url": "https://rc.css.master.co/docs",
-        "totalCSSSize": 30111,
-        "totalCSSBrotliSize": 6302,
-        "totalInternalCSSSize": 28430,
-        "totalInternalCSSBrotliSize": 5686,
+        "totalCSSSize": 30065,
+        "totalCSSBrotliSize": 6323,
+        "totalInternalCSSSize": 28384,
+        "totalInternalCSSBrotliSize": 5707,
         "totalExternalCSSSize": 1681,
         "totalExternalCSSBrotliSize": 616,
         "externals": [
@@ -360,12 +355,12 @@
             {
                 "tag": "<style>",
                 "size": 7080,
-                "brotliSize": 426
+                "brotliSize": 431
             },
             {
                 "tag": "<style id=\"master\">",
-                "size": 21168,
-                "brotliSize": 5156
+                "size": 21122,
+                "brotliSize": 5172
             },
             {
                 "tag": "<style>",
@@ -378,6 +373,6 @@
                 "brotliSize": 23
             }
         ],
-        "date": "2024-01-29T07:48:31.574Z"
+        "date": "2024-02-02T12:40:41.071Z"
     }
 ]
