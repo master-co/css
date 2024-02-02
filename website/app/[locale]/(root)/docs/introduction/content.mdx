@@ -73,7 +73,7 @@ Master CSS is the first language to highlight class names fully, making identify
 <Demo $py={0}>
     <DemoPanel>
         <code className="font:16@sm token language-html">
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>sm:hover:bg-[#ceb195] …<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+            <span className="token tag"><span className="token tag"><span className="token punctuation">&lt;</span>div</span> <span className="token attr-name">class</span><span className="token attr-value"><span className="token punctuation attr-equals">=</span><span className="token punctuation">"</span>sm:hover:bg-[#ceb195] …<span className="token punctuation">"</span></span><span className="token punctuation">&gt;</span></span>
         </code>
     </DemoPanel>
 </Demo>
@@ -95,11 +95,10 @@ Initially, Master CSS was intended to create a CSS engine for production browser
 Master CSS doesn't use heavy-duty build tools like PostCSS, Autoprefixer, or any CSS minifiers, as these rules are generated with optimization.
 
 ### Minimal CSS on the market
-This is a real-world benchmark of critical CSS on page load for well-known official documentation websites.
+This is a real-world benchmark of [critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) on page load for well-known official documentation websites.
 <CriticalCSSForDocsSitesBenchmark />
 According to HTTP Archive [CSS Bytes](https://httparchive.org/reports/page-weight#bytesCss), the sum of transfer size kilobytes of all external stylesheets requested by the page is **~82 kB**, excluding internal and inline styles. **The Master CSS documentation site is only ~6 kB (brotli) in total**.
-
-Reducing [critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) can improve page loading speed, browser rendering performance, and SEO metrics.
+{/* Reducing [critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) can improve page loading speed, browser rendering performance, and SEO metrics. */}
 
 ---
 

@@ -15,7 +15,7 @@ export default function RootLayout({ children, locale, bodyClassName, style, tra
     translations: any
 }) {
     return (
-        <html lang={locale} style={process.env.NODE_ENV === 'development' ? { display: 'none' } : style}>
+        <html lang={locale} style={process.env.NODE_ENV === 'development' ? { display: 'none' } : style} suppressHydrationWarning>
             <head>
                 <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
                 <script dangerouslySetInnerHTML={{ __html: getPreInitScript({ default: 'system' }) }}></script>
