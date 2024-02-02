@@ -1,5 +1,9 @@
 import { Viewport } from 'next'
 
+if (process.env.NODE_ENV === 'development') {
+    require('~/master.css')
+}
+
 export const metadata = {
     metadataBase: new URL(process.env.HOST as string)
 }

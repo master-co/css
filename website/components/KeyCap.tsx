@@ -1,3 +1,3 @@
 import { styled } from '@master/css.react'
 
-export default styled.span`bg:surface r:1x p:1x|2x b:1|frame s:01 font:12 fg:strong`
+export default styled.span`b:1|frame bg:surface fg:strong font:12 p:1x|2x r:1x s:01`
