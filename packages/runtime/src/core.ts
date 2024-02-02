@@ -6,6 +6,7 @@ import './types/global'
 export class RuntimeCSS extends MasterCSS {
     readonly host: Element
     readonly observing = false
+    readonly progressive = false
     readonly container: HTMLElement | ShadowRoot
     observer?: MutationObserver | null
     constructor(
@@ -43,6 +44,8 @@ export class RuntimeCSS extends MasterCSS {
                 if (ownerNode && (ownerNode as HTMLStyleElement).id === 'master') {
                     // @ts-ignore
                     this.style = ownerNode
+                    // @ts-ignore
+                    this.progressive = true
                     break
                 }
             }
@@ -391,9 +394,11 @@ export class RuntimeCSS extends MasterCSS {
                 sheet.deleteRule(i)
             }
         }
-        this.style?.remove()
-        // @ts-ignore
-        this.style = null
+        if (!this.progressive) {
+            this.style?.remove()
+            // @ts-ignore
+            this.style = null
+        }
         return this
     }
 
