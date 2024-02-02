@@ -509,7 +509,7 @@ export default function Play(props: any) {
                 <Link href={'/'}>
                     {<Logotype height="19" />}
                 </Link>
-                <label className='app-header-nav rel gap:5 ml:auto ml:30@md'>
+                <label className='app-header-nav rel font:medium gap:5 ml:auto ml:30@md'>
                     v{version}
                     <select ref={versionSelectRef} name="version" defaultValue={version}
                         className="abs full cursor:pointer inset:0 opacity:0"
