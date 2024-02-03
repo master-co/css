@@ -22,7 +22,7 @@ export default function RootLayout({ children, locale, bodyClassName, style, tra
                 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=block" rel="stylesheet" />
                 {locale === 'tw' && <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=block" rel="stylesheet" />}
             </head>
-            <body className={clsx(bodyClassName, '{font:mono;font-feature:normal}_:where(code,kbd,samp) bg:slate-50/.2_:where(::selection) fg:neutral font-feature:\'salt\' font:sans overflow-x:hidden')}>
+            <body className={clsx(bodyClassName, '{font:mono;font-feature:normal}_:where(code,kbd,samp) bg:slate-50/.2_:where(::selection) fg:neutral font-feature:\'salt\' font:sans')}>
                 <Client locale={locale} translations={translations}>
                     {children}
                 </Client>
