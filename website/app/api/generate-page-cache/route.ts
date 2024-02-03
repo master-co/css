@@ -8,23 +8,30 @@ export async function POST(req: Request) {
         return new Response(null, { status: 401 })
     
     for (const eachLocale of i18n.locales) {
-        fetch(
-            `https://api.github.com/repos/${process.env.VERCEL_GIT_REPO_OWNER}/css/actions/workflows/generate-page-cache.yml/dispatches`,
-            {
-                method: 'POST',
-                body: JSON.stringify({
-                    ref: process.env.VERCEL_GIT_COMMIT_REF,
-                    inputs: {
-                        locale: eachLocale
+        try {
+            const response = await fetch(
+                `https://api.github.com/repos/${process.env.VERCEL_GIT_REPO_OWNER}/css/actions/workflows/generate-page-cache.yml/dispatches`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        ref: process.env.VERCEL_GIT_COMMIT_REF,
+                        inputs: {
+                            locale: eachLocale
+                        }
+                    }),
+                    headers: {
+                        'User-Agent': 'Master CSS Generate Page Cache',
+                        'X-GitHub-Api-Version': '2022-11-28',
+                        Authorization: 'Bearer ' + githubToken
                     }
-                }),
-                headers: {
-                    'User-Agent': 'Master CSS Generate Page Cache',
-                    'X-GitHub-Api-Version': '2022-11-28',
-                    Authorization: 'Bearer ' + githubToken
                 }
+            )
+            if (!response.ok) {
+                console.error(eachLocale + ' error: ' +  await response.text())
             }
-        )
+        } catch (err) {
+            console.error(err)
+        }
     }
 
     return new Response(null, { status: 200 })
