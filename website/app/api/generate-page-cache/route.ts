@@ -1,9 +1,6 @@
-import getCurrentGitBranch from 'current-git-branch'
 import githubToken from 'websites/tokens/github'
 import i18n from '~/i18n.config.mjs'
 import token from 'websites/tokens/api'
-
-const currentBranch = getCurrentGitBranch()
 
 export async function POST(req: Request) {
     const tokenParam = new URL(req.url).searchParams.get('token')
@@ -16,7 +13,7 @@ export async function POST(req: Request) {
             {
                 method: 'POST',
                 body: JSON.stringify({
-                    ref: currentBranch,
+                    ref: process.env.VERCEL_GIT_COMMIT_REF,
                     inputs: {
                         locale: eachLocale
                     }
