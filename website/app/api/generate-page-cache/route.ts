@@ -7,6 +7,8 @@ export async function POST(req: Request) {
     if (tokenParam !== token)
         return new Response(null, { status: 401 })
 
+    console.log(process.env)
+
     for (const eachLocale of i18n.locales) {
         fetch(
             `https://api.github.com/repos/${process.env.VERCEL_GIT_REPO_OWNER}/${process.env.VERCEL_GIT_REPO_SLUG}/actions/workflows/generate-page-cache.yml/dispatches`,
@@ -19,6 +21,7 @@ export async function POST(req: Request) {
                     }
                 }),
                 headers: {
+                    'User-Agent': 'Master CSS Generate Page Cache',
                     'X-GitHub-Api-Version': '2022-11-28',
                     Authorization: 'Bearer ' + githubToken
                 }
