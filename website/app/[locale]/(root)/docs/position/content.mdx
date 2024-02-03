@@ -22,7 +22,7 @@ Use `static`to position an element according to the normal flow of the document.
 ### Positioning elements as relative
 Use `rel`to position an element according to the normal flow of the document, and then offset relative to itself based on the values of top, right, bottom, and left.
 <Demo className="pb:60">
-    <div className="bg-stripe">
+    <div className="bg:stripe">
         <code className="rel p:20 top:30 left:20 box-perspective-pink inline-block">
             <div>relative parent</div>
         </code>
@@ -37,7 +37,7 @@ Use `rel`to position an element according to the normal flow of the document, an
 ### Positioning elements as absolute
 Use `abs`to remove an element from the normal flow of the document, and the element positioned relative to its closest positioned ancestor.
 <Demo>
-    <code className="rel p:12x! box bg-stripe">
+    <code className="rel p:12x! box bg:stripe">
         <div>relative parent</div>
         <code className="box-perspective-pink abs left:0 top:0 w:fit">abs child</code>
     </code>
