@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Introduction',
-    description: 'Quickly overview and understand Master CSS.',
+    description: 'Get a quick overview of Master CSS and its benefits.',
     category: 'Getting Started',
     disabled: true,
     order: 1
