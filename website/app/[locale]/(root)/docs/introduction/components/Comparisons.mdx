@@ -4,155 +4,153 @@ export const masterCSS = brands.find(({ name }) => name === 'Master CSS')
 export const tailwindCSS = brands.find(({ name }) => name === 'Tailwind CSS')
 export const bootstrap = brands.find(({ name }) => name === 'Bootstrap')
 
-<div className="overflow-x:auto {px:30;mx:-30}@<sm text:center_td:not(:first)">
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <th className="w:1/5">
-                    <Image src={masterCSS.src} className="size:56 mx:auto" />
-                    <div className="text:center mt:2x">Master CSS</div>
-                </th>
-                <th className="w:1/5">
-                    <Image src={tailwindCSS.src} className="size:56 mx:auto" />
-                    <div className="text:center mt:2x">Tailwind CSS</div>
-                </th>
-                <th className="w:1/5">
-                    <Image src={bootstrap.src} className="size:56 mx:auto" />
-                    <div className="text:center mt:2x">Bootstrap</div>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th>Language</th>
-                <td><InlineGood /></td>
-                <td>-</td>
-                <td>-</td>
-            </tr>
-            <tr>
-                <th>Framework</th>
-                <td><InlineGood /></td>
-                <td><InlineGood /></td>
-                <td><InlineGood /></td>
-            </tr>
-            <tr>
-                <td colSpan={4}><small>Rendering</small></td>
-            </tr>
-            <tr>
-                <th>Runtime rendering</th>
-                <td><InlineGood /></td>
-                <td><InlineWarn />Dev JIT</td>
-                <td>-</td>
-            </tr>
-            <tr>
-                <th>Server-side rendering</th>
-                <td><InlineGood /></td>
-                <td>-</td>
-                <td>-</td>
-            </tr>
-            <tr>
-                <th>CSS hydration</th>
-                <td><InlineGood /></td>
-                <td>-</td>
-                <td>-</td>
-            </tr>
-            <tr>
-                <th>Extracted at build time</th>
-                <td><InlineGood /></td>
-                <td><InlineGood /></td>
-                <td>-</td>
-            </tr>
-            <tr>
-                <td colSpan={4}><small>Preprocessors</small></td>
-            </tr>
-            <tr>
-                <th>PostCSS</th>
-                <td><InlineGood />No</td>
-                <td>Yes</td>
-                <td>Yes</td>
-            </tr>
-            <tr>
-                <th>Autoprefixer</th>
-                <td><InlineGood />No</td>
-                <td>Yes</td>
-                <td>Yes</td>
-            </tr>
-            <tr>
-                <th>CSS minifiers</th>
-                <td><InlineGood />No</td>
-                <td>Yes</td>
-                <td>Yes</td>
-            </tr>
-            <tr>
-                <td colSpan={4}><small>Resource Size</small></td>
-            </tr>
-            <tr>
-                <th>Critical CSS for initial paint</th>
-                <td><InlineGood />Minimal</td>
-                <td><InlineWarn />Largest</td>
-                <td>~233 KB</td>
-            </tr>
-            <tr>
-                <th>Source that generates CSS</th>
-                <td><InlineGood />Page</td>
-                <td><InlineBad />All files</td>
-                <td>-</td>
-            </tr>
-            <tr>
-                <th>Generate redundant CSS rules</th>
-                <td><InlineGood />No</td>
-                <td><InlineWarn />Yes</td>
-                <td><InlineWarn />Yes</td>
-            </tr>
-            <tr>
-                <th>Render-blocking CSS resources</th>
-                <td><InlineGood />Internal</td>
-                <td><InlineWarn />External</td>
-                <td><InlineWarn />External</td>
-            </tr>
-            <tr>
-                <td colSpan={4}><small>Programming</small></td>
-            </tr>
-            <tr>
-                <th>The class names from server</th>
-                <td><InlineGood /></td>
-                <td><InlineBad /></td>
-                <td>-</td>
-            </tr>
-            <tr>
-                <th>The class names from static files</th>
-                <td><InlineGood /></td>
-                <td><InlineWarn />Unreliable</td>
-                <td>-</td>
-            </tr>
-            <tr>
-                <td colSpan={4}><small>Developer Tools</small></td>
-            </tr>
-            <tr>
-                <th>Code-completion</th>
-                <td><InlineGood /></td>
-                <td><InlineGood /></td>
-                <td>-</td>
-            </tr>
-            <tr>
-                <th>Syntax highlighting for class names</th>
-                <td><InlineGood /></td>
-                <td>-</td>
-                <td>-</td>
-            </tr>
-            <tr>
-                <th>CSS generate preview</th>
-                <td><InlineGood /></td>
-                <td><InlineGood /></td>
-                <td>-</td>
-            </tr>
-            <tr>
-                <th>Code linting</th>
-                <td><InlineGood /></td>
-                <td><InlineWarn />Incomplete</td>
-                <td><InlineBad /></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+<table className="text:center_td:not(:first) mt:-2x">
+    <thead>
+        <tr>
+            <th className="sticky top:48 top:60@sm pt:4x bg:base"></th>
+            <th className="sticky top:48 top:60@sm pt:4x bg:base w:1/5">
+                <Image src={masterCSS.src} className="size:48 mx:auto" />
+                <div className="text:center mt:2x hide@<sm">Master CSS</div>
+            </th>
+            <th className="sticky top:48 top:60@sm pt:4x bg:base w:1/5">
+                <Image src={tailwindCSS.src} className="size:48 mx:auto" />
+                <div className="text:center mt:2x hide@<sm">Tailwind CSS</div>
+            </th>
+            <th className="sticky top:48 top:60@sm pt:4x bg:base w:1/5">
+                <Image src={bootstrap.src} className="size:48 mx:auto" />
+                <div className="text:center mt:2x hide@<sm">Bootstrap</div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>Language</th>
+            <td><InlineGood /></td>
+            <td>-</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <th>Framework</th>
+            <td><InlineGood /></td>
+            <td><InlineGood /></td>
+            <td><InlineGood /></td>
+        </tr>
+        <tr>
+            <td colSpan={4}><small>Rendering</small></td>
+        </tr>
+        <tr>
+            <th>Runtime rendering</th>
+            <td><InlineGood /></td>
+            <td><InlineWarn />Dev JIT</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <th>Server-side rendering</th>
+            <td><InlineGood /></td>
+            <td>-</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <th>CSS hydration</th>
+            <td><InlineGood /></td>
+            <td>-</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <th>Extracted at build time</th>
+            <td><InlineGood /></td>
+            <td><InlineGood /></td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td colSpan={4}><small>Preprocessors</small></td>
+        </tr>
+        <tr>
+            <th>PostCSS</th>
+            <td><InlineGood />No</td>
+            <td>Yes</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <th>Autoprefixer</th>
+            <td><InlineGood />No</td>
+            <td>Yes</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <th>CSS minifiers</th>
+            <td><InlineGood />No</td>
+            <td>Yes</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td colSpan={4}><small>Resource Size</small></td>
+        </tr>
+        <tr>
+            <th>Critical CSS for initial paint</th>
+            <td><InlineGood />Minimal</td>
+            <td><InlineWarn />Largest</td>
+            <td>~233 KB</td>
+        </tr>
+        <tr>
+            <th>Source that generates CSS</th>
+            <td><InlineGood />Page</td>
+            <td><InlineBad />All files</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <th>Generate redundant CSS rules</th>
+            <td><InlineGood />No</td>
+            <td><InlineWarn />Yes</td>
+            <td><InlineWarn />Yes</td>
+        </tr>
+        <tr>
+            <th>Render-blocking CSS resources</th>
+            <td><InlineGood />Internal</td>
+            <td><InlineWarn />External</td>
+            <td><InlineWarn />External</td>
+        </tr>
+        <tr>
+            <td colSpan={4}><small>Programming</small></td>
+        </tr>
+        <tr>
+            <th>The class names from server</th>
+            <td><InlineGood /></td>
+            <td><InlineBad /></td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <th>The class names from static files</th>
+            <td><InlineGood /></td>
+            <td><InlineWarn />Unreliable</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td colSpan={4}><small>Developer Tools</small></td>
+        </tr>
+        <tr>
+            <th>Code-completion</th>
+            <td><InlineGood /></td>
+            <td><InlineGood /></td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <th>Syntax highlighting for class names</th>
+            <td><InlineGood /></td>
+            <td>-</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <th>CSS generate preview</th>
+            <td><InlineGood /></td>
+            <td><InlineGood /></td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <th>Code linting</th>
+            <td><InlineGood /></td>
+            <td><InlineWarn />Incomplete</td>
+            <td><InlineBad /></td>
+        </tr>
+    </tbody>
+</table>
