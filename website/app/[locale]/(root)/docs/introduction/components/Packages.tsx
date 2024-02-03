@@ -35,9 +35,9 @@ const solutionPackages = [
 export default () => {
     const Tr = ({ children }: any) => (
         <tr>
-            <td className='white-space:nowrap'><Link href={'https://github.com/master-co/css/tree/rc/' + children.repository.directory}>
+            <th className='white-space:nowrap'><Link href={'https://github.com/master-co/css/tree/rc/' + children.repository.directory}>
                 {children.name}
-            </Link></td>
+            </Link></th>
             <td>{children.description}</td>
         </tr>
     )

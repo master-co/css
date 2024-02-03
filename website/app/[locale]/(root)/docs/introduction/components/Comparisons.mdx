@@ -39,28 +39,28 @@ export const bootstrap = brands.find(({ name }) => name === 'Bootstrap')
             <td colSpan={4}><small>Rendering</small></td>
         </tr>
         <tr>
-            <th>Runtime rendering</th>
+            <th>Runtime Rendering</th>
             <td><InlineGood /></td>
             <td><InlineWarn />Dev JIT</td>
-            <td>-</td>
+            <td><InlineBad /></td>
         </tr>
         <tr>
-            <th>Server-side rendering</th>
+            <th>Server-side Rendering</th>
             <td><InlineGood /></td>
-            <td>-</td>
-            <td>-</td>
+            <td><InlineBad /></td>
+            <td><InlineBad /></td>
         </tr>
         <tr>
-            <th>CSS hydration</th>
+            <th>CSS Hydration</th>
             <td><InlineGood /></td>
-            <td>-</td>
-            <td>-</td>
+            <td><InlineBad /></td>
+            <td><InlineBad /></td>
         </tr>
         <tr>
-            <th>Extracted at build time</th>
+            <th>Static Extraction</th>
             <td><InlineGood /></td>
             <td><InlineGood /></td>
-            <td>-</td>
+            <td><InlineBad /></td>
         </tr>
         <tr>
             <td colSpan={4}><small>Preprocessors</small></td>
@@ -124,6 +124,39 @@ export const bootstrap = brands.find(({ name }) => name === 'Bootstrap')
             <td><InlineGood /></td>
             <td><InlineWarn />Unreliable</td>
             <td>-</td>
+        </tr>
+        <tr>
+            <td colSpan={4}><small>The ability to customize tokens</small></td>
+        </tr>
+        <tr>
+            <th>Variables with Modes</th>
+            <td><InlineGood /></td>
+            <td><InlineBad /></td>
+            <td><InlineBad /></td>
+        </tr>
+        <tr>
+            <th>[Media Queries](/docs/media-queries)</th>
+            <td><InlineGood /></td>
+            <td><InlineBad /></td>
+            <td><InlineBad /></td>
+        </tr>
+        <tr>
+            <th>[Abstract Styles](/docs/styles)</th>
+            <td><InlineGood /></td>
+            <td><InlineWarn />`@apply`</td>
+            <td><InlineBad />Predefined</td>
+        </tr>
+        <tr>
+            <th>Breakpoints and Screens</th>
+            <td>11</td>
+            <td>5</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <th>Colors</th>
+            <td>~222</td>
+            <td>~244</td>
+            <td>~100</td>
         </tr>
         <tr>
             <td colSpan={4}><small>Developer Tools</small></td>
