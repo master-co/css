@@ -38,17 +38,17 @@ Overview of some of the main features of Master CSS:
 ### Rendering Modes
 Master CSS provides three [rendering modes](/docs/rendering-modes), and you can choose according to project scale and application scenarios to meet your business needs.
 
-One of the most unique, [progressive rendering](/docs/rendering-modes/progressive-rendering) works by pre-rendering the critical CSS based on the document's class names and deferring the loading of the [runtime](/docs/rendering-modes/runtime-rendering) engine for any future dynamic class names.
+1. [Progressive Rendering](/docs/rendering-modes/progressive-rendering) scans the rendered HTML server-side or at build time, generates the corresponding CSS rules for each page, and lazy loads the runtime engine to keep track of the dynamic class names.
+2. [Runtime Rendering](/docs/rendering-modes/runtime-rendering) observes changes in DOM class names at browser runtime, generates corresponding CSS rules, and injects them into the running style sheet.
+3. [Static Extraction](/docs/rendering-modes/static-extraction) integrates build tools to scan project source code, extract class names, generate CSS rules, and write them into a virtual CSS module.
+
+One of the most unique, the progressive rendering works by pre-rendering the critical CSS based on the document's class names and deferring the loading of the runtime engine for any future dynamic class names.
 ```html name=index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     …
-    <style id="master">
-+        .block {
-+            display: block;
-+        }
-    </style>
++    <style id="master">.block{display:block}</style>
     <script src="https://cdn.master.co/css-runtime@rc" defer></script>
 </head>
 <body>
@@ -58,13 +58,23 @@ One of the most unique, [progressive rendering](/docs/rendering-modes/progressiv
 ```
 This ensures the page generates the [ultra-lightweight CSS](#minimal-css-on-the-market) and the fastest first-page render, unlike traditionally bundling styles across the entire application.
 
-### Design System
-Master CSS has built-in a neutral design system, Master Design System, including simplified syntax aliases, a crafted [color palette](/docs/colors), visually beautiful [color tokens](/docs/base-colors), universal responsive [breakpoints](/docs/responsive-design), 4 pixels base of [spacing and sizing](/docs/spacing-and-sizing), dark [modes](/docs/variables-and-modes), and more.
+### Design System APIs
+Master CSS provides a set of systematic [configuration](/docs/configuration) APIs to help you build a consistent, easy-to-manage, and scalable design system:
+<Configuration />
 
-import TextColorsOverview from '../text-colors/components/Overview.mdx'
+We have built a series of neutral tokens in the default configuration and created a universal Master Design System, which make your design system on top of or use it as a quick starting point.
+<DesignVariables />
+This is just one part; more design variables and tokens are scattered throughout the syntax documentation.
 
-<TextColorsOverview />
-All features are implemented through powerful [configuration](/docs/configuration), and you can build your design system on top of it or use it as a quick starting point.
+For example, the semantic class `capitalize` is used to simplify `css text-transform: capitalize`:
+<Demo $py={0}>
+    <DemoPanel>
+        <DemoP><b className="bg:stripe-pink">H</b>eavy <b className="bg:stripe-pink">B</b>oxes <b className="bg:stripe-pink">P</b>erform <b className="bg:stripe-pink">Q</b>uick <b className="bg:stripe-pink">W</b>altzes <b className="bg:stripe-pink">A</b>nd <b className="bg:stripe-pink">J</b>igs.</DemoP>
+    </DemoPanel>
+</Demo>
+```html
+<p class="**capitalize**">Heavy Boxes Perform Quick Waltzes And Jigs.</p>
+```
 
 ### Syntax Highlighting
 Master CSS is the first language to highlight class names fully, making identifying their properties, appearance, and state faster.
@@ -97,7 +107,9 @@ Master CSS doesn't use heavy-duty build tools like PostCSS, Autoprefixer, or any
 ### Minimal CSS on the market
 This is a real-world benchmark of [critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) on page load for well-known official documentation websites.
 <CriticalCSSForDocsSitesBenchmark />
-According to HTTP Archive [CSS Bytes](https://httparchive.org/reports/page-weight#bytesCss), the sum of transfer size kilobytes of all external stylesheets requested by the page is **~82 kB**, excluding internal and inline styles. **The Master CSS documentation site is only ~6 kB (brotli) in total**.
+According to HTTP Archive [CSS Bytes](https://httparchive.org/reports/page-weight#bytesCss), the sum of transfer size kilobytes of all external stylesheets requested by the page is **~82 kB**, excluding internal and inline styles.
+
+The **Master CSS documentation site** is only about **~6 kB (brotli) per page**.
 {/* Reducing [critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) can improve page loading speed, browser rendering performance, and SEO metrics. */}
 
 ---
