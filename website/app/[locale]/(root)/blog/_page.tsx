@@ -21,7 +21,7 @@ export async function generateMetadata(props: any, parent: any) {
 
 export default function Page(props: any) {
     return <>
-        <DocHeader contained />
+        <DocHeader />
         <main className='app-doc-main max-w:screen-xl'>
             <Article className="mb:80" prose>
                 <div className='gap:12x|25 grid-cols:4'>

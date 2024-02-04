@@ -3,11 +3,12 @@
 import { styled } from '@master/css.react'
 
 const DocMain = styled.main(
-    'max-w:screen-xl mx:auto p:80|20|20|20 p:60|30@print pb:80@md pt:140@md',
+    'max-w:screen-xl mx:auto p:60|30@print pb:5x pb:20x@md pt:35x@md px:5x',
     ({ $hideRightSide, $hideLeftSide }) => ({
         'pr:85x@lg': !$hideRightSide,
         'pl:75x@md pl:85x@lg': !$hideLeftSide,
-    })
+    }),
+    ({ $pt }) => `pt:${$pt || '20x'}`
 )
 
 DocMain.defaultProps = {

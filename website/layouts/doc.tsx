@@ -10,15 +10,17 @@ import PageContent from 'websites/components/PageContent'
 import clsx from 'clsx'
 
 export default function Layout({ children, params, toc, prose, $hideLeftSide, ...props }: any) {
-    return <>
-        <DocMain $hideRightSide={!toc} $hideLeftSide={$hideLeftSide}>
-            <Article className={clsx({ 'max-w:screen-sm_:where(p)': !toc })} prose>
-                <ArticleHeader {...props} metadata={props.metadata} />
-                {children}
-            </Article>
-            <PageNavs metadata={props.metadata} pages={pages} />
-            <DocFooter locale={params.locale} title={props.metadata.title} editors={props.metadata.authors} />
-        </DocMain>
-        {toc && <PageContent locale={params.locale}>{toc}</PageContent>}
-    </>
+    return (
+        <>
+            <DocMain $hideRightSide={!toc} $hideLeftSide={$hideLeftSide}>
+                <Article className={clsx({ 'max-w:screen-sm_:where(p)': !toc })} prose>
+                    <ArticleHeader {...props} metadata={props.metadata} />
+                    {children}
+                </Article>
+                <PageNavs metadata={props.metadata} pages={pages} />
+                <DocFooter locale={params.locale} title={props.metadata.title} editors={props.metadata.authors} />
+            </DocMain>
+            {toc && <PageContent locale={params.locale}>{toc}</PageContent>}
+        </>
+    )
 }

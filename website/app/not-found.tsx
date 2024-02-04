@@ -15,7 +15,7 @@ export default async function NotFound() {
     const $ = await createTranslation(locale)
     return (
         <RootLayout bodyClassName='bg:base' locale={locale} translations={await importTranslations(locale)} style={{ display: 'none' }}>
-            <DocHeader contained />
+            <DocHeader />
             <div className="center-content flex flex:col min-h:100dvh pt:50 pt:60@md px:10x">
                 <h3 className='fg:accent font:18 ls:.01em mb:5x mt:12x text:center'>404</h3>
                 <h1 className='fg:strong font:32 font:48@sm font:extrabold lh:1.2 ls:-.4 mt:0 text:center'>{$('This page does not exist')}</h1>

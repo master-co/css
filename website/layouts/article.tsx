@@ -10,9 +10,9 @@ import { useTranslation } from 'websites/contexts/i18n'
 export default function Layout(props: any) {
     const $ = useTranslation()
     return <>
-        <DocHeader contained />
-        <GridsBg className="abs h:352 left:0 top:97 top:60@md w:full z:-1" />
-        <div className='max-w:screen-md mb:-20 mt:180 mx:auto'>
+        <DocHeader />
+        <GridsBg className="abs h:352 left:0 top:49 top:60@md w:full z:-1" />
+        <div className='max-w:screen-md mb:-5x mt:45x mx:auto px:5x'>
             <div className='fg:accent font:semibold mb:10 text:center'>
                 {props.metadata.date && <TimeAgo timestamp={props.metadata.date} />}
             </div>

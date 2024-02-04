@@ -36,6 +36,7 @@ import Editor, { type Monaco } from '@monaco-editor/react'
 import DocMenuButton from '~/components/DocMenuButton'
 import { useLocale } from 'websites/contexts/locale'
 import { useTranslation } from 'websites/contexts/i18n'
+import HeaderContent from '../../../../../../components/HeaderContent'
 
 const ShareButton = dynamic(() => import('./components/ShareButton'))
 
@@ -506,123 +507,125 @@ export default function Play(props: any) {
     return (
         <div className="abs flex full flex:col">
             <Header fixed={false}>
-                <Link href={'/'}>
-                    {<Logotype height="19" />}
-                </Link>
-                <label className='app-header-nav rel font:medium gap:5 ml:auto ml:30@md'>
-                    v{version}
-                    <select ref={versionSelectRef} name="version" defaultValue={version}
-                        className="abs full cursor:pointer inset:0 opacity:0"
-                        onChange={onVersionSelectChange}>
-                        {templates.map(({ version: eachVersion }) => (
-                            <option value={eachVersion} key={eachVersion} disabled={props.shareItem && version !== eachVersion}>
-                                v{eachVersion}
-                            </option>
-                        ))}
-                        {/* {
+                <HeaderContent>
+                    <Link href={'/'}>
+                        {<Logotype height="19" />}
+                    </Link>
+                    <label className='app-header-nav rel font:medium gap:5 ml:auto ml:30@md'>
+                        v{version}
+                        <select ref={versionSelectRef} name="version" defaultValue={version}
+                            className="abs full cursor:pointer inset:0 opacity:0"
+                            onChange={onVersionSelectChange}>
+                            {templates.map(({ version: eachVersion }) => (
+                                <option value={eachVersion} key={eachVersion} disabled={props.shareItem && version !== eachVersion}>
+                                    v{eachVersion}
+                                </option>
+                            ))}
+                            {/* {
                             shareItem?.version && !templates.find((eachTemplate) => eachTemplate.version === version)
                             && <option value={shareItem.version} disabled>
                                 v{shareItem?.version}
                             </option>
                         } */}
-                    </select>
-                    <IconChevronDown className="mr:-3 size:1em stroke:1.5" />
-                </label>
-                {links?.map(({ fullName, Icon, ...eachLink }: any, index) =>
-                    <HeaderNav className={clsx('hide@<md', index === links.length - 1 && 'mr:auto')} key={eachLink.name} {...eachLink} onClick={(event: any) => {
-                        if (shareable) {
-                            if (!window.confirm('Are you sure to go to another page and discard current changes?')) {
-                                event.preventDefault()
-                                return
+                        </select>
+                        <IconChevronDown className="mr:-3 size:1em stroke:1.5" />
+                    </label>
+                    {links?.map(({ fullName, Icon, ...eachLink }: any, index) =>
+                        <HeaderNav className={clsx('hide@<md', index === links.length - 1 && 'mr:auto')} key={eachLink.name} {...eachLink} onClick={(event: any) => {
+                            if (shareable) {
+                                if (!window.confirm('Are you sure to go to another page and discard current changes?')) {
+                                    event.preventDefault()
+                                    return
+                                }
                             }
-                        }
-                    }}>
-                        {$(eachLink.name)}
-                    </HeaderNav>
-                )}
-                {(shareId && !shareable) &&
-                    <button className="app-header-icon hide@<md mx:12" onClick={() => copyShareLink()}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                        }}>
+                            {$(eachLink.name)}
+                        </HeaderNav>
+                    )}
+                    {(shareId && !shareable) &&
+                        <button className="app-header-icon hide@<md mx:12" onClick={() => copyShareLink()}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M9 15l6 -6"></path>
+                                <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"></path>
+                                <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"></path>
+                            </svg>
+                            <span className="font:12 ls:0 ml:10">
+                                {shareId}
+                            </span>
+                        </button>}
+                    {/* share button */}
+                    {shareable && <ShareButton className={clsx('hide@<md', sharing ? 'app-header-nav' : 'app-header-icon')} disabled={sharing} onClick={share}>
+                        {sharing && <span className="ml:10">{$('Sharing ...')}</span>}
+                    </ShareButton>}
+                    {(shareId || shareable) && <div className='hide@<md bg:divider h:1em mx:4x w:1'></div>}
+                    <Link className="app-header-icon hide@<md" href={getSearchPath('layout', layout ? '' : '2')}>
+                        <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                            <path className={clsx(
+                                '~transform|.2s',
+                                (!layout || layout === '2') ? 'fill:accent/.15' : 'fill:text-lightest/.2',
+                                { 'translate(12,4)': !layout }
+                            )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M9 15l6 -6"></path>
-                            <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"></path>
-                            <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"></path>
+                            <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
+                            <path d="M12 4l0 16"></path>
                         </svg>
-                        <span className="font:12 ls:0 ml:10">
-                            {shareId}
-                        </span>
-                    </button>}
-                {/* share button */}
-                {shareable && <ShareButton className={clsx('hide@<md', sharing ? 'app-header-nav' : 'app-header-icon')} disabled={sharing} onClick={share}>
-                    {sharing && <span className="ml:10">{$('Sharing ...')}</span>}
-                </ShareButton>}
-                {(shareId || shareable) && <div className='hide@<md bg:divider h:1em mx:4x w:1'></div>}
-                <Link className="app-header-icon hide@<md" href={getSearchPath('layout', layout ? '' : '2')}>
-                    <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                        <path className={clsx(
-                            '~transform|.2s',
-                            (!layout || layout === '2') ? 'fill:accent/.15' : 'fill:text-lightest/.2',
-                            { 'translate(12,4)': !layout }
-                        )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
-                        <path d="M12 4l0 16"></path>
-                    </svg>
-                </Link>
-                <Link className="app-header-icon hide@<md" href={getSearchPath('layout', layout === '3' ? '4' : '3')}>
-                    <svg className={clsx({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate(90)')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                        <path className={clsx(
-                            '~transform|.2s',
-                            (layout === '3' || layout === '4') ? 'fill:accent/.15' : 'fill:text-lightest/.2',
-                            { 'translate(12,4)': layout === '3' }
-                        )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
-                        <path d="M12 4l0 16"></path>
-                    </svg>
-                </Link>
-                <Link className="app-header-icon hide@<md" href={getSearchPath('layout', '5')}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className={clsx(layout === '5' && 'stroke:accent')} width="22" height="22" strokeWidth="1.2" viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
-                        <path d="M4 9l16 0"></path>
-                        <rect className={layout === '5' ? 'fill:accent/.15' : 'fill:text-lightest/.2'} width="16" height="11" stroke='none' transform="translate(4 9)" />
-                    </svg>
-                </Link>
-                <span className='hide'>{layout}</span>
-                <div className='hide@<md bg:divider h:1em mx:4x w:1'></div>
-                {/* preview: desktop */}
-                <Link className="app-header-icon hide@<md" href={getSearchPath('preview', '')}>
-                    <IconDeviceDesktop width="22" height="22" className={clsx(
-                        'stroke:1.3 stroke:current',
-                        !preview ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
-                    )} />
-                </Link>
-                {/* preview: responsive */}
-                <Link className="app-header-icon hide@<md" href={getSearchPath('preview', 'responsive')}>
-                    <IconDeviceMobile width="22" height="22" className={clsx(
-                        'stroke:1.3 stroke:current',
-                        responsive ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
-                    )} />
-                </Link>
-                {/* preview: css */}
-                <Link className="app-header-icon hide@<md" href={getSearchPath('preview', 'css')}>
-                    <IconBrandCss3 width="22" height="22" className={clsx(
-                        'stroke:1.3 stroke:current',
-                        preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
-                    )} />
-                </Link>
-                <span className='hide'>{preview}</span>
-                <div className='hide@<md bg:divider h:1em mx:4x w:1'></div>
-                <LanguageButton className="app-header-icon hide@<md" locale={locale} />
-                <ThemeButton className="app-header-icon hide@<md mr:-12"
-                    onChange={(theme: string) => {
-                        previewIframeRef?.current?.contentWindow?.postMessage({
-                            theme
-                        }, window.location.origin)
-                    }}
-                />
-                <DocMenuButton className="app-header-icon hide@md mr:-12" />
+                    </Link>
+                    <Link className="app-header-icon hide@<md" href={getSearchPath('layout', layout === '3' ? '4' : '3')}>
+                        <svg className={clsx({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate(90)')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                            <path className={clsx(
+                                '~transform|.2s',
+                                (layout === '3' || layout === '4') ? 'fill:accent/.15' : 'fill:text-lightest/.2',
+                                { 'translate(12,4)': layout === '3' }
+                            )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
+                            <path d="M12 4l0 16"></path>
+                        </svg>
+                    </Link>
+                    <Link className="app-header-icon hide@<md" href={getSearchPath('layout', '5')}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className={clsx(layout === '5' && 'stroke:accent')} width="22" height="22" strokeWidth="1.2" viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
+                            <path d="M4 9l16 0"></path>
+                            <rect className={layout === '5' ? 'fill:accent/.15' : 'fill:text-lightest/.2'} width="16" height="11" stroke='none' transform="translate(4 9)" />
+                        </svg>
+                    </Link>
+                    <span className='hide'>{layout}</span>
+                    <div className='hide@<md bg:divider h:1em mx:4x w:1'></div>
+                    {/* preview: desktop */}
+                    <Link className="app-header-icon hide@<md" href={getSearchPath('preview', '')}>
+                        <IconDeviceDesktop width="22" height="22" className={clsx(
+                            'stroke:1.3 stroke:current',
+                            !preview ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
+                        )} />
+                    </Link>
+                    {/* preview: responsive */}
+                    <Link className="app-header-icon hide@<md" href={getSearchPath('preview', 'responsive')}>
+                        <IconDeviceMobile width="22" height="22" className={clsx(
+                            'stroke:1.3 stroke:current',
+                            responsive ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
+                        )} />
+                    </Link>
+                    {/* preview: css */}
+                    <Link className="app-header-icon hide@<md" href={getSearchPath('preview', 'css')}>
+                        <IconBrandCss3 width="22" height="22" className={clsx(
+                            'stroke:1.3 stroke:current',
+                            preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
+                        )} />
+                    </Link>
+                    <span className='hide'>{preview}</span>
+                    <div className='hide@<md bg:divider h:1em mx:4x w:1'></div>
+                    <LanguageButton className="app-header-icon hide@<md" locale={locale} />
+                    <ThemeButton className="app-header-icon hide@<md mr:-12"
+                        onChange={(theme: string) => {
+                            previewIframeRef?.current?.contentWindow?.postMessage({
+                                theme
+                            }, window.location.origin)
+                        }}
+                    />
+                    <DocMenuButton className="app-header-icon hide@md mr:-12" />
+                </HeaderContent>
             </Header >
             <div
                 className={clsx(
