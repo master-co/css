@@ -1,0 +1,10 @@
+{
+    "name": "master-css-static-output",
+    "scripts": {
+        "build": "mastercss render \"**/*.html\""
+    },
+    "devDependencies": {
+        "@master/css": "workspace:^",
+        "@master/css-renderer": "workspace:^"
+    }
+}
