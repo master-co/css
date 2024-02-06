@@ -1,5 +1,5 @@
 import { join } from 'path'
-import testGeneratedCSS from '../test-generated-css'
+import testGeneratedCSS from '../../test-generated-css'
 
 test('render', () => {
     testGeneratedCSS(
