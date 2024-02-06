@@ -11,7 +11,7 @@
         "type-check": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --parallel type-check",
         "commit-check": "commitlint --from=HEAD~1 --verbose",
         "dev": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" dev",
-        "clean": "rm -rf node_modules && rm -rf pnpm-lock.json && rm -rf **/*pnpm-lock.json && rm -rf **/*node_modules && rm -rf **/*dist"
+        "clean": "cross-env rm -rf node_modules && rm -rf pnpm-lock.json"
     },
     "packageManager": "pnpm@8.6.10",
     "engines": {
@@ -33,7 +33,6 @@
         "@techor/glob": "^2.5.24",
         "@techor/jest-dom": "^2.5.24",
         "@techor/repo": "^2.5.24",
-        "@types/jest": "^29.5.8",
         "@types/node": "^20.4.0",
         "@types/node-fetch": "^2.6.10",
         "@types/shuffle-array": "^1.0.5",
@@ -42,6 +41,7 @@
         "css-shared": "workspace:^",
         "fast-glob": "^3.2.12",
         "firebase-admin": "^11.11.1",
+        "jest": "^29.7.0",
         "jest-extended": "^4.0.0",
         "jest-text-transformer": "^1.0.4",
         "nanoid": "^4.0.2",

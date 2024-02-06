@@ -1,13 +1,12 @@
 import { readFileSync } from 'fs'
 import { render } from '../src'
 import { dirname, join } from 'path'
-
 import fg from 'fast-glob'
 
-fg.sync('**/*template.html', { cwd: __dirname })
+fg.sync('../../../website/app/**/tests/**/template.html', { cwd: __dirname })
     .forEach(templatePath => {
         const templateDirname = dirname(templatePath)
-        test(templateDirname, () => {
+        test(templateDirname.replace('../app/[locale]/(root)', ''), () => {
             expect(
                 render(
                     readFileSync(join(__dirname, templatePath)).toString()
