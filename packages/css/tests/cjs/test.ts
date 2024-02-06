@@ -7,7 +7,7 @@ import normalizeNewline from 'normalize-newline'
 it('init cjs', () => {
     const configFilepath = resolve(__dirname, 'master.css.js')
     rm(configFilepath)
-    execSync('tsx ../../dist/bin/index.bundle.js init', { cwd: __dirname, stdio: 'inherit' })
+    execSync('node ../../dist/bin/index.bundle.js init', { cwd: __dirname, stdio: 'inherit' })
     expect(normalizeNewline(readFileSync(configFilepath, 'utf-8'))).toEqual(normalizeNewline(require('../../src/master.css.js.txt')))
     rm(configFilepath)
 })

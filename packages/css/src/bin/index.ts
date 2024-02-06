@@ -1,24 +1,21 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander'
-import path from 'path'
-import fs from 'fs'
-// @ts-expect-error
-import CONFIG_TEXT from '../master.css.js.txt'
-// @ts-expect-error
-import CONFIG_ESM_TEXT from '../master.css.mjs.txt'
-// @ts-expect-error
-import CONFIG_TS_TEXT from '../master.css.ts.txt'
-import log from '@techor/log'
-import { readJSONFileSync } from '@techor/fs'
-
-const { version, name, description } = readJSONFileSync(path.resolve(__dirname, '../../package.json'))
+const { Command } = require('commander')
+const path = require('path')
+const fs = require('fs')
+const log = require('@techor/log')
+const { readJSONFileSync } = require('@techor/fs')
+const pkg = readJSONFileSync(path.resolve(__dirname, '../../package.json'))
 const program = new Command()
 
+const CONFIG_ESM_TEXT = require('../master.css.mjs.txt')
+const CONFIG_TS_TEXT = require('../master.css.ts.txt')
+const CONFIG_TEXT = require('../master.css.js.txt')
+
 program
-    .name(name)
-    .description(description)
-    .version(version || '0.0.0')
+    .name(pkg.name)
+    .description(pkg.description)
+    .version(pkg.version || '0.0.0')
 
 program.command('init')
     .description('Initialize definition files for Master CSS')
@@ -26,7 +23,7 @@ program.command('init')
     .option('--esm', 'ES Module .mjs')
     .option('--ts', 'TypeScript .ts')
     .option('--cjs', 'CommonJS .js')
-    .action(async function (options) {
+    .action(async function (options: { override?: any; esm?: any; ts?: any; cjs?: any }) {
         let { esm, ts, cjs } = options
         // automatically detect the format
         if (!esm && !ts && !cjs) {
@@ -68,7 +65,7 @@ program.command('render')
     .argument('<source paths>', 'The path in glob patterns of the source of the HTML file')
     .option('-c --config <path>', 'The source path of the Master CSS configuration', 'master.css.*')
     .option('-a --analyze', 'Analyze injected CSS and HTML size ( brotli ) without writing to file')
-    .action(async function (args, options) {
+    .action(async function (args: any, options: any) {
         try {
             const action = require('@master/css-renderer/actions/main')
             await action(args, options)
@@ -88,7 +85,7 @@ program.command('extract')
     .option('-v, --verbose <level>', 'Verbose logging 0~N', '1')
     .option('--no-export', 'Print only CSS results.')
     .option('--options <path>', 'Specify your extractor options sources', 'master.css-extractor.*')
-    .action(async function (args, options) {
+    .action(async function (args: any, options: any) {
         try {
             const action = require('@master/css-extractor/actions/main')
             await action(args, options)

@@ -10,7 +10,7 @@
         "type-check": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --parallel type-check",
         "commit-check": "commitlint --from=HEAD~1 --verbose",
         "dev": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" dev",
-        "clean": "rm -rf node_modules && rm -rf package-lock.json && rm -rf **/*package-lock.json && rm -rf **/*node_modules && rm -rf **/*dist && rm -rf **/*.turbo"
+        "clean": "rm -rf node_modules && rm -rf pnpm-lock.json && rm -rf **/*pnpm-lock.json && rm -rf **/*node_modules && rm -rf **/*dist"
     },
     "packageManager": "pnpm@8.6.10",
     "engines": {
