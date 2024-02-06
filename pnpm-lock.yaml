@@ -716,6 +716,15 @@ importers:
         specifier: ^4.8.4
         version: 4.9.5
 
+  examples/static-output:
+    devDependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/css
+      '@master/css-renderer':
+        specifier: workspace:^
+        version: link:../../packages/renderer
+
   examples/svelte-with-progressive-rendering:
     dependencies:
       '@master/css-runtime':
