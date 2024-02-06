@@ -7,7 +7,7 @@
         "build:cjs": "techor pack \"src/index.ts\" --outfile \"dist/index.bundle.js\" --bundle --format cjs --no-clean",
         "build:type": "tsc --emitDeclarationOnly --declaration --outDir dist",
         "dev": "pnpm run \"/^build:(?!type)/\" --watch",
-        "test": "playwright test",
+        "e2e": "playwright test",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
     },
