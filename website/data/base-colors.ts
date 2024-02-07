@@ -4,6 +4,7 @@ export default [
     'black',
     'white',
     'base',
+    'invert',
     'gray',
     'slate',
     'brown',

@@ -3,6 +3,7 @@ export default [
     'current',
     'black',
     'white',
+    'invert',
     'strong',
     'neutral',
     'light',

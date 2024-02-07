@@ -109,6 +109,10 @@ const variables = {
     },
     current: 'currentColor',
     'text': {
+        'invert': {
+            '@light': '#ffffff',
+            '@dark': '#000000'
+        },
         'strong': {
             '@light': '$(slate-95)',
             '@dark': '$(gray-10)'
@@ -221,6 +225,10 @@ const variables = {
     'surface': {
         '@light': '$(white)',
         '@dark': '$(gray-80)'
+    },
+    'invert': {
+        '@light': '#000000',
+        '@dark': '#ffffff'
     },
     'white': '#ffffff',
     'black': '#000000',
