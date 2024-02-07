@@ -1,34 +1,59 @@
-## Overview [sr-only]
-<Overview />
+The composition of styles is similar to using syntax within `class=""`, with the difference that you can provide an abstract name for this set of classes and reuse it anywhere.
 
 ---
 
-## Project structure
-### Split configuration into files
-Typically, frameworks or standard directory structures come with a `styles/` folder for CSS files, and we recommend placing your custom styles there.
+## Basic usage
+### Add a style
+Create an abstract style using Master CSS syntax.
+<Overview opened />
+Master CSS shares the same CSS declarations for `css .inline-flex, .btn { ... }` through a selector list. This structural arrangement enhances browser rendering and enables selectors or media queries to be applied within the `config.styles`.
 
-(i) Whether to split into multiple files depends on how many abstract styles you have.
-```treeview
-styles/
-|-- btn.css.js
-|-- card.css.js
-master.css.js
+Furthermore, `styles.btn` utilizes `:where()` to reduce CSS specificity, allowing you to modify abstract classes using practical syntax without needing to add `!important` declarations:
+```html
+- <button class="btn bg:red!">Submit</button>
++ <button class="btn bg:red">Submit</button>
 ```
-Create a `styles/btn.js` file and export the class names in the following standard format to enjoy [language service](/docs/language-service) highlighting and auto-suggestion.
+
+### Add a style with states
+Create an abstract style with [state selectors](/docs/state-selectors) and [condtional queries](/docs/conditional-queries).
+
+(click) Try clicking the button to see the outline effect
+<Demo>
+    <button className="center-content inline-flex bg:invert fg:invert font:14 font:medium h:10x px:4x r:2x outline:2|invert:focus outline-offset:2:focus">Submit</button>
+</Demo>
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-style-with-states/master.css.js').default}</Code>
+Apply the style:
+<Code lang="html">{require('!!raw-loader!./tests/add-a-style-with-states/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-style-with-states/generated.css').default}</Code>
+    </div>
+</details>
+
+---
+
+## Style guides
+### Split styles into files
+Whether to split into multiple files depends on how many abstract styles you have.
+```treeview
+project/
+|-- styles
+|   |-- btn.css.js
+|   `-- card.css.js
+`-- master.css.js
+```
+Typically, frameworks or standard directory structures come with a `styles/` folder for CSS files, and we recommend placing your custom styles there with `styles/*.css.js`.
 ```js name=styles/btn.css.js
 /** @type {import('@master/css').Config} */
 export default {
     styles: {
-        btn: {
-            '': 'font:14 text:center h:40 p:10|15',
-            primary: 'bg:primary fg:white',
-            outline: 'b:1|solid|slate-90'
-        }
+        btn: 'font:14 text:center h:40 p:10|15'
     }
 }
 ```
 
-Extend `styles/btn.js` in `master.css.js`.
+Extend `styles/btn.css.js` in `master.css.js`.
 
 ```js name=master.css.js
 /** @type {import('@master/css').Config} */

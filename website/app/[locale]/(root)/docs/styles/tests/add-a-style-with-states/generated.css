@@ -1,0 +1,1 @@
+.light{--invert:0 0 0}.dark{--invert:255 255 255}.outline\:2\|invert\:focus:focus,.btn:focus{outline:0.125rem rgb(var(--invert)) solid}.outline-offset\:2\:focus:focus,.btn:focus{outline-offset:0.125rem}

@@ -6,11 +6,11 @@
 ## Customization
 ### Add a color
 Add color variables using `#000`, `rgb(0 0 0)`, or `hsl(0 0% 0%)`.
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-color/config.js').default}</Code>
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-color/master.css.js').default}</Code>
 Apply it using color-related syntax and even change the opacity.
 <Code lang="html">{require('!!raw-loader!./tests/add-a-color/template.html').default}</Code>
 <details>
-    <summary>View the generated CSS</summary>
+    <summary>Generated CSS</summary>
     <div>
         <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-color/generated.css').default}</Code>
     </div>
@@ -23,11 +23,11 @@ Apply it using color-related syntax and even change the opacity.
 
 ### Add a color with opacity
 Add color variables with opacity using `#00000080`, `rgb(0 0 0/.5)`, or `hsl(0 0% 0%/.5)`.
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-color-with-opacity/config.js').default}</Code>
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-color-with-opacity/master.css.js').default}</Code>
 Apply it using color-related syntax like [`fg:`](/docs/color).
 <Code lang="html">{require('!!raw-loader!./tests/add-a-color-with-opacity/template.html').default}</Code>
 <details>
-    <summary>View the generated CSS</summary>
+    <summary>Generated CSS</summary>
     <div>
         <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-color-with-opacity/generated.css').default}</Code>
     </div>
@@ -39,11 +39,11 @@ Apply it using color-related syntax like [`fg:`](/docs/color).
 
 ### Add an alias
 Create an alias for a color to link its value to an existing color.
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-an-alias/config.js').default}</Code>
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-an-alias/master.css.js').default}</Code>
 Apply it using color-related syntax.
 <Code lang="html">{require('!!raw-loader!./tests/add-an-alias/template.html').default}</Code>
 <details>
-    <summary>View the generated CSS</summary>
+    <summary>Generated CSS</summary>
     <div>
         <Code lang="css" beautify>{require('!!raw-loader!./tests/add-an-alias/generated.css').default}</Code>
     </div>
@@ -52,11 +52,11 @@ For example, say you have multiple color variables referencing the same color to
 
 ### Add an alias with opacity
 Create an alias for a color with opacity to link its value to an existing color.
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-an-alias-with-opacity/config.js').default}</Code>
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-an-alias-with-opacity/master.css.js').default}</Code>
 Apply it using color-related syntax like [`fg:`](/docs/color).
 <Code lang="html">{require('!!raw-loader!./tests/add-an-alias-with-opacity/template.html').default}</Code>
 <details>
-    <summary>View the generated CSS</summary>
+    <summary>Generated CSS</summary>
     <div>
         <Code lang="css" beautify>{require('!!raw-loader!./tests/add-an-alias-with-opacity/generated.css').default}</Code>
     </div>
@@ -83,11 +83,11 @@ Apply it using color-related syntax like [`fill:`](/docs/fill).
 
 ### Add colors by theme
 Add color variables based on different themes.
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-colors-by-theme/config.js').default}</Code>
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-colors-by-theme/master.css.js').default}</Code>
 Using modes for variables, you can access a single source of truth and simplify the markup.
 <Code lang="html">{require('!!raw-loader!./tests/add-colors-by-theme/template.html').default}</Code>
 <details>
-    <summary>View the generated CSS</summary>
+    <summary>Generated CSS</summary>
     <div>
         <Code lang="css" beautify>{require('!!raw-loader!./tests/add-colors-by-theme/generated.css').default}</Code>
     </div>
@@ -106,11 +106,11 @@ export default {
 
 (o) Use `app-*` to avoid conflicts with defaults and keep `blue-*` colors consistent.
 
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/override-default-colors/config.js').default}</Code>
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/override-default-colors/master.css.js').default}</Code>
 Apply custom colors for the current application.
 <Code lang="html">{require('!!raw-loader!./tests/override-default-colors/template.html').default}</Code>
 <details>
-    <summary>View the generated CSS</summary>
+    <summary>Generated CSS</summary>
     <div>
         <Code lang="css" beautify>{require('!!raw-loader!./tests/override-default-colors/generated.css').default}</Code>
     </div>
