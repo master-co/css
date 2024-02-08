@@ -159,30 +159,51 @@ export const bootstrap = brands.find(({ name }) => name === 'Bootstrap')
             <td>~100</td>
         </tr>
         <tr>
-            <td colSpan={4}><small>Developer Tools</small></td>
+            <td colSpan={4}><small>Language Service</small></td>
         </tr>
         <tr>
             <th>Code-completion</th>
             <td><InlineGood /></td>
             <td><InlineGood /></td>
-            <td>-</td>
+            <td><InlineBad /></td>
         </tr>
         <tr>
             <th>Syntax highlighting for class names</th>
             <td><InlineGood /></td>
-            <td>-</td>
-            <td>-</td>
+            <td><InlineBad /></td>
+            <td><InlineBad /></td>
         </tr>
         <tr>
             <th>CSS generate preview</th>
             <td><InlineGood /></td>
             <td><InlineGood /></td>
-            <td>-</td>
+            <td><InlineBad /></td>
         </tr>
         <tr>
-            <th>Code linting</th>
+            <td colSpan={4}><small>Code Linting for Markup</small></td>
+        </tr>
+        <tr>
+            <th>Consistent class order</th>
             <td><InlineGood /></td>
-            <td><InlineWarn />Incomplete</td>
+            <td><InlineGood /></td>
+            <td><InlineBad /></td>
+        </tr>
+        <tr>
+            <th>Syntax error checks</th>
+            <td><InlineGood /></td>
+            <td><InlineBad /></td>
+            <td><InlineBad /></td>
+        </tr>
+        <tr>
+            <th>Disallow unknown classes</th>
+            <td><InlineGood /></td>
+            <td><InlineBad /></td>
+            <td><InlineBad /></td>
+        </tr>
+        <tr>
+            <th>Class collision detection</th>
+            <td><InlineGood /></td>
+            <td><InlineGood /></td>
             <td><InlineBad /></td>
         </tr>
     </tbody>

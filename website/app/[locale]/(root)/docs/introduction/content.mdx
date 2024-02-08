@@ -32,8 +32,8 @@ Is the framework you're using not mentioned above? Check out the official [insta
 
 ---
 
-## Main features
-Overview of some of the main features of Master CSS:
+## Why Master CSS?
+The reasons why to use Master CSS with an overview of features, syntax benefits, benchmarks, and a comprehensive comparison:
 
 ### Rendering Modes
 Master CSS provides three [rendering modes](/docs/rendering-modes), and you can choose according to project scale and application scenarios to meet your business needs.
@@ -97,14 +97,11 @@ This feature is included in the [Master CSS Language Service](/docs/language-ser
 
 ### 🚧 Code Linting
 
----
-
-## Benchmarks
+### Minimal CSS on the market
 Initially, Master CSS was intended to create a CSS engine for production browser runtimes, so we concentrated on performance such as syntax parsing, rule generation, cache sharing, and even browser rendering.
 
 Master CSS doesn't use heavy-duty build tools like PostCSS, Autoprefixer, or any minifiers, as these rules are generated with optimization.
 
-### Minimal CSS on the market
 This is a real-world benchmark of [critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) on page load for well-known official documentation websites.
 <CriticalCSSForDocsSitesBenchmark />
 According to HTTP Archive [CSS Bytes](https://httparchive.org/reports/page-weight#bytesCss), the sum of transfer size kilobytes of all external stylesheets requested by the page is **~82 kB**, excluding internal and inline styles.
@@ -112,9 +109,7 @@ According to HTTP Archive [CSS Bytes](https://httparchive.org/reports/page-weigh
 The **Master CSS documentation site** is only about **~6 kB (brotli) per page**.
 {/* Reducing [critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) can improve page loading speed, browser rendering performance, and SEO metrics. */}
 
----
-
-## Comparisons
+### Comparisons
 Here’s a comprehensive comparison of Master CSS, Tailwind CSS and Bootstrap:
 <Comparisons />
 
