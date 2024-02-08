@@ -43,7 +43,7 @@ export default function Page(props: any) {
                         })}
                 </div>
             </Article>
-            <DocFooter locale={props.params.locale} title={metadata.title} />
+            <DocFooter locale={props.params.locale} />
         </main>
     </>
 

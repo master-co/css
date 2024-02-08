@@ -18,9 +18,9 @@ export default function Layout({ children, params, toc, prose, $hideLeftSide, ..
                     {children}
                 </Article>
                 <PageNavs metadata={props.metadata} pages={pages} />
-                <DocFooter locale={params.locale} title={props.metadata.title} editors={props.metadata.authors} />
+                <DocFooter locale={params.locale} />
             </DocMain>
-            {toc && <PageContent locale={params.locale}>{toc}</PageContent>}
+            {toc && <PageContent locale={params.locale} metadata={props.metadata}>{toc}</PageContent>}
         </>
     )
 }

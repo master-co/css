@@ -35,7 +35,7 @@ const solutionPackages = [
 export default () => {
     const Tr = ({ children }: any) => (
         <tr>
-            <th><Link href={'https://github.com/master-co/css/tree/rc/' + children.repository.directory}>
+            <th><Link href={'https://github.com/master-co/css/tree/rc/' + children.repository.directory} indicate>
                 {children.name}
             </Link></th>
             <td>{children.description}</td>

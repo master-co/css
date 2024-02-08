@@ -6,15 +6,15 @@
 However, it involved writing a substantial amount of code in card.css, and it required making numerous decisions along the way:
 
 - What do we call this card?
-- `.card` has this class name been used?
+- Has the class name `.card` been used?
 - Is there a convention being used that arrives at the name `.card-text`? Has it been accepted by everyone?
 - Do other cards use the same style? Is code-sharing working for `.card`?
 - If we need to make small adjustments to this card, would we need to create another name?
 - The styling of this card might not be reusable.
 - What do we call the card on the homepage? How about on other pages?
-- Do we adjust `.card` itself for those cards mentioned previously?
-- There are other elements that look like `.card`, but they aren't cards!
-- `.card` may need to be extended; its style is used in many places.
+- Do we adjust the `.card` for those previously mentioned cards?
+- Other elements look like `.card`, but they aren't cards!
+- `.card` may need to be extended; its style is used everywhere.
 - Switching back and forth between HTML and CSS
 - Is this following best practices?
 - ...
@@ -93,7 +93,7 @@ Then, use the abstract class as before:
 ### Smart rule ordering
 How is CSS rule order and priority handled?
 
-"Center-align the homepage headline when the viewport width `>=1280px`, and align right when `>=1024px`."
+"Center-align the homepage headline when the viewport width is `>=1280px`, and align right when it is `>=1024px`."
 
 (x) Incorrect responsive media rules.
 ```css

@@ -1,5 +1,5 @@
 {
-    "name": "css-website",
+    "name": "website",
     "version": "0.1.0",
     "private": true,
     "scripts": {
@@ -13,9 +13,9 @@
         "@firebase/firestore": "^4.3.2",
         "@master/css": "workspace:^",
         "@master/css-extractor": "workspace:^",
-        "@master/css-server": "workspace:^",
         "@master/css-language-service": "workspace:^",
         "@master/css-renderer": "workspace:^",
+        "@master/css-server": "workspace:^",
         "@master/css.react": "workspace:^",
         "@master/eslint-config-css": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",

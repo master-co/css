@@ -20,9 +20,9 @@ export default function Layout({ children, params, toc, $hideLeftSide, ...props 
                 {children}
             </Article>
             <PageNavs metadata={props.metadata} pages={pages} />
-            <DocFooter locale={params.locale} title={props.metadata.title} />
+            <DocFooter locale={params.locale} />
         </DocMain>
-        {toc && <PageContent locale={params.locale}
+        {toc && <PageContent locale={params.locale} metadata={props.metadata}
             start={(props.metadata.canIUseLink || props.metadata.mdnLink) &&
                 <>
                     {
