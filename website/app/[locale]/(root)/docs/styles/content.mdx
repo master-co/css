@@ -1,5 +1,11 @@
 The composition of styles is similar to using syntax within `class=""`, with the difference that you can provide an abstract name for this set of classes and reuse it anywhere.
 
+The styles utilizes `:where()` to reduce CSS specificity, allowing you to modify abstract classes using practical syntax without needing to add `!important` declarations:
+```html
+- <button class="btn bg:red!">Submit</button>
+<button class="btn **bg:red**">Submit</button>
+```
+
 ---
 
 ## Basic usage
@@ -8,26 +14,49 @@ Create an abstract style using Master CSS syntax.
 <Overview opened />
 Master CSS shares the same CSS declarations for `css .inline-flex, .btn { ... }` through a selector list. This structural arrangement enhances browser rendering and enables selectors or media queries to be applied within the `config.styles`.
 
-Furthermore, `styles.btn` utilizes `:where()` to reduce CSS specificity, allowing you to modify abstract classes using practical syntax without needing to add `!important` declarations:
-```html
-- <button class="btn bg:red!">Submit</button>
-+ <button class="btn bg:red">Submit</button>
-```
-
 ### Add a style with states
 Create an abstract style with [state selectors](/docs/state-selectors) and [condtional queries](/docs/conditional-queries).
-
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-style-with-states/master.css.js').default}</Code>
 (click) Try clicking the button to see the outline effect
 <Demo>
     <button className="center-content inline-flex bg:invert fg:invert font:14 font:medium h:10x px:4x r:2x outline:2|invert:focus outline-offset:2:focus">Submit</button>
 </Demo>
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-style-with-states/master.css.js').default}</Code>
-Apply the style:
 <Code lang="html">{require('!!raw-loader!./tests/add-a-style-with-states/template.html').default}</Code>
 <details>
     <summary>Generated CSS</summary>
     <div>
         <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-style-with-states/generated.css').default}</Code>
+    </div>
+</details>
+
+### Add styles in a nested structure
+Create and manage a set of abstract styles in a nested structure. Rather than repeating the same style names over and over again, you can write one style inside another. Master CSS will automatically combine the outer style’s name with the inner style’s.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-styles-in-a-nested-structure/master.css.js').default}</Code>
+Apply the styles:
+<Code lang="html">{require('!!raw-loader!./tests/add-styles-in-a-nested-structure/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-styles-in-a-nested-structure/generated.css').default}</Code>
+    </div>
+</details>
+The empty string `''` represents an outer style, much like Sass's `&`.
+
+### Extend an existing style
+Create a new abstract style by extending an existing style and adding additional syntax.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/extend-an-existing-style/master.css.js').default}</Code>
+You can see that `b` inherits the text lime color of `a`:
+<Demo $py={0}>
+    <DemoPanel>
+        <span className="font:20 fg:lime">a</span>
+        <span className="font:20 fg:lime text:underline">b</span>
+    </DemoPanel>
+</Demo>
+<Code lang="html">{require('!!raw-loader!./tests/extend-an-existing-style/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/extend-an-existing-style/generated.css').default}</Code>
     </div>
 </details>
 
@@ -48,7 +77,7 @@ Typically, frameworks or standard directory structures come with a `styles/` fol
 /** @type {import('@master/css').Config} */
 export default {
     styles: {
-        btn: 'font:14 text:center h:40 p:10|15'
+        btn: '…'
     }
 }
 ```
