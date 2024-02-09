@@ -1,14 +1,5 @@
-import RuntimeRenderingIntro from '../components/RuntimeRenderingIntro.mdx'
-
 ## Overview [sr-only]
-<RuntimeRenderingIntro />
-
----
-
-## Setup
-The Master CSS runtime engine is tiny JavaScript package —— import the script and enable it immediately on the browser.
-
-Take the most convenient [CDN](/docs/installtion/cdn) as an example:
+We've created a tiny JavaScript package `@master/css-runtime` that can be imported and enabled immediately in the browser.
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -23,17 +14,14 @@ Take the most convenient [CDN](/docs/installtion/cdn) as an example:
 </body>
 </html>
 ```
-If you haven't done the installation yet, please see the complete [Installation Guide](/docs/installation).
+If you haven't done the installation, please see the complete [Installation Guide](/docs/installation).
 
 ---
 
-## How it works
-
-### Observing DOM changes
+## Style life cycle
 The Master CSS runtime engine uses the standard [Web APIs - Mutation Observer](https://developer.mozilla.org/zh-TW/docs/Web/API/MutationObserver) to observe the DOM changes in class names at runtime and generate/remove its corresponding CSS rules on the fly.
 
 The following continuous DOM manipulation takes you to understand the behavior of the runtime when the browser is running:
-
 <StepSection>
     <Step>
         #### <StepNum />Insert an element with a Master CSS class name into the DOM
@@ -117,10 +105,10 @@ The Master CSS Runtime Rendering relies on the lifecycle of individual elements.
 
 Due to its runtime execution nature, you can modify the class name directly in the browser by inspecting the element and seeing its changes.
 
-### Running style sheet
-Where are the generated CSS rules inserted?
+---
 
-The runtime engine appends `html <style id="master">` in `html <head>` during initialization:
+## Running style sheet
+Where are the generated CSS rules inserted? The runtime engine appends `html <style id="master">` in `html <head>` during initialization:
 ```html
 <head>
     <meta charset="utf-8">
