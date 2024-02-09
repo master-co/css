@@ -1,10 +1,12 @@
 {
     "The CSS language and framework for rapidly building modern and high-performance websites.": "一個 CSS 語言兼框架，用於快速打造現代且具高效能的網站。",
     "Updates": "更新",
+    "updated": "更新於",
     "Daily": "日常",
     "ON THIS PAGE": "該頁目錄",
     "Changelog": "變更日誌",
-    "Issue on this page": "關於此頁的問題",
+    "Edit this page": "編輯此頁",
+    "Issue on this page": "提交此頁問題",
     "This page does not exist": "此頁面不存在",
     "Sorry, the page cannot be found. Please try searching for other content.": "抱歉，找不到該頁面。請嘗試搜尋其他內容。",
     "Edited by": "編輯自",

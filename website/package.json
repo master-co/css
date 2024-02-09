@@ -31,6 +31,7 @@
         "monaco-editor-textmate": "^4.0.0",
         "monaco-textmate": "^3.0.1",
         "next": "14.1.0",
+        "parent-module": "^3.1.0",
         "react": "^18",
         "react-countup": "^6.5.0",
         "react-dom": "^18",
