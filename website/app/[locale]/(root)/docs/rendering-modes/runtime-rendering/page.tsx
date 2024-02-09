@@ -1,4 +1,4 @@
-import Layout from '../Layout'
+import Layout from '~/layouts/doc'
 import metadata from './metadata'
 /* @ts-expect-error toc */
 import Content, { toc } from './content.mdx'
@@ -13,7 +13,7 @@ export async function generateMetadata(props: any, parent: any) {
 
 export default async function Page(props: any) {
     return (
-        <Layout {...props} pageDirname={__dirname} metadata={metadata} toc={toc} >
+        <Layout {...props} pageDirname={__dirname} metadata={metadata} toc={toc} titleBig backOnClickCategory='/docs/rendering-modes'>
             <Content />
         </Layout >
     )

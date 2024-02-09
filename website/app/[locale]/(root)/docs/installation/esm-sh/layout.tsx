@@ -1,4 +1,3 @@
-import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
 import { createTranslation } from '~/i18n'
 import DocLayout from '~/layouts/reference'
 import LogoSvg from '~/public/images/cdns/esm-sh.svg?inlineSvg'
