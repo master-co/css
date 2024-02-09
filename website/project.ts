@@ -1,9 +1,5 @@
-import pkg from 'websites/package.json'
-
-const project = {
-    name: 'CSS',
-    id: 'css',
-    version: pkg.dependencies['@master/css.react'].slice(1)
+export default {
+    name: 'css',
+    branch: 'rc',
+    owner: 'master-co',
 }
-
-export default project
