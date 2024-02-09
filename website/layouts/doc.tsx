@@ -20,7 +20,7 @@ export default async function Layout({ children, pageDirname, params, toc, prose
                 <PageNavs metadata={props.metadata} pages={pages} />
                 <DocFooter locale={params.locale} />
             </DocMain>
-            {toc && <PageContent locale={params.locale} metadata={props.metadata} lastCommit={await fetchLastCommit(pageDirname, project)}>{toc}</PageContent>}
+            {toc && <PageContent locale={params.locale} metadata={props.metadata} pageDirname={pageDirname} lastCommit={await fetchLastCommit(pageDirname, project)}>{toc}</PageContent>}
         </>
     )
 }
