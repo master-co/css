@@ -6,13 +6,10 @@ import DocFooter from '../components/DocFooter'
 import pages from '../app/[locale]/(root)/pages'
 import PageContent from 'websites/components/PageContent'
 import clsx from 'clsx'
-import parentModule from 'parent-module'
 import fetchLastCommit from 'websites/utils/fetch-last-commit'
 import project from '~/project'
 
-const pageSourcePath = parentModule()
-
-export default async function Layout({ children, params, toc, prose, $hideLeftSide, ...props }: any) {
+export default async function Layout({ children, pageDirname, params, toc, prose, $hideLeftSide, ...props }: any) {
     return (
         <>
             <DocMain $hideRightSide={!toc} $hideLeftSide={$hideLeftSide}>
@@ -23,7 +20,7 @@ export default async function Layout({ children, params, toc, prose, $hideLeftSi
                 <PageNavs metadata={props.metadata} pages={pages} />
                 <DocFooter locale={params.locale} />
             </DocMain>
-            {toc && <PageContent locale={params.locale} metadata={props.metadata} lastCommit={await fetchLastCommit(pageSourcePath, project)}>{toc}</PageContent>}
+            {toc && <PageContent locale={params.locale} metadata={props.metadata} lastCommit={await fetchLastCommit(pageDirname, project)}>{toc}</PageContent>}
         </>
     )
 }
