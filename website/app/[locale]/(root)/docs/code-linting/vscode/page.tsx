@@ -13,7 +13,7 @@ export async function generateMetadata(props: any, parent: any) {
 
 export default async function Page(props: any) {
     return (
-        <Layout {...props}
+        <Layout {...props} pageDirname={__dirname}
             metadata={metadata}
             titleBig
             backOnClickCategory='/docs/code-linting'
