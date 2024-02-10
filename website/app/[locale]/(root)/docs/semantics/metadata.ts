@@ -3,7 +3,7 @@ import { Metadata } from 'websites/types/Metadata'
 const metadata: Metadata = {
     title: 'Semantics',
     description: 'Customizing semantic classes for your design system.',
-    category: 'Configuration',
+    category: 'Custom Syntax',
     unfinished: true
 }
 

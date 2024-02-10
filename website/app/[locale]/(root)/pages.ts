@@ -16,7 +16,7 @@ const categoryOrder = [
     'Syntax Tutorial',
     'Fundamentals',
     'Design Variables',
-    'Configuration',
+    'Custom Syntax',
     'Production Optimization',
     'Syntax',
     'API Reference'

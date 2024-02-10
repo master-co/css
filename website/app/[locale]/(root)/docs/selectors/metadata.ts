@@ -3,7 +3,7 @@ import { Metadata } from 'websites/types/Metadata'
 const metadata: Metadata = {
     title: 'Selectors',
     description: 'Customizing selectors for your design system.',
-    category: 'Configuration',
+    category: 'Custom Syntax',
     unfinished: true
 }
 

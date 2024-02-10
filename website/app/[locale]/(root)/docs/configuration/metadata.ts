@@ -1,9 +1,9 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'master.css.js',
+    title: 'Configuration',
     description: 'Implement your design system using the configuration API.',
-    category: 'Configuration',
+    category: 'Custom Syntax',
     order: 1
 }
 
