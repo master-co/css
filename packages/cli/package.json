@@ -1,0 +1,55 @@
+{
+    "name": "@master/css-cli",
+    "scripts": {
+        "build": "techor pack --platform node",
+        "dev": "pnpm run build --watch",
+        "lint": "eslint ./src",
+        "type-check": "tsc --noEmit",
+        "test": "jest"
+    },
+    "license": "MIT",
+    "description": "Master CSS CLI",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://css.master.co/docs/donate",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/cli"
+    },
+    "keywords": [
+        "cli",
+        "css",
+        "mastercss"
+    ],
+    "bin": {
+        "mcss": "./dist/bin/index.bundle.js",
+        "mastercss": "./dist/bin/index.bundle.js"
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@master/css-server": "workspace:^",
+        "@master/css-extractor": "workspace:^",
+        "@techor/extend": "^2.5.24",
+        "@techor/glob": "^2.5.24",
+        "@techor/log": "^2.5.24",
+        "@techor/fs": "^2.5.24",
+        "commander": "^12.0.0",
+        "chokidar": "^3.5.3",
+        "explore-config": "^2.5.24",
+        "minimatch": "^9.0.1",
+        "pretty-hrtime": "^1.0.3"
+    },
+    "devDependencies": {
+        "@types/pretty-hrtime": "^1.0.3",
+        "fast-glob": "^3.3.2"
+    }
+}

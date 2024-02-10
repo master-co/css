@@ -10,7 +10,7 @@
     },
     "dependencies": {
         "@master/css-runtime": "workspace:^",
-        "@master/css-renderer": "workspace:^",
+        "@master/css-cli": "workspace:^",
         "@master/css.react": "workspace:^",
         "@types/node": "^20.2.5",
         "@types/react": "^18.2.8",

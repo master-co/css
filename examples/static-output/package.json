@@ -5,6 +5,6 @@
     },
     "devDependencies": {
         "@master/css": "workspace:^",
-        "@master/css-renderer": "workspace:^"
+        "@master/css-cli": "workspace:^"
     }
 }

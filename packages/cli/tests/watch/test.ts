@@ -63,7 +63,7 @@ beforeAll(() => {
     fs.writeFileSync(optionsFilepath, originOptionsText, { flag: 'w+' })
     fs.writeFileSync(configFilepath, originConfigText, { flag: 'w+' })
 
-    child = spawnd('tsx ../../../css/dist/bin/index.bundle.js extract -w', { shell: true, cwd: __dirname })
+    child = spawnd('tsx ../../src/bin extract -w', { shell: true, cwd: __dirname })
 }, 120000)
 
 it('start watch process', async () => {

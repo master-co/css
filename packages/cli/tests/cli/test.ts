@@ -1,6 +1,6 @@
+import { execSync } from 'child_process'
 import fs, { readFileSync } from 'fs'
 import path, { join } from 'path'
-import action from '../../src/actions/main'
 
 it('basic extract', async () => {
     fs.rmSync(path.join(__dirname, '.virtual/master.css'), { force: true })
@@ -11,6 +11,6 @@ it('basic extract', async () => {
             }
         }
     `, { flag: 'w' })
-    await action([], { export: true, cwd: __dirname })
+    execSync('tsx ../../src/bin extract', { cwd: __dirname })
     expect(readFileSync(join(__dirname, '.virtual/master.css')).toString()).toMatch(/(fg\\:primary|m\\:12x|text\\:center|font\\:sans|font\\:heavy|font\\:48)/)
 })

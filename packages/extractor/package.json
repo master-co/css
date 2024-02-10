@@ -45,8 +45,7 @@
             "import": "./dist/options/index.bundle.mjs",
             "require": "./dist/options/index.bundle.js",
             "types": "./dist/options/index.d.ts"
-        },
-        "./actions/main": "./dist/actions/main.bundle.js"
+        }
     },
     "typesVersions": {
         "*": {
@@ -73,8 +72,5 @@
         "chokidar": "^3.5.3",
         "explore-config": "^2.5.24",
         "minimatch": "^9.0.1"
-    },
-    "devDependencies": {
-        "ts-jest": "^29.0.5"
     }
 }

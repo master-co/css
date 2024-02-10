@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
+import { existsSync, writeFileSync } from 'fs'
 const { Command } = require('commander')
 const path = require('path')
-const fs = require('fs')
 const log = require('@techor/log')
 const { readJSONFileSync } = require('@techor/fs')
 const pkg = readJSONFileSync(path.resolve(__dirname, '../../package.json'))
@@ -27,7 +27,7 @@ program.command('init')
         let { esm, ts, cjs } = options
         // automatically detect the format
         if (!esm && !ts && !cjs) {
-            if (fs.existsSync('tsconfig.json')) {
+            if (existsSync('tsconfig.json')) {
                 ts = true
             } else {
                 const { type } = readJSONFileSync('./package.json') || {}
@@ -37,12 +37,12 @@ program.command('init')
             }
         }
         const create = (fileName: string, text: string) => {
-            const configExists = fs.existsSync(path.join(process.cwd(), fileName))
+            const configExists = existsSync(path.join(process.cwd(), fileName))
             if (!configExists) {
-                fs.writeFileSync(fileName, text)
+                writeFileSync(fileName, text)
                 log.ok`**${fileName}** file is created`
             } else if (configExists && options.override) {
-                fs.writeFileSync(fileName, text)
+                writeFileSync(fileName, text)
                 log.ok`**${fileName}** file is overridden`
             } else {
                 log.x`**${fileName}** file already exists`
@@ -57,44 +57,6 @@ program.command('init')
         }
         if (cjs) {
             create('master.css.js', CONFIG_TEXT)
-        }
-    })
-
-program.command('render')
-    .description('Scans HTML and injects generated CSS rules')
-    .argument('<source paths>', 'The path in glob patterns of the source of the HTML file')
-    .option('-c --config <path>', 'The source path of the Master CSS configuration', 'master.css.*')
-    .option('-a --analyze', 'Analyze injected CSS and HTML size ( brotli ) without writing to file')
-    .action(async function (args: any, options: any) {
-        try {
-            const action = require('@master/css-renderer/actions/main')
-            await action(args, options)
-        } catch (error: any) {
-            if (error.code === 'ERR_MODULE_NOT_FOUND') {
-                log.i`Please run **npm** **install** **@master/css-renderer** first`
-            } else {
-                console.error(error)
-            }
-        }
-    })
-
-program.command('extract')
-    .argument('[source paths]', 'The glob pattern path to extract sources')
-    .option('-w, --watch', 'Watch file changed and generate CSS rules.')
-    .option('-o, --output <path>', 'Specify your CSS file output path')
-    .option('-v, --verbose <level>', 'Verbose logging 0~N', '1')
-    .option('--no-export', 'Print only CSS results.')
-    .option('--options <path>', 'Specify your extractor options sources', 'master.css-extractor.*')
-    .action(async function (args: any, options: any) {
-        try {
-            const action = require('@master/css-extractor/actions/main')
-            await action(args, options)
-        } catch (error: any) {
-            if (error.code === 'ERR_MODULE_NOT_FOUND') {
-                log.i`Please run **npm** **install** **@master/css-extractor** first`
-            } else {
-                console.error(error)
-            }
         }
     })
 

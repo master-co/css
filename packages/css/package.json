@@ -1,7 +1,7 @@
 {
     "name": "@master/css",
     "scripts": {
-        "build": "techor pack --declare --external @master/css-renderer @master/css-extractor",
+        "build": "techor pack --declare",
         "dev": "pnpm run build --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",
@@ -53,11 +53,6 @@
             "types": "./dist/index.d.ts"
         }
     },
-    "bin": {
-        "@master/css": "./dist/bin/index.bundle.js",
-        "mcss": "./dist/bin/index.bundle.js",
-        "mastercss": "./dist/bin/index.bundle.js"
-    },
     "files": [
         "dist"
     ],
@@ -65,18 +60,11 @@
         "access": "public"
     },
     "dependencies": {
-        "@master/normal.css": "workspace:^",
-        "@techor/fs": "^2.5.24",
-        "@techor/log": "^2.5.24",
-        "commander": "^11.0.0"
+        "@master/normal.css": "workspace:^"
     },
     "devDependencies": {
         "@techor/extend": "^2.5.24",
-        "@techor/pack": "^2.5.24",
-        "@types/jest": "^29.5.11",
         "css-shared": "workspace:^",
-        "csstype": "^3.1.2",
-        "puppeteer": "^21.0.1",
-        "vite": "^4.2.1"
+        "csstype": "^3.1.2"
     }
 }

@@ -26,7 +26,7 @@
         "@master/css": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-extractor.vite": "workspace:^",
-        "@master/css-renderer": "workspace:^",
+        "@master/css-cli": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
         "@swc-node/jest": "^1.6.8",
         "@techor/fs": "^2.5.24",

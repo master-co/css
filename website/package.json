@@ -14,7 +14,7 @@
         "@master/css": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-language-service": "workspace:^",
-        "@master/css-renderer": "workspace:^",
+        "@master/css-cli": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css.react": "workspace:^",
         "@master/eslint-config-css": "workspace:^",
