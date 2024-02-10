@@ -74,7 +74,7 @@ In practice, you pay less attention to the order of classes, and as the number o
 ```
 
 ### Syntax error checks
-In the past, you would add utility classes to your templates in an unsafe manner, without being able to check whether they were valid or legal in the source code.
+In the past, you added utility classes to your templates unsafely, lacking the capability to verify their validity or legality directly within the source code.
 
 (i) With the [class validation rule](/docs/eslint#class-order), you can check the validity of classes early as you write them.
 <video className="aspect:2/1 r:5 max-w:screen-xs w:full" autoPlay loop muted playsInline>
@@ -83,7 +83,7 @@ In the past, you would add utility classes to your templates in an unsafe manner
 
 (x) <span className="text:error">Invalid value for \`width\` property.</span>
 ```html
-<div class="width:">…</div>
+<div class="**width:**">…</div>
 ```
 This is helpful if you make a typo or are unfamiliar with Master CSS syntax!
 
@@ -97,7 +97,7 @@ You can also restrict teams to using [configuration](/docs/configuration) to cre
 
 (x) <span className="text:error">"btn" is not a valid or known class.</span>
 ```html
-<button class="btn">…</button>
+<button class="**btn**">…</button>
 ```
 (o) Fix this @master/css/class-validation problem using the Master CSS syntax.
 ```html
@@ -126,7 +126,7 @@ The class you added may collide with existing classes due to human error or havi
 
 (!) <span className="text:warning">"m:10" applies the same CSS declarations as "m:20".</span><br/><span className="text:warning">"m:20" applies the same CSS declarations as "m:10".</span>
 ```html
-<div class="m:10 m:20">…</div>
+<div class="**m:10** **m:20**">…</div>
 ```
 (o) Fix this @master/css/class-collision problem by removing other colliding classes.
 ```html
@@ -136,7 +136,7 @@ It can also detect whether declarations with the same selector and media query s
 
 (!) <span className="text:warning">"m:40@sm" applies the same CSS declarations as "m:12x@sm".</span><br/><span className="text:warning">"m:12x@sm" applies the same CSS declarations as "m:40@sm".</span>
 ```html
-<div class="m:40@sm m:12x@sm">…</div>
+<div class="**m:40@sm** **m:12x@sm**">…</div>
 ```
 (o) Fix this @master/css/class-collision problem by removing other colliding classes.
 ```html
@@ -156,14 +156,14 @@ You may be using [clsx](https://github.com/lukeed/clsx) or [class variant](/docs
 import clsx from 'clsx'
 
 export default () => (
-    <h1 className={clsx('display:bloc')}>Hello World</h1>
+    <h1 className={clsx('**display:bloc**')}>Hello World</h1>
 )
 ```
 (x) <span className="text:error">Invalid value for `text-align` property.</span>
 ```tsx
 import { styled } from '@master/css.react'
 
-const H1 = styled.h1`text-align:cente`
+const H1 = styled.h1`**text-align:cente**`
 
 export default () => <H1>Hello World</H1>
 ```
