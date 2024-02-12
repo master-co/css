@@ -7,7 +7,7 @@
         "dev": "pnpm run build:main --watch",
         "type-check": "vue-tsc --noEmit",
         "lint": "eslint src",
-        "test": "jest"
+        "e2e": "playwright test -c e2e/playwright-ct.config.ts"
     },
     "license": "MIT",
     "description": "Integrate Master CSS in Vue way",
@@ -94,6 +94,8 @@
         "theme-service": "workspace:^"
     },
     "devDependencies": {
+        "@playwright/test": "^1.41.2",
+        "@playwright/experimental-ct-vue": "^1.41.2",
         "@vitejs/plugin-vue": "^4.2.3",
         "@vue/server-renderer": "^3.3.4",
         "@vue/test-utils": "^2.4.1",
