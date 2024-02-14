@@ -200,7 +200,7 @@ export class RuntimeCSS extends MasterCSS {
             /**
              * 待所有 DOM 結構完成解析後，開始繪製 Rule 樣式
              */
-            this.host
+            (this.root === document ? this.host : this.container)
                 .querySelectorAll('[class]')
                 .forEach((element) => handleClassList(element.classList))
         }
