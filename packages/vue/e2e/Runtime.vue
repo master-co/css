@@ -1,13 +1,30 @@
 <script setup lang="ts">
-    import { ref } from 'vue'
     import { CSSRuntimeProvider } from '../src/CSSRuntimeProvider'
-    import config from './master.css'
-    
-    const destroyed = ref<boolean>(false)
+    import { ref, onMounted } from 'vue'
+    import type { Config } from '@master/css'
+
+    const config = ref<Config>({
+        styles: {
+            btn: 'b:2|red'
+        }
+    })
+    const root = ref()
+    const containerRef = ref()
+
+    let shadowRoot: any
+    onMounted(() => {
+        shadowRoot = containerRef.value.attachShadow({ mode: 'open' });
+        
+        const shadowContent = document.createElement('div');
+        shadowContent.className = 'f:1000'
+        shadowRoot.appendChild(shadowContent);
+    })
 </script>
 
 <template>
-    <CSSRuntimeProvider v-if="!destroyed" :config="config">
-        <button id="my-btn" class="f:10" @click="destroyed = true"></button>
+    <CSSRuntimeProvider :root="root" :config="config">
+        <button id="config-btn" class="btn" @click="config = {}"></button>
+        <button id="root-btn" @click="root = shadowRoot"></button>
+        <div :ref="el => containerRef = el"></div>
     </CSSRuntimeProvider>
 </template>
