@@ -7,11 +7,13 @@ import { detect as detectPackageManager } from 'detect-package-manager'
 import detectAppExt from '../detect-app-ext'
 import detectAppTech from '../detect-app-tech'
 import { downloadTemplate } from 'giget'
-import createConfig from '../create-config'
 import { Options } from '../Options'
 import { execSync } from 'node:child_process'
-import { writeFileSync } from 'node:fs'
+import { existsSync, writeFileSync } from 'node:fs'
 import ora from 'ora'
+import CONFIG_ESM_TEXT from '../master.css.mjs.js'
+import CONFIG_TS_TEXT from '../master.css.ts.js'
+import CONFIG_TEXT from '../master.css.js.js'
 
 const pkg = readJSONFileSync(resolve(__dirname, '../../package.json'))
 const program = new Command()
@@ -30,6 +32,7 @@ program
             // Detect the package manager
             options.pm = await detectPackageManager()
         }
+        const appPkg = readJSONFileSync('package.json')
         // Create a new app with the example
         if (appName) {
             log.i(`Detected **${options.pm}**`)
@@ -45,7 +48,6 @@ program
                 return
             }
             process.chdir(appName)
-            const appPkg = readJSONFileSync('package.json')
             if (!appPkg) {
                 spinner.fail(`Cannot found "${examplePath}"`)
                 log.i`View all available examples at **https://github.com/master-co/css/tree/rc/examples**`
@@ -83,12 +85,37 @@ program
             }
         } else {
             options.ext = options.ext || detectAppExt()
-            createConfig(options)
-            log.i(`Detected **${options.pm}**`)
-            log.i`Start "${options.pm} add @master/css@rc"`
-            log``
-            execSync(`${options.pm} add @master/css@rc`, { stdio: 'inherit' })
-            log``
+            const create = (fileName: string, text: string) => {
+                const configExists = existsSync(fileName)
+                if (!configExists) {
+                    writeFileSync(fileName, text)
+                    log.ok`Created **${fileName}**`
+                } else if (configExists && options.override) {
+                    writeFileSync(fileName, text)
+                    log.ok`**${fileName}** is overridden`
+                } else {
+                    log.x`**${fileName}** already exists`
+                }
+            }
+            // create master.css.* file
+            switch (options.ext) {
+                case 'js':
+                    create('master.css.js', CONFIG_TEXT)
+                    break
+                case 'mjs':
+                    create('master.css.mjs', CONFIG_ESM_TEXT)
+                    break
+                case 'ts':
+                    create('master.css.ts', CONFIG_TS_TEXT)
+                    break
+            }
+            if (!appPkg?.dependencies?.['@master/css']) {
+                log.i(`Detected **${options.pm}**`)
+                log.i`Start "${options.pm} add @master/css@rc"`
+                log``
+                execSync(`${options.pm} add @master/css@rc`, { stdio: 'inherit' })
+                log``
+            }
             const tech = detectAppTech()
             if (tech) {
                 log.i(`Detected **${tech}**, check out the guide at **https://rc.css.master.co/docs/installation/${tech}**`)
