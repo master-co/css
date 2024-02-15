@@ -26,7 +26,7 @@ program
     .option('-o, --override', 'Override existing definition file')
     .option('--ext <ext>', 'Specify the extension mjs, ts, js')
     .option('--pm <package manager>', 'Specify the package manager npm, yarn, pnpm, bun')
-    .option('--example <folder name>', 'Specify the example folder name', 'vite')
+    .option('--example <folder name>', 'Specify the example folder name', 'blank')
     .action(async function (appName: string | undefined, options: Options) {
         if (!options.pm) {
             // Detect the package manager
