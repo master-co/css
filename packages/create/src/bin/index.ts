@@ -30,7 +30,7 @@ program
     .action(async function (appName: string | undefined, options: Options) {
         if (!options.pm) {
             // Detect the package manager
-            options.pm = await detectPackageManager()
+            options.pm = await detectPackageManager({ cwd: process.cwd() })
         }
         const appPkg = readJSONFileSync('package.json')
         // Create a new app with the example
@@ -118,7 +118,7 @@ program
             }
             const tech = detectAppTech()
             if (tech) {
-                log.i(`Detected **${tech}**, check out the guide at **https://rc.css.master.co/docs/installation/${tech}**`)
+                log.i(`Detected **${tech}** (https://rc.css.master.co/docs/installation/${tech})`)
             } else {
                 log.i(`To integrate with your framework, check out the guides at **https://rc.css.master.co/docs/installation**`)
             }

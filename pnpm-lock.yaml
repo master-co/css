@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@semantic-release/commit-analyzer': 11.0.0
-
 importers:
 
   .:
@@ -1044,6 +1041,40 @@ importers:
       css-shared:
         specifier: workspace:^
         version: link:../../shared
+
+  packages/create/tests/nextjs:
+    dependencies:
+      '@master/css':
+        specifier: 2.0.0-rc.14
+        version: 2.0.0-rc.14
+      next:
+        specifier: 14.1.0
+        version: 14.1.0(react-dom@18.2.0)(react@18.2.0)
+      react:
+        specifier: ^18
+        version: 18.2.0
+      react-dom:
+        specifier: ^18
+        version: 18.2.0(react@18.2.0)
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.11.17
+      '@types/react':
+        specifier: ^18
+        version: 18.2.55
+      '@types/react-dom':
+        specifier: ^18
+        version: 18.2.19
+      typescript:
+        specifier: ^5
+        version: 5.3.3
+
+  packages/create/tests/with-no-deps:
+    dependencies:
+      '@master/css':
+        specifier: 2.0.0-rc.14
+        version: 2.0.0-rc.14
 
   packages/css:
     dependencies:
@@ -5399,6 +5430,16 @@ packages:
 
   /@master/css@2.0.0-rc.13:
     resolution: {integrity: sha512-auaoUEmt8UjBU9F8EsDGYdddnVJmCMkorCxFXGiWK590Sg0lKO9pfBVgxMgqvmrMzUSo2kHABm/wjLoxmlScYQ==}
+    hasBin: true
+    dependencies:
+      '@master/normal.css': 2.0.0-rc.14
+      '@techor/fs': 2.6.5
+      '@techor/log': 2.6.5
+      commander: 11.1.0
+    dev: false
+
+  /@master/css@2.0.0-rc.14:
+    resolution: {integrity: sha512-oT25n0xnDS5iHRiRIUzC+NXsTSAy2skp6oa7m+Mw21SIFvQlHfqSeXjOluQpYqViacibluZFSxajbwPeUn/KBA==}
     hasBin: true
     dependencies:
       '@master/normal.css': 2.0.0-rc.14
@@ -18198,6 +18239,45 @@ packages:
       - babel-plugin-macros
     dev: false
 
+  /next@14.1.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-wlzrsbfeSU48YQBjZhDzOwhWhGsy+uQycR8bHAOt1LY1bn3zZEcDyHQOEoN3aWzQ8LHCAJ1nqrWCc9XF2+O45Q==}
+    engines: {node: '>=18.17.0'}
+    hasBin: true
+    peerDependencies:
+      '@opentelemetry/api': ^1.1.0
+      react: ^18.2.0
+      react-dom: ^18.2.0
+      sass: ^1.3.0
+    peerDependenciesMeta:
+      '@opentelemetry/api':
+        optional: true
+      sass:
+        optional: true
+    dependencies:
+      '@next/env': 14.1.0
+      '@swc/helpers': 0.5.2
+      busboy: 1.6.0
+      caniuse-lite: 1.0.30001587
+      graceful-fs: 4.2.11
+      postcss: 8.4.31
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      styled-jsx: 5.1.1(react@18.2.0)
+    optionalDependencies:
+      '@next/swc-darwin-arm64': 14.1.0
+      '@next/swc-darwin-x64': 14.1.0
+      '@next/swc-linux-arm64-gnu': 14.1.0
+      '@next/swc-linux-arm64-musl': 14.1.0
+      '@next/swc-linux-x64-gnu': 14.1.0
+      '@next/swc-linux-x64-musl': 14.1.0
+      '@next/swc-win32-arm64-msvc': 14.1.0
+      '@next/swc-win32-ia32-msvc': 14.1.0
+      '@next/swc-win32-x64-msvc': 14.1.0
+    transitivePeerDependencies:
+      - '@babel/core'
+      - babel-plugin-macros
+    dev: false
+
   /nice-napi@1.0.2:
     resolution: {integrity: sha512-px/KnJAJZf5RuBGcfD+Sp2pAKq0ytz8j+1NehvgIGFkvtvFrDM3T8E4x/JJODXK9WZow8RRGrbA9QQ3hs+pDhA==}
     os: ['!win32']
@@ -22186,6 +22266,23 @@ packages:
         optional: true
     dependencies:
       '@babel/core': 7.23.9
+      client-only: 0.0.1
+      react: 18.2.0
+    dev: false
+
+  /styled-jsx@5.1.1(react@18.2.0):
+    resolution: {integrity: sha512-pW7uC1l4mBZ8ugbiZrcIsiIvVx1UmTfw7UkC3Um2tmfUq9Bhk8IiyEIPl6F8agHgjzku6j0xQEZbfA5uSgSaCw==}
+    engines: {node: '>= 12.0.0'}
+    peerDependencies:
+      '@babel/core': '*'
+      babel-plugin-macros: '*'
+      react: '>= 16.8.0 || 17.x.x || ^18.0.0-0'
+    peerDependenciesMeta:
+      '@babel/core':
+        optional: true
+      babel-plugin-macros:
+        optional: true
+    dependencies:
       client-only: 0.0.1
       react: 18.2.0
     dev: false
