@@ -1,7 +1,7 @@
 {
     "name": "master-css-static-output",
     "scripts": {
-        "build": "mastercss render \"**/*.html\""
+        "build": "mcss render \"**/*.html\""
     },
     "devDependencies": {
         "@master/css": "workspace:^",

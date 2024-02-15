@@ -20,8 +20,8 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npm create @master/css@rc __my-app__ --example next.js
-            cd __my-app__
+            npm create @master/css@rc __project__ --example next.js
+            cd __project__
             npm run dev
             ```
         </StepR>
@@ -46,7 +46,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                         name: 'Terminal',
                         lang: 'bash',
                         code: `
-                            npx create-next-app@latest --experimental-app --ts
+                            npm create next-app --app --ts
                             cd __project__
                         `
                     },
@@ -54,23 +54,12 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                         name: 'Terminal (pages/)',
                         lang: 'bash',
                         code: `
-                            npx create-next-app@latest --ts
+                            npm create next-app --ts
                             cd __project__
                         `
                     }
                 ]}
             </CodeTabs>
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Master CSS
-            Install Master CSS React into your project via package managers.
-        </StepL>
-        <StepR>
-            ```install
-            **@master/css.react@rc** **@master/css-cli@rc**
-            ```
         </StepR>
     </Step>
     <Step $row>
@@ -81,6 +70,17 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         <StepR>
             ```bash name=Terminal
             npm create @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS React into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css.react@rc** **@master/css-cli@rc**
             ```
         </StepR>
     </Step>
@@ -164,7 +164,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                                 "scripts": {
                                     "dev": "next dev",
                         -            "build": "next build",
-                        +            "build": "next build && mastercss render \\".next/**/*.html\\"",
+                        +            "build": "next build && mcss render \\".next/**/*.html\\"",
                                     "start": "next start",
                                     "lint": "next lint"
                                 }

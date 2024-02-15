@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@semantic-release/commit-analyzer': 11.0.0
-
 importers:
 
   .:
@@ -1105,6 +1102,12 @@ importers:
       css-shared:
         specifier: workspace:^
         version: link:../../shared
+
+  packages/create/tests/with-package-json:
+    dependencies:
+      '@master/css':
+        specifier: 2.0.0-rc.14
+        version: 2.0.0-rc.14
 
   packages/css:
     dependencies:
@@ -5460,6 +5463,16 @@ packages:
 
   /@master/css@2.0.0-rc.13:
     resolution: {integrity: sha512-auaoUEmt8UjBU9F8EsDGYdddnVJmCMkorCxFXGiWK590Sg0lKO9pfBVgxMgqvmrMzUSo2kHABm/wjLoxmlScYQ==}
+    hasBin: true
+    dependencies:
+      '@master/normal.css': 2.0.0-rc.14
+      '@techor/fs': 2.6.5
+      '@techor/log': 2.6.5
+      commander: 11.1.0
+    dev: false
+
+  /@master/css@2.0.0-rc.14:
+    resolution: {integrity: sha512-oT25n0xnDS5iHRiRIUzC+NXsTSAy2skp6oa7m+Mw21SIFvQlHfqSeXjOluQpYqViacibluZFSxajbwPeUn/KBA==}
     hasBin: true
     dependencies:
       '@master/normal.css': 2.0.0-rc.14

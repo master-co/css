@@ -20,8 +20,8 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npm create @master/css@rc __my-app__ --example next.js-with-static-extraction
-            cd __my-app__
+            npm create @master/css@rc __project__ --example next.js-with-static-extraction
+            cd __project__
             npm run dev
             ```
         </StepR>
@@ -46,7 +46,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                         name: 'Terminal',
                         lang: 'bash',
                         code: `
-                            npx create-next-app@latest --experimental-app --ts
+                            npm create next-app --app --ts
                             cd __project__
                         `
                     },
@@ -54,23 +54,12 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                         name: 'Terminal (pages/)',
                         lang: 'bash',
                         code: `
-                            npx create-next-app@latest --ts
+                            npm create next-app --ts
                             cd __project__
                         `
                     }
                 ]}
             </CodeTabs>
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Install Master CSS
-            Install the Master CSS extractor into your project via package managers.
-        </StepL>
-        <StepR>
-            ```install
-            **@master/css-extractor.webpack@rc**
-            ```
         </StepR>
     </Step>
     <Step $row>
@@ -81,6 +70,17 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         <StepR>
             ```bash name=Terminal
             npm create @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install the Master CSS extractor into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css-extractor.webpack@rc**
             ```
         </StepR>
     </Step>
