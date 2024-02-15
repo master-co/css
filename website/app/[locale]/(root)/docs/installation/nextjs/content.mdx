@@ -22,7 +22,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             ```bash name=Terminal
             npx degit master-co/css/examples/next.js-with-progressive-rendering __my-project__
             cd __my-project__
-            npm install @master/css.react@rc
+            npm install @master/css.react@rc @master/cli@rc
             npm install
             npm run dev
             ```
@@ -71,7 +71,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         </StepL>
         <StepR>
             ```install
-            **@master/css.react@rc** **@master/css-renderer@rc** **@master/css-server@rc**
+            **@master/css.react@rc** **@master/css-cli@rc**
             ```
         </StepR>
     </Step>
@@ -166,7 +166,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                                 "scripts": {
                                     "dev": "next dev",
                         -            "build": "next build",
-                        +            "build": "next build && mcss render \\".next/**/*.html\\"",
+                        +            "build": "next build && mastercss render \\".next/**/*.html\\"",
                                     "start": "next start",
                                     "lint": "next lint"
                                 }

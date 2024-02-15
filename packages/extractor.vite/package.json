@@ -49,6 +49,10 @@
         "lodash.debounce": "^4.0.8"
     },
     "devDependencies": {
-        "@types/lodash.debounce": "^4.0.9"
+        "@playwright/test": "^1.41.2",
+        "@types/lodash.debounce": "^4.0.9",
+        "@types/node": "^20.11.17",
+        "puppeteer-core": "^22.0.0",
+        "css-shared": "workspace:^"
     }
 }

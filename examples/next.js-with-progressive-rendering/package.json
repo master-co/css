@@ -4,12 +4,11 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "build": "next build && mcss render \".next/**/*.html\"",
+        "build": "next build && mastercss render \".next/**/*.html\"",
         "start": "next start",
         "lint": "next lint"
     },
     "dependencies": {
-        "@master/css-runtime": "workspace:^",
         "@master/css-cli": "workspace:^",
         "@master/css.react": "workspace:^",
         "@types/node": "^20.2.5",

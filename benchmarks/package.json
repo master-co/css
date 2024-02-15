@@ -4,7 +4,7 @@
         "extract": "hyperfine 'cd extract/tailwindcss && npx tailwindcss -i src/main.css' 'cd extract/mastercss && npx mastercss extract --no-export'"
     },
     "dependencies": {
-        "@techor/log": "^2.6.3",
+        "@techor/log": "^2.6.5",
         "axios": "^1.6.7",
         "cheerio": "0.22.0",
         "filesize": "^10.1.0",
@@ -15,7 +15,7 @@
         "postcss": "^8.4.33",
         "tailwindcss": "^3.4.1",
         "@master/css": "workspace:^",
-        "@master/css-runtime": "workspace:^",
-        "@master/extractor": "workspace:^"
+        "@master/css-cli": "workspace:^",
+        "@master/css-runtime": "workspace:^"
     }
 }

@@ -1,5 +1,5 @@
 {
-    "name": "@master/css-cli",
+    "name": "@master/create-css",
     "scripts": {
         "build": "techor pack --platform node",
         "dev": "pnpm run build --watch",
@@ -8,7 +8,7 @@
         "test": "jest"
     },
     "license": "MIT",
-    "description": "Master CSS CLI",
+    "description": "Initialize a new Master CSS project",
     "author": "Aoyue Design LLC.",
     "funding": "https://css.master.co/docs/donate",
     "homepage": "https://css.master.co",
@@ -18,17 +18,16 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/cli"
+        "directory": "packages/create"
     },
     "keywords": [
         "cli",
+        "create",
+        "init",
         "css",
         "mastercss"
     ],
-    "bin": {
-        "mcss": "./dist/bin/index.bundle.js",
-        "mastercss": "./dist/bin/index.bundle.js"
-    },
+    "bin": "./dist/bin/index.bundle.js",
     "files": [
         "dist"
     ],
@@ -36,21 +35,15 @@
         "access": "public"
     },
     "dependencies": {
-        "@master/css": "workspace:^",
-        "@master/css-extractor": "workspace:^",
-        "@master/css-server": "workspace:^",
-        "@techor/extend": "^2.6.5",
+        "@master/css": "2.0.0-rc.13",
         "@techor/fs": "^2.6.5",
-        "@techor/glob": "^2.6.5",
         "@techor/log": "^2.6.5",
-        "chokidar": "^3.5.3",
         "commander": "^12.0.0",
-        "explore-config": "^2.6.5",
-        "minimatch": "^9.0.1",
-        "pretty-hrtime": "^1.0.3"
+        "detect-package-manager": "^3.0.1",
+        "giget": "^1.2.1",
+        "ora": "^8.0.1"
     },
     "devDependencies": {
-        "@types/pretty-hrtime": "^1.0.3",
-        "fast-glob": "^3.3.2"
+        "css-shared": "workspace:^"
     }
 }

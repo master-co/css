@@ -1,0 +1,8 @@
+{
+    "name": "esm.test",
+    "type": "module",
+    "private": true,
+    "dependencies": {
+        "@master/css": "2.0.0-rc.14"
+    }
+}

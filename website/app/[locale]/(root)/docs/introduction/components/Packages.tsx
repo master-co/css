@@ -5,9 +5,10 @@ const mainPackages = [
     require('~/../packages/runtime/package.json'),
     require('~/../packages/server/package.json'),
     require('~/../packages/extractor/package.json'),
-    require('~/../packages/renderer/package.json'),
     require('~/../packages/validator/package.json'),
-    require('~/../packages/normal.css/package.json')
+    require('~/../packages/normal.css/package.json'),
+    require('~/../packages/cli/package.json'),
+    require('~/../packages/create/package.json'),
 ]
 
 const integrationPackages = [

@@ -53,6 +53,7 @@
             "types": "./dist/index.d.ts"
         }
     },
+    "bin": "./dist/bin/index.bundle.js",
     "files": [
         "dist"
     ],
@@ -63,7 +64,7 @@
         "@master/normal.css": "workspace:^"
     },
     "devDependencies": {
-        "@techor/extend": "^2.5.24",
+        "@techor/extend": "^2.6.5",
         "css-shared": "workspace:^",
         "csstype": "^3.1.2"
     }

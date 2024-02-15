@@ -1,6 +1,5 @@
-import type { Config } from '@master/css'
-
-export default {
+/** @type {import('@master/css').Config} */
+module.exports = {
     styles: {},
     rules: {},
     variables: {},
@@ -9,4 +8,4 @@ export default {
     animations: {},
     selectors: {},
     functions: {}
-} as Config
+}
