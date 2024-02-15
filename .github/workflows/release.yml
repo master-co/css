@@ -20,7 +20,7 @@ jobs:
             - run: pnpm install
             - run: pnpm install semantic-release-config-techor --workspace-root
             - run: pnpm run build
-            - uses: lewagon/wait-on-check-action@v1.3.1
+            - uses: lewagon/wait-on-check-action@v1.3.3
               with:
                   ref: ${{ github.ref }}
                   running-workflow-name: wait-for-check-regexp
