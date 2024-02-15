@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "node ../../../scripts/assets && next dev",
-        "build": "node ../../../scripts/assets && cd ../ && pnpm build && cd website && next build && node ../packages/css/dist/bin/index.bundle render \".next/**/*.html\"",
+        "build": "node ../../../scripts/assets && cd ../ && pnpm build && cd website && next build && node ../packages/cli/dist/bin/index.bundle render \".next/**/*.html\"",
         "start": "next start",
         "lint": "next lint",
         "type-check": "tsc --noEmit"
