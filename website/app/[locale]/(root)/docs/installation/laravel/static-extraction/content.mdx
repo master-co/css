@@ -19,9 +19,8 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npx degit master-co/css/examples/laravel-with-static-extraction __my-project__
-            cd __my-project__
-            npm install @master/css-extractor.vite@rc
+            npm create @master/css@rc __project__ --example laravel-with-static-extraction
+            cd __project__
             npm install
             ```
         </StepR>
@@ -69,23 +68,23 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install Master CSS Extractor into your project via package managers.
-        </StepL>
-        <StepR>
-            ```install
-            **@master/css-extractor.vite@rc**
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Initialize configuration file
             Run `npm create @master/css@rc` to create a configuration file [master.css.js](/docs/configuration).
         </StepL>
         <StepR>
             ```bash name=Terminal
             npm create @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS Extractor into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css-extractor.vite@rc**
             ```
         </StepR>
     </Step>
