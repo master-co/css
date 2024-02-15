@@ -72,3 +72,7 @@ packages/nuxt/**/.nuxt
 packages/nuxt/playground/.output
 
 **/*/cache
+**/test-results/
+**/playwright-report/
+**/blob-report/
+**/playwright/.cache/
