@@ -1,7 +1,0 @@
-{
-    "name": "esm.next.js",
-    "private": true,
-    "dependencies": {
-        "@master/css": "2.0.0-rc.13"
-    }
-}
