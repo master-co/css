@@ -13,15 +13,14 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     <Step $row>
         <StepL>
             ### <StepNum />Clone the example
-            Copy-paste the following commands to quickly start using the [example](https://github.com/master-co/css/tree/rc/examples/angular-with-progressive-rendering).
+            Copy-paste the commands to quickly start using the https://angular.pr.rc.css.master.co example.
 
             You can skip all [installation](#installation) steps.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npx degit master-co/css/examples/angular-with-progressive-rendering __my-project__
-            cd __my-project__
-            npm install @master/css-runtime@rc @master/css-server@rc
+            npm create @master/css@rc __project__ --example angular
+            cd __project__
             npm install
             npm run dev
             ```
@@ -33,7 +32,6 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
 ---
 
 ## Installation
-
 <StepSection>
     <Step $row>
         <StepL>
@@ -49,23 +47,23 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install Master CSS Server into your project via package managers.
-        </StepL>
-        <StepR>
-            ```install
-            **@master/css-runtime@rc** **@master/css-server@rc**
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Initialize configuration file
             Run `npm create @master/css@rc` to create a configuration file [master.css.ts](/docs/configuration).
         </StepL>
         <StepR>
             ```bash name=Terminal
             npm create @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS Server into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css-runtime@rc** **@master/css-server@rc**
             ```
         </StepR>
     </Step>

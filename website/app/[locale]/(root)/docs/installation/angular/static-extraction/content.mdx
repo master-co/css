@@ -14,16 +14,14 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
     <Step $row>
         <StepL>
             ### <StepNum />Clone the example
-            Copy-paste the following commands to quickly start using the [angular.rc.css.master.co](https://angular\.se.rc.css.master.co).
+            Copy-paste the commands to quickly start using the https://angular.se.rc.css.master.co example.
 
             You can skip all [installation](#installation) steps.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npx degit master-co/css/examples/angular-with-static-extraction __my-project__
-            cd __my-project__
-            npm install @master/css-runtime@rc
-            npm install
+            npm create @master/css@rc __project__ --example angular-with-static-extraction
+            cd __project__
             npm run dev
             ```
         </StepR>
@@ -58,23 +56,23 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS and others
-            Install the Master CSS and Angular custom webpack plugin into your project via package managers.
-        </StepL>
-        <StepR>
-            ```install
-            **@master/css-extractor.webpack@rc** @angular-builders/custom-webpack
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Initialize configuration file
             Run `npm create @master/css@rc` to create a configuration file [master.css.ts](/docs/configuration).
         </StepL>
         <StepR>
             ```bash name=Terminal
             npm create @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS and others
+            Install the Master CSS and Angular custom webpack plugin into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css-extractor.webpack@rc** @angular-builders/custom-webpack
             ```
         </StepR>
     </Step>
