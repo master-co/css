@@ -1,7 +1,7 @@
-import ProgressiveRenderingIntro from '../../rendering-modes/components/ProgressiveRenderingIntro.mdx'
+import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRenderingIntro.mdx'
 
-<ProgressiveRenderingIntro img={{
-    href: "https://vuejs.pr.rc.css.master.co",
+<RuntimeRenderingIntro img={{
+    href: "https://vuejs.rr.rc.css.master.co",
     ...require('~/public/images/vuejs-dev.png').default,
     dark: require('~/public/images/vuejs-dev@dark.png').default,
     alt: 'Vue.js and Master CSS',
@@ -9,23 +9,23 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
 
 ---
 
-## Quick start
-This is a simple Vite example of Vue.js server-side rendering.
-
 A full-stack framework, such as [Nuxt.js](/docs/installation/nuxtjs), is recommended for better application performance and experience.
+
+---
+
+## Quick start
 <StepSection>
     <Step $row>
         <StepL>
             ### <StepNum />Clone the example
-            Copy-paste the following commands to quickly start using the [vuejs.pr.rc.css.master.co](https://vuejs.pr.rc.css.master.co).
+            Copy-paste the commands to quickly start using the https://vuejs.rr.rc.css.master.co example.
 
             You can skip all [installation](#installation) steps.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npx degit master-co/css/examples/vue.js-with-progressive-rendering __my-project__
-            cd __my-project__
-            npm install @master/css.vue@rc
+            npm create @master/css@rc __project__ --example vue.js
+            cd __project__
             npm install
             npm run dev
             ```
@@ -36,4 +36,98 @@ A full-stack framework, such as [Nuxt.js](/docs/installation/nuxtjs), is recomme
 
 ---
 
-Are you building a Vue.js single-page application (SPA)? Use the handy [Master CSS Runtime Rendering in Vue.js](/docs/installation/vuejs/runtime-rendering).
+## Installation
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a project
+            If you don't have a Vue.js project, create one first. It's recommended to refer to [Quick Start - Vue.js](https://vuejs.org/guide/quick-start.html).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm init vue@latest
+            cd __project__
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Initialize configuration file
+            Run `npm create @master/css@rc` to create a configuration file [master.css.ts](/docs/configuration).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS Vue into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css.vue@rc**
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS runtime engine
+            - Import your custom configuration `master.css.ts`
+            - Initialize the runtime engine using `CSSRuntimeProvider`
+        </StepL>
+        <StepR>
+            ```html name=src/App.vue
+            <script setup lang="ts">
+            +import { CSSRuntimeProvider } from '@master/css.vue'
+            +import config from '../master.css'
+            </script>
+
+            <template>
+            +    <CSSRuntimeProvider :config="config">
+                    …
+            +    </CSSRuntimeProvider>
+            </template>
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Prevent flash of unstyled content
+            Add `css display: 'none'` in `html <html>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) caused by the runtime engine not yet injecting CSS rules.
+        </StepL>
+        <StepR>
+            ```html name=index.html
+            <!doctype html>
+            <html lang="en" style="**display: none**">
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Launch server
+            Run `npm run dev` to start your Vite development server
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm run dev
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first element using Master CSS syntax!
+        ```html name=src/App.vue
+        …
+        <template>
+            <CSSRuntimeProvider :config="config">
+                <h1 class="**font:40** **font:heavy** **italic** **m:12x** **text:center**">Hello World</h1>
+            </CSSRuntimeProvider>
+        </template>
+        ```
+        <p className="mt:12x">Open your browser to watch the changes.</p>
+        <HelloWorld url="localhost:3000" />
+    </Step>
+</StepSection>

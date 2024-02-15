@@ -17,8 +17,7 @@ export default async function Layout(props: any) {
             titleBig
         >
             <Tabs className="mb:8x">
-                <Tab href='/docs/installation/vuejs'>{$('Progressive Rendering')}</Tab>
-                <Tab href='/docs/installation/vuejs/runtime-rendering'>{$('Runtime Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>
+                <Tab href='/docs/installation/vuejs'>{$('Runtime Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>
                 <Tab href='/docs/installation/vuejs/static-extraction'>{$('Static Extraction')}</Tab>
             </Tabs>
             {props.children}
