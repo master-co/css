@@ -115,7 +115,7 @@ This is a real-world benchmark of [critical CSS](https://web.dev/articles/codela
 <CriticalCSSForDocsSitesBenchmark />
 According to HTTP Archive [CSS Bytes](https://httparchive.org/reports/page-weight#bytesCss), the sum of transfer size kilobytes of all external stylesheets requested by the page is **~82 kB**, excluding internal and inline styles.
 
-The **Master CSS documentation site** is only about **~6 kB (brotli) per page**.
+Master CSS only injects the CSS required by the page, so the official documentation site is super tiny, about **~6 kB per page** (brotli).
 {/* Reducing [critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) can improve page loading speed, browser rendering performance, and SEO metrics. */}
 
 ### Comparisons
