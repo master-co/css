@@ -13,7 +13,7 @@
         "@master/css.vue": "workspace:^"
     },
     "devDependencies": {
-        "@types/node": "^18.19.9",
+        "@types/node": "^20",
         "nuxt": "^3.9.3",
         "vue": "^3.4.15",
         "vue-router": "^4.2.5"

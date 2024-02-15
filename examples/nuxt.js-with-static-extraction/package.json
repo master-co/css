@@ -10,7 +10,7 @@
     "devDependencies": {
         "@master/css-runtime": "workspace:^",
         "@master/css-extractor.vite": "workspace:^",
-        "@types/node": "^18",
+        "@types/node": "^20",
         "nuxt": "^3.9.3"
     }
 }

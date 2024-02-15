@@ -47,7 +47,7 @@
     "devDependencies": {
         "@angular-eslint/template-parser": "^16.2.0",
         "@swc-node/register": "^1.6.8",
-        "@types/node": "^20.6.0",
+        "@types/node": "^20",
         "@typescript-eslint/parser": "^6.10.0",
         "@typescript-eslint/utils": "^6.10.0",
         "eslint": "^8.52.0",

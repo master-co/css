@@ -12,7 +12,7 @@
         "@master/css.vue": "workspace:^"
     },
     "devDependencies": {
-        "@types/node": "^18",
+        "@types/node": "^20",
         "nuxt": "^3.5.2"
     }
 }
