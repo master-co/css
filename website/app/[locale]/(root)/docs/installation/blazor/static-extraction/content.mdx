@@ -4,32 +4,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
 
 ---
 
-## Quick start
-<StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Clone the example
-            Copy-paste the following commands to quickly start using the [blazor.se.rc.css.master.co](https://blazor.se.rc.css.master.co).
-
-            You can skip all [installation](#installation) steps.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npx degit master-co/css/examples/blazor-with-static-extraction __my-project__
-            cd __my-project__
-            npm install @master/css-extractor.blazor@rc
-            npm install
-            npm run dev
-            ```
-        </StepR>
-        <StepEnd/>
-    </Step>
-</StepSection>
-
----
-
 ## Installation
-
 <StepSection>
     <Step $row>
         <StepL>
@@ -54,23 +29,23 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS Extractor
-            Install the Master CSS extractor into your project via package managers.
-        </StepL>
-        <StepR>
-            ```install
-            **@master/css-extractor.blazor@rc**
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Initialize configuration file
             Run `npm create @master/css@rc` to create a configuration file [master.css.ts](/docs/configuration).
         </StepL>
         <StepR>
             ```bash name=Terminal
             npm create @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS Extractor
+            Install the Master CSS extractor into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css-extractor.blazor@rc**
             ```
         </StepR>
     </Step>

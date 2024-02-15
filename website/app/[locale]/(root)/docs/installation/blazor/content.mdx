@@ -4,30 +4,6 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
 
 ---
 
-## Quick start
-<StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Clone the example
-            Copy-paste the following commands to quickly start using the [blazor.rr.rc.css.master.co](https://blazor.rr.rc.css.master.co).
-
-            You can skip all [installation](#installation) steps.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npx degit master-co/css/examples/blazor-with-runtime-rendering __my-project__
-            cd __my-project__
-            npm install @master/css-runtime@rc
-            npm install
-            npm run dev
-            ```
-        </StepR>
-        <StepEnd/>
-    </Step>
-</StepSection>
-
----
-
 ## Installation
 
 <StepSection>
@@ -93,23 +69,23 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install Master CSS into your project via package managers.
-        </StepL>
-        <StepR>
-            ```install
-            **@master/css-runtime@rc**
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Initialize configuration file
             Run `npm create @master/css@rc` to create a configuration file [master.css.ts](/docs/configuration).
         </StepL>
         <StepR>
             ```bash name=Terminal
             npm create @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css-runtime@rc**
             ```
         </StepR>
     </Step>
