@@ -29,7 +29,7 @@ if (!process.env.GITHUB_ACTIONS) {
         const urlPattern = /(http:\/\/localhost:).*?([0-9]+)/
         const data = await waitForDataMatch(devProcess, (data) => urlPattern.exec(data)?.length)
         const result = urlPattern.exec(data)
-        browser = await puppeteer.launch({ headless: 'new', channel: 'chrome' })
+        browser = await puppeteer.launch({ channel: 'chrome' })
         page = await browser.newPage()
         page.on('console', (consoleMessage) => {
             if (consoleMessage.type() === 'error') {
