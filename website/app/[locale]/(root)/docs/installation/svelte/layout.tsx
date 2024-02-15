@@ -1,7 +1,7 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
 import { createTranslation } from '~/i18n'
 import DocLayout from '~/layouts/reference'
-import LogoSvg from '~/public/images/frameworks/svelte.svg?inlineSvg'
+import brands from 'websites/data/brands'
 
 export const metadata = {
     title: 'Set up Master CSS in Svelte',
@@ -15,7 +15,7 @@ export default async function Layout(props: any) {
         <DocLayout {...props}
             metadata={metadata}
             backOnClickCategory='/docs/installation'
-            icon={<LogoSvg width={64} />}
+            brand={brands.find(({ name }) => name === 'Svelte')}
             titleBig
         >
             <Tabs className="mb:8x">

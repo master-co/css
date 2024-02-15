@@ -1,7 +1,7 @@
 import Tabs, { Tab, TabBadge } from 'websites/components/Tabs'
 import { createTranslation } from '~/i18n'
 import DocLayout from '~/layouts/reference'
-import LogoSvg from '~/public/images/build-tools/vite.svg?inlineSvg'
+import brands from 'websites/data/brands'
 
 export default async function Layout(props: any) {
     const $ = await createTranslation(props.params.locale)
@@ -13,7 +13,7 @@ export default async function Layout(props: any) {
                 category: 'Installation'
             }}
             backOnClickCategory='/docs/installation'
-            icon={<LogoSvg width={72} />}
+            brand={brands.find(({ name }) => name === 'Vite')}
             titleBig
         >
             <Tabs className="mb:8x">

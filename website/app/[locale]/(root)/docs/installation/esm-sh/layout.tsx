@@ -1,7 +1,7 @@
 import { createTranslation } from '~/i18n'
 import DocLayout from '~/layouts/reference'
-import LogoSvg from '~/public/images/cdns/esm-sh.svg?inlineSvg'
 import metadata from './metadata'
+import brands from 'websites/data/brands'
 
 export default async function Layout(props: any) {
     const $ = await createTranslation(props.params.locale)
@@ -13,7 +13,7 @@ export default async function Layout(props: any) {
                 category: metadata.category
             }}
             backOnClickCategory='/docs/installation'
-            icon={<LogoSvg width={64} />}
+            brand={brands.find(({ name }) => name === 'esm.sh')}
             titleBig
         >
             {props.children}
