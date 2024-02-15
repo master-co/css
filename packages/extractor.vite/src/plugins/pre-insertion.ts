@@ -51,7 +51,7 @@ export default function PreInsertionPlugin(
         name: 'master-css-extractor:pre-insertion',
         enforce: 'pre',
         apply(config, env) {
-            return env.command === 'build' || !env.ssrBuild
+            return env.command === 'build' || !env.isSsrBuild
         },
         async buildStart() {
             await extractor.prepare()
