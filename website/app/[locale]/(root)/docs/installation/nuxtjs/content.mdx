@@ -14,15 +14,14 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     <Step $row>
         <StepL>
             ### <StepNum />Clone the example
-            Copy-paste the following commands to quickly start using the [nuxtjs.pr.rc.css.master.co](https://nuxtjs.pr.rc.css.master.co).
+            Copy-paste the commands to quickly start using the https://nuxtjs.pr.rc.css.master.co example.
 
             You can skip all [installation](#installation) steps.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npx degit master-co/css/examples/nuxt.js-with-progressive-rendering __my-project__
-            cd __my-project__
-            npm install @master/css.nuxt@rc @master/css.vue@rc @master/css-server@rc
+            npm create @master/css@rc __project__ --example nuxt.js
+            cd __project__
             npm install
             npm run dev
             ```
@@ -50,23 +49,23 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install Master CSS Nuxt into your project via package managers.
-        </StepL>
-        <StepR>
-            ```install
-            **@master/css.nuxt@rc**
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Initialize configuration file
             Run `npm create @master/css@rc` to create a configuration file [master.css.ts](/docs/configuration).
         </StepL>
         <StepR>
             ```bash name=Terminal
             npm create @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS Nuxt into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css.nuxt@rc**
             ```
         </StepR>
     </Step>

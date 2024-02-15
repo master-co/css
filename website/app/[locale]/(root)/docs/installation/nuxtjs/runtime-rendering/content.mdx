@@ -14,15 +14,14 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
     <Step $row>
         <StepL>
             ### <StepNum />Clone the example
-            Copy-paste the following commands to quickly start using the [nuxtjs.rr.rc.css.master.co](https://nuxtjs.rr.rc.css.master.co).
+            Copy-paste the commands to quickly start using the https://nuxtjs.rr.rc.css.master.co example.
 
             You can skip all [installation](#installation) steps.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npx degit master-co/css/examples/nuxt.js-with-runtime-rendering __my-project__
-            cd __my-project__
-            npm install @master/css.vue@rc
+            npm create @master/css@rc __project__ --example nuxt.js-with-runtime-rendering
+            cd __project__
             npm install
             npm run dev
             ```
@@ -50,23 +49,23 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install Master CSS Vue into your project via package managers.
-        </StepL>
-        <StepR>
-            ```install
-            **@master/css.vue@rc**
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Initialize configuration file
             Run `npm create @master/css@rc` to create a configuration file [master.css.ts](/docs/configuration).
         </StepL>
         <StepR>
             ```bash name=Terminal
             npm create @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS Vue into your project via package managers.
+        </StepL>
+        <StepR>
+            ```install
+            **@master/css.vue@rc**
             ```
         </StepR>
     </Step>
