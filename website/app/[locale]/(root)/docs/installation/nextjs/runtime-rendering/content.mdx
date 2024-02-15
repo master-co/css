@@ -14,16 +14,14 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
     <Step $row>
         <StepL>
             ### <StepNum />Clone the example
-            Copy-paste the following commands to quickly start using the [nextjs.rr.rc.css.master.co](https://nextjs.rr.rc.css.master.co).
+            Copy-paste the commands to quickly start using the https://nextjs.rr.rc.css.master.co example.
 
             You can skip all [installation](#installation) steps.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npx degit master-co/css/examples/next.js-with-runtime-rendering __my-project__
-            cd __my-project__
-            npm install @master/css.react@rc
-            npm install
+            npm create @master/css@rc __my-app__ --example next.js-with-runtime-rendering
+            cd __my-app__
             npm run dev
             ```
         </StepR>
@@ -78,11 +76,11 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
     <Step $row>
         <StepL>
             ### <StepNum />Initialize configuration file
-            Run `npx @master/css@rc init` to create a configuration file [master.css.ts](/docs/configuration).
+            Run `npm create @master/css@rc` to create a configuration file [master.css.ts](/docs/configuration).
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npx @master/css@rc init
+            npm create @master/css@rc
             ```
         </StepR>
     </Step>
