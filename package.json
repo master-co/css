@@ -13,7 +13,6 @@
         "dev": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" dev",
         "clean": "cross-env rm -rf node_modules && rm -rf pnpm-lock.json"
     },
-    "packageManager": "^pnpm@8.6.10",
     "engines": {
         "node": "^20"
     },
