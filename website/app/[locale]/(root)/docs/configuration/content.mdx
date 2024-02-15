@@ -8,63 +8,10 @@ import FunctionsOverview from '../functions/components/Overview.mdx'
 import StylesOverview from '../styles/components/Overview.mdx'
 
 ## Setup [sr-only]
-
 ```bash name=Terminal
-npx @master/css@rc init
+npm create @master/css@rc
 ```
 It generates a top-level configuration file `master.css.{js,mjs,ts}` based on the characteristics of your project.
-
-### `--esm`
-Specify creating a `master.css.mjs` file in ECMAScript Modules format. If `package.json` is set `"type": "module"` will be enabled automatically.
-<DocProp defaultValue="false" types={['boolean']} />
-```bash name=Terminal
-npx @master/css@rc init **--esm**
-```
-<details>
-    <summary>View the generated file</summary>
-    <div>
-        <Code lang="js" name="master.css.mjs">
-            {require('../../../../../../packages/create/src/master.css.mjs')}
-        </Code>
-    </div>
-</details>
-
-### `--cjs`
-Specify creating a `master.css.js` file in CommonJS format.
-<DocProp defaultValue="false" types={['boolean']} />
-```bash name=Terminal
-npx @master/css@rc init **--cjs**
-```
-<details>
-    <summary>View the generated file</summary>
-    <div>
-        <Code lang="js" name="master.css.js">
-            {require('../../../../../../packages/create/src/master.css.js.js')}
-        </Code>
-    </div>
-</details>
-
-### `--ts`
-Specify creating a `master.css.ts` file in TypeScript format. Automatically enabled if `tsconfig.json` exists.
-<DocProp defaultValue="false" types={['boolean']} />
-```bash name=Terminal
-npx @master/css@rc init **--ts**
-```
-<details>
-    <summary>View the generated file</summary>
-    <div>
-        <Code lang="js" name="master.css.ts">
-            {require('../../../../../../packages/create/src/master.css.ts.js')}
-        </Code>
-    </div>
-</details>
-
-### `-o, --override`
-Override the existing Master CSS config file.
-<DocProp defaultValue="false" types={['boolean']} />
-```bash name=Terminal
-npx @master/css@rc init **--override**
-```
 
 ---
 

@@ -1,10 +1,9 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Core',
+    title: '@master/css',
     description: 'The core syntax parsing of Master CSS.',
-    category: 'API Reference',
-    order: 1
+    category: 'API Reference'
 }
 
 export default metadata

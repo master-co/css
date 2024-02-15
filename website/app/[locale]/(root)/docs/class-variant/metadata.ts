@@ -1,7 +1,7 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Class Variant',
+    title: 'class-variant',
     description: 'Create reusable, extensible, and customizable style class variants.',
     category: 'API Reference',
     unfinished: true

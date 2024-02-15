@@ -1,0 +1,77 @@
+
+---
+
+## Extractor
+Scan source files, extract syntax classes, generate CSS rules, and output as a CSS file.
+```bash name=Terminal
+mcss **extract** …
+```
+The command runs according to the preset [extractor options](/docs/extractor/#options).
+
+### `extract [source paths]`
+Explicitly specify sources to scan, ignoring [`options.include`](/docs/extractor#include) and [`options.exclude`](/docs/extractor#exclude) restrictions.
+<DocProp defaultValue="undefined" types={['FastGlobPattern[]']} />
+```bash name=Terminal
+mcss extract **index.html** **main.js**
+```
+If no sources are specified, by default, all directories of your current project will be scanned according to [`options.include`](/docs/extractor#include) and [`options.exclude`](/docs/extractor#exclude).
+```bash name=Terminal
+mcss extract
+```
+
+### `extract -o, --output <path>`
+Watch for file changes and build continuously.
+<DocProp defaultValue="'master.css'" types={['string']} />
+```bash name=Terminal
+mcss extract **--output master.css**
+```
+
+### `extract --options <path>`
+Specifies the source of the extractor options.
+<DocProp defaultValue="'master.css-extractor.*'" types={['string']} />
+```bash name=Terminal
+mcss extract **--option dir/master.css-extractor.js**
+```
+
+### `extract -v, --verbose`
+Verbose logging.
+<DocProp defaultValue="1" types={['number']} />
+Set to `0` to silence the terminal.
+```bash name=Terminal
+mcss extract **--verbose 0**
+```
+
+### `extract -w, --watch`
+Watch for file changes and build continuously.
+<DocProp defaultValue="false" types={['boolean']} />
+```bash name=Terminal
+mcss extract **--watch**
+```
+
+---
+
+## Renderer
+```bash name=Terminal
+mcss **render** …
+```
+
+### `render [source paths]`
+The path in glob patterns of the source of the HTML file
+<DocProp defaultValue="undefined" types={['FastGlobPattern[]']} />
+```bash name=Terminal
+mcss render **"**/*.html"**
+```
+
+### `render -c, --config <path>`
+The source path of the Master CSS [configuration](/docs/configuration).
+<DocProp defaultValue="'master.css.*'" types={['string']} />
+```bash name=Terminal
+mcss render "**/*.html" **--config dir/master.css.js**
+```
+
+### `render -a, --analyze`
+Analyze injected CSS and HTML size ( brotli ) without writing to file
+<DocProp defaultValue="false" types={['boolean']} />
+```bash name=Terminal
+mcss render "**/*.html" **--analyze**
+```

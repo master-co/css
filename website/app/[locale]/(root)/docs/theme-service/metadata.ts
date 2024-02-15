@@ -1,10 +1,9 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Theme Service',
+    title: 'theme-service',
     description: 'Standard CSS theme switching and service for Master CSS.',
-    category: 'API Reference',
-    unfinished: true
+    category: 'API Reference'
 }
 
 export default metadata
