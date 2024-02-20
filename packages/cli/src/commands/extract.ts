@@ -2,7 +2,7 @@ import type { Command } from 'commander'
 import CSSExtractor, { Options } from '@master/css-extractor'
 import log from '@techor/log'
 
-module.exports = (program: Command) => program
+export default (program: Command) => program
     .command('extract')
     .argument('[source paths]', 'The glob pattern path to extract sources')
     .option('-w, --watch', 'Watch file changed and generate CSS rules.')

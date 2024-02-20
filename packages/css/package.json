@@ -1,8 +1,9 @@
 {
     "name": "@master/css",
+    "type": "module",
     "scripts": {
-        "build": "techor pack --declare",
-        "dev": "pnpm run build --watch",
+        "build": "techor build",
+        "dev": "techor dev",
         "test": "jest",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
@@ -41,19 +42,19 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.bundle.js",
-    "jsnext:main": "./dist/index.bundle.mjs",
-    "esnext": "./dist/index.bundle.mjs",
-    "module": "./dist/index.bundle.mjs",
+    "main": "./dist/index.cjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/index.bundle.js",
-            "import": "./dist/index.bundle.mjs",
+            "require": "./dist/index.cjs",
+            "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
         }
     },
-    "bin": "./dist/bin/index.bundle.js",
+    "bin": "./dist/bin/index.mjs",
     "files": [
         "dist"
     ],
@@ -64,7 +65,7 @@
         "@master/normal.css": "workspace:^"
     },
     "devDependencies": {
-        "@techor/extend": "^2.6.5",
+        "@techor/extend": "^3.0.3",
         "css-shared": "workspace:^",
         "csstype": "^3.1.2"
     }

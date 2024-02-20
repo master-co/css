@@ -1,4 +1,4 @@
-import { extend } from '@techor/extend'
+import extend from '@techor/extend'
 import defaultOptions, { Options, ThemeValue } from './options'
 
 export class ThemeService {

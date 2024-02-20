@@ -1,8 +1,8 @@
 {
     "name": "@master/css-validator",
     "scripts": {
-        "build": "techor pack --platform node --declare",
-        "dev": "pnpm run build --watch",
+        "build": "techor build",
+        "dev": "techor dev",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
         "test": "jest --forceExit --detectOpenHandles"
@@ -28,7 +28,7 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.bundle.js",
+    "main": "./dist/index.cjs",
     "types": "./dist/index.d.ts",
     "files": [
         "dist"

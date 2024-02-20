@@ -2,6 +2,7 @@
 import { resolve } from 'node:path'
 import { Command } from 'commander'
 import { readJSONFileSync } from '@techor/fs'
+
 const pkg = readJSONFileSync(resolve(__dirname, '../../package.json'))
 const program = new Command()
 
@@ -10,7 +11,10 @@ program
     .description(pkg.description)
     .version(pkg.version || '0.0.0')
 
-require('../commands/extract')(program)
-require('../commands/render')(program)
+import commandExtract from '../commands/extract'
+import commandRender from '../commands/render'
+
+commandExtract(program)
+commandRender(program)
 
 program.parse()

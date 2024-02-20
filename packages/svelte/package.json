@@ -2,8 +2,8 @@
     "name": "@master/css.svelte",
     "type": "module",
     "scripts": {
-        "build": "techor pack \"./src/**/*.{ts,svelte}\" --bundle --declare --format esm --esm-ext .js --entry-names [dir]/[name]",
-        "dev": "pnpm run build --watch",
+        "build": "techor build \"./src/**/*.{ts,svelte}\" --bundle --format esm --esm-ext .js --entry-names [dir]/[name]",
+        "dev": "techor dev",
         "type-check": "tsc --noEmit"
     },
     "license": "MIT",
@@ -26,14 +26,14 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.js",
-    "jsnext:main": "./dist/index.js",
-    "esnext": "./dist/index.js",
-    "module": "./dist/index.js",
+    "main": "./dist/index.cjs",
+    "jsnext:main": "./dist/index.jcjss",
+    "esnext": "./dist/index.cjs",
+    "module": "./dist/index.cjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "import": "./dist/index.js",
+            "import": "./dist/index.cjs",
             "types": "./dist/index.d.ts"
         }
     },

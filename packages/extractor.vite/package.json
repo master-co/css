@@ -1,8 +1,8 @@
 {
     "name": "@master/css-extractor.vite",
     "scripts": {
-        "build": "techor pack --platform node --declare",
-        "dev": "pnpm run build --watch",
+        "build": "techor build",
+        "dev": "techor dev",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
         "test": "jest --workerThreads"
@@ -32,7 +32,7 @@
         "vite-plugin"
     ],
     "sideEffects": false,
-    "main": "./dist/index.bundle.js",
+    "main": "./dist/index.jcjss",
     "types": "./dist/index.d.ts",
     "files": [
         "dist"

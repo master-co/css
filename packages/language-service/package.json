@@ -1,8 +1,8 @@
 {
     "name": "@master/css-language-service",
     "scripts": {
-        "build": "techor pack --platform node --declare",
-        "dev": "pnpm run build --watch",
+        "build": "techor build",
+        "dev": "techor dev",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
     },
@@ -25,11 +25,11 @@
         "vscode-css-languageservice": "^6.2.5",
         "vscode-languageserver-types": "^3.17.3"
     },
-    "main": "./dist/index.bundle.js",
+    "main": "./dist/index.cjs",
     "types": "./dist/index.d.ts",
     "exports": {
-        ".": "./dist/index.bundle.js",
-        "./settings": "./dist/settings.bundle.js"
+        ".": "./dist/index.cjs",
+        "./settings": "./dist/settings.cjs"
     },
     "typesVersions": {
         "*": {

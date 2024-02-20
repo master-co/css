@@ -1,6 +1,6 @@
 import { h, defineComponent, type VNode } from 'vue'
 import cv from 'class-variant'
-import { extend } from '@techor/extend'
+import extend from '@techor/extend'
 import clsx from 'clsx'
 
 type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends (<T>() => T extends Y ? 1 : 2)

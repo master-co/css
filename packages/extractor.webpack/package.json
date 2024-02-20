@@ -1,8 +1,8 @@
 {
     "name": "@master/css-extractor.webpack",
     "scripts": {
-        "build": "techor pack --platform node --declare",
-        "dev": "pnpm run build --watch",
+        "build": "techor build",
+        "dev": "techor dev",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
     },
@@ -29,7 +29,7 @@
         "webpack-plugin"
     ],
     "sideEffects": false,
-    "main": "./dist/index.bundle.js",
+    "main": "./dist/index.cjs",
     "types": "./dist/index.d.ts",
     "files": [
         "dist"

@@ -1,8 +1,8 @@
 {
     "name": "theme-service",
     "scripts": {
-        "build": "techor pack --declare",
-        "dev": "pnpm run build --watch",
+        "build": "techor build",
+        "dev": "techor dev",
         "test": "jest",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
@@ -29,20 +29,20 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.bundle.js",
-    "jsnext:main": "./dist/index.bundle.mjs",
-    "esnext": "./dist/index.bundle.mjs",
-    "module": "./dist/index.bundle.mjs",
-    "browser": "./dist/index.browser.bundle.js",
+    "main": "./dist/index.cjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "browser": "./dist/index.browser.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
             "browser": {
-                "import": "./dist/index.bundle.mjs",
+                "import": "./dist/index.mjs",
                 "types": "./dist/index.browser.d.ts"
             },
-            "require": "./dist/index.bundle.js",
-            "import": "./dist/index.bundle.mjs",
+            "require": "./dist/index.cjs",
+            "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
         }
     },
@@ -53,6 +53,6 @@
         "access": "public"
     },
     "devDependencies": {
-        "@techor/extend": "^2.6.5"
+        "@techor/extend": "^3.0.3"
     }
 }

@@ -1,6 +1,6 @@
 import MasterCSS from '../../../src'
 import config from '../../config'
-import { extend } from '@techor/extend'
+import extend from '@techor/extend'
 
 test('styles', () => {
     expect(new MasterCSS(config).add('btn').text)

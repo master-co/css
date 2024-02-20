@@ -1,8 +1,8 @@
 {
     "name": "@master/eslint-plugin-css",
     "scripts": {
-        "build": "techor pack \"src/**/*.ts\" --declare",
-        "dev": "pnpm run build --watch",
+        "build": "techor build \"src/**/*.ts\"",
+        "dev": "techor dev",
         "test": "jest",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
@@ -26,9 +26,9 @@
         "directory": "packages/eslint-plugin"
     },
     "sideEffects": false,
-    "main": "./dist/index.js",
+    "main": "./dist/index.cjs",
     "types": "./dist/index.d.ts",
-    "exports": "./dist/index.js",
+    "exports": "./dist/index.cjs",
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
@@ -41,7 +41,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "explore-config": "^2.6.5",
+        "explore-config": "^3.0.3",
         "synckit": "^0.8.5"
     },
     "devDependencies": {

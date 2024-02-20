@@ -4,8 +4,8 @@ import type { Config } from '@master/css'
 import extractLatentClasses from './functions/extract-latent-classes'
 import fs from 'fs'
 import { minimatch } from 'minimatch'
-import log, { chalk } from '@techor/log'
-import { extend } from '@techor/extend'
+import log from '@techor/log'
+import extend from '@techor/extend'
 import exploreConfig from 'explore-config'
 import { generateValidRules } from '@master/css-validator'
 import chokidar from 'chokidar'
@@ -177,7 +177,7 @@ export default class CSSExtractor extends EventEmitter {
         const spent = Math.round(((time[0] * 1e9 + time[1]) / 1e6) * 10) / 10
         if (this.css.rules.length && validClasses.length) {
             if (this.options.verbose) {
-                log.ok`**${path.relative(this.cwd, source)}** ${validClasses.length} classes inserted ${chalk.gray('in')} ${spent}ms ${this.options.verbose > 1 ? validClasses : ''}`
+                log.ok`**${path.relative(this.cwd, source)}** ${validClasses.length} classes inserted ${log.chalk.gray('in')} ${spent}ms ${this.options.verbose > 1 ? validClasses : ''}`
             }
             this.emit('change')
         }
@@ -200,7 +200,7 @@ export default class CSSExtractor extends EventEmitter {
         }
         fs.writeFileSync(filepath, this.css.text)
         if (this.options.verbose) {
-            log.success`${this.css.rules.length} rules exported ${chalk.gray('in')} **${filename}**`
+            log.success`${this.css.rules.length} rules exported ${log.chalk.gray('in')} **${filename}**`
         }
         this.emit('export', filename, filepath)
     }

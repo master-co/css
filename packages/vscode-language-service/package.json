@@ -1,8 +1,8 @@
 {
     "name": "master-css-vscode-language-service",
     "scripts": {
-        "build": "techor pack --platform node --declare",
-        "dev": "pnpm run build --watch",
+        "build": "techor build",
+        "dev": "techor dev",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
         "deploy": "mv ../../package.json ../../_package.json && npm i vsce -D && vsce publish && mv ../../_package.json ../../package.json"
@@ -27,11 +27,11 @@
     "activationEvents": [
         "onStartupFinished"
     ],
-    "main": "./dist/extension.bundle.js",
+    "main": "./dist/extension.js",
     "types": "./dist/extension.d.ts",
     "exports": {
-        ".": "./dist/extension.bundle.js",
-        "./server": "./dist/server.bundle.js"
+        ".": "./dist/extension.js",
+        "./server": "./dist/server.js"
     },
     "files": [
         "dist"

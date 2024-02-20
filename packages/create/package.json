@@ -1,8 +1,9 @@
 {
     "name": "@master/create-css",
+    "type": "module",
     "scripts": {
-        "build": "techor pack --platform node",
-        "dev": "pnpm run build --watch",
+        "build": "techor build",
+        "dev": "techor dev",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
         "test": "jest"
@@ -27,7 +28,7 @@
         "css",
         "mastercss"
     ],
-    "bin": "./dist/bin/index.bundle.js",
+    "bin": "./dist/bin/index.mjs",
     "files": [
         "dist"
     ],
@@ -36,8 +37,8 @@
     },
     "dependencies": {
         "@master/css": "2.0.0-rc.13",
-        "@techor/fs": "^2.6.5",
-        "@techor/log": "^2.6.5",
+        "@techor/fs": "^3.0.3",
+        "@techor/log": "^3.0.3",
         "commander": "^12.0.0",
         "detect-package-manager": "^3.0.1",
         "giget": "^1.2.1",

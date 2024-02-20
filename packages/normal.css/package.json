@@ -1,8 +1,8 @@
 {
     "name": "@master/normal.css",
     "scripts": {
-        "build": "techor pack --bundle",
-        "dev": "npm run build -- --watch"
+        "build": "techor build",
+        "dev": "techor dev"
     },
     "license": "MIT",
     "description": "Normalize the browser's styles ~500B",

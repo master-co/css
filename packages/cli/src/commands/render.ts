@@ -10,7 +10,7 @@ import { brotliCompressSync } from 'zlib'
 import bytes from 'bytes'
 import { render } from '@master/css-server'
 
-module.exports = (program: Command) => program
+export default (program: Command) => program
     .command('render')
     .description('Scans HTML and injects generated CSS rules')
     .argument('<source paths>', 'The path in glob patterns of the source of the HTML file')

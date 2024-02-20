@@ -1,8 +1,8 @@
 {
     "name": "@master/css-extractor",
     "scripts": {
-        "build": "techor pack --platform node --declare",
-        "dev": "pnpm run build --watch",
+        "build": "techor build",
+        "dev": "techor dev",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
         "test": "jest"
@@ -30,20 +30,20 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.bundle.js",
-    "module": "./dist/index.bundle.mjs",
-    "jsnext:main": "./dist/index.bundle.mjs",
-    "esnext": "./dist/index.bundle.mjs",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "import": "./dist/index.bundle.mjs",
-            "require": "./dist/index.bundle.js",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs",
             "types": "./dist/index.d.ts"
         },
         "./options": {
-            "import": "./dist/options/index.bundle.mjs",
-            "require": "./dist/options/index.bundle.js",
+            "import": "./dist/options/index.mjs",
+            "require": "./dist/options/index.cjs",
             "types": "./dist/options/index.d.ts"
         }
     },
@@ -66,11 +66,11 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "@techor/extend": "^2.6.5",
-        "@techor/glob": "^2.6.5",
-        "@techor/log": "^2.6.5",
+        "@techor/extend": "^3.0.3",
+        "@techor/glob": "^3.0.3",
+        "@techor/log": "^3.0.3",
         "chokidar": "^3.5.3",
-        "explore-config": "^2.6.5",
+        "explore-config": "^3.0.3",
         "minimatch": "^9.0.1"
     }
 }

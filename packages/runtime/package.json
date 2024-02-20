@@ -1,12 +1,9 @@
 {
     "name": "@master/css-runtime",
+    "type": "module",
     "scripts": {
-        "build": "pnpm run \"/^build:/\"",
-        "build:iife": "techor pack \"src/iife.ts\" --outfile \"dist/iife.bundle.js\" --bundle --format iife --no-external --no-clean",
-        "build:esm": "techor pack \"src/index.ts\" --outfile \"dist/index.bundle.mjs\" --bundle --format esm --no-clean",
-        "build:cjs": "techor pack \"src/index.ts\" --outfile \"dist/index.bundle.js\" --bundle --format cjs --no-clean",
-        "build:type": "tsc --emitDeclarationOnly --declaration --outDir dist",
-        "dev": "pnpm run \"/^build:(?!type)/\" --watch",
+        "build": "techor build",
+        "dev": "techor dev",
         "e2e": "playwright test",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
@@ -34,16 +31,16 @@
         "cdn"
     ],
     "sideEffects": false,
-    "main": "./dist/index.bundle.js",
-    "jsnext:main": "./dist/index.bundle.mjs",
-    "esnext": "./dist/index.bundle.mjs",
-    "module": "./dist/index.bundle.mjs",
-    "browser": "./dist/iife.bundle.js",
+    "main": "./dist/index.cjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "browser": "./dist/global.min.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/index.bundle.js",
-            "import": "./dist/index.bundle.mjs",
+            "require": "./dist/index.cjs",
+            "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
         }
     },

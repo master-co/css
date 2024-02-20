@@ -1,8 +1,8 @@
 {
     "name": "@master/css-server",
     "scripts": {
-        "build": "techor pack \"./src/**/*.ts\" --platform node --declare",
-        "dev": "pnpm run build --watch",
+        "build": "techor build",
+        "dev": "techor dev",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
         "test": "jest"
@@ -30,7 +30,7 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.js",
+    "main": "./dist/index.cjs",
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
@@ -38,7 +38,7 @@
     "exports": {
         ".": {
             "import": "./dist/index.mjs",
-            "require": "./dist/index.js",
+            "require": "./dist/index.cjs",
             "types": "./dist/index.d.ts"
         }
     },
@@ -50,6 +50,8 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "dom-serializer": "^2.0.0",
+        "domhandler": "^5.0.3",
         "htmlparser2": "^9.0.0"
     }
 }

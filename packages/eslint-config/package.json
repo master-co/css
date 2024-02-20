@@ -18,10 +18,10 @@
         "url": "https://github.com/master-co/css.git",
         "directory": "packages/eslint-config"
     },
-    "main": "index.js",
+    "main": "index.cjs",
     "exports": {
-        ".": "./index.js",
-        "./flat": "./flat.js"
+        ".": "./index.cjs",
+        "./flat": "./flat.cjs"
     },
     "publishConfig": {
         "access": "public"
