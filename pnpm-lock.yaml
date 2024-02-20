@@ -71,6 +71,9 @@ importers:
       jest-text-transformer:
         specifier: ^1.0.4
         version: 1.0.4
+      lightningcss-cli:
+        specifier: ^1.23.0
+        version: 1.23.0
       nanoid:
         specifier: ^4.0.2
         version: 4.0.2
@@ -13695,7 +13698,6 @@ packages:
     resolution: {integrity: sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==}
     engines: {node: '>=0.10'}
     hasBin: true
-    dev: true
 
   /detect-libc@2.0.2:
     resolution: {integrity: sha512-UX6sGumvvqSaXgdKGUsgZWqcUyIXZ/vZTrlRT/iobiKhGL0zL4d3osHj3uqllWJK+i+sixDS/3COVEOFbupFyw==}
@@ -18868,6 +18870,106 @@ packages:
     dependencies:
       immediate: 3.0.6
     dev: true
+
+  /lightningcss-cli-darwin-arm64@1.23.0:
+    resolution: {integrity: sha512-uZvy0I7lf5dt/Ti4egRuSpd3OEPA9I0+aQ/iXUB9pFl4enD6+EmGtfjfEwvOFgcECTO8SZW0tSaRgwhXtHz0qg==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /lightningcss-cli-darwin-x64@1.23.0:
+    resolution: {integrity: sha512-VTOPUVnL+znA1LktTK5jo+3qNhaU0hUYF2u8znJr07vG0NGy8KsZffimYUvWSKi7qid6M8CGAaY9Tw6zMqIniw==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /lightningcss-cli-freebsd-x64@1.23.0:
+    resolution: {integrity: sha512-dPeiQjfatVfTJA06Hb2ou6jtk/mbYmBM4YLro8bh6FWMNRKmglwR12kog4Dj/2umNtbLcf4OVDe5+/UhSL+Atw==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [freebsd]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /lightningcss-cli-linux-arm-gnueabihf@1.23.0:
+    resolution: {integrity: sha512-bq7Lbn3btKbeV/6UTS0MucHF0cpnCAVUycvmTrNTB1VF0JvekUStORAhqRlhgMYsjgklGFvQSaBPX1pozYGp8Q==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /lightningcss-cli-linux-arm64-gnu@1.23.0:
+    resolution: {integrity: sha512-CbRzSK4tH2KpqoFuFLAb0DZgRIA7RsYYYKrDAdsC/S0kq6VBR/rSeISsczfCtMRSBTjqYwnZAdQXQO0YQrfsrA==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /lightningcss-cli-linux-arm64-musl@1.23.0:
+    resolution: {integrity: sha512-bkhubISbHj/G3+BuOMclC+V5k82PTYuWdGAvqrMB3HOd/yIcOxP1uX3O/KLo7qxrLw0m729RCo8Lk7Cd54Z6jg==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /lightningcss-cli-linux-x64-gnu@1.23.0:
+    resolution: {integrity: sha512-uWiB/7m1pI+UcpmrikD+r8T4b1hcjNHe43/GX2zkx+BtzzUhDwwW1/bXbatGar4K6BVDtSGP8B0diOtONsm2KQ==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /lightningcss-cli-linux-x64-musl@1.23.0:
+    resolution: {integrity: sha512-2GQKReVX2BLM+2vXdp9pUt8NzPy5PKyEU3PKNuAaKAW6gEMFRUWiISir6faSlMm6lCjEoqfrvAtrenELudhQCA==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /lightningcss-cli-win32-x64-msvc@1.23.0:
+    resolution: {integrity: sha512-5xAaw/S1cTywwGZGBFtNSnb5YH67toEualXjlKH2RpmtaWPYvxwtXr86BCnZotAqx0KNESMjE27tIWDvYAQNKQ==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /lightningcss-cli@1.23.0:
+    resolution: {integrity: sha512-STwsFaVtiGwBCAl3swVvs/ido0ZzhcLFWn0KEkZv1DQNtNppJrULjqap/yaxCooDI5bfjJGj70Ne1tt3AwaQ+g==}
+    engines: {node: '>= 12.0.0'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      detect-libc: 1.0.3
+    optionalDependencies:
+      lightningcss-cli-darwin-arm64: 1.23.0
+      lightningcss-cli-darwin-x64: 1.23.0
+      lightningcss-cli-freebsd-x64: 1.23.0
+      lightningcss-cli-linux-arm-gnueabihf: 1.23.0
+      lightningcss-cli-linux-arm64-gnu: 1.23.0
+      lightningcss-cli-linux-arm64-musl: 1.23.0
+      lightningcss-cli-linux-x64-gnu: 1.23.0
+      lightningcss-cli-linux-x64-musl: 1.23.0
+      lightningcss-cli-win32-x64-msvc: 1.23.0
+    dev: false
 
   /lilconfig@3.1.0:
     resolution: {integrity: sha512-p3cz0JV5vw/XeouBU3Ldnp+ZkBjE+n8ydJ4mcwBrOiXXPqNlrzGBqWs9X4MWF7f+iKUBu794Y8Hh8yawiJbCjw==}

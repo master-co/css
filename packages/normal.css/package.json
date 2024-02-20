@@ -1,8 +1,7 @@
 {
     "name": "@master/normal.css",
     "scripts": {
-        "build": "techor build",
-        "dev": "techor dev"
+        "build": "lightningcss src/index.css -o dist/index.css --minify --bundle"
     },
     "license": "MIT",
     "description": "Normalize the browser's styles ~500B",

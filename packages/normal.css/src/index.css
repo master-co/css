@@ -1,23 +1,23 @@
-@import '../better-text-appearance';
-@import '../eliminate-click-delays';
-@import '../improve-user-recognition';
-@import '../intuitive-sizing-control';
-@import '../readable-tab-size';
-@import '../responsive-media-elements';
+@import '../better-text-appearance.css';
+@import '../eliminate-click-delays.css';
+@import '../improve-user-recognition.css';
+@import '../intuitive-sizing-control.css';
+@import '../readable-tab-size.css';
+@import '../responsive-media-elements.css';
 
 /* consistent */
-@import '../consistent-abbreviation-styles';
-@import '../consistent-bold-styles';
-@import '../consistent-control-styles';
-@import '../consistent-horizontal-lines';
-@import '../consistent-small-styles';
-@import '../consistent-superscript-subscript';
-@import '../consistent-table-styles';
+@import '../consistent-abbreviation-styles.css';
+@import '../consistent-bold-styles.css';
+@import '../consistent-control-styles.css';
+@import '../consistent-horizontal-lines.css';
+@import '../consistent-small-styles.css';
+@import '../consistent-superscript-subscript.css';
+@import '../consistent-table-styles.css';
 
 /* remove */
-@import '../remove-anchor-styles';
-@import '../remove-control-styles';
-@import '../remove-default-borders';
-@import '../remove-default-spacing';
-@import '../remove-tap-highlight';
-@import '../remove-list-styles';
+@import '../remove-anchor-styles.css';
+@import '../remove-control-styles.css';
+@import '../remove-default-borders.css';
+@import '../remove-default-spacing.css';
+@import '../remove-tap-highlight.css';
+@import '../remove-list-styles.css';

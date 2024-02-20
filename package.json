@@ -28,7 +28,6 @@
         "@master/css-extractor.vite": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
         "@swc-node/jest": "^1.7.0",
-        "techor": "^3.0.3",
         "@techor/fs": "^3.0.3",
         "@techor/glob": "^3.0.3",
         "@techor/jest-dom": "^3.0.3",
@@ -42,6 +41,7 @@
         "firebase-admin": "^11.11.1",
         "jest-extended": "^4.0.2",
         "jest-text-transformer": "^1.0.4",
+        "lightningcss-cli": "^1.23.0",
         "nanoid": "^4.0.2",
         "nodemon": "^2.0.22",
         "normalize-newline": "^4.1.0",
@@ -49,6 +49,7 @@
         "shuffle-array": "^1.0.1",
         "spawnd": "^9.0.2",
         "strip-ansi": "^7.1.0",
+        "techor": "^3.0.3",
         "tinybench": "^2.6.0",
         "ts-dedent": "^2.2.0",
         "tsx": "^3.14.0"
