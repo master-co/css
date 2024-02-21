@@ -5,7 +5,7 @@
         "dev": "techor dev",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
-        "test": "jest"
+        "e2e": "playwright test -c e2e/playwright-ct.config.ts"
     },
     "license": "MIT",
     "description": "Integrate Master CSS in React way",
@@ -93,6 +93,7 @@
         "clsx": "^2.0.0"
     },
     "devDependencies": {
+        "@playwright/experimental-ct-react": "^1.41.2",
         "util": "^0.12.5"
     }
 }

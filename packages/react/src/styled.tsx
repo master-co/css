@@ -47,7 +47,7 @@ const styled: {
     ((firstParam: any, ...params: any[]) => {
         return (Array.isArray(firstParam) && 'raw' in firstParam || typeof firstParam !== 'object' || !('render' in firstParam))
             ? styled.div(firstParam as any, ...params)
-            : handle(firstParam.tag ?? firstParam, firstParam.params, firstParam.displayName)
+            : handle(firstParam.tag ?? firstParam, firstParam.params, firstParam.displayName, firstParam.defaultProps)
     }) as any,
     {
         get: function (target, Tag: IntrinsicElementsKeys) {
