@@ -1,4 +1,4 @@
-module.exports = `import type { Config } from '@master/css'
+export default `import type { Config } from '@master/css'
 
 export default {
     styles: {},

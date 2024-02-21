@@ -1,12 +1,13 @@
 {
     "name": "@master/css-extractor",
     "scripts": {
-        "build": "techor build",
+        "build": "techor build \"src/**/*.ts\"",
         "dev": "techor dev",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
         "test": "jest"
     },
+    "type": "module",
     "license": "MIT",
     "description": "Master CSS static extractor for various raw text",
     "author": "Aoyue Design LLC.",
@@ -66,11 +67,11 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "@techor/extend": "^3.0.5",
-        "@techor/glob": "^3.0.5",
-        "@techor/log": "^3.0.5",
+        "@techor/extend": "^3.0.8",
+        "@techor/glob": "^3.0.8",
+        "@techor/log": "^3.0.8",
         "chokidar": "^3.5.3",
-        "explore-config": "^3.0.5",
+        "explore-config": "^3.0.8",
         "minimatch": "^9.0.1"
     }
 }

@@ -1,10 +1,10 @@
 import { execSync } from 'child_process'
 import fs from 'fs'
-import path from 'path'
 import dedent from 'ts-dedent'
+import { join } from 'path'
 
 it('render css text into <head>', async () => {
-    const filePath = path.join(__dirname, './a.test.html')
+    const filePath = join(__dirname, './a.test.html')
     fs.rmSync(filePath, { force: true })
     fs.writeFileSync(filePath, dedent`
         <html>
@@ -32,7 +32,7 @@ it('render css text into <head>', async () => {
 })
 
 it('render css text into head and create <style id="master">', async () => {
-    const filePath = path.join(__dirname, './b.test.html')
+    const filePath = join(__dirname, './b.test.html')
     fs.rmSync(filePath, { force: true })
     fs.writeFileSync(filePath, dedent`
         <html>

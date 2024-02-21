@@ -1,7 +1,8 @@
 {
     "name": "@master/css-extractor.vite",
+    "type": "module",
     "scripts": {
-        "build": "techor build",
+        "build": "techor build \"src/**/*.ts\" --formats esm",
         "dev": "techor dev",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
@@ -32,7 +33,10 @@
         "vite-plugin"
     ],
     "sideEffects": false,
-    "main": "./dist/index.cjs",
+    "main": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
     "files": [
         "dist"

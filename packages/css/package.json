@@ -65,7 +65,7 @@
         "@master/normal.css": "workspace:^"
     },
     "devDependencies": {
-        "@techor/extend": "^3.0.5",
+        "@techor/extend": "^3.0.8",
         "css-shared": "workspace:^",
         "csstype": "^3.1.2"
     }

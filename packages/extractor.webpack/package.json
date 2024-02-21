@@ -1,7 +1,7 @@
 {
     "name": "@master/css-extractor.webpack",
     "scripts": {
-        "build": "techor build",
+        "build": "techor build \"src/**/*.ts\"",
         "dev": "techor dev",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
@@ -30,7 +30,17 @@
     ],
     "sideEffects": false,
     "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs",
+            "types": "./dist/index.d.ts"
+        }
+    },
     "files": [
         "dist"
     ],
@@ -40,6 +50,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-extractor": "workspace:^",
+        "@techor/log": "^3.0.8",
         "webpack-virtual-modules": "^0.5.0"
     }
 }

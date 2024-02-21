@@ -1,7 +1,8 @@
 {
     "name": "@master/css-language-service",
+    "type": "module",
     "scripts": {
-        "build": "techor build",
+        "build": "techor build \"src/**/*.ts\"",
         "dev": "techor dev",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"
@@ -18,18 +19,30 @@
         "@babel/parser": "^7.22.7",
         "@master/css": "workspace:^",
         "color-convert": "^2.0.1",
-        "js-beautify": "^1.14.7"
+        "js-beautify": "^1.14.7",
+        "vscode-css-languageservice": "^6.2.12"
     },
     "devDependencies": {
         "@types/color-convert": "^2.0.0",
-        "vscode-css-languageservice": "^6.2.5",
         "vscode-languageserver-types": "^3.17.3"
     },
+    "sideEffects": false,
     "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
-        ".": "./dist/index.cjs",
-        "./settings": "./dist/settings.cjs"
+        ".": {
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs",
+            "types": "./dist/index.d.ts"
+        },
+        "./settings": {
+            "import": "./dist/settings/index.mjs",
+            "require": "./dist/settings/index.cjs",
+            "types": "./dist/settings/index.d.ts"
+        }
     },
     "typesVersions": {
         "*": {

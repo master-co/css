@@ -1,10 +1,10 @@
 import { execSync } from 'child_process'
 import fs, { readFileSync } from 'fs'
-import path, { join } from 'path'
+import { join } from 'path'
 
 it('basic extract', async () => {
-    fs.rmSync(path.join(__dirname, '.virtual/master.css'), { force: true })
-    fs.writeFileSync(path.join(__dirname, 'master.css.ts'), `
+    fs.rmSync(join(__dirname, '.virtual/master.css'), { force: true })
+    fs.writeFileSync(join(__dirname, 'master.css.ts'), `
         export default {
             variables: {
                 primary: '$(blue)'

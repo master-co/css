@@ -1,7 +1,7 @@
 {
     "name": "@master/css-server",
     "scripts": {
-        "build": "techor build",
+        "build": "techor build \"src/**/*.ts\"",
         "dev": "techor dev",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",

@@ -27,11 +27,10 @@
     "activationEvents": [
         "onStartupFinished"
     ],
-    "main": "./dist/extension.js",
-    "types": "./dist/extension.d.ts",
+    "main": "./dist/extension.min.cjs",
     "exports": {
-        ".": "./dist/extension.js",
-        "./server": "./dist/server.js"
+        ".": "./dist/extension.min.cjs",
+        "./server": "./dist/server.min.cjs"
     },
     "files": [
         "dist"

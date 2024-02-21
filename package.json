@@ -28,10 +28,10 @@
         "@master/css-extractor.vite": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
         "@swc-node/jest": "^1.7.0",
-        "@techor/fs": "^3.0.5",
-        "@techor/glob": "^3.0.5",
-        "@techor/jest-dom": "^3.0.5",
-        "@techor/repo": "^3.0.5",
+        "@techor/fs": "^3.0.8",
+        "@techor/glob": "^3.0.8",
+        "@techor/jest-dom": "^3.0.8",
+        "@techor/repo": "^3.0.8",
         "@types/node-fetch": "^2.6.11",
         "@types/shuffle-array": "^1.0.5",
         "cheerio": "1.0.0-rc.12",
@@ -49,10 +49,10 @@
         "shuffle-array": "^1.0.1",
         "spawnd": "^9.0.2",
         "strip-ansi": "^7.1.0",
-        "techor": "^3.0.5",
+        "techor": "^3.0.8",
         "tinybench": "^2.6.0",
         "ts-dedent": "^2.2.0",
-        "tsx": "^3.14.0"
+        "tsx": "^4.7.1"
     },
     "resolutions": {
         "@semantic-release/commit-analyzer": "11.0.0"

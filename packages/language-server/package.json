@@ -1,5 +1,6 @@
 {
     "name": "@master/css-language-server",
+    "type": "module",
     "scripts": {
         "build": "techor build",
         "dev": "techor dev",
@@ -18,14 +19,25 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-language-service": "workspace:^",
-        "explore-config": "^3.0.5",
+        "explore-config": "^3.0.8",
         "js-beautify": "^1.14.7",
         "minimatch": "^9.0.1",
         "vscode-languageserver": "^7.0.0",
         "vscode-languageserver-textdocument": "^1.0.9"
     },
-    "main": "./dist/server.js",
+    "sideEffects": false,
+    "main": "./dist/server.cjs",
+    "module": "./dist/server.mjs",
+    "jsnext:main": "./dist/server.mjs",
+    "esnext": "./dist/server.mjs",
     "types": "./dist/server.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/server.mjs",
+            "require": "./dist/server.cjs",
+            "types": "./dist/server.d.ts"
+        }
+    },
     "files": [
         "dist"
     ],

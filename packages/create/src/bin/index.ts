@@ -14,7 +14,11 @@ import ora from 'ora'
 import CONFIG_ESM_TEXT from '../master.css.mjs.js'
 import CONFIG_TS_TEXT from '../master.css.ts.js'
 import CONFIG_TEXT from '../master.css.js.js'
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 const pkg = readJSONFileSync(resolve(__dirname, '../../package.json'))
 const program = new Command()
 

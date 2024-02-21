@@ -2,7 +2,7 @@
 
 import type { Config } from '@master/css'
 import { RuntimeCSS } from '@master/css-runtime'
-import { useEffect, useLayoutEffect, createContext, useContext, useState } from 'react'
+import React, { useEffect, useLayoutEffect, createContext, useContext, useState } from 'react'
 
 export const CSSRuntimeContext = createContext<RuntimeCSS | undefined>(undefined)
 export const useCSSRuntime = () => useContext(CSSRuntimeContext)

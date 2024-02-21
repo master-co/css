@@ -53,6 +53,6 @@
         "access": "public"
     },
     "devDependencies": {
-        "@techor/extend": "^3.0.5"
+        "@techor/extend": "^3.0.8"
     }
 }

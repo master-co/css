@@ -2,6 +2,11 @@
 import { resolve } from 'node:path'
 import { Command } from 'commander'
 import { readJSONFileSync } from '@techor/fs'
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const pkg = readJSONFileSync(resolve(__dirname, '../../package.json'))
 const program = new Command()
