@@ -89,7 +89,7 @@ export default function serve() {
         }
         if (root?.uri) {
             const configCWD = fileURLToPath(root.uri.replace('%3A', ':'))
-            customConfig = exploreConfig(settings.config || 'master.css.*', { cwd: configCWD })
+            customConfig = exploreConfig(settings.config || 'master.css', { cwd: configCWD })
             css = new MasterCSS(customConfig)
         }
     }
