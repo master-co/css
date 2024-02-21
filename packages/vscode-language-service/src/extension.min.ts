@@ -1,13 +1,6 @@
 import path from 'path'
 import { workspace, ExtensionContext, Disposable } from 'vscode'
-
-import {
-    LanguageClient,
-    LanguageClientOptions,
-    ServerOptions,
-    TransportKind
-} from 'vscode-languageclient/node'
-import vscode from 'vscode'
+import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node'
 
 let client: LanguageClient
 
@@ -16,9 +9,8 @@ const disposables: Disposable[] = []
 export function activate(context: ExtensionContext) {
 
     // The server is implemented in node
-    const serverModule = context.asAbsolutePath(
-        path.join('dist', 'server.bundle.js')
-    )
+    const serverModule = context.asAbsolutePath(path.join('dist', 'server.min.cjs'))
+
     // The debug options for the server
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
     const debugOptions = { execArgv: ['--nolazy', '--inspect=6010'] }
@@ -35,7 +27,7 @@ export function activate(context: ExtensionContext) {
     }
 
 
-    const langs = vscode.workspace.getConfiguration('masterCSS').languages
+    const langs = workspace.getConfiguration('masterCSS').languages
 
 
     const Languages: { scheme: 'file', language: string }[] = []
@@ -78,6 +70,7 @@ function unregisterProviders(disposables: Disposable[]) {
     disposables.forEach(disposable => disposable.dispose())
     disposables.length = 0
 }
+
 function dedupe(arg0: any[]) {
     throw new Error('Function not implemented.')
 }

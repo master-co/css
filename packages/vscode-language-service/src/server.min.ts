@@ -1,1 +1,3 @@
-import '@master/css-language-server'
+import { serve } from '@master/css-language-server'
+
+serve()

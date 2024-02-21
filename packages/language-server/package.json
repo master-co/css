@@ -2,7 +2,7 @@
     "name": "@master/css-language-server",
     "type": "module",
     "scripts": {
-        "build": "techor build",
+        "build": "techor build \"src/**/*.ts\"",
         "dev": "techor dev",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
@@ -26,16 +26,16 @@
         "vscode-languageserver-textdocument": "^1.0.9"
     },
     "sideEffects": false,
-    "main": "./dist/server.cjs",
-    "module": "./dist/server.mjs",
-    "jsnext:main": "./dist/server.mjs",
-    "esnext": "./dist/server.mjs",
-    "types": "./dist/server.d.ts",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "import": "./dist/server.mjs",
-            "require": "./dist/server.cjs",
-            "types": "./dist/server.d.ts"
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs",
+            "types": "./dist/index.d.ts"
         }
     },
     "files": [
