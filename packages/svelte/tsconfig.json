@@ -1,17 +1,15 @@
 {
-    "extends": "@tsconfig/svelte/tsconfig.json",
-    "compilerOptions": {
-        "ignoreDeprecations": "5.0",
-        "outDir": "src",
-        "declaration": true,
-    },
-    "include": [
-        "src/**/*",
-        "src/node_modules"
-    ],
-    "exclude": [
-        "node_modules/*",
-        "__sapper__/*",
-        "public/*"
-    ]
+	"extends": "./.svelte-kit/tsconfig.json",
+	"compilerOptions": {
+		"allowJs": true,
+		"checkJs": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+		"module": "es2022",
+		"moduleResolution": "node"
+	}
 }

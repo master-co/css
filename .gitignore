@@ -76,3 +76,4 @@ packages/nuxt/playground/.output
 **/playwright-report/
 **/blob-report/
 **/playwright/.cache/
+**/.svelte-kit

@@ -4,7 +4,7 @@
     import { onMount, setContext } from "svelte";
     import { writable } from "svelte/store";
     import { cssRuntimeSymbol } from "./css-runtime";
-    export let config: Config | Promise<Config> | Promise<any>;
+    export let config: Config | Promise<Config> | Promise<any> | undefined = undefined;
     export let root: Document | ShadowRoot | undefined = undefined;
     const runtimeCSS = writable<RuntimeCSS>();
     onMount(() => {
