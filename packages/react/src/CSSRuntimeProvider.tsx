@@ -7,7 +7,7 @@ import { useEffect, useLayoutEffect, createContext, useContext, useState } from 
 export const CSSRuntimeContext = createContext<RuntimeCSS | undefined>(undefined)
 export const useCSSRuntime = () => useContext(CSSRuntimeContext)
 
-export function CSSRuntimeProvider({ children, config, root }: {
+export default function CSSRuntimeProvider({ children, config, root }: {
     children: React.ReactNode,
     config?: Config | Promise<any>,
     root?: Document | ShadowRoot
@@ -44,5 +44,3 @@ export function CSSRuntimeProvider({ children, config, root }: {
     }, [config, root])
     return <CSSRuntimeContext.Provider value={runtimeCSS}>{children}</CSSRuntimeContext.Provider>
 }
-
-export default CSSRuntimeProvider

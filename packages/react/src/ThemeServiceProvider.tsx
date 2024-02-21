@@ -12,7 +12,7 @@ export function useThemeService() {
     return useContext(ThemeServiceContext)
 }
 
-export function ThemeServiceProvider({
+export default function ThemeServiceProvider({
     options,
     host,
     children
@@ -53,5 +53,3 @@ export function ThemeServiceProvider({
 
     return <ThemeServiceContext.Provider value={{ ...themeService, value, current, switch: switchValue } as ThemeService}>{children}</ThemeServiceContext.Provider>
 }
-
-export default ThemeServiceProvider

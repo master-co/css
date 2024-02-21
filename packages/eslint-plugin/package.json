@@ -41,7 +41,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "explore-config": "^3.0.3",
+        "explore-config": "^3.0.5",
         "synckit": "^0.8.5"
     },
     "devDependencies": {

@@ -33,7 +33,7 @@ type ReturnType<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
     ? ReturnType<K, E>
     : MasterExoticComponent<K, E>)
 
-export const styled: {
+const styled: {
     [key in IntrinsicElementsKeys]: (<E extends object = object>(firstParam: TemplateStringsArray | ParamType<key, E>, ...params: ParamsType<key, E>) => MasterExoticComponent<key, E>)
     & (<F extends MasterExoticComponent<any, any>, E extends object = object>(firstParam: F) => F extends MasterExoticComponent<any, infer ME> ? ReturnType<key, ME & E> : never)
 } & {
@@ -194,3 +194,5 @@ function handle<K extends IntrinsicElementsKeys | React.ComponentType<any>, E ex
         }
     }
 }
+
+export default styled
