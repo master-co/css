@@ -7,7 +7,7 @@ const options: Options = {
     // specify virtual CSS module id (e.g. .virtual:home.css)
     module: '.virtual/master.css',
     // specify options file path or set `Options`
-    config: 'master.css.*',
+    config: 'master.css',
     // forcibly specify sources for scanning, not excluded by `options.exclude`
     sources: [],
     // specify sources for scanning
