@@ -14,10 +14,10 @@ export default (program: Command) => program
     .command('render')
     .description('Scans HTML and injects generated CSS rules')
     .argument('<source paths>', 'The path in glob patterns of the source of the HTML file')
-    .option('-c --config <path>', 'The source path of the Master CSS configuration', 'master.css.*')
+    .option('-c --config <path>', 'The source path of the Master CSS configuration', 'master.css')
     .option('-a --analyze', 'Analyze injected CSS and HTML size ( brotli ) without writing to file')
     .action(async function (filePatterns: Pattern | Pattern[], options: any = {
-        config: 'master.css.*'
+        config: 'master.css'
     }) {
         const sourcePaths = explorePathsSync(filePatterns)
         if (sourcePaths.length) {
