@@ -53,8 +53,7 @@
         "@master/css-server": "workspace:^",
         "@master/css.vue": "workspace:^",
         "@nuxt/kit": "^3.9.3",
-        "@techor/log": "^3.0.8",
-        "fast-glob": "^3.3.2"
+        "@techor/log": "^3.0.9"
     },
     "devDependencies": {
         "@nuxt/devtools": "latest",
