@@ -1,37 +1,12 @@
-import {
-    createConnection,
-    TextDocuments,
-    ProposedFeatures,
-    InitializeParams,
-    DidChangeConfigurationNotification,
-    CompletionItem,
-    TextDocumentPositionParams,
-    TextDocumentSyncKind,
-    InitializeResult,
-    DocumentColorParams,
-    ColorInformation,
-    ColorPresentationParams
-} from 'vscode-languageserver/node'
-
+import { createConnection, TextDocuments, ProposedFeatures, InitializeParams, DidChangeConfigurationNotification, CompletionItem, TextDocumentPositionParams, TextDocumentSyncKind, InitializeResult, DocumentColorParams, ColorInformation, ColorPresentationParams } from 'vscode-languageserver/node'
 import { WorkspaceFolder } from 'vscode-languageserver'
 import { MasterCSS } from '@master/css'
 import { minimatch } from 'minimatch'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { settings as defaultSettings, doHover, positionCheck, getColorPresentation, getDocumentColors, getLastInstance, getCompletionItem, getConfigColorsCompletionItem, checkConfigColorsBlock } from '@master/css-language-service'
+import { settings as defaultSettings, Settings, doHover, positionCheck, getColorPresentation, getDocumentColors, getLastInstance, getCompletionItem, getConfigColorsCompletionItem, checkConfigColorsBlock } from '@master/css-language-service'
 import exploreConfig from 'explore-config'
-
-export interface MasterCSSSettings {
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    languages: {},
-    classMatch: string[],
-    files: { exclude: string[] },
-    suggestions: boolean,
-    inspect: boolean,
-    previewColors: boolean,
-    config: string
-}
 
 export default function serve() {
     const connection = createConnection(ProposedFeatures.all)
@@ -40,7 +15,7 @@ export default function serve() {
     let hasConfigurationCapability = false
     let hasWorkspaceFolderCapability = false
     let hasDiagnosticRelatedInformationCapability = false
-    let settings: MasterCSSSettings
+    let settings: Settings
 
     let css: MasterCSS | undefined
     let customConfig: any
@@ -49,14 +24,14 @@ export default function serve() {
     let globalSettings: any = defaultSettings
 
     // Cache the settings of all open documents
-    const documentSettings: Map<string, Thenable<MasterCSSSettings>> = new Map()
+    const documentSettings: Map<string, Thenable<Settings>> = new Map()
 
     connection.onDidChangeConfiguration(change => {
         if (hasConfigurationCapability) {
             // Reset all cached document settings
             documentSettings.clear()
         } else {
-            globalSettings = <MasterCSSSettings>(
+            globalSettings = <Settings>(
                 (change.settings.masterCSS || defaultSettings)
             )
         }
@@ -65,7 +40,7 @@ export default function serve() {
         documents.all().forEach(validateTextDocument)
     })
 
-    async function getDocumentSettings(resource: string): Promise<MasterCSSSettings> {
+    async function getDocumentSettings(resource: string): Promise<Settings> {
         if (!hasConfigurationCapability) {
             return Promise.resolve(globalSettings)
         }
