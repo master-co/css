@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import { HTMLAttributes } from 'react'
 import i18n from '~/i18n.config.mjs'
 import Client from './client'
+import FontStyle from 'websites/components/FontStyle'
 
 export default async function RootLayout({ children, locale, bodyClassName, style, translations }: {
     children: JSX.Element[] | JSX.Element,
@@ -17,11 +18,10 @@ export default async function RootLayout({ children, locale, bodyClassName, styl
             <head>
                 <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
                 <script dangerouslySetInnerHTML={{ __html: getPreInitScript({ default: 'system' }) }}></script>
-                <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=block" rel="stylesheet" />
-                {locale === 'tw' && <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=block" rel="stylesheet" />}
+                <FontStyle locale={locale} />
                 <style id="master" suppressHydrationWarning></style>
             </head>
-            <body className={clsx(bodyClassName, '{font:mono;font-feature:normal}_:where(code,kbd,samp) bg:slate-50/.2_:where(::selection) fg:neutral font-feature:\'salt\' font:sans')}>
+            <body className={clsx(bodyClassName, '{font:mono;font-feature:mono}_:where(code,kbd,samp) bg:slate-50/.2_:where(::selection) fg:neutral font-feature:sans font:sans')}>
                 <Client locale={locale} translations={translations}>
                     {children}
                 </Client>
