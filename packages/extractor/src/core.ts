@@ -22,14 +22,14 @@ export default class CSSExtractor extends EventEmitter {
     watchers: chokidar.FSWatcher[] = []
 
     constructor(
-        public customOptions: Options | string | string[] = 'master.css-extractor.*',
+        public customOptions: Options | string = 'master.css-extractor',
         public cwd = process.cwd()
     ) {
         super()
     }
 
     init(customOptions = this.customOptions) {
-        if (typeof customOptions === 'string' || Array.isArray(customOptions)) {
+        if (typeof customOptions === 'string') {
             this.options = extend(defaultOptions, exploreConfig(customOptions, {
                 found: (basename) => log.i`Loaded **${basename}**`,
                 cwd: this.cwd

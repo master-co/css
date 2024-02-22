@@ -9,7 +9,7 @@ export default (program: Command) => program
     .option('-o, --output <path>', 'Specify your CSS file output path')
     .option('-v, --verbose <level>', 'Verbose logging 0~N', '1')
     .option('--no-export', 'Print only CSS results.')
-    .option('--options <path>', 'Specify your extractor options sources', 'master.css-extractor.*')
+    .option('--options <path>', 'Specify your extractor options sources', 'master.css-extractor')
     .action(async function (specifiedSourcePaths: any, options?: {
         watch?: boolean,
         output?: string,
