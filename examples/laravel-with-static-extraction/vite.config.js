@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import laravel from 'laravel-vite-plugin'
-import { CSSExtractorPlugin } from '@master/css-extractor.vite'
+import CSSExtractorPlugin from '@master/css-extractor.vite'
 
 export default defineConfig({
     plugins: [

@@ -1,6 +1,6 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { CSSExtractorPlugin } = require('@master/css-extractor.webpack')
+const CSSExtractorPlugin = require('@master/css-extractor.webpack')
 
 module.exports = {
     entry: './src/index.js',

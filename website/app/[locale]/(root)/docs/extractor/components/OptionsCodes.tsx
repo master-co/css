@@ -22,7 +22,7 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
                 name: 'vite.config.ts', lang: 'ts',
                 code: dedent`
                     ${imports ? `import { ${imports} } from '@master/css-extractor'` : ''}
-                    import { CSSExtractorPlugin } from '@master/css-extractor.vite'
+                    import CSSExtractorPlugin from '@master/css-extractor.vite'
 
                     /** @type {import('vite').UserConfig} */
                     const config = {
@@ -42,7 +42,7 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
                 name: 'webpack.config.js', lang: 'js',
                 code: dedent`
                     ${imports ? `const { ${imports} } = require('@master/css-extractor')` : ''}
-                    const { CSSExtractorPlugin } = require('@master/css-extractor.webpack')
+                    const CSSExtractorPlugin = require('@master/css-extractor.webpack')
 
                     module.exports = {
                         plugins: [

@@ -1,4 +1,4 @@
-const { CSSExtractorPlugin } = require('@master/css-extractor.webpack')
+const CSSExtractorPlugin = require('@master/css-extractor.webpack')
 
 /** @type {import('webpack').Configuration} */
 const webpackConfig = {

@@ -1,5 +1,5 @@
 import { defineConfig } from 'astro/config'
-import { CSSExtractorPlugin } from '@master/css-extractor.vite'
+import CSSExtractorPlugin from '@master/css-extractor.vite'
 import sitemap from '@astrojs/sitemap'
 
 // https://astro.build/config
