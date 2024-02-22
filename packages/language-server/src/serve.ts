@@ -266,7 +266,7 @@ export default function serve() {
     })
 
     function CheckFilesExclude(path: string): boolean {
-        for (const exclude of settings.files.exclude) {
+        for (const exclude of (settings as any).files.exclude) {
             if (minimatch(path, exclude)) {
                 return false
             }
