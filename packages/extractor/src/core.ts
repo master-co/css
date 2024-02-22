@@ -31,10 +31,7 @@ export default class CSSExtractor extends EventEmitter {
     init(customOptions = this.customOptions) {
         if (typeof customOptions === 'string' || Array.isArray(customOptions)) {
             this.options = extend(defaultOptions, exploreConfig(customOptions, {
-                on: {
-                    found: (foundPath: string) => log.ok`**${foundPath}** file found`,
-                    notFound: () => log.i`No **${customOptions}** file found`
-                },
+                found: (basename) => log.i`Loaded **${basename}**`,
                 cwd: this.cwd
             }), customOptions)
         } else {

@@ -185,9 +185,6 @@
     "publishConfig": {
         "access": "public"
     },
-    "peerDependencies": {
-        "vscode": ""
-    },
     "devDependencies": {
         "@master/css-language-server": "workspace:^",
         "@vscode/vsce": "^2.20.0",

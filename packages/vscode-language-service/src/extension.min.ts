@@ -1,12 +1,12 @@
 import path from 'path'
-import { workspace, ExtensionContext, Disposable } from 'vscode'
+import * as vscode from 'vscode'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node'
 
 let client: LanguageClient
 
 const disposables: Disposable[] = []
 
-export function activate(context: ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
 
     // The server is implemented in node
     const serverModule = context.asAbsolutePath(path.join('dist', 'server.min.cjs'))
@@ -27,7 +27,7 @@ export function activate(context: ExtensionContext) {
     }
 
 
-    const langs = workspace.getConfiguration('masterCSS').languages
+    const langs = vscode.workspace.getConfiguration('masterCSS').languages
 
 
     const Languages: { scheme: 'file', language: string }[] = []
@@ -41,7 +41,7 @@ export function activate(context: ExtensionContext) {
         documentSelector: Languages,
         synchronize: {
             // Notify the server about file changes to '.clientrc files contained in the workspace
-            fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
+            fileEvents: vscode.workspace.createFileSystemWatcher('**/.clientrc')
         }
     }
 

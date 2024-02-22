@@ -35,7 +35,7 @@ export default (program: Command) => program
             )
             const col2Width = 8
             const config = typeof options.config === 'string'
-                ? exploreConfig(options.config)
+                ? exploreConfig(options.config, { found: (basename) => log.i`Loaded **${basename}**`, })
                 : undefined
             log``
             log`${'  Source Files'.padEnd(col1Width)}${'CSS Size'.padStart(col2Width)}`
