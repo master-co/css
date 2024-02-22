@@ -2,7 +2,7 @@ import { default as defaultOptions, Options } from './options'
 import { MasterCSS } from '@master/css'
 import type { Config } from '@master/css'
 import extractLatentClasses from './functions/extract-latent-classes'
-import fs from 'fs'
+import fs, { existsSync } from 'fs'
 import { minimatch } from 'minimatch'
 import log from '@techor/log'
 import extend from '@techor/extend'
@@ -12,7 +12,7 @@ import chokidar from 'chokidar'
 import { EventEmitter } from 'node:events'
 import cssEscape from 'css-shared/utils/css-escape'
 import { explorePathsSync, explorePathSync } from '@techor/glob'
-import path from 'path'
+import path, { resolve } from 'path'
 
 export default class CSSExtractor extends EventEmitter {
     latentClasses = new Set<string>()
@@ -42,6 +42,7 @@ export default class CSSExtractor extends EventEmitter {
             log.tree(this.options)
             log``
         }
+
         this.css = new MasterCSS(
             typeof this.options.config === 'object'
                 ? this.options.config
@@ -342,8 +343,20 @@ export default class CSSExtractor extends EventEmitter {
      * computed from string `options.config`
     */
     get configPath(): string | undefined {
-        if (typeof this.options.config === 'string' || Array.isArray(this.options.config)) {
-            return explorePathSync(this.options.config, { cwd: this.cwd })
+        if (typeof this.options.config === 'string') {
+            // try to find the config file with the given name and options.extensions
+            let foundConfigPath: string | undefined
+            let foundBasename: string | undefined
+            for (const eachExtension of ['js', 'mjs', 'ts', 'cjs', 'cts', 'mts']) {
+                const eachBasename = this.options.config + '.' + eachExtension
+                const eachPath = resolve(this.cwd || '', eachBasename)
+                if (existsSync(eachPath)) {
+                    foundConfigPath = eachPath
+                    foundBasename = eachBasename
+                    break
+                }
+            }
+            return foundBasename
         }
     }
 
@@ -361,8 +374,20 @@ export default class CSSExtractor extends EventEmitter {
      * computed from string `customOptions`
     */
     get optionsPath(): string | undefined {
-        if (typeof this.customOptions === 'string' || Array.isArray(this.customOptions)) {
-            return explorePathSync(this.customOptions, { cwd: this.cwd })
+        if (typeof this.customOptions === 'string') {
+            // try to find the config file with the given name and options.extensions
+            let foundConfigPath: string | undefined
+            let foundBasename: string | undefined
+            for (const eachExtension of ['js', 'mjs', 'ts', 'cjs', 'cts', 'mts']) {
+                const eachBasename = this.customOptions + '.' + eachExtension
+                const eachPath = resolve(this.cwd || '', eachBasename)
+                if (existsSync(eachPath)) {
+                    foundConfigPath = eachPath
+                    foundBasename = eachBasename
+                    break
+                }
+            }
+            return foundBasename
         }
     }
 

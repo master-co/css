@@ -55,7 +55,7 @@ const options: Options = {
 
 export interface Options {
     verbose?: number
-    config?: Pattern | Pattern[] | Config,
+    config?: string | Config,
     output?: string,
     path?: string,
     module?: string,

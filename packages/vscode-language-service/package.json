@@ -2,7 +2,7 @@
     "name": "master-css-vscode-language-service",
     "scripts": {
         "build": "techor build",
-        "dev": "techor dev",
+        "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
         "deploy": "mv ../../package.json ../../_package.json && npm i vsce -D && vsce publish && mv ../../_package.json ../../package.json"
@@ -177,7 +177,7 @@
                 },
                 "masterCSS.config": {
                     "type": "string",
-                    "default": "master.css.{ts,js,mjs,cjs}"
+                    "default": "master.css"
                 }
             }
         }

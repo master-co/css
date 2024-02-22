@@ -3,7 +3,7 @@
     "type": "module",
     "scripts": {
         "build": "techor build",
-        "dev": "techor dev",
+        "dev": "pnpm build --watch",
         "e2e": "playwright test",
         "type-check": "tsc --noEmit",
         "lint": "eslint src"

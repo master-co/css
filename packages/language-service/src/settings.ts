@@ -25,5 +25,5 @@ export const settings = {
     suggestions: true,
     inspect: true,
     previewColors: true,
-    config: 'master.css.{ts,js,mjs,cjs}'
+    config: 'master.css'
 }

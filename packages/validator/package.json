@@ -2,7 +2,7 @@
     "name": "@master/css-validator",
     "scripts": {
         "build": "techor build \"src/**/*.ts\"",
-        "dev": "techor dev",
+        "dev": "pnpm build --watch",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
         "test": "jest --forceExit --detectOpenHandles"

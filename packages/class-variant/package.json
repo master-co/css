@@ -2,7 +2,7 @@
     "name": "class-variant",
     "scripts": {
         "build": "techor build",
-        "dev": "techor dev",
+        "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
         "test": "jest"

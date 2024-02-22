@@ -2,7 +2,7 @@
     "name": "@master/css-cli",
     "scripts": {
         "build": "techor build",
-        "dev": "techor dev",
+        "dev": "pnpm build --watch",
         "lint": "eslint ./src",
         "type-check": "tsc --noEmit",
         "test": "jest"
