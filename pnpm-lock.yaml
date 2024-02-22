@@ -1357,6 +1357,9 @@ importers:
         specifier: workspace:^
         version: link:../theme-service
     devDependencies:
+      '@playwright/experimental-ct-svelte':
+        specifier: ^1.41.2
+        version: 1.41.2(@sveltejs/vite-plugin-svelte@3.0.2)(@types/node@20.11.19)(svelte@4.2.11)
       '@sveltejs/adapter-auto':
         specifier: ^3.0.0
         version: 3.1.1(@sveltejs/kit@2.5.0)
@@ -6614,6 +6617,7 @@ packages:
     dependencies:
       is-glob: 4.0.3
       micromatch: 4.0.5
+      napi-wasm: 1.1.0
     dev: true
     bundledDependencies:
       - napi-wasm
@@ -6713,6 +6717,30 @@ packages:
       - supports-color
       - terser
       - vite
+    dev: true
+
+  /@playwright/experimental-ct-svelte@1.41.2(@sveltejs/vite-plugin-svelte@3.0.2)(@types/node@20.11.19)(svelte@4.2.11):
+    resolution: {integrity: sha512-wZQeGckZMish7D7TNZjMvqxlZ65oflu34zxvg97LkE2BTXKT8PiTVoCyCjVgltVaErQJe2WThjvCqatnaxSHeQ==}
+    engines: {node: '>=16'}
+    hasBin: true
+    peerDependencies:
+      '@sveltejs/vite-plugin-svelte': ^3.0.0
+      svelte: ^4.0.0
+    peerDependenciesMeta:
+      '@sveltejs/vite-plugin-svelte':
+        optional: true
+    dependencies:
+      '@playwright/experimental-ct-core': 1.41.2(@types/node@20.11.19)
+      '@sveltejs/vite-plugin-svelte': 3.0.2(svelte@4.2.11)(vite@5.1.4)
+      svelte: 4.2.11
+    transitivePeerDependencies:
+      - '@types/node'
+      - less
+      - lightningcss
+      - sass
+      - stylus
+      - sugarss
+      - terser
     dev: true
 
   /@playwright/experimental-ct-vue@1.41.2(@types/node@20.11.19)(vite@5.1.4)(vue@3.4.19):
@@ -16842,6 +16870,8 @@ packages:
     peerDependenciesMeta:
       webpack:
         optional: true
+      webpack-sources:
+        optional: true
     dependencies:
       webpack: 5.90.1(@swc/core@1.4.2)(esbuild@0.20.0)
       webpack-sources: 3.2.3
@@ -18447,6 +18477,10 @@ packages:
     resolution: {integrity: sha512-ONmRUqK7zj7DWX0D9ADe03wbwOBZxNAfF20PlGfCWQcD3+/MakShIHrMqx9YwPTfxDdF1zLeL+RGZiR9kGMLdg==}
     requiresBuild: true
     optional: true
+
+  /napi-wasm@1.1.0:
+    resolution: {integrity: sha512-lHwIAJbmLSjF9VDRm9GoVOy9AGp3aIvkjv+Kvz9h16QR3uSVYH78PNQUnT2U4X53mhlnV2M7wrhibQ3GHicDmg==}
+    dev: true
 
   /natural-compare-lite@1.4.0:
     resolution: {integrity: sha512-Tj+HTDSJJKaZnfiuw+iaF9skdPpTo2GtEly5JHnWV/hfv2Qj/9RKsGISQtLh2ox3l5EAGw487hnBee0sIJ6v2g==}
@@ -22931,7 +22965,7 @@ packages:
       jest-worker: 27.5.1
       schema-utils: 3.3.0
       serialize-javascript: 6.0.2
-      terser: 5.27.0
+      terser: 5.27.2
       webpack: 5.90.1(@swc/core@1.4.2)(esbuild@0.20.0)
     dev: true
 
