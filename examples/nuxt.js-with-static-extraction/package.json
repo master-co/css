@@ -3,11 +3,10 @@
     "type": "module",
     "private": true,
     "scripts": {
-        "build": "nuxt build",
-        "dev": "nuxt dev",
-        "generate": "nuxt generate",
-        "preview": "nuxt preview",
-        "postinstall": "nuxt prepare"
+        "build": "nuxt prepare && nuxt build",
+        "dev": "nuxt prepare && nuxt dev",
+        "generate": "nuxt prepare && nuxt generate",
+        "preview": "nuxt prepare && nuxt preview"
     },
     "devDependencies": {
         "@master/css-runtime": "workspace:^",
