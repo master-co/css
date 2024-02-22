@@ -5,10 +5,8 @@
         "outDir": "dist"
     },
     "include": [
-        "src/**/*",
+        "src/**/*.ts",
+        "declarations.d.ts",
         "./setup-jest.ts"
-    ],
-    "exclude": [
-        "**/*.d.ts"
     ]
 }

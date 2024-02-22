@@ -1,4 +1,4 @@
-import MasterCSS, { Config } from '@master/css'
+import { MasterCSS, Config } from '@master/css'
 import parseHTML from './parse-html'
 import { Element, Text, ChildNode } from 'domhandler'
 import serialize from 'dom-serializer'

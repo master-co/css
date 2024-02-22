@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
-import type { MasterCSS, Variable } from './core'
+import MasterCSS, { type Variable } from './core'
 import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'css-shared/utils/css-escape'
 import { Layer } from './layer'
@@ -455,7 +455,7 @@ export class Rule {
 
                     let cssText = getCssText(className)
                         + (classNames
-                            ? classNames.reduce((str, className) => str + ',' + getCssText(className), '')
+                            ? classNames.reduce((str: string, className: string) => str + ',' + getCssText(className), '')
                             : '')
                         + '{'
                         + propertiesText.join(';')

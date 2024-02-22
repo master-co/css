@@ -1,6 +1,6 @@
 import { Layer } from '../layer'
 import type { Config } from '../config'
-import { MasterCSS } from '../core'
+import MasterCSS from '../core'
 
 /**
  * Sorts classes in a consistent order

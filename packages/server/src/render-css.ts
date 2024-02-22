@@ -1,5 +1,5 @@
 import parseHTML from './parse-html'
-import MasterCSS, { Config } from '@master/css'
+import { MasterCSS, Config } from '@master/css'
 
 /**
  * Renders the Master CSS string from HTML

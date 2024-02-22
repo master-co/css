@@ -2,7 +2,7 @@
     "name": "@master/css",
     "type": "module",
     "scripts": {
-        "build": "techor build",
+        "build": "techor build \"src/**/*.ts\"",
         "dev": "techor dev",
         "test": "jest",
         "type-check": "tsc --noEmit",
@@ -62,10 +62,10 @@
         "access": "public"
     },
     "dependencies": {
-        "@master/normal.css": "workspace:^"
+        "@master/normal.css": "workspace:^",
+        "@techor/extend": "^3.0.10"
     },
     "devDependencies": {
-        "@techor/extend": "^3.0.10",
         "css-shared": "workspace:^",
         "csstype": "^3.1.2"
     }

@@ -1,4 +1,4 @@
-import CSSExtractor from '@master/css-extractor'
+import { CSSExtractor } from '@master/css-extractor'
 import type { Plugin, ViteDevServer } from 'vite'
 import { existsSync, readFileSync } from 'fs'
 import debounce from 'lodash.debounce'

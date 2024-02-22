@@ -1,2 +1,1 @@
-
-export { default as CSSExtractorPlugin } from './plugins/core'
+export { default } from './plugins/core'

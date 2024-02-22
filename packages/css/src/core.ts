@@ -6,7 +6,6 @@ import { Layer } from './layer'
 import { hexToRgb } from './utils/hex-to-rgb'
 import { flattenObject } from './utils/flatten-object'
 import { extendConfig } from './utils/extend-config'
-import './types/global'
 import { PropertiesHyphen } from 'csstype'
 
 type VariableValue =
@@ -21,7 +20,7 @@ export type Variable = Omit<VariableValue, 'value' | 'space'> & {
     themes?: { [theme: string]: VariableValue }
 }
 
-export interface MasterCSS {
+export default interface MasterCSS {
     readonly style: HTMLStyleElement
     styles: Record<string, string[]>
     stylesBy: Record<string, string[]>
@@ -33,7 +32,7 @@ export interface MasterCSS {
     animations: Record<string, AnimationDefinitions & { usage?: number, native?: NativeRule }>
 }
 
-export class MasterCSS {
+export default class MasterCSS {
     static config: Config = defaultConfig
     readonly rules: Rule[] = []
     readonly ruleBy: Record<string, Rule> = {}
@@ -1205,4 +1204,3 @@ export const masterCSSs: MasterCSS[] = [];
     globalThis.MasterCSS = MasterCSS
     globalThis.masterCSSs = masterCSSs
 })()
-

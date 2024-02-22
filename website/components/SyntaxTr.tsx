@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import InlineCode from '../../../../components/InlineCode'
 import clsx from 'clsx'
-import MasterCSS from '@master/css'
+import { MasterCSS } from '@master/css'
 
 export default function SyntaxTr({ value, children, previewSyntax }: any) {
     const { text } = generateCSS(value)

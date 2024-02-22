@@ -1,4 +1,4 @@
-import MasterCSS, { Config, config } from '@master/css'
+import { MasterCSS, Config, config } from '@master/css'
 import exploreConfig from 'explore-config'
 
 let currentCSS: MasterCSS

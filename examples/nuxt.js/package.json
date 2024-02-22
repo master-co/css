@@ -14,8 +14,8 @@
     },
     "devDependencies": {
         "@types/node": "^20",
-        "nuxt": "^3.9.3",
-        "vue": "^3.4.15",
+        "nuxt": "^3.10.2",
+        "vue": "^3.4.19",
         "vue-router": "^4.2.5"
     }
 }

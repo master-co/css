@@ -5,7 +5,7 @@ import log from '@techor/log'
 
 const NAME = 'MasterCSSExtractorPlugin'
 
-export class CSSExtractorPlugin extends CSSExtractor {
+export default class CSSExtractorPlugin extends CSSExtractor {
 
     initialized = false
     moduleContentByPath: any = {}
@@ -60,3 +60,5 @@ export class CSSExtractorPlugin extends CSSExtractor {
         })
     }
 }
+
+exports.__esModule = true

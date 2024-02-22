@@ -1,16 +1,19 @@
 {
     "name": "nuxt.js-with-static-extraction",
+    "type": "module",
     "private": true,
     "scripts": {
-        "build": "nuxt prepare && nuxt build",
-        "dev": "nuxt prepare && nuxt dev",
-        "generate": "nuxt prepare && nuxt generate",
-        "preview": "nuxt prepare && nuxt preview"
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare"
     },
     "devDependencies": {
         "@master/css-runtime": "workspace:^",
         "@master/css-extractor.vite": "workspace:^",
-        "@types/node": "^20",
-        "nuxt": "^3.9.3"
+        "nuxt": "^3.10.2",
+        "vue": "^3.4.19",
+        "vue-router": "^4.2.5"
     }
 }

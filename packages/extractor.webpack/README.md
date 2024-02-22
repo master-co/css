@@ -53,7 +53,7 @@
 </div>
 
 ```js
-const { CSSExtractorPlugin } = require('@master/css-extractor.webpack')
+const CSSExtractorPlugin = require('@master/css-extractor.webpack')
 
 module.exports = {
     plugins: [

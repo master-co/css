@@ -1,4 +1,4 @@
-import CSSExtractor from '@master/css-extractor'
+import { CSSExtractor } from '@master/css-extractor'
 import type { Plugin } from 'vite'
 
 /**

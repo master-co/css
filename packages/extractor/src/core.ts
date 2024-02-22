@@ -1,5 +1,5 @@
 import { default as defaultOptions, Options } from './options'
-import MasterCSS from '@master/css'
+import { MasterCSS } from '@master/css'
 import type { Config } from '@master/css'
 import extractLatentClasses from './functions/extract-latent-classes'
 import fs from 'fs'

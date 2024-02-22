@@ -53,7 +53,7 @@
 </div>
 
 ```js
-import { CSSExtractorPlugin } from '@master/css-extractor.vite'
+import CSSExtractorPlugin from '@master/css-extractor.vite'
 
 /** @type {import('vite').UserConfig} */
 const config = {

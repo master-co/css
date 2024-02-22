@@ -1,5 +1,5 @@
 import type { Hover, Range } from 'vscode-languageserver-types'
-import MasterCSS from '@master/css'
+import { MasterCSS } from '@master/css'
 import { getCssEntryMarkdownDescription } from '../utils/get-css-entry-markdown-description'
 import { masterCssKeyValues } from '../constant'
 // @ts-expect-error
