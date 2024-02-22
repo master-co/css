@@ -727,10 +727,10 @@ importers:
         version: 1.0.0
       '@sveltejs/adapter-auto':
         specifier: ^3.1.1
-        version: 3.1.1(@sveltejs/kit@2.5.0)
+        version: 3.1.1(@sveltejs/kit@2.5.1)
       '@sveltejs/kit':
         specifier: ^2.5.0
-        version: 2.5.0(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.11)(vite@5.1.4)
+        version: 2.5.1(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.11)(vite@5.1.4)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.0.2
         version: 3.0.2(svelte@4.2.11)(vite@5.1.4)
@@ -767,10 +767,10 @@ importers:
         version: 1.0.0
       '@sveltejs/adapter-auto':
         specifier: ^3.0.0
-        version: 3.1.1(@sveltejs/kit@2.5.0)
+        version: 3.1.1(@sveltejs/kit@2.5.1)
       '@sveltejs/kit':
         specifier: ^2.0.0
-        version: 2.5.0(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.11)(vite@5.1.4)
+        version: 2.5.1(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.11)(vite@5.1.4)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.0.0
         version: 3.0.2(svelte@4.2.11)(vite@5.1.4)
@@ -806,10 +806,10 @@ importers:
         version: 1.0.0
       '@sveltejs/adapter-auto':
         specifier: ^3.0.0
-        version: 3.1.1(@sveltejs/kit@2.5.0)
+        version: 3.1.1(@sveltejs/kit@2.5.1)
       '@sveltejs/kit':
         specifier: ^2.0.0
-        version: 2.5.0(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.11)(vite@5.1.4)
+        version: 2.5.1(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.11)(vite@5.1.4)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.0.0
         version: 3.0.2(svelte@4.2.11)(vite@5.1.4)
@@ -1184,7 +1184,7 @@ importers:
         version: link:../../shared
       puppeteer-core:
         specifier: ^22.0.0
-        version: 22.1.0
+        version: 22.2.0
 
   packages/extractor.webpack:
     dependencies:
@@ -1365,13 +1365,13 @@ importers:
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^3.0.0
-        version: 3.1.1(@sveltejs/kit@2.5.0)
+        version: 3.1.1(@sveltejs/kit@2.5.1)
       '@sveltejs/kit':
         specifier: ^2.0.0
-        version: 2.5.0(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.11)(vite@5.1.4)
+        version: 2.5.1(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.11)(vite@5.1.4)
       '@sveltejs/package':
         specifier: ^2.0.0
-        version: 2.2.6(svelte@4.2.11)(typescript@5.3.3)
+        version: 2.2.7(svelte@4.2.11)(typescript@5.3.3)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.0.0
         version: 3.0.2(svelte@4.2.11)(vite@5.1.4)
@@ -6795,8 +6795,8 @@ packages:
     resolution: {integrity: sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==}
     dev: false
 
-  /@puppeteer/browsers@2.0.1:
-    resolution: {integrity: sha512-IQj/rJY1MNfZ6Z2ERu+6S0LkIPBSXRGddgmvODqjm1afHy04aJIiWmoohuFtL78SPSlbjpIMuFVfhyqsR5Ng4A==}
+  /@puppeteer/browsers@2.1.0:
+    resolution: {integrity: sha512-xloWvocjvryHdUjDam/ZuGMh7zn4Sn3ZAaV4Ah2e2EwEt90N3XphZlSsU3n0VDc1F7kggCjMuH0UuxfPQ5mD9w==}
     engines: {node: '>=18'}
     hasBin: true
     dependencies:
@@ -6804,6 +6804,7 @@ packages:
       extract-zip: 2.0.1
       progress: 2.0.3
       proxy-agent: 6.4.0
+      semver: 7.6.0
       tar-fs: 3.0.5
       unbzip2-stream: 1.4.3
       yargs: 17.7.2
@@ -7435,17 +7436,17 @@ packages:
     resolution: {integrity: sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==}
     dev: true
 
-  /@sveltejs/adapter-auto@3.1.1(@sveltejs/kit@2.5.0):
+  /@sveltejs/adapter-auto@3.1.1(@sveltejs/kit@2.5.1):
     resolution: {integrity: sha512-6LeZft2Fo/4HfmLBi5CucMYmgRxgcETweQl/yQoZo/895K3S9YWYN4Sfm/IhwlIpbJp3QNvhKmwCHbsqQNYQpw==}
     peerDependencies:
       '@sveltejs/kit': ^2.0.0
     dependencies:
-      '@sveltejs/kit': 2.5.0(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.11)(vite@5.1.4)
+      '@sveltejs/kit': 2.5.1(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.11)(vite@5.1.4)
       import-meta-resolve: 4.0.0
     dev: true
 
-  /@sveltejs/kit@2.5.0(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.11)(vite@5.1.4):
-    resolution: {integrity: sha512-1uyXvzC2Lu1FZa30T4y5jUAC21R309ZMRG0TPt+PPPbNUoDpy8zSmSNVWYaBWxYDqLGQ5oPNWvjvvF2IjJ1jmA==}
+  /@sveltejs/kit@2.5.1(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.11)(vite@5.1.4):
+    resolution: {integrity: sha512-TKj08o3mJCoQNLTdRdGkHPePTCPUGTgkew65RDqjVU3MtPVxljsofXQYfXndHfq0P7KoPRO/0/reF6HesU0Djw==}
     engines: {node: '>=18.13'}
     hasBin: true
     requiresBuild: true
@@ -7471,8 +7472,8 @@ packages:
       vite: 5.1.4(@types/node@20.11.19)
     dev: true
 
-  /@sveltejs/package@2.2.6(svelte@4.2.11)(typescript@5.3.3):
-    resolution: {integrity: sha512-rhKL/96M7LCvFI2xN94qsqHtEWr/ypcMGiii3s6dRW7ADt3tiDm8UfExjRR8v5jW3Femz0+VJ0TNevxI4Q9Quw==}
+  /@sveltejs/package@2.2.7(svelte@4.2.11)(typescript@5.3.3):
+    resolution: {integrity: sha512-/vvmrQO2mMvROdM/iGRHtRn+ValnK9xzB50pqRcX0IvoeVoTq7uhYf+KifrZTluBA+km6AX/WXRXajrgrgbmvw==}
     engines: {node: ^16.14 || >=18}
     hasBin: true
     peerDependencies:
@@ -9047,7 +9048,7 @@ packages:
       '@babel/plugin-syntax-typescript': 7.23.3(@babel/core@7.23.9)
       '@vanilla-extract/babel-plugin-debug-ids': 1.0.5
       '@vanilla-extract/css': 1.14.1
-      esbuild: 0.19.12
+      esbuild: 0.17.6
       eval: 0.1.8
       find-up: 5.0.0
       javascript-stringify: 2.1.0
@@ -11088,12 +11089,12 @@ packages:
     engines: {node: '>=6.0'}
     dev: true
 
-  /chromium-bidi@0.5.9(devtools-protocol@0.0.1232444):
+  /chromium-bidi@0.5.9(devtools-protocol@0.0.1249869):
     resolution: {integrity: sha512-wOTX3m2zuHX0zRX4h7Ol1DAGz0cqHzo2IrAPvOqBxdd4ZR32vxg4FKNjmBihi1oP9b1QGSBBG5VNUUXUCsxDfg==}
     peerDependencies:
       devtools-protocol: '*'
     dependencies:
-      devtools-protocol: 0.0.1232444
+      devtools-protocol: 0.0.1249869
       mitt: 3.0.1
       urlpattern-polyfill: 10.0.0
     dev: true
@@ -12226,8 +12227,8 @@ packages:
       dequal: 2.0.3
     dev: false
 
-  /devtools-protocol@0.0.1232444:
-    resolution: {integrity: sha512-pM27vqEfxSxRkTMnF+XCmxSEb6duO5R+t8A9DEEJgy4Wz2RVanje2mmj99B6A3zv2r/qGfYlOvYznUhuokizmg==}
+  /devtools-protocol@0.0.1249869:
+    resolution: {integrity: sha512-Ctp4hInA0BEavlUoRy9mhGq0i+JSo/AwVyX2EFgZmV1kYB+Zq+EMBAn52QWu6FbRr10hRb6pBl420upbp4++vg==}
     dev: true
 
   /di@0.0.1:
@@ -18164,7 +18165,6 @@ packages:
   /mimic-response@3.1.0:
     resolution: {integrity: sha512-z0yWI+4FDrrweS8Zmt4Ej5HdJmky15+L2e6Wgn3+iK5fWzb6T3fhNFq2+MeTRb064c6Wr4N/wv0DzQTjNzHNGQ==}
     engines: {node: '>=10'}
-    requiresBuild: true
 
   /min-indent@1.0.1:
     resolution: {integrity: sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==}
@@ -20700,15 +20700,15 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  /puppeteer-core@22.1.0:
-    resolution: {integrity: sha512-LdsQxslPf0Rpk6gLvkyyrraad2S4PUjGCT2CAKS2EnrRPpzIb6fsrFnoPNZxLlMkU7apU1g4Nf5wYePdSjxLkQ==}
+  /puppeteer-core@22.2.0:
+    resolution: {integrity: sha512-rxLM860FP05CxCPAn6dwY0KnVhbnogsXu4XORb+2hb/va69v7R1VdJWLMGHd7EE5wfpT8oFZ7Q6NN85OhOtV9Q==}
     engines: {node: '>=18'}
     dependencies:
-      '@puppeteer/browsers': 2.0.1
-      chromium-bidi: 0.5.9(devtools-protocol@0.0.1232444)
+      '@puppeteer/browsers': 2.1.0
+      chromium-bidi: 0.5.9(devtools-protocol@0.0.1249869)
       cross-fetch: 4.0.0
       debug: 4.3.4
-      devtools-protocol: 0.0.1232444
+      devtools-protocol: 0.0.1249869
       ws: 8.16.0
     transitivePeerDependencies:
       - bufferutil
@@ -22036,8 +22036,8 @@ packages:
     resolution: {integrity: sha512-9LK+E7Hv5R9u4g4C3p+jjLstaLe11MDsL21UpYaCNmapvMkYhqCV4A/f/3gyH8QjMyh6l68q9xC85vihY9ahMQ==}
     dev: true
 
-  /socket.io-adapter@2.5.3:
-    resolution: {integrity: sha512-OtkQtynXUM0JSEwmI6YlEJ5hU9kpDUVjda0hx8QVffKhqum53xhynH8eTCyjHSfI8FiJnyfK8I3Dlc88Jr81Dg==}
+  /socket.io-adapter@2.5.4:
+    resolution: {integrity: sha512-wDNHGXGewWAjQPt3pyeYBtpWSq9cLE5UW1ZUPL/2eGK9jtse/FpXib7epSTsz0Q0m+6sg6Y4KtcFTlah1bdOVg==}
     dependencies:
       debug: 4.3.4
       ws: 8.11.0
@@ -22066,7 +22066,7 @@ packages:
       cors: 2.8.5
       debug: 4.3.4
       engine.io: 6.5.4
-      socket.io-adapter: 2.5.3
+      socket.io-adapter: 2.5.4
       socket.io-parser: 4.2.4
     transitivePeerDependencies:
       - bufferutil
@@ -22937,7 +22937,7 @@ packages:
       jest-worker: 27.5.1
       schema-utils: 3.3.0
       serialize-javascript: 6.0.2
-      terser: 5.27.2
+      terser: 5.27.0
       webpack: 5.90.1(@swc/core@1.4.2)(esbuild@0.20.0)
     dev: true
 
