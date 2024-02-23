@@ -52,7 +52,7 @@
         "access": "public"
     },
     "peerDependencies": {
-        "vite": ">=3.0.0"
+        "vite": ">=5.0.0"
     },
     "dependencies": {
         "@master/css": "workspace:^",

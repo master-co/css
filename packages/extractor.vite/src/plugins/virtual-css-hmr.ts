@@ -3,37 +3,37 @@ import type { Plugin, ViteDevServer } from 'vite'
 import { existsSync, readFileSync } from 'fs'
 import debounce from 'lodash.debounce'
 
-/**
- * Pre-insert code for all modules
- */
-export default function PreInsertionPlugin(
-    extractor: CSSExtractor,
-): Plugin {
+const HMR_EVENT_UPDATE = 'master-css-hmr:update'
+
+/** HMR when the config and source files changed */
+export default function VirtualCSSHMRPlugin(extractor: CSSExtractor): Plugin {
+    let HMRReady = false
     let server: ViteDevServer
     let transformedIndexHTMLModule: { id: string, code: string }
-    let HMRReady = false
     const straightUpdateVirtualModule = () => {
         if (!server) return
         const resolvedVirtualModuleId = extractor.resolvedVirtualModuleId
         const virtualCSSModule = server.moduleGraph.getModuleById(resolvedVirtualModuleId)
         if (virtualCSSModule) {
             server.reloadModule(virtualCSSModule)
-            server.ws.send({
-                type: 'update',
-                updates: [{
-                    type: 'js-update',
-                    path: resolvedVirtualModuleId,
-                    acceptedPath: resolvedVirtualModuleId,
-                    timestamp: +Date.now()
-                }]
-            })
-            server.ws.send({
-                type: 'custom',
-                event: `master-css-hmr:update`,
-                data: {
-                    id: resolvedVirtualModuleId,
-                    css: extractor.css.text
-                }
+            server.hot.channels.forEach((eachChannel) => {
+                eachChannel.send({
+                    type: 'update',
+                    updates: [{
+                        type: 'js-update',
+                        path: resolvedVirtualModuleId,
+                        acceptedPath: resolvedVirtualModuleId,
+                        timestamp: +Date.now()
+                    }]
+                })
+                eachChannel.send({
+                    type: 'custom',
+                    event: HMR_EVENT_UPDATE,
+                    data: {
+                        id: resolvedVirtualModuleId,
+                        css: extractor.css.text
+                    }
+                })
             })
         }
     }
@@ -48,13 +48,18 @@ export default function PreInsertionPlugin(
     extractor
         .on('change', updateVirtualModule)
     return {
-        name: 'master-css-extractor:pre-insertion',
+        name: 'master-css-extractor:virtual-css-module:hmr',
+        apply: 'serve',
         enforce: 'pre',
-        apply(config, env) {
-            return env.command === 'build' || !env.isSsrBuild
+        async resolveId(id) {
+            if (id === extractor.options.module || id === extractor.resolvedVirtualModuleId) {
+                return extractor.resolvedVirtualModuleId
+            }
         },
-        async buildStart() {
-            await extractor.prepare()
+        load(id) {
+            if (id === extractor.resolvedVirtualModuleId) {
+                return extractor.css.text
+            }
         },
         transformIndexHtml: {
             order: 'pre',
@@ -64,12 +69,6 @@ export default function PreInsertionPlugin(
                     code: html
                 }
                 await extractor.insert(filename, html)
-            }
-        },
-        async transform(code, id) {
-            const resolvedVirtualModuleId = extractor.resolvedVirtualModuleId
-            if (id !== resolvedVirtualModuleId) {
-                await extractor.insert(id, code)
             }
         },
         configureServer(devServer) {
@@ -87,12 +86,13 @@ export default function PreInsertionPlugin(
                         .filter((eachModuleId) => eachModuleId !== extractor.resolvedVirtualModuleId)
                         .map(async (eachModuleId: string) => {
                             const eachModule = server.moduleGraph.idToModuleMap.get(eachModuleId)
-                            let eachModuleCode = eachModule?.transformResult?.code
-                            if (eachModule && eachModuleCode) {
-                                if (eachModule.file && typeof eachModuleCode !== 'string' && !eachModule.file.startsWith('virtual:') && existsSync(eachModule.file)) {
+                            if (eachModule) {
+                                let eachModuleCode = eachModule?.transformResult?.code || eachModule?.ssrTransformResult?.code
+                                if (eachModule.file && !eachModuleCode && !eachModule.file.startsWith('virtual:') && existsSync(eachModule.file)) {
                                     eachModuleCode = readFileSync(eachModule.file, 'utf-8')
                                 }
-                                await extractor.insert(eachModuleId, eachModuleCode)
+                                if (eachModuleCode)
+                                    await extractor.insert(eachModuleId, eachModuleCode)
                             }
                         })
                 )
@@ -100,7 +100,7 @@ export default function PreInsertionPlugin(
                 updateVirtualModule()
             }
             server = devServer
-            server.ws.on('connection', () => {
+            server.hot.on('connection', () => {
                 extractor
                     .off('reset', resetHandler)
                     .on('reset', resetHandler)
@@ -108,5 +108,5 @@ export default function PreInsertionPlugin(
             })
             extractor.startWatch()
         }
-    } as Plugin
+    }
 }
