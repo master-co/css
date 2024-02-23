@@ -16,7 +16,7 @@ export default (program: Command) => program
         verbose?: number,
         export?: boolean,
         cwd?: string,
-        options?: string | string[] | Options
+        options?: string | Options
     }) {
         const { watch, output, verbose, cwd, options: customOptions } = options || {}
         const extractor = new CSSExtractor(customOptions, cwd)
