@@ -1,9 +1,13 @@
-import { resolve } from 'path'
 import { test, expect } from '@playwright/test'
 import { readFileSync } from 'fs'
+import { dirname, resolve } from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 test('complex', async ({ page }) => {
-    await page.addScriptTag({ path: resolve(__dirname, '../dist/iife.bundle.js') })
+    await page.addScriptTag({ path: resolve(__dirname, '../dist/global.min.js') })
 
     /**
      * <p class="block font:bold">

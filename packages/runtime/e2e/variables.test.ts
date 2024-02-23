@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test'
-import { resolve } from 'path'
+import { dirname, resolve } from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const variables = {
     first: {
@@ -30,7 +34,7 @@ const variables = {
 }
 
 test.beforeEach(async ({ page }) => {
-    await page.addScriptTag({ path: resolve(__dirname, '../dist/iife.bundle.js') })
+    await page.addScriptTag({ path: resolve(__dirname, '../dist/global.min.js') })
     await page.evaluate((variables) => globalThis.runtimeCSS.refresh({ variables }), variables)
 })
 
