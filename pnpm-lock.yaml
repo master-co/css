@@ -1031,9 +1031,6 @@ importers:
 
   packages/create:
     dependencies:
-      '@master/css':
-        specifier: 2.0.0-rc.13
-        version: 2.0.0-rc.13
       '@techor/fs':
         specifier: ^3.0.11
         version: 3.0.11
@@ -1043,12 +1040,12 @@ importers:
       commander:
         specifier: ^12.0.0
         version: 12.0.0
+      detect-package-manager:
+        specifier: ^3.0.1
+        version: 3.0.1
       giget:
         specifier: ^1.2.1
         version: 1.2.1
-      nypm:
-        specifier: ^0.3.6
-        version: 0.3.6
       ora:
         specifier: ^8.0.1
         version: 8.0.1
@@ -5651,20 +5648,6 @@ packages:
       - supports-color
     dev: true
 
-  /@master/css@2.0.0-rc.13:
-    resolution: {integrity: sha512-auaoUEmt8UjBU9F8EsDGYdddnVJmCMkorCxFXGiWK590Sg0lKO9pfBVgxMgqvmrMzUSo2kHABm/wjLoxmlScYQ==}
-    hasBin: true
-    dependencies:
-      '@master/normal.css': 2.0.0-rc.15
-      '@techor/fs': 2.6.7
-      '@techor/log': 2.6.7
-      commander: 11.1.0
-    dev: false
-
-  /@master/normal.css@2.0.0-rc.15:
-    resolution: {integrity: sha512-mkjN5GjGNp4Z/TYpcL74oDY+rZwfjUxRMLlE2zmXBNJKZfdlv3xaEJMJCDo+HNez+MYOsczpfn8GFJwVLa/8HA==}
-    dev: false
-
   /@mdn/browser-compat-data@5.5.11:
     resolution: {integrity: sha512-4o1ZaGmvqoDx3QLyEAcZvGDKmdVXLB0aiANuPDumgue/7iH67KUBsKejLX7wrdxEdyNYfXUKtjFQYhGwVUBXGw==}
     dev: false
@@ -8172,10 +8155,6 @@ packages:
   /@techor/extend@3.0.11:
     resolution: {integrity: sha512-9Y+x1xt/qzOffMqzk8K5tflJuEFFhrlWh+R+8f/hIQGMs9h1lxgjAEkRPhOyKtnb4gQepDVDx2AUizYUIL2GPA==}
 
-  /@techor/fs@2.6.7:
-    resolution: {integrity: sha512-KNSGJxws2pPD5aXPlTsq2JrTqraQsG4pnN6GkYmlQ0VFAPA8w3fdtUFpqO+zlDW1pTeKQaDTZONl28Zt68BBig==}
-    dev: false
-
   /@techor/fs@3.0.11:
     resolution: {integrity: sha512-2DWQXj3wEN+Mm2heqerhixOvkrZb310uFIUY3s0Ukz2Q/BCLc+UKFn0aG6C027H1S/iuZw+dVmRmHQYRSq08bw==}
     dev: false
@@ -8222,10 +8201,6 @@ packages:
       ts-node: 10.9.2(@swc/core@1.4.2)(@types/node@20.11.20)(typescript@5.3.3)
     transitivePeerDependencies:
       - '@swc/helpers'
-    dev: false
-
-  /@techor/log@2.6.7:
-    resolution: {integrity: sha512-c4UAijQhwKgJepk06438nLbaGrIMyV5CP0qbByrWst3EeD2BuSefjbRQNJlV3OQTV1+9lSmX4ANy0qK2l6xl4Q==}
     dev: false
 
   /@techor/log@3.0.11:
@@ -11782,11 +11757,6 @@ packages:
     resolution: {integrity: sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==}
     engines: {node: '>=14'}
 
-  /commander@11.1.0:
-    resolution: {integrity: sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==}
-    engines: {node: '>=16'}
-    dev: false
-
   /commander@12.0.0:
     resolution: {integrity: sha512-MwVNWlYjDTtOjX5PiD7o5pK0UrFU/OYgcJfjjK4RaHZETNtjJqrZa9Y9ds88+A+f+d5lv+561eZ+yCKoS3gbAA==}
     engines: {node: '>=18'}
@@ -12757,6 +12727,13 @@ packages:
   /detect-node@2.1.0:
     resolution: {integrity: sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==}
     dev: true
+
+  /detect-package-manager@3.0.1:
+    resolution: {integrity: sha512-qoHDH6+lMcpJPAScE7+5CYj91W0mxZNXTwZPrCqi1KMk+x+AoQScQ2V1QyqTln1rHU5Haq5fikvOGHv+leKD8A==}
+    engines: {node: '>=12'}
+    dependencies:
+      execa: 5.1.1
+    dev: false
 
   /deterministic-object-hash@1.3.1:
     resolution: {integrity: sha512-kQDIieBUreEgY+akq0N7o4FzZCr27dPG1xr3wq267vPwDlSXQ3UMcBXHqTGUBaM/5WDS1jwTYjxRhUzHeuiAvw==}
@@ -17484,8 +17461,6 @@ packages:
       webpack: '*'
     peerDependenciesMeta:
       webpack:
-        optional: true
-      webpack-sources:
         optional: true
     dependencies:
       webpack: 5.90.1(@swc/core@1.4.2)(esbuild@0.20.0)
