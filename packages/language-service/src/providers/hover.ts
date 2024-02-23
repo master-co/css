@@ -1,7 +1,6 @@
 import type { Hover, Range } from 'vscode-languageserver-types'
 import { MasterCSS, Layer, Rule } from '@master/css'
 import { getCssEntryMarkdownDescription } from '../utils/get-css-entry-markdown-description'
-import { masterCssKeyValues } from '../constant'
 // @ts-expect-error
 import { css_beautify } from 'js-beautify/js/lib/beautify-css'
 // @ts-expect-error
