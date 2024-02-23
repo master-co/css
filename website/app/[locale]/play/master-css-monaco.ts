@@ -93,7 +93,7 @@ export function HoverItemProvider(textDocumentPosition: monaco.Position, documen
 
     const checkResult = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
     if (checkResult) {
-        const result = doHover(checkResult.instance.instanceString, indexToVsCodeRange(checkResult.instance.index, document))
+        const result = doHover(checkResult.instanceContent, indexToVsCodeRange(checkResult.index, document))
         if (result) {
             return {
                 range: vsCodeRangeToMonacoRange(result.range as any),

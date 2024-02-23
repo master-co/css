@@ -257,7 +257,7 @@ export default function serve() {
                 const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
                 const checkResult = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
                 if (checkResult) {
-                    return doHover(checkResult.instance.instanceString, indexToRange(checkResult.instance.index, document), customConfig)
+                    return doHover(checkResult.instanceContent, indexToRange(checkResult.index, document), customConfig)
                 }
             }
         }
