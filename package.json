@@ -37,6 +37,7 @@
         "cheerio": "1.0.0-rc.12",
         "cross-env": "^7.0.3",
         "css-shared": "workspace:^",
+        "execa": "^8.0.1",
         "fast-glob": "^3.3.2",
         "firebase-admin": "^11.11.1",
         "jest-extended": "^4.0.2",
