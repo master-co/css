@@ -40,7 +40,7 @@ export function CompletionItemProvider(document: monaco.editor.ITextModel, posit
         ], 10))
     }
 
-    const inMasterCSS = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch).IsMatch
+    const checkResult = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
 
     const line = document.getValueInRange({
         startLineNumber: position.lineNumber,
@@ -54,7 +54,7 @@ export function CompletionItemProvider(document: monaco.editor.ITextModel, posit
 
     const lastInstance = getLastInstance(lineText, monacoPositionToVsCodePosition(position), language)
 
-    if (lastInstance.isInstance === true && inMasterCSS) {
+    if (lastInstance.isInstance === true && checkResult) {
         result.push(...getCompletionItem(
             lastInstance.lastKey,
             lastInstance.triggerKey,
@@ -91,9 +91,9 @@ export function HoverItemProvider(textDocumentPosition: monaco.Position, documen
     const startIndex = document.getOffsetAt({ lineNumber: position.lineNumber - 100, column: 0 }) ?? 0
     const endIndex = document.getOffsetAt({ lineNumber: position.lineNumber + 100, column: 0 }) ?? undefined
 
-    const HoverInstance = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
-    if (HoverInstance.IsMatch) {
-        const result = doHover(HoverInstance.instance.instanceString, indexToVsCodeRange(HoverInstance.instance.index, document))
+    const checkResult = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
+    if (checkResult) {
+        const result = doHover(checkResult.instance.instanceString, indexToVsCodeRange(checkResult.instance.index, document))
         if (result) {
             return {
                 range: vsCodeRangeToMonacoRange(result.range as any),
@@ -140,9 +140,9 @@ export function ColorPresentationProvider(document: monaco.editor.ITextModel, co
     const startIndex = document.getOffsetAt({ lineNumber: colorInfo.range.startLineNumber - 100, column: 0 }) ?? 0
     const endIndex = document.getOffsetAt({ lineNumber: colorInfo.range.startLineNumber + 100, column: 0 }) ?? undefined
 
-    const isColorRender = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, colorRender)
+    const checkResult = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, colorRender)
 
-    const documentColors = getColorPresentation({ color: colorInfo.color, range: monacoRangeToVsCodeRange(colorInfo.range) } as any, isColorRender.IsMatch)
+    const documentColors = getColorPresentation({ color: colorInfo.color, range: monacoRangeToVsCodeRange(colorInfo.range) } as any, checkResult !== null)
 
     return documentColors.map(x => ({ label: x.label, textEdit: { range: colorInfo.range, text: x.textEdit?.newText ?? '' } }))
 }
