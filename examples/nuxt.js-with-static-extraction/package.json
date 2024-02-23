@@ -9,10 +9,10 @@
         "preview": "nuxt prepare && nuxt preview"
     },
     "devDependencies": {
-        "@master/css-runtime": "workspace:^",
         "@master/css-extractor.vite": "workspace:^",
-        "nuxt": "^3.10.2",
+        "@master/css-runtime": "workspace:^",
+        "nuxt": "^3.10.3",
         "vue": "^3.4.19",
-        "vue-router": "^4.2.5"
+        "vue-router": "^4.3.0"
     }
 }

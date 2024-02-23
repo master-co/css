@@ -20,6 +20,7 @@ export default class CSSExtractor extends EventEmitter {
     invalidClasses = new Set<string>()
     watching = false
     watchers: chokidar.FSWatcher[] = []
+    initialized = false
 
     constructor(
         public customOptions: Options | string = 'master.css-extractor',
@@ -29,6 +30,7 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     init(customOptions = this.customOptions) {
+        if (this.initialized) return
         if (typeof customOptions === 'string') {
             this.options = extend(defaultOptions, exploreConfig(customOptions, {
                 found: (basename) => log.i`Loaded **${basename}**`,
@@ -42,13 +44,16 @@ export default class CSSExtractor extends EventEmitter {
             log.tree(this.options)
             log``
         }
-
         this.css = new MasterCSS(
             typeof this.options.config === 'object'
                 ? this.options.config
-                : (exploreConfig(this.options.config as string, { cwd: this.cwd }) || {})
+                : (exploreConfig(this.options.config as string, {
+                    found: (basename) => log.i`Loaded **${basename}**`,
+                    cwd: this.cwd
+                }) || {})
         )
         this.emit('init', this.options, this.config)
+        this.initialized = true
         return this
     }
 
@@ -57,6 +62,7 @@ export default class CSSExtractor extends EventEmitter {
         this.latentClasses.clear()
         this.validClasses.clear()
         this.invalidClasses.clear()
+        this.initialized = false
         this.init(customOptions)
         await this.prepare()
         if (this.watching) await this.initWatch()
@@ -232,7 +238,7 @@ export default class CSSExtractor extends EventEmitter {
             await this.watch('add change unlink', resolvedConfigPath, async () => {
                 if (this.options.verbose) {
                     log``
-                    log.t`[change] **${this.configPath}**`
+                    log`[change] **${this.configPath}**`
                 }
                 await this.reset()
                 this.emit('configChange')
@@ -243,7 +249,7 @@ export default class CSSExtractor extends EventEmitter {
             await this.watch('add change unlink', resolvedOptionsPath, async () => {
                 if (this.options.verbose) {
                     log``
-                    log.t`[change] **${this.customOptions}**`
+                    log`[change] **${this.customOptions}**`
                 }
                 await this.reset()
                 this.emit('optionsChange')

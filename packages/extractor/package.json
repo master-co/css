@@ -67,11 +67,11 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "@techor/extend": "^3.0.10",
-        "@techor/glob": "^3.0.10",
-        "@techor/log": "^3.0.10",
+        "@techor/extend": "^3.0.11",
+        "@techor/glob": "^3.0.11",
+        "@techor/log": "^3.0.11",
         "chokidar": "^3.5.3",
-        "explore-config": "^3.0.10",
+        "explore-config": "^3.0.11",
         "minimatch": "^9.0.1"
     }
 }

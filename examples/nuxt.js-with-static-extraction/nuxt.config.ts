@@ -4,9 +4,6 @@ export default defineNuxtConfig({
     vite: {
         plugins: [
             CSSExtractorPlugin()
-        ],
-        define: {
-            __NUXT_ASYNC_CONTEXT__: false
-        }
+        ]
     }
 })

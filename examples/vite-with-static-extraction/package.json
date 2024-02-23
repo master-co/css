@@ -9,9 +9,9 @@
         "preview": "vite preview"
     },
     "devDependencies": {
-        "@master/css-runtime": "workspace:^",
         "@master/css-extractor.vite": "workspace:^",
-        "typescript": "^4.9.3",
-        "vite": "^5.0.0"
+        "@master/css-runtime": "workspace:^",
+        "typescript": "^4.9.5",
+        "vite": "^5.1.4"
     }
 }

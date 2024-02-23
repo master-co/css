@@ -88,7 +88,7 @@
     },
     "dependencies": {
         "@master/css-runtime": "workspace:^",
-        "@techor/extend": "^3.0.10",
+        "@techor/extend": "^3.0.11",
         "class-variant": "workspace:^",
         "clsx": "^2.1.0",
         "theme-service": "workspace:^"
