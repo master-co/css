@@ -1,4 +1,4 @@
-import { execSync } from 'child_process'
+import { execaCommandSync } from 'execa'
 import fs from 'fs'
 import dedent from 'ts-dedent'
 import { join } from 'path'
@@ -17,7 +17,7 @@ it('render css text into <head>', async () => {
             </body>
         </html>
     `)
-    execSync(`tsx ../../src/bin render "${filePath}"`, { cwd: __dirname })
+    execaCommandSync(`tsx ../../src/bin render ${filePath}`, { cwd: __dirname })
     expect(fs.readFileSync(filePath, { encoding: 'utf-8' })).toMatch(dedent`
         <html>
             <head>
@@ -46,7 +46,7 @@ it('render css text into head and create <style id="master">', async () => {
             </body>
         </html>
     `)
-    execSync(`tsx ../../src/bin render "${filePath}"`, { cwd: __dirname })
+    execaCommandSync(`tsx ../../src/bin render ${filePath}`, { cwd: __dirname })
     expect(fs.readFileSync(filePath, { encoding: 'utf-8' })).toMatch(dedent`
         <html>
             <head>
