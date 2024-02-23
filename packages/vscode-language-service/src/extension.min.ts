@@ -67,7 +67,7 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 function unregisterProviders(disposables: Disposable[]) {
-    disposables.forEach(disposable => disposable.dispose())
+    disposables.forEach(disposable => disposable?.[Symbol.dispose]())
     disposables.length = 0
 }
 
