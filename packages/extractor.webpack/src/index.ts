@@ -1,4 +1,4 @@
-import CSSExtractor, { Options } from '@master/css-extractor'
+import { CSSExtractor, Options } from '@master/css-extractor'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import log from '@techor/log'
