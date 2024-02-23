@@ -20,6 +20,7 @@ import { fileURLToPath } from 'url'
 import { exit } from 'node:process'
 
 const BRANCH = 'rc'
+const CURRENT_VERSION = '>=2.0.0-rc.1'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const pkg = readJSONFileSync(resolve(__dirname, '../../package.json'))
@@ -63,14 +64,14 @@ program
             appPkg.name = appName
             const targetPackages = []
             for (const key in appPkg.dependencies) {
-                if (pkg.version && appPkg.dependencies[key] === 'workspace:^') {
-                    appPkg.dependencies[key] = `^${pkg.version}`
+                if (appPkg.dependencies[key] === 'workspace:^') {
+                    appPkg.dependencies[key] = CURRENT_VERSION
                 }
                 targetPackages.push(key)
             }
             for (const key in appPkg.devDependencies) {
-                if (pkg.version && appPkg.devDependencies[key] === 'workspace:^') {
-                    appPkg.devDependencies[key] = `^${pkg.version}`
+                if (appPkg.devDependencies[key] === 'workspace:^') {
+                    appPkg.devDependencies[key] = CURRENT_VERSION
                 }
                 targetPackages.push(key)
             }
