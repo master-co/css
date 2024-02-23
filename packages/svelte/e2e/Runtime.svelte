@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store'
     import type { Config } from '@master/css'
-    import CSSRuntimeProvider from '../lib/CSSRuntimeProvider.svelte'
+    import CSSRuntimeProvider from '../src/lib/CSSRuntimeProvider.svelte'
 
     let containerRef: HTMLDivElement
     let shadowRoot: ShadowRoot
@@ -13,7 +13,6 @@
         }
     })
     const root = writable<ShadowRoot>()
-    const destroy = writable<boolean>(false)
 
     onMount(() => {
         shadowRoot = containerRef.attachShadow({ mode: 'open' });
@@ -24,17 +23,9 @@
     })
 </script>
 
-{#if $destroy}
-    <button on:click={() => destroy.set(false)}>INIT</button>
-{/if}
-
-{#if !$destroy}
-    <CSSRuntimeProvider config={$config} root={$root}>
-        <button on:click={() => destroy.set(true)}>DESTROY</button>
-        <button id="config-btn" class="btn" on:click={() => config.set({})}>CONFIG</button>
-        <button id="root-btn" on:click={() => root.set(shadowRoot)}>ROOT</button>
-        <div bind:this={containerRef}></div>
-    </CSSRuntimeProvider>
-{/if}
-
+<CSSRuntimeProvider config={$config} root={$root}>
+    <button id="config-btn" class="btn" on:click={() => config.set({})}></button>
+    <button id="root-btn" on:click={() => root.set(shadowRoot)}></button>
+    <div bind:this={containerRef}></div>
+</CSSRuntimeProvider>
 
