@@ -6,5 +6,5 @@ import { existsSync } from 'node:fs'
 it('creates a new app', () => {
     rm(join(__dirname, 'my-app'))
     execSync('tsx ../../src/bin my-app', { cwd: __dirname })
-    expect(existsSync(join(__dirname, 'my-app'))).toBe(true)
+    expect(existsSync(join(__dirname, 'my-app/package.json'))).toBe(true)
 })

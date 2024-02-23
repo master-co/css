@@ -1,9 +1,10 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { resolve } from 'node:path'
 import { Command } from 'commander'
 import { readJSONFileSync } from '@techor/fs'
 import log from '@techor/log'
-import { detect as detectPackageManager } from 'detect-package-manager'
+import { PackageManager, addDependency, detectPackageManager, installDependencies, packageManagers } from 'nypm'
 import detectAppExt from '../detect-app-ext'
 import detectAppTech from '../detect-app-tech'
 import { downloadTemplate } from 'giget'
@@ -16,7 +17,9 @@ import CONFIG_TS_TEXT from '../master.css.ts.js'
 import CONFIG_TEXT from '../master.css.js.js'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { exit } from 'node:process'
 
+const BRANCH = 'rc'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const pkg = readJSONFileSync(resolve(__dirname, '../../package.json'))
@@ -32,16 +35,17 @@ program
     .option('--pm <package manager>', 'Specify the package manager npm, yarn, pnpm, bun')
     .option('--example <folder name>', 'Specify the example folder name', 'blank')
     .action(async function (appName: string | undefined, options: Options) {
-        if (!options.pm) {
-            // Detect the package manager
-            options.pm = await detectPackageManager({ cwd: process.cwd() })
+        let pm: PackageManager
+        if (options.pm) {
+            pm = packageManagers.find((eachPM) => eachPM.name === options.pm)!
+        } else {
+            pm = await detectPackageManager(process.cwd()) || packageManagers.find((eachPM) => eachPM.name === 'npm')!
         }
-        const appPkg = readJSONFileSync('package.json')
         // Create a new app with the example
         if (appName) {
-            log.i(`Detected **${options.pm}**`)
+            log.i(`Detected **${pm.name}**`)
             const spinner = ora(`Initializing Master CSS`).start()
-            const examplePath = `github:master-co/css/examples/${options.example}#rc`
+            const examplePath = `github:master-co/css/examples/${options.example}#${BRANCH}`
             spinner.start(`Cloning example from "${examplePath}"`)
             try {
                 await downloadTemplate(examplePath, {
@@ -52,10 +56,12 @@ program
                 return
             }
             process.chdir(appName)
+            const appPkg = readJSONFileSync('package.json')
             if (!appPkg) {
-                spinner.fail(`Cannot found "${examplePath}"`)
-                log.i`View all available examples at **https://github.com/master-co/css/tree/rc/examples**`
-                return
+                spinner.stop()
+                log.i`View all examples at **https://github.com/master-co/css/tree/${BRANCH}/examples**`
+                log.x(`Cannot found "${examplePath}"`)
+                exit(1)
             }
             appPkg.name = appName
             const targetPackages = []
@@ -74,20 +80,21 @@ program
             writeFileSync('package.json', JSON.stringify(appPkg, null, 4), { flag: 'w' })
             spinner.stop()
             log.ok`Cloned example from "${examplePath}"`
-            log.i`Start "${options.pm} install" for dependencies: ${targetPackages}`
+            log.i`Start "${pm.name} install" for dependencies: ${targetPackages}`
             log``
             try {
-                execSync(`${options.pm} install`, { stdio: 'inherit' })
+                await installDependencies({ packageManager: pm })
                 log``
                 log.ok`Created **${appName}**`
                 log.i`Commands in this app:`
                 console.table(appPkg.scripts)
-                log.i`Start by running "cd ${appName} && ${options.pm} run ${appPkg.scripts?.dev ? 'dev' : 'start'}"`
+                log.i`Start by running "cd ${appName} && ${pm.command} run ${appPkg.scripts?.dev ? 'dev' : 'start'}"`
             } catch (error) {
                 spinner.fail()
                 throw error
             }
         } else {
+            const appPkg = readJSONFileSync('package.json')
             options.ext = options.ext || detectAppExt()
             const create = (fileName: string, text: string) => {
                 const configExists = existsSync(fileName)
@@ -114,17 +121,17 @@ program
                     break
             }
             if (!appPkg?.dependencies?.['@master/css']) {
-                log.i(`Detected **${options.pm}**`)
-                log.i`Start "${options.pm} add @master/css@rc"`
+                log.i(`Detected **${pm.name}**`)
+                log.i`Start "${pm.command} add @master/css@${BRANCH}"`
                 log``
-                execSync(`${options.pm} add @master/css@rc`, { stdio: 'inherit' })
+                addDependency(`@master/css@${BRANCH}`, { packageManager: pm })
                 log``
             }
             const tech = detectAppTech()
             if (tech) {
-                log.i(`Detected **${tech}** (https://rc.css.master.co/docs/installation/${tech})`)
+                log.i(`Detected **${tech}** (https://${BRANCH}.css.master.co/docs/installation/${tech})`)
             } else {
-                log.i(`To integrate with your framework, check out the guides at **https://rc.css.master.co/docs/installation**`)
+                log.i(`To integrate with your framework, check out the guides at **https://${BRANCH}.css.master.co/docs/installation**`)
             }
         }
     })
