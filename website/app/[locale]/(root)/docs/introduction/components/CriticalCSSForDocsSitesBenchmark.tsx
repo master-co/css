@@ -22,7 +22,7 @@ export default () => (
                     content: (
                         <Bars>
                             {results
-                                .sort((a, b) => b.totalCSSSize - a.totalCSSSize)
+                                .sort((a, b) => a.totalCSSSize - b.totalCSSSize)
                                 .map((result) => {
                                     const brand = brands.find((brand) => brand.name === result.name)
                                     return (
@@ -50,7 +50,7 @@ export default () => (
                     content: (
                         <Bars>
                             {results
-                                .sort((a, b) => b.totalCSSBrotliSize - a.totalCSSBrotliSize)
+                                .sort((a, b) => a.totalCSSBrotliSize - b.totalCSSBrotliSize)
                                 .map((result) => {
                                     const brand = brands.find((brand) => brand.name === result.name)
                                     return (
