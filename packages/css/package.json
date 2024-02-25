@@ -59,14 +59,15 @@
         "dist"
     ],
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
     "dependencies": {
         "@master/normal.css": "workspace:^",
-        "@techor/extend": "^3.0.11"
+        "@techor/extend": "^3.0.14"
     },
     "devDependencies": {
         "css-shared": "workspace:^",
-        "csstype": "^3.1.2"
+        "csstype": "^3.1.3"
     }
 }

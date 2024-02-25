@@ -47,25 +47,26 @@
         "dist"
     ],
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
     "dependencies": {
         "@master/css-server": "workspace:^",
         "@master/css.vue": "workspace:^",
-        "@nuxt/kit": "^3.9.3",
-        "@techor/log": "^3.0.11"
+        "@nuxt/kit": "^3.10.3",
+        "@techor/log": "^3.0.14"
     },
     "devDependencies": {
         "@nuxt/devtools": "latest",
         "@nuxt/eslint-config": "^0.2.0",
         "@nuxt/module-builder": "^0.5.5",
-        "@nuxt/schema": "^3.9.3",
-        "@nuxt/test-utils": "^3.10.0",
-        "@types/node": "^20",
+        "@nuxt/schema": "^3.10.3",
+        "@nuxt/test-utils": "^3.11.0",
+        "@types/node": "^20.11.20",
         "changelogen": "^0.5.5",
-        "eslint": "^8.56.0",
-        "nuxt": "^3.9.3",
-        "vitest": "^1.2.1",
-        "vue": "^3.4.15"
+        "eslint": "^8.57.0",
+        "nuxt": "^3.10.3",
+        "vitest": "^1.3.1",
+        "vue": "^3.4.19"
     }
 }

@@ -1,5 +1,6 @@
 {
     "private": true,
+    "type": "module",
     "scripts": {
         "postinstall": "pnpm dlx husky install",
         "build": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" build",
@@ -11,7 +12,8 @@
         "type-check": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --parallel type-check",
         "commit-check": "commitlint --from=HEAD~1 --verbose",
         "dev": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" dev",
-        "clean": "cross-env rm -rf node_modules && rm -rf pnpm-lock.json"
+        "clean": "cross-env rm -rf node_modules && rm -rf pnpm-lock.json",
+        "update:deps": "pnpm recursive update"
     },
     "engines": {
         "node": "^20"
@@ -22,27 +24,21 @@
     },
     "dependencies": {
         "@google-cloud/storage": "^7.7.0",
-        "@master/css": "workspace:^",
-        "@master/css-cli": "workspace:^",
-        "@master/css-extractor": "workspace:^",
-        "@master/css-extractor.vite": "workspace:^",
-        "@master/eslint-plugin-css": "workspace:^",
         "@swc-node/jest": "^1.7.0",
-        "@techor/fs": "^3.0.11",
-        "@techor/glob": "^3.0.11",
-        "@techor/jest-dom": "^3.0.11",
-        "@techor/repo": "^3.0.11",
+        "@techor/fs": "^3.0.14",
+        "@techor/glob": "^3.0.14",
+        "@techor/jest-dom": "^3.0.14",
+        "@techor/repo": "^3.0.14",
         "@types/node-fetch": "^2.6.11",
         "@types/shuffle-array": "^1.0.5",
         "cheerio": "1.0.0-rc.12",
         "cross-env": "^7.0.3",
-        "css-shared": "workspace:^",
         "execa": "^8.0.1",
         "fast-glob": "^3.3.2",
         "firebase-admin": "^11.11.1",
         "jest-extended": "^4.0.2",
         "jest-text-transformer": "^1.0.4",
-        "lightningcss-cli": "^1.23.0",
+        "lightningcss-cli": "^1.24.0",
         "nanoid": "^4.0.2",
         "nodemon": "^2.0.22",
         "normalize-newline": "^4.1.0",
@@ -50,12 +46,31 @@
         "shuffle-array": "^1.0.1",
         "spawnd": "^9.0.2",
         "strip-ansi": "^7.1.0",
-        "techor": "^3.0.11",
+        "techor": "^3.0.14",
         "tinybench": "^2.6.0",
         "ts-dedent": "^2.2.0",
         "tsx": "^4.7.1"
     },
-    "resolutions": {
-        "@semantic-release/commit-analyzer": "11.0.0"
+    "devDependencies": {
+        "@master/create-css": "workspace:^",
+        "@master/css": "workspace:^",
+        "@master/css-cli": "workspace:^",
+        "@master/css-extractor": "workspace:^",
+        "@master/css-extractor.vite": "workspace:^",
+        "@master/css-extractor.webpack": "workspace:^",
+        "@master/css-language-server": "workspace:^",
+        "@master/css-language-service": "workspace:^",
+        "@master/css-runtime": "workspace:^",
+        "@master/css-server": "workspace:^",
+        "@master/css-validator": "workspace:^",
+        "@master/css.nuxt": "workspace:^",
+        "@master/css.react": "workspace:^",
+        "@master/css.svelte": "workspace:^",
+        "@master/css.vue": "workspace:^",
+        "@master/eslint-config-css": "workspace:^",
+        "@master/eslint-plugin-css": "workspace:^",
+        "class-variant": "workspace:^",
+        "css-shared": "workspace:^",
+        "theme-service": "workspace:^"
     }
 }

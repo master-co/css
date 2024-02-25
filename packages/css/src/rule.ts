@@ -461,7 +461,7 @@ export class Rule {
                         + propertiesText.join(';')
                         + '}'
 
-                    for (const key of Object.keys(this.at).sort((a, b) => b === 'supports' ? -1 : 1)) {
+                    for (const key of Object.keys(this.at).sort((_a, b) => b === 'supports' ? -1 : 1)) {
                         cssText = '@' + key + (key.includes(' ') ? '' : ' ') + this.at[key] + '{' + cssText + '}'
                     }
 

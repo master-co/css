@@ -49,7 +49,8 @@
         "dist"
     ],
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
     "peerDependencies": {
         "vite": ">=5.0.0"
@@ -62,8 +63,8 @@
     "devDependencies": {
         "@playwright/test": "^1.41.2",
         "@types/lodash.debounce": "^4.0.9",
-        "@types/node": "^20",
-        "puppeteer-core": "^22.0.0",
-        "css-shared": "workspace:^"
+        "@types/node": "^20.11.20",
+        "css-shared": "workspace:^",
+        "puppeteer-core": "^22.2.0"
     }
 }

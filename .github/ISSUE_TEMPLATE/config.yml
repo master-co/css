@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: 🤔 Questions & Discussions
-    url: https://github.com/master-co/package/discussions
+    url: https://github.com/master-co/css/discussions
     about: Use GitHub discussions for forum-like discussions and questions.
   - name: 💬 Discord Chat
     url: https://discord.gg/sZNKpAAAw6

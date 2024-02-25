@@ -8,8 +8,8 @@
     },
     "devDependencies": {
         "@master/css-extractor.vite": "workspace:^",
-        "axios": "^1.1.2",
+        "axios": "^1.6.7",
         "laravel-vite-plugin": "^1.0.1",
-        "vite": "^5.0.0"
+        "vite": "^5.1.4"
     }
 }

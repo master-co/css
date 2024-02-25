@@ -24,7 +24,8 @@
         "./flat": "./flat.cjs"
     },
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
     "dependencies": {
         "@master/eslint-plugin-css": "workspace:^"

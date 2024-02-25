@@ -44,14 +44,16 @@
         "dist"
     ],
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
     "dependencies": {
         "@master/css": "workspace:^",
         "css-tree": "^2.3.1"
     },
     "devDependencies": {
+        "@types/css-tree": "^2.3.6",
         "css-shared": "workspace:^",
-        "ts-jest": "^29.1.0"
+        "ts-jest": "^29.1.2"
     }
 }

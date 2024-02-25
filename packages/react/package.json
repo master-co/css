@@ -80,7 +80,8 @@
         "dist"
     ],
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
     "peerDependencies": {
         "@types/react": ">=15",
@@ -89,8 +90,8 @@
     "dependencies": {
         "@master/css-runtime": "workspace:^",
         "class-variant": "workspace:^",
-        "theme-service": "workspace:^",
-        "clsx": "^2.0.0"
+        "clsx": "^2.1.0",
+        "theme-service": "workspace:^"
     },
     "devDependencies": {
         "@playwright/experimental-ct-react": "^1.41.2",

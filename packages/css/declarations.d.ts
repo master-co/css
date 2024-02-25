@@ -1,9 +1,3 @@
 import './src'
+import './types/global'
 import '@types/jest'
-
-import { default as _MasterCSS } from './src/core'
-
-declare global {
-    var MasterCSS: typeof _MasterCSS
-    var masterCSSs: _MasterCSS[]
-}

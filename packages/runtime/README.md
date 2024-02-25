@@ -48,7 +48,7 @@
             <img alt="Follow @mastercorg" src="https://img.shields.io/static/v1?label=%20&message=twitter&color=f6f7f8&logo=twitter&style=for-the-badge">
         </picture>
     </a>
-    <a aria-label="Github Actions" href="https://github.com/1aron/repo/actions/workflows/release.yml">
+    <a aria-label="Github Actions" href="https://github.com/master-co/css/actions/workflows/release.yml">
         <picture>
             <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&message=twitter&color=212022&logo=githubactions&style=for-the-badge">
             <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/actions/workflow/status/master-co/css/release.yml?branch=rc&label=%20&message=twitter&color=f6f7f8&logo=githubactions&style=for-the-badge&logoColor=%23000">

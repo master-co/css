@@ -43,7 +43,7 @@ export type SelectorDefinitions = { [key: string]: string | string[] | SelectorD
 export type MediaQueryDefinitions = { [key: string]: number | string | MediaQueryDefinitions }
 export type StyleDefinitions = { [key: string]: string | StyleDefinitions }
 export type RuleDefinitions = { [key in keyof typeof rules | string]?: RuleDefinition }
-export type VariableDefinitions = { [key in keyof typeof rules]?: VariableDefinition } & { [key: string]: VariableDefinition | VariableValue }
+export type VariableDefinitions = { [key in keyof typeof rules]?: VariableDefinition | VariableValue } & { [key: string]: VariableDefinition | VariableValue }
 export type SemanticDefinitions = { [key in keyof typeof semantics]?: PropertiesHyphen } & { [key: string]: PropertiesHyphen }
 export interface FunctionDefinition {
     unit?: string

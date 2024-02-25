@@ -9,15 +9,15 @@ export const bootstrap = brands.find(({ name }) => name === 'Bootstrap')
         <tr>
             <th className="sticky top:48 top:60@sm pt:4x bg:base"></th>
             <th className="sticky top:48 top:60@sm pt:4x bg:base w:1/5">
-                <Image src={masterCSS.src} className="size:48 mx:auto" />
+                <Image src={masterCSS.src} alt={masterCSS.name} className="size:48 mx:auto" />
                 <div className="text:center mt:2x hide@<sm">Master CSS</div>
             </th>
             <th className="sticky top:48 top:60@sm pt:4x bg:base w:1/5">
-                <Image src={tailwindCSS.src} className="size:48 mx:auto" />
+                <Image src={tailwindCSS.src} alt={tailwindCSS.name} className="size:48 mx:auto" />
                 <div className="text:center mt:2x hide@<sm">Tailwind CSS</div>
             </th>
             <th className="sticky top:48 top:60@sm pt:4x bg:base w:1/5">
-                <Image src={bootstrap.src} className="size:48 mx:auto" />
+                <Image src={bootstrap.src} alt={bootstrap.name} className="size:48 mx:auto" />
                 <div className="text:center mt:2x hide@<sm">Bootstrap</div>
             </th>
         </tr>

@@ -1,12 +1,6 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "rootDir": "src",
         "outDir": "dist"
-    },
-    "include": [
-        "src/**/*.ts",
-        "declarations.d.ts",
-        "./setup-jest.ts"
-    ]
+    }
 }

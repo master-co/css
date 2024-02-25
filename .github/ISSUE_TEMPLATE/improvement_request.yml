@@ -9,6 +9,13 @@ body:
           value: Tell us about anything that needs improvement or enhancement!
 
     - type: textarea
+      id: context
+      attributes:
+          label: Context
+          description: |
+              Describe the current and expected common context.
+
+    - type: textarea
       id: current
       attributes:
           label: Current
