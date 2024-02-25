@@ -7,8 +7,5 @@
             "DOM",
             "DOM.Iterable"
         ]
-    },
-    "include": [
-        "src/**/*"
-    ]
+    }
 }

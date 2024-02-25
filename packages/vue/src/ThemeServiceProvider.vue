@@ -9,8 +9,8 @@ const props = defineProps<{
 }>()
 
 const themeService = ref<ThemeService>()
-const current = ref<string>()
-const value = ref<ThemeValue>()
+const current = ref<ThemeService['current']>()
+const value = ref<ThemeService['value']>()
 
 const onThemeChange = () => {
     if (themeService.value) {

@@ -1,11 +1,7 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "rootDir": "src",
-        "moduleResolution": "Node",
+        "outDir": "dist",
         "strict": false
-    },
-    "include": [
-        "src/**/*"
-    ]
+    }
 }

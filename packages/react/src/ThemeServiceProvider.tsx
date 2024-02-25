@@ -23,8 +23,8 @@ export default function ThemeServiceProvider({
 }) {
     const themeService = useMemo(() => new ThemeService(options, host), [options, host])
     // Make React hook theme members
-    const [current, setCurrent] = useState<string>(themeService.current)
-    const [value, setValue] = useState<ThemeValue>(themeService.value)
+    const [current, setCurrent] = useState<ThemeService['current']>(themeService.current)
+    const [value, setValue] = useState<ThemeService['value']>(themeService.value)
 
     const switchValue = useCallback((value: ThemeValue, options?: {
         store?: boolean;

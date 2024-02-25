@@ -2,7 +2,6 @@ import cssEscape from 'css-shared/utils/css-escape'
 import { START_SYMBOLS } from '../constants/start-symbol'
 import type { Rule, RuleDefinition } from '../rule'
 import { Layer } from '../layer'
-import { PropertiesHyphen } from 'csstype'
 
 export const BORDER_STYLES = ['none', 'auto', 'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
 
@@ -419,7 +418,7 @@ const rules = {
         match: /^size:/,
         layer: Layer.CoreShorthand,
         unit: 'rem',
-        declare(value, valueComponents) {
+        declare(_value, valueComponents) {
             const length = valueComponents.length
             return {
                 width: length === 1
@@ -435,7 +434,7 @@ const rules = {
         match: /^min:/,
         layer: Layer.CoreShorthand,
         unit: 'rem',
-        declare(value, valueComponents) {
+        declare(_value, valueComponents) {
             const length = valueComponents.length
             return {
                 'min-width': length === 1
@@ -451,7 +450,7 @@ const rules = {
         match: /^max:/,
         layer: Layer.CoreShorthand,
         unit: 'rem',
-        declare(value, valueComponents) {
+        declare(_value, valueComponents) {
             const length = valueComponents.length
             return {
                 'max-width': length === 1
