@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
-import { Rule, NativeRule, RuleDefinition, RegisteredRule } from './rule'
+import { Rule, type NativeRule, type RuleDefinition, type RegisteredRule } from './rule'
 import type { Config, AnimationDefinitions } from './config'
 import { config as defaultConfig } from './config'
 import { Layer } from './layer'
 import { hexToRgb } from './utils/hex-to-rgb'
 import { flattenObject } from './utils/flatten-object'
 import { extendConfig } from './utils/extend-config'
-import { PropertiesHyphen } from 'csstype'
+import { type PropertiesHyphen } from 'csstype'
 import '../types/global.d' // fix: ../css/src/core.ts:1205:16 - error TS7017: Element implicitly has an 'any' type because type 'typeof globalThis' has no index signature.
 
 type VariableValue =
