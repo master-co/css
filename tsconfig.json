@@ -20,21 +20,25 @@
             "@master/css-validator": [ "./node_modules/@master/css-validator/src" ],
             "@master/css.vue": [ "./node_modules/@master/css.vue/src" ],
             "theme-service": [ "./node_modules/theme-service/src" ],
-
+            "css-shared/*": [ "./node_modules/css-shared/*" ],
         },
         "target": "esnext",
         "module": "esnext",
         "moduleResolution": "Bundler",
         "lib": [
-            "esnext"
+            "esnext",
+            "dom",
+            "dom.iterable"
         ],
         "types": [
-            "node"
+            "node",
+            "@types/jest"
         ],
         "esModuleInterop": true,
         "strict": true,
         "skipLibCheck": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "allowJs": true
     },
     "exclude": [
         "**/dist/**",

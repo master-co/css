@@ -7,6 +7,7 @@ import { hexToRgb } from './utils/hex-to-rgb'
 import { flattenObject } from './utils/flatten-object'
 import { extendConfig } from './utils/extend-config'
 import { PropertiesHyphen } from 'csstype'
+import '../types/global.d' // fix: ../css/src/core.ts:1205:16 - error TS7017: Element implicitly has an 'any' type because type 'typeof globalThis' has no index signature.
 
 type VariableValue =
     { type: 'string', value: string }
@@ -18,18 +19,6 @@ export type Variable = Omit<VariableValue, 'value' | 'space'> & {
     space?: any,
     usage?: number,
     themes?: { [theme: string]: VariableValue }
-}
-
-export default interface MasterCSS {
-    readonly style: HTMLStyleElement
-    styles: Record<string, string[]>
-    stylesBy: Record<string, string[]>
-    selectors: Record<string, [RegExp, string[]][]>
-    variables: Record<string, Variable>
-    mediaQueries: Record<string, string | number>
-    variablesNativeRules: Record<string, NativeRule>
-    hasKeyframesRule: boolean
-    animations: Record<string, AnimationDefinitions & { usage?: number, native?: NativeRule }>
 }
 
 export default class MasterCSS {
@@ -1198,7 +1187,19 @@ export default class MasterCSS {
     }
 }
 
-export const masterCSSs: MasterCSS[] = [];
+export const masterCSSs: MasterCSS[] = []
+
+export default interface MasterCSS {
+    readonly style: HTMLStyleElement
+    styles: Record<string, string[]>
+    stylesBy: Record<string, string[]>
+    selectors: Record<string, [RegExp, string[]][]>
+    variables: Record<string, Variable>
+    mediaQueries: Record<string, string | number>
+    variablesNativeRules: Record<string, NativeRule>
+    hasKeyframesRule: boolean
+    animations: Record<string, AnimationDefinitions & { usage?: number, native?: NativeRule }>
+}
 
 (() => {
     globalThis.MasterCSS = MasterCSS
