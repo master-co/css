@@ -10,7 +10,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - name: Techor Actions
-              uses: 1aron/techor@v2.5.17
+              uses: techor-dev/techor@v2.5.17
               with:
                   action: "sync-dev-branches"
               env:

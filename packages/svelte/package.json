@@ -45,7 +45,8 @@
 		"!dist/**/*.spec.*"
 	],
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
 	"peerDependencies": {
 		"svelte": "^4.0.0"

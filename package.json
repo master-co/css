@@ -1,5 +1,6 @@
 {
     "private": true,
+    "type": "module",
     "scripts": {
         "postinstall": "pnpm dlx husky install",
         "build": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" build",

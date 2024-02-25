@@ -33,7 +33,8 @@
         "dist"
     ],
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
     "dependencies": {
         "@techor/fs": "^3.0.11",

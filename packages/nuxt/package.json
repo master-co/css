@@ -47,7 +47,8 @@
         "dist"
     ],
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
     "dependencies": {
         "@master/css-server": "workspace:^",

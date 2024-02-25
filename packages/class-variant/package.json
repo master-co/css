@@ -43,7 +43,8 @@
         "dist"
     ],
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
     "peerDependencies": {
         "react": ">= 16.8.0"

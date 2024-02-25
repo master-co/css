@@ -50,7 +50,8 @@
         "dist"
     ],
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
     "devDependencies": {
         "@techor/extend": "^3.0.11"

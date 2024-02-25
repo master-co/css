@@ -183,7 +183,8 @@
         }
     },
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
     "devDependencies": {
         "@master/css-language-server": "workspace:^",

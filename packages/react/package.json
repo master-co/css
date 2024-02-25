@@ -80,7 +80,8 @@
         "dist"
     ],
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
     "peerDependencies": {
         "@types/react": ">=15",

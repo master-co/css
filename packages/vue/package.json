@@ -81,7 +81,8 @@
         "dist"
     ],
     "publishConfig": {
-        "access": "public"
+        "access": "public",
+        "provenance": true
     },
     "peerDependencies": {
         "vue": ">= 3.0.0"
