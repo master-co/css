@@ -188,9 +188,9 @@
     },
     "devDependencies": {
         "@master/css-language-server": "workspace:^",
-        "@vscode/vsce": "^2.20.0",
-        "@types/vscode": "^1.63.0",
-        "@vscode/test-electron": "^2.3.4",
+        "@types/vscode": "^1.86.0",
+        "@vscode/test-electron": "^2.3.9",
+        "@vscode/vsce": "^2.24.0",
         "vscode-languageclient": "^7.0.0"
     }
 }

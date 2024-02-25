@@ -1,15 +1,15 @@
 {
     "name": "master-css-eslint-example",
     "devDependencies": {
-        "@angular-eslint/template-parser": "^16.2.0",
-        "@master/css.react": "workspace:^",
+        "@angular-eslint/template-parser": "^16.3.1",
         "@master/css-runtime": "workspace:^",
+        "@master/css.react": "workspace:^",
         "@master/eslint-config-css": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
-        "@typescript-eslint/parser": "^6.9.0",
-        "clsx": "^2.0.0",
-        "eslint": "^8.51.0",
-        "eslint-mdx": "^2.2.0",
-        "eslint-plugin-mdx": "^2.2.0"
+        "@typescript-eslint/parser": "^6.21.0",
+        "clsx": "^2.1.0",
+        "eslint": "^8.57.0",
+        "eslint-mdx": "^2.3.4",
+        "eslint-plugin-mdx": "^2.3.4"
     }
 }

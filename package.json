@@ -12,7 +12,8 @@
         "type-check": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --parallel type-check",
         "commit-check": "commitlint --from=HEAD~1 --verbose",
         "dev": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" dev",
-        "clean": "cross-env rm -rf node_modules && rm -rf pnpm-lock.json"
+        "clean": "cross-env rm -rf node_modules && rm -rf pnpm-lock.json",
+        "update:deps": "pnpm recursive update"
     },
     "engines": {
         "node": "^20"
@@ -24,10 +25,10 @@
     "dependencies": {
         "@google-cloud/storage": "^7.7.0",
         "@swc-node/jest": "^1.7.0",
-        "@techor/fs": "^3.0.13",
-        "@techor/glob": "^3.0.13",
-        "@techor/jest-dom": "^3.0.13",
-        "@techor/repo": "^3.0.13",
+        "@techor/fs": "^3.0.14",
+        "@techor/glob": "^3.0.14",
+        "@techor/jest-dom": "^3.0.14",
+        "@techor/repo": "^3.0.14",
         "@types/node-fetch": "^2.6.11",
         "@types/shuffle-array": "^1.0.5",
         "cheerio": "1.0.0-rc.12",
@@ -45,13 +46,12 @@
         "shuffle-array": "^1.0.1",
         "spawnd": "^9.0.2",
         "strip-ansi": "^7.1.0",
-        "techor": "^3.0.13",
+        "techor": "^3.0.14",
         "tinybench": "^2.6.0",
         "ts-dedent": "^2.2.0",
         "tsx": "^4.7.1"
     },
     "devDependencies": {
-        "css-shared": "workspace:^",
         "@master/create-css": "workspace:^",
         "@master/css": "workspace:^",
         "@master/css-cli": "workspace:^",
@@ -70,6 +70,7 @@
         "@master/eslint-config-css": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
         "class-variant": "workspace:^",
+        "css-shared": "workspace:^",
         "theme-service": "workspace:^"
     }
 }

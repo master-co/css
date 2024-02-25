@@ -42,20 +42,20 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "explore-config": "^3.0.11",
-        "synckit": "^0.8.5"
+        "explore-config": "^3.0.14",
+        "synckit": "^0.8.8"
     },
     "devDependencies": {
-        "@angular-eslint/template-parser": "^16.2.0",
-        "@swc-node/register": "^1.6.8",
-        "@types/node": "^20",
-        "@typescript-eslint/parser": "^6.10.0",
-        "@typescript-eslint/utils": "^6.10.0",
-        "eslint": "^8.52.0",
+        "@angular-eslint/template-parser": "^16.3.1",
+        "@swc-node/register": "^1.8.0",
+        "@types/node": "^20.11.20",
+        "@typescript-eslint/parser": "^6.21.0",
+        "@typescript-eslint/utils": "^6.21.0",
+        "eslint": "^8.57.0",
         "eslint-plugin-markdown": "^3.0.1",
-        "eslint-plugin-mdx": "^2.2.0",
+        "eslint-plugin-mdx": "^2.3.4",
         "svelte-eslint-parser": "^0.33.1",
-        "ts-node": "^10.9.1",
-        "vue-eslint-parser": "^9.3.1"
+        "ts-node": "^10.9.2",
+        "vue-eslint-parser": "^9.4.2"
     }
 }

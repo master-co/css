@@ -10,7 +10,7 @@
         "type-check": "tsc --noEmit"
     },
     "dependencies": {
-        "@firebase/firestore": "^4.3.2",
+        "@firebase/firestore": "^4.4.2",
         "@master/css": "workspace:^",
         "@master/css-cli": "workspace:^",
         "@master/css-extractor": "workspace:^",
@@ -21,8 +21,8 @@
         "@master/eslint-plugin-css": "workspace:^",
         "@master/normal.css": "workspace:^",
         "@monaco-editor/react": "^4.6.0",
-        "@tabler/icons-react": "^2.46.0",
-        "@vercel/speed-insights": "^1.0.2",
+        "@tabler/icons-react": "^2.47.0",
+        "@vercel/speed-insights": "^1.0.10",
         "accept-language": "^3.0.18",
         "clone-deep": "^4.0.1",
         "eslint-config-next": "^14.1.0",
@@ -31,10 +31,10 @@
         "monaco-textmate": "^3.0.1",
         "next": "14.1.0",
         "parent-module": "^3.1.0",
-        "react": "^18",
+        "react": "^18.2.0",
         "react-countup": "^6.5.0",
-        "react-dom": "^18",
-        "react-intersection-observer": "^9.5.3",
+        "react-dom": "^18.2.0",
+        "react-intersection-observer": "^9.8.1",
         "theme-service": "workspace:^",
         "websites": "workspace:../../.."
     },
@@ -42,13 +42,13 @@
         "@builder.io/partytown": "^0.8.2",
         "@testing-library/jest-dom": "^6.4.2",
         "@testing-library/react": "^14.2.1",
-        "@types/jest": "^29.5.11",
-        "@types/node": "^20",
-        "@types/react": "^18",
-        "@types/react-dom": "^18",
-        "eslint": "^8",
+        "@types/jest": "^29.5.12",
+        "@types/node": "^20.11.20",
+        "@types/react": "^18.2.58",
+        "@types/react-dom": "^18.2.19",
+        "eslint": "^8.57.0",
         "jest": "^29.7.0",
         "jest-environment-jsdom": "^29.7.0",
-        "typescript": "^5"
+        "typescript": "^5.3.3"
     }
 }
