@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "experimentalDecorators": true,
-        "baseUrl": ".",
         "moduleResolution": "Node",
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,

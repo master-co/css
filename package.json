@@ -23,11 +23,6 @@
     },
     "dependencies": {
         "@google-cloud/storage": "^7.7.0",
-        "@master/css": "workspace:^",
-        "@master/css-cli": "workspace:^",
-        "@master/css-extractor": "workspace:^",
-        "@master/css-extractor.vite": "workspace:^",
-        "@master/eslint-plugin-css": "workspace:^",
         "@swc-node/jest": "^1.7.0",
         "@techor/fs": "^3.0.11",
         "@techor/glob": "^3.0.11",
@@ -56,7 +51,25 @@
         "ts-dedent": "^2.2.0",
         "tsx": "^4.7.1"
     },
-    "resolutions": {
-        "@semantic-release/commit-analyzer": "11.0.0"
+    "devDependencies": {
+        "class-variant": "workspace:^",
+        "@master/css-cli": "workspace:^",
+        "@master/create-css": "workspace:^",
+        "@master/css": "workspace:^",
+        "@master/eslint-config-css": "workspace:^",
+        "@master/eslint-plugin-css": "workspace:^",
+        "@master/css-extractor": "workspace:^",
+        "@master/css-extractor.vite": "workspace:^",
+        "@master/css-extractor.webpack": "workspace:^",
+        "@master/css-language-server": "workspace:^",
+        "@master/css-language-service": "workspace:^",
+        "@master/css.nuxt": "workspace:^",
+        "@master/css.react": "workspace:^",
+        "@master/css-runtime": "workspace:^",
+        "@master/css-server": "workspace:^",
+        "@master/css.svelte": "workspace:^",
+        "@master/css-validator": "workspace:^",
+        "@master/css.vue": "workspace:^",
+        "theme-service": "workspace:^"
     }
 }

@@ -10,7 +10,6 @@
     ],
     "compilerOptions": {
         "composite": true,
-        "baseUrl": ".",
         "moduleResolution": "node",
         "resolveJsonModule": false
     }

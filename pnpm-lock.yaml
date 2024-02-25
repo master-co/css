@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@semantic-release/commit-analyzer': 11.0.0
-
 importers:
 
   .:
@@ -14,21 +11,6 @@ importers:
       '@google-cloud/storage':
         specifier: ^7.7.0
         version: 7.7.0
-      '@master/css':
-        specifier: workspace:^
-        version: link:packages/css
-      '@master/css-cli':
-        specifier: workspace:^
-        version: link:packages/cli
-      '@master/css-extractor':
-        specifier: workspace:^
-        version: link:packages/extractor
-      '@master/css-extractor.vite':
-        specifier: workspace:^
-        version: link:packages/extractor.vite
-      '@master/eslint-plugin-css':
-        specifier: workspace:^
-        version: link:packages/eslint-plugin
       '@swc-node/jest':
         specifier: ^1.7.0
         version: 1.7.0(@swc/core@1.4.2)(@swc/types@0.1.5)(typescript@5.3.3)
@@ -110,6 +92,64 @@ importers:
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
+    devDependencies:
+      '@master/create-css':
+        specifier: workspace:^
+        version: link:packages/create
+      '@master/css':
+        specifier: workspace:^
+        version: link:packages/css
+      '@master/css-cli':
+        specifier: workspace:^
+        version: link:packages/cli
+      '@master/css-extractor':
+        specifier: workspace:^
+        version: link:packages/extractor
+      '@master/css-extractor.vite':
+        specifier: workspace:^
+        version: link:packages/extractor.vite
+      '@master/css-extractor.webpack':
+        specifier: workspace:^
+        version: link:packages/extractor.webpack
+      '@master/css-language-server':
+        specifier: workspace:^
+        version: link:packages/language-server
+      '@master/css-language-service':
+        specifier: workspace:^
+        version: link:packages/language-service
+      '@master/css-runtime':
+        specifier: workspace:^
+        version: link:packages/runtime
+      '@master/css-server':
+        specifier: workspace:^
+        version: link:packages/server
+      '@master/css-validator':
+        specifier: workspace:^
+        version: link:packages/validator
+      '@master/css.nuxt':
+        specifier: workspace:^
+        version: link:packages/nuxt
+      '@master/css.react':
+        specifier: workspace:^
+        version: link:packages/react
+      '@master/css.svelte':
+        specifier: workspace:^
+        version: link:packages/svelte
+      '@master/css.vue':
+        specifier: workspace:^
+        version: link:packages/vue
+      '@master/eslint-config-css':
+        specifier: workspace:^
+        version: link:packages/eslint-config
+      '@master/eslint-plugin-css':
+        specifier: workspace:^
+        version: link:packages/eslint-plugin
+      class-variant:
+        specifier: workspace:^
+        version: link:packages/class-variant
+      theme-service:
+        specifier: workspace:^
+        version: link:packages/theme-service
 
   examples/angular:
     dependencies:
