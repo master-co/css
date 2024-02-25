@@ -3,7 +3,7 @@ import CSSExtractor from '../../src'
 test('Oskar', () => {
     const extractor = new CSSExtractor({}, __dirname).init()
     expect(
-        extractor.extract('test.tsx',
+        extractor?.extract('test.tsx',
             `
             <div class="hidden flex@sm">
             <div class="display:hidden p:15 flex@sm  gap:5  ">

@@ -10,7 +10,7 @@ test('read custom options', async () => {
         }
     `)
     const extractor = new CSSExtractor('master.css-extractor', __dirname).init()
-    expect(extractor.options)
+    expect(extractor?.options)
         .toEqual({
             ...options,
             module: '.virtual:home.css'

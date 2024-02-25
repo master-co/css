@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 import { Command } from 'commander'
 import { readJSONFileSync } from '@techor/fs'
 import log from '@techor/log'
+// @ts-expect-error https://github.com/egoist/detect-package-manager/pull/15
 import { detect as detectPackageManager, PM } from 'detect-package-manager'
 import detectAppExt from '../detect-app-ext'
 import detectAppTech from '../detect-app-tech'

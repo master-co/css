@@ -2,7 +2,7 @@ import CSSExtractor from '../../src'
 
 test('AristideBH', async () => {
     const extractor = new CSSExtractor({ include: ['**/test.svelte'] }, __dirname).init()
-    await extractor.insert('test.svelte',
+    await extractor?.insert('test.svelte',
         `
 <script lang="ts">
 	import type { PageData } from "./$houdini";
@@ -77,7 +77,7 @@ test('AristideBH', async () => {
 </style>
         `)
     expect(
-        Object.keys(extractor.css.ruleBy)
+        Object.keys(extractor?.css.ruleBy || [])
     ).toEqual([
         'grid-row:1/2',
         'flex',

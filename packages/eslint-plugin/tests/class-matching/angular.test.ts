@@ -1,6 +1,6 @@
 import rule from '../../src/rules/class-order'
 import { RuleTester } from 'eslint'
-import parser from '@angular-eslint/template-parser'
+import { resolve } from 'path'
 
 new RuleTester({
     parserOptions: {
@@ -33,7 +33,7 @@ new RuleTester({
                         :)
                     </div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
-            parser,
+            parser: require.resolve('@angular-eslint/template-parser'),
         }
     ],
 })
