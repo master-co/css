@@ -3,6 +3,7 @@ import { RuleTester } from 'eslint'
 
 new RuleTester({
     parserOptions: {
+        ecmaVersion: 2019,
         ecmaFeatures: {
             jsx: true,
         },
@@ -58,6 +59,7 @@ new RuleTester({
 
 new RuleTester({
     parserOptions: {
+        ecmaVersion: 2019,
         ecmaFeatures: {
             jsx: true,
         },

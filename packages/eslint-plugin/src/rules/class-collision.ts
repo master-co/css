@@ -4,7 +4,7 @@ import resolveContext from '../utils/resolve-context'
 import { Rule } from 'eslint'
 import findLoc from '../utils/find-loc'
 import { parseNodeRecursive } from '../utils/parse-node-recursive'
-import validRulesAction from '../utils/valid-rules-action'
+import validRules from '../functions/valid-rules'
 
 export default {
     meta: {
@@ -51,7 +51,7 @@ export default {
                     const sourceCodeLines = sourceCode.lines
                     const nodeStartLine = node.loc.start.line
                     const nodeEndLine = node.loc.end.line
-                    const ruleOfClass = validRulesAction(classNames, settings.config)
+                    const ruleOfClass = validRules(classNames, settings.config)
                     for (let i = 0; i < classNames.length; i++) {
                         const className = classNames[i]
                         const rule = ruleOfClass[className]

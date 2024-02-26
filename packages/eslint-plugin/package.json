@@ -2,7 +2,9 @@
     "name": "@master/eslint-plugin-css",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\"",
+        "build": "rm -rf ./dist && pnpm run \"/^build:.*/\"",
+        "build:main": "techor build \"src/**/*.ts\" --no-clean",
+        "build:worker": "techor build \"src/**/*.worker.cjs\" --formats cjs --no-clean",
         "dev": "pnpm build --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",
