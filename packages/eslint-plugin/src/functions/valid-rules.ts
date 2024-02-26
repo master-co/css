@@ -1,7 +1,7 @@
 import { createSyncFn } from 'synckit'
-import type { runValidRules } from './valid-rules.worker.js'
+import runValidRules from './valid-rules.worker'
 import { join } from 'path'
 
-const validRules = createSyncFn(join(__dirname, 'valid-rules.worker')) as typeof runValidRules
-
-export default validRules
+export default process.env.NODE_ENV === 'test'
+    ? runValidRules
+    : createSyncFn(join(__dirname, 'valid-rules.worker.cjs')) as typeof runValidRules

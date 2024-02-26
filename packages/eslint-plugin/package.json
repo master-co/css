@@ -2,9 +2,7 @@
     "name": "@master/eslint-plugin-css",
     "type": "module",
     "scripts": {
-        "build": "rm -rf ./dist && pnpm run \"/^build:.*/\"",
-        "build:main": "techor build \"src/**/*.ts\" --no-clean",
-        "build:worker": "techor build \"src/**/*.worker.js\" --formats cjs --no-clean",
+        "build": "techor build \"src/**/*.{js,ts}\"",
         "dev": "pnpm build --watch",
         "test": "jest",
         "type-check": "tsc --noEmit",
@@ -51,9 +49,9 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
+        "@typescript-eslint/utils": "^7.0.2",
         "explore-config": "^3.0.15",
         "synckit": "^0.9.0",
-        "@typescript-eslint/utils": "^7.0.2",
         "typescript-eslint": "^7.0.2"
     },
     "devDependencies": {

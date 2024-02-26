@@ -1,7 +1,7 @@
 import { createSyncFn } from 'synckit'
-import type { runValidate } from './validate.worker.js'
+import runValidate from './validate.worker'
 import { join } from 'path'
 
-const validate = createSyncFn(join(__dirname, 'validate.worker')) as typeof runValidate
-
-export default validate
+export default process.env.NODE_ENV === 'test'
+    ? runValidate
+    : createSyncFn(join(__dirname, 'validate.worker.cjs')) as typeof runValidate
