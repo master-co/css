@@ -1,4 +1,4 @@
-import type Core from '../src/core'
+import type Core from '../core'
 
 declare global {
     // eslint-disable-next-line no-var

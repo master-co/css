@@ -1,7 +1,7 @@
 /* eslint-disable no-cond-assign */
 // @ts-expect-error
 import { lexer, parse, walk, property as propertyName } from 'css-tree'
-import { type SyntaxError } from '../types/syntax-error'
+import { type SyntaxError } from './types/syntax-error'
 
 export default function validateCSS(text: string, parseOptions = {
     parseAtrulePrelude: false,
