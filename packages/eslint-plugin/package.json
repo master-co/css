@@ -52,21 +52,19 @@
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
         "explore-config": "^3.0.15",
-        "synckit": "^0.9.0"
+        "synckit": "^0.9.0",
+        "@typescript-eslint/utils": "^7.0.2",
+        "typescript-eslint": "^7.0.2"
     },
     "devDependencies": {
         "@angular-eslint/template-parser": "^16.3.1",
-        "@swc-node/register": "^1.8.0",
         "@types/node": "^20.11.20",
-        "@typescript-eslint/parser": "^7.0.2",
         "@typescript-eslint/rule-tester": "^7.0.2",
-        "@typescript-eslint/utils": "^7.0.2",
         "eslint": "^8.57.0",
         "eslint-plugin-markdown": "^3.0.1",
         "eslint-plugin-mdx": "^2.3.4",
         "svelte-eslint-parser": "^0.33.1",
         "ts-node": "^10.9.2",
-        "typescript-eslint": "^7.0.2",
         "vue-eslint-parser": "^9.4.2"
     }
 }

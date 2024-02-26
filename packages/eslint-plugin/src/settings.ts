@@ -6,3 +6,10 @@ const settings = {
 }
 
 export default settings
+
+export interface Settings {
+    calleeMatching: string
+    classMatching: string
+    ignoredKeys: string[]
+    config: string | object
+}

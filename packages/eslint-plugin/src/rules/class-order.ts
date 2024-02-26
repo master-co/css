@@ -49,8 +49,7 @@ export default createRule({
     create: function (context) {
         const { options, settings } = resolveContext(context)
         const sourceCode = context.sourceCode
-
-        const visitNode = (node, arg = null) => {
+        const visitNode = (node: any, arg = null) => {
             let originalClassNamesValue = null
             let start = null
             let end = null
@@ -183,16 +182,15 @@ export default createRule({
                 const sourceCodeLines = sourceCode.lines
                 const nodeStartLine = node.loc.start.line
                 const nodeEndLine = node.loc.end.line
-                const descriptor = {
+                context.report({
                     loc: findLoc(originalClassNamesValue, sourceCodeLines, nodeStartLine, nodeEndLine),
                     messageId: 'invalidClassOrder',
                     fix: function (fixer) {
                         return fixer.replaceTextRange([start, end], validatedClassNamesValue)
                     }
-                }
-                context.report(descriptor)
+                })
             }
         }
-        return defineVisitors({ context, settings }, visitNode)
+        return defineVisitors({ context, settings, options }, visitNode)
     },
 })
