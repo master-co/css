@@ -7,5 +7,9 @@
             "DOM",
             "DOM.Iterable"
         ]
-    }
+    },
+    "include": [
+        "src/**/*.tsx",
+        "e2e/**/*.tsx"
+    ]
 }
