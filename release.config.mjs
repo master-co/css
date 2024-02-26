@@ -1,6 +1,6 @@
-const { configure } = require('semantic-release-config-techor')
+import { configure } from 'semantic-release-config-techor'
 
-module.exports = configure({
+export default configure({
     assets: [
         {
             path: 'packages/runtime/dist/global.min.js',
@@ -13,4 +13,4 @@ module.exports = configure({
             label: 'normal-${nextRelease.gitTag}.min.css'
         }
     ]
-})
+});
