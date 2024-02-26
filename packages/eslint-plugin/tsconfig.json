@@ -4,7 +4,6 @@
         "outDir": "dist",
         "strict": false
     },
-    // todo: standardize the source code of the entire project through types.
     "include": [
         "src/**/*.ts",
         "tests/**/*.test.ts",
