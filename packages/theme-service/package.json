@@ -55,6 +55,6 @@
         "provenance": true
     },
     "devDependencies": {
-        "@techor/extend": "^3.0.14"
+        "@techor/extend": "^3.0.16"
     }
 }

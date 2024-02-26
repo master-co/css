@@ -1,4 +1,4 @@
-const configure = require('semantic-release-config-techor/configure')
+const { configure } = require('semantic-release-config-techor')
 
 module.exports = configure({
     assets: [
