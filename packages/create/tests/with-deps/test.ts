@@ -1,4 +1,4 @@
-import { execaCommandSync } from 'execa'
+import { execSync } from 'child_process'
 import { join } from 'node:path'
 import { existsSync, writeFileSync } from 'node:fs'
 
@@ -11,6 +11,6 @@ writeFileSync(join(__dirname, 'package.json'), JSON.stringify({
 }))
 
 it('init', () => {
-    execaCommandSync('tsx ../../src/bin', { cwd: __dirname })
+    execSync('tsx ../../src/bin', { cwd: __dirname })
     expect(existsSync(join(__dirname, 'node_modules'))).toBeFalsy()
 })
