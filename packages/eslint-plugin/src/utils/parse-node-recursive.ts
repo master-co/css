@@ -1,9 +1,9 @@
-import { Rule } from 'eslint'
 import getTemplateElementPrefix from './get-template-element-prefix'
 import getTemplateElementSuffix from './get-template-element-suffix'
 import extractValueFromNode from './extract-value-from-node'
 import extractClassnamesFromValue from './extract-classnames-from-value'
 import extractRangeFromNode from './extract-range-from-node'
+import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 
 /**
  * Inspect and parse an abstract syntax node and run a callback function
@@ -16,7 +16,7 @@ import extractRangeFromNode from './extract-range-from-node'
  * @param {Array} ignoredKeys Optional, set object keys which should not be parsed e.g. for `cva`
  * @returns {void}
  */
-export function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, isolate = false, ignoredKeys = [], context: Rule.RuleContext = null) {
+export function parseNodeRecursive(rootNode, childNode, cb, skipConditional = false, isolate = false, ignoredKeys = [], context?: RuleContext<any, any>) {
     // TODO allow vue non litteral
     let originalClassNamesValue
     let classNames

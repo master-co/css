@@ -1,11 +1,12 @@
-import { Config, Rule } from '@master/css'
 import { runAsWorker } from 'synckit'
-import getMasterCSS from '../get-mastercss'
+import getMasterCSS from './get-css'
 import { generateValidRules } from '@master/css-validator'
+import { Rule } from '@master/css'
 
-export function runValidRules(classNames: string[], config: string | Config): Rule {
+export default function runValidRules(classNames: string[], config: string | object):
+    Record<string, { declarations: Rule['declarations'], stateToken: Rule['stateToken'] }> {
     const currentCSS = getMasterCSS(config)
-    const ruleOfClass: any = {}
+    const ruleOfClass = {}
     classNames
         .forEach(eachClassName => {
             const validRule = generateValidRules(eachClassName, { css: currentCSS })[0]

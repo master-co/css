@@ -1,8 +1,8 @@
-import type { RuleListener } from '@typescript-eslint/utils/ts-eslint'
-import { Rule } from 'eslint'
+import { TSESTree } from '@typescript-eslint/utils'
+import type { RuleContext, RuleListener } from '@typescript-eslint/utils/ts-eslint'
+import { Settings } from '../settings'
 
-export default function defineVisitors({ context, settings }: { context: Rule.RuleContext, settings: any }, visitNode) {
-
+export default function defineVisitors({ context, settings, options }: { context: RuleContext<any, any[]>, settings: Settings, options: any }, visitNode: (node: TSESTree.Node, args?: any) => void): RuleListener {
     const isFnNode = (node) => {
         let calleeName = ''
         const calleeNode = node.callee || node.tag
@@ -23,9 +23,7 @@ export default function defineVisitors({ context, settings }: { context: Rule.Ru
             visitNode(node, arg)
         })
     }
-
     const classMatchingRegex = new RegExp(settings.classMatching)
-
     const scriptVisitor: RuleListener = {
         CallExpression,
         JSXAttribute: function (node: any) {
@@ -53,7 +51,6 @@ export default function defineVisitors({ context, settings }: { context: Rule.Ru
             }
         },
     }
-
     const templateBodyVisitor: RuleListener = {
         CallExpression,
         VAttribute: function (node: any) {
@@ -71,9 +68,11 @@ export default function defineVisitors({ context, settings }: { context: Rule.Ru
         },
     }
 
+    // @ts-expect-error defineTemplateBodyVisitor
     if (context.sourceCode.parserServices == null || context.sourceCode.parserServices.defineTemplateBodyVisitor == null) {
         return scriptVisitor
     } else {
+        // @ts-expect-error defineTemplateBodyVisitor
         return context.sourceCode.parserServices.defineTemplateBodyVisitor(templateBodyVisitor, scriptVisitor)
     }
 }

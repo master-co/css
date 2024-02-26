@@ -1,7 +1,6 @@
 /* eslint-disable no-case-declarations */
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
-import { Rule } from 'eslint'
 import getTemplateElementBody from '../utils/get-template-element-body'
 import getTemplateElementSuffix from '../utils/get-template-element-suffix'
 import getTemplateElementPrefix from '../utils/get-template-element-prefix'
@@ -9,20 +8,21 @@ import extractValueFromNode from '../utils/extract-value-from-node'
 import extractRangeFromNode from '../utils/extract-range-from-node'
 import extractClassnamesFromValue from '../utils/extract-classnames-from-value'
 import findLoc from '../utils/find-loc'
-import reorderValidClassesAction from '../utils/reorder-valid-classes-action'
+import reorderValidClasses from '../functions/reorder-valid-classes'
+import createRule from '../create-rule'
 
-export default {
+export default createRule({
+    name: 'consistent-class-order',
     meta: {
+        type: 'layout',
+        fixable: 'code',
         docs: {
             description: 'Enforce a consistent and logical order of classes',
-            category: 'Stylistic Issues',
-            recommended: false,
-            url: 'https://rc.css.master.co/docs/code-linting#consistent-class-order',
+            recommended: 'recommended'
         },
         messages: {
             invalidClassOrder: 'No consistent class order followed.',
         },
-        fixable: 'code',
         schema: [
             {
                 type: 'object',
@@ -45,11 +45,11 @@ export default {
             },
         ],
     },
+    defaultOptions: [],
     create: function (context) {
         const { options, settings } = resolveContext(context)
         const sourceCode = context.sourceCode
-
-        const visitNode = (node, arg = null) => {
+        const visitNode = (node: any, arg = null) => {
             let originalClassNamesValue = null
             let start = null
             let end = null
@@ -149,7 +149,7 @@ export default {
                 return
             }
 
-            let orderedClassNames = reorderValidClassesAction(classNames, settings.config)
+            let orderedClassNames = reorderValidClasses(classNames, settings.config)
 
             orderedClassNames = classNames.filter(x => !orderedClassNames.includes(x))
                 .concat(orderedClassNames)
@@ -182,16 +182,15 @@ export default {
                 const sourceCodeLines = sourceCode.lines
                 const nodeStartLine = node.loc.start.line
                 const nodeEndLine = node.loc.end.line
-                const descriptor = {
+                context.report({
                     loc: findLoc(originalClassNamesValue, sourceCodeLines, nodeStartLine, nodeEndLine),
                     messageId: 'invalidClassOrder',
                     fix: function (fixer) {
                         return fixer.replaceTextRange([start, end], validatedClassNamesValue)
                     }
-                }
-                context.report(descriptor)
+                })
             }
         }
-        return defineVisitors({ context, settings }, visitNode)
+        return defineVisitors({ context, settings, options }, visitNode)
     },
-} as Rule.RuleModule
+})

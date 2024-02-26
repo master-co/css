@@ -1,10 +1,10 @@
-import { MasterCSS, Config, config } from '@master/css'
+import { MasterCSS } from '@master/css'
 import exploreConfig from 'explore-config'
 
-let currentCSS: MasterCSS
-let currentConfig: string | Config
+let currentCSS
+let currentConfig
 
-export default function getMasterCSS(config: string | Config) {
+export default function getCSS(config) {
     if (!currentCSS || currentConfig !== config) {
         currentCSS = new MasterCSS(typeof config === 'object' ? config : exploreConfig(config || ''))
         currentConfig = config

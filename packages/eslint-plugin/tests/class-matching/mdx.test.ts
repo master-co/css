@@ -1,12 +1,15 @@
 import OrderRule from '../../src/rules/class-order'
 import CollisionRule from '../../src/rules/class-collision'
-import { RuleTester } from 'eslint'
+import { RuleTester } from '@typescript-eslint/rule-tester'
 
 const ruleTester = new RuleTester({
+    parser: require.resolve('@typescript-eslint/parser'),
     parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: 'module',
         ecmaFeatures: {
             jsx: true,
-        },
+        }
     }
 })
 

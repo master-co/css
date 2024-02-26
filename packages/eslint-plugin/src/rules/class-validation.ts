@@ -1,17 +1,17 @@
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
-import { Rule } from 'eslint'
 import findLoc from '../utils/find-loc'
 import { parseNodeRecursive } from '../utils/parse-node-recursive'
-import validateAction from '../utils/validate-action'
+import validate from '../functions/validate'
+import createRule from '../create-rule'
 
-export default {
+export default createRule({
+    name: 'syntax-error-checks',
     meta: {
+        type: 'problem',
         docs: {
             description: 'Detect syntax errors early when writing classes',
-            category: 'Stylistic Issues',
-            recommended: false,
-            url: 'https://rc.css.master.co/docs/code-linting#syntax-error-checks',
+            recommended: 'recommended'
         },
         messages: {
             invalidClass: '{{message}}',
@@ -40,6 +40,7 @@ export default {
             },
         ],
     },
+    defaultOptions: [],
     create: function (context) {
         const { options, settings } = resolveContext(context)
         const visitNode = (node, arg = null) => {
@@ -52,7 +53,7 @@ export default {
                     const nodeStartLine = node.loc.start.line
                     const nodeEndLine = node.loc.end.line
                     for (const className of classNames) {
-                        const { isMasterCSS, errors } = validateAction(className, settings.config)
+                        const { isMasterCSS, errors } = validate(className, settings.config)
                         if (errors.length > 0) {
                             for (const error of errors) {
                                 if (isMasterCSS) {
@@ -82,6 +83,6 @@ export default {
                 context
             )
         }
-        return defineVisitors({ context, settings }, visitNode)
+        return defineVisitors({ context, settings, options }, visitNode)
     },
-} as Rule.RuleModule
+})

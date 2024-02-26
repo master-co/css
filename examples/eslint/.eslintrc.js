@@ -1,3 +1,5 @@
+const { resolve } = require('path')
+
 module.exports = {
     parserOptions: {
         ecmaFeatures: {
@@ -16,7 +18,7 @@ module.exports = {
     settings: {
         'mdx/code-blocks': true,
         '@master/css': {
-            config: 'examples/eslint/master.css.*'
+            config: resolve(__dirname, 'master.css')
         }
     },
     overrides: [

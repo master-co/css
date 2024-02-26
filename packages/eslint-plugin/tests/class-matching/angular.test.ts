@@ -1,12 +1,14 @@
+import { RuleTester } from '@typescript-eslint/rule-tester'
 import rule from '../../src/rules/class-order'
-import { RuleTester } from 'eslint'
-import { resolve } from 'path'
 
 new RuleTester({
+    parser: require.resolve('@typescript-eslint/parser'),
     parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: 'module',
         ecmaFeatures: {
             jsx: true,
-        },
+        }
     }
 }).run('class order', rule, {
     valid: [],

@@ -85,8 +85,10 @@ program
                 execSync(`${options.pm} install`, { stdio: 'inherit' })
                 log``
                 log.ok`Created **${appName}**`
-                log.i`Commands in this app:`
-                console.table(appPkg.scripts)
+                if (appPkg.scripts) {
+                    log.i`Commands in this app:`
+                    console.table(appPkg.scripts)
+                }
                 log.i`Start by running "cd ${appName} && ${options.pm} run ${appPkg.scripts?.dev ? 'dev' : 'start'}"`
             } catch (error) {
                 spinner.fail()
