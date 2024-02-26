@@ -1,4 +1,4 @@
-import { execaCommandSync } from 'execa'
+import { execSync } from 'child_process'
 import { join } from 'node:path'
 import { readFileSync, writeFileSync } from 'node:fs'
 
@@ -8,6 +8,6 @@ writeFileSync(join(__dirname, 'package.json'), JSON.stringify({
 }))
 
 it('init', () => {
-    execaCommandSync('tsx ../../src/bin', { cwd: __dirname })
+    execSync('tsx ../../src/bin', { cwd: __dirname })
     expect(JSON.parse(readFileSync(join(__dirname, 'package.json'), 'utf-8')).dependencies['@master/css']).toBeDefined()
 })

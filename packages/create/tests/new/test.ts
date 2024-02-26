@@ -1,11 +1,11 @@
-import { execaCommandSync } from 'execa'
+import { execSync } from 'child_process'
 import { rm } from 'css-shared/utils/fs'
 import { join } from 'node:path'
 import { existsSync, readFileSync } from 'node:fs'
 
 it('creates a new app', () => {
     rm(join(__dirname, 'my-app'))
-    execaCommandSync('tsx ../../src/bin my-app', { cwd: __dirname })
+    execSync('tsx ../../src/bin my-app', { cwd: __dirname })
     expect(existsSync(join(__dirname, 'my-app/package.json'))).toBe(true)
 })
 

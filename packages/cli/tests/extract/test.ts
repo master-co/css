@@ -1,5 +1,4 @@
 import { execSync } from 'child_process'
-import { execaCommandSync } from 'execa'
 import fs, { readFileSync } from 'fs'
 import { join } from 'path'
 
