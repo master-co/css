@@ -3,5 +3,16 @@
         "app/api/generate-page-cache/route.ts": {
             "memory": 3008
         }
-    }
+    },
+    "headers": [
+        {
+            "source": "*.woff2",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=31536000"
+                }
+            ]
+        }
+    ]
 }
