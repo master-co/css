@@ -1,4 +1,4 @@
-import { type SyntaxError } from '../types/syntax-error'
+import { type SyntaxError } from './types/syntax-error'
 import { Config, MasterCSS } from '@master/css'
 import validateCSS from './validate-css'
 

@@ -7,7 +7,7 @@ import { hexToRgb } from './utils/hex-to-rgb'
 import { flattenObject } from './utils/flatten-object'
 import { extendConfig } from './utils/extend-config'
 import { type PropertiesHyphen } from 'csstype'
-import '../types/global.d' // fix: ../css/src/core.ts:1205:16 - error TS7017: Element implicitly has an 'any' type because type 'typeof globalThis' has no index signature.
+import './types/global' // fix: ../css/src/core.ts:1205:16 - error TS7017: Element implicitly has an 'any' type because type 'typeof globalThis' has no index signature.
 
 type VariableValue =
     { type: 'string', value: string }
