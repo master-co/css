@@ -2,12 +2,20 @@ name: Release
 on:
     push:
         branches:
-            - main
+            - alpha
+            - beta
             - rc
+            - main
+            - canary
 
 jobs:
     release:
         runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            issues: write
+            pull-requests: write
+            id-token: write
         steps:
             - uses: actions/checkout@v4
             - uses: pnpm/action-setup@v3
