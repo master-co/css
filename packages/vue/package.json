@@ -39,29 +39,29 @@
     ],
     "sideEffects": false,
     "main": "./dist/index.cjs",
-    "jsnext:main": "./dist/index.mjs",
-    "esnext": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.js",
+    "esnext": "./dist/index.js",
+    "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
             "require": "./dist/index.cjs",
-            "import": "./dist/index.mjs",
+            "import": "./dist/index.js",
             "types": "./dist/index.d.ts"
         },
         "./CSSRuntimeProvider": {
             "require": "./dist/CSSRuntimeProvider.cjs",
-            "import": "./dist/CSSRuntimeProvider.mjs",
+            "import": "./dist/CSSRuntimeProvider.js",
             "types": "./dist/CSSRuntimeProvider.d.ts"
         },
         "./ThemeServiceProvider": {
             "require": "./dist/ThemeServiceProvider.cjs",
-            "import": "./dist/ThemeServiceProvider.mjs",
+            "import": "./dist/ThemeServiceProvider.js",
             "types": "./dist/ThemeServiceProvider.d.ts"
         },
         "./styled": {
             "require": "./dist/styled.cjs",
-            "import": "./dist/styled.mjs",
+            "import": "./dist/styled.js",
             "types": "./dist/styled.d.ts"
         }
     },
