@@ -1,5 +1,5 @@
 import { createSyncFn } from 'synckit'
-import type { runReorderValidClasses } from './workers/reorder-valid-classes'
+import type { runReorderValidClasses } from '../workers/reorder-valid-classes'
 
 const reorderValidClassesAction = createSyncFn(require.resolve('./workers/reorder-valid-classes'), {
     tsRunner: 'swc'

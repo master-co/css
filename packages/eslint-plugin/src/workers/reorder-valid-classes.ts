@@ -1,6 +1,6 @@
 import { Config, reorderForReadableClasses } from '@master/css'
 import { runAsWorker } from 'synckit'
-import getMasterCSS from '../get-mastercss'
+import getMasterCSS from '../utils/get-mastercss'
 
 export function runReorderValidClasses(classNames: string[], config: string | Config): string[] {
     const currentCSS = getMasterCSS(config)

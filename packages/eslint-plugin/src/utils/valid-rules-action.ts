@@ -1,5 +1,5 @@
 import { createSyncFn } from 'synckit'
-import type { runValidRules } from './workers/valid-rules'
+import type { runValidRules } from '../workers/valid-rules'
 
 const validRulesAction = createSyncFn(require.resolve('./workers/valid-rules'), {
     tsRunner: 'swc'

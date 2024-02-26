@@ -1,5 +1,5 @@
 import { createSyncFn } from 'synckit'
-import type { runValidate } from './workers/validate'
+import type { runValidate } from '../workers/validate'
 
 const validateAction = createSyncFn(require.resolve('./workers/validate'), {
     tsRunner: 'swc'

@@ -28,11 +28,17 @@
     },
     "sideEffects": false,
     "main": "./dist/index.cjs",
-    "types": "./dist/index.d.ts",
-    "exports": "./dist/index.cjs",
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs",
+            "types": "./dist/index.d.ts"
+        }
+    },
     "files": [
         "dist"
     ],
@@ -43,8 +49,8 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "explore-config": "^3.0.14",
-        "synckit": "^0.8.8"
+        "explore-config": "^3.0.15",
+        "synckit": "^0.9.0"
     },
     "devDependencies": {
         "@angular-eslint/template-parser": "^16.3.1",
@@ -57,6 +63,7 @@
         "eslint-plugin-mdx": "^2.3.4",
         "svelte-eslint-parser": "^0.33.1",
         "ts-node": "^10.9.2",
+        "typescript-eslint": "^7.0.2",
         "vue-eslint-parser": "^9.4.2"
     }
 }

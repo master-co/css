@@ -1,6 +1,6 @@
 import { Config, Rule } from '@master/css'
 import { runAsWorker } from 'synckit'
-import getMasterCSS from '../get-mastercss'
+import getMasterCSS from '../utils/get-mastercss'
 import { generateValidRules } from '@master/css-validator'
 
 export function runValidRules(classNames: string[], config: string | Config): Rule {

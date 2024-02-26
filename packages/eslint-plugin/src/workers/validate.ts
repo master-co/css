@@ -1,6 +1,6 @@
 import { Config } from '@master/css'
 import { runAsWorker } from 'synckit'
-import getMasterCSS from '../get-mastercss'
+import getMasterCSS from '../utils/get-mastercss'
 import { validate } from '@master/css-validator'
 
 export function runValidate(className: string, config: string | Config): { isMasterCSS: boolean; errors: SyntaxError[] } {

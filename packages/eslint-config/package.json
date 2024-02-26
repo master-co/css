@@ -1,5 +1,12 @@
 {
     "name": "@master/eslint-config-css",
+    "type": "module",
+    "scripts": {
+        "build": "techor build \"src/**/*.ts\"",
+        "dev": "pnpm build --watch",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint src"
+    },
     "keywords": [
         "mastercss",
         "eslint",
@@ -18,10 +25,22 @@
         "url": "https://github.com/master-co/css.git",
         "directory": "packages/eslint-config"
     },
-    "main": "index.cjs",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
     "exports": {
-        ".": "./index.cjs",
-        "./flat": "./flat.cjs"
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        },
+        "./flat": {
+            "types": "./dist/flat.d.ts",
+            "import": "./dist/flat.mjs",
+            "require": "./dist/flat.cjs"
+        }
     },
     "publishConfig": {
         "access": "public",
