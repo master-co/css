@@ -8,7 +8,6 @@ import { readFile, writeFileSync } from 'fs'
 import { brotliCompressSync } from 'zlib'
 // @ts-expect-error
 import bytes from 'bytes'
-import { render } from '@master/css-server'
 
 export default (program: Command) => program
     .command('render')
@@ -19,6 +18,7 @@ export default (program: Command) => program
     .action(async function (filePatterns: Pattern | Pattern[], options: any = {
         config: 'master.css'
     }) {
+        const { render } = await import('@master/css-server')
         const sourcePaths = explorePathsSync(filePatterns)
         if (sourcePaths.length) {
             const renderStart = process.hrtime()

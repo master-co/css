@@ -1,5 +1,6 @@
 {
     "name": "@master/css.nuxt",
+    "type": "module",
     "scripts": {
         "build": "nuxt-module-build prepare && nuxt-module-build",
         "dev": "nuxt-module-build prepare && nuxi dev playground",
@@ -8,7 +9,6 @@
         "lint": "eslint .",
         "test": "vitest run"
     },
-    "type": "module",
     "license": "MIT",
     "description": "Integrate Master CSS Progressive Rendering in Nuxt way",
     "author": "Aoyue Design LLC.",

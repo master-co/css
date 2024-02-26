@@ -1,5 +1,6 @@
 {
     "name": "@master/css.react",
+    "type": "module",
     "scripts": {
         "build": "techor build \"src/**/*.tsx\"",
         "dev": "pnpm build --watch",

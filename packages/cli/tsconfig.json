@@ -7,5 +7,9 @@
         "src/**/*.ts",
         "tests/**/*.test.ts",
         "tests/**/test.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
     ]
 }

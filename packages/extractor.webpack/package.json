@@ -1,5 +1,6 @@
 {
     "name": "@master/css-extractor.webpack",
+    "type": "module",
     "scripts": {
         "build": "techor build \"src/**/*.ts\"",
         "dev": "pnpm build --watch",
