@@ -13,4 +13,4 @@ export default configure({
             label: 'normal-${nextRelease.gitTag}.min.css'
         }
     ]
-});
+})
