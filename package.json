@@ -25,10 +25,10 @@
     "dependencies": {
         "@google-cloud/storage": "^7.7.0",
         "@swc-node/jest": "^1.7.0",
-        "@techor/fs": "^3.0.14",
-        "@techor/glob": "^3.0.14",
-        "@techor/jest-dom": "^3.0.14",
-        "@techor/repo": "^3.0.14",
+        "@techor/fs": "^3.0.16",
+        "@techor/glob": "^3.0.16",
+        "@techor/jest-dom": "^3.0.16",
+        "@techor/repo": "^3.0.16",
         "@types/node-fetch": "^2.6.11",
         "@types/shuffle-array": "^1.0.5",
         "cheerio": "1.0.0-rc.12",
@@ -45,7 +45,7 @@
         "shuffle-array": "^1.0.1",
         "spawnd": "^9.0.2",
         "strip-ansi": "^7.1.0",
-        "techor": "^3.0.14",
+        "techor": "^3.0.16",
         "tinybench": "^2.6.0",
         "ts-dedent": "^2.2.0",
         "tsx": "^4.7.1"
