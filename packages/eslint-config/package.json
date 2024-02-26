@@ -5,6 +5,7 @@
         "build": "techor build \"src/**/*.ts\"",
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
+        "test": "jest",
         "lint": "eslint src"
     },
     "keywords": [
@@ -48,5 +49,9 @@
     },
     "dependencies": {
         "@master/eslint-plugin-css": "workspace:^"
+    },
+    "devDependencies": {
+        "@angular-eslint/template-parser": "^16.3.1",
+        "eslint": "^8.57.0"
     }
 }
