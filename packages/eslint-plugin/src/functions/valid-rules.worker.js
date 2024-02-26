@@ -1,5 +1,5 @@
 import { runAsWorker } from 'synckit'
-import getMasterCSS from './get-css.cjs'
+import getMasterCSS from './get-css.js'
 import { generateValidRules } from '@master/css-validator'
 
 export function runValidRules(classNames, config) {
