@@ -1,7 +1,6 @@
 /* eslint-disable no-case-declarations */
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
-import { Rule } from 'eslint'
 import getTemplateElementBody from '../utils/get-template-element-body'
 import getTemplateElementSuffix from '../utils/get-template-element-suffix'
 import getTemplateElementPrefix from '../utils/get-template-element-prefix'
@@ -10,19 +9,20 @@ import extractRangeFromNode from '../utils/extract-range-from-node'
 import extractClassnamesFromValue from '../utils/extract-classnames-from-value'
 import findLoc from '../utils/find-loc'
 import reorderValidClasses from '../functions/reorder-valid-classes'
+import createRule from '../create-rule'
 
-export default {
+export default createRule({
+    name: 'consistent-class-order',
     meta: {
+        type: 'layout',
+        fixable: 'code',
         docs: {
             description: 'Enforce a consistent and logical order of classes',
-            category: 'Stylistic Issues',
-            recommended: false,
-            url: 'https://rc.css.master.co/docs/code-linting#consistent-class-order',
+            recommended: 'recommended'
         },
         messages: {
             invalidClassOrder: 'No consistent class order followed.',
         },
-        fixable: 'code',
         schema: [
             {
                 type: 'object',
@@ -45,6 +45,7 @@ export default {
             },
         ],
     },
+    defaultOptions: [],
     create: function (context) {
         const { options, settings } = resolveContext(context)
         const sourceCode = context.sourceCode
@@ -194,4 +195,4 @@ export default {
         }
         return defineVisitors({ context, settings }, visitNode)
     },
-} as Rule.RuleModule
+})

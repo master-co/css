@@ -1,7 +1,6 @@
-import type { RuleListener } from '@typescript-eslint/utils/ts-eslint'
-import { Rule } from 'eslint'
+import type { RuleContext, RuleListener } from '@typescript-eslint/utils/ts-eslint'
 
-export default function defineVisitors({ context, settings }: { context: Rule.RuleContext, settings: any }, visitNode) {
+export default function defineVisitors({ context, settings }: { context: RuleContext<any, any>, settings: any }, visitNode) {
 
     const isFnNode = (node) => {
         let calleeName = ''

@@ -1,18 +1,18 @@
 import areDeclarationsEqual from '../utils/are-declarations-equal'
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
-import { Rule } from 'eslint'
 import findLoc from '../utils/find-loc'
 import { parseNodeRecursive } from '../utils/parse-node-recursive'
 import validRules from '../functions/valid-rules'
+import createRule from '../create-rule'
 
-export default {
+export default createRule({
+    name: 'class-collision-detection',
     meta: {
+        type: 'layout',
         docs: {
             description: 'Avoid applying classes with the same CSS declaration',
-            category: 'Stylistic Issues',
-            recommended: false,
-            url: 'https://rc.css.master.co/docs/code-linting#class-collision-detection',
+            recommended: 'recommended'
         },
         messages: {
             collisionClass: '{{message}}',
@@ -40,6 +40,7 @@ export default {
             },
         ],
     },
+    defaultOptions: [],
     create(context) {
         const { options, settings } = resolveContext(context)
         const visitNode = (node, arg = null) => {
@@ -98,4 +99,4 @@ export default {
         }
         return defineVisitors({ context, settings }, visitNode)
     },
-} as Rule.RuleModule
+})
