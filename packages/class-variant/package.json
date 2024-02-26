@@ -1,5 +1,6 @@
 {
     "name": "class-variant",
+    "type": "module",
     "scripts": {
         "build": "techor build",
         "dev": "pnpm build --watch",

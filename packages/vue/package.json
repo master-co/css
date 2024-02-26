@@ -1,5 +1,6 @@
 {
     "name": "@master/css.vue",
+    "type": "module",
     "scripts": {
         "build:main": "vite build",
         "build:type": "vue-tsc --declaration --emitDeclarationOnly",

@@ -1,5 +1,6 @@
 {
     "name": "@master/eslint-plugin-css",
+    "type": "module",
     "scripts": {
         "build": "techor build \"src/**/*.ts\"",
         "dev": "pnpm build --watch",

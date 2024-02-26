@@ -1,5 +1,6 @@
 {
     "name": "@master/css-extractor",
+    "type": "module",
     "scripts": {
         "build": "techor build \"src/**/*.ts\"",
         "dev": "techor build --watch",
@@ -7,7 +8,6 @@
         "type-check": "tsc --noEmit",
         "test": "jest"
     },
-    "type": "module",
     "license": "MIT",
     "description": "Master CSS static extractor for various raw text",
     "author": "Aoyue Design LLC.",
