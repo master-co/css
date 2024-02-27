@@ -1,7 +1,6 @@
 import type { Hover, Range } from 'vscode-languageserver-types'
 import { MasterCSS, Layer, Rule } from '@master/css'
 import { getCssEntryMarkdownDescription } from '../utils/get-css-entry-markdown-description'
-import { masterCssKeyValues } from '../constant'
 // @ts-expect-error
 import { css_beautify } from 'js-beautify/js/lib/beautify-css'
 // @ts-expect-error
@@ -17,15 +16,17 @@ export function doHover(instance: string, range: Range, config?: any): Hover | n
     const contents = []
 
     if (css.text) {
-        const cssPreview = getCssPreview(instance, css.text)
+        const cssPreview = getCssPreview(css.text)
         if (cssPreview) {
             contents.push(cssPreview)
         }
     }
 
-    const cssHoverInfo = getCssHoverInfo(instance, css.rules[0])
-    if (cssHoverInfo) {
-        contents.push(cssHoverInfo)
+    if (css.rules.length > 0) {
+        const cssHoverInfo = getCssHoverInfo(css.rules[0])
+        if (cssHoverInfo) {
+            contents.push(cssHoverInfo)
+        }
     }
 
     return {
@@ -34,7 +35,7 @@ export function doHover(instance: string, range: Range, config?: any): Hover | n
     }
 }
 
-function getCssPreview(instance: string, renderText: string) {
+function getCssPreview(renderText: string) {
     return {
         language: 'css',
         value: css_beautify(renderText, {
@@ -44,7 +45,7 @@ function getCssPreview(instance: string, renderText: string) {
     }
 }
 
-function getCssHoverInfo(instance: string, rule: Rule) {
+function getCssHoverInfo(rule: Rule) {
     const cssDataProvider = new CSSDataProvider(cssData)
     const cssProperties = cssDataProvider.provideProperties()
 
@@ -52,7 +53,7 @@ function getCssHoverInfo(instance: string, rule: Rule) {
 
     const fullKey = rule.id
     const originalCssProperty = cssProperties.find((x: { name: string }) => x.name == fullKey)
-    if ([Layer.Core, Layer.CoreNative, Layer.CoreShorthand, Layer.CoreNativeShorthand].includes(rule.layer) && originalCssProperty) {
+    if (rule?.layer && [Layer.Core, Layer.CoreNative, Layer.CoreShorthand, Layer.CoreNativeShorthand].includes(rule.layer) && originalCssProperty) {
         if (!originalCssProperty.references?.find((x: { name: string }) => x.name === 'Master Reference')) {
             originalCssProperty.references = [
                 ...(originalCssProperty?.references ?? []),

@@ -79,6 +79,29 @@ ruleTester.run('vue class order', rule, {
             ],
             filename: 'test.vue',
             parser: require.resolve('vue-eslint-parser'),
+        },
+        {
+            code: `
+                    <template>
+                        <div :class="[
+                            true
+                                ? 'fg:#aaaaaa {content:\\'\\';block;h:full;w:full;abs}::after bg:#ffffff'
+                                : 'fg:#ffffff'
+                        ]"/>
+                    </template>`,
+            output: `
+                    <template>
+                        <div :class="[
+                            true
+                                ? '{content:\\'\\';block;h:full;w:full;abs}::after bg:#ffffff fg:#aaaaaa'
+                                : 'fg:#ffffff'
+                        ]"/>
+                    </template>`,
+            errors: [
+                { messageId: 'invalidClassOrder' }
+            ],
+            filename: 'test.vue',
+            parser: require.resolve('vue-eslint-parser'),
         }
     ],
 })

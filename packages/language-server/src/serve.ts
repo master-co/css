@@ -159,8 +159,7 @@ export default function serve() {
                     const positionIndex = document.offsetAt(position) ?? 0
                     const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
                     const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
-                    const inMasterCSS = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch).IsMatch
-
+                    const checkResult = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
 
                     const lineText: string = document.getText({
                         start: { line: position.line, character: 0 },
@@ -171,7 +170,7 @@ export default function serve() {
                     const lastInstance = getLastInstance(lineText, position, language)
 
 
-                    if (lastInstance.isInstance == true && inMasterCSS == true) {
+                    if (lastInstance.isInstance == true && checkResult) {
                         return getCompletionItem(lastInstance.lastKey, lastInstance.triggerKey, lastInstance.isStart, lastInstance.language, css)
                     } else if (lastInstance.isInstance == true && checkConfigColorsBlock(document, textDocumentPosition.position) == true) {
                         return getConfigColorsCompletionItem(css)
@@ -239,8 +238,8 @@ export default function serve() {
                 const positionIndex = document.offsetAt(params.range.start) ?? 0
                 const startIndex = document.offsetAt({ line: params.range.start.line - 100, character: 0 }) ?? 0
                 const endIndex = document.offsetAt({ line: params.range.start.line + 100, character: 0 }) ?? undefined
-                const isColorRender = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, colorRender)
-                return getColorPresentation(params, isColorRender.IsMatch)
+                const checkResult = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, colorRender)
+                return getColorPresentation(params, checkResult !== null)
             }
 
         }
@@ -256,9 +255,9 @@ export default function serve() {
                 const positionIndex = document.offsetAt(position) ?? 0
                 const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
                 const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
-                const HoverInstance = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
-                if (HoverInstance.IsMatch) {
-                    return doHover(HoverInstance.instance.instanceString, indexToRange(HoverInstance.instance.index, document), customConfig)
+                const checkResult = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
+                if (checkResult) {
+                    return doHover(checkResult.instanceContent, indexToRange(checkResult.index, document), customConfig)
                 }
             }
         }

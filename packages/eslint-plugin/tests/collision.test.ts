@@ -35,6 +35,14 @@ new RuleTester({
                 { messageId: 'collisionClass' },
                 { messageId: 'collisionClass' }
             ]
+        },
+        {
+            code: `<div class=":target_{invisible} :target_{visible}"></div>`,
+            output: `<div class=":target_{invisible}"></div>`,
+            errors: [
+                { messageId: 'collisionClass' },
+                { messageId: 'collisionClass' }
+            ]
         }
     ]
 })
