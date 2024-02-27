@@ -14,7 +14,7 @@ jobs:
             matrix:
                 node-version: [20]
         steps:
-            - uses: techor-dev/techor@v2.5.17
+            - uses: techor-dev/techor@main
               with:
                   action: "check-pull-request-title"
               env:
