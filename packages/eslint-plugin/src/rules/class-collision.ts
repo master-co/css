@@ -1,4 +1,5 @@
 import areDeclarationsEqual from '../utils/are-declarations-equal'
+import areVendorPrefixSelectorsEqual from '../utils/are-vendor-prefix-selectors-equal'
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import findLoc from '../utils/find-loc'
@@ -64,6 +65,7 @@ export default createRule({
                                 if (i !== j && compareRule
                                     // 比對兩個 rule 是否具有相同數量及相同屬性的 declarations
                                     && areDeclarationsEqual(rule.declarations, compareRule.declarations)
+                                    && areVendorPrefixSelectorsEqual(rule.vendorPrefixSelectors, compareRule.vendorPrefixSelectors)
                                     && rule.stateToken === compareRule.stateToken
                                 ) {
                                     conflicts.push(compareClassName)
