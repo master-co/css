@@ -109,7 +109,7 @@ export default createRule({
                         visitNode(node, arg.key)
                         break
                     case 'Literal':
-                        originalClassNamesValue = arg.value
+                        originalClassNamesValue = arg.raw.slice(1, arg.raw.length - 1)
                         start = arg.range[0] + 1
                         end = arg.range[1] - 1
                         break
@@ -140,7 +140,7 @@ export default createRule({
                         break
                 }
             }
-
+            
             const { classNames, whitespaces, headSpace, tailSpace } =
                 extractClassnamesFromValue(originalClassNamesValue)
 
@@ -182,6 +182,7 @@ export default createRule({
                 const sourceCodeLines = sourceCode.lines
                 const nodeStartLine = node.loc.start.line
                 const nodeEndLine = node.loc.end.line
+
                 context.report({
                     loc: findLoc(originalClassNamesValue, sourceCodeLines, nodeStartLine, nodeEndLine),
                     messageId: 'invalidClassOrder',
