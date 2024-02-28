@@ -81,12 +81,7 @@ Apply the variables:
 ```html
 <div class="fg:primary mt:md"></div>
 ```
-To learn more, check out:
-- [Colors](/docs/colors)
-- [Fonts](/docs/fonts)
-- [Screen Sizes](/docs/screen-sizes)
-- [Spacing & Sizing](/docs/spacing-and-sizing)
-- [Variables](/docs/variables)
+To learn more, check out those documents: [Colors](/docs/colors), [Fonts](/docs/fonts), [Screen Sizes](/docs/screen-sizes), [Spacing & Sizing](/docs/spacing-and-sizing), [Variables](/docs/variables)
 
 ### Using new custom animations
 In v2, you can apply the [default animations](/docs/animations) out of the box:
@@ -204,12 +199,15 @@ If you want to access native CSS variables not defined in `config specifically. 
 ### Removed color mid-values
 v2 no longer supports 1 to 99 shades for each color.
 ```html
--<div class="bg:blue-1"></div>
 -<div class="bg:blue-2"></div>
+-<div class="bg:blue-4"></div>
+<div class="bg:blue-5"></div>
+-...
 <div class="bg:blue-10"></div>
+-...
+<div class="bg:blue-20"></div>
 ...
 -<div class="bg:blue-98"></div>
--<div class="bg:blue-99"></div>
 ```
 Initially, we wanted to support a wide range of colors through the LAB color model to provide flexibility, but its color gamut was limited.
 
@@ -225,3 +223,19 @@ Also, we inverted the colors, which was probably the most painful change from v1
 -<div class="bg:blue-60"></div>
 +<div class="bg:blue-40"></div>
 ```
+
+---
+
+## Compatibility
+### Using v1 colors
+For those who prefer v1 colors, we separated colors from `@master/css` and created a new package [`@master/colors`](https://github.com/master-co/colors) to allow you to continue using [v1 colors](https://v1.css.master.co/docs/colors).
+
+Since the structure exported by Master Colors v1 and v2 is the same, you can override the dependent `@master/colors@2` version in `@master/css@2` to v1 by specifying the [`overrides`](https://docs.npmjs.com/cli/v10/configuring-npm/package-json#overrides) field in `package.json`.
+```json name=package.json
+{
+    "overrides": {
+        "@master/colors": "^1.0.0"
+    }
+}
+```
+In this way, the color system used by `@master/css` will be `@master/colors@1`.
