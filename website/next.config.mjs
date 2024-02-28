@@ -31,6 +31,20 @@ const nextConfig = {
     async redirects() {
         return redirects
     },
+    async headers() {
+        return [
+            {
+                source: '/:all*(woff2)',
+                locale: false,
+                headers: [
+                    {
+                        'key': 'Cache-Control',
+                        'value': 'public, max-age=31536000'
+                    }
+                ],
+            },
+        ]
+    },
     images: {
         formats: ['image/avif', 'image/webp'],
         remotePatterns: [
