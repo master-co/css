@@ -89,11 +89,19 @@ export default function serve() {
         }
         if (root?.uri) {
             const configCWD = fileURLToPath(root.uri.replace('%3A', ':'))
-            customConfig = exploreConfig(settings.config || 'master.css', {
-                cwd: configCWD,
-                found: (basename) => console.log`Loaded **${basename}**`
-            })
-            css = new MasterCSS(customConfig)
+            try {
+                customConfig = exploreConfig(settings.config || 'master.css', {
+                    cwd: configCWD,
+                    found: (basename) => console.log`Loaded **${basename}**`
+                })
+                css = new MasterCSS(customConfig)
+            }
+            catch (e) {
+                console.log('Config loading failed')
+                console.error(e)
+                css = new MasterCSS()
+                console.log('Using default config')
+            }
         }
     }
 
