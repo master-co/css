@@ -1099,6 +1099,9 @@ importers:
 
   packages/css:
     dependencies:
+      '@master/colors':
+        specifier: rc
+        version: 2.0.0-rc.2
       '@master/normal.css':
         specifier: workspace:^
         version: link:../normal.css
@@ -5572,6 +5575,10 @@ packages:
       - encoding
       - supports-color
     dev: true
+
+  /@master/colors@2.0.0-rc.2:
+    resolution: {integrity: sha512-0vbicbXvHvO7spAvEL4AMAvL+CUr6NTaufng8Oglh+ISsgtXfhkB82n3mS6kNgmwzgf8bOKMkNJRIDotjSMoqg==}
+    dev: false
 
   /@monaco-editor/loader@1.4.0(monaco-editor@0.45.0):
     resolution: {integrity: sha512-00ioBig0x642hytVspPl7DbQyaSWRaolYie/UFNjoTdvoKPzo6xrXLhTk9ixgIKcLH5b5vDOjVNiGyY+uDCUlg==}

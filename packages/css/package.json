@@ -63,6 +63,7 @@
         "provenance": true
     },
     "dependencies": {
+        "@master/colors": "rc",
         "@master/normal.css": "workspace:^",
         "@techor/extend": "^3.0.16"
     },
