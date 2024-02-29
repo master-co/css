@@ -95,7 +95,6 @@
         "theme-service": "workspace:^"
     },
     "devDependencies": {
-        "@playwright/experimental-ct-react": "^1.41.2",
-        "util": "^0.12.5"
+        "@playwright/experimental-ct-react": "^1.41.2"
     }
 }
