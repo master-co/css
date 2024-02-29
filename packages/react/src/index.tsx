@@ -4,4 +4,3 @@
  */
 export { default as CSSRuntimeProvider, CSSRuntimeContext, useCSSRuntime } from './CSSRuntimeProvider'
 export { default as ThemeServiceProvider, ThemeServiceContext, useThemeService } from './ThemeServiceProvider'
-export { default as styled } from './styled'
