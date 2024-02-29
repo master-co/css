@@ -24,10 +24,8 @@
         "directory": "packages/vue"
     },
     "keywords": [
-        "styled",
         "component",
         "element",
-        "styled-component",
         "vue",
         "hooks",
         "use",
@@ -58,11 +56,6 @@
             "require": "./dist/ThemeServiceProvider.cjs",
             "import": "./dist/ThemeServiceProvider.js",
             "types": "./dist/ThemeServiceProvider.d.ts"
-        },
-        "./styled": {
-            "require": "./dist/styled.cjs",
-            "import": "./dist/styled.js",
-            "types": "./dist/styled.d.ts"
         }
     },
     "typesVersions": {
@@ -91,8 +84,6 @@
     "dependencies": {
         "@master/css-runtime": "workspace:^",
         "@techor/extend": "^3.0.17",
-        "class-variant": "workspace:^",
-        "clsx": "^2.1.0",
         "theme-service": "workspace:^"
     },
     "devDependencies": {
