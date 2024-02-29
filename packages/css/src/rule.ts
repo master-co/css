@@ -6,7 +6,7 @@ import { Layer } from './layer'
 import { type PropertiesHyphen } from 'csstype'
 import { BASE_UNIT_REGEX } from './constants/base-unit-regex'
 
-const atRuleRegExp = /^(media|supports|page|font-face|keyframes|counter-style|font-feature-values|property|layer)(?=\||{|\(|$)/
+const atRuleRegExp = /^(media|supports|page|font-face|keyframes|counter-style|font-feature-values|property|layer|container)(?=\||{|\(|$)/
 
 export class Rule {
     readonly at: Record<string, string> = {}
@@ -260,9 +260,7 @@ export class Rule {
                                 || typeOrFeatureToken === 'speech'
                             ) {
                                 this.media.type = typeOrFeatureToken
-                            } else if (typeOrFeatureToken === '🖨') {
-                                this.media.type = 'print'
-                            } else {
+                            } else if (typeOrFeatureToken.startsWith('')) {
                                 if (typeOrFeatureToken === 'landscape' || typeOrFeatureToken === 'portrait') {
                                     queryTexts.push('(orientation:' + typeOrFeatureToken + ')')
                                 } else if (typeOrFeatureToken === 'motion' || typeOrFeatureToken === 'reduced-motion') {
