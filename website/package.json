@@ -20,6 +20,7 @@
         "@master/eslint-config-css": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
         "@master/normal.css": "workspace:^",
+        "@master/styled.react": "^2.0.1",
         "@monaco-editor/react": "^4.6.0",
         "@tabler/icons-react": "^2.47.0",
         "@vercel/speed-insights": "^1.0.10",
