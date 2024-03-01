@@ -79,7 +79,6 @@ program
             writeFileSync('package.json', JSON.stringify(appPkg, null, 4), { flag: 'w' })
             spinner.stop()
             log.ok`Cloned example from "${examplePath}"`
-            log.i`Start "${options.pm} install" for dependencies: ${targetPackages}`
             log``
             try {
                 execSync(`${options.pm} install`, { stdio: 'inherit' })
