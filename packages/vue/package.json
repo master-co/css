@@ -24,10 +24,8 @@
         "directory": "packages/vue"
     },
     "keywords": [
-        "styled",
         "component",
         "element",
-        "styled-component",
         "vue",
         "hooks",
         "use",
@@ -58,11 +56,6 @@
             "require": "./dist/ThemeServiceProvider.cjs",
             "import": "./dist/ThemeServiceProvider.js",
             "types": "./dist/ThemeServiceProvider.d.ts"
-        },
-        "./styled": {
-            "require": "./dist/styled.cjs",
-            "import": "./dist/styled.js",
-            "types": "./dist/styled.d.ts"
         }
     },
     "typesVersions": {
@@ -90,16 +83,14 @@
     },
     "dependencies": {
         "@master/css-runtime": "workspace:^",
-        "@techor/extend": "^3.0.16",
-        "class-variant": "workspace:^",
-        "clsx": "^2.1.0",
+        "@techor/extend": "^3.0.17",
         "theme-service": "workspace:^"
     },
     "devDependencies": {
         "@playwright/experimental-ct-vue": "^1.41.2",
-        "@playwright/test": "^1.41.2",
+        "@playwright/test": "^1.42.0",
         "@vitejs/plugin-vue": "^4.6.2",
-        "@vue/server-renderer": "^3.4.19",
+        "@vue/server-renderer": "^3.4.21",
         "@vue/test-utils": "^2.4.4",
         "@vue/tsconfig": "^0.4.0",
         "typescript": "^5.3.3",
