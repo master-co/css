@@ -144,7 +144,7 @@ It can also detect whether declarations with the same selector and media query s
 ```
 
 ### Supports JS utilities
-You may be using [clsx](https://github.com/lukeed/clsx) or [class variant](/docs/class-variant) to conditionally apply classes, but unfortunately, they're just pure strings in JavaScript.
+You may be using [clsx](https://github.com/lukeed/clsx) or [class variant](https://github.com/master-co/styled) to conditionally apply classes, but unfortunately, they're just pure strings in JavaScript.
 
 (i) You can make arguments of JavaScript [callees](/docs/eslint#calleematching) have Master CSS code linting.
 <video className="aspect:2/1 r:5 max-w:screen-xs w:full" autoPlay loop muted playsInline>
@@ -161,7 +161,7 @@ export default () => (
 ```
 (x) <span className="text:error">Invalid value for `text-align` property.</span>
 ```tsx
-import { styled } from '@master/css.react'
+import styled from '@master/styled.react'
 
 const H1 = styled.h1`**text-align:cente**`
 

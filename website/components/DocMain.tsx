@@ -1,6 +1,6 @@
 'use client'
 
-import { styled } from '@master/css.react'
+import styled from '@master/styled.react'
 
 const DocMain = styled.main(
     'max-w:screen-xl mx:auto p:60|30@print pb:5x pb:20x@md pt:35x@md px:5x',
