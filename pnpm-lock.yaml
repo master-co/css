@@ -1355,6 +1355,12 @@ importers:
         specifier: workspace:^
         version: link:../../shared
 
+  packages/create/tests/with-no-deps:
+    dependencies:
+      '@master/css':
+        specifier: 2.0.0-rc.21
+        version: 2.0.0-rc.21
+
   packages/css:
     dependencies:
       '@master/colors':
@@ -8034,6 +8040,19 @@ packages:
 
   /@master/colors@2.0.0-rc.2:
     resolution: {integrity: sha512-0vbicbXvHvO7spAvEL4AMAvL+CUr6NTaufng8Oglh+ISsgtXfhkB82n3mS6kNgmwzgf8bOKMkNJRIDotjSMoqg==}
+    dev: false
+
+  /@master/css@2.0.0-rc.21:
+    resolution: {integrity: sha512-zR/haUPYeJNKkKf490ha8YUxLJ5OwDuCsKtDbUlwnj82r571E5y8NmXu0MQQLrx9v3OkQ3ex8PWduaknbeWEXA==}
+    hasBin: true
+    dependencies:
+      '@master/colors': 2.0.0-rc.2
+      '@master/normal.css': 2.0.0-rc.21
+      '@techor/extend': 3.0.17
+    dev: false
+
+  /@master/normal.css@2.0.0-rc.21:
+    resolution: {integrity: sha512-R42STr12Chqo0BggJSZeBnL7b154+V8GYnFyrWDsfTHGTuL+9tVvdT9US64bjS2Thx5i9zd8q7j0WUiyP8dXoQ==}
     dev: false
 
   /@master/styled.react@2.0.1(@types/react@18.2.58)(react-dom@18.2.0)(react@18.2.0):
