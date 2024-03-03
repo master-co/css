@@ -9,7 +9,7 @@
         "prepublishOnly": "pnpm run package",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-        "e2e": "playwright test -c e2e/playwright-ct.config.ts"
+        "e2e": "playwright test -c playwright-ct.config.ts"
     },
     "license": "MIT",
     "description": "Integrate Master CSS in Svelte way",
@@ -55,7 +55,9 @@
         "@master/css-runtime": "workspace:^"
     },
     "devDependencies": {
-        "@playwright/experimental-ct-svelte": "^1.42.1",
+        "@master/css-server": "workspace:^",
+        "@playwright/experimental-ct-svelte": "^1.41.2",
+        "@playwright/test": "1.41",
         "@sveltejs/adapter-auto": "^3.1.1",
         "@sveltejs/kit": "^2.5.2",
         "@sveltejs/package": "^2.2.7",
