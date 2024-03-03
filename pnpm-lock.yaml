@@ -1031,10 +1031,10 @@ importers:
         version: 1.0.0
       '@sveltejs/adapter-auto':
         specifier: ^3.1.1
-        version: 3.1.1(@sveltejs/kit@2.5.1)
+        version: 3.1.1(@sveltejs/kit@2.5.2)
       '@sveltejs/kit':
-        specifier: ^2.5.1
-        version: 2.5.1(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.12)(vite@5.1.4)
+        specifier: ^2.5.2
+        version: 2.5.2(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@4.2.12)(vite@5.1.4)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.0.2
         version: 3.0.2(svelte@4.2.12)(vite@5.1.4)
@@ -1042,8 +1042,8 @@ importers:
         specifier: ^4.2.12
         version: 4.2.12
       svelte-check:
-        specifier: ^3.6.4
-        version: 3.6.4(@babel/core@7.24.0)(svelte@4.2.12)
+        specifier: ^3.6.6
+        version: 3.6.6(@babel/core@7.24.0)(svelte@4.2.12)
       tslib:
         specifier: ^2.6.2
         version: 2.6.2
