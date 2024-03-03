@@ -18,7 +18,6 @@
             "@master/css.svelte": [ "./node_modules/@master/css-svelte/src/lib" ],
             "@master/css-validator": [ "./node_modules/@master/css-validator/src" ],
             "@master/css.vue": [ "./node_modules/@master/css.vue/src" ],
-            "theme-service": [ "./node_modules/theme-service/src" ],
             "css-shared/*": [ "./node_modules/css-shared/*" ],
         },
         "target": "esnext",

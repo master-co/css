@@ -68,7 +68,6 @@
         "@master/css.vue": "workspace:^",
         "@master/eslint-config-css": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
-        "css-shared": "workspace:^",
-        "theme-service": "workspace:^"
+        "css-shared": "workspace:^"
     }
 }

@@ -141,9 +141,6 @@ importers:
       css-shared:
         specifier: workspace:^
         version: link:shared
-      theme-service:
-        specifier: workspace:^
-        version: link:packages/theme-service
 
   ../..:
     dependencies:
@@ -176,10 +173,10 @@ importers:
         version: 3.0.0(@types/react@18.2.58)(react@18.2.0)
       '@next/bundle-analyzer':
         specifier: ^14.1.0
-        version: 14.1.0
+        version: 14.1.1
       '@next/mdx':
         specifier: ^14.1.0
-        version: 14.1.0(@mdx-js/loader@3.0.0)(@mdx-js/react@3.0.0)
+        version: 14.1.1(@mdx-js/loader@3.0.0)(@mdx-js/react@3.0.0)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -1355,12 +1352,6 @@ importers:
         specifier: workspace:^
         version: link:../../shared
 
-  packages/create/tests/with-no-deps:
-    dependencies:
-      '@master/css':
-        specifier: 2.0.0-rc.21
-        version: 2.0.0-rc.21
-
   packages/css:
     dependencies:
       '@master/colors':
@@ -1626,9 +1617,6 @@ importers:
       react:
         specifier: '>= 16.8.0'
         version: 18.2.0
-      theme-service:
-        specifier: workspace:^
-        version: link:../theme-service
     devDependencies:
       '@playwright/experimental-ct-react':
         specifier: ^1.41.2
@@ -1667,9 +1655,6 @@ importers:
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../runtime
-      theme-service:
-        specifier: workspace:^
-        version: link:../theme-service
     devDependencies:
       '@playwright/experimental-ct-svelte':
         specifier: ^1.41.2
@@ -1704,12 +1689,6 @@ importers:
       vite:
         specifier: ^5.1.4
         version: 5.1.4(@types/node@20.11.24)
-
-  packages/theme-service:
-    devDependencies:
-      '@techor/extend':
-        specifier: ^3.0.16
-        version: 3.0.16
 
   packages/validator:
     dependencies:
@@ -1756,9 +1735,6 @@ importers:
       '@techor/extend':
         specifier: ^3.0.17
         version: 3.0.17
-      theme-service:
-        specifier: workspace:^
-        version: link:../theme-service
       vue:
         specifier: '>= 3.0.0'
         version: 3.4.21(typescript@5.3.3)
@@ -1828,6 +1804,9 @@ importers:
       '@master/styled.react':
         specifier: ^2.0.1
         version: 2.0.1(@types/react@18.2.58)(react-dom@18.2.0)(react@18.2.0)
+      '@master/theme-mode.react':
+        specifier: ^1.0.0
+        version: 1.0.0(@types/react@18.2.58)(react-dom@18.2.0)(react@18.2.0)
       '@monaco-editor/react':
         specifier: ^4.6.0
         version: 4.6.0(monaco-editor@0.45.0)(react-dom@18.2.0)(react@18.2.0)
@@ -1873,9 +1852,6 @@ importers:
       react-intersection-observer:
         specifier: ^9.8.1
         version: 9.8.1(react-dom@18.2.0)(react@18.2.0)
-      theme-service:
-        specifier: workspace:^
-        version: link:../packages/theme-service
       websites:
         specifier: workspace:../../..
         version: link:../../..
@@ -8042,19 +8018,6 @@ packages:
     resolution: {integrity: sha512-0vbicbXvHvO7spAvEL4AMAvL+CUr6NTaufng8Oglh+ISsgtXfhkB82n3mS6kNgmwzgf8bOKMkNJRIDotjSMoqg==}
     dev: false
 
-  /@master/css@2.0.0-rc.21:
-    resolution: {integrity: sha512-zR/haUPYeJNKkKf490ha8YUxLJ5OwDuCsKtDbUlwnj82r571E5y8NmXu0MQQLrx9v3OkQ3ex8PWduaknbeWEXA==}
-    hasBin: true
-    dependencies:
-      '@master/colors': 2.0.0-rc.2
-      '@master/normal.css': 2.0.0-rc.21
-      '@techor/extend': 3.0.17
-    dev: false
-
-  /@master/normal.css@2.0.0-rc.21:
-    resolution: {integrity: sha512-R42STr12Chqo0BggJSZeBnL7b154+V8GYnFyrWDsfTHGTuL+9tVvdT9US64bjS2Thx5i9zd8q7j0WUiyP8dXoQ==}
-    dev: false
-
   /@master/styled.react@2.0.1(@types/react@18.2.58)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-1i6TY4hRiTUrU76sDgJELGsYDsWJznn8kOIsjQoYOHvW2gdSnwQxKr944PxqKAIShg54PlngHg7XLkXn7JRwVg==}
     peerDependencies:
@@ -8067,6 +8030,19 @@ packages:
       clsx: 2.1.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+
+  /@master/theme-mode.react@1.0.0(@types/react@18.2.58)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-N5aWSL9vm9j3NgJxQpf17/ZU5Zl0Cs56fz60tgodYpw8I510vzpQmf+vVTaEjQtqHTX8vYJ/4rQdiDMv/40fnQ==}
+    peerDependencies:
+      '@types/react': '>=15'
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      '@types/react': 18.2.58
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      theme-mode: 1.0.0
+    dev: false
 
   /@mdx-js/loader@3.0.0(webpack@5.90.3):
     resolution: {integrity: sha512-9kLv83YtgxpoXVYHaf0ygx1dmhCffo0MQCv6KtNG67jy/JlBK/2Q0dSWfuuyStP3jnZKABHfbjv8zsiT1buu6A==}
@@ -8177,8 +8153,8 @@ packages:
       urlpattern-polyfill: 8.0.2
     dev: true
 
-  /@next/bundle-analyzer@14.1.0:
-    resolution: {integrity: sha512-RJWjnlMp/1WSW0ahAdawV22WgJiC6BVaFS5Xfhw6gP7NJEX3cAJjh4JqSHKGr8GnLNRaFCVTQdDPoX84E421BA==}
+  /@next/bundle-analyzer@14.1.1:
+    resolution: {integrity: sha512-vM8PLggRNodmJo8FJy6+Bnv4jWsVtOuH87naJA7/sdmBUZrBk2fj3xkI1zwarWzDAYzNYTxiMRGVioyNPxBvXg==}
     dependencies:
       webpack-bundle-analyzer: 4.10.1
     transitivePeerDependencies:
@@ -8196,8 +8172,8 @@ packages:
       glob: 10.3.10
     dev: false
 
-  /@next/mdx@14.1.0(@mdx-js/loader@3.0.0)(@mdx-js/react@3.0.0):
-    resolution: {integrity: sha512-YLYsViq91+H8+3oCtK1iuMWdeN14K70Hy6/tYScY+nfo5bQ84A/A+vA6UdNC9MkbWQ/373hQubx2p4JvUjlb2Q==}
+  /@next/mdx@14.1.1(@mdx-js/loader@3.0.0)(@mdx-js/react@3.0.0):
+    resolution: {integrity: sha512-GVjirRAkv5uBx2C7PgTZibIJ+AQyeqL6pkHURVGT6XuQoCqgfQSjKUl/U0rYnxaoUwXLWXmBt4mozKV8YrhVow==}
     peerDependencies:
       '@mdx-js/loader': '>=0.15.0'
       '@mdx-js/react': '>=0.15.0'
@@ -10651,6 +10627,7 @@ packages:
 
   /@techor/extend@3.0.16:
     resolution: {integrity: sha512-oMNaDgFmg2cwYdjZWzQRVHnXBeIYYocYn5XCUGddEkRxwqngCP4e6ZUurvPRPjkAqqX2sZO1xEO/rVBxWD0TKg==}
+    dev: false
 
   /@techor/extend@3.0.17:
     resolution: {integrity: sha512-i/QXjTDpsKRv/FsYXDbB41BfbKEw1DESHY3NVzRyvZgBmMavqbP+Gw87UahHMH/z6eju1zv6WJ1nPJMRvTU8yQ==}
@@ -27738,6 +27715,10 @@ packages:
 
   /text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
+
+  /theme-mode@1.0.0:
+    resolution: {integrity: sha512-r4xGWkmf1yvc9YnOrsJ48CMHyhZQRQ7zhOUakuliDICSUpFefQwK4bTZ4fGIs8xJyRotHIQHwZeYkJu20S+lcw==}
+    dev: false
 
   /thenify-all@1.6.0:
     resolution: {integrity: sha512-RNxQH/qI8/t3thXJDwcstUO4zeqo64+Uy/+sNVRBx4Xn2OX+OZ9oP+iJnNFqplFra2ZUVeKCSa2oVWi3T4uVmA==}
