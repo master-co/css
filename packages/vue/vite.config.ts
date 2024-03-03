@@ -9,8 +9,6 @@ export default defineConfig({
     build: {
         lib: {
             entry: [
-                resolve(__dirname, 'src/CSSRuntimeProvider.ts'),
-                resolve(__dirname, 'src/ThemeServiceProvider.ts'),
                 resolve(__dirname, 'src/index.ts'),
             ],
             formats: ['cjs', 'es']

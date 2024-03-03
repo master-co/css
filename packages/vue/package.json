@@ -3,7 +3,7 @@
     "type": "module",
     "scripts": {
         "build:main": "vite build",
-        "build:type": "vue-tsc --declaration --emitDeclarationOnly",
+        "build:type": "vue-tsc --declaration --emitDeclarationOnly --project tsconfig.prod.json",
         "build": "pnpm run \"/^build:/\"",
         "dev": "pnpm run build:main --watch",
         "type-check": "vue-tsc --noEmit",
@@ -46,29 +46,6 @@
             "require": "./dist/index.cjs",
             "import": "./dist/index.js",
             "types": "./dist/index.d.ts"
-        },
-        "./CSSRuntimeProvider": {
-            "require": "./dist/CSSRuntimeProvider.cjs",
-            "import": "./dist/CSSRuntimeProvider.js",
-            "types": "./dist/CSSRuntimeProvider.d.ts"
-        },
-        "./ThemeServiceProvider": {
-            "require": "./dist/ThemeServiceProvider.cjs",
-            "import": "./dist/ThemeServiceProvider.js",
-            "types": "./dist/ThemeServiceProvider.d.ts"
-        }
-    },
-    "typesVersions": {
-        "*": {
-            ".": [
-                "./dist/index.d.ts"
-            ],
-            "CSSRuntimeProvider": [
-                "./dist/CSSRuntimeProvider.d.ts"
-            ],
-            "ThemeServiceProvider": [
-                "./dist/ThemeServiceProvider.d.ts"
-            ]
         }
     },
     "files": [
@@ -83,8 +60,7 @@
     },
     "dependencies": {
         "@master/css-runtime": "workspace:^",
-        "@techor/extend": "^3.0.17",
-        "theme-service": "workspace:^"
+        "@techor/extend": "^3.0.17"
     },
     "devDependencies": {
         "@playwright/experimental-ct-vue": "^1.41.2",
