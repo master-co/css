@@ -377,11 +377,14 @@ export class RuntimeCSS extends MasterCSS {
     }
 
     refresh(customConfig: Config = this.customConfig) {
-        const newStyle = document.createElement('style')
-        newStyle.id = 'master'
-        this.style.replaceWith(newStyle)
-        // @ts-ignore
-        this.style = newStyle
+        // remove all CSS rules
+        // todo: e2e test
+        const sheet = this.style?.sheet
+        if (sheet?.cssRules) {
+            for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+                sheet.deleteRule(i)
+            }
+        }
         super.refresh(customConfig)
         return this
     }
