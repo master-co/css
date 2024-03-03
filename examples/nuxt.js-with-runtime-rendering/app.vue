@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CSSRuntimeProvider } from '@master/css.vue'
+import CSSRuntimeProvider from '@master/css.vue'
 import config from './master.css'
 </script>
 

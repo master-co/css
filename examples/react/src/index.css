@@ -34,12 +34,6 @@
     }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .logo.react {
-        animation: logo-spin infinite 20s linear;
-    }
-}
-
 .card {
     padding: 2em;
 }
@@ -106,19 +100,4 @@ button:hover {
 button:focus,
 button:focus-visible {
     outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-    :root {
-        color: #213547;
-        background-color: #ffffff;
-    }
-
-    a:hover {
-        color: #747bff;
-    }
-
-    button {
-        background-color: #f9f9f9;
-    }
 }

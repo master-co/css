@@ -1,5 +1,5 @@
 import './globals.css'
-import { CSSRuntimeProvider } from '@master/css.react'
+import CSSRuntimeProvider from '@master/css.react'
 import config from '../master.css'
 
 export const metadata = {

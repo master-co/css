@@ -99,7 +99,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                         lang: 'tsx',
                         code: `
                             import './globals.css'
-                            +import { CSSRuntimeProvider } from '@master/css.react'
+                            +import CSSRuntimeProvider from '@master/css.react'
                             +import config from '../master.css'
 
                             export const metadata = {
@@ -126,7 +126,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                         code: `
                             import '../styles/globals.css'
                             import type { AppProps } from 'next/app'
-                            +import { CSSRuntimeProvider } from '@master/css.react'
+                            +import CSSRuntimeProvider from '@master/css.react'
                             +import config from '../master.css'
 
                             export default function App({ Component, pageProps }: AppProps) {
