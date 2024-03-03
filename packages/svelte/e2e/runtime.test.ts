@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/experimental-ct-svelte'
 import App from '../src/routes/+page.svelte'
 
+// todo: initialization unexpectedly triggers refresh
+
 test('class changed', async ({ page, mount }) => {
     const app = await mount(App)
 
