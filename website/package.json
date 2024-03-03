@@ -21,6 +21,7 @@
         "@master/eslint-plugin-css": "workspace:^",
         "@master/normal.css": "workspace:^",
         "@master/styled.react": "^2.0.1",
+        "@master/theme-mode.react": "^1.0.0",
         "@monaco-editor/react": "^4.6.0",
         "@tabler/icons-react": "^2.47.0",
         "@vercel/speed-insights": "^1.0.10",
@@ -36,7 +37,6 @@
         "react-countup": "^6.5.0",
         "react-dom": "^18.2.0",
         "react-intersection-observer": "^9.8.1",
-        "theme-service": "workspace:^",
         "websites": "workspace:../../.."
     },
     "devDependencies": {
