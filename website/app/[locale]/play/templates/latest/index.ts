@@ -45,7 +45,7 @@ export default {
         ]
     },
     links: [
-        { rel: 'preload', as: 'style', href: 'https://cdn.master.co/normal.css@' + latestMasterCSSVersion },
+        { rel: 'preload', as: 'style', href: 'https://cdn.master.co/normal.css' },
         { rel: 'preload', as: 'script', href: 'https://cdn.master.co/css-runtime@' + latestMasterCSSVersion }
     ]
 }
