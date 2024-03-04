@@ -21,47 +21,6 @@ The initialization is typically completed within milliseconds, and you don't nee
 
 By [preloading critical resources](/docs/preload-critical-resources), there will be a bonus effect.
 
-### Initialize style theme early
-Initializers for the [theme service](/docs/theme-service) is usually bundled in the main JavaScript resource by build tools and defer to load.
-
-(o) Pre-apply the theme and inline the script in `html <head>` to fix the style flickering issue:
-```html
-<html>
-    <script>
-        /* default value */
-        let value = 'system';
-        /* sync with local storage */
-        const storage = localStorage.getItem('theme');
-        if (storage) {
-            value = storage;
-        }
-        let current = value;
-        /* sync with the user's system preference */
-        if (value === 'system') {
-            current = matchMedia('(prefers-color-scheme:dark)')
-                .matches ? 'dark' : 'light';
-        };
-        const host = document.documentElement;
-        host.classList.add(current);
-        if (current === 'dark' || current === 'light') {
-            host.style.colorScheme = current;
-        }
-    </script>
-</html>
-```
-If you're using a template language, you can use the exported script:
-```js
-import { getPreInitScript } from 'theme-service'
-
-const html = `
-    <html>
-        <script>
-            ${getPreInitScript({ default: 'system' })}
-        </script>
-    </html>
-`
-```
-
 ---
 
 ## Benefits
