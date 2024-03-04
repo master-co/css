@@ -45,6 +45,7 @@
         initializing = false;
     };
     const waitInitialized = async () => {
+        const currentIdentifier = ++identifier;
         if (initializing) {
             await new Promise<void>((resolve) => {
                 const interval = setInterval(() => {
@@ -55,26 +56,41 @@
                 }, 10);
             });
         }
+        return currentIdentifier === identifier
     };
 
     onMount(async () => await init());
 
-    afterUpdate(async () => {
-        const currentIdentifier = ++identifier;
-        await waitInitialized();
-        if (currentIdentifier !== identifier) return;
+    const getRuntimeCSS = () => $runtimeCSS
+    $: {
+        const currentRuntimeCSS = getRuntimeCSS()
+        if (currentRuntimeCSS) {
+            (async () => {
+                if (!await waitInitialized())
+                    return
 
-        const resolvedConfig = await getResolvedConfig();
-        if (
-            $runtimeCSS.root !== root &&
-            (root || $runtimeCSS.root !== document)
-        ) {
-            $runtimeCSS.destroy();
-            await init(resolvedConfig);
-        } else {
-            $runtimeCSS.refresh(resolvedConfig);
+                if (
+                    currentRuntimeCSS.root !== root &&
+                    (root || currentRuntimeCSS.root !== document)
+                ) {
+                    currentRuntimeCSS.destroy();
+                    await init(await getResolvedConfig());
+                }
+            })()
         }
-    });
+    }
+
+    $: {
+        const currentRuntimeCSS = getRuntimeCSS()
+        if (currentRuntimeCSS) {
+            (async () => {
+                if (!await waitInitialized())
+                    return
+
+                currentRuntimeCSS.refresh(config && await getResolvedConfig());
+            })()
+        }
+    }
 
     onDestroy(() => {
         if (!isExternalRuntimeCSS) {
