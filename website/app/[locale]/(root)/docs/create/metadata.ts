@@ -1,8 +1,10 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: '@master/create-css',
-    description: 'CLI for creating a Master CSS config file or application.',
+    title: {
+        absolute: 'Create Master CSS'
+    },
+    description: 'Set up or create a modern web app by running one command.',
     category: 'API Reference'
 }
 
