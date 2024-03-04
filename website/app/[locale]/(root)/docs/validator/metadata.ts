@@ -1,7 +1,9 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: '@master/css-validator',
+    title: {
+        absolute: 'Master CSS Validator'
+    },
     description: 'Validator for Master CSS syntactic class.',
     category: 'API Reference'
 }

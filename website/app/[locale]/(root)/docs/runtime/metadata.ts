@@ -1,7 +1,9 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: '@master/css-runtime',
+    title: {
+        absolute: 'Master CSS Runtime'
+    },
     description: 'The core syntax parsing and runtime engine of Master CSS.',
     category: 'API Reference'
 }
