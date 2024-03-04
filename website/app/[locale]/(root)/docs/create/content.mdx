@@ -1,7 +1,9 @@
 
 ---
 
-Initialize Master CSS in an existing project:
+## Setup
+### Create a config file
+Initialize Master CSS in an existing project.
 <CodeTabs showControls>
 {[
     {
@@ -18,7 +20,9 @@ Initialize Master CSS in an existing project:
     }
 ]}
 </CodeTabs>
-Or create a new Master CSS application by specifying the new `project` name and using the [example](#--example):
+
+### Create a new app
+Or you can specify an argument to create a new project, which by default uses the [blank example](https://github.com/master-co/css/tree/rc/examples/blank).
 <CodeTabs showControls>
 {[
     {
@@ -36,6 +40,9 @@ Or create a new Master CSS application by specifying the new `project` name and 
 ]}
 </CodeTabs>
 
+---
+
+## Options
 ### `--ext esm`
 Specify creating a `master.css.mjs` file in ECMAScript Modules format. If `package.json` is set `"type": "module"` will be enabled automatically.
 <DocProp defaultValue="auto" types={['boolean']} />
