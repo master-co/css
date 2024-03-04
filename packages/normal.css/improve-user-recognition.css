@@ -1,9 +1,0 @@
-[role=button], summary,
-:where(button, [type=button]):not([disabled]) {
-    cursor: pointer;
-    user-select: none;
-}
-
-a {
-    cursor: pointer;
-}

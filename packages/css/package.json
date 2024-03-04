@@ -64,7 +64,7 @@
     },
     "dependencies": {
         "@master/colors": "rc",
-        "@master/normal.css": "workspace:^",
+        "@master/normal.css": "^2.0.0",
         "@techor/extend": "^3.0.16"
     },
     "devDependencies": {

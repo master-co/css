@@ -37,7 +37,6 @@
         "firebase-admin": "^11.11.1",
         "jest-extended": "^4.0.2",
         "jest-text-transformer": "^1.0.4",
-        "lightningcss-cli": "^1.24.0",
         "nanoid": "^4.0.2",
         "nodemon": "^2.0.22",
         "normalize-newline": "^4.1.0",

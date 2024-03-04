@@ -1,4 +1,0 @@
-img, svg, video, canvas, audio, iframe, embed, object {
-    max-width: 100%;
-    display: block;
-}

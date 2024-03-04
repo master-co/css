@@ -13,7 +13,6 @@
         "vite": "^5.1.4"
     },
     "dependencies": {
-        "@master/css-runtime": "workspace:^",
-        "@master/normal.css": "workspace:^"
+        "@master/css-runtime": "workspace:^"
     }
 }

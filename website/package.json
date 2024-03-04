@@ -19,7 +19,6 @@
         "@master/css.react": "workspace:^",
         "@master/eslint-config-css": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
-        "@master/normal.css": "workspace:^",
         "@master/styled.react": "^2.0.1",
         "@master/theme-mode.react": "^1.0.0",
         "@monaco-editor/react": "^4.6.0",
