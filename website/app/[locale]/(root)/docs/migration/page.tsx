@@ -14,7 +14,7 @@ export async function generateMetadata(props: any, parent: any) {
 export default async function Layout(props: any) {
     const $ = await createTranslation(props.params.locale)
     return (
-        <DocLayout {...props} metadata={metadata} titleBig>
+        <DocLayout {...props} metadata={metadata}>
             <Content />
         </DocLayout >
     )

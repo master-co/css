@@ -14,7 +14,7 @@ export default async function Layout(props: any) {
             }}
             backOnClickCategory='/docs/installation'
             brand={brands.find(({ name }) => name === 'esm.sh')}
-            titleBig
+
         >
             {props.children}
         </DocLayout >

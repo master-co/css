@@ -12,7 +12,7 @@ export default async function Layout({ children, pageDirname, params, toc, $hide
     return <>
         <DocMain $hideRightSide={!toc} $hideLeftSide={$hideLeftSide}>
             <Article>
-                <ArticleHeader {...props} metadata={props.metadata} titleBig />
+                <ArticleHeader {...props} metadata={props.metadata} />
                 {children}
             </Article>
             <PageNavs metadata={props.metadata} pages={pages} />

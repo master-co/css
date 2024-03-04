@@ -1,12 +1,9 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Understand browser support for Master CSS',
+    title: 'Browser Support',
     description: 'The core engine of Master CSS hardly affects CSS support for browsers.',
-    category: 'Fundamentals',
-    other: {
-        subject: 'Browser Support'
-    }
+    category: 'Fundamentals'
 }
 
 export default metadata

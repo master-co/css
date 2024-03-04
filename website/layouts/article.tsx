@@ -23,7 +23,7 @@ export default function Layout(props: any) {
             {props.metadata.authors && <ListAuthors className="center-content gap:8x mt:12x">{props.metadata.authors}</ListAuthors>}
         </div>
         <main className='app-doc-main max-w:screen-sm'>
-            <Article className="mb:80 mt:0>:first">
+            <Article className="mb:80 mt:0>:first" prose>
                 {props.children}
             </Article>
         </main>

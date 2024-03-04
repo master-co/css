@@ -161,7 +161,7 @@ export default async function Page(props: any) {
     )
 
     return <>
-        <Layout {...props} pageDirname={__dirname} metadata={metadata} titleBig>
+        <Layout {...props} pageDirname={__dirname} metadata={metadata}>
             <div className="flex align-items:center gap:10 mb:5x mt:12x">
                 <h2 id="backer" className="m:0!">Backer</h2>
                 <hr className="flex:1|1|auto my:0!" />

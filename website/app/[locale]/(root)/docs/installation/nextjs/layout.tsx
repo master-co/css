@@ -14,7 +14,7 @@ export default async function Layout(props: any) {
             }}
             backOnClickCategory='/docs/installation'
             brand={brands.find(({ name }) => name === 'Next.js')}
-            titleBig
+
         >
             <Tabs className="mb:8x">
                 <Tab href='/docs/installation/nextjs'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>

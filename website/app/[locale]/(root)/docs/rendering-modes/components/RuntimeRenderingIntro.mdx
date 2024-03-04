@@ -4,30 +4,27 @@ import Features, { Feature } from 'websites/components/Features'
 import clsx from 'clsx'
 
 Master CSS [Runtime Rendering](/docs/rendering-modes/runtime-rendering) observes **changes in DOM class names** at browser runtime, generates corresponding CSS rules, and injects them into the **running style sheet**.
-<div className="flex flex:wrap@<sm gap:12x my:12x">
+<div className="flex flex:wrap@<sm gap:12x my:14x">
     <Features className={clsx(props.img ? 'w:35%@sm' : 'grid-cols:3@sm')}>
         <Feature>
             <IconWorldDownload className="app-icon-primary" />
             <div>
                 **Fixed style cost**
-
-                All features work out of the box with ~17KB transfer cost
+                <p className='text:16'>All features work out of the box with ~17KB transfer cost</p>
             </div>
         </Feature>
         <Feature>
             <IconAdjustments className="app-icon-primary" />
             <div>
                 **Fully automatic**
-
-                Capture any program-generated class names
+                <p className='text:16'>Capture any program-generated class names</p>
             </div>
         </Feature>
         <Feature>
             <IconRecycle className="app-icon-primary" />
             <div>
                 **CSS lifecycle**
-
-                Generated on-demand and frees memory when not in use
+                <p className='text:16'>Generated on-demand and frees memory when not in use</p>
             </div>
         </Feature>
     </Features>

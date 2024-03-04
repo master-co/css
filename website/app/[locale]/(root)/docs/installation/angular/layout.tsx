@@ -14,7 +14,7 @@ export default async function Layout(props: any) {
             }}
             backOnClickCategory='/docs/installation'
             brand={brands.find(({ name }) => name === 'Angular')}
-            titleBig
+
         >
             <Tabs className="mb:8x">
                 <Tab href='/docs/installation/angular'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>

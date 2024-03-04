@@ -14,7 +14,7 @@ export default async function Layout(props: any) {
             }}
             backOnClickCategory='/docs/installation'
             brand={brands.find(({ name }) => name === 'Nuxt.js')}
-            titleBig
+
         >
             <Tabs className="mb:8x">
                 <Tab href='/docs/installation/nuxtjs'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>

@@ -13,7 +13,7 @@ export async function generateMetadata(props: any, parent: any) {
 
 export default async function Page(props: any) {
     return (
-        <Layout {...props} pageDirname={__dirname} metadata={metadata} toc={toc} titleBig backOnClickCategory='/docs/migration'>
+        <Layout {...props} pageDirname={__dirname} metadata={metadata} toc={toc} backOnClickCategory='/docs/migration'>
             <Content />
         </Layout >
     )

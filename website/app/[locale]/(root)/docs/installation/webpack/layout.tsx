@@ -14,7 +14,7 @@ export default async function Layout(props: any) {
             }}
             backOnClickCategory='/docs/installation'
             brand={brands.find(({ name }) => name === 'Webpack')}
-            titleBig
+
         >
             <Tabs className="mb:8x">
                 <Tab href='/docs/installation/webpack'>{$('Runtime Rendering')}</Tab>

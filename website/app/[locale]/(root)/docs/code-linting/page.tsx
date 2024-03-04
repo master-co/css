@@ -13,7 +13,7 @@ export async function generateMetadata(props: any, parent: any) {
 
 export default async function Page(props: any) {
     return (
-        <DocLayout {...props} metadata={metadata} titleBig icon={<ESLintSvg width={90} />}>
+        <DocLayout {...props} metadata={metadata} icon={<ESLintSvg width={90} />}>
             <Content />
         </DocLayout >
     )

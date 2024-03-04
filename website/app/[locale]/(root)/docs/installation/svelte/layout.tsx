@@ -16,7 +16,7 @@ export default async function Layout(props: any) {
             metadata={metadata}
             backOnClickCategory='/docs/installation'
             brand={brands.find(({ name }) => name === 'Svelte')}
-            titleBig
+
         >
             <Tabs className="mb:8x">
                 <Tab href='/docs/installation/svelte'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>
