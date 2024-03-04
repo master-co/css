@@ -1,5 +1,6 @@
 import './globals.css'
-import { getPreInitScript } from 'theme-service'
+// @ts-expect-error
+import PRE_INIT_SCRIPT from '!!raw-loader!theme-mode/pre-init'
 import clsx from 'clsx'
 import { HTMLAttributes } from 'react'
 import i18n from '~/i18n.config.mjs'
@@ -17,7 +18,7 @@ export default async function RootLayout({ children, locale, bodyClassName, styl
         <html lang={locale} style={process.env.NODE_ENV === 'development' ? { display: 'none' } : style} suppressHydrationWarning>
             <head>
                 <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
-                <script dangerouslySetInnerHTML={{ __html: getPreInitScript({ default: 'system' }) }}></script>
+                <script dangerouslySetInnerHTML={{ __html: PRE_INIT_SCRIPT }}></script>
                 <FontStyle locale={locale} />
                 <style id="master" suppressHydrationWarning></style>
             </head>
