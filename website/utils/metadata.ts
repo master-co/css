@@ -10,10 +10,9 @@ export async function generate(
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     const $ = await createTranslation(params?.locale)
-    const title = $(metadata.title)
     const description = $(metadata.description)
     const category = $(metadata.category)
-    const ogTitle = $(metadata.openGraph?.title || metadata.title)
+    const ogTitle = $(metadata.openGraph?.title || metadata.title.absolute || metadata.title)
     const ogDescription = $(metadata.openGraph?.description || metadata.description)
     const requestedSearchParams = {
         ...metadata as any,
@@ -48,7 +47,11 @@ export async function generate(
         baseMetadata,
         metadata,
         {
-            title,
+            title: typeof metadata.title === 'string'
+                ? $(metadata.title)
+                : {
+                    absolute: $(metadata.title.absolute)
+                },
             description,
             category
         }

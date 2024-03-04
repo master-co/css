@@ -3,7 +3,7 @@ import create from '~/og-image'
 import metadata from './metadata'
 import Icon from 'websites/svgs/tailwindcss.svg?inlineSvg'
 
-export const alt = metadata.title
+export const alt = metadata.title.absolute || metadata.title
 export const contentType = 'image/jpg'
 export const runtime = 'nodejs'
 

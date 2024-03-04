@@ -1,7 +1,9 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Language Service for Master CSS',
+    title: {
+        absolute: 'Language Service for Master CSS'
+    },
     description: 'Enhanced Master CSS development experience, including syntax highlighting, code completion, syntax rule preview, and more.',
     category: 'Getting Started',
     other: {

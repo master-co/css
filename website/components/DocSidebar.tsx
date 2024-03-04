@@ -54,7 +54,7 @@ export default function DocSidebar() {
                                         unfinished={eachPage.metadata.unfinished}
                                         key={eachPage.pathname}>
                                         {!eachPage.metadata.disabled && <svg></svg>}
-                                        {$(eachPage.metadata.other?.subject || eachPage.metadata.title)}
+                                        {$(eachPage.metadata.other?.subject || eachPage.metadata.title.absolute || eachPage.metadata.title)}
                                     </Link>
                                 ))}
                         </Fragment>

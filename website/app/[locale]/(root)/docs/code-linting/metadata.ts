@@ -1,7 +1,9 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Code Linting for Master CSS',
+    title: {
+        absolute: 'Code Linting for Master CSS'
+    },
     description: 'An official ESLint plugin for enforcing team coding styles, making your template markup more organized, and catching syntax errors early.',
     category: 'Getting Started',
     other: {

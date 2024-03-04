@@ -92,8 +92,8 @@ pages = pageCategories
     .flat()
 
 allPages = allPages.sort((a, b) => {
-    const titleA = a.metadata.title.toLowerCase()
-    const titleB = b.metadata.title.toLowerCase()
+    const titleA = (a.metadata.title?.absolute || a.metadata.title).toLowerCase()
+    const titleB = (b.metadata.title?.absolute || b.metadata.title).toLowerCase()
 
     if (titleA < titleB) {
         return -1
