@@ -23,7 +23,7 @@ export default {
     ],
     dependencies: {
         styles: [
-            { src: 'https://cdn.master.co/normal.css@' + latestMasterCSSVersion }
+            { src: 'https://cdn.master.co/normal.css' }
         ],
         scripts: [
             {
