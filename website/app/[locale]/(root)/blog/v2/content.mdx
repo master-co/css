@@ -88,30 +88,3 @@ To learn more, check out the [Animaiton Fill Mode](/docs/animation-iteration-cou
 +<div class="@direction:alt-reverse">
 ```
 To learn more, check out the [Animaiton Direction](/docs/animation-direction) documentation.
-
----
-
-## Enhanced Services
-
-### Theme Service
-Install the theme service separately and initialize it:
-```js
-import ThemeService from 'theme-service'
-
-export const themeService = new ThemeService({ default: 'dark' })
-```
-For React, check out the [Theme Service for React](/docs/theme-service/react).
-
-It helps you set up:
-```html
-<html class="**dark**" style="**color-scheme: dark**">
-    <body>
-        <h1 class="bg:black@dark ˟˟bg:white@light˟˟">Hello World</h1>
-    </body>
-</html>
-```
-To switch themes:
-```js
-themeService.switch('light')
-```
-Check out the full documentation [Theme Service](/docs/theme-service).
