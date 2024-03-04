@@ -11,7 +11,7 @@ import useRewritedPathname from 'websites/uses/rewrited-pathname'
 import { useSearchParams } from 'next/navigation'
 import LanguageButton from 'websites/components/LanguageButton'
 import previewHandlerScriptText from './previewHandler.js?text'
-import ThemeButton from 'websites/components/ThemeButton'
+import ThemeButton from '~/components/ThemeButton'
 import { getScriptHTML } from './getScriptHTML'
 import { getStyleHTML } from './getStyleHTML'
 import { beautifyCSS } from 'websites/utils/beautifyCSS'
@@ -19,7 +19,7 @@ import templates from './templates'
 import latestMasterCSSVersion from '~/version'
 import Resizable from 'websites/components/Resizable'
 import { getLinkHTML } from './getLinkHTML'
-import { useThemeService } from '@master/css.react'
+import { useThemeMode } from '@master/theme-mode.react'
 import { Logotype } from '~/components/Logotype'
 import Header from 'websites/components/Header'
 import HeaderNav from 'websites/components/HeaderNav'
@@ -78,7 +78,7 @@ export default function Play(props: any) {
     const $ = useTranslation()
     const locale = useLocale()
     const router = useRouter()
-    const themeService = useThemeService()
+    const themeMode = useThemeMode()
     const searchParams = useSearchParams()
     const pathname = useRewritedPathname()
     const versionSelectRef = useRef<HTMLSelectElement>(null)
@@ -681,7 +681,7 @@ export default function Play(props: any) {
                             )}
                             height="100%"
                             width="100%"
-                            theme={'vs-' + themeService?.current}
+                            theme={'vs-' + themeMode.value}
                             defaultValue={tabFile.content}
                             defaultLanguage={tabFile.language}
                             path={tabFile.id}
@@ -731,7 +731,7 @@ export default function Play(props: any) {
                             <Editor
                                 height="100%"
                                 width="100%"
-                                theme={'vs-' + themeService?.current}
+                                theme={'vs-' + themeMode.value}
                                 defaultValue={generatedCSSText}
                                 value={generatedCSSText}
                                 language="css"

@@ -7,9 +7,9 @@ import Link from 'websites/components/Link'
 import Portal from 'websites/components/Portal'
 import clsx from 'clsx'
 import { IconArrowUpRight, IconBrandDiscord, IconBrandGithub, IconBrandX, IconChevronRight, IconLanguage, IconMessages, IconSelector, IconVersions } from '@tabler/icons-react'
-import ThemeSelect from 'websites/components/ThemeSelect'
-import ThemeIcon from 'websites/components/ThemeIcon'
-import { useThemeService } from '@master/css.react'
+import ThemeSelect from '~/components/ThemeSelect'
+import ThemeIcon from '~/components/ThemeIcon'
+import { useThemeMode } from '@master/theme-mode.react'
 import DocVersionSelect from './DocVersionSelect'
 import version from '~/version'
 import LanguageSelect from 'websites/components/LanguageSelect'
@@ -19,7 +19,7 @@ import { useTranslation } from 'websites/contexts/i18n'
 
 export default function DocMenuButton(props: any) {
     const [opened, setOpened] = useState(false)
-    const themeService = useThemeService()
+    const themeMode = useThemeMode()
     const locale = useLocale()
     const $ = useTranslation()
     return (
@@ -95,7 +95,7 @@ export default function DocMenuButton(props: any) {
                             <div className="flex ai:center bb:1|frame fg:strong flex:1 h:48">
                                 {$('Theme')}
                                 <div className='flex rel ai:center ml:auto'>
-                                    <div className="capitalize fg:light ml:auto mr:12">{themeService?.value}</div>
+                                    <div className="capitalize fg:light ml:auto mr:12">{themeMode.value}</div>
                                     <ThemeSelect />
                                     <IconSelector className="fg:lightest mr:12" stroke="1.3" />
                                 </div>
