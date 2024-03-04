@@ -298,13 +298,36 @@ export function getReturnItem(items: Array<string | CompletionItem>, kind: Compl
 function getColorsItem(css: MasterCSS = new MasterCSS()): CompletionItem[] {
     const masterStyleCompletionItem: CompletionItem[] = []
 
-    // todo: refactor css.variables
     for (const eachVariableName in css.variables) {
         const eachVariable = css.variables[eachVariableName]
         if (eachVariable.type === 'color') {
+
+            let colorValue
+            let colorSpace
+            if (eachVariable.themes) {
+                colorValue = Object.values(eachVariable.themes)[0].value
+                colorSpace = Object.values<any>(eachVariable.themes)[0].space
+            } else {
+                colorValue = eachVariable.value
+                colorSpace = eachVariable.space
+            }
+
+            let colorResult
+            switch (colorSpace) {
+                case 'rgb':
+                    colorResult = `rgb(${colorValue?.split(' ')?.slice(0, 3).join(',')})`
+                    break
+                case 'hsl':
+                    colorResult = `hsl(${colorValue?.split(' ')?.slice(0, 3).join(',')})`
+                    break
+                case 'hex':
+                    colorResult = `#${colorValue}`
+                    break
+            }
+
             masterStyleCompletionItem.push({
                 label: eachVariableName,
-                documentation: eachVariable.value,
+                documentation: colorResult,
                 kind: 16,
                 sortText: eachVariableName
             })

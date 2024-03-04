@@ -89,11 +89,19 @@ export default function serve() {
         }
         if (root?.uri) {
             const configCWD = fileURLToPath(root.uri.replace('%3A', ':'))
-            customConfig = exploreConfig(settings.config || 'master.css', {
-                cwd: configCWD,
-                found: (basename) => console.log`Loaded **${basename}**`
-            })
-            css = new MasterCSS(customConfig)
+            try {
+                customConfig = exploreConfig(settings.config || 'master.css', {
+                    cwd: configCWD,
+                    found: (basename) => console.log`Loaded **${basename}**`
+                })
+                css = new MasterCSS(customConfig)
+            }
+            catch (e) {
+                console.log('Config loading failed')
+                console.error(e)
+                css = new MasterCSS()
+                console.log('Using default config')
+            }
         }
     }
 
@@ -193,7 +201,7 @@ export default function serve() {
             if (settings == null) {
                 return []
             }
-            if (settings.previewColors == true && CheckFilesExclude(documentColor.textDocument.uri)) {
+            if (settings.previewColors && CheckFilesExclude(documentColor.textDocument.uri)) {
                 const documentUri = documentColor.textDocument.uri
                 const document = documents.get(documentUri)
                 if (document) {
@@ -202,10 +210,10 @@ export default function serve() {
                         return []
                     }
 
-                    const colorIndexs = (await getDocumentColors(text, css))
+                    const colorIndexes = (await getDocumentColors(text, css))
 
                     const colorIndexSet = new Set()
-                    const colorInformations = colorIndexs
+                    const colorInformation = colorIndexes
                         .filter(item => {
                             if (colorIndexSet.has(item.index.start)) {
                                 return false
@@ -222,14 +230,14 @@ export default function serve() {
                             color: x.color
                         }))
 
-                    return colorInformations
+                    return colorInformation
                 }
             }
             return []
         })
 
     connection.onColorPresentation((params: ColorPresentationParams) => {
-        if (settings.previewColors == true && CheckFilesExclude(params.textDocument.uri)) {
+        if (settings.previewColors && CheckFilesExclude(params.textDocument.uri)) {
             const document = documents.get(params.textDocument.uri)
             if (document) {
                 const text = document.getText()

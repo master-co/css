@@ -13,7 +13,9 @@ const ruleTester = new RuleTester({
 })
 
 ruleTester.run('vue class order', rule, {
-    valid: [{ code: `<div class="bg:black f:24 fg:white m:8 p:8">Simple, basic</div>` }],
+    valid: [
+        { code: `<div class="bg:black f:24 fg:white m:8 p:8">Simple, basic</div>` }
+    ],
     invalid: [
         {
             code: `<template><div class="m:8 bg:black p:8 f:24 fg:white">Enhancing readability</div></template>`,
@@ -97,6 +99,25 @@ ruleTester.run('vue class order', rule, {
                                 : 'fg:#ffffff'
                         ]"/>
                     </template>`,
+            errors: [
+                { messageId: 'invalidClassOrder' }
+            ],
+            filename: 'test.vue',
+            parser: require.resolve('vue-eslint-parser'),
+        },
+        {
+            code: `<template>
+                        <input   type="password"
+                            placeholder="如果我在Vue元件內不小心寫了沒有function的事件VSCODE的ESLINT套件會無法格式化，輸出會有錯誤"
+                            class="bg:black p:8 f:24 fg:white m:8"
+                            @blur.prevent="" />
+                        </template>`,
+            output: `<template>
+                        <input   type="password"
+                            placeholder="如果我在Vue元件內不小心寫了沒有function的事件VSCODE的ESLINT套件會無法格式化，輸出會有錯誤"
+                            class="bg:black f:24 fg:white m:8 p:8"
+                            @blur.prevent="" />
+                        </template>`,
             errors: [
                 { messageId: 'invalidClassOrder' }
             ],

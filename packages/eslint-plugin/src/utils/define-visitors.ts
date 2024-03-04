@@ -56,11 +56,11 @@ export default function defineVisitors({ context, settings, options }: { context
         VAttribute: function (node: any) {
             if (node.value && node.value.type === 'VLiteral') {
                 visitNode(node)
-            } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression.type === 'ArrayExpression') {
+            } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression?.type === 'ArrayExpression') {
                 node.value.expression.elements.forEach((arg) => {
                     visitNode(node, arg)
                 })
-            } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression.type === 'ObjectExpression') {
+            } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression?.type === 'ObjectExpression') {
                 node.value.expression.properties.forEach((prop) => {
                     visitNode(node, prop)
                 })
