@@ -1,37 +1,26 @@
 <script setup lang="ts">
-import { ref, inject } from 'vue'
+import { ref } from 'vue'
 
 const count = ref<number>(0)
-const themeService = inject<any>('theme-service')
-
 </script>
 
 <template>
-    <div class='grid-cols:2 w:fit gap:20 mx:auto'>
-        <a href="https://vitejs.dev" target="_blank">
-            <img src="../assets/vue.svg" class="logo" alt="Vite logo" />
-        </a>
-        <a href="https://rc.css.master.co" target="_blank">
-            <img src="../assets/master.svg" class="logo scale(2)" alt="Master logo" />
-        </a>
+    <div>
+        <div class='grid-cols:2 w:fit mx:auto'>
+            <a href="https://rc.css.master.co" target="_blank">
+                <img src="../assets/master.svg" class="logo size:24x scale(2)" alt="Master logo" />
+            </a>
+            <a href="https://vitejs.dev" target="_blank">
+                <img src="../assets/vue.svg" class="logo size:24x" alt="Vite logo" />
+            </a>
+        </div>
+        <h1 class="font:56 fg:white@dark font:heavy my:8x">
+            <span>Master CSS</span> <span class="fg:#42b883">Vue</span>
+        </h1>
     </div>
-    <h1 class="font:sans ls:-.25 fg:white@dark font:heavy">
-        <span class="fg:#42b883">Vue</span>
-        <span class="fg:slate-70 mx:10 font:semibold">+</span>
-        <span>Master CSS</span>
-    </h1>
 
     <div class="card">
         <button type="button" @click="count++">count is {{ count }}</button>
-        <button className="h:40 bg:gray-20@dark bg:slate-90@light ml:10 rel">
-            {{ themeService.current.value === 'dark' ? '🌜' : '☀️' }} {{ themeService.value.value }}
-            <Select className="abs full inset:0 r:inherit opacity:0 font:inherit" v-bind="themeService.value"
-                @change="themeService.switch($event.target.value)">
-                <option value="light">☀️ Light</option>
-                <option value="dark">🌜 Dark</option>
-                <option value="system">System</option>
-            </Select>
-        </button>
         <p>
             Edit
             <code>components/HelloWorld.vue</code> to test HMR

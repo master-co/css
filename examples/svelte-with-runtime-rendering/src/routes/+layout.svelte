@@ -1,5 +1,5 @@
 <script>
-    import { CSSRuntimeProvider } from "@master/css.svelte";
+    import CSSRuntimeProvider from "@master/css.svelte";
     import config from "../../master.css";
     import Header from "./Header.svelte";
     import "./styles.css";

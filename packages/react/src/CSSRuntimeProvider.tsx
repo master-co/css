@@ -4,8 +4,8 @@ import type { Config } from '@master/css'
 import { RuntimeCSS } from '@master/css-runtime'
 import React, { useEffect, useLayoutEffect, createContext, useContext, useState, useRef } from 'react'
 
-export const CSSRuntimeContext = createContext<RuntimeCSS | undefined>(undefined)
-export const useCSSRuntime = () => useContext(CSSRuntimeContext)
+export const RuntimeCSSContext = createContext<RuntimeCSS | undefined>(undefined)
+export const useRuntimeCSS = () => useContext(RuntimeCSSContext)
 
 export default function CSSRuntimeProvider({ children, config, root }: {
     children: React.ReactNode,
@@ -43,7 +43,7 @@ export default function CSSRuntimeProvider({ children, config, root }: {
 
             const init = async () => {
                 initializing.current = true
-            
+
                 const currentRoot = root ?? document
                 const existingCSSRuntime = (globalThis as any).runtimeCSSs.find((eachCSS: RuntimeCSS) => eachCSS.root === currentRoot)
                 if (existingCSSRuntime) {
@@ -53,14 +53,14 @@ export default function CSSRuntimeProvider({ children, config, root }: {
                     setCSSRuntime(newRuntimeCSS.current = new RuntimeCSS(root, resolvedConfig).observe())
                     isExternalRuntimeCSS.current = false
                 }
-            
+
                 initializing.current = false
             }
 
             if (!newRuntimeCSS.current) {
                 await init()
             } else if (
-                newRuntimeCSS.current.root !== root 
+                newRuntimeCSS.current.root !== root
                 && (root || newRuntimeCSS.current.root !== document)
             ) {
                 newRuntimeCSS.current.destroy()
@@ -77,7 +77,7 @@ export default function CSSRuntimeProvider({ children, config, root }: {
                 (async () => {
                     if (!await waitInitialized())
                         return
-                    
+
                     newRuntimeCSS.current?.destroy()
                     newRuntimeCSS.current = undefined
                 })()
@@ -86,5 +86,5 @@ export default function CSSRuntimeProvider({ children, config, root }: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    return <CSSRuntimeContext.Provider value={runtimeCSS}>{children}</CSSRuntimeContext.Provider>
+    return <RuntimeCSSContext.Provider value={runtimeCSS}>{children}</RuntimeCSSContext.Provider>
 }

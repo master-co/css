@@ -112,7 +112,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             +    let CSSRuntimeProvider: ComponentType<CSSProviderType> = Fragment as any;
 
             +    onMount(async () => {
-            +        CSSRuntimeProvider = (await import("@master/css.svelte")).CSSRuntimeProvider;
+            +        CSSRuntimeProvider = (await import("@master/css.svelte")).default;
             +    });
             </script>
 

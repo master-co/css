@@ -61,6 +61,8 @@
         "src/**/*.d.ts",
         "src/**/*.tsx",
         "src/**/*.vue",
+        "e2e/**/*.ts",
+        "e2e/**/*.vue",
         "vue.shims.d.ts"
     ]
 }

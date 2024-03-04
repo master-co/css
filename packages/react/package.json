@@ -45,29 +45,6 @@
             "require": "./dist/index.cjs",
             "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
-        },
-        "./CSSRuntimeProvider": {
-            "require": "./dist/CSSRuntimeProvider.cjs",
-            "import": "./dist/CSSRuntimeProvider.mjs",
-            "types": "./dist/CSSRuntimeProvider.d.ts"
-        },
-        "./ThemeServiceProvider": {
-            "require": "./dist/ThemeServiceProvider.cjs",
-            "import": "./dist/ThemeServiceProvider.mjs",
-            "types": "./dist/ThemeServiceProvider.d.ts"
-        }
-    },
-    "typesVersions": {
-        "*": {
-            ".": [
-                "./dist/index.d.ts"
-            ],
-            "CSSRuntimeProvider": [
-                "./dist/CSSRuntimeProvider.d.ts"
-            ],
-            "ThemeServiceProvider": [
-                "./dist/ThemeServiceProvider.d.ts"
-            ]
         }
     },
     "files": [
@@ -82,8 +59,7 @@
         "react": ">= 16.8.0"
     },
     "dependencies": {
-        "@master/css-runtime": "workspace:^",
-        "theme-service": "workspace:^"
+        "@master/css-runtime": "workspace:^"
     },
     "devDependencies": {
         "@playwright/experimental-ct-react": "^1.41.2"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { CSSRuntimeProvider } from '../src/CSSRuntimeProvider'
+    import CSSRuntimeProvider from '../src'
     import { ref, onMounted } from 'vue'
     import type { Config } from '@master/css'
 
@@ -14,7 +14,7 @@
     let shadowRoot: any
     onMounted(() => {
         shadowRoot = containerRef.value.attachShadow({ mode: 'open' });
-        
+
         const shadowContent = document.createElement('div');
         shadowContent.className = 'f:1000'
         shadowRoot.appendChild(shadowContent);

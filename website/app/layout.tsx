@@ -14,9 +14,7 @@ export const viewport: Viewport = {
     viewportFit: 'cover'
 }
 
-export default async function RootLayout({
-    children
-}: {
+export default async function RootLayout({ children }: {
     children: JSX.Element
 }) {
     return children

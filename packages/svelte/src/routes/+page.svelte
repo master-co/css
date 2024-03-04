@@ -17,7 +17,7 @@
 
     onMount(() => {
         shadowRoot = containerRef.attachShadow({ mode: 'open' });
-        
+
         const shadowContent = document.createElement('div');
         shadowContent.className = 'f:1000'
         shadowRoot.appendChild(shadowContent);
@@ -31,7 +31,7 @@
 {#if !$destroy}
     <CSSRuntimeProvider config={$config} root={$root}>
         <button on:click={() => destroy.set(true)}>DESTROY</button>
-        <button id="config-btn" class="btn" on:click={() => config.set({})}>CONFIG</button>
+        <button id="config-btn" class="btn bg:blue-50" on:click={() => config.set({})}>CONFIG</button>
         <button id="root-btn" on:click={() => root.set(shadowRoot)}>ROOT</button>
         <div bind:this={containerRef}></div>
     </CSSRuntimeProvider>

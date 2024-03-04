@@ -6,15 +6,15 @@ import { I18nProvider } from 'websites/contexts/i18n'
 import redirects from '~/redirects.mjs'
 import { Analytics } from '@vercel/analytics/react'
 import config from '~/master.css'
-import CSSRuntimeProvider from '@master/css.react/CSSRuntimeProvider'
-import ThemeServiceProvider from '@master/css.react/ThemeServiceProvider'
+import CSSRuntimeProvider from '@master/css.react'
+import ThemeModeProvider from '@master/theme-mode.react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import i18n from '~/i18n.config.mjs'
 
 export default function Client({ children, locale, translations }: any) {
     return (
         <>
-            <ThemeServiceProvider options={{ default: 'system' }}>
+            <ThemeModeProvider preference='system'>
                 <CSSRuntimeProvider config={config}>
                     <RedirectsProvider value={redirects}>
                         <I18nProvider value={{ ...i18n, translations }}>
@@ -24,7 +24,7 @@ export default function Client({ children, locale, translations }: any) {
                         </I18nProvider>
                     </RedirectsProvider>
                 </CSSRuntimeProvider>
-            </ThemeServiceProvider>
+            </ThemeModeProvider>
             <Analytics />
             <SpeedInsights />
         </>

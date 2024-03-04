@@ -1,4 +1,4 @@
-import CSSRuntimeProvider from '../src/CSSRuntimeProvider'
+import CSSRuntimeProvider from '../src'
 import { useState, useEffect, useRef } from 'react'
 import type { Config } from '@master/css'
 import React from 'react'
@@ -16,7 +16,7 @@ export default function Runtime() {
     useEffect(() => {
         if (containerRef.current) {
             const newShadowRoot = containerRef.current.attachShadow({ mode: 'open' })
-        
+
             const shadowContent = document.createElement('div')
             shadowContent.className = 'f:1000'
             newShadowRoot.appendChild(shadowContent)

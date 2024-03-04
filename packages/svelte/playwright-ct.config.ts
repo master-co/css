@@ -1,5 +1,4 @@
 import { defineConfig, devices } from '@playwright/experimental-ct-svelte'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
 
 export default defineConfig({
     testDir: './',

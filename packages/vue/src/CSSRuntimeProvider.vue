@@ -65,7 +65,7 @@ onUpdated(async () => {
 
     const resolvedConfig = await getResolvedConfig()
     if (
-        runtimeCSS.value.root !== props.root 
+        runtimeCSS.value.root !== props.root
         && (props.root || runtimeCSS.value.root !== document)
     ) {
         runtimeCSS.value.destroy()
@@ -81,7 +81,7 @@ onBeforeUnmount(async () => {
     }
 })
 
-provide('css', runtimeCSS)
+provide('runtime-css', runtimeCSS)
 
 </script>
 
