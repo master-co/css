@@ -6,7 +6,6 @@ const mainPackages = [
     require('~/../packages/server/package.json'),
     require('~/../packages/extractor/package.json'),
     require('~/../packages/validator/package.json'),
-    require('~/../packages/normal.css/package.json'),
     require('~/../packages/cli/package.json'),
     require('~/../packages/create/package.json'),
 ]
@@ -29,16 +28,20 @@ const developerToolPackages = [
 ]
 
 const solutionPackages = [
-    require('~/../packages/theme-service/package.json'),
-    require('~/../packages/class-variant/package.json'),
+    require('~/node_modules/@master/colors/package.json'),
+    require('~/node_modules/@master/normal.css/package.json'),
+    require('~/node_modules/theme-mode/package.json'),
+    require('~/node_modules/class-variant/package.json'),
 ]
 
 export default () => {
     const Tr = ({ children }: any) => (
         <tr>
-            <th><Link href={'https://github.com/master-co/css/tree/rc/' + children.repository.directory} indicate>
-                {children.name}
-            </Link></th>
+            <th>
+                <Link href={'https://github.com/master-co/css/tree/rc/' + children.repository.directory} indicate>
+                    {children.name}
+                </Link>
+            </th>
             <td>{children.description}</td>
         </tr>
     )
@@ -64,9 +67,18 @@ export default () => {
                 </tr>
                 {developerToolPackages.map((eachPackage) => <Tr key={eachPackage.name}>{eachPackage}</Tr>)}
                 <tr>
-                    <td colSpan={2}><small>Solutions</small></td>
+                    <td colSpan={2}><small>Other Solutions</small></td>
                 </tr>
-                {solutionPackages.map((eachPackage) => <Tr key={eachPackage.name}>{eachPackage}</Tr>)}
+                {solutionPackages.map((eachPackage) => (
+                    <tr key={eachPackage.name}>
+                        <th>
+                            <Link href={eachPackage.repository.url} indicate>
+                                {eachPackage.name}
+                            </Link>
+                        </th>
+                        <td>{eachPackage.description}</td>
+                    </tr>
+                ))}
             </tbody>
         </table>
     )
