@@ -36,6 +36,7 @@ const generateCSS = (name: string | Record<string, any>) => {
     target = target
         .replace(/`size`/g, '160000000')
         .replace(/`value`/g, 'var(--value)')
+        .replace(/`n\/d`/g, '100000000%')
     const classes = target.split(' ')
     const css = new MasterCSS()
     classes.forEach((eachClass: string) => css.add(eachClass))
@@ -48,6 +49,7 @@ const generateCSS = (name: string | Record<string, any>) => {
             declarations[declarationName] = declarations[declarationName]
                 .replace(/var\(--value\)/g, '`value`')
                 .replace(/10000000rem/g, '`size`rem')
+                .replace(/100000000%/g, '`r`%')
     }
     return {
         text: convertDeclarationsToCSS(declarations),
