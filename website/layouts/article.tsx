@@ -19,7 +19,7 @@ export default function Layout(props: any) {
             <h1 className='bg:text font:64@sm font:heavy gradient(180deg,gray-60,gray-90) gradient(180deg,white,gray-40)@dark ls:-.5 m:0 text-fill:transparent text:center'>
                 {$(props.metadata.title.absolute || props.metadata.title)}
             </h1>
-            <p className='text:18 fg:light max-w:screen-sm mt:3x mx:auto text:center'>{$(props.metadata.description)}</p>
+            <p className='text:20 fg:light max-w:screen-sm mt:3x mx:auto text:center'>{$(props.metadata.description)}</p>
             {props.metadata.authors && <ListAuthors className="center-content gap:8x mt:12x">{props.metadata.authors}</ListAuthors>}
         </div>
         <main className='app-doc-main max-w:screen-sm'>
