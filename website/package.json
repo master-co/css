@@ -11,7 +11,7 @@
     },
     "dependencies": {
         "@firebase/firestore": "^4.4.3",
-        "@master/colors": "rc",
+        "@master/colors": "^2.0.0",
         "@master/css": "workspace:^",
         "@master/css-cli": "workspace:^",
         "@master/css-extractor": "workspace:^",

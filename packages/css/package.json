@@ -63,7 +63,7 @@
         "provenance": true
     },
     "dependencies": {
-        "@master/colors": "rc",
+        "@master/colors": "^2.0.0",
         "@master/normal.css": "^2.0.0",
         "@techor/extend": "^3.0.16"
     },
