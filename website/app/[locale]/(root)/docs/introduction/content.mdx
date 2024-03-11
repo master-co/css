@@ -4,10 +4,10 @@
 ## What is Master CSS?
 The CSS language and framework for rapidly building modern and high-performance websites.
 
-Whether you're a solo developer or part of a large team, Master CSS can help you build interactive, dynamic, [fastest](#minimal-css-on-the-market), and beautiful websites.
+Whether you're a solo developer or part of a large team, Master CSS can help you build the [fastest](#minimal-css-on-the-market) and beautiful websites.
 
 ### The CSS language
-Master CSS is a [markup-driven](/docs/markup-driven) CSS language with smart rules allowing you to write familiar CSS using concise syntax within HTML.
+Master CSS is a [markup-driven](/docs/markup-driven) CSS language with smart rules allowing you to write familiar CSS using concise syntax within HTML/JSX.
 
 Under the hood, Master CSS automatically adds [vendor prefixes](/docs/browser-support), smartly [ordering CSS rules](/docs/markup-driven#smart-rule-ordering), and more. This allows you to focus on building your website rather than spending a lot of effort writing and maintaining CSS rules.
 
@@ -36,11 +36,7 @@ The reasons why to use Master CSS with an overview of features, syntax benefits,
 ### Rendering Modes
 Master CSS provides three [rendering modes](/docs/rendering-modes), and you can choose according to project scale and application scenarios to meet your business needs.
 
-1. [Progressive Rendering](/docs/rendering-modes/progressive-rendering) scans the rendered HTML server-side or at build time, generates the corresponding CSS rules for each page, and lazy loads the runtime engine to keep track of the dynamic class names.
-2. [Runtime Rendering](/docs/rendering-modes/runtime-rendering) observes changes in DOM class names at browser runtime, generates corresponding CSS rules, and injects them into the running style sheet.
-3. [Static Extraction](/docs/rendering-modes/static-extraction) integrates build tools to scan project source code, extract class names, generate CSS rules, and write them into a virtual CSS module.
-
-One of the most unique, the progressive rendering works by pre-rendering the critical CSS based on the document's class names and deferring the loading of the runtime engine for any future dynamic class names.
+One of the most unique, the [progressive rendering](/docs/rendering-modes/progressive-rendering) works by pre-rendering the critical CSS based on the element's class names and deferring the loading of the runtime engine for any future dynamic class names.
 ```html name=index.html
 <!DOCTYPE html>
 <html lang="en">
