@@ -65,7 +65,7 @@
     "dependencies": {
         "@master/colors": "^2.0.0",
         "@master/normal.css": "^2.0.0",
-        "@techor/extend": "^3.0.16"
+        "@techor/extend": "^3.0.18"
     },
     "devDependencies": {
         "css-shared": "workspace:^",

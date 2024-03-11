@@ -52,7 +52,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-extractor": "workspace:^",
-        "@techor/log": "^3.0.16",
+        "@techor/log": "^3.0.18",
         "webpack-virtual-modules": "^0.5.0"
     }
 }

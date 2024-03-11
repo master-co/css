@@ -54,7 +54,7 @@
         "@master/css-server": "workspace:^",
         "@master/css.vue": "workspace:^",
         "@nuxt/kit": "^3.10.3",
-        "@techor/log": "^3.0.16"
+        "@techor/log": "^3.0.18"
     },
     "devDependencies": {
         "@nuxt/devtools": "latest",
