@@ -22,7 +22,7 @@ export async function generate(
     }
     delete requestedSearchParams.openGraph
     if (requestedSearchParams.authors) {
-        requestedSearchParams.authors = JSON.stringify(requestedSearchParams.authors)
+        requestedSearchParams.authors = JSON.stringify(requestedSearchParams.authors.map((author: any) => author.name))
     }
     const baseMetadata: any = {
         icons: '',

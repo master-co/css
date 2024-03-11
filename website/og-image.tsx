@@ -72,7 +72,7 @@ export default async function create({
     const authorImageURLs: any = {
         Aron: readImage(aronFilename),
         Joy: readImage(joyFilename),
-        Benseage: readImage(benseageFilename),
+        BenSeage: readImage(benseageFilename),
         Miles: readImage(milesFilename),
         Lola: readImage(lolaFilename),
         Monting: readImage(montingFilename),

@@ -16,6 +16,7 @@ import LanguageSelect from 'websites/components/LanguageSelect'
 import { useLocale } from 'websites/contexts/locale'
 import i18n from '~/i18n.config.mjs'
 import { useTranslation } from 'websites/contexts/i18n'
+import { Fragment } from 'react'
 
 export default function DocMenuButton(props: any) {
     const [opened, setOpened] = useState(false)
@@ -29,13 +30,15 @@ export default function DocMenuButton(props: any) {
                 <Portal>
                     <div className="fixed @fade|.3s bd:blur(25) bg:base/.9 bottom:0 overflow-y:auto overscroll-behavior:contain pb:80 pt:20 top:49 top:61@md w:full z:1050">
                         {links.map(({ Icon, disabled, fullName, ...eachLink }: any) =>
-                            <Link className={clsx('flex ai:center w:full', { 'fg:lightest': disabled })} {...eachLink} disabled={disabled} key={eachLink.name} onClick={!disabled && (() => setOpened(false))}>
-                                <Icon className={clsx('fill:text-lightest/.2 ml:20 mr:12', disabled ? 'fg:lightest' : 'fg:light')} stroke="1" width="26" height="26" />
-                                <div className={clsx('flex ai:center bb:1|frame flex:1 h:48', { 'fg:strong': !disabled })}>
-                                    {$(fullName || eachLink.name)}
-                                    {!disabled && <IconChevronRight className="fg:lightest ml:auto mr:12" stroke="1.3" />}
-                                </div>
-                            </Link>
+                            <Fragment key={eachLink.name}>
+                                <Link className={clsx('flex ai:center w:full', { 'fg:lightest': disabled })} {...eachLink} disabled={disabled} onClick={!disabled && (() => setOpened(false))}>
+                                    <Icon className={clsx('fill:text-lightest/.2 ml:20 mr:12', disabled ? 'fg:lightest' : 'fg:light')} stroke="1" width="26" height="26" />
+                                    <div className={clsx('flex ai:center bb:1|frame flex:1 h:48', { 'fg:strong': !disabled })}>
+                                        {$(fullName || eachLink.name)}
+                                        {!disabled && <IconChevronRight className="fg:lightest ml:auto mr:12" stroke="1.3" />}
+                                    </div>
+                                </Link>
+                            </Fragment>
                         )}
                         <div className='font:14 m:40|20|10|20'>{$('Community')}</div>
                         <Link className="flex ai:center w:full" href="https://github.com/master-co/css" onClick={() => setOpened(false)}>

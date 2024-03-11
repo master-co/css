@@ -1,10 +1,5 @@
-import extend from '@techor/extend';
-import type { Metadata } from 'next';
-import authors from 'websites/data/authors'
+import type { Metadata } from 'next'
 
 export default function defineMetadata(metadata: Metadata | Record<string, any>) {
-    if (metadata.authors) {
-        metadata.authors = metadata.authors.map((author: string) => authors.find(({ name }) => name === author))
-    }
     return metadata
 }

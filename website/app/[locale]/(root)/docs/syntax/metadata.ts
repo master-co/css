@@ -1,8 +1,8 @@
 import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
-    title: 'Overview',
-    description: 'Quick reference to all Master CSS syntax.',
+    title: 'Quick Reference',
+    description: 'Get an overview of all Master CSS syntax.',
     category: 'Syntax',
     order: 1
 }

@@ -1,10 +1,12 @@
 import { Metadata } from 'websites/types/Metadata'
+import version from '~/version'
 
 const metadata: Metadata = {
     title: 'Roadmap',
-    description: 'Currently in release candidate and moving towards v2.',
-    date: '2024-01-15T09:19:21.050Z',
-    category: 'Syntax'
+    description: 'v2 is coming soon.',
+    date: '2024-03-11T15:15:14.241Z',
+    category: 'v' + version,
+    authors: [{ name: 'Aron' }]
 }
 
 export default metadata

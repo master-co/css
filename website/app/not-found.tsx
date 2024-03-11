@@ -21,7 +21,7 @@ export default async function NotFound() {
                 <h1 className='fg:strong font:32 font:48@sm font:extrabold lh:1.2 ls:-.4 mt:0 text:center'>{$('This page does not exist')}</h1>
                 <div className='mb:12x p:4x|2x'>
                     <p className='text:18 fg:light'>{$('Sorry, the page cannot be found. Please try searching for other content.')}</p>
-                    <SearchButton className="rounded b:1|frame lh:3rem min-w:60x mt:10x mx:auto pointer-events:auto px:6x" />
+                    <SearchButton className="flex align-items:center fg:lightest rounded b:1|frame lh:3rem min-w:60x mt:10x mx:auto pointer-events:auto px:6x" />
                 </div>
             </div>
         </RootLayout>
