@@ -6,72 +6,271 @@ import version from '~/version';
 ---
 
 ## Release phases
-We're **at the release candidate**, we can more accurately estimate arrival times based on the task at hand:
+We are at the release candidate and have stabilized.
 
-- **Master CSS v2.0**
-    1. <del>Alpha － 2.0.0-alpha.80</del>
-    2. <del>Beta － 2.0.0-beta.215</del>
-    3. **Release Candidate** － <svg className="mr:1x inline-block v:middle fill:green size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><circle className="@ping|1s|infinite transform:center" cx="4" cy="4" r="4" /><circle cx="4" cy="4" r="4" /></svg> [{version}](https://github.com/master-co/css/releases)
-    4. Stable － May 2024
-
-Since the syntax and API of Master CSS are expected to be in use for many years, even though v2 is nearing completion, it will take us some time to validate its market acceptance and solidify its foundation.
-
-At this stage, **Master CSS is nearly stable**, which means there will be no further breaking changes.
+1. <del>Alpha － 2.0.0-alpha.80</del>
+2. <del>Beta － 2.0.0-beta.215</del>
+3. Release Candidate － <svg className="mr:1x inline-block v:middle fill:green size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><circle className="@ping|1s|infinite transform:center" cx="4" cy="4" r="4" /><circle cx="4" cy="4" r="4" /></svg> [{version}](https://github.com/master-co/css/releases)
+4. 🫨 **2.0 is coming soon**
 
 ---
 
-## What did we do before?
-距離 Master CSS [v1](https://github.com/master-co/css/releases/tag/v1.0.0) 發布也快兩年，這些日子我們專注於 v2 核心功能的開發，很少發布動態，因此蘊含著許多驚人的功能待正式版一次爆發！
+## What's the news?
+Master CSS 2.0 might be one of the most time-consuming versions, nearly two years since the release of Master CSS [v1](https://github.com/master-co/css/releases/tag/v1.0.0). During this time, we've been relentlessly developing new features, improving experiences, and laying the groundwork for configurations, with fewer updates.
 
-這裡我們究竟做了哪些功能及優化：
+Thus, there's a plethora of amazing features brewing for a grand explosion upon the official release!
 
-### 🟠 Improving documentation
-Initially, the v1 docs were rushed into release, making its content rather rudimentary and potentially challenging to comprehend.
+Here's a sneak peek into some of the new features, or you can check out the [migration guide from v1](/docs/migration/v1) to glimpse at some of the new functionalities.
 
-Our goal for our upcoming v2 docs is to present a comprehensive and elegantly crafted syntax document. This enables developers to grasp the intricacies of CSS effortlessly, thus enhancing understanding through our meticulous documentation.
-<details>
-    <summary>View the states of all the documents</summary>
-    <div>
-        <table>
-            <Documents category='Getting Started' first />
-            <Documents category='Syntax Tutorial' />
-            <Documents category='Fundamentals' />
-            <Documents category='Production Optimization' />
-            <Documents category='Design Variables' />
-            <Documents category='Custom Syntax' />
-            <Documents category='API Reference' />
-            <Documents category='Syntax' />
-        </table>
-        <p className="flex gap:10 text:12">
-            <b>🟢 Completed</b>
-            <b>🚧 Unfinished</b>
-            <b>⚪️ Planning</b>
-        </p>
-    </div>
-</details>
+### Master CSS Nuxt
+A new integration package, `@master/css.nuxt`, which helps you set up the Master CSS server in your [Nuxt.js](/docs/installation/nuxtjs) project with ease.
+```ts name=nuxt.config.ts
+export default defineNuxtConfig({
+    modules: [
++        '@master/css.nuxt'
+    ]
+})
+```
+We will submit it to the Nuxt.js's [modules](https://nuxt.com/modules) 🤩
 
-### ⚪️ Refactoring Master CSS Language Service
-{/* See the related [issues](https://github.com/master-co/css/issues?q=is%3Aopen+label%3A%22language+service%22+milestone%3A%222.0+%28+RC+%29%22). */}
-🚧 The detailed content is under planning.
+### Master CSS ESLint
+One of our proud products, Master CSS ESLint, the first CSS framework with syntax-error checking in template `class=""`.
+<video className="aspect:2/1 r:2x max-w:screen-xs w:full" autoPlay loop muted playsInline>
+    <source src="/videos/syntax-error-checks.webm" type="video/webm" />
+</video>
+This is just one of the features, see the [Code Linting](/docs/code-linting) for complete details.
 
-### 🟠 Redesigning homepage
-Redesign the homepage according to the features of v2.
+### Master Colors
+Refactoring a color palette is a challenging task with no formulas or standards. The all-new [colors](/docs/colors) in 2.0 relies entirely on our experience with UI components and intuitive blending.
+<figure>
+    <Image src={require('~/public/colors.svg').default} className="r:2x" alt="Master Colors" />
+    <figcaption>A crafted color system for beautiful user interfaces</figcaption>
+</figure>
+There are built-in Master CSS color variables based on theme modes. For example, applying a meticulously designed [text color](/docs/text-colors) that works in light/dark mode.
+<Demo $py={0} $px={0}>
+    <DemoLight>
+        <div className="fg:violet font:heavy font:96">M</div>
+    </DemoLight>
+    <DemoDark>
+        <div className="fg:violet font:heavy font:96">M</div>
+    </DemoDark>
+</Demo>
+```html
+<div class="light">
+    <span class="fg:**violet**">M</span>
+</div>
+<div class="dark">
+    <span class="fg:**violet**">M</span>
+</div>
+```
+Master CSS's colors have been spun off into a new repository [master-co/colors](https://github.com/master-co/colors), as motivations always stem from random requests in our community:
+<figure>
+    <Image src={require('~/public/master-colors-motivation.jpg').default} className="r:2x" alt="Master Colors Motivation" />
+</figure>
+Now, you can install it separately anywhere.
+```install
+@master/colors@rc
+```
 
-### 🟢 New Master CSS ESLint
-🎉 Released. Check out the [Code Linting](/docs/code-linting) documentation.
+### Master CSS Configuration
+The protagonist of v2 is here - a brand-new [configuration API](/docs/configuration) designed specifically for design systems. For keeping a fresh feeling of what's released, please refer to the documentation first.
+
+### Master Theme Mode
+Used for setting and switching theme modes, the "packages/theme-mode" has been spun off into a new repository [master-co/theme-mode](https://github.com/master-co/theme-mode).
+<figure>
+    <Image src={require('~/public/theme-mode.gif').default} className="r:2x" alt="Master Theme Mode" />
+    <figcaption>Theme mode switching and system preference synchronization</figcaption>
+</figure>
+In addition to Vanilla, React, and Vue integrations, we also added Svelte support during the migration process ✨
+
+For example, install the stable React version without specifying `@rc`!
+```install
+@master/theme-mode.react
+```
+Just tweak the import and options, and everything will work as usual.
+```tsx name=App.tsx
+-import { ThemeServiceProvider } from '@master/css.react'
++import ThemeModeProvider from '@master/theme-mode.react'
+
+export default function App({ children }) {
+    return (
+-       <ThemeServiceProvider options={{ default: 'system' }}>{children}</ThemeModeProvider>
++       <ThemeModeProvider preference='system'>{children}</ThemeModeProvider>
+    )
+}
+```
+
+### Master Styled Element
+The syntactic sugar, `styled`, for the Master CSS syntax, has been also separated into a new repository, [master-co/styled](https://github.com/master-co/styled).
+
+This feature was completed nearly [two years ago](https://github.com/master-co/styled/releases/tag/v1.0.1-alpha.1), but due to its entanglement with Master CSS, we couldn't find the right time to unveil it, resulting in highly similar products appearing on the market. Now, it's released independently and marked as stable!
+
+Its uniqueness lies in achieving an extreme size of **~1.5KB** using [Proxy](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy) techniques. You can use it with Master CSS or even Tailwind CSS, and it supports Vanilla, React, and Vue.
+
+It's great if you've used [styled-components](https://styled-components.com/), `styled` is inspired by it and has a similar but more concise syntax.
+
+A simple demonstration, **create a styled reusable element with just one line of code**.
+```tsx name=Button.tsx
+import styled from '@master/styled.react'
+
+-function Button(props) {
+-    return (
+-        <button {...props} className={"inline-flex font:14" + (props.className ? ' ' + props.className : '')}>
+-            {props.children}
+-        </button>
+-    )
+-}
+
++const Button = styled.button`inline-flex font:14`
+```
+And use `Button` as usual.
+```tsx
+<Button className="uppercase">Submit</Button>
+```
+It will render as:
+```html
+<button class="inline-flex font:14 uppercase">submit</button>
+```
+You can use `styled` as a way to abstract styles.
+
+### Master CSS Runtime
+The runtime engine of Master CSS has been separated from `@master/css` into a new package `@master/css-runtime`, avoiding additional downloads in non-browser environments.
+```js
+-import { initCSSRuntime } from '@master/css';
++import { initCSSRuntime } from '@master/css-runtime'
+
+initCSSRuntime()
+```
+The CDN is changed to "css-runtime".
+```html
+-<script src="https://cdn.master.co/css"></script>
++<script src="https://cdn.master.co/css-runtime@rc"></script>
+```
+There are no major changes; it operates as usual.
+
+### Master Normal CSS
+The "packages/normal.css" for normalizing [global styles](/docs/global-styles) has been spun off into a new repository [master-co/normal.css](https://github.com/master-co/normal.css).
+
+Now, install the stable version without specifying `@rc`!
+```install
+@master/normal.css
+```
+
+...
+
+There's more, let's save it for a big bang with the v2 release!
 
 ---
 
-## Future
+## Product planning
+Initially planned to sprint full throttle towards Master UI after v1's release, but after absorbing some community feedback and delving into more real-world applications, we realized that Master CSS's support for design systems was insufficient. Hence, we focused on strengthening the [configuration API](/docs/configuration) and shaping the syntax instead.
+
+We don't want to hastily release peripherals or even paid products before the product matures, leaving a heavy burden for future improvements.
+
+Master CSS 2.0 will be officially released in May, and this year's product plan is confirmed!
+
+| ETA  | Product                                                              | Version  | Introduction                                                          |
+|------|----------------------------------------------------------------------|----------|-----------------------------------------------------------------------|
+| ✔    | [**Master Theme Mode**](https://github.com/master-co/theme-mode)     | v1.0     | A lightweight utility for switching CSS theme modes                   |
+| ✔    | [**Master Normal CSS**](https://github.com/master-co/normal.css)     | v2.0     | Normalize browser's styles ~600B                                      |
+| ✔    | [**Master Styled**](https://github.com/master-co/styled)             | v2.0     | Create reusable and extensible styled elements in one line            |
+| ✔    | [**Master Colors**](https://github.com/master-co/colors)             | v2.0     | A crafted color system for beautiful user interfaces                  |
+| Q2   | **Master CSS**                                                       | v2.0     | The CSS Language and Framework                                        |
+| Q3   | [**Master UI**](https://github.com/master-co/ui)                     | v1.0     | Beautiful components crafted with Master CSS                          |
+| Q4   | **Master UI Pro**                                                    | v1.0     | Professional UIs crafted with Master UI                               |
+| ?    | **Master AI**                                                        | v1.0     | Beautiful generative UIs built on Master UI.                           |
+
+### Master UI
+What's heartening so far is that the community is still eagerly awaiting Master UI 😌 With a comprehensive plan in place internally, here's an early disclosure of Master UI's product positioning and solutions.
+
+> Master UI is **free** and **MIT licensed**, you no longer need to pay for a basic button.
+
+<figure>
+    <Image src={require('~/public/master-ui-covers.jpeg').default} className="r:2x" alt="Master UI" />
+    <figcaption>Master UI Components</figcaption>
+</figure>
+
+> Master UI is a **framework-agnostic** and **framework-friendly** UI library.
+
+Just using a basic button provides four different ways of integration.
+<Demo>
+    <button className="center-content inline-flex bg:indigo fg:white font:14 font:medium h:10x px:4x r:2x">Submit</button>
+</Demo>
+We've designed a solution supporting React, Vue, Svelte, Angular, and more popular frameworks.
+
+(i) 1. Install and import the React integrated button.
+```tsx name=App.tsx
+import { Button } from '@master/ui.react'
+
+export default function App() {
+    return (
+        <Button color="indigo">Submit</Button>
+    )
+}
+```
+(i) 2. Use CLI to clone the React button into the project and modify the source directly.
+```sh
+npx @master/ui add Button.tsx
+```
+Great, but what about framework-agnostic?
+
+> Master UI can be an **Atomic CSS** or **Semantic CSS** UI library.
+
+(i) 3. Copy atomic source code from the documentation and modify directly.
+```html
+<button class="inline-flex bg:indigo fg:white font:14 ...">Submit</button>
+```
+Or embrace semantics again!
+
+(i) 4. Import all Master UI [styles](/docs/styles) in the configuration.
+```js name=master.css.js
+export default {
+    extends: [
+        require('@master/ui')
+    ]
+}
+```
+```html
+<button class="btn">Submit</button>
+```
+We aim to create a CSS framework and UI library that get rid of the fetters of frameworks and factionalism.
+
+### Master UI Pro
+This will be a professionally crafted UI library based on Master UI, offering components for marketing, e-commerce, applications, and even for different industries.
+
+> Lifetime upgrades and access to any future products with just a one-time payment.
+
+We will launch it in Q4 this year, so stay tuned; there might be early bird offers!
+
+---
+
+## What's not perfect yet?
+There are still some peripheral features and core documentation that are not yet complete; at this stage, we are working hard to accomplish these tasks.
+
+- [ ] Major － Completing Getting Started, Syntax Tutorial, Fundamentals, etc., core documentation.
+- [x] Major － [Quick Reference for Syntax](/docs/syntax)。
+- [ ] Minor － Refactoring the Master CSS Language Service based on new features and improving development experience.
+- [ ] Minor － Basic usage and examples for various syntax documentation.
+
+Major tasks will be completed before the v2 release; minor tasks like extensive use cases of CSS properties will be filled in our future day-to-day work. Here's an example, [`text-transform`](/docs/text-transform)：
+<Demo $py={0}>
+    <DemoPanel>
+        <DemoP><b className="bg:stripe-pink">H</b>eavy <b className="bg:stripe-pink">B</b>oxes <b className="bg:stripe-pink">P</b>erform <b className="bg:stripe-pink">Q</b>uick <b className="bg:stripe-pink">W</b>altzes <b className="bg:stripe-pink">A</b>nd <b className="bg:stripe-pink">J</b>igs.</DemoP>
+    </DemoPanel>
+</Demo>
+```html
+<p class="**capitalize**">**h**eavy **b**oxes **p**erform **q**uick **w**altzes **a**nd **j**igs.</p>
+```
+In conclusion, Master CSS is nearly stable, the biggest reason we haven't released it as stable yet is due to the lack of core documentation.
 
 ---
 
 ## FAQs
-<details>
+<details open>
     <summary>How to keep track of the latest updates?</summary>
     <div className='bg:canvas b:1|frame p:3x|8x r:1x mt:2x'>
         - [GitHub Releases](https://github.com/master-co/css/releases) － We've beautified the release changelog, which notes any version and package detailed changes.
-        - [Docs - Discord Channel](https://discord.com/channels/917780624314613760/1144544204979175626) － We'll post the latest documentation updates in the #docs channel in the Master discord server.
+        - [Updates - Discord Channel](https://discord.com/channels/917780624314613760/1144544204979175626) － We'll post the latest updates in the discord #updates channel.
     </div>
 </details>
 <details>
@@ -89,3 +288,7 @@ Redesign the homepage according to the features of v2.
         The official [documentation is now open source](https://github.com/master-co/css/tree/rc/website/app/%5Blocale%5D/(root)/docs); welcome to contribute your expertise.
     </div>
 </details>
+
+---
+
+<StarUs />
