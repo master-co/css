@@ -23,9 +23,9 @@
         "url": "https://github.com/master-co/css.git"
     },
     "dependencies": {
-        "@google-cloud/storage": "^7.7.0",
-        "@master/normal.css": "^2.1.0",
-        "@swc-node/jest": "^1.7.0",
+        "@google-cloud/storage": "^7.8.0",
+        "@master/normal.css": "^2.1.1",
+        "@swc-node/jest": "^1.8.0",
         "@techor/fs": "^3.0.18",
         "@techor/glob": "^3.0.18",
         "@techor/jest-dom": "^3.0.18",
