@@ -4,19 +4,19 @@
             <th className="sticky top:48 top:60@sm pt:4x bg:base w:1/3">
                 <DocBadge $color="primary" $size="xs" className="mb:15">Recommended</DocBadge>
                 <div className="font:22@sm font:bold">Progressive Rendering</div>
-                <p className="fg:neutral font:regular text:14 mt:2x hide@<sm">Renders HTML statically or server-side for class names, generates CSS rules, and loads the runtime engine asynchronously.</p>
+                <p className="fg:neutral font:regular text:14! mt:2x hide@<sm">Render the CSS rules required for the page on the server side or at build time, and lazily load the runtime engine.</p>
                 <LearnMore href="/docs/rendering-modes/progressive-rendering">Learn more</LearnMore>
             </th>
             <th className="sticky top:48 top:60@sm pt:4x bg:base w:1/3">
                 <DocBadge $color="fade" $size="xs" className="mb:15">Easiest</DocBadge>
                 <div className="font:22@sm font:bold">Runtime Rendering</div>
-                <p className="fg:neutral font:regular text:14 mt:2x hide@<sm">Observe for changes to class names in the DOM tree to manipulate CSS rules and sync to the runtime stylesheet.</p>
+                <p className="fg:neutral font:regular text:14! mt:2x hide@<sm">Observe for changes to class names in the DOM tree to manipulate CSS rules and sync to the runtime stylesheet.</p>
                 <LearnMore href="/docs/rendering-modes/runtime-rendering">Learn more</LearnMore>
             </th>
             <th className="sticky top:48 top:60@sm pt:4x bg:base w:1/3">
                 <DocBadge $color="fade" $size="xs" className="mb:15 invisible">Zero Runtime</DocBadge>
                 <div className="font:22@sm font:bold">Static Extraction</div>
-                <p className="fg:neutral font:regular text:14 mt:2x hide@<sm">Extract class names from various files at build time, generate a virtual CSS module or file, and import it into the entry file.</p>
+                <p className="fg:neutral font:regular text:14! mt:2x hide@<sm">Extract class names from various files at build time, generate a virtual CSS module or file, and import it into the entry file.</p>
                 <LearnMore href="/docs/rendering-modes/static-extraction">Learn more</LearnMore>
             </th>
         </tr>

@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Static Extraction',
-    description: 'Master CSS Static Extraction integrates build tools to scan project source code, extract class names, generate CSS rules, and write them into a virtual CSS module.',
+    description: 'Extract class names from various files at build time, generate a virtual CSS module or file, and import it into the entry file.',
     category: 'Rendering Modes',
     unfinished: true
 }

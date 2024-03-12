@@ -2,7 +2,7 @@ import { Metadata } from 'websites/types/Metadata'
 
 const metadata: Metadata = {
     title: 'Runtime Rendering',
-    description: 'Master CSS Runtime Rendering observes changes in DOM class names at browser runtime, generates corresponding CSS rules, and injects them into the running style sheet.',
+    description: 'Observe for changes to class names in the DOM tree to manipulate CSS rules and sync to the runtime stylesheet.',
     category: 'Rendering Modes',
 }
 
