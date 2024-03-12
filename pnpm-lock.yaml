@@ -12,8 +12,8 @@ importers:
         specifier: ^7.7.0
         version: 7.8.0
       '@master/normal.css':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^2.1.0
+        version: 2.1.0
       '@swc-node/jest':
         specifier: ^1.7.0
         version: 1.8.0(@swc/core@1.4.6)(@swc/types@0.1.5)(typescript@5.4.2)
@@ -337,8 +337,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/runtime
       '@master/normal.css':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^2.1.0
+        version: 2.1.0
     devDependencies:
       typescript:
         specifier: ^5.3.3
@@ -1085,8 +1085,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@master/normal.css':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^2.1.0
+        version: 2.1.0
       '@techor/extend':
         specifier: ^3.0.18
         version: 3.0.18
@@ -1533,8 +1533,8 @@ importers:
         specifier: workspace:^
         version: link:../packages/eslint-plugin
       '@master/normal.css':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^2.1.0
+        version: 2.1.0
       '@master/styled.react':
         specifier: ^2.0.2
         version: 2.0.2(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
@@ -6584,8 +6584,8 @@ packages:
     resolution: {integrity: sha512-0s4DzBSXthRVCFKkKbGvAioT6oVlN54f9H4MX6GN1YoNG0/x0NECyIv/5Tx9p5nDMr+ClDHSDbQ37DJUp8CHFg==}
     dev: false
 
-  /@master/normal.css@2.0.0:
-    resolution: {integrity: sha512-zXvZwFTP9gvinLH06ElOlcPJRm7cgFVVxoL/uzFb5qiiXZq1TgsjYS57dEHoPirCWZnk987Xwvi9GQJ4AAgzxA==}
+  /@master/normal.css@2.1.0:
+    resolution: {integrity: sha512-qRW05ThdgfbEqBhEYk+DauPoesFSHjnUmpwNtVO+ZGmM90E8IWjADe7poBAEanO0saMu0VqnGcmBSbr+3RVKfA==}
     dev: false
 
   /@master/styled.react@2.0.2(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0):
@@ -10159,7 +10159,7 @@ packages:
       '@babel/plugin-syntax-typescript': 7.23.3(@babel/core@7.24.0)
       '@vanilla-extract/babel-plugin-debug-ids': 1.0.5
       '@vanilla-extract/css': 1.14.1
-      esbuild: 0.17.6
+      esbuild: 0.19.12
       eval: 0.1.8
       find-up: 5.0.0
       javascript-stringify: 2.1.0
@@ -19196,6 +19196,7 @@ packages:
   /mimic-response@3.1.0:
     resolution: {integrity: sha512-z0yWI+4FDrrweS8Zmt4Ej5HdJmky15+L2e6Wgn3+iK5fWzb6T3fhNFq2+MeTRb064c6Wr4N/wv0DzQTjNzHNGQ==}
     engines: {node: '>=10'}
+    requiresBuild: true
 
   /min-indent@1.0.1:
     resolution: {integrity: sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==}
@@ -23888,7 +23889,7 @@ packages:
       jest-worker: 27.5.1
       schema-utils: 3.3.0
       serialize-javascript: 6.0.2
-      terser: 5.27.0
+      terser: 5.29.1
       webpack: 5.90.1(@swc/core@1.4.6)(esbuild@0.20.0)
     dev: true
 

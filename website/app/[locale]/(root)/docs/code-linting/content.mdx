@@ -55,9 +55,7 @@ import brands from 'websites/data/brands'
 In practice, you pay less attention to the order of classes, and as the number of classes increases, the template markup becomes less readable.
 
 (i) With the [class order rule](/docs/eslint#class-order), you can enforce a consistent and fixed order for classes.
-<video className="aspect:2/1 r:2x max-w:screen-xs w:full" autoPlay loop muted playsInline>
-    <source src="/videos/consistent-class-order.webm" type="video/webm" />
-</video>
+<Image className="aspect:2/1 r:2x max-w:screen-xs w:full" src={require('~/public/consistent-class-order.webp').default} alt="Consistent class order" unoptimized />
 
 (!) <span className="text:warning">No consistent class order followed.</span>
 ```html
@@ -72,13 +70,11 @@ In practice, you pay less attention to the order of classes, and as the number o
 In the past, you added utility classes to your templates unsafely, lacking the capability to verify their validity or legality directly within the source code.
 
 (i) With the [class validation rule](/docs/eslint#class-order), you can check the validity of classes early as you write them.
-<video className="aspect:2/1 r:2x max-w:screen-xs w:full" autoPlay loop muted playsInline>
-    <source src="/videos/syntax-error-checks.webm" type="video/webm" />
-</video>
+<Image className="aspect:2/1 r:2x max-w:screen-xs w:full" src={require('~/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
 
-(x) <span className="text:error">Invalid value for \`width\` property.</span>
+(x) <span className="text:error">Invalid value for \`font\` property.</span>
 ```html
-<div class="**width:**">…</div>
+<div class="**font:**">…</div>
 ```
 This is helpful if you make a typo or are unfamiliar with Master CSS syntax!
 
@@ -86,9 +82,7 @@ This is helpful if you make a typo or are unfamiliar with Master CSS syntax!
 You can also restrict teams to using [configuration](/docs/configuration) to create [styles](/docs/styles) instead of defining classes through traditional `html <style>` or CSS files.
 
 (i) Based on syntax error checking, you can [disallow unknown classes](/docs/eslint#class-validation).
-<video className="aspect:2/1 r:2x max-w:screen-xs w:full" autoPlay loop muted playsInline>
-    <source src="/videos/disallow-unknown-class.webm" type="video/webm" />
-</video>
+<Image className="aspect:2/1 r:2x max-w:screen-xs w:full" src={require('~/public/disallow-unknown-class.webp').default} alt="Disallow unknown classes" unoptimized />
 
 (x) <span className="text:error">"btn" is not a valid or known class.</span>
 ```html
@@ -115,9 +109,7 @@ Restart the VSCode ESLint server to read the modified Master CSS configuration. 
 The class you added may collide with existing classes due to human error or having the same declarations as a third-party custom syntax.
 
 (i) With the [class collision rule](/docs/eslint#class-collision), you'll no longer collide with existing classes.
-<video className="aspect:2/1 r:2x max-w:screen-xs w:full" autoPlay loop muted playsInline>
-    <source src="/videos/class-collision-detection.webm" type="video/webm" />
-</video>
+<Image className="aspect:2/1 r:2x max-w:screen-xs w:full" src={require('~/public/class-collision-detection.webp').default} alt="Class collision detection" unoptimized />
 
 (!) <span className="text:warning">"m:10" applies the same CSS declarations as "m:20".</span><br/><span className="text:warning">"m:20" applies the same CSS declarations as "m:10".</span>
 ```html
@@ -129,22 +121,20 @@ The class you added may collide with existing classes due to human error or havi
 ```
 It can also detect whether declarations with the same selector and media query state collide!
 
-(!) <span className="text:warning">"m:40@sm" applies the same CSS declarations as "m:12x@sm".</span><br/><span className="text:warning">"m:12x@sm" applies the same CSS declarations as "m:40@sm".</span>
+(!) <span className="text:warning">"m:40@sm" applies the same CSS declarations as "m:50@sm".</span><br/><span className="text:warning">"m:50@sm" applies the same CSS declarations as "m:40@sm".</span>
 ```html
-<div class="**m:40@sm** **m:12x@sm**">…</div>
+<div class="**m:40@sm** **m:50@sm**">…</div>
 ```
 (o) Fix this @master/css/class-collision problem by removing other colliding classes.
 ```html
-<div class="m:12x@sm">…</div>
+<div class="m:50@sm">…</div>
 ```
 
 ### Supports JS utilities
 You may be using [clsx](https://github.com/lukeed/clsx) or [class variant](https://github.com/master-co/styled) to conditionally apply classes, but unfortunately, they're just pure strings in JavaScript.
 
 (i) You can make arguments of JavaScript [callees](/docs/eslint#calleematching) have Master CSS code linting.
-<video className="aspect:2/1 r:2x max-w:screen-xs w:full" autoPlay loop muted playsInline>
-    <source src="/videos/supports-js-utilities.webm" type="video/webm" />
-</video>
+<Image className="aspect:2/1 r:2x max-w:screen-xs w:full" src={require('~/public/supports-js-utilities.webp').default} alt="Supports JS utilities" unoptimized />
 
 (x) <span className="text:error">Invalid value for `display` property.</span>
 ```tsx

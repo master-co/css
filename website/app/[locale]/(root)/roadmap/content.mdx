@@ -35,9 +35,12 @@ We will submit it to the Nuxt.js's [modules](https://nuxt.com/modules) 🤩
 
 ### Master CSS ESLint
 One of our proud products, Master CSS ESLint, the first CSS framework with syntax-error checking in template `class=""`.
-<video className="aspect:2/1 r:2x max-w:screen-xs w:full" autoPlay loop muted playsInline>
-    <source src="/videos/syntax-error-checks.webm" type="video/webm" />
-</video>
+<Image className="aspect:2/1 r:2x max-w:screen-xs w:full" src={require('~/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
+
+(x) <span className="text:error">Invalid value for \`font\` property.</span>
+```html
+<div class="**font:**">…</div>
+```
 This is just one of the features, see the [Code Linting](/docs/code-linting) for complete details.
 
 ### Master Colors
@@ -78,7 +81,7 @@ The protagonist of v2 is here - a brand-new [configuration API](/docs/configurat
 ### Master Theme Mode
 Used for setting and switching theme modes, the "packages/theme-mode" has been spun off into a new repository [master-co/theme-mode](https://github.com/master-co/theme-mode).
 <figure>
-    <Image src={require('~/public/theme-mode.gif').default} className="r:2x" alt="Master Theme Mode" />
+    <Image src={require('~/public/theme-modes.webp').default} className="r:2x" alt="Master Theme Modes" unoptimized />
     <figcaption>Theme mode switching and system preference synchronization</figcaption>
 </figure>
 In addition to Vanilla, React, and Vue integrations, we also added Svelte support during the migration process ✨
@@ -192,13 +195,13 @@ What's heartening so far is that the community is still eagerly awaiting Master 
 
 > Master UI is a **framework-agnostic** and **framework-friendly** UI library.
 
-Just using a basic button provides four different ways of integration.
+Even a basic button provides four different ways of use.
 <Demo>
     <button className="center-content inline-flex bg:indigo fg:white font:14 font:medium h:10x px:4x r:2x">Submit</button>
 </Demo>
 We've designed a solution supporting React, Vue, Svelte, Angular, and more popular frameworks.
 
-(i) 1. Install and import the React integrated button.
+(i) A. Install and import the React integrated button.
 ```tsx name=App.tsx
 import { Button } from '@master/ui.react'
 
@@ -208,7 +211,7 @@ export default function App() {
     )
 }
 ```
-(i) 2. Use CLI to clone the React button into the project and modify the source directly.
+(i) B. Use CLI to clone the React button into the project and modify the source directly.
 ```sh
 npx @master/ui add Button.tsx
 ```
@@ -216,13 +219,13 @@ Great, but what about framework-agnostic?
 
 > Master UI can be an **Atomic CSS** or **Semantic CSS** UI library.
 
-(i) 3. Copy atomic source code from the documentation and modify directly.
+(i) C. Copy atomic source code from the documentation and modify directly.
 ```html
 <button class="inline-flex bg:indigo fg:white font:14 ...">Submit</button>
 ```
 Or embrace semantics again!
 
-(i) 4. Import all Master UI [styles](/docs/styles) in the configuration.
+(i) D. Import all Master UI [styles](/docs/styles) in the configuration.
 ```js name=master.css.js
 export default {
     extends: [

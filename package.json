@@ -24,7 +24,7 @@
     },
     "dependencies": {
         "@google-cloud/storage": "^7.7.0",
-        "@master/normal.css": "^2.0.0",
+        "@master/normal.css": "^2.1.0",
         "@swc-node/jest": "^1.7.0",
         "@techor/fs": "^3.0.18",
         "@techor/glob": "^3.0.18",

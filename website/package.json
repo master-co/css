@@ -20,7 +20,7 @@
         "@master/css.react": "workspace:^",
         "@master/eslint-config-css": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
-        "@master/normal.css": "^2.0.0",
+        "@master/normal.css": "^2.1.0",
         "@master/styled.react": "^2.0.2",
         "@master/theme-mode.react": "^1.1.0",
         "@monaco-editor/react": "^4.6.0",

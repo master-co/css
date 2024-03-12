@@ -14,6 +14,6 @@
     },
     "dependencies": {
         "@master/css-runtime": "workspace:^",
-        "@master/normal.css": "^2.0.0"
+        "@master/normal.css": "^2.1.0"
     }
 }
