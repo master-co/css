@@ -12,7 +12,7 @@ export async function generate(
     const $ = await createTranslation(params?.locale)
     const description = $(metadata.description)
     const category = $(metadata.category)
-    const ogTitle = $(metadata.openGraph?.title || metadata.title.absolute || metadata.title)
+    const ogTitle = $(metadata.openGraph?.title || metadata.title?.absolute || metadata.title)
     const ogDescription = $(metadata.openGraph?.description || metadata.description)
     const requestedSearchParams = {
         ...metadata as any,
