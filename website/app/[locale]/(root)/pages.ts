@@ -5,6 +5,7 @@ import metadataForList from './docs/*/metadata.ts'
 // @ts-ignore
 import allMetadata from './docs/*/**/metadata.ts'
 import docsInstallationMetadata from './docs/installation/(tabs)/metadata'
+import { AbsoluteTemplateString } from 'next/dist/lib/metadata/types/metadata-types.js'
 
 metadataForList.push({
     ...docsInstallationMetadata,
@@ -92,8 +93,8 @@ pages = pageCategories
     .flat()
 
 allPages = allPages.sort((a, b) => {
-    const titleA = (a.metadata.title?.absolute || a.metadata.title).toLowerCase()
-    const titleB = (b.metadata.title?.absolute || b.metadata.title).toLowerCase()
+    const titleA = ((a.metadata.title as AbsoluteTemplateString)?.absolute || a.metadata.title as string).toLowerCase()
+    const titleB = ((b.metadata.title as AbsoluteTemplateString)?.absolute || b.metadata.title as string).toLowerCase()
 
     if (titleA < titleB) {
         return -1
