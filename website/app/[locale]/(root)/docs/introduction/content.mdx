@@ -91,12 +91,11 @@ This feature is included in the [Master CSS Language Service](/docs/language-ser
 
 ### Code Linting
 Have you ever felt anxious about adding styles to class attributes? Master CSS was the first to introduce [syntax validation](/docs/code-linting#syntax-error-checks) of classes in template markup, which helps you find errors early before building and dramatically improves the developer experience.
-<video className="aspect:2/1 r:5 max-w:screen-xs w:full" autoPlay loop muted playsInline>
-    <source src="/videos/syntax-error-checks.webm" type="video/webm" />
-</video>
-(x) <span className="text:error">Invalid value for \`width\` property.</span>
+<Image className="aspect:2/1 r:2x max-w:screen-xs w:full" src={require('~/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
+
+(x) <span className="text:error">Invalid value for \`font\` property.</span>
 ```html
-<div class="**width:**">…</div>
+<div class="**font:**">…</div>
 ```
 This is just a piece of cake; we also allow you to **enforce consistent class ordering**, **legitimate class checks**, **class collision checks**, and checks for JavaScript utilities like **`clsx()`**.
 
