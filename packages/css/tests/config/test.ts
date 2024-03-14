@@ -14,7 +14,7 @@ test('styles', () => {
 
 test('viewports', () => {
     expect(new MasterCSS({
-        mediaQueries: {
+        queries: {
             'xss': 500
         }
     }).add('hide@xss').text).toBe(
@@ -37,10 +37,10 @@ test('colors', () => {
     )
 })
 
-test('mediaQueries', () => {
+test('queries', () => {
     expect(new MasterCSS({
-        mediaQueries: {
-            'min-600': '(min-width: 600px)'
+        queries: {
+            'min-600': 'media (min-width: 600px)'
         }
     }).add('f:12@min-600').text).toBe(
         '@media (min-width: 600px){.f\\:12\\@min-600{font-size:0.75rem}}'

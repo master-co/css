@@ -5,7 +5,7 @@ module.exports = {
     variables: {},
     semantics: {},
     breakpoints: {},
-    mediaQueries: {},
+    queries: {},
     keyframes: {},
     selectors: {},
     functions: {},

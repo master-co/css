@@ -5,7 +5,7 @@ export default {
     rules: {},
     variables: {},
     semantics: {},
-    mediaQueries: {},
+    queries: {},
     animations: {},
     selectors: {},
     functions: {},

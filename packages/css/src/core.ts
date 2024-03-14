@@ -49,7 +49,7 @@ export default class MasterCSS {
         this.stylesBy = {}
         this.selectors = {}
         this.variables = {}
-        this.mediaQueries = {}
+        this.queries = {}
         this.animations = {}
         this.RegisteredRules.length = 0
         this.RegisteredSemanticRules.length = 0
@@ -61,7 +61,7 @@ export default class MasterCSS {
             transparent: undefined
         }
 
-        const { styles, selectors, variables, semantics, mediaQueries, rules, animations } = this.config
+        const { styles, selectors, variables, semantics, queries, rules, animations } = this.config
 
         function escapeString(str: string) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -248,8 +248,8 @@ export default class MasterCSS {
             }
         }
 
-        if (mediaQueries) {
-            this.mediaQueries = flattenObject(mediaQueries)
+        if (queries) {
+            this.queries = flattenObject(queries)
         }
 
         if (animations) {
@@ -1200,7 +1200,7 @@ export default interface MasterCSS {
     stylesBy: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>
     variables: Record<string, Variable>
-    mediaQueries: Record<string, string | number>
+    queries: Record<string, string | number>
     variablesNativeRules: Record<string, NativeRule>
     hasKeyframesRule: boolean
     animations: Record<string, AnimationDefinitions & { usage?: number, native?: NativeRule }>

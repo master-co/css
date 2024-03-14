@@ -1,6 +1,6 @@
 import config from './config'
 
-test('mediaQueries', () => {
+test('queries', () => {
     expect(new MasterCSS(config).add('hide@watch').text)
         .toBe('@media (max-device-width:42mm) and (min-device-width:38mm){.hide\\@watch{display:none}}')
 

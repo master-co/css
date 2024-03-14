@@ -27,7 +27,7 @@ export function CompletionItemProvider(document: monaco.editor.ITextModel, posit
             'classes',
             'colors',
             'viewports',
-            'mediaQueries',
+            'queries',
             'selectors',
             'semantics',
             'values',

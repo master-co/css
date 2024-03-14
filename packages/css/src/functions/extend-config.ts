@@ -17,8 +17,8 @@ export default function extendConfig(...configs: Config[]) {
         if (clonedConfig.styles) {
             formatDeeply(clonedConfig.styles)
         }
-        if (clonedConfig.mediaQueries) {
-            formatDeeply(clonedConfig.mediaQueries)
+        if (clonedConfig.queries) {
+            formatDeeply(clonedConfig.queries)
         }
         if (clonedConfig.variables) {
             formatDeeply(clonedConfig.variables)
@@ -41,7 +41,7 @@ export default function extendConfig(...configs: Config[]) {
     let extendedConfig: Config = {
         animations: {},
         styles: {},
-        mediaQueries: {},
+        queries: {},
         variables: {},
     }
     for (let i = 0; i < formattedConfigs.length; i++) {

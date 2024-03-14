@@ -32,7 +32,7 @@ export class Rule {
         if (!definition.unit) definition.unit = ''
         if (!definition.separators) definition.separators = [',']
         const { scope, important, themeDriver } = css.config
-        const { selectors, mediaQueries, stylesBy, animations } = css
+        const { selectors, queries, stylesBy, animations } = css
         const classNames = stylesBy[className]
 
         if (create) create.call(this, className)
@@ -238,7 +238,8 @@ export class Rule {
                     let queryType: string | undefined
                     const atComponents: AtComponent[] = []
                     // x font-face, counter-style, keyframes, font-feature-values, property, layer
-                    const atRuleResult = /^(media|supports|container)(?=\||{|\(|$)/.exec(atToken)
+                    const queryTypeRegExp = /^(media|supports|container)/
+                    const atRuleResult = queryTypeRegExp.exec(atToken)
                     if (atRuleResult) {
                         queryType = atRuleResult[1]
                         atComponents.push({
@@ -264,17 +265,20 @@ export class Rule {
                                 if (atComponentToken === 'landscape' || atComponentToken === 'portrait') {
                                     queryType = 'media'
                                     atComponents.push({ type: 'feature', token: atComponentToken, name: 'orientation', valueType: 'string', value: atComponentToken })
-                                    // queryTexts.push('(orientation:' + atComponentToken + ')')
                                 } else if (atComponentToken === 'motion' || atComponentToken === 'reduced-motion') {
                                     queryType = 'media'
                                     const value = atComponentToken === 'motion' ? 'no-preference' : 'reduce'
                                     atComponents.push({ type: 'feature', token: atComponentToken, name: 'prefers-reduced-motion', valueType: 'string', value })
-                                    // queryTexts.push('(prefers-reduced-motion:' + value + ')')
                                 } else {
-                                    const targetMediaQuery = mediaQueries[atComponentToken]
-                                    if (targetMediaQuery && typeof targetMediaQuery === 'string') {
-                                        queryType = 'media'
-                                        atComponents.push({ type: 'arbitrary', value: targetMediaQuery })
+                                    const targetQuery = queries[atComponentToken]
+                                    if (targetQuery && typeof targetQuery === 'string') {
+                                        const match = targetQuery.match(queryTypeRegExp)
+                                        queryType = match ? match[1] : ''
+                                        if (!queryType) throw new Error(`Invalid query '${atComponentToken}': '${targetQuery}'`)
+                                        atComponents.push({
+                                            type: 'arbitrary',
+                                            value: targetQuery.slice(match ? match[1].length + 1 : 0)
+                                        })
                                     } else {
                                         // todo: container queries
                                         queryType = 'media'
@@ -284,7 +288,7 @@ export class Rule {
                                         if (atComponentToken.startsWith('<=')) {
                                             extremumOperator = '<='
                                             featureName = 'max-width'
-                                        } else if (atComponentToken.startsWith('>=') || targetMediaQuery) {
+                                        } else if (atComponentToken.startsWith('>=') || targetQuery) {
                                             extremumOperator = '>='
                                             featureName = 'min-width'
                                         } else if (atComponentToken.startsWith('>')) {
@@ -300,7 +304,7 @@ export class Rule {
                                             = extremumOperator
                                                 ? atComponentToken.replace(extremumOperator, '')
                                                 : atComponentToken
-                                        const viewport = mediaQueries[token]
+                                        const viewport = queries[token]
                                         switch (featureName) {
                                             case 'max-width':
                                             case 'min-width':

@@ -1,4 +1,4 @@
-import { mediaQueries } from '@master/css'
+import { queries } from '@master/css'
 import InlineCode from 'websites/components/InlineCode'
 import DocTable from 'websites/components/DocTable'
 import descriptions from '../../screens/descriptions'
@@ -15,10 +15,10 @@ export default () =>
         <tbody>
             {
                 [
-                    ...Object.keys(mediaQueries)
+                    ...Object.keys(queries)
                         .map((eachBreakpointName) => {
                             // @ts-ignore
-                            const eachBreakpoint = mediaQueries[eachBreakpointName]
+                            const eachBreakpoint = queries[eachBreakpointName]
                             return (
                                 <tr key={eachBreakpointName}>
                                     <th>{eachBreakpointName}</th>

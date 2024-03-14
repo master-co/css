@@ -5,7 +5,7 @@ export default {
     variables: {},
     semantics: {},
     breakpoints: {},
-    mediaQueries: {},
+    queries: {},
     keyframes: {},
     selectors: {},
     functions: {}

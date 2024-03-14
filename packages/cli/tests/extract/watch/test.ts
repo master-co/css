@@ -45,7 +45,7 @@ const config: Config = {
     },
     rules: {},
     semantics: {},
-    mediaQueries: {},
+    queries: {},
     animations: {},
     selectors: {},
     functions: {}

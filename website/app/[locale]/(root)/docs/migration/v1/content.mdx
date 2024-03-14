@@ -104,7 +104,7 @@ Apply the style:
 To learn more, check out the [Styles](/docs/styles) documentation.
 
 ### Merging media queries
-Deprecate extended `breakpoints` and `mediaQueries` ​​in favor of `config.mediaQueries`.
+Deprecate extended `breakpoints` and `queries` ​​in favor of `config.queries`.
 ```js name=master.css.js
 -import { Style } from '@master/css'
 
@@ -112,12 +112,12 @@ Deprecate extended `breakpoints` and `mediaQueries` ​​in favor of `config.me
 -   laptop: '1024px'
 -})
 
--Style.extend('mediaQueries', {
+-Style.extend('queries', {
 -   watch: '(max-device-width:42mm) and (min-device-width:38mm)'
 -})
 
 +export default {
-+    mediaQueries: {
++    queries: {
 +        laptop: 1024,
 +        watch: '(max-device-width:42mm) and (min-device-width:38mm)'
 +    }

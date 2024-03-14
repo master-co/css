@@ -88,16 +88,16 @@ export default {
             '1': '~div'
         }
     },
-    mediaQueries: {
+    queries: {
         tablet: 768,
         laptop: 1024,
         desktop: 1280,
         custom: {
             '1': 2500
         },
-        watch: '(max-device-width:42mm) and (min-device-width:38mm)',
+        watch: 'media (max-device-width:42mm) and (min-device-width:38mm)',
         device: {
-            watch: '(max-device-width:42mm) and (min-device-width:38mm)'
+            watch: 'media (max-device-width:42mm) and (min-device-width:38mm)'
         }
     },
     rootSize: 16,

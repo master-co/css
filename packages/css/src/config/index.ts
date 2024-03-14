@@ -1,4 +1,4 @@
-import mediaQueries from './media-queries'
+import queries from './queries'
 import selectors from './selectors'
 import semantics from './semantics'
 import animations from './animations'
@@ -9,7 +9,7 @@ import type { PropertiesHyphen } from 'csstype'
 import type { Rule, RuleDefinition, ValueComponent } from '../rule'
 
 const config: Config = {
-    mediaQueries,
+    queries,
     selectors,
     semantics,
     rules,
@@ -26,7 +26,7 @@ const config: Config = {
 
 export {
     config,
-    mediaQueries,
+    queries,
     selectors,
     semantics,
     rules,
@@ -55,7 +55,7 @@ export type FunctionDefinitions = { [key: string]: FunctionDefinition }
 export interface Config {
     extends?: (Config | any)[]
     styles?: StyleDefinitions
-    mediaQueries?: MediaQueryDefinitions
+    queries?: MediaQueryDefinitions
     selectors?: SelectorDefinitions
     semantics?: SemanticDefinitions
     variables?: VariableDefinitions
