@@ -680,8 +680,8 @@ export default class MasterCSS {
             if (mediaStartIndex === -1) {
                 index = endIndex + 1
             } else {
-                const maxWidthFeature = at.media.find(({ name }: any) => name === 'max-width') as AtFeatureComponent
-                const minWidthFeature = at.media.find(({ name }: any) => name === 'min-width') as AtFeatureComponent
+                const maxWidthFeature = at.media?.find(({ name }: any) => name === 'max-width') as AtFeatureComponent
+                const minWidthFeature = at.media?.find(({ name }: any) => name === 'min-width') as AtFeatureComponent
                 if (maxWidthFeature || minWidthFeature) {
                     const mediaWidthStartIndex = this.rules.findIndex(eachRule => eachRule.at?.media?.find(({ name }: any) => name === 'max-width' || name === 'min-width'))
                     if (mediaWidthStartIndex === -1) {
