@@ -1,8 +1,7 @@
 import { runAsWorker } from 'synckit'
 import getMasterCSS from './get-css'
 import { generateValidRules } from '@master/css-validator'
-import { Rule, areRuleStatesEqual } from '@master/css'
-import areDeclarationsEqual from '../utils/are-declarations-equal'
+import { Rule, areRuleStatesEqual, areRulesDuplicated } from '@master/css'
 
 export default function runFilterCollisionClasses(classNames: string[], config: string | object): Record<string, string[]> {
     const currentCSS = getMasterCSS(config)
@@ -19,7 +18,7 @@ export default function runFilterCollisionClasses(classNames: string[], config: 
                 const compareClassName = classNames[j]
                 const compareRule = validRules.find((eachValidRule) => eachValidRule.className === compareClassName)
                 if (i !== j && compareRule
-                    && areDeclarationsEqual(rule.declarations, compareRule.declarations)
+                    && areRulesDuplicated(rule, compareRule)
                     && areRuleStatesEqual(rule, compareRule)
                 ) {
                     collisionClasses.push(compareClassName)
