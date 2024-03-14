@@ -1,7 +1,7 @@
 import extend from '@techor/extend'
 import type { Config } from '../config'
 
-export function extendConfig(...configs: Config[]) {
+export default function extendConfig(...configs: Config[]) {
     const formatConfig = (config: Config) => {
         const clonedConfig: Config = extend({}, config)
         const formatDeeply = (obj: Record<string, any>) => {
@@ -16,20 +16,13 @@ export function extendConfig(...configs: Config[]) {
         }
         if (clonedConfig.styles) {
             formatDeeply(clonedConfig.styles)
-        } else {
-            clonedConfig.styles = {}
         }
         if (clonedConfig.mediaQueries) {
             formatDeeply(clonedConfig.mediaQueries)
-        } else {
-            clonedConfig.mediaQueries = {}
         }
         if (clonedConfig.variables) {
             formatDeeply(clonedConfig.variables)
-        } else {
-            clonedConfig.variables = {}
         }
-
         return clonedConfig
     }
 
@@ -45,12 +38,30 @@ export function extendConfig(...configs: Config[]) {
         })(eachConfig)
     }
 
-    let extendedConfig = formattedConfigs[0]
-    for (let i = 1; i < formattedConfigs.length; i++) {
+    let extendedConfig: Config = {
+        animations: {},
+        styles: {},
+        mediaQueries: {},
+        variables: {},
+    }
+    for (let i = 0; i < formattedConfigs.length; i++) {
         const currentFormattedConfig = formattedConfigs[i]
-        extendedConfig = extend(extendedConfig, currentFormattedConfig)
-        if (Object.prototype.hasOwnProperty.call(currentFormattedConfig, 'animations') && extendedConfig.animations) {
-            Object.assign(extendedConfig.animations, currentFormattedConfig.animations)
+        for (const key in currentFormattedConfig) {
+            switch (key) {
+                case 'animations':
+                    if (currentFormattedConfig.animations) {
+                        // @ts-expect-error defined
+                        Object.assign(extendedConfig.animations, currentFormattedConfig.animations)
+                    }
+                    break
+                default:
+                    if (currentFormattedConfig[key as keyof Config]) {
+                        extendedConfig = extend(extendedConfig, { [key]: currentFormattedConfig[key as keyof Config] })
+                    }
+            }
+            // if (Object.prototype.hasOwnProperty.call(currentFormattedConfig.styles, key)) {
+            //     Object.assign(extendedConfig.styles[key], currentFormattedConfig.styles[key])
+            // }
         }
     }
 

@@ -6,14 +6,13 @@ import { Layer } from './layer'
 import { type PropertiesHyphen } from 'csstype'
 import { BASE_UNIT_REGEX } from './constants/base-unit-regex'
 
-const atRuleRegExp = /^(media|supports|page|font-face|keyframes|counter-style|font-feature-values|property|layer|container)(?=\||{|\(|$)/
-
 export class Rule {
-    readonly at: Record<string, string> = {}
+    readonly at: Record<string, AtComponent[]> = {}
     readonly priority: number = -1
     readonly natives: NativeRule[] = []
     readonly order: number = 0
     readonly layer: Layer = 0
+    readonly atToken: string = ''
     readonly stateToken: string
     readonly declarations?: PropertiesHyphen
 
@@ -232,91 +231,106 @@ export class Rule {
         for (let i = 1; i < stateTokens.length; i++) {
             const atToken = stateTokens[i]
             if (atToken) {
-                if (
-                    atToken === 'rtl'
-                    || atToken === 'ltr'
-                ) {
+                this.atToken += '@' + atToken
+                if (atToken === 'rtl' || atToken === 'ltr') {
                     this.direction = atToken
                 } else {
-                    let type = ''
-                    let queryText: string | undefined
-
-                    const atRuleResult = atRuleRegExp.exec(atToken)
+                    let queryType: string | undefined
+                    const atComponents: AtComponent[] = []
+                    // x font-face, counter-style, keyframes, font-feature-values, property, layer
+                    const atRuleResult = /^(media|supports|container)(?=\||{|\(|$)/.exec(atToken)
                     if (atRuleResult) {
-                        type = atRuleResult[1]
-                        queryText = atToken.slice(type.length)
-                    } else {
-                        this.media = {
+                        queryType = atRuleResult[1]
+                        atComponents.push({
+                            type: 'arbitrary',
                             token: atToken,
-                            features: {}
-                        }
-                        const queryTexts: string[] = []
-
-                        const analyzeToken = (typeOrFeatureToken: string) => {
+                            value: atToken
+                                .slice(queryType.length)
+                                .replace(/\|/g, ' ')
+                        })
+                    } else {
+                        const analyzeToken = (atComponentToken: string) => {
                             if (
-                                typeOrFeatureToken === 'all'
-                                || typeOrFeatureToken === 'print'
-                                || typeOrFeatureToken === 'screen'
-                                || typeOrFeatureToken === 'speech'
+                                atComponentToken === 'all'
+                                || atComponentToken === 'print'
+                                || atComponentToken === 'screen'
+                                || atComponentToken === 'speech'
                             ) {
-                                this.media.type = typeOrFeatureToken
-                            } else if (typeOrFeatureToken.startsWith('')) {
-                                if (typeOrFeatureToken === 'landscape' || typeOrFeatureToken === 'portrait') {
-                                    queryTexts.push('(orientation:' + typeOrFeatureToken + ')')
-                                } else if (typeOrFeatureToken === 'motion' || typeOrFeatureToken === 'reduced-motion') {
-                                    queryTexts.push('(prefers-reduced-motion:'
-                                        + (typeOrFeatureToken === 'motion' ? 'no-preference' : 'reduce')
-                                        + ')')
+                                queryType = 'media'
+                                atComponents.push({ type: 'media-type', token: atComponentToken, value: atComponentToken })
+                            } else if (atComponentToken === '&') {
+                                atComponents.push({ type: 'operator', token: atComponentToken, value: 'and' })
+                            } else if (atComponentToken.startsWith('')) {
+                                if (atComponentToken === 'landscape' || atComponentToken === 'portrait') {
+                                    queryType = 'media'
+                                    atComponents.push({ type: 'feature', token: atComponentToken, name: 'orientation', valueType: 'string', value: atComponentToken })
+                                    // queryTexts.push('(orientation:' + atComponentToken + ')')
+                                } else if (atComponentToken === 'motion' || atComponentToken === 'reduced-motion') {
+                                    queryType = 'media'
+                                    const value = atComponentToken === 'motion' ? 'no-preference' : 'reduce'
+                                    atComponents.push({ type: 'feature', token: atComponentToken, name: 'prefers-reduced-motion', valueType: 'string', value })
+                                    // queryTexts.push('(prefers-reduced-motion:' + value + ')')
                                 } else {
-                                    const targetMediaQuery = mediaQueries[typeOrFeatureToken]
+                                    const targetMediaQuery = mediaQueries[atComponentToken]
                                     if (targetMediaQuery && typeof targetMediaQuery === 'string') {
-                                        queryTexts.push(targetMediaQuery)
+                                        queryType = 'media'
+                                        atComponents.push({ type: 'arbitrary', value: targetMediaQuery })
                                     } else {
+                                        // todo: container queries
+                                        queryType = 'media'
                                         let featureName = ''
                                         let extremumOperator = ''
                                         let correction = 0
-                                        if (typeOrFeatureToken.startsWith('<=')) {
+                                        if (atComponentToken.startsWith('<=')) {
                                             extremumOperator = '<='
                                             featureName = 'max-width'
-                                        } else if (typeOrFeatureToken.startsWith('>=') || targetMediaQuery) {
+                                        } else if (atComponentToken.startsWith('>=') || targetMediaQuery) {
                                             extremumOperator = '>='
                                             featureName = 'min-width'
-                                        } else if (typeOrFeatureToken.startsWith('>')) {
+                                        } else if (atComponentToken.startsWith('>')) {
                                             extremumOperator = '>'
                                             featureName = 'min-width'
                                             correction = .02
-                                        } else if (typeOrFeatureToken.startsWith('<')) {
+                                        } else if (atComponentToken.startsWith('<')) {
                                             extremumOperator = '<'
                                             featureName = 'max-width'
                                             correction = -.02
                                         }
                                         const token
                                             = extremumOperator
-                                                ? typeOrFeatureToken.replace(extremumOperator, '')
-                                                : typeOrFeatureToken
+                                                ? atComponentToken.replace(extremumOperator, '')
+                                                : atComponentToken
                                         const viewport = mediaQueries[token]
                                         switch (featureName) {
                                             case 'max-width':
                                             case 'min-width':
                                                 // eslint-disable-next-line no-case-declarations
-                                                let featureComponent: MediaFeatureComponent = {} as any
                                                 if (typeof viewport === 'number') {
-                                                    featureComponent = {
-                                                        type: 'number',
+                                                    atComponents.push({
+                                                        type: 'feature',
+                                                        name: featureName,
+                                                        valueType: 'number',
                                                         value: viewport + correction,
                                                         unit: 'px'
-                                                    }
+                                                    })
                                                 } else {
-                                                    featureComponent = this.parseValueComponent(token, 'px') as MediaFeatureComponent
-                                                    if (featureComponent.type === 'number' && featureComponent.unit === 'px') {
-                                                        featureComponent.value += correction
+                                                    const valueComponent = this.parseValueComponent(token, 'px')
+                                                    if (valueComponent.type === 'number') {
+                                                        atComponents.push({
+                                                            type: 'feature',
+                                                            name: featureName,
+                                                            valueType: 'number',
+                                                            value: valueComponent.value + correction,
+                                                            unit: valueComponent.unit
+                                                        })
+                                                    } else {
+                                                        atComponents.push({
+                                                            type: 'feature',
+                                                            name: featureName,
+                                                            valueType: 'string',
+                                                            value: token
+                                                        })
                                                     }
-                                                }
-                                                this.media.features[featureName] = featureComponent
-                                                if (featureComponent.type === 'number') {
-                                                    queryTexts.push('(' + featureName + ':' + (featureComponent.value + featureComponent.unit) + ')')
-                                                } else {
-                                                    queryTexts.push('(' + featureName + ':' + featureComponent.value + ')')
                                                 }
                                                 break
                                         }
@@ -327,35 +341,25 @@ export class Rule {
 
                         const isAmpersandIncluded = atToken.includes('&')
                         if (isAmpersandIncluded) {
-                            const typeOrFeatureTokens = atToken.split('&')
-                            for (const typeOrFeatureToken of typeOrFeatureTokens) {
-                                analyzeToken(typeOrFeatureToken)
+                            const typeOrFeatureTokens = atToken.split(/(&|,)/)
+                            for (const atComponentToken of typeOrFeatureTokens) {
+                                analyzeToken(atComponentToken)
                             }
                         } else {
                             analyzeToken(atToken)
                         }
-
-                        if (this.media.type) {
-                            queryText = this.media.type
-                        }
-                        if (queryTexts.length) {
-                            queryText = queryTexts.join(' and ')
-                        }
-                        if (!queryText) {
+                        if (!atComponents.length) {
                             if (!isAmpersandIncluded) {
-                                this.theme = atToken
+                                this.mode = atToken
                                 continue
+                            } else {
+                                // container queries
                             }
-                        } else {
-                            type = 'media'
                         }
                     }
 
-                    if (queryText) {
-                        this.at[type] = (type in this.at
-                            ? this.at[type] + ' and '
-                            : '')
-                            + queryText.replace(/\|/g, ' ')
+                    if (queryType) {
+                        this.at[queryType] = atComponents
                     }
                 }
             }
@@ -431,10 +435,10 @@ export class Rule {
                     const prefixTexts = prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText)
                     const getCssText = (name: string) =>
                         prefixTexts
-                            .map(eachPrefixText => ((this.theme && themeDriver !== 'media')
+                            .map(eachPrefixText => ((this.mode && themeDriver !== 'media')
                                 ? themeDriver === 'host'
-                                    ? `:host(.${this.theme}) `
-                                    : `.${this.theme} `
+                                    ? `:host(.${this.mode}) `
+                                    : `.${this.mode} `
                                 : '')
                                 + (scope ? scope + ' ' : '')
                                 + eachPrefixText)
@@ -460,17 +464,33 @@ export class Rule {
                         + '}'
 
                     for (const key of Object.keys(this.at).sort((_a, b) => b === 'supports' ? -1 : 1)) {
-                        cssText = '@' + key + (key.includes(' ') ? '' : ' ') + this.at[key] + '{' + cssText + '}'
+                        cssText = '@' + key + (key.includes(' ') ? '' : ' ')
+                            + this.at[key]
+                                .map((eachAtComponent) => this.resolveAtComponent(eachAtComponent))
+                                .join(' ')
+                            + '{' + cssText + '}'
                     }
 
-                    if (this.theme && themeDriver === 'media') {
-                        cssText = `@media(prefers-color-scheme:${this.theme}){` + cssText + '}'
+                    if (this.mode && themeDriver === 'media') {
+                        cssText = `@media(prefers-color-scheme:${this.mode}){` + cssText + '}'
                     }
-
 
                     this.natives.push({ text: cssText })
                 }
             }
+        }
+    }
+
+    resolveAtComponent(atComponent: AtComponent) {
+        switch (atComponent.type) {
+            case 'arbitrary':
+                return atComponent.value
+            case 'media-type':
+                return atComponent.value
+            case 'feature':
+                return '(' + atComponent.name + ':' + atComponent.value + (atComponent.unit || '') + ')'
+            case 'operator':
+                return atComponent.value
         }
     }
 
@@ -513,9 +533,9 @@ export class Rule {
                             normalHandler: (variable: MasterCSS['variables'][0]) => void,
                             varHandler: () => void
                         ) => {
-                            if (variable.themes) {
-                                if (this.theme) {
-                                    const themeVariable = variable.themes[this.theme] ?? variable
+                            if (variable.modes) {
+                                if (this.mode) {
+                                    const themeVariable = variable.modes[this.mode] ?? variable
                                     if (themeVariable?.value) {
                                         normalHandler(themeVariable as any)
                                     }
@@ -797,6 +817,17 @@ export class Rule {
     }
 }
 
+export type AtComponent =
+    AtArbitraryComponent |
+    AtMediaTypeComponent |
+    AtFeatureComponent |
+    AtOperatorComponent
+
+export interface AtArbitraryComponent { type: 'arbitrary', token?: string, value: string }
+export interface AtMediaTypeComponent { type: 'media-type', token?: string, value: 'all' | 'print' | 'screen' | 'speech' }
+export interface AtFeatureComponent { type: 'feature', token?: string, name: string, valueType: 'number' | 'string', value: string | number, unit?: string }
+export interface AtOperatorComponent { type: 'operator', token: '&', value: 'and' } // future: 'or'
+
 export type ValueComponent =
     StringValueComponent |
     NumericValueComponent |
@@ -817,9 +848,8 @@ export interface Rule extends RegisteredRule {
     vendorPrefixSelectors: Record<string, string[]>
     vendorSuffixSelectors: Record<string, string[]>
     important: boolean
-    media: MediaQuery
     direction: string
-    theme: string
+    mode: string
     unitToken: string
     hasWhere: boolean
     valueComponents: Array<ValueComponent>

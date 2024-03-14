@@ -40,7 +40,7 @@ describe('with themes', () => {
             type: 'color',
             space: 'hsl',
             value: '0deg 0% 0%',
-            themes: {
+            modes: {
                 'dark': { type: 'color', space: 'hsl', value: '0deg 0% 100%' },
                 'light': { type: 'color', space: 'hsl', value: '0deg 0% 58.82%' },
                 'chrisma': { type: 'color', space: 'hsl', value: '0deg 0% 0%/.5' }

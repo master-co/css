@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
-import { Rule, type NativeRule, type RuleDefinition, type RegisteredRule } from './rule'
+import { Rule, type NativeRule, type RuleDefinition, type RegisteredRule, AtFeatureComponent } from './rule'
 import type { Config, AnimationDefinitions } from './config'
 import { config as defaultConfig } from './config'
 import { Layer } from './layer'
 import { hexToRgb } from './utils/hex-to-rgb'
 import { flattenObject } from './utils/flatten-object'
-import { extendConfig } from './utils/extend-config'
+import extendConfig from './functions/extend-config'
 import { type PropertiesHyphen } from 'csstype'
 import './types/global' // fix: ../css/src/core.ts:1205:16 - error TS7017: Element implicitly has an 'any' type because type 'typeof globalThis' has no index signature.
 
@@ -18,7 +18,7 @@ export type Variable = Omit<VariableValue, 'value' | 'space'> & {
     value?: any,
     space?: any,
     usage?: number,
-    themes?: { [theme: string]: VariableValue }
+    modes?: { [mode: string]: VariableValue }
 }
 
 export default class MasterCSS {
@@ -89,15 +89,15 @@ export default class MasterCSS {
         }
 
         if (variables) {
-            const unexecutedAliasVariable: Record<string, { [theme: string]: () => void }> = {}
-            const parseVariable = (variable: any, name: string, theme?: string) => {
+            const unexecutedAliasVariable: Record<string, { [mode: string]: () => void }> = {}
+            const parseVariable = (variable: any, name: string, mode?: string) => {
                 if (!variable)
                     return
 
                 const addVariable = (
                     name: string,
                     variableValue: VariableValue,
-                    replacedTheme?: string,
+                    replacedMode?: string,
                     alpha?: string
                 ) => {
                     if (variableValue === undefined)
@@ -117,15 +117,15 @@ export default class MasterCSS {
                         colorVariableNames[name] = undefined
                     }
 
-                    const currentTheme = replacedTheme ?? theme
-                    if (currentTheme !== undefined) {
+                    const currentMode = replacedMode ?? mode
+                    if (currentMode !== undefined) {
                         if (Object.prototype.hasOwnProperty.call(this.variables, name)) {
                             const variable = this.variables[name]
-                            if (currentTheme) {
-                                if (!variable.themes) {
-                                    variable.themes = {}
+                            if (currentMode) {
+                                if (!variable.modes) {
+                                    variable.modes = {}
                                 }
-                                variable.themes[currentTheme] = variableValue
+                                variable.modes[currentMode] = variableValue
                             } else {
                                 variable.value = variableValue.value
                                 if (variableValue.type === 'color') {
@@ -133,10 +133,10 @@ export default class MasterCSS {
                                 }
                             }
                         } else {
-                            if (currentTheme) {
+                            if (currentMode) {
                                 const newVariable: Variable = {
                                     type: variableValue.type,
-                                    themes: { [currentTheme]: variableValue }
+                                    modes: { [currentMode]: variableValue }
                                 }
                                 if (variableValue.type === 'color') {
                                     newVariable.space = variableValue.space
@@ -174,37 +174,37 @@ export default class MasterCSS {
                         if (!Object.prototype.hasOwnProperty.call(unexecutedAliasVariable, name)) {
                             unexecutedAliasVariable[name] = {}
                         }
-                        unexecutedAliasVariable[name][theme as string] = () => {
-                            delete unexecutedAliasVariable[name][theme as string]
+                        unexecutedAliasVariable[name][mode as string] = () => {
+                            delete unexecutedAliasVariable[name][mode as string]
 
-                            const [alias, aliasTheme] = aliasResult[1].split('@')
+                            const [alias, aliasMode] = aliasResult[1].split('@')
                             if (alias) {
                                 if (Object.prototype.hasOwnProperty.call(unexecutedAliasVariable, alias)) {
-                                    for (const theme of Object.keys(unexecutedAliasVariable[alias])) {
-                                        unexecutedAliasVariable[alias][theme]?.()
+                                    for (const mode of Object.keys(unexecutedAliasVariable[alias])) {
+                                        unexecutedAliasVariable[alias][mode]?.()
                                     }
                                 }
 
                                 const aliasVariable = this.variables[alias]
                                 if (aliasVariable) {
-                                    if (aliasTheme === undefined && aliasVariable.themes) {
+                                    if (aliasMode === undefined && aliasVariable.modes) {
                                         addVariable(
                                             name,
                                             { type: aliasVariable.type, value: aliasVariable.value, space: aliasVariable.space },
                                             '',
                                             aliasResult[2]
                                         )
-                                        for (const theme in aliasVariable.themes) {
+                                        for (const mode in aliasVariable.modes) {
                                             addVariable(
                                                 name,
-                                                aliasVariable.themes[theme],
-                                                theme,
+                                                aliasVariable.modes[mode],
+                                                mode,
                                                 aliasResult[2]
                                             )
                                         }
                                     } else {
-                                        const variable = aliasTheme !== undefined
-                                            ? aliasVariable.themes?.[aliasTheme]
+                                        const variable = aliasMode !== undefined
+                                            ? aliasVariable.modes?.[aliasMode]
                                             : aliasVariable
                                         if (variable) {
                                             const newVariable = { type: variable.type, value: variable.value } as VariableValue
@@ -242,8 +242,8 @@ export default class MasterCSS {
                 parseVariable(variables[parnetKey], parnetKey)
             }
             for (const name of Object.keys(unexecutedAliasVariable)) {
-                for (const theme of Object.keys(unexecutedAliasVariable[name])) {
-                    unexecutedAliasVariable[name][theme]?.()
+                for (const mode of Object.keys(unexecutedAliasVariable[name])) {
+                    unexecutedAliasVariable[name][mode]?.()
                 }
             }
         }
@@ -561,15 +561,15 @@ export default class MasterCSS {
                     const variable = this.variables[eachVariableName]
                     if (!variable.usage) variable.usage = 0
                     if (!--variable.usage) {
-                        const removeProperty = (theme: string) => {
-                            const nativeRule = this.variablesNativeRules[theme];
+                        const removeProperty = (mode: string) => {
+                            const nativeRule = this.variablesNativeRules[mode];
                             (nativeRule.cssRule as CSSStyleRule).style.removeProperty('--' + eachVariableName)
                             if (!(nativeRule.cssRule as CSSStyleRule).style.length) {
                                 const variablesRule = this.rules[0]
                                 const index = variablesRule.natives.indexOf(nativeRule)
                                 sheet?.deleteRule(index)
                                 variablesRule.natives.splice(index, 1)
-                                delete this.variablesNativeRules[theme]
+                                delete this.variablesNativeRules[mode]
                                 if (!variablesRule.natives.length) {
                                     this.rules.splice(0, 1)
                                     this.variablesNativeRules = {}
@@ -579,9 +579,9 @@ export default class MasterCSS {
                         if (variable.value) {
                             removeProperty('')
                         }
-                        if (variable.themes) {
-                            for (const theme in variable.themes) {
-                                removeProperty(theme)
+                        if (variable.modes) {
+                            for (const mode in variable.modes) {
+                                removeProperty(mode)
                             }
                         }
                     }
@@ -654,7 +654,7 @@ export default class MasterCSS {
          * @description
          */
         const endIndex = this.rules.length - 1
-        const { media, order, priority, hasWhere, className } = rule
+        const { at, atToken, order, priority, hasWhere, className } = rule
 
         const findIndex = (startIndex: number, stopCheck?: (rule: Rule) => any, matchCheck?: (rule: Rule) => any) => {
             let i = startIndex
@@ -675,14 +675,15 @@ export default class MasterCSS {
 
         let matchStartIndex: number | undefined
         let matchEndIndex: number | undefined
-        if (media) {
-            const mediaStartIndex = this.rules.findIndex(eachRule => eachRule.media)
+        if (atToken) {
+            const mediaStartIndex = this.rules.findIndex(eachRule => eachRule.at?.media)
             if (mediaStartIndex === -1) {
                 index = endIndex + 1
             } else {
-                const { 'max-width': maxWidthFeature, 'min-width': minWidthFeature } = media.features
+                const maxWidthFeature = at.media.find(({ name }: any) => name === 'max-width') as AtFeatureComponent
+                const minWidthFeature = at.media.find(({ name }: any) => name === 'min-width') as AtFeatureComponent
                 if (maxWidthFeature || minWidthFeature) {
-                    const mediaWidthStartIndex = this.rules.findIndex(eachRule => eachRule.media?.features['max-width'] || eachRule.media?.features['min-width'])
+                    const mediaWidthStartIndex = this.rules.findIndex(eachRule => eachRule.at?.media?.find(({ name }: any) => name === 'max-width' || name === 'min-width'))
                     if (mediaWidthStartIndex === -1) {
                         index = endIndex + 1
                     } else {
@@ -697,7 +698,7 @@ export default class MasterCSS {
                                 matchStartIndex = findIndex(
                                     mediaWidthStartIndex,
                                     eachRule => eachRule.priority !== -1,
-                                    eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width']
+                                    eachRule => eachRule.at.media?.find(({ name }: any) => name === 'max-width') && eachRule.at.media?.find(({ name }: any) => name === 'min-width')
                                 )
                                 matchEndIndex = findIndex(
                                     mediaWidthStartIndex,
@@ -707,20 +708,22 @@ export default class MasterCSS {
                                 matchStartIndex = findIndex(
                                     mediaWidthStartIndex,
                                     undefined,
-                                    eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1
+                                    eachRule => eachRule.at.media?.find(({ name }: any) => name === 'max-width') && eachRule.at.media?.find(({ name }: any) => name === 'min-width') && eachRule.priority !== -1
                                 )
                                 matchEndIndex = endIndex
                             }
 
                             if (matchStartIndex !== -1) {
-                                const range = maxWidthFeature.value - minWidthFeature.value
+                                const range = (maxWidthFeature.value) as number - (minWidthFeature.value as number)
 
                                 let i = matchEndIndex
                                 const endI = matchStartIndex
                                 matchStartIndex = undefined
                                 for (; i >= endI; i--) {
-                                    const { 'max-width': eachMaxWidthFeature, 'min-width': eachMinWidthFeature } = this.rules[i].media.features
-                                    const eachRange = eachMaxWidthFeature.value - eachMinWidthFeature.value
+                                    const eachRule = this.rules[i]
+                                    const eachMaxWidthFeature = eachRule.at.media?.find(({ name }: any) => name === 'max-width') as AtFeatureComponent
+                                    const eachMinWidthFeature = eachRule.at.media?.find(({ name }: any) => name === 'min-width') as AtFeatureComponent
+                                    const eachRange = (eachMaxWidthFeature.value as number) - (eachMinWidthFeature.value as number)
                                     if (eachRange < range) {
                                         matchEndIndex = i - 1
                                     } else if (eachRange === range) {
@@ -732,10 +735,12 @@ export default class MasterCSS {
                             }
 
                             if (matchStartIndex !== -1 && matchStartIndex !== undefined) {
-                                const range = maxWidthFeature.value - minWidthFeature.value
+                                const range = (maxWidthFeature.value) as number - (minWidthFeature.value as number)
                                 for (let i = matchEndIndex; i >= matchStartIndex; i--) {
-                                    const { 'max-width': eachMaxWidthFeature, 'min-width': eachMinWidthFeature } = this.rules[i].media.features
-                                    const eachRange = eachMaxWidthFeature.value - eachMinWidthFeature.value
+                                    const eachRule = this.rules[i]
+                                    const eachMaxWidthFeature = eachRule.at.media?.find(({ name }: any) => name === 'max-width') as AtFeatureComponent
+                                    const eachMinWidthFeature = eachRule.at.media?.find(({ name }: any) => name === 'min-width') as AtFeatureComponent
+                                    const eachRange = (eachMaxWidthFeature.value as number) - (eachMinWidthFeature.value as number)
                                     if (eachRange < range) {
                                         matchEndIndex = i - 1
                                     } else if (eachRange > range) {
@@ -752,28 +757,28 @@ export default class MasterCSS {
                             if (priority === -1) {
                                 matchStartIndex = findIndex(
                                     mediaWidthStartIndex,
-                                    eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] || eachRule.priority !== -1,
-                                    eachRule => !eachRule.media.features['max-width'] && eachRule.media.features['min-width']
+                                    eachRule => eachRule.at.media?.find(({ name }: any) => name === 'max-width') && eachRule.at.media?.find(({ name }: any) => name === 'min-width') || eachRule.priority !== -1,
+                                    eachRule => !eachRule.at.media?.find(({ name }: any) => name === 'max-width') && eachRule.at.media?.find(({ name }: any) => name === 'min-width')
                                 )
                                 matchEndIndex = findIndex(
                                     mediaWidthStartIndex,
-                                    eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] || eachRule.priority !== -1
+                                    eachRule => eachRule.at.media?.find(({ name }: any) => name === 'max-width') && eachRule.at.media?.find(({ name }: any) => name === 'min-width') || eachRule.priority !== -1
                                 )
                             } else {
                                 matchStartIndex = findIndex(
                                     mediaWidthStartIndex,
-                                    eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1,
-                                    eachRule => !eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1
+                                    eachRule => eachRule.at.media?.find(({ name }: any) => name === 'max-width') && eachRule.at.media?.find(({ name }: any) => name === 'min-width') && eachRule.priority !== -1,
+                                    eachRule => !eachRule.at.media?.find(({ name }: any) => name === 'max-width') && eachRule.at.media?.find(({ name }: any) => name === 'min-width') && eachRule.priority !== -1
                                 )
                                 matchEndIndex = findIndex(
                                     mediaWidthStartIndex,
-                                    eachRule => eachRule.media.features['max-width'] && eachRule.media.features['min-width'] && eachRule.priority !== -1
+                                    eachRule => eachRule.at.media?.find(({ name }: any) => name === 'max-width') && eachRule.at.media?.find(({ name }: any) => name === 'min-width') && eachRule.priority !== -1
                                 )
                             }
 
                             if (matchStartIndex !== -1) {
                                 for (let i = matchEndIndex; i >= matchStartIndex; i--) {
-                                    const value = this.rules[i].media.features['min-width'].value
+                                    const value = (this.rules[i].at.media?.find(({ name }: any) => name === 'min-width') as AtFeatureComponent).value
                                     if (value > minWidthFeature.value) {
                                         matchEndIndex = i - 1
                                     } else if (value < minWidthFeature.value) {
@@ -790,28 +795,28 @@ export default class MasterCSS {
                             if (priority === -1) {
                                 matchStartIndex = findIndex(
                                     mediaWidthStartIndex,
-                                    eachRule => eachRule.media.features['min-width'] || eachRule.priority !== -1,
-                                    eachRule => eachRule.media.features['max-width']
+                                    eachRule => eachRule.at.media?.find(({ name }: any) => name === 'min-width') || eachRule.priority !== -1,
+                                    eachRule => eachRule.at.media?.find(({ name }: any) => name === 'max-width')
                                 )
                                 matchEndIndex = findIndex(
                                     mediaWidthStartIndex,
-                                    eachRule => eachRule.media.features['min-width'] || eachRule.priority !== -1
+                                    eachRule => eachRule.at.media?.find(({ name }: any) => name === 'min-width') || eachRule.priority !== -1
                                 )
                             } else {
                                 matchStartIndex = findIndex(
                                     mediaWidthStartIndex,
-                                    eachRule => eachRule.media.features['min-width'] && eachRule.priority !== -1,
-                                    eachRule => eachRule.media.features['max-width'] && eachRule.priority !== -1
+                                    eachRule => eachRule.at.media?.find(({ name }: any) => name === 'min-width') && eachRule.priority !== -1,
+                                    eachRule => eachRule.at.media?.find(({ name }: any) => name === 'max-width') && eachRule.priority !== -1
                                 )
                                 matchEndIndex = findIndex(
                                     mediaWidthStartIndex,
-                                    eachRule => eachRule.media.features['min-width'] && eachRule.priority !== -1
+                                    eachRule => eachRule.at.media?.find(({ name }: any) => name === 'min-width') && eachRule.priority !== -1
                                 )
                             }
 
                             if (matchStartIndex !== -1) {
                                 for (let i = matchEndIndex; i >= matchStartIndex; i--) {
-                                    const value = this.rules[i].media.features['max-width'].value
+                                    const value = (this.rules[i].at.media?.find(({ name }: any) => name === 'max-width') as AtFeatureComponent).value
                                     if (value < maxWidthFeature.value) {
                                         matchEndIndex = i - 1
                                     } else if (value > maxWidthFeature.value) {
@@ -827,17 +832,17 @@ export default class MasterCSS {
                         matchStartIndex = mediaStartIndex
                         matchEndIndex = findIndex(
                             mediaStartIndex,
-                            eachRule => eachRule.media?.features['max-width'] || eachRule.media?.features['min-width'] || eachRule.priority !== -1
+                            eachRule => eachRule.at.media?.find(({ name }: any) => name === 'max-width' || name === 'min-width') || eachRule.priority !== -1
                         )
                     } else {
                         matchStartIndex = findIndex(
                             mediaStartIndex,
-                            eachRule => eachRule.media?.features['max-width'] || eachRule.media?.features['min-width'],
+                            eachRule => eachRule.at.media?.find(({ name }: any) => name === 'max-width' || name === 'min-width'),
                             eachRule => eachRule.priority !== -1
                         )
                         matchEndIndex = findIndex(
                             mediaStartIndex,
-                            eachRule => eachRule.media?.features['max-width'] || eachRule.media?.features['min-width']
+                            eachRule => eachRule.at.media?.find(({ name }: any) => name === 'max-width' || name === 'min-width')
                         )
                     }
                 }
@@ -855,17 +860,17 @@ export default class MasterCSS {
                 matchStartIndex = findStartIndex
                 matchEndIndex = findIndex(
                     findStartIndex,
-                    eachRule => eachRule.media || eachRule.priority !== -1
+                    eachRule => eachRule.atToken || eachRule.priority !== -1
                 )
             } else {
                 matchStartIndex = findIndex(
                     findStartIndex,
-                    eachRule => eachRule.media,
+                    eachRule => eachRule.atToken,
                     eachRule => eachRule.priority !== -1
                 )
                 matchEndIndex = findIndex(
                     findStartIndex,
-                    eachRule => eachRule.media
+                    eachRule => eachRule.atToken
                 )
             }
         }
@@ -1048,24 +1053,24 @@ export default class MasterCSS {
                 if (variable.usage) {
                     variable.usage++
                 } else {
-                    const addProperty = (theme: string, variableValue: VariableValue) => {
-                        let nativeRule = this.variablesNativeRules[theme]
+                    const addProperty = (mode: string, variableValue: VariableValue) => {
+                        let nativeRule = this.variablesNativeRules[mode]
                         if (!nativeRule) {
                             let cssRule: CSSStyleRule
                             let mediaConditionText: string | undefined
                             let selectorText: string
 
-                            if (theme) {
+                            if (mode) {
                                 switch (this.config.themeDriver) {
                                     case 'media':
-                                        mediaConditionText = `@media(prefers-color-scheme:${theme})`
+                                        mediaConditionText = `@media(prefers-color-scheme:${mode})`
                                         selectorText = ':root'
                                         break
                                     case 'host':
-                                        selectorText = `:host(.${theme})`
+                                        selectorText = `:host(.${mode})`
                                         break
                                     default:
-                                        selectorText = `.${theme}`
+                                        selectorText = `.${mode}`
                                         break
                                 }
                             } else {
@@ -1128,7 +1133,7 @@ export default class MasterCSS {
                                 }
                             }
 
-                            nativeRule = this.pushVariableNativeRule(theme, cssRule)
+                            nativeRule = this.pushVariableNativeRule(mode, cssRule)
                         }
 
                         const propertyName = '--' + eachVariableName
@@ -1139,9 +1144,9 @@ export default class MasterCSS {
                     if (variable.value) {
                         addProperty('', variable as any)
                     }
-                    if (variable.themes) {
-                        for (const theme in variable.themes) {
-                            addProperty(theme, variable.themes[theme])
+                    if (variable.modes) {
+                        for (const mode in variable.modes) {
+                            addProperty(mode, variable.modes[mode])
                         }
                     }
 
@@ -1151,7 +1156,7 @@ export default class MasterCSS {
         }
     }
 
-    pushVariableNativeRule(theme: string, variableCSSRule: CSSStyleRule) {
+    pushVariableNativeRule(mode: string, variableCSSRule: CSSStyleRule) {
         if (!Object.keys(this.variablesNativeRules).length) {
             this.variablesNativeRules = {}
             const newRule = {
@@ -1182,7 +1187,7 @@ export default class MasterCSS {
                 return prefix + properties.join(';') + suffix
             }
         }
-        this.rules[0].natives.push(this.variablesNativeRules[theme] = nativeRule)
+        this.rules[0].natives.push(this.variablesNativeRules[mode] = nativeRule)
         return nativeRule
     }
 }

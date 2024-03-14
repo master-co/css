@@ -1,7 +1,7 @@
 test('background', () => {
     expect(new MasterCSS().create('bg:black')?.text).toContain('background-color:rgb(0 0 0)')
     expect(new MasterCSS().create('bg:#fff')?.text).toContain('background-color:#fff')
-    expect(new MasterCSS().create('bg:black:hover@md@landscape')?.text).toBe('@media (min-width:1024px) and (orientation:landscape){.bg\\:black\\:hover\\@md\\@landscape:hover{background-color:rgb(0 0 0)}}')
+    expect(new MasterCSS().create('bg:black:hover@md&landscape')?.text).toBe('@media (min-width:1024px) and (orientation:landscape){.bg\\:black\\:hover\\@md\\&landscape:hover{background-color:rgb(0 0 0)}}')
     expect(new MasterCSS().create('bg:transparent')?.text).toContain('background-color:transparent')
     expect(new MasterCSS().create('bg:current')?.text).toContain('background-color:currentColor')
     expect(new MasterCSS().create('background-clip:border')?.text).toContain('-webkit-background-clip:border-box;background-clip:border-box')

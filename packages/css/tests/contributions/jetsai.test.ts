@@ -1,5 +1,5 @@
 import { Config } from '../../src/config'
-import { extend } from '../../src'
+import { extendConfig } from '../../src'
 
 const buttonTokens = Object.freeze({
     primary: '$(button-primary)',
@@ -61,7 +61,7 @@ export const textConfig: Config = {
     }
 }
 
-const config = extend(colorConfig, textConfig, buttonConfig)
+const config = extendConfig(colorConfig, textConfig, buttonConfig)
 
 describe('jetsai', () => {
 

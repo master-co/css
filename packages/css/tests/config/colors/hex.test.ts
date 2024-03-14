@@ -33,7 +33,7 @@ describe('with themes', () => {
             type: 'color',
             space: 'rgb',
             value: '0 0 0',
-            themes: {
+            modes: {
                 'dark': { type: 'color', space: 'rgb', value: '255 255 255' },
                 'light': { type: 'color', space: 'rgb', value: '150 150 150' },
                 'chrisma': { type: 'color', space: 'rgb', value: '0 0 0 / .5' }

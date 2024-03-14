@@ -16,12 +16,8 @@ test('mediaQueries', () => {
     expect(new MasterCSS(config).add('fg:black@christmas').text)
         .toBe('.christmas .fg\\:black\\@christmas{color:rgb(0 0 0)}')
 
-    expect(new MasterCSS(config).add('fg:black@christmas&md').text)
-        .toBe('@media (min-width:1024px){.fg\\:black\\@christmas\\&md{color:rgb(0 0 0)}}')
-
     expect(new MasterCSS(config).add('fg:black@christmas@md').text)
         .toBe('@media (min-width:1024px){.christmas .fg\\:black\\@christmas\\@md{color:rgb(0 0 0)}}')
-
 })
 
 test('viewports', () => {

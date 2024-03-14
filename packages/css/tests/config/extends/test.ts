@@ -22,7 +22,7 @@ it('config extends', () => {
         type: 'color',
         space: 'rgb',
         value: '17 17 17',
-        themes: {
+        modes: {
             dark: {
                 space: 'rgb',
                 type: 'color',
@@ -38,7 +38,7 @@ it('config extends', () => {
     expect(css.variables.second).toEqual({
         type: 'color',
         space: 'rgb',
-        themes: {
+        modes: {
             dark: {
                 space: 'rgb',
                 type: 'color',
@@ -55,7 +55,7 @@ it('config extends', () => {
         type: 'color',
         space: 'rgb',
         value: '0 0 0',
-        themes: {
+        modes: {
             dark: {
                 space: 'rgb',
                 type: 'color',
@@ -66,7 +66,7 @@ it('config extends', () => {
     expect(css.variables['third-2']).toEqual({
         type: 'color',
         space: 'rgb',
-        themes: {
+        modes: {
             dark: {
                 space: 'rgb',
                 type: 'color',
@@ -78,7 +78,7 @@ it('config extends', () => {
         type: 'color',
         space: 'rgb',
         value: '17 17 17',
-        themes: {
+        modes: {
             dark: {
                 space: 'rgb',
                 type: 'color',

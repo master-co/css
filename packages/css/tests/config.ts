@@ -100,5 +100,5 @@ export default {
             watch: '(max-device-width:42mm) and (min-device-width:38mm)'
         }
     },
-    rootSize: 16
+    rootSize: 16,
 } as any
