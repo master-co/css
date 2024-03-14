@@ -262,82 +262,73 @@ export class Rule {
                             } else if (atComponentToken === '&') {
                                 atComponents.push({ type: 'operator', token: atComponentToken, value: 'and' })
                             } else if (atComponentToken.startsWith('')) {
-                                if (atComponentToken === 'landscape' || atComponentToken === 'portrait') {
-                                    queryType = 'media'
-                                    atComponents.push({ type: 'feature', token: atComponentToken, name: 'orientation', valueType: 'string', value: atComponentToken })
-                                } else if (atComponentToken === 'motion' || atComponentToken === 'reduced-motion') {
-                                    queryType = 'media'
-                                    const value = atComponentToken === 'motion' ? 'no-preference' : 'reduce'
-                                    atComponents.push({ type: 'feature', token: atComponentToken, name: 'prefers-reduced-motion', valueType: 'string', value })
+                                const targetQuery = queries[atComponentToken]
+                                if (targetQuery && typeof targetQuery === 'string') {
+                                    const match = targetQuery.match(queryTypeRegExp)
+                                    queryType = match ? match[1] : ''
+                                    if (!queryType) throw new Error(`Invalid query '${atComponentToken}': '${targetQuery}'`)
+                                    atComponents.push({
+                                        type: 'arbitrary',
+                                        value: targetQuery.slice(match ? match[1].length + 1 : 0)
+                                    })
                                 } else {
-                                    const targetQuery = queries[atComponentToken]
-                                    if (targetQuery && typeof targetQuery === 'string') {
-                                        const match = targetQuery.match(queryTypeRegExp)
-                                        queryType = match ? match[1] : ''
-                                        if (!queryType) throw new Error(`Invalid query '${atComponentToken}': '${targetQuery}'`)
-                                        atComponents.push({
-                                            type: 'arbitrary',
-                                            value: targetQuery.slice(match ? match[1].length + 1 : 0)
-                                        })
-                                    } else {
-                                        // todo: container queries
-                                        queryType = 'media'
-                                        let featureName = ''
-                                        let extremumOperator = ''
-                                        let correction = 0
-                                        if (atComponentToken.startsWith('<=')) {
-                                            extremumOperator = '<='
-                                            featureName = 'max-width'
-                                        } else if (atComponentToken.startsWith('>=') || targetQuery) {
-                                            extremumOperator = '>='
-                                            featureName = 'min-width'
-                                        } else if (atComponentToken.startsWith('>')) {
-                                            extremumOperator = '>'
-                                            featureName = 'min-width'
-                                            correction = .02
-                                        } else if (atComponentToken.startsWith('<')) {
-                                            extremumOperator = '<'
-                                            featureName = 'max-width'
-                                            correction = -.02
-                                        }
-                                        const token
-                                            = extremumOperator
-                                                ? atComponentToken.replace(extremumOperator, '')
-                                                : atComponentToken
-                                        const viewport = queries[token]
-                                        switch (featureName) {
-                                            case 'max-width':
-                                            case 'min-width':
-                                                // eslint-disable-next-line no-case-declarations
-                                                if (typeof viewport === 'number') {
+                                    // todo: container queries
+                                    queryType = 'media'
+                                    let featureName = ''
+                                    let extremumOperator = ''
+                                    let correction = 0
+                                    if (atComponentToken.startsWith('<=')) {
+                                        extremumOperator = '<='
+                                        featureName = 'max-width'
+                                    } else if (atComponentToken.startsWith('>=') || targetQuery) {
+                                        extremumOperator = '>='
+                                        featureName = 'min-width'
+                                    } else if (atComponentToken.startsWith('>')) {
+                                        extremumOperator = '>'
+                                        featureName = 'min-width'
+                                        correction = .02
+                                    } else if (atComponentToken.startsWith('<')) {
+                                        extremumOperator = '<'
+                                        featureName = 'max-width'
+                                        correction = -.02
+                                    }
+                                    const token
+                                        = extremumOperator
+                                            ? atComponentToken.replace(extremumOperator, '')
+                                            : atComponentToken
+                                    const viewport = queries[token]
+                                    switch (featureName) {
+                                        case 'max-width':
+                                        case 'min-width':
+                                            // eslint-disable-next-line no-case-declarations
+                                            if (typeof viewport === 'number') {
+                                                atComponents.push({
+                                                    type: 'feature',
+                                                    name: featureName,
+                                                    valueType: 'number',
+                                                    value: viewport + correction,
+                                                    unit: 'px'
+                                                })
+                                            } else {
+                                                const valueComponent = this.parseValueComponent(token, 'px')
+                                                if (valueComponent.type === 'number') {
                                                     atComponents.push({
                                                         type: 'feature',
                                                         name: featureName,
                                                         valueType: 'number',
-                                                        value: viewport + correction,
-                                                        unit: 'px'
+                                                        value: valueComponent.value + correction,
+                                                        unit: valueComponent.unit
                                                     })
                                                 } else {
-                                                    const valueComponent = this.parseValueComponent(token, 'px')
-                                                    if (valueComponent.type === 'number') {
-                                                        atComponents.push({
-                                                            type: 'feature',
-                                                            name: featureName,
-                                                            valueType: 'number',
-                                                            value: valueComponent.value + correction,
-                                                            unit: valueComponent.unit
-                                                        })
-                                                    } else {
-                                                        atComponents.push({
-                                                            type: 'feature',
-                                                            name: featureName,
-                                                            valueType: 'string',
-                                                            value: token
-                                                        })
-                                                    }
+                                                    atComponents.push({
+                                                        type: 'feature',
+                                                        name: featureName,
+                                                        valueType: 'string',
+                                                        value: token
+                                                    })
                                                 }
-                                                break
-                                        }
+                                            }
+                                            break
                                     }
                                 }
                             }

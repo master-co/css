@@ -1,4 +1,20 @@
-import config from './config'
+import config from '../../config'
+
+test('orientation', () => {
+    expect(new MasterCSS(config).add('hide@landscape').text)
+        .toBe('@media (orientation:landscape){.hide\\@landscape{display:none}}')
+
+    expect(new MasterCSS(config).add('hide@portrait').text)
+        .toBe('@media (orientation:portrait){.hide\\@portrait{display:none}}')
+})
+
+test('prefers-reduced-motion', () => {
+    expect(new MasterCSS(config).add('hide@motion').text)
+        .toBe('@media (prefers-reduced-motion:no-preference){.hide\\@motion{display:none}}')
+
+    expect(new MasterCSS(config).add('hide@reduced-motion').text)
+        .toBe('@media (prefers-reduced-motion:reduce){.hide\\@reduced-motion{display:none}}')
+})
 
 test('queries', () => {
     expect(new MasterCSS(config).add('hide@watch').text)
@@ -32,5 +48,4 @@ test('viewports', () => {
 
     expect(new MasterCSS(config).add('hide@custom-1').text)
         .toBe('@media (min-width:2500px){.hide\\@custom-1{display:none}}')
-
 })
