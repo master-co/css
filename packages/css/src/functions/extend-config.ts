@@ -1,5 +1,5 @@
 import extend from '@techor/extend'
-import type { Config } from '../config'
+import type { AnimationDefinitions, Config } from '../config'
 
 export default function extendConfig(...configs: Config[]) {
     const formatConfig = (config: Config) => {
@@ -50,8 +50,7 @@ export default function extendConfig(...configs: Config[]) {
             switch (key) {
                 case 'animations':
                     if (currentFormattedConfig.animations) {
-                        // @ts-expect-error defined
-                        Object.assign(extendedConfig.animations, currentFormattedConfig.animations)
+                        Object.assign(extendedConfig.animations as AnimationDefinitions, currentFormattedConfig.animations)
                     }
                     break
                 default:
