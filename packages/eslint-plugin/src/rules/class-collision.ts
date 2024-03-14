@@ -1,10 +1,8 @@
-import areDeclarationsEqual from '../utils/are-declarations-equal'
-import areVendorPrefixSelectorsEqual from '../utils/are-vendor-prefix-selectors-equal'
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import findLoc from '../utils/find-loc'
 import { parseNodeRecursive } from '../utils/parse-node-recursive'
-import validRules from '../functions/valid-rules'
+import filterCollisionClasses from '../functions/filter-collision-classes'
 import createRule from '../create-rule'
 
 export default createRule({
@@ -53,44 +51,25 @@ export default createRule({
                     const sourceCodeLines = sourceCode.lines
                     const nodeStartLine = node.loc.start.line
                     const nodeEndLine = node.loc.end.line
-                    const ruleOfClass = validRules(classNames, settings.config)
-                    for (let i = 0; i < classNames.length; i++) {
-                        const className = classNames[i]
-                        const rule = ruleOfClass[className]
-                        const conflicts = []
-                        if (rule) {
-                            for (let j = 0; j < classNames.length; j++) {
-                                const compareClassName = classNames[j]
-                                const compareRule = ruleOfClass[compareClassName]
-                                if (i !== j && compareRule
-                                    // 比對兩個 rule 是否具有相同數量及相同屬性的 declarations
-                                    && areDeclarationsEqual(rule.declarations, compareRule.declarations)
-                                    && areVendorPrefixSelectorsEqual(rule.vendorPrefixSelectors, compareRule.vendorPrefixSelectors)
-                                    && rule.stateToken === compareRule.stateToken
-                                ) {
-                                    conflicts.push(compareClassName)
-                                }
-                            }
+                    const collisionClassesRecord = filterCollisionClasses(classNames, settings.config)
+                    for (const className in collisionClassesRecord) {
+                        const collisionClasses = collisionClassesRecord[className]
+                        const collisionClassNamesMsg = collisionClasses.map(x => `"${x}"`).join(' and ')
+                        let fixClassNames = originalClassNamesValue
+                        for (const collisionClassName of collisionClasses) {
+                            const regexSafe = collisionClassName.replace(/(\\|\.|\(|\)|\[|\]|\{|\}|\+|\*|\?|\^|\$|\||\/)/g, '\\$1')
+                            fixClassNames = fixClassNames.replace(new RegExp(`\\s+${regexSafe}|${regexSafe}\\s+`), '')
                         }
-
-                        if (conflicts.length > 0) {
-                            const conflictClassNamesMsg = conflicts.map(x => `"${x}"`).join(' and ')
-                            let fixClassNames = originalClassNamesValue
-                            for (const conflictClassName of conflicts) {
-                                const regexSafe = conflictClassName.replace(/(\\|\.|\(|\)|\[|\]|\{|\}|\+|\*|\?|\^|\$|\||\/)/g, '\\$1')
-                                fixClassNames = fixClassNames.replace(new RegExp(`\\s+${regexSafe}|${regexSafe}\\s+`), '')
+                        context.report({
+                            loc: findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
+                            messageId: 'collisionClass',
+                            data: {
+                                message: `"${className}" applies the same CSS declarations as ${collisionClassNamesMsg}.`,
+                            },
+                            fix: function (fixer) {
+                                return fixer.replaceTextRange([start, end], fixClassNames)
                             }
-                            context.report({
-                                loc: findLoc(className, sourceCodeLines, nodeStartLine, nodeEndLine),
-                                messageId: 'collisionClass',
-                                data: {
-                                    message: `"${className}" applies the same CSS declarations as ${conflictClassNamesMsg}.`,
-                                },
-                                fix: function (fixer) {
-                                    return fixer.replaceTextRange([start, end], fixClassNames)
-                                }
-                            })
-                        }
+                        })
                     }
                 },
                 false,
