@@ -31,7 +31,7 @@ export class Rule {
         this.colored = !!colored
         if (!definition.unit) definition.unit = ''
         if (!definition.separators) definition.separators = [',']
-        const { scope, important, themeDriver } = css.config
+        const { scope, important, modeDriver } = css.config
         const { selectors, queries, stylesBy, animations } = css
         const classNames = stylesBy[className]
 
@@ -430,8 +430,8 @@ export class Rule {
                     const prefixTexts = prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText)
                     const getCssText = (name: string) =>
                         prefixTexts
-                            .map(eachPrefixText => ((this.mode && themeDriver !== 'media')
-                                ? themeDriver === 'host'
+                            .map(eachPrefixText => ((this.mode && modeDriver !== 'media')
+                                ? modeDriver === 'host'
                                     ? `:host(.${this.mode}) `
                                     : `.${this.mode} `
                                 : '')
@@ -466,7 +466,7 @@ export class Rule {
                             + '{' + cssText + '}'
                     }
 
-                    if (this.mode && themeDriver === 'media') {
+                    if (this.mode && modeDriver === 'media') {
                         cssText = `@media(prefers-color-scheme:${this.mode}){` + cssText + '}'
                     }
 

@@ -9,5 +9,5 @@ export default {
     animations: {},
     selectors: {},
     functions: {},
-    themeDriver: 'media'
+    modeDriver: 'media'
 } as Config

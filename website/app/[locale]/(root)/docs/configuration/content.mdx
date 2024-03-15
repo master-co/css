@@ -167,7 +167,7 @@ Generated CSS:
 }
 ```
 
-### `.themeDriver`
+### `.modeDriver`
 Sets how the theme should drive and generate CSS rules.
 <DocProp defaultValue="'class'" types={["'class'", "'media'", "'host'"]} />
 ```html
@@ -177,7 +177,7 @@ Sets how the theme should drive and generate CSS rules.
 #### Drive theme styles through CSS classes
 ```js name=master.css.js
 export default {
-+    themeDriver: 'class'
++    modeDriver: 'class'
 }
 ```
 Generated CSS:
@@ -188,7 +188,7 @@ Generated CSS:
 #### Drive theme styles through media queries
 ```js name=master.css.js
 export default {
-+    themeDriver: 'media'
++    modeDriver: 'media'
 }
 ```
 Generated CSS:
@@ -199,7 +199,7 @@ Generated CSS:
 #### Drive theme styles through shadow DOM's host
 ```js name=master.css.js
 export default {
-+    themeDriver: 'host'
++    modeDriver: 'host'
 }
 ```
 Generated CSS:

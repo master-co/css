@@ -9,5 +9,5 @@ module.exports = {
     keyframes: {},
     selectors: {},
     functions: {},
-    themeDriver: 'media'
+    modeDriver: 'media'
 }

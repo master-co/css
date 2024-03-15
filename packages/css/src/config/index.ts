@@ -21,7 +21,7 @@ const config: Config = {
     baseUnit: 4,
     override: false,
     important: false,
-    themeDriver: 'class',
+    modeDriver: 'class',
 }
 
 export {
@@ -67,5 +67,5 @@ export interface Config {
     override?: boolean
     functions?: FunctionDefinitions
     animations?: AnimationDefinitions
-    themeDriver?: 'class' | 'media' | 'host'
+    modeDriver?: 'class' | 'media' | 'host'
 }

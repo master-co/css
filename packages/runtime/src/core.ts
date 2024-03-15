@@ -58,7 +58,7 @@ export class RuntimeCSS extends MasterCSS {
                     case 'CSSKeyframesRule':
                         continue
                     case 'CSSMeidaRule':
-                        if (this.config.themeDriver === 'media') {
+                        if (this.config.modeDriver === 'media') {
                             const result = /\(prefers-color-scheme: (.*?)\)/.exec((eachCSSRule as CSSMediaRule).conditionText)
                             if (result) {
                                 const firstCSSRule = (eachCSSRule as CSSMediaRule).cssRules[0]
@@ -88,7 +88,7 @@ export class RuntimeCSS extends MasterCSS {
                                     this.pushVariableNativeRule('', eachCSSRule as CSSStyleRule)
                                     continue
                                 } else {
-                                    if (this.config.themeDriver === 'host') {
+                                    if (this.config.modeDriver === 'host') {
                                         const result = /:host(.*?)/.exec(selectorText)
                                         if (result) {
                                             this.pushVariableNativeRule(result[1], eachCSSRule as CSSStyleRule)
