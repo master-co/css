@@ -2,11 +2,10 @@
 
 A style can be composed of multiple syntaxes, you can provide an abstract name for this set of classes and reuse it anywhere.
 
+Those styles adopt `mcss :where()` to reduce CSS specificity, allowing you to modify abstract classes using practical syntax without needing to add `mcss !important` declarations.
 ```html
-<button class="btn">Submit</button>
+<button class="**btn** bg:pink">Submit</button>
 ```
-
-Those styles adopt `mcss :where()` to reduce CSS specificity, allowing you to modify abstract classes using practical syntax without needing to add `mcss !important` declarations:
 
 This is just one of the abstract means. For React, Vue, and Svelte users, it's recommended to use the official [styled](https://github.com/master-co/styled) package.
 
