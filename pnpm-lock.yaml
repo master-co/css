@@ -1079,6 +1079,12 @@ importers:
         specifier: workspace:^
         version: link:../../shared
 
+  packages/create/tests/with-no-deps:
+    dependencies:
+      '@master/css':
+        specifier: 2.0.0-rc.25
+        version: 2.0.0-rc.25
+
   packages/css:
     dependencies:
       '@master/colors':
@@ -6693,6 +6699,15 @@ packages:
 
   /@master/colors@2.0.0:
     resolution: {integrity: sha512-0s4DzBSXthRVCFKkKbGvAioT6oVlN54f9H4MX6GN1YoNG0/x0NECyIv/5Tx9p5nDMr+ClDHSDbQ37DJUp8CHFg==}
+    dev: false
+
+  /@master/css@2.0.0-rc.25:
+    resolution: {integrity: sha512-MttURNWUl5haE8Yg7rrPkX3rdDr2RdYH2eHBauMs+qKjt/yyI6oUXQ2QWe7JN6eAruRdtLUPqITrTfcPqSw9DQ==}
+    hasBin: true
+    dependencies:
+      '@master/colors': 2.0.0
+      '@master/normal.css': 2.1.1
+      '@techor/extend': 3.0.18
     dev: false
 
   /@master/normal.css@2.1.0:
