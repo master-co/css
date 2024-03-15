@@ -1,6 +1,6 @@
 **Tailwind CSS** is a utility-first CSS framework that empowers you to select corresponding values for your requirements from a plethora of defined constraints, such as `text-sm`, `pt-4`, `lg:w-9`, and more.
 
-**Master CSS** is a markup-driven CSS language with smart syntax that allows you to construct your user interface using structured and native-like syntax, such as `font:14`, `pt:16`, `w:36@md`, instead of referencing tables or relying on memory.
+**Master CSS** is a markup-driven CSS language with smart syntax that allows you to construct your user interface using structured and native-like syntax, such as `mcss font:14`, `mcss pt:16`, `mcss w:36@md`, instead of referencing tables or relying on memory.
 
 Our syntax concepts draw inspiration from [Sass](https://sass-lang.com) and [TypeScript](https://www.typescriptlang.org).
 
@@ -85,6 +85,71 @@ You can use decimals or percentages to adjust the opacity of colors.
 ---
 
 ## 🚧 Configuration
+### Customizing screens
+Define responsive breakpoints using [queries](/docs/queries).
+```js name=master.css.js
+-/** @type {import('tailwindcss').Config} */
+-module.exports = {
+-    theme: {
+-        screens: {
+-            'sm': '640px',
+-            'md': '768px',
+-            'lg': '1024px',
+-            'xl': '1280px',
+-            '2xl': '1536px'
+-        }
+-    }
+-}
++/** @type {import('@master/css').Config} */
++export default {
++    queries: {
++        'sm': 640,
++        'md': 768,
++        'lg': 1024,
++        'xl': 1280,
++        '2xl': 1536
++    }
++}
+```
+(x) No longer need redundant screen options.
+```js name=tailwind.config.js
+-module.exports = {
+-    theme: {
+-        screens: {
+-            'sm': {'min': '640px', 'max': '767px'},
+-            'md': {'min': '768px', 'max': '1023px'},
+-            'lg': {'min': '1024px', 'max': '1279px'},
+-            'xl': {'min': '1280px', 'max': '1535px'},
+-            '2xl': {'min': '1536px'},
+-        },
+-    }
+-}
+```
+(o) Liberate flexibility with [syntax-first](/docs/responsive-design#syntax-first).
+```html
+<div class="hide**@sm&<md**">
+```
+
+### Customizing media queries
+Using [queries](/docs/queries) to define media queries, feature queries, and even container queries.
+```js name=master.css.js
+-/** @type {import('tailwindcss').Config} */
+-module.exports = {
+-    theme: {
+-        extend: {
+-           screens: {
+-               'tall': { 'raw': '(min-height: 800px)' },
+-           }
+-        }
+-    }
+-}
++/** @type {import('@master/css').Config} */
++export default {
++    queries: {
++        tall: 'media (min-height: 800px)'
++    }
++}
+```
 
 ---
 
