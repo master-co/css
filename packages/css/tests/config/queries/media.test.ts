@@ -16,6 +16,11 @@ test('prefers-reduced-motion', () => {
         .toBe('@media (prefers-reduced-motion:reduce){.hide\\@reduced-motion{display:none}}')
 })
 
+test('mixed', () => {
+    expect(new MasterCSS(config).add('hide@motion&landscape').text)
+        .toBe('@media (prefers-reduced-motion:no-preference) and (orientation:landscape){.hide\\@motion\\&landscape{display:none}}')
+})
+
 test('queries', () => {
     expect(new MasterCSS(config).add('hide@watch').text)
         .toBe('@media (max-device-width:42mm) and (min-device-width:38mm){.hide\\@watch{display:none}}')

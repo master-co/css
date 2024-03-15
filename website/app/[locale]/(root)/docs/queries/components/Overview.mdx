@@ -1,16 +1,9 @@
-```js name=master.css.js
-export default {
-    queries: {
-        mobile: 600,
-        tablet: 1024,
-        desktop: 1440,
-        watch: 'media (max-device-width:42mm) and (min-device-width:38mm)'
-    }
-}
-```
-Apply your custom media queries:
-```html
-<div class="font:24**@mobile** font:36**@table** font:48**@desktop** text:center**@watch**"></div>
-```
-Check out the [responsive design](/docs/responsive-design) to learn about responsive syntax.
-
+<Code lang="js" name="master.css.js">{require('!!raw-loader!../tests/add-a-responsive-breakpoint/master.css.js').default}</Code>
+Applies larger font sizes as the viewport width increases.
+<Code lang="html">{require('!!raw-loader!../tests/add-a-responsive-breakpoint/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!../tests/add-a-responsive-breakpoint/generated.css').default}</Code>
+    </div>
+</details>

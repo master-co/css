@@ -4,7 +4,6 @@ const metadata: Metadata = {
     title: 'Queries',
     description: 'Customizing feature queries and breakpoints for your design system.',
     category: 'Custom Syntax',
-    unfinished: true
 }
 
 export default metadata
