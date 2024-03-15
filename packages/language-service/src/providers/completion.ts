@@ -304,9 +304,9 @@ function getColorsItem(css: MasterCSS = new MasterCSS()): CompletionItem[] {
 
             let colorValue
             let colorSpace
-            if (eachVariable.themes) {
-                colorValue = Object.values(eachVariable.themes)[0].value
-                colorSpace = Object.values<any>(eachVariable.themes)[0].space
+            if (eachVariable.modes) {
+                colorValue = Object.values(eachVariable.modes)[0].value
+                colorSpace = Object.values<any>(eachVariable.modes)[0].space
             } else {
                 colorValue = eachVariable.value
                 colorSpace = eachVariable.space
