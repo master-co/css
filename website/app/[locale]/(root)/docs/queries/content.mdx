@@ -1,18 +1,61 @@
-## Overview [sr-only]
-<Overview />
+## Introduction [sr-only]
+In native CSS, it's not possible to reuse queries through variables, and this is where configuring `queries` comes into play, tokenizing media queries, feature queries, container queries, and even responsive breakpoints, and apply them with flexible syntax within the markup.
+```html
+<div class="hide@<sm text:center@sm aspect:2/1@landscape">…</div>
+```
+Tokenizing queries also serves for simplification.
+
+(!) You wouldn't want to write full media queries within the markup.
+```html
+<div class="aspect:2/1**@media(orientation:landscape)**">…</div>
+```
+(o) Employ concise yet semantically meaningful markup.
+```html
+<div class="aspect:2/1**@landscape**">…</div>
+```
 
 ---
 
 ## Basic usage
-🚧
+### Add a responsive breakpoint
+Create a responsive breakpoint, such as `@tablet` and `@desktop`.
+<Overview />
+The responsive breakpoints can be flexibly used with operators, see the [Responsive Design](/docs/responsive-design) documentation.
+
+### Add a media query
+Create a media query token, such as `@landscape`, to represent landscape orientation.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-media-query/master.css.js').default}</Code>
+When displayed in landscape orientation, the image is presented in a 2:1 aspect ratio.
+<Code lang="html">{require('!!raw-loader!./tests/add-a-media-query/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-media-query/generated.css').default}</Code>
+    </div>
+</details>
+The `landscape` is the [default](#default) token.
+
+### Add a feature query
+Create a feature query token, such as `@support-backdrop`, to apply styles based on `backdrop-filter` support.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-feature-query/master.css.js').default}</Code>
+Applies translucent background only when `backdrop-filter` is supported.
+<Code lang="html">{require('!!raw-loader!./tests/add-a-feature-query/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-feature-query/generated.css').default}</Code>
+    </div>
+</details>
 
 ---
 
-## Customization
-🚧
-
----
-
-## Default
+## Reference
+### Default
 <Default />
 View the full [source code](https://github.com/master-co/css/blob/rc/packages/css/src/config/queries.ts)
+
+---
+
+## Future
+
+- [Container Queries #334](https://github.com/master-co/css/issues/334)
