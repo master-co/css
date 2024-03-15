@@ -61,7 +61,7 @@
         "lodash.debounce": "^4.0.8"
     },
     "devDependencies": {
-        "@playwright/test": "^1.41.2",
+        "@playwright/test": "1.41.2",
         "@types/lodash.debounce": "^4.0.9",
         "@types/node": "^20.11.20",
         "css-shared": "workspace:^",

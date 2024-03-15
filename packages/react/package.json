@@ -62,6 +62,7 @@
         "@master/css-runtime": "workspace:^"
     },
     "devDependencies": {
-        "@playwright/experimental-ct-react": "^1.41.2"
+        "@playwright/experimental-ct-react": "1.41.2",
+        "@playwright/test": "1.41.2"
     }
 }

@@ -63,8 +63,8 @@
         "@techor/extend": "^3.0.17"
     },
     "devDependencies": {
-        "@playwright/experimental-ct-vue": "^1.41.2",
-        "@playwright/test": "^1.42.0",
+        "@playwright/experimental-ct-vue": "1.41.2",
+        "@playwright/test": "1.41.2",
         "@vitejs/plugin-vue": "^4.6.2",
         "@vue/server-renderer": "^3.4.21",
         "@vue/test-utils": "^2.4.4",
