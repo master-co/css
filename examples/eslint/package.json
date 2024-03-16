@@ -4,7 +4,7 @@
         "@angular-eslint/template-parser": "^16.3.1",
         "@master/eslint-config-css": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
-        "@master/styled.react": "^2.0.1",
+        "@master/styled.react": "^2.0.2",
         "@typescript-eslint/parser": "^6.21.0",
         "clsx": "^2.1.0",
         "eslint": "^8.57.0",
