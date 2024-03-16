@@ -5,6 +5,7 @@ import App from '../src/routes/+page.svelte'
 
 test('class changed', async ({ page, mount }) => {
     const app = await mount(App)
+    await app.waitFor({ state: 'visible' })
 
     const $button = await page.$('#config-btn')
     await $button?.evaluateHandle(($button) => $button.classList.add('f:10'))
