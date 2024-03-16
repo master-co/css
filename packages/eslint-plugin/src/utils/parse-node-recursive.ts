@@ -50,15 +50,21 @@ export function parseNodeRecursive(rootNode, childNode, cb, skipConditional = fa
         const forceIsolation = skipConditional ? true : isolate
         let trim = false
 
+        let expStrings = []
+
         switch (childNode.type) {
             case 'TemplateLiteral':
                 childNode.expressions.forEach((exp) => {
                     parseNodeRecursive(rootNode, exp, cb, skipConditional, forceIsolation, ignoredKeys)
                 })
-                childNode.quasis.forEach((quasis) => {
-                    parseNodeRecursive(rootNode, quasis, cb, skipConditional, isolate, ignoredKeys)
-                })
-                return
+                const sourceCode = context.sourceCode
+                originalClassNamesValue = sourceCode.getText(childNode)
+                originalClassNamesValue = originalClassNamesValue.substring(1, originalClassNamesValue.length - 1)
+                expStrings = originalClassNamesValue.match(/\$\{(?:(?<!\\\\)(['"`]).*?(?<!\\\\)\1|[^}])*?\}/g) ?? []
+                for (let i = 0; i < expStrings.length; i++) {
+                    originalClassNamesValue = originalClassNamesValue.replace(expStrings[i], `EXPRESSION_STRING_NUM_${i}`)
+                }
+                break
             case 'ConditionalExpression':
                 parseNodeRecursive(rootNode, childNode.consequent, cb, skipConditional, forceIsolation, ignoredKeys)
                 parseNodeRecursive(rootNode, childNode.alternate, cb, skipConditional, forceIsolation, ignoredKeys)
@@ -118,6 +124,10 @@ export function parseNodeRecursive(rootNode, childNode, cb, skipConditional = fa
                 prefix = getTemplateElementPrefix(txt, originalClassNamesValue)
                 suffix = getTemplateElementSuffix(txt, originalClassNamesValue)
                 break
+        }
+
+        for (let i = 0; i < expStrings.length; i++) {
+            originalClassNamesValue = originalClassNamesValue.replace(`EXPRESSION_STRING_NUM_${i}`, expStrings[i])
         }
         ({ classNames } = extractClassnamesFromValue(originalClassNamesValue))
         classNames = [...new Set(classNames)]

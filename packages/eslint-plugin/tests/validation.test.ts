@@ -14,7 +14,10 @@ new RuleTester({
     valid: [
         {
             code: `<div class="bg:black f:24 fg:white m:8 p:8">Simple, basic</div>`,
-        }
+        },
+        {
+            code: `<div class={\`f:\${ fontSize }px\`}>TemplateLiteral</div>`,
+        },
     ],
     invalid: [
         {
@@ -55,7 +58,7 @@ new RuleTester({
             errors: [
                 { messageId: 'invalidClass' }
             ]
-        }
+        },
     ]
 })
 
