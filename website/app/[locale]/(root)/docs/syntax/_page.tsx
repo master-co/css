@@ -1,5 +1,5 @@
 import Layout from '~/layouts/reference'
-import metadata from './metadata'
+import metadata from './_metadata'
 /* @ts-expect-error toc */
 import Content, { toc } from './content.mdx'
 import { generate } from '~/utils/metadata'
