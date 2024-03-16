@@ -4,14 +4,15 @@ import React from 'react'
 
 test('Runtime - class changed', async ({ page, mount }) => {
     const runtimeComponentInstance = await mount(<RuntimeComponent></RuntimeComponent>)
-    
+    await runtimeComponentInstance.waitFor({ state: 'visible' })
+
     const $button = await page.$('#config-btn')
     await $button?.evaluateHandle(($button) => $button.classList.add('f:10'))
     expect(await page.evaluate(() => globalThis.runtimeCSS.classesUsage)).toEqual({
         'btn': 1,
         'f:10': 1
     })
-    
+
     await runtimeComponentInstance.unmount()
     expect(await page.evaluate(() => globalThis.runtimeCSS.style)).toBeNull()
     expect(await page.evaluate(() => globalThis.runtimeCSSs.length)).toBe(0)
