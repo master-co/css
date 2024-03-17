@@ -24,7 +24,7 @@ const developerToolPackages = [
     require('~/../packages/eslint-plugin/package.json'),
     require('~/../packages/language-server/package.json'),
     require('~/../packages/language-service/package.json'),
-    require('~/../packages/vscode-language-service/package.json'),
+    require('~/../packages/language-service.vscode/package.json'),
 ]
 
 const solutionPackages = [
