@@ -5,7 +5,7 @@
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
-        "deploy": "mv ../../package.json ../../_package.json && npm i vsce -D && vsce publish && mv ../../_package.json ../../package.json"
+        "deploy": "mv ../../package.json ../../_package.json && pnpm dlx @vscode/vsce publish && mv ../../_package.json ../../package.json"
     },
     "description": "Master CSS Language Service for Visual Studio Code",
     "displayName": "Master CSS Language Service",
@@ -14,7 +14,7 @@
     "homepage": "https://rc.css.master.co/docs/installation/language-service",
     "license": "MIT",
     "publisher": "masterco",
-    "version": "2.1.35",
+    "version": "2.1.36",
     "icon": "icon.png",
     "repository": {
         "type": "git",
@@ -22,7 +22,7 @@
         "directory": "packages/language-service"
     },
     "engines": {
-        "vscode": "^1.63.0"
+        "vscode": "^1.86.0"
     },
     "activationEvents": [
         "onStartupFinished"
