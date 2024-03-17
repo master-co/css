@@ -1,16 +1,19 @@
-import type { Color, ColorPresentation } from 'vscode-languageserver-types'
+import type { Color, ColorInformation } from 'vscode-languageserver-types'
 import { MasterCSS } from '@master/css'
 import { hexToRgb } from '../utils/hex-to-rgb'
 import { instancePattern } from '../utils/regex'
-import { toTwoDigitHex } from '../utils/to-two-digit-hex'
-import { rgb, hsl, hwb, lch, lab, cmyk } from 'color-convert'
+import { hsl, hwb, lch, lab, cmyk } from 'color-convert'
 import { oklabToRgb } from '../utils/oklab-to-rgb'
 import { oklchToOklab } from '../utils/oklch-to-oklab'
+import MasterCSSLanguageService from '../core'
+import { TextDocument } from 'vscode-languageserver-textdocument'
 
-export async function getDocumentColors(text: string, css: MasterCSS = new MasterCSS()
-): Promise<any[]> {
-    const colors: any[] = []
-
+export default async function getSyntaxColorInfo(this: MasterCSSLanguageService, document: TextDocument): Promise<ColorInformation[] | undefined> {
+    const text = document.getText() ?? ''
+    if (typeof document == 'undefined') {
+        return []
+    }
+    const colorIndexes: any[] = []
     let instanceMatch: RegExpExecArray | null
     while ((instanceMatch = instancePattern.exec(text)) !== null) {
         const instanceStartIndex = instanceMatch.index
@@ -23,7 +26,7 @@ export async function getDocumentColors(text: string, css: MasterCSS = new Maste
 
         //check color
         while ((colorMatch = colorPattern.exec(instanceMatch[0])) !== null) {
-            const colorValue = parseColorString(colorMatch[0], theme, css)
+            const colorValue = parseColorString(colorMatch[0], theme, this.css)
             if (colorValue) {
                 const colorIndex: any = {
                     index: {
@@ -32,13 +35,29 @@ export async function getDocumentColors(text: string, css: MasterCSS = new Maste
                     },
                     color: colorValue
                 }
-                colors.push(colorIndex)
+                colorIndexes.push(colorIndex)
             }
         }
     }
+    const colorIndexSet = new Set()
+    const colorInformation = colorIndexes
+        .filter(item => {
+            if (colorIndexSet.has(item.index.start)) {
+                return false
+            } else {
+                colorIndexSet.add(item.index.start)
+                return true
+            }
+        })
+        .map(x => ({
+            range: {
+                start: document.positionAt(x.index.start),
+                end: document.positionAt(x.index.end)
+            },
+            color: x.color
+        }))
 
-
-    return colors
+    return colorInformation
 }
 
 function percentageConverter(value: string, max = 1) {
@@ -168,81 +187,4 @@ function getColorsRGBA(colorName: string, colorAlpha = 1, theme = '', css: Maste
 
 export function getColorValue(color: Color): Color {
     return { red: color.red / 255.0, green: color.green / 255.0, blue: color.blue / 255.0, alpha: color.alpha }
-}
-
-export function getColorPresentation(params: any, isColorRender = false) {
-    const result: ColorPresentation[] = []
-    const color = params.color
-    const range = params.range
-
-
-    const red256 = Math.round(color.red * 255), green256 = Math.round(color.green * 255), blue256 = Math.round(color.blue * 255)
-
-    let label
-
-    if (isColorRender) {
-        if (color.alpha === 1) {
-            label = `'#${toTwoDigitHex(red256)}${toTwoDigitHex(green256)}${toTwoDigitHex(blue256)}`
-        } else {
-            label = `'#${toTwoDigitHex(red256)}${toTwoDigitHex(green256)}${toTwoDigitHex(blue256)}${toTwoDigitHex(Math.round(color.alpha * 255))}`
-        }
-        result.push({ label: label, textEdit: { range: range, newText: label } })
-        return result
-    }
-
-    if (color.alpha === 1) {
-        label = `rgb(${red256},${green256},${blue256})`
-    } else {
-        label = `rgba(${red256},${green256},${blue256},${color.alpha})`
-    }
-    result.push({ label: label, textEdit: { range: range, newText: label } })
-
-    if (color.alpha === 1) {
-        label = `#${toTwoDigitHex(red256)}${toTwoDigitHex(green256)}${toTwoDigitHex(blue256)}`
-    } else {
-        label = `#${toTwoDigitHex(red256)}${toTwoDigitHex(green256)}${toTwoDigitHex(blue256)}${toTwoDigitHex(Math.round(color.alpha * 255))}`
-    }
-    result.push({ label: label, textEdit: { range: range, newText: label } })
-
-    const hsl = rgb.hsl(red256, green256, blue256)
-    if (color.alpha === 1) {
-        label = `hsl(${hsl[0]},${Math.round(hsl[1])}%,${Math.round(hsl[2])}%)`
-    } else {
-        label = `hsla(${hsl[0]},${Math.round(hsl[1])}%,${Math.round(hsl[2])}%,${color.alpha})`
-    }
-    result.push({ label: label, textEdit: { range: range, newText: label } })
-
-    // const hwb = rgb.hwb(red256, green256, blue256)
-    // if (color.alpha === 1) {
-    //     label = `hwb(${hwb[0]}|${hwb[1]}%|${hwb[2]}%)`
-    // } else {
-    //     label = `hwb(${hwb[0]}|${hwb[1]}%|${hwb[2]}%/${color.alpha})`
-    // }
-    // result.push({ label: label, textEdit: { range: range, newText: label } })
-
-    // const lab = rgb.lab(red256, green256, blue256)
-    // if (color.alpha === 1) {
-    //     label = `lab(${lab[0]}%|${lab[1]}|${lab[2]})`
-    // } else {
-    //     label = `lab(${lab[0]}%|${lab[1]}|${lab[2]}/${color.alpha})`
-    // }
-    // result.push({ label: label, textEdit: { range: range, newText: label } })
-
-    // const lch = rgb.lch(red256, green256, blue256)
-    // if (color.alpha === 1) {
-    //     label = `lch(${lch[0]}%|${lch[1]}|${lch[2]})`
-    // } else {
-    //     label = `lch(${lch[0]}%|${lch[1]}|${lch[2]}/${color.alpha})`
-    // }
-    // result.push({ label: label, textEdit: { range: range, newText: label } })
-
-    // const cmyk = rgb.cmyk(red256, green256, blue256)
-    // if (color.alpha === 1) {
-    //     label = `device-cmyk(${cmyk[0]}%|${cmyk[1]}%|${cmyk[2]}%|${cmyk[3]}%)`
-    // } else {
-    //     label = `device-cmyk(${cmyk[0]}%|${cmyk[1]}%|${cmyk[2]}%|${cmyk[3]}%/${color.alpha})`
-    // }
-    // result.push({ label: label, textEdit: { range: range, newText: label } })
-
-    return result
 }

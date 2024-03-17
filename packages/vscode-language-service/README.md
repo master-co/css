@@ -18,8 +18,8 @@
   - [`masterCSS.languages`](#mastercsslanguages)
   - [`masterCSS.files.exclude`](#mastercssfilesexclude)
   - [`masterCSS.classMatch`](#mastercssclassmatch)
-  - [`masterCSS.previewColors: true`](#mastercsspreviewcolors-true)
-  - [`masterCSS.inspect: true`](#mastercssinspect-true)
+  - [`masterCSS.renderSyntaxColors: true`](#mastercsspreviewcolors-true)
+  - [`masterCSS.inspectSyntax: true`](#mastercssinspectsyntax-true)
   - [`masterCSS.suggestions: true`](#mastercsssuggestions-true)
   - [`masterCSS.config`](#mastercssconfig)
 
@@ -98,10 +98,10 @@ Configure Regex patterns as conditions for triggering Suggestions and generating
 ],
 ```
 
-### `masterCSS.previewColors: true`
+### `masterCSS.renderSyntaxColors: true`
 Render color boxes by color-related class names as previews.
 
-### `masterCSS.inspect: true`
+### `masterCSS.inspectSyntax: true`
 Preview the generated CSS rules when hovering over a class name.
 
 ### `masterCSS.suggestions: true`

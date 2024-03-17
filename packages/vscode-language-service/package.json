@@ -134,7 +134,7 @@
                         "rust"
                     ]
                 },
-                "masterCSS.files.exclude": {
+                "masterCSS.exclude": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -167,11 +167,11 @@
                     "type": "boolean",
                     "default": true
                 },
-                "masterCSS.inspect": {
+                "masterCSS.inspectSyntax": {
                     "type": "boolean",
                     "default": true
                 },
-                "masterCSS.previewColors": {
+                "masterCSS.renderSyntaxColors": {
                     "type": "boolean",
                     "default": true
                 },

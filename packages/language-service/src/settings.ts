@@ -1,4 +1,4 @@
-export const settings = {
+ const settings: Settings = {
     languages: [
         'html',
         'php',
@@ -23,7 +23,19 @@ export const settings = {
     ],
     exclude: ['**/.git/**', '**/node_modules/**', '**/.hg/**'],
     suggestions: true,
-    inspect: true,
-    previewColors: true,
+    inspectSyntax: true,
+    renderSyntaxColors: true,
     config: 'master.css'
+}
+
+export default settings
+
+export interface Settings {
+    languages?: string[]
+    classMatch?: string[]
+    exclude?: string[]
+    suggestions?: boolean
+    inspectSyntax?: boolean
+    renderSyntaxColors?: boolean
+    config?: string
 }

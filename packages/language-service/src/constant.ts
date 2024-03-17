@@ -49,6 +49,7 @@ export const masterCssCommonValues = [
 
 export const commonUnit: any = [
     { label: '0%', kind: 11 },
+    { label: '0x', kind: 11 },
     { label: '0ch', kind: 11 },
     { label: '0cm', kind: 11 },
     { label: '0em', kind: 11 },

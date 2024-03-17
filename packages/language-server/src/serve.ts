@@ -1,113 +1,66 @@
-import { createConnection, TextDocuments, ProposedFeatures, InitializeParams, DidChangeConfigurationNotification, CompletionItem, TextDocumentPositionParams, TextDocumentSyncKind, InitializeResult, DocumentColorParams, ColorInformation, ColorPresentationParams } from 'vscode-languageserver/node'
-import { WorkspaceFolder } from 'vscode-languageserver'
-import { MasterCSS } from '@master/css'
-import { minimatch } from 'minimatch'
+import { createConnection, TextDocuments, ProposedFeatures, InitializeParams, DidChangeConfigurationNotification, CompletionItem, TextDocumentSyncKind, InitializeResult } from 'vscode-languageserver/node'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { settings as defaultSettings, doHover, positionCheck, getColorPresentation, getDocumentColors, getLastInstance, getCompletionItem, getConfigColorsCompletionItem, checkConfigColorsBlock } from '@master/css-language-service'
-import exploreConfig from 'explore-config'
+import MasterCSSLanguageService from '@master/css-language-service'
 
 export default function serve() {
+    const workspaceLanguageService: Record<string, MasterCSSLanguageService> = {}
     const connection = createConnection(ProposedFeatures.all)
     const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument)
 
     let hasConfigurationCapability = false
     let hasWorkspaceFolderCapability = false
-    let hasDiagnosticRelatedInformationCapability = false
-    let settings: typeof defaultSettings
 
-    let css: MasterCSS | undefined
-    let customConfig: any
-    const configFileLocation = ''
-
-    let globalSettings: any = defaultSettings
-
-    // Cache the settings of all open documents
-    const documentSettings: Map<string, Thenable<typeof defaultSettings>> = new Map()
-
-    connection.onDidChangeConfiguration(change => {
-        if (hasConfigurationCapability) {
-            // Reset all cached document settings
-            documentSettings.clear()
-        } else {
-            globalSettings = <typeof defaultSettings>(
-                (change.settings.masterCSS || defaultSettings)
-            )
-        }
-
-        // Revalidate all open text documents
-        documents.all().forEach(validateTextDocument)
-    })
-
-    async function getDocumentSettings(resource: string): Promise<typeof defaultSettings> {
-        if (!hasConfigurationCapability) {
-            return Promise.resolve(globalSettings)
-        }
-        let result = documentSettings.get(resource)
-
-        if (!result) {
-            result = connection.workspace.getConfiguration({
-                scopeUri: resource,
-                section: 'masterCSS'
-            })
-            documentSettings.set(resource, result)
-        }
-        return result
+    async function createLanguageService(workspaceURI: string) {
+        console.log('Create a language service for', workspaceURI)
+        const cwd = fileURLToPath(workspaceURI.replace('%3A', ':'))
+        const settings = await connection.workspace.getConfiguration({
+            scopeUri: workspaceURI,
+            section: 'masterCSS'
+        })
+        return new MasterCSSLanguageService(settings, cwd)
     }
+
+    // find the workspace language service for the given uri
+    function findCurrentLanguageService(uri: string): MasterCSSLanguageService | undefined {
+        for (const workspaceURI in workspaceLanguageService) {
+            if (uri.startsWith(workspaceURI)) {
+                return workspaceLanguageService[workspaceURI]
+            }
+        }
+    }
+
+    connection.onDidChangeConfiguration((change) => {
+        // Revalidate all open text documents
+        documents.all().forEach(async (textDocument) => {
+            workspaceLanguageService[textDocument.uri] = await createLanguageService(textDocument.uri)
+        })
+    })
 
     // Only keep settings for open documents
     documents.onDidClose(e => {
-        documentSettings.delete(e.document.uri)
+        // documentSettings.delete(e.document.uri)
+        console.log('Document closed', e.document.uri)
     })
 
     // The content of a text document has changed. This event is emitted
     // when the text document first opened or when its content has changed.
     documents.onDidOpen(change => {
-        validateTextDocument(change.document)
+        // validateTextDocument(change.document)
+        console.log('Document opened', change.document.uri)
     })
 
     documents.onDidSave(async change => {
+        // if the saved file is the master.css file, we need to refresh the css instance
         if (path.parse(change.document.uri).name === 'master.css') {
-            await loadMasterCssConfig(change.document.uri)
+            const targetCSSLS = workspaceLanguageService[change.document.uri]
+            targetCSSLS.css.refresh(targetCSSLS.exploreConfig())
         }
     })
 
-    async function validateTextDocument(textDocument: TextDocument): Promise<void> {
-        // In this simple example we get the settings for every validate run.
-        settings = await getDocumentSettings(textDocument.uri)
-        await loadMasterCssConfig(textDocument.uri)
-    }
-
-    async function loadMasterCssConfig(resource: string) {
-        const workspaceFolders = await connection.workspace.getWorkspaceFolders()
-        let root: WorkspaceFolder | undefined
-        if (workspaceFolders?.length === 1) {
-            root = workspaceFolders[0]
-        } else {
-            root = workspaceFolders?.find(x => resource.includes(x.uri))
-        }
-        if (root?.uri) {
-            const configCWD = fileURLToPath(root.uri.replace('%3A', ':'))
-            try {
-                customConfig = exploreConfig(settings.config || 'master.css', {
-                    cwd: configCWD,
-                    found: (basename) => console.log`Loaded **${basename}**`
-                })
-                css = new MasterCSS(customConfig)
-            }
-            catch (e) {
-                console.log('Config loading failed')
-                console.error(e)
-                css = new MasterCSS()
-                console.log('Using default config')
-            }
-        }
-    }
-
     connection.onInitialize((params: InitializeParams) => {
         const capabilities = params.capabilities
-
 
         // Does the client support the `workspace/configuration` request?
         // If not, we fall back using global settings.
@@ -117,23 +70,17 @@ export default function serve() {
         hasWorkspaceFolderCapability = !!(
             capabilities.workspace && !!capabilities.workspace.workspaceFolders
         )
-        hasDiagnosticRelatedInformationCapability = !!(
-            capabilities.textDocument &&
-            capabilities.textDocument.publishDiagnostics &&
-            capabilities.textDocument.publishDiagnostics.relatedInformation
-        )
 
         const result: InitializeResult = {
             capabilities: {
                 textDocumentSync: TextDocumentSyncKind.Incremental,
-
                 // Tell the client that this server supports code completion.
                 completionProvider: {
                     resolveProvider: true,
                     workDoneProgress: false,
                     triggerCharacters: [':', '@', '\'']
                 },
-                colorProvider: {},
+                colorProvider: true,
                 hoverProvider: true
             }
         }
@@ -147,146 +94,56 @@ export default function serve() {
         return result
     })
 
-    connection.onInitialized(() => {
+    connection.onInitialized(async () => {
+        const workspaceFolders = await connection.workspace.getWorkspaceFolders()
+        if (workspaceFolders) {
+            await workspaceFolders.map(async (folder) => {
+                workspaceLanguageService[folder.uri] = await createLanguageService(folder.uri)
+            })
+        }
         if (hasConfigurationCapability) {
             // Register for all configuration changes.
             connection.client.register(DidChangeConfigurationNotification.type, undefined)
         }
     })
 
-    connection.onCompletion(
-        (textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-            if (settings.suggestions == true && CheckFilesExclude(textDocumentPosition.textDocument.uri)) {
-
-                const documentUri = textDocumentPosition.textDocument.uri
-                const document = documents.get(documentUri)
-                const language = documentUri.substring(documentUri.lastIndexOf('.') + 1)
-                const position = textDocumentPosition.position
-                if (document) {
-                    const text = document.getText()
-                    const positionIndex = document.offsetAt(position) ?? 0
-                    const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
-                    const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
-                    const checkResult = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
-
-                    const lineText: string = document.getText({
-                        start: { line: position.line, character: 0 },
-                        end: { line: position.line, character: position.character },
-                    }).trim()
-
-
-                    const lastInstance = getLastInstance(lineText, position, language)
-
-
-                    if (lastInstance.isInstance == true && checkResult) {
-                        return getCompletionItem(lastInstance.lastKey, lastInstance.triggerKey, lastInstance.isStart, lastInstance.language, css)
-                    } else if (lastInstance.isInstance == true && checkConfigColorsBlock(document, textDocumentPosition.position) == true) {
-                        return getConfigColorsCompletionItem(css)
-                    }
-                }
-            }
-            return []
+    connection.onHover((params) => {
+        const languageService = findCurrentLanguageService(params.textDocument.uri)
+        if (languageService) {
+            const document = documents.get(params.textDocument.uri)
+            if (document) return languageService.onHover(document, params.position)
         }
-    )
+    })
+
+    connection.onCompletion((params) => {
+        const languageService = findCurrentLanguageService(params.textDocument.uri)
+        if (languageService) {
+            const document = documents.get(params.textDocument.uri)
+            if (document) return languageService.onCompletion(document, params.position)
+        }
+    })
+
+    connection.onDocumentColor((params) => {
+        const languageService = findCurrentLanguageService(params.textDocument.uri)
+        if (languageService) {
+            const document = documents.get(params.textDocument.uri)
+            if (document) return languageService.onDocumentColor(document)
+        }
+    })
+
+    connection.onColorPresentation((params) => {
+        const languageService = findCurrentLanguageService(params.textDocument.uri)
+        if (languageService) {
+            const document = documents.get(params.textDocument.uri)
+            if (document) return languageService.onColorPresentation(document, params.color, params.range)
+        }
+    })
+
     connection.onCompletionResolve(
         (item: CompletionItem): CompletionItem => {
-
             return item
         }
     )
-
-
-    connection.onDocumentColor(
-        async (documentColor: DocumentColorParams): Promise<ColorInformation[]> => {
-            if (settings == null) {
-                return []
-            }
-            if (settings.previewColors && CheckFilesExclude(documentColor.textDocument.uri)) {
-                const documentUri = documentColor.textDocument.uri
-                const document = documents.get(documentUri)
-                if (document) {
-                    const text = document.getText() ?? ''
-                    if (typeof document == 'undefined') {
-                        return []
-                    }
-
-                    const colorIndexes = (await getDocumentColors(text, css))
-
-                    const colorIndexSet = new Set()
-                    const colorInformation = colorIndexes
-                        .filter(item => {
-                            if (colorIndexSet.has(item.index.start)) {
-                                return false
-                            } else {
-                                colorIndexSet.add(item.index.start)
-                                return true
-                            }
-                        })
-                        .map(x => ({
-                            range: {
-                                start: document.positionAt(x.index.start),
-                                end: document.positionAt(x.index.end)
-                            },
-                            color: x.color
-                        }))
-
-                    return colorInformation
-                }
-            }
-            return []
-        })
-
-    connection.onColorPresentation((params: ColorPresentationParams) => {
-        if (settings.previewColors && CheckFilesExclude(params.textDocument.uri)) {
-            const document = documents.get(params.textDocument.uri)
-            if (document) {
-                const text = document.getText()
-                const colorRender = ['(?<=colors:\\s*{\\s*.*)([^}]*)}']
-
-                const positionIndex = document.offsetAt(params.range.start) ?? 0
-                const startIndex = document.offsetAt({ line: params.range.start.line - 100, character: 0 }) ?? 0
-                const endIndex = document.offsetAt({ line: params.range.start.line + 100, character: 0 }) ?? undefined
-                const checkResult = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, colorRender)
-                return getColorPresentation(params, checkResult !== null)
-            }
-
-        }
-        return []
-    })
-
-    connection.onHover(textDocumentPosition => {
-        if (settings.inspect == true && CheckFilesExclude(textDocumentPosition.textDocument.uri)) {
-            const document = documents.get(textDocumentPosition.textDocument.uri)
-            const position = textDocumentPosition.position
-            if (document) {
-                const text = document.getText()
-                const positionIndex = document.offsetAt(position) ?? 0
-                const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
-                const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
-                const checkResult = positionCheck(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
-                if (checkResult) {
-                    return doHover(checkResult.instanceContent, indexToRange(checkResult.index, document), customConfig)
-                }
-            }
-        }
-        return null
-    })
-
-    function CheckFilesExclude(path: string): boolean {
-        for (const exclude of (settings as any).files.exclude) {
-            if (minimatch(path, exclude)) {
-                return false
-            }
-        }
-        return true
-    }
-
-    function indexToRange(index: { start: number, end: number }, document: TextDocument) {
-        return {
-            start: document.positionAt(index.start),
-            end: document.positionAt(index.end)
-        }
-    }
 
     // Make the text document manager listen on the connection
     // for open, change and close text document events

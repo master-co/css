@@ -15,6 +15,7 @@ import { MasterCSS } from '@master/css'
 import { cssData } from 'vscode-css-languageservice/lib/umd/data/webCustomData'
 // @ts-expect-error
 import { CSSDataProvider } from 'vscode-css-languageservice/lib/umd/languageFacts/dataProvider'
+import MasterCSSLanguageService from '../core'
 
 let cssKeys: Array<string | CompletionItem> = []
 cssKeys = cssKeys.concat(masterCssOtherKeys)
@@ -23,6 +24,27 @@ masterCssKeyValues.forEach(x => {
 })
 
 const masterCssKeys: Array<string | CompletionItem> = [...new Set(cssKeys)]
+
+export default function getSyntaxCompletionItems(this: MasterCSSLanguageService, document: TextDocument, position: Position): CompletionItem[] | undefined {
+    if (this.settings.suggestions && this.isDocAllowed(document)) {
+        const text = document.getText()
+        const language = document.uri.substring(document.uri.lastIndexOf('.') + 1)
+        const positionIndex = document.offsetAt(position) ?? 0
+        const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
+        const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
+        const checkResult = this.getPosition(text.substring(startIndex, endIndex), positionIndex, startIndex)
+        const lineText: string = document.getText({
+            start: { line: position.line, character: 0 },
+            end: { line: position.line, character: position.character },
+        }).trim()
+        const lastInstance = getLastInstance(lineText, position, language)
+        if (lastInstance.isInstance === true && checkResult) {
+            return getCompletionItem(lastInstance.lastKey, lastInstance.triggerKey, lastInstance.isStart, lastInstance.language, this.css)
+        } else if (lastInstance.isInstance === true && checkConfigColorsBlock(document, position) === true) {
+            return getColorsItem(this.css)
+        }
+    }
+}
 
 // temporary
 export function checkConfigColorsBlock(document: TextDocument, position: Position) {
@@ -78,14 +100,6 @@ export function getLastInstance(lineText: string, position: Position, language: 
     }
 
     return { isInstance: true, lastKey: lastKey, triggerKey: triggerKey, isStart: isStart, language: language }
-}
-
-export function getConfigColorsCompletionItem(css: MasterCSS = new MasterCSS()) {
-    let masterStyleCompletionItem: CompletionItem[] = []
-
-    masterStyleCompletionItem = masterStyleCompletionItem.concat(getColorsItem(css))
-
-    return masterStyleCompletionItem
 }
 
 export function getCompletionItem(instance: string, triggerKey: string, isStart: boolean, language: string, css: MasterCSS = new MasterCSS()) {
@@ -292,10 +306,7 @@ export function getReturnItem(items: Array<string | CompletionItem>, kind: Compl
     return masterStyleCompletionItem
 }
 
-
-
-
-function getColorsItem(css: MasterCSS = new MasterCSS()): CompletionItem[] {
+export function getColorsItem(css: MasterCSS = new MasterCSS()): CompletionItem[] {
     const masterStyleCompletionItem: CompletionItem[] = []
 
     for (const eachVariableName in css.variables) {

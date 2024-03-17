@@ -1,1 +1,3 @@
-export { default } from '../../../master.css'
+import config from '../../../master.css'
+
+export default config

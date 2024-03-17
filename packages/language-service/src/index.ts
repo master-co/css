@@ -1,5 +1,1 @@
-export * from './providers/color'
-export * from './providers/completion'
-export * from './providers/hover'
-export * from './position-check'
-export * from './settings'
+export { default } from './core'
