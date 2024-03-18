@@ -4,7 +4,7 @@ import MasterCSSLanguageService from '../core'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import toRGBA from 'color-rgba'
 
-export default async function getSyntaxColorInfo(this: MasterCSSLanguageService, document: TextDocument): Promise<ColorInformation[]> {
+export default async function renderSyntaxColors(this: MasterCSSLanguageService, document: TextDocument): Promise<ColorInformation[]> {
     const text = document.getText() ?? ''
     const colorInformations: ColorInformation[] = []
     let instanceMatch: RegExpExecArray | null

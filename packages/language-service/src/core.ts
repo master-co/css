@@ -8,7 +8,7 @@ import { instancePattern } from './utils/regex'
 import { fileURLToPath } from 'node:url'
 import getSyntaxHover from './functions/get-syntax-hover'
 import getSyntaxCompletionItems from './functions/get-syntax-completion-items'
-import getSyntaxColorInfo from './functions/get-syntax-color-info'
+import renderSyntaxColors from './functions/render-syntax-colors'
 import getSyntaxColorPresentation from './functions/get-syntax-color-presentations'
 
 export default class MasterCSSLanguageService extends EventEmitter {
@@ -39,7 +39,7 @@ export default class MasterCSSLanguageService extends EventEmitter {
 
     onHover = getSyntaxHover
     onCompletion = getSyntaxCompletionItems
-    onDocumentColor = getSyntaxColorInfo
+    onDocumentColor = renderSyntaxColors
     onColorPresentation = getSyntaxColorPresentation
 
     getPosition(text: string, positionIndex: number, startIndex: number, patterns?: string[]): {
