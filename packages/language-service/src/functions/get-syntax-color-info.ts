@@ -16,7 +16,7 @@ export default async function getSyntaxColorInfo(this: MasterCSSLanguageService,
         const colorPattern = /(?<=[|:\s"'`]|^)(?:#?[\w-]+(?:-[\d]{1,2})?(?:\/.?[\d]*)?(?:\([^\s)]+\))?(?![:]))/g
         while ((colorMatch = colorPattern.exec(instanceMatch[0])) !== null) {
             // replace any | with space
-            // target = colorMatch[0].replace(/\|/g, ' ')
+            target = colorMatch[0].replace(/\|/g, ' ')
             // convert any color channel string to rgba: [red, green, blue, alpha]
             rgba = toRGBA(target)
             // check if rgba is valid

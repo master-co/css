@@ -15,18 +15,18 @@ test('hex', async () => {
     }])
 })
 
-// test('with |', async () => {
-//     const target = 'rgb(0|0|0/.5)'
-//     const content = `
-//         export default () => <div className='fg:${target}'></div>
-//     `
-//     const doc = createDoc('tsx', content)
-//     const languageService = new MasterCSSLanguageService()
-//     expect(await languageService.onDocumentColor(doc)).toEqual([{
-//         color: { red: 0, green: 0, blue: 0, alpha: .5 },
-//         range: getRange(target, doc)
-//     }])
-// })
+test('with |', async () => {
+    const target = 'rgb(0|0|0/.5)'
+    const content = `
+        export default () => <div className='fg:${target}'></div>
+    `
+    const doc = createDoc('tsx', content)
+    const languageService = new MasterCSSLanguageService()
+    expect(await languageService.onDocumentColor(doc)).toEqual([{
+        color: { red: 0, green: 0, blue: 0, alpha: .5 },
+        range: getRange(target, doc)
+    }])
+})
 
 test('with !', async () => {
     const target = 'rgb(0|0|0)'
