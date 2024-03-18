@@ -19,7 +19,7 @@ export default function serve() {
             scopeUri: workspaceURI,
             section: 'masterCSS'
         })
-        return new MasterCSSLanguageService(settings, cwd)
+        return new MasterCSSLanguageService({ settings, cwd })
     }
 
     // find the workspace language service for the given uri
