@@ -151,4 +151,6 @@ export default function serve() {
 
     // Listen on the connection
     connection.listen()
+
+    return connection
 }

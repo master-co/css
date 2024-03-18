@@ -4,7 +4,7 @@ import { spawnd } from 'spawnd'
 let serverProcess: SpawndChildProcess
 
 beforeAll(() => {
-    serverProcess = spawnd('node ../dist/server.bundle.js --node-ipc', { shell: true, cwd: __dirname })
+    serverProcess = spawnd('node ./index --node-ipc', { shell: true, cwd: __dirname })
 })
 
 it('run server', async () => {
