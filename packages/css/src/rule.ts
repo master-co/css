@@ -55,7 +55,11 @@ export class Rule {
                 valueToken = className.slice(indexOfColon + 1)
             }
             this.valueComponents = []
-            stateToken = valueToken.slice(this.parseValue(this.valueComponents, 0, valueToken, unit, '', undefined, false, (id === 'animation' || id === 'animation-name') ? Object.keys(this.css.animations) : []))
+            const parsedValueIndex = this.parseValue(this.valueComponents, 0, valueToken, unit, '', undefined, false,
+                (id === 'animation' || id === 'animation-name') ? Object.keys(this.css.animations) : []
+            )
+            this.valueToken = valueToken.slice(0, parsedValueIndex)
+            stateToken = valueToken.slice(parsedValueIndex)
         }
 
         // 2. !important
@@ -846,6 +850,7 @@ export interface Rule extends RegisteredRule {
     direction: string
     mode: string
     unitToken: string
+    valueToken: string
     hasWhere: boolean
     valueComponents: Array<ValueComponent>
 }
