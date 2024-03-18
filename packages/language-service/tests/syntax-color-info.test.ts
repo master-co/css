@@ -41,15 +41,15 @@ test('with !', async () => {
     }])
 })
 
-// test('invalid rgb should no color informations', async () => {
-//     const target = 'rgb(0,0,)'
-//     const content = `
-//         export default () => <div className='fg:${target}'></div>
-//     `
-//     const doc = createDoc('tsx', content)
-//     const languageService = new MasterCSSLanguageService()
-//     expect(await languageService.onDocumentColor(doc)).toEqual([])
-// })
+test('invalid rgb should no color informations', async () => {
+    const target = 'rgb(0,0,)'
+    const content = `
+        export default () => <div className='fg:${target}'></div>
+    `
+    const doc = createDoc('tsx', content)
+    const languageService = new MasterCSSLanguageService()
+    expect(await languageService.onDocumentColor(doc)).toEqual([])
+})
 
 test('group', async () => {
     const target = '#000'
