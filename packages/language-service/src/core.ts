@@ -1,4 +1,4 @@
-import { MasterCSS } from '@master/css'
+import { Config, MasterCSS } from '@master/css'
 import EventEmitter from 'node:events'
 import exploreConfig from 'explore-config'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
@@ -16,18 +16,21 @@ export default class MasterCSSLanguageService extends EventEmitter {
     settings: Settings
 
     constructor(
-        public customSettings: Settings = settings,
-        public cwd: string = process.cwd()
+        public options?: {
+            settings?: Settings
+            config?: Config
+            cwd?: string
+        }
     ) {
         super()
-        this.settings = Object.assign({}, settings, customSettings)
-        this.css = new MasterCSS(this.exploreConfig())
+        this.settings = Object.assign({}, settings, this.options?.settings)
+        this.css = new MasterCSS(this.options?.config ? this.options.config : this.exploreConfig())
     }
 
     exploreConfig(configName = this.settings.config || 'master.css') {
         try {
             return exploreConfig(configName, {
-                cwd: this.cwd,
+                cwd: this.options?.cwd || process.cwd(),
                 found: (basename) => console.log(`Loaded ${basename}`)
             })
         } catch (e) {
