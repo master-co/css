@@ -1,10 +1,11 @@
 {
     "name": "master-css-vscode-language-service",
     "scripts": {
-        "build": "techor build",
+        "build": "techor build \"./src/**/*.ts\" --formats cjs",
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint src",
+        "test": "vscode-test",
         "deploy": "mv ../../package.json ../../_package.json && pnpm dlx @vscode/vsce publish && mv ../../_package.json ../../package.json"
     },
     "description": "Master CSS Language Service for Visual Studio Code",
@@ -188,9 +189,14 @@
     },
     "devDependencies": {
         "@master/css-language-server": "workspace:^",
-        "@types/vscode": "^1.86.0",
-        "@vscode/test-electron": "^2.3.9",
         "@vscode/vsce": "^2.24.0",
-        "vscode-languageclient": "^7.0.0"
+        "vscode-languageclient": "^7.0.0",
+        "@types/glob": "^8.1.0",
+        "@types/mocha": "^10.0.6",
+        "@types/vscode": "^1.86.0",
+        "@vscode/test-cli": "^0.0.8",
+        "@vscode/test-electron": "^2.3.9",
+        "glob": "^10.3.10",
+        "mocha": "^10.3.0"
     }
 }

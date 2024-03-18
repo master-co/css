@@ -18,14 +18,14 @@
     "dependencies": {
         "@babel/parser": "^7.23.9",
         "@master/css": "workspace:^",
-        "color-convert": "^2.0.1",
+        "color-rgba": "^3.0.0",
         "explore-config": "^3.0.18",
         "js-beautify": "^1.15.1",
         "minimatch": "^9.0.3",
         "vscode-css-languageservice": "^6.2.12"
     },
     "devDependencies": {
-        "@types/color-convert": "^2.0.3",
+        "@types/color-rgba": "^2.1.2",
         "vscode-languageserver": "^7.0.0",
         "vscode-languageserver-textdocument": "^1.0.11",
         "vscode-languageserver-types": "^3.17.5"
