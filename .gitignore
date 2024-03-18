@@ -8,6 +8,7 @@
 /out-tsc
 
 # monorepo
+**/*.vscode-test
 **/*dist
 **/*dist-test
 **/*node_modules

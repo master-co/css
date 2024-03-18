@@ -16,14 +16,11 @@ export default class MasterCSSLanguageService extends EventEmitter {
     settings: Settings
 
     constructor(
-        public customSettings: Settings,
-        public cwd: string
+        public customSettings: Settings = settings,
+        public cwd: string = process.cwd()
     ) {
         super()
         this.settings = Object.assign({}, settings, customSettings)
-        if (settings) {
-            console.log(`settings:`, this.settings)
-        }
         this.css = new MasterCSS(this.exploreConfig())
     }
 
