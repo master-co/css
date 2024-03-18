@@ -4,26 +4,27 @@ import MasterCSSLanguageService from '../core'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import toRGBA from 'color-rgba'
 
-// todo: use 'color-space' and 'color-parse' packages
-
-export default async function getSyntaxColorInfo(this: MasterCSSLanguageService, document: TextDocument): Promise<ColorInformation[] | undefined> {
+export default async function getSyntaxColorInfo(this: MasterCSSLanguageService, document: TextDocument): Promise<ColorInformation[]> {
     const text = document.getText() ?? ''
     const colorInformations: ColorInformation[] = []
     let instanceMatch: RegExpExecArray | null
     while ((instanceMatch = instancePattern.exec(text)) !== null) {
         const instanceStartIndex = instanceMatch.index
         let colorMatch: RegExpExecArray | null
+        let target: string
         let rgba: number[] | undefined
         const colorPattern = /(?<=[|:\s"'`]|^)(?:#?[\w-]+(?:-[\d]{1,2})?(?:\/.?[\d]*)?(?:\([^\s)]+\))?(?![:]))/g
         while ((colorMatch = colorPattern.exec(instanceMatch[0])) !== null) {
+            // replace any | with space
+            // target = colorMatch[0].replace(/\|/g, ' ')
             // convert any color channel string to rgba: [red, green, blue, alpha]
-            rgba = toRGBA(colorMatch[0])
+            rgba = toRGBA(target)
             // check if rgba is valid
             if (rgba?.length && rgba.filter(x => isNaN(x)).length === 0) {
                 colorInformations.push({
                     range: {
                         start: document.positionAt(instanceStartIndex + colorMatch.index),
-                        end: document.positionAt(instanceStartIndex + colorMatch.index + colorMatch[0].length)
+                        end: document.positionAt(instanceStartIndex + colorMatch.index + target.length)
                     },
                     color: { red: rgba[0], green: rgba[1], blue: rgba[2], alpha: rgba[3] }
                 })
