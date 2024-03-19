@@ -12,8 +12,6 @@ export class Rule {
     readonly natives: NativeRule[] = []
     readonly order: number = 0
     readonly layer: Layer = 0
-    readonly atToken: string = ''
-    readonly stateToken: string
     readonly declarations?: PropertiesHyphen
 
     animationNames?: string[]
@@ -55,9 +53,10 @@ export class Rule {
                 valueToken = className.slice(indexOfColon + 1)
             }
             this.valueComponents = []
-            const parsedValueIndex = this.parseValue(this.valueComponents, 0, valueToken, unit, '', undefined, false,
+            const parsedValueIndex = this.parseValues(this.valueComponents, 0, valueToken, unit, '', undefined, false,
                 (id === 'animation' || id === 'animation-name') ? Object.keys(this.css.animations) : []
             )
+            // @ts-expect-error readonly
             this.valueToken = valueToken.slice(0, parsedValueIndex)
             stateToken = valueToken.slice(parsedValueIndex)
         }
@@ -68,6 +67,7 @@ export class Rule {
             stateToken = stateToken.slice(1)
         }
 
+        // @ts-expect-error readonly
         this.stateToken = stateToken
 
         // 3. prefix selector
@@ -235,7 +235,8 @@ export class Rule {
         for (let i = 1; i < stateTokens.length; i++) {
             const atToken = stateTokens[i]
             if (atToken) {
-                this.atToken += '@' + atToken
+                // @ts-expect-error readonly
+                this.atToken = (this.atToken || '') + '@' + atToken
                 if (atToken === 'rtl' || atToken === 'ltr') {
                     this.direction = atToken
                 } else {
@@ -314,7 +315,7 @@ export class Rule {
                                                     unit: 'px'
                                                 })
                                             } else {
-                                                const valueComponent = this.parseValueComponent(token, 'px')
+                                                const valueComponent = this.parseValue(token, 'px')
                                                 if (valueComponent.type === 'number') {
                                                     atComponents.push({
                                                         type: 'feature',
@@ -523,7 +524,7 @@ export class Rule {
                             + START_SYMBOLS[eachValueComponent.symbol as keyof typeof START_SYMBOLS]
                     }
                     break
-                // todo: 應挪到 parseValue 階段處理才能支援 variables: { x: 'calc(20vw-30px)' } 這種情況，並且解析上可能會比較合理、精簡
+                // todo: 應挪到 parseValues 階段處理才能支援 variables: { x: 'calc(20vw-30px)' } 這種情況，並且解析上可能會比較合理、精簡
                 case 'variable':
                     // eslint-disable-next-line no-case-declarations
                     const variable = this.css.variables[eachValueComponent.name]
@@ -556,7 +557,7 @@ export class Rule {
                                 handleVariable(
                                     (variable) => {
                                         const valueComponents: ValueComponent[] = []
-                                        this.parseValue(valueComponents, 0, variable.value as string, unit, '', undefined, bypassParsing, [...bypassVariableNames, eachValueComponent.name])
+                                        this.parseValues(valueComponents, 0, variable.value as string, unit, '', undefined, bypassParsing, [...bypassVariableNames, eachValueComponent.name])
                                         currentValue += eachValueComponent.text = this.resolveValue(
                                             valueComponents,
                                             unit,
@@ -575,7 +576,7 @@ export class Rule {
                                         if (bypassParsing) {
                                             currentValue += eachValueComponent.text = variable.value
                                         } else {
-                                            const valueComponent = this.parseValueComponent(variable.value, unit) as NumericValueComponent
+                                            const valueComponent = this.parseValue(variable.value, unit) as NumericValueComponent
                                             currentValue += eachValueComponent.text = valueComponent.value + (valueComponent.unit ?? '')
                                         }
                                     },
@@ -621,7 +622,7 @@ export class Rule {
         return this.natives.map((eachNative) => eachNative.text).join('')
     }
 
-    parseValue = (
+    parseValues = (
         currentValueComponents: ValueComponent[],
         i: number,
         value: string,
@@ -659,7 +660,7 @@ export class Rule {
                             const name = variable.name ?? variableName
                             if (!bypassVariableNames.includes(name)) {
                                 handled = true
-                                const valueComponent: VariableValueComponent = { type: 'variable', name, variable: this.css.variables[name] }
+                                const valueComponent: VariableValueComponent = { type: 'variable', name, variable: this.css.variables[name], token: currentValue }
                                 if (alpha) valueComponent.alpha = alpha
                                 currentValueComponents.push(valueComponent)
                             }
@@ -680,9 +681,9 @@ export class Rule {
                         }
                     }
                     if (bypassParsing) {
-                        currentValueComponents.push({ type: 'string', value: currentValue })
+                        currentValueComponents.push({ type: 'string', value: currentValue, token: currentValue })
                     } else {
-                        currentValueComponents.push(this.parseValueComponent(currentValue, unit))
+                        currentValueComponents.push({ ...this.parseValue(currentValue, unit), token: currentValue })
                     }
                 }
 
@@ -714,7 +715,7 @@ export class Rule {
                 return i
             } else if (!isString && val in START_SYMBOLS) {
                 const functionName = currentValue
-                const newValueComponent: ValueComponent[][0] = { type: 'function', name: functionName, symbol: val, children: [] }
+                const newValueComponent: ValueComponent[][0] = { type: 'function', name: functionName, symbol: val, children: [], token: currentValue }
                 currentValueComponents.push(newValueComponent)
                 currentValue = ''
 
@@ -724,7 +725,7 @@ export class Rule {
                     this.colored = true
                 }
 
-                i = this.parseValue(
+                i = this.parseValues(
                     newValueComponent.children,
                     ++i,
                     value,
@@ -735,7 +736,7 @@ export class Rule {
                 )
             } else if ((val === '|' || val === ' ') && endSymbol !== '}' && (!isString || parentFunctionName === 'path')) {
                 parse()
-                currentValueComponents.push({ type: 'separator', value: ' ' })
+                currentValueComponents.push({ type: 'separator', value: ' ', token: val })
             } else {
                 if (!isString) {
                     if (val === '.') {
@@ -750,7 +751,8 @@ export class Rule {
                         currentValueComponents.push({
                             type: 'separator',
                             value: val,
-                            text: (val === ',' ? '' : ' ') + val + (val === ',' ? '' : ' ')
+                            text: (val === ',' ? '' : ' ') + val + (val === ',' ? '' : ' '),
+                            token: val
                         })
                         continue
                     } else if (
@@ -770,7 +772,7 @@ export class Rule {
         return i
     }
 
-    parseValueComponent(token: string | number, unit = this.definition.unit): StringValueComponent | NumericValueComponent {
+    parseValue(token: string | number, unit = this.definition.unit): { value: string, type: 'string' } | { value: number, unit: string, type: 'number' } {
         const defaultUnit = unit ?? this.definition.unit
         let newUnit = ''
         let value: any
@@ -834,11 +836,11 @@ export type ValueComponent =
     VariableValueComponent |
     SeparatorValueComponent
 
-export interface StringValueComponent { text?: string, token?: string, type: 'string', value: string }
-export interface NumericValueComponent { text?: string, token?: string, type: 'number', value: number, unit?: string }
-export interface FunctionValueComponent { text?: string, token?: string, type: 'function', name: string, symbol: string, children: ValueComponent[], bypassTransform?: boolean }
-export interface VariableValueComponent { text?: string, token?: string, type: 'variable', name: string, alpha?: string, fallback?: string, variable?: Variable }
-export interface SeparatorValueComponent { text?: string, type: 'separator', value: string }
+export interface StringValueComponent { text?: string, token: string, type: 'string', value: string }
+export interface NumericValueComponent { text?: string, token: string, type: 'number', value: number, unit?: string }
+export interface FunctionValueComponent { text?: string, token: string, type: 'function', name: string, symbol: string, children: ValueComponent[], bypassTransform?: boolean }
+export interface VariableValueComponent { text?: string, token: string, type: 'variable', name: string, alpha?: string, fallback?: string, variable?: Variable }
+export interface SeparatorValueComponent { text?: string, token: string, type: 'separator', value: string }
 
 export interface Rule extends RegisteredRule {
     colored: boolean
@@ -850,7 +852,9 @@ export interface Rule extends RegisteredRule {
     direction: string
     mode: string
     unitToken: string
-    valueToken: string
+    readonly valueToken: string
+    readonly stateToken: string
+    readonly atToken: string
     hasWhere: boolean
     valueComponents: Array<ValueComponent>
 }
