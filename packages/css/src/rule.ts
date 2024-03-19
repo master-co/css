@@ -49,14 +49,13 @@ export class Rule {
                 [valueToken, prefixToken] = analyze.call(this, className)
             } else {
                 const indexOfColon = className.indexOf(':')
-                this.prefix = className.slice(0, indexOfColon + 1)
+                this.keyToken = className.slice(0, indexOfColon + 1)
                 valueToken = className.slice(indexOfColon + 1)
             }
             this.valueComponents = []
             const parsedValueIndex = this.parseValues(this.valueComponents, 0, valueToken, unit, '', undefined, false,
                 (id === 'animation' || id === 'animation-name') ? Object.keys(this.css.animations) : []
             )
-            // @ts-expect-error readonly
             this.valueToken = valueToken.slice(0, parsedValueIndex)
             stateToken = valueToken.slice(parsedValueIndex)
         }
@@ -67,7 +66,6 @@ export class Rule {
             stateToken = stateToken.slice(1)
         }
 
-        // @ts-expect-error readonly
         this.stateToken = stateToken
 
         // 3. prefix selector
@@ -235,7 +233,6 @@ export class Rule {
         for (let i = 1; i < stateTokens.length; i++) {
             const atToken = stateTokens[i]
             if (atToken) {
-                // @ts-expect-error readonly
                 this.atToken = (this.atToken || '') + '@' + atToken
                 if (atToken === 'rtl' || atToken === 'ltr') {
                     this.direction = atToken
@@ -410,14 +407,14 @@ export class Rule {
                 )
             }
 
-            const prefix = propertyName + ':'
+            const keyToken = propertyName + ':'
             const declarations = this.declarations[propertyName as keyof PropertiesHyphen] as any
             if (Array.isArray(declarations)) {
                 for (const value of declarations) {
-                    push(prefix + String(value))
+                    push(keyToken + String(value))
                 }
             } else {
-                push(prefix + String(declarations))
+                push(keyToken + String(declarations))
             }
         }
 
@@ -844,7 +841,6 @@ export interface SeparatorValueComponent { text?: string, token: string, type: '
 
 export interface Rule extends RegisteredRule {
     colored: boolean
-    prefix: string
     token: string
     vendorPrefixSelectors: Record<string, string[]>
     vendorSuffixSelectors: Record<string, string[]>
@@ -852,9 +848,10 @@ export interface Rule extends RegisteredRule {
     direction: string
     mode: string
     unitToken: string
-    readonly valueToken: string
-    readonly stateToken: string
-    readonly atToken: string
+    keyToken: string
+    valueToken: string
+    stateToken: string
+    atToken: string
     hasWhere: boolean
     valueComponents: Array<ValueComponent>
 }

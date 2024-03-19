@@ -13,8 +13,8 @@ export const autofillSolidToValueComponent: RuleDefinition['transformValueCompon
     })
     if (!styleValueComponent) {
         valueComponents.push(
-            { type: 'separator', value: ' ' },
-            { type: 'string', value: 'solid' }
+            { type: 'separator', value: ' ', token: '|' },
+            { type: 'string', value: 'solid', token: 'solid' }
         )
     }
     return valueComponents
@@ -150,7 +150,7 @@ const rules = {
         layer: Layer.Core,
         declare(value) {
             return {
-                ['--' + this.prefix.slice(1, -1)]: value
+                ['--' + this.keyToken.slice(1, -1)]: value
             }
         }
     } as RuleDefinition,
@@ -827,7 +827,7 @@ const rules = {
                 return [className.slice(1)]
             } else {
                 const indexOfColon = className.indexOf(':')
-                this.prefix = className.slice(0, indexOfColon + 1)
+                this.keyToken = className.slice(0, indexOfColon + 1)
                 return [className.slice(indexOfColon + 1)]
             }
         },
@@ -875,7 +875,7 @@ const rules = {
                 return [className.slice(1)]
             } else {
                 const indexOfColon = className.indexOf(':')
-                this.prefix = className.slice(0, indexOfColon + 1)
+                this.keyToken = className.slice(0, indexOfColon + 1)
                 return [className.slice(indexOfColon + 1)]
             }
         }
@@ -1325,7 +1325,7 @@ const rules = {
         match: /^grid-col(?:umn)?(?:-span)?:/,
         layer: Layer.CoreNativeShorthand,
         transformValue(value) {
-            return this.prefix.slice(-5, -1) === 'span' && value !== 'auto'
+            return this.keyToken.slice(-5, -1) === 'span' && value !== 'auto'
                 ? 'span' + ' ' + value + '/' + 'span' + ' ' + value
                 : value
         }
@@ -1354,7 +1354,7 @@ const rules = {
         match: /^grid-row-span:/,
         layer: Layer.CoreNativeShorthand,
         transformValue(value) {
-            return this.prefix.slice(-5, -1) === 'span' && value !== 'auto'
+            return this.keyToken.slice(-5, -1) === 'span' && value !== 'auto'
                 ? 'span' + ' ' + value + '/' + 'span' + ' ' + value
                 : value
         }

@@ -15,17 +15,17 @@ const functions: FunctionDefinitions = {
             } else {
                 name = value
             }
-            return [{ type: 'variable', name, fallback }]
+            return [{ type: 'variable', name, fallback, token: value }]
         }
     } as FunctionDefinition,
     calc: {
         transform(value, bypassVariableNames) {
             const valueComponents: Rule['valueComponents'] = []
             let i = 0
-            
+
             const anaylzeDeeply = (
-                currentValueComponents: Rule['valueComponents'], 
-                bypassHandlingSeparator: boolean, 
+                currentValueComponents: Rule['valueComponents'],
+                bypassHandlingSeparator: boolean,
                 parentBypassParsing: boolean,
                 parentUnitChecking: boolean,
                 isVarFunction: boolean
@@ -55,7 +55,7 @@ const functions: FunctionDefinitions = {
                         }
 
                         if (!bypassParsing && !parentBypassParsing) {
-                            const valueComponent = this.parseValueComponent(current)
+                            const valueComponent = this.parseValue(current)
                             if (
                                 !hasUnit
                                 && isNaN(+current)
@@ -67,25 +67,25 @@ const functions: FunctionDefinitions = {
                             if (unitChecking) {
                                 if (isNaN(+current)) {
                                     if (valueComponent.type === 'number') {
-                                        currentValueComponents.push(valueComponent)
+                                        currentValueComponents.push({ ...valueComponent, token: current })
                                         currentHasUnit = true
                                     } else {
-                                        currentValueComponents.push(valueComponent)
+                                        currentValueComponents.push({ ...valueComponent, token: current })
                                     }
                                 } else {
-                                    currentValueComponents.push({ type: 'number', value: +current })
+                                    currentValueComponents.push({ type: 'number', value: +current, token: current })
                                 }
                             } else {
                                 if (isChildHandler) {
                                     const newValueComponent = { type: 'string', value: current } as const
-                                    unparsedValueComponents.push(newValueComponent)
-                                    currentValueComponents.push(newValueComponent)
+                                    unparsedValueComponents.push({ ...newValueComponent, token: current })
+                                    currentValueComponents.push({ ...newValueComponent, token: current })
                                 } else {
-                                    currentValueComponents.push(valueComponent)
+                                    currentValueComponents.push({ ...valueComponent, token: current })
                                 }
                             }
                         } else {
-                            currentValueComponents.push({ type: 'string', value: current })
+                            currentValueComponents.push({ type: 'string', value: current, token: current })
                         }
 
                         current = ''
@@ -103,23 +103,23 @@ const functions: FunctionDefinitions = {
                             suffix = ''
                         }
                         if (bypassHandlingSeparator) {
-                            currentValueComponents.push({ type: 'separator', value: separator, text: separator })
+                            currentValueComponents.push({ type: 'separator', value: separator, text: separator, token: separator })
                         } else {
-                            currentValueComponents.push({ type: 'separator', value: separator, text: prefix + separator + suffix })
+                            currentValueComponents.push({ type: 'separator', value: separator, text: prefix + separator + suffix, token: separator })
                         }
                     }
                     bypassParsing = false
                 }
                 const pushUnitValueComponents = () => {
-                    if (this.definition.unit === 'rem' || this.definition.unit ==='em') {
+                    if (this.definition.unit === 'rem' || this.definition.unit === 'em') {
                         currentValueComponents.push(
-                            { type: 'separator', value: '/', text: ' / ' },
-                            { type: 'number', value: this.css.config.rootSize as number }
+                            { type: 'separator', value: '/', text: ' / ', token: '/' },
+                            { type: 'number', value: this.css.config.rootSize as number, token: String(this.css.config.rootSize) }
                         )
                     }
                     currentValueComponents.push(
-                        { type: 'separator', value: '*', text: ' * ' },
-                        { type: 'number', value: 1, unit: this.definition.unit }
+                        { type: 'separator', value: '*', text: ' * ', token: '*' },
+                        { type: 'number', value: 1, unit: this.definition.unit, token: this.definition.unit }
                     )
                 }
                 const handleUnitChecking = () => {
@@ -135,10 +135,12 @@ const functions: FunctionDefinitions = {
                     if (char === '(') {
                         const symbolResult = /^([+-])/.exec(current)
                         if (symbolResult) {
-                            currentValueComponents.push({ type: 'string', value: symbolResult[1] })
+                            currentValueComponents.push({ type: 'string', value: symbolResult[1], token: symbolResult[1] })
                         }
                         const functionName = symbolResult ? current.slice(1) : current
-                        const newValueComponent: Rule['valueComponents'][0] = { type: 'function', name: functionName, symbol: char, children: [], bypassTransform: functionName === 'calc' }
+                        const newValueComponent: Rule['valueComponents'][0] = {
+                            type: 'function', name: functionName, symbol: char, children: [], bypassTransform: functionName === 'calc', token: current
+                        }
                         currentValueComponents.push(newValueComponent)
                         current = ''
                         i++
@@ -167,7 +169,7 @@ const functions: FunctionDefinitions = {
                         clear('')
                         if (hasUnit) {
                             for (const eachUnparsedValueComponent of unparsedValueComponents) {
-                                Object.assign(eachUnparsedValueComponent, this.parseValueComponent(eachUnparsedValueComponent.value))
+                                Object.assign(eachUnparsedValueComponent, this.parseValue(eachUnparsedValueComponent.value))
                             }
                         }
                         return hasUnit

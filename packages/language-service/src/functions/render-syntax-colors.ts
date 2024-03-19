@@ -16,12 +16,12 @@ export default async function renderSyntaxColors(this: MasterCSSLanguageService,
         const syntax = instanceMatch[0]
         const rule = this.css.generate(syntax)[0]
         if (rule && rule.layer !== Layer.Semantic) {
-            const prefixLenght = rule.prefix?.length || 0
+            const prefixLenght = rule.keyToken?.length || 0
             let currentTextLength = prefixLenght
             for (const valueComponent of rule.valueComponents) {
                 if (valueComponent.text === undefined) return  // text is always existing, just for type
-                // TODO: should record valueComponent.token
-                currentTextLength += rule.valueToken?.length || 0
+                console.log(valueComponent.token)
+                currentTextLength += valueComponent.token.length || 0
                 // TODO: check number mt:30
                 switch (valueComponent.type) {
                     default:
