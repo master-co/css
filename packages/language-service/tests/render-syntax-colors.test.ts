@@ -86,7 +86,6 @@ test('with variable/opacity', async () => {
     }])
 })
 
-test.todo('with variable alpha')
 test('with variable alpha', async () => {
     const target = 'custom/.5'
     const content = `
@@ -106,7 +105,7 @@ test('with variable alpha', async () => {
     }])
 })
 
-test('invalid rgb should no color informations', async () => {
+test('should ignore invalid rgb', async () => {
     const target = 'rgb(0,0,)'
     const content = `
         export default () => <div className='fg:${target}'></div>
@@ -116,7 +115,17 @@ test('invalid rgb should no color informations', async () => {
     expect(await languageService.onDocumentColor(doc)).toEqual([])
 })
 
-test('semantic class should be ignored', async () => {
+test('should ignore single #', async () => {
+    const target = '#'
+    const content = `
+        export default () => <div className='fg:${target}'></div>
+    `
+    const doc = createDoc('tsx', content)
+    const languageService = new MasterCSSLanguageService()
+    expect(await languageService.onDocumentColor(doc)).toEqual([])
+})
+
+test('should ignore semantic', async () => {
     const target = 'block'
     const content = `
         export default () => <div className='fg:${target}'></div>
@@ -124,6 +133,56 @@ test('semantic class should be ignored', async () => {
     const doc = createDoc('tsx', content)
     const languageService = new MasterCSSLanguageService()
     expect(await languageService.onDocumentColor(doc)).toEqual([])
+})
+
+test('should ignore number', async () => {
+    const target = '4x'
+    const content = `
+        export default () => <div className='m:${target}'></div>
+    `
+    const doc = createDoc('tsx', content)
+    const languageService = new MasterCSSLanguageService()
+    expect(await languageService.onDocumentColor(doc)).toEqual([])
+})
+
+test('box-shadow', async () => {
+    const target1 = 'black'
+    const target2 = 'white'
+    const content = `
+        export default () => <div className='shadow:1|1|2|${target1},2|2|3|${target2}'></div>
+    `
+    const doc = createDoc('tsx', content)
+    const languageService = new MasterCSSLanguageService()
+    expect(await languageService.onDocumentColor(doc)).toEqual([
+        {
+            color: { red: 0, green: 0, blue: 0, alpha: 1 },
+            range: getRange(target1, doc)
+        },
+        {
+            color: { red: 1, green: 1, blue: 1, alpha: 1 },
+            range: getRange(target2, doc)
+        }
+    ])
+})
+
+test('gradient', async () => {
+    const target1 = 'black'
+    const target2 = 'white'
+    const content = `
+        export default () => <div className='gradient(${target1},${target2})'></div>
+    `
+    const doc = createDoc('tsx', content)
+    const languageService = new MasterCSSLanguageService()
+    expect(await languageService.onDocumentColor(doc)).toEqual([
+        {
+            color: { red: 0, green: 0, blue: 0, alpha: 1 },
+            range: getRange(target1, doc)
+        },
+        {
+            color: { red: 1, green: 1, blue: 1, alpha: 1 },
+            range: getRange(target2, doc)
+        }
+    ])
 })
 
 describe('color space', () => {

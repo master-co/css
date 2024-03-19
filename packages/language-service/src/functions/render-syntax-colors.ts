@@ -3,7 +3,7 @@ import { instancePattern } from '../utils/regex'
 import MasterCSSLanguageService from '../core'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import toRGBA from 'color-rgba'
-import { Layer } from '@master/css'
+import { Layer, ValueComponent } from '@master/css'
 
 export default async function renderSyntaxColors(this: MasterCSSLanguageService, document: TextDocument): Promise<ColorInformation[] | undefined> {
     const text = document.getText() ?? ''
@@ -16,30 +16,42 @@ export default async function renderSyntaxColors(this: MasterCSSLanguageService,
         const syntax = instanceMatch[0]
         const rule = this.css.generate(syntax)[0]
         if (rule && rule.layer !== Layer.Semantic) {
-            const prefixLenght = rule.keyToken?.length || 0
-            let currentTextLength = prefixLenght
-            for (const valueComponent of rule.valueComponents) {
+            const keyTokenLength = rule.keyToken.length
+            let currentLength = 0
+            const resolveValueComponent = (valueComponent: ValueComponent) => {
                 if (valueComponent.text === undefined) return  // text is always existing, just for type
-                console.log(valueComponent.token)
-                currentTextLength += valueComponent.token.length || 0
+                const startOffset = instanceStartIndex + keyTokenLength + currentLength
                 // TODO: check number mt:30
+                const valueComponentTokenLength = valueComponent.token.length
+                let rgba: number[] | undefined
                 switch (valueComponent.type) {
-                    default:
-                        // convert any color channel string to rgba: [red, green, blue, alpha]
-                        const rgba = toRGBA(valueComponent.text)
-                        // check if rgba is valid
-                        if (rgba?.length && isRGBAValid(rgba)) {
-                            colorInformations.push({
-                                range: {
-                                    start: document.positionAt(instanceStartIndex + prefixLenght),
-                                    end: document.positionAt(instanceStartIndex + currentTextLength)
-                                },
-                                color: { red: rgba[0] / 255, green: rgba[1] / 255, blue: rgba[2] / 255, alpha: rgba[3] }
-                            })
+                    case 'function':
+                        if (['rgb', 'rgba', 'hsl', 'hsla', 'hwb', 'lab', 'lch', 'oklab', 'oklch', 'color'].includes(valueComponent.name)) {
+                            rgba = toRGBA(valueComponent.text)
+                        } else if (valueComponent.children.length) {
+                            currentLength += valueComponent.name.length + 1 // function name + '('
+                            valueComponent.children.forEach(resolveValueComponent)
                         }
                         break
+                    case 'variable':
+                    case 'string':
+                        if (valueComponent.text !== '#') {
+                            rgba = toRGBA(valueComponent.text)
+                        }
                 }
+                // check if rgba is valid
+                if (rgba?.length && isRGBAValid(rgba)) {
+                    colorInformations.push({
+                        range: {
+                            start: document.positionAt(startOffset),
+                            end: document.positionAt(startOffset + valueComponentTokenLength)
+                        },
+                        color: { red: rgba[0] / 255, green: rgba[1] / 255, blue: rgba[2] / 255, alpha: rgba[3] }
+                    })
+                }
+                currentLength += valueComponentTokenLength || 0
             }
+            rule.valueComponents.forEach(resolveValueComponent)
         }
     }
 
