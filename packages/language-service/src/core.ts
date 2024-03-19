@@ -31,7 +31,7 @@ export default class MasterCSSLanguageService extends EventEmitter {
         try {
             return exploreConfig(configName, {
                 cwd: this.options?.cwd || process.cwd(),
-                found: (basename) => console.log(`Loaded ${basename}`)
+                found: (basename) => process.env.NODE_ENV !== 'test' && console.log(`Loaded ${basename}`)
             })
         } catch (e) {
             console.log('Config loading failed')
