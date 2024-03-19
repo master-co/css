@@ -55,7 +55,7 @@ const functions: FunctionDefinitions = {
                         }
 
                         if (!bypassParsing && !parentBypassParsing) {
-                            const valueComponent = this.parseValue(current)
+                            const valueComponent = { ...this.parseValue(current), token: current }
                             if (
                                 !hasUnit
                                 && isNaN(+current)
@@ -67,21 +67,21 @@ const functions: FunctionDefinitions = {
                             if (unitChecking) {
                                 if (isNaN(+current)) {
                                     if (valueComponent.type === 'number') {
-                                        currentValueComponents.push({ ...valueComponent, token: current })
+                                        currentValueComponents.push(valueComponent)
                                         currentHasUnit = true
                                     } else {
-                                        currentValueComponents.push({ ...valueComponent, token: current })
+                                        currentValueComponents.push(valueComponent)
                                     }
                                 } else {
                                     currentValueComponents.push({ type: 'number', value: +current, token: current })
                                 }
                             } else {
                                 if (isChildHandler) {
-                                    const newValueComponent = { type: 'string', value: current } as const
-                                    unparsedValueComponents.push({ ...newValueComponent, token: current })
-                                    currentValueComponents.push({ ...newValueComponent, token: current })
+                                    const newValueComponent = { type: 'string', value: current, token: current } as const
+                                    unparsedValueComponents.push(newValueComponent)
+                                    currentValueComponents.push(newValueComponent)
                                 } else {
-                                    currentValueComponents.push({ ...valueComponent, token: current })
+                                    currentValueComponents.push(valueComponent)
                                 }
                             }
                         } else {
@@ -217,7 +217,6 @@ const functions: FunctionDefinitions = {
                 handleUnitChecking()
             }
             anaylzeDeeply(valueComponents, false, false, false, false)
-
             return 'calc(' + this.resolveValue(valueComponents, functions.calc.unit ?? this.definition.unit, bypassVariableNames, true) + ')'
         }
     } as FunctionDefinition,

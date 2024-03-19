@@ -35,7 +35,7 @@ describe('value components', () => {
     })
 
     test('function', () => {
-        expect(new MasterCSS().generate('bg:rgb(125,125,0)')[0].valueComponents).toStrictEqual([
+        expect(new MasterCSS().generate('bg:rgb(125,125,0)!')[0].valueComponents).toStrictEqual([
             {
                 type: 'function',
                 name: 'rgb',

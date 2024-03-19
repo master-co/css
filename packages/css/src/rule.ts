@@ -511,11 +511,11 @@ export class Rule {
                             ),
                             bypassVariableNames
                         )
-                        currentValue += eachValueComponent.text = typeof result === 'string'
+                        currentValue += eachValueComponent.token = eachValueComponent.text = typeof result === 'string'
                             ? result
                             : this.resolveValue(result, functionDefinition?.unit ?? unit, bypassVariableNames, bypassParsing)
                     } else {
-                        currentValue += eachValueComponent.text = eachValueComponent.name
+                        currentValue += eachValueComponent.token = eachValueComponent.text = eachValueComponent.name
                             + eachValueComponent.symbol
                             + this.resolveValue(eachValueComponent.children, functionDefinition?.unit ?? unit, bypassVariableNames, bypassParsing)
                             + START_SYMBOLS[eachValueComponent.symbol as keyof typeof START_SYMBOLS]
@@ -712,7 +712,7 @@ export class Rule {
                 return i
             } else if (!isString && val in START_SYMBOLS) {
                 const functionName = currentValue
-                const newValueComponent: ValueComponent[][0] = { type: 'function', name: functionName, symbol: val, children: [], token: value }
+                const newValueComponent: ValueComponent[][0] = { type: 'function', name: functionName, symbol: val, children: [], token: '' }
                 currentValueComponents.push(newValueComponent)
                 currentValue = ''
 
