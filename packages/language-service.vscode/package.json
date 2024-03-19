@@ -92,7 +92,8 @@
                     "source.tsx",
                     "source.js",
                     "source.ts",
-                    "source.svelte"
+                    "source.svelte",
+                    "source.vue"
                 ],
                 "embeddedLanguages": {
                     "meta.embedded.block.master-css.class": "master-css"
