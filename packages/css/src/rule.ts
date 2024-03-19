@@ -712,7 +712,7 @@ export class Rule {
                 return i
             } else if (!isString && val in START_SYMBOLS) {
                 const functionName = currentValue
-                const newValueComponent: ValueComponent[][0] = { type: 'function', name: functionName, symbol: val, children: [], token: currentValue }
+                const newValueComponent: ValueComponent[][0] = { type: 'function', name: functionName, symbol: val, children: [], token: value }
                 currentValueComponents.push(newValueComponent)
                 currentValue = ''
 
