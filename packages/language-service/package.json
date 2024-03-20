@@ -19,14 +19,21 @@
     "dependencies": {
         "@babel/parser": "^7.23.9",
         "@master/css": "workspace:^",
+        "color-convert": "^2.0.1",
         "color-rgba": "^3.0.0",
+        "color-space": "^2.0.1",
+        "culori": "^4.0.1",
         "explore-config": "^3.0.18",
         "js-beautify": "^1.15.1",
         "minimatch": "^9.0.3",
+        "pex-color": "^2.1.0",
         "vscode-css-languageservice": "^6.2.12"
     },
     "devDependencies": {
+        "@types/chroma-js": "^2.4.4",
+        "@types/color-convert": "^2.0.3",
         "@types/color-rgba": "^2.1.2",
+        "@types/culori": "^2.1.0",
         "@types/vscode": "^1.86.0",
         "vscode-languageserver": "^7.0.0",
         "vscode-languageserver-textdocument": "^1.0.11",

@@ -9,7 +9,8 @@ import { fileURLToPath } from 'node:url'
 import getSyntaxHover from './functions/get-syntax-hover'
 import getSyntaxCompletionItems from './functions/get-syntax-completion-items'
 import renderSyntaxColors from './functions/render-syntax-colors'
-import getSyntaxColorPresentation from './functions/get-syntax-color-presentations'
+import editSyntaxColors from './functions/edit-syntax-colors'
+import { ColorPresentationParams } from 'vscode-languageserver'
 
 export default class MasterCSSLanguageService extends EventEmitter {
     css: MasterCSS
@@ -42,8 +43,17 @@ export default class MasterCSSLanguageService extends EventEmitter {
 
     onHover = getSyntaxHover
     onCompletion = getSyntaxCompletionItems
-    onDocumentColor = renderSyntaxColors
-    onColorPresentation = getSyntaxColorPresentation
+    onDocumentColor(textDocument: TextDocument) {
+        if (this.settings.renderSyntaxColors && this.isDocAllowed(textDocument)) {
+            return renderSyntaxColors.call(this, textDocument)
+        }
+    }
+
+    onColorPresentation(textDocument: TextDocument, color: ColorPresentationParams['color'], range: ColorPresentationParams['range']) {
+        if (this.settings.renderSyntaxColors && this.isDocAllowed(textDocument)) {
+            return editSyntaxColors.call(this, textDocument, color, range)
+        }
+    }
 
     getPosition(text: string, positionIndex: number, startIndex: number, patterns?: string[]): {
         index: { start: number, end: number },
