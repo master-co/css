@@ -8,7 +8,6 @@ import { Layer, ValueComponent } from '@master/css'
 export default async function renderSyntaxColors(this: MasterCSSLanguageService, document: TextDocument): Promise<ColorInformation[] | undefined> {
     const text = document.getText() ?? ''
     const colorInformations: ColorInformation[] = []
-
     for (const instanceMatch of text.matchAll(instancePattern)) {
         if (instanceMatch.index === undefined) break
         const instanceStartIndex = instanceMatch.index

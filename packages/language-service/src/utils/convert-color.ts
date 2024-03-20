@@ -17,7 +17,6 @@ export default function convertColor(rgb: Rgb, targetSpace: any): string | undef
             return `hsl(${Math.round(hsl.h || 0)}|${Math.round(hsl.s * 100)}%|${Math.round(hsl.l * 100)}%${alphaToken})`
         case 'hwb':
             const hwb = modeHwb.fromMode.rgb(rgb)
-            console.log(hwb)
             return `hwb(${Math.round(hwb.h || 0)}|${Math.round(hwb.w * 100)}%|${Math.round(hwb.b * 100)}%${alphaToken})`
         case 'lab':
             const lab = modeLab.fromMode.rgb(rgb)
@@ -30,7 +29,7 @@ export default function convertColor(rgb: Rgb, targetSpace: any): string | undef
             return `oklab(${Math.round(oklab.l * 100)}%|${oklab.a.toFixed(4)}|${oklab.b.toFixed(4)}${alphaToken})`
         case 'oklch':
             const oklch = modeOklch.fromMode.rgb(rgb)
-            return `oklch(${oklch.l}%|${oklch.c}|${oklch.h}${alphaToken})`
+            return `oklch(${Math.round(oklch.l * 100)}%|${oklch.c.toFixed(4)}|${Math.round(oklch.h || 0)}${alphaToken})`
     }
     // color()
     return formatCss(rgb)
