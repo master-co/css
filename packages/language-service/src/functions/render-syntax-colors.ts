@@ -26,7 +26,7 @@ export default async function renderSyntaxColors(this: MasterCSSLanguageService,
                 let rgba: number[] | undefined
                 switch (valueComponent.type) {
                     case 'function':
-                        if (['rgb', 'rgba', 'hsl', 'hsla', 'hwb', 'lab', 'lch', 'oklab', 'oklch', 'color'].includes(valueComponent.name)) {
+                        if (['rgb', 'rgba', 'hsl', 'hsla', 'hwb', 'lab', 'lch', 'oklab', 'oklch'].includes(valueComponent.name)) {
                             rgba = toRGBA(valueComponent.text)
                         } else if (valueComponent.children.length) {
                             currentLength += valueComponent.name.length + 1 // function name + '('
