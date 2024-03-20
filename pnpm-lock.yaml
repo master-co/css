@@ -1544,6 +1544,9 @@ importers:
       color-space:
         specifier: ^2.0.1
         version: 2.0.1
+      culori:
+        specifier: ^4.0.1
+        version: 4.0.1
       explore-config:
         specifier: ^3.0.18
         version: 3.0.18
@@ -1553,6 +1556,9 @@ importers:
       minimatch:
         specifier: ^9.0.3
         version: 9.0.3
+      pex-color:
+        specifier: ^2.1.0
+        version: 2.1.0
       vscode-css-languageservice:
         specifier: ^6.2.12
         version: 6.2.12
@@ -1566,6 +1572,9 @@ importers:
       '@types/color-rgba':
         specifier: ^2.1.2
         version: 2.1.2
+      '@types/culori':
+        specifier: ^2.1.0
+        version: 2.1.0
       '@types/vscode':
         specifier: ^1.86.0
         version: 1.87.0
@@ -9578,6 +9587,10 @@ packages:
     resolution: {integrity: sha512-LUlutQBpR2TgqZJdvXCPOx9EME7a4PHSEo2Y2c8POFpj1E9a6V94PUZNwjVdfHWyb8RQZoNHTYOKs980+sOi+g==}
     dev: true
 
+  /@types/culori@2.1.0:
+    resolution: {integrity: sha512-4uJT5CcC9Mi8mACkWShsPHqILMWL0OqoTsfoLJUGzN1mcipcepmmEdzU8b9L1KwyRNN3rnQO39ylI/2VR850zw==}
+    dev: true
+
   /@types/debug@4.1.12:
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
     dependencies:
@@ -13485,6 +13498,11 @@ packages:
 
   /csv-stringify@6.4.6:
     resolution: {integrity: sha512-h2V2XZ3uOTLilF5dPIptgUfN/o2ia/80Ie0Lly18LAnw5s8Eb7kt8rfxSUy24AztJZas9f6DPZpVlzDUtFt/ag==}
+    dev: false
+
+  /culori@4.0.1:
+    resolution: {integrity: sha512-LSnjA6HuIUOlkfKVbzi2OlToZE8OjFi667JWN9qNymXVXzGDmvuP60SSgC+e92sd7B7158f7Fy3Mb6rXS5EDPw==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     dev: false
 
   /custom-event@1.0.1:
@@ -22450,6 +22468,11 @@ packages:
       '@types/estree': 1.0.5
       estree-walker: 3.0.3
       is-reference: 3.0.2
+
+  /pex-color@2.1.0:
+    resolution: {integrity: sha512-N/AyN1sHmXBI4Gss9+EIEBcJB4D0j3El5qrNDJANKsJYU1ZOfiCk38rQ9XSCOfZWboBDKqLd6arNvRrytKtgkw==}
+    engines: {node: '>=20.0.0', npm: '>=9.6.4'}
+    dev: false
 
   /picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
