@@ -63,3 +63,7 @@ test('oklab', async () => {
 test('oklch', async () => {
     await simulateEditingColors({ before: 'oklch(40%|0.1|21)', after: 'oklch(54%|0.0951|115)' })
 })
+
+test('hex to hex8', async () => {
+    await simulateEditingColors({ before: '#333333', after: '#66666600' })
+})
