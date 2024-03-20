@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url'
 import getSyntaxHover from './functions/get-syntax-hover'
 import getSyntaxCompletionItems from './functions/get-syntax-completion-items'
 import renderSyntaxColors from './functions/render-syntax-colors'
-import getSyntaxColorPresentation from './functions/get-syntax-color-presentations'
+import editSyntaxColors from './functions/edit-syntax-colors'
 
 export default class MasterCSSLanguageService extends EventEmitter {
     css: MasterCSS
@@ -42,8 +42,12 @@ export default class MasterCSSLanguageService extends EventEmitter {
 
     onHover = getSyntaxHover
     onCompletion = getSyntaxCompletionItems
-    onDocumentColor = renderSyntaxColors
-    onColorPresentation = getSyntaxColorPresentation
+    async onDocumentColor(textDocument: TextDocument) {
+        if (this.settings.renderSyntaxColors && this.isDocAllowed(textDocument)) {
+            return await renderSyntaxColors.call(this, textDocument)
+        }
+    }
+    onColorPresentation = editSyntaxColors
 
     getPosition(text: string, positionIndex: number, startIndex: number, patterns?: string[]): {
         index: { start: number, end: number },
