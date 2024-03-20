@@ -1,47 +1,39 @@
-import convert from 'color-convert'
-// @ts-expect-error
-import ColorSpace from 'color-space'
+import { serializeHex, serializeHex8, formatCss, type Rgb, modeLch, modeHsl, modeLab, modeHwb, modeOklab, modeOklch } from 'culori'
 
-export default function convertColor(color: any, targetSpace: any) {
-    let colorToken
-    const { red, green, blue } = color
-    const alpha = color.alpha !== undefined ? color.alpha : 1
-    const alphaToken = alpha >= 0 && alpha < 1 ? `/${alpha}` : ''
+export default function convertColor(rgb: Rgb, targetSpace: any): string | undefined {
+    const alphaUsed = rgb.alpha !== 1
+    const alphaToken = alphaUsed ? `/${rgb.alpha}` : ''
+    if (rgb.r === 0 && rgb.g === 0 && rgb.b === 0) return 'black' + alphaToken
+    if (rgb.r === 1 && rgb.g === 1 && rgb.b === 1) return 'white' + alphaToken
     switch (targetSpace) {
         case 'hex':
-            colorToken = `#${convert.rgb.hex([red, green, blue])}${alpha >= 0 && alpha < 1 ? Math.round(alpha * 255).toString(16).padStart(2, '0') : ''}`.toLocaleLowerCase()
-            break
+            return alphaUsed ? serializeHex8(rgb) : serializeHex(rgb)
         case 'rgba':
         case 'rgb':
-            colorToken = `rgb(${red}|${green}|${blue}${alphaToken})`
-            break
+            return `rgb(${Math.round(rgb.r * 255)}|${Math.round(rgb.g * 255)}|${Math.round(rgb.b * 255)}${alphaToken})`
         case 'hsla':
         case 'hsl':
-            const hsl = convert.rgb.hsl([red, green, blue])
-            colorToken = `hsl(${hsl[0]}|${hsl[1]}%|${hsl[2]}%${alphaToken}))`
-            break
+            const hsl = modeHsl.fromMode.rgb(rgb)
+            return `hsl(${Math.round(hsl.h || 0)}|${Math.round(hsl.s * 100)}%|${Math.round(hsl.l * 100)}%${alphaToken})`
         case 'hwb':
-            const hwb = convert.rgb.hwb([red, green, blue])
-            colorToken = `hwb(${hwb[0]}|${hwb[1]}%|${hwb[2]}%${alphaToken})`
-            break
+            const hwb = modeHwb.fromMode.rgb(rgb)
+            console.log(hwb)
+            return `hwb(${Math.round(hwb.h || 0)}|${Math.round(hwb.w * 100)}%|${Math.round(hwb.b * 100)}%${alphaToken})`
         case 'lab':
-            const lab = ColorSpace.rgb.lab([red, green, blue])
-            colorToken = `lab(${lab[0]}%|${lab[1]}|${lab[2]}${alphaToken})`
-            break
+            const lab = modeLab.fromMode.rgb(rgb)
+            return `lab(${Math.round(lab.l)}%|${Math.round(lab.a)}|${Math.round(lab.b || 0)}${alphaToken})`
         case 'lch':
-            const lch = ColorSpace.rgb.lch([red, green, blue])
-            colorToken = `lch(${lch[0]}%|${lch[1]}|${lch[2]}${alphaToken})`
-            break
+            const lch = modeLch.fromMode.rgb(rgb)
+            return `lch(${Math.round(lch.l)}%|${Math.round(lch.c)}|${Math.round(lch.h || 0)}${alphaToken})`
         case 'oklab':
-            const oklab = ColorSpace.rgb.oklab([red, green, blue]).concat(alpha)
-            colorToken = `oklab(${oklab[0]}%|${oklab[1]}|${oklab[2]}${alphaToken})`
-            break
+            const oklab = modeOklab.fromMode.rgb(rgb)
+            return `oklab(${Math.round(oklab.l * 100)}%|${oklab.a.toFixed(4)}|${oklab.b.toFixed(4)}${alphaToken})`
         case 'oklch':
-            const oklch = ColorSpace.rgb.oklch([red, green, blue]).concat(alpha)
-            colorToken = `oklch(${oklch[0]}%|${oklch[1]}|${oklch[2]}${alphaToken})`
-            break
-        default:
-            console.log('Unsupported color space', targetSpace)
+            const oklch = modeOklch.fromMode.rgb(rgb)
+            return `oklch(${oklch.l}%|${oklch.c}|${oklch.h}${alphaToken})`
     }
-    return colorToken
+    // color()
+    return formatCss(rgb)
+        .replace(' / ', '/')
+        .replace(' ', '|')
 }

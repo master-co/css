@@ -25,13 +25,12 @@ export default function editSyntaxColors(
             outputColorSpace = 'hex'
             break
     }
-    console.log(color)
-    console.log(valueComponent)
     const outputColorToken = convertColor({
-        red: Math.round(color.red * 255),
-        green: Math.round(color.green * 255),
-        blue: Math.round(color.blue * 255),
-        alpha: color.alpha
+        r: color.red,
+        g: color.green,
+        b: color.blue,
+        alpha: color.alpha,
+        mode: 'rgb'
     }, outputColorSpace)
     if (outputColorToken)
         colorPresentations.push({ label: outputColorToken, textEdit: { range, newText: outputColorToken } })
