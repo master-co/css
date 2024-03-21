@@ -4,7 +4,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import CSSLanguageService from '@master/css-language-service'
 import { Settings } from './settings'
-import exploreConfig from 'explore-config'
+import exploreConfig from '@master/css-explore-config'
 import extend from '@techor/extend'
 import settings from './settings'
 import { Config } from '@master/css'
@@ -153,10 +153,7 @@ export default class CSSLanguageServer {
         let workspaceConfig: Config | undefined
         if (typeof workspaceSettings.config === 'string') {
             try {
-                workspaceConfig = exploreConfig(workspaceSettings.config, {
-                    cwd: workspaceCWD,
-                    found: (basename) => process.env.NODE_ENV !== 'test' && console.log(`Loaded ${basename}`)
-                })
+                workspaceConfig = exploreConfig({ name: workspaceSettings.config, cwd: workspaceCWD })
             } catch (e) {
                 console.log('Config loading failed from', workspaceCWD)
                 console.error(e)
