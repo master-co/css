@@ -19,7 +19,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
         end: document.positionAt(checkResult.index.end)
     }
     const rules = this.css.generate(syntax)
-    const css = new MasterCSS(this.config)
+    const css = new MasterCSS(this.settings?.config)
     css.add(syntax)
     const rule = rules[0]
     const contents = []

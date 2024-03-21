@@ -19,11 +19,11 @@
     "dependencies": {
         "@babel/parser": "^7.23.9",
         "@master/css": "workspace:^",
+        "@techor/extend": "^3.0.18",
         "color-convert": "^2.0.1",
         "color-rgba": "^3.0.0",
         "color-space": "^2.0.1",
         "culori": "^4.0.1",
-        "explore-config": "^3.0.18",
         "js-beautify": "^1.15.1",
         "minimatch": "^9.0.3",
         "pex-color": "^2.1.0",
@@ -51,9 +51,9 @@
             "types": "./dist/index.d.ts"
         },
         "./settings": {
-            "import": "./dist/settings/index.mjs",
-            "require": "./dist/settings/index.cjs",
-            "types": "./dist/settings/index.d.ts"
+            "import": "./dist/settings.mjs",
+            "require": "./dist/settings.cjs",
+            "types": "./dist/settings.d.ts"
         }
     },
     "typesVersions": {

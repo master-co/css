@@ -1,6 +1,5 @@
 import { Config, MasterCSS } from '@master/css'
 import EventEmitter from 'node:events'
-import exploreConfig from 'explore-config'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import settings, { type Settings } from './settings'
 import { minimatch } from 'minimatch'
@@ -11,36 +10,16 @@ import renderSyntaxColors from './features/render-syntax-colors'
 import editSyntaxColors from './features/edit-syntax-colors'
 import { ColorPresentationParams } from 'vscode-languageserver'
 import hintSyntaxCompletions from './features/hint-syntax-completions'
+import extend from '@techor/extend'
 
 export default class CSSLanguageService extends EventEmitter {
     css: MasterCSS
     settings: Settings
-    config: Config
 
-    constructor(
-        public options?: {
-            settings?: Settings
-            config?: Config
-            cwd?: string
-        }
-    ) {
+    constructor(public customSettings?: Settings) {
         super()
-        this.settings = Object.assign({}, settings, this.options?.settings)
-        this.config = this.options?.config ? this.options.config : this.exploreConfig()
-        this.css = new MasterCSS(this.config)
-    }
-
-    exploreConfig(configName = this.settings.config || 'master.css') {
-        try {
-            return exploreConfig(configName, {
-                cwd: this.options?.cwd || process.cwd(),
-                found: (basename) => process.env.NODE_ENV !== 'test' && console.log(`Loaded ${basename}`)
-            })
-        } catch (e) {
-            console.log('Config loading failed')
-            console.error(e)
-            console.log('Using default config')
-        }
+        this.settings = extend(settings, customSettings)
+        this.css = new MasterCSS(this.settings.config)
     }
 
     onCompletion(textDocument: TextDocument, position: Position) {

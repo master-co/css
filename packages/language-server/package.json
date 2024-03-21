@@ -19,6 +19,8 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-language-service": "workspace:^",
+        "@techor/extend": "^3.0.18",
+        "explore-config": "^3.0.18",
         "js-beautify": "^1.15.1",
         "vscode-languageserver": "^7.0.0",
         "vscode-languageserver-textdocument": "^1.0.11"
@@ -34,6 +36,11 @@
             "import": "./dist/index.mjs",
             "require": "./dist/index.cjs",
             "types": "./dist/index.d.ts"
+        },
+        "./settings": {
+            "import": "./dist/settings.mjs",
+            "require": "./dist/settings.cjs",
+            "types": "./dist/settings.d.ts"
         }
     },
     "files": [

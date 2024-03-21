@@ -1,4 +1,6 @@
- const settings: Settings = {
+import { Config } from '@master/css'
+
+const settings: Settings = {
     languages: [
         'html',
         'php',
@@ -24,18 +26,17 @@
     exclude: ['**/.git/**', '**/node_modules/**', '**/.hg/**'],
     hintSyntaxCompletions: true,
     inspectSyntax: true,
-    renderSyntaxColors: true,
-    config: 'master.css'
+    renderSyntaxColors: true
 }
 
 export default settings
 
-export interface Settings {
+export declare type Settings = {
     languages?: string[]
     classMatch?: string[]
     exclude?: string[]
     hintSyntaxCompletions?: boolean
     inspectSyntax?: boolean
     renderSyntaxColors?: boolean
-    config?: string
+    config?: Config
 }
