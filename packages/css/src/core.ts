@@ -91,7 +91,7 @@ export default class MasterCSS {
         if (variables) {
             const unexecutedAliasVariable: Record<string, { [mode: string]: () => void }> = {}
             const parseVariable = (variable: any, name: string, mode?: string) => {
-                if (!variable)
+                if (typeof variable === undefined || variable === null)
                     return
 
                 const addVariable = (
