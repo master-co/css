@@ -1,12 +1,12 @@
 import { Config, MasterCSS } from '@master/css'
 import EventEmitter from 'node:events'
 import exploreConfig from 'explore-config'
-import type { TextDocument } from 'vscode-languageserver-textdocument'
+import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import settings, { type Settings } from './settings'
 import { minimatch } from 'minimatch'
 import { instancePattern } from './utils/regex'
 import { fileURLToPath } from 'node:url'
-import getSyntaxHover from './functions/get-syntax-hover'
+import inspectSyntax from './functions/inspect-syntax'
 import getSyntaxCompletionItems from './functions/get-syntax-completion-items'
 import renderSyntaxColors from './functions/render-syntax-colors'
 import editSyntaxColors from './functions/edit-syntax-colors'
@@ -15,6 +15,7 @@ import { ColorPresentationParams } from 'vscode-languageserver'
 export default class MasterCSSLanguageService extends EventEmitter {
     css: MasterCSS
     settings: Settings
+    config: Config
 
     constructor(
         public options?: {
@@ -25,7 +26,8 @@ export default class MasterCSSLanguageService extends EventEmitter {
     ) {
         super()
         this.settings = Object.assign({}, settings, this.options?.settings)
-        this.css = new MasterCSS(this.options?.config ? this.options.config : this.exploreConfig())
+        this.config = this.options?.config ? this.options.config : this.exploreConfig()
+        this.css = new MasterCSS(this.config)
     }
 
     exploreConfig(configName = this.settings.config || 'master.css') {
@@ -41,8 +43,14 @@ export default class MasterCSSLanguageService extends EventEmitter {
         }
     }
 
-    onHover = getSyntaxHover
     onCompletion = getSyntaxCompletionItems
+
+    onHover(textDocument: TextDocument, position: Position) {
+        if (this.settings.inspectSyntax && this.isDocAllowed(textDocument)) {
+            return inspectSyntax.call(this, textDocument, position)
+        }
+    }
+
     onDocumentColor(textDocument: TextDocument) {
         if (this.settings.renderSyntaxColors && this.isDocAllowed(textDocument)) {
             return renderSyntaxColors.call(this, textDocument)
