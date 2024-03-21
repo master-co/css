@@ -20,6 +20,7 @@
 **/*.test.html
 **/*tsconfig.tsbuildinfo
 **/*.virtual
+**/*coverage
 
 # Only exists if Bazel was run
 /bazel-out
