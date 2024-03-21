@@ -68,6 +68,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-validator": "workspace:^",
+        "@master/css-explore-config": "workspace:^",
         "@techor/extend": "^3.0.18",
         "@techor/glob": "^3.0.18",
         "@techor/log": "^3.0.18",

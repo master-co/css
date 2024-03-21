@@ -48,9 +48,9 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-explore-config": "workspace:^",
         "@master/css-validator": "workspace:^",
         "@typescript-eslint/utils": "^7.0.2",
-        "explore-config": "^3.0.15",
         "synckit": "^0.9.0",
         "typescript-eslint": "^7.0.2"
     },

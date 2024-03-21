@@ -7,6 +7,7 @@ import { minimatch } from 'minimatch'
 import log from '@techor/log'
 import extend from '@techor/extend'
 import exploreConfig from 'explore-config'
+import exploreCSSConfig from '@master/css-explore-config'
 import { generateValidRules } from '@master/css-validator'
 import chokidar from 'chokidar'
 import { EventEmitter } from 'node:events'
@@ -48,10 +49,10 @@ export default class CSSExtractor extends EventEmitter {
         this.css = new MasterCSS(
             typeof this.options.config === 'object'
                 ? this.options.config
-                : (exploreConfig(this.options.config as string, {
-                    found: (basename) => log.i`Loaded **${basename}**`,
+                : exploreCSSConfig({
+                    name: this.options.config as string,
                     cwd: this.cwd
-                }) || {})
+                })
         )
         this.emit('init', this.options, this.config)
         this.initialized = true

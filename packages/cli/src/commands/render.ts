@@ -3,7 +3,7 @@ import log from '@techor/log'
 import type { Pattern } from 'fast-glob'
 import prettyHartime from 'pretty-hrtime'
 import { explorePathsSync } from '@techor/glob'
-import exploreConfig from 'explore-config'
+import exploreConfig from '@master/css-explore-config'
 import { readFile, writeFileSync } from 'fs'
 import { brotliCompressSync } from 'zlib'
 // @ts-expect-error
@@ -35,7 +35,7 @@ export default (program: Command) => program
             )
             const col2Width = 8
             const config = typeof options.config === 'string'
-                ? exploreConfig(options.config, { found: (basename) => log.i`Loaded **${basename}**`, })
+                ? exploreConfig({ name: options.config })
                 : undefined
             log``
             log`${'  Source Files'.padEnd(col1Width)}${'CSS Size'.padStart(col2Width)}`

@@ -39,6 +39,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-explore-config": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-server": "workspace:^",
         "@techor/extend": "^3.0.18",
@@ -48,7 +49,6 @@
         "bytes": "^3.1.2",
         "chokidar": "^3.6.0",
         "commander": "^12.0.0",
-        "explore-config": "^3.0.18",
         "minimatch": "^9.0.3",
         "pretty-hrtime": "^1.0.3"
     },
