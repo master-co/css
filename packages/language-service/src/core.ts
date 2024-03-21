@@ -7,7 +7,6 @@ import { minimatch } from 'minimatch'
 import { instancePattern } from './utils/regex'
 import { fileURLToPath } from 'node:url'
 import inspectSyntax from './features/inspect-syntax'
-import getSyntaxCompletionItems from './features/hint-syntax-completions'
 import renderSyntaxColors from './features/render-syntax-colors'
 import editSyntaxColors from './features/edit-syntax-colors'
 import { ColorPresentationParams } from 'vscode-languageserver'
@@ -68,10 +67,14 @@ export default class MasterCSSLanguageService extends EventEmitter {
         }
     }
 
-    getPosition(text: string, positionIndex: number, startIndex: number, patterns?: string[]): {
+    getPosition(textDocument: TextDocument, position: Position, patterns?: string[]): {
         index: { start: number, end: number },
         instanceContent: string
     } | undefined {
+        const positionIndex = textDocument.offsetAt(position) ?? 0
+        const startIndex = textDocument.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
+        const endIndex = textDocument.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
+        const text = textDocument.getText().substring(startIndex, endIndex)
         let result
         let instanceMatch: RegExpExecArray | null
         let classMatch: RegExpExecArray | null

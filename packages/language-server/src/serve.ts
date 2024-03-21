@@ -38,19 +38,6 @@ export default function serve() {
         })
     })
 
-    // Only keep settings for open documents
-    documents.onDidClose(e => {
-        // documentSettings.delete(e.document.uri)
-        console.log('Document closed', e.document.uri)
-    })
-
-    // The content of a text document has changed. This event is emitted
-    // when the text document first opened or when its content has changed.
-    documents.onDidOpen(change => {
-        // validateTextDocument(change.document)
-        console.log('Document opened', change.document.uri)
-    })
-
     documents.onDidSave(async change => {
         // if the saved file is the master.css file, we need to refresh the css instance
         if (path.parse(change.document.uri).name === 'master.css') {

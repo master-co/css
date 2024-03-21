@@ -11,11 +11,7 @@ import type MasterCSSLanguageService from '../core'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 
 export default function inspectSyntax(this: MasterCSSLanguageService, document: TextDocument, position: Position): Hover | undefined {
-    const text = document.getText()
-    const positionIndex = document.offsetAt(position) ?? 0
-    const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
-    const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
-    const checkResult = this.getPosition(text.substring(startIndex, endIndex), positionIndex, startIndex)
+    const checkResult = this.getPosition(document, position)
     if (!checkResult) return
     const syntax = checkResult.instanceContent
     const range: Range = {

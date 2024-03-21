@@ -25,13 +25,9 @@ masterCssKeyValues.forEach(x => {
 
 const masterCssKeys: Array<string | CompletionItem> = [...new Set(cssKeys)]
 
-export default function hintSyntaxCompletions(this: MasterCSSLanguageService, document: TextDocument, position: Position): CompletionItem[] {
-    const text = document.getText()
+export default function hintSyntaxCompletions(this: MasterCSSLanguageService, document: TextDocument, position: Position): CompletionItem[] | undefined {
     const language = document.uri.substring(document.uri.lastIndexOf('.') + 1)
-    const positionIndex = document.offsetAt(position) ?? 0
-    const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
-    const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
-    const checkResult = this.getPosition(text.substring(startIndex, endIndex), positionIndex, startIndex)
+    const checkResult = this.getPosition(document, position)
     const lineText: string = document.getText({
         start: { line: position.line, character: 0 },
         end: { line: position.line, character: position.character },
