@@ -14,6 +14,7 @@ import cssEscape from 'css-shared/utils/css-escape'
 import { explorePathsSync, explorePathSync } from '@techor/glob'
 import path, { resolve } from 'path'
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export default class CSSExtractor extends EventEmitter {
     latentClasses = new Set<string>()
     validClasses = new Set<string>()
