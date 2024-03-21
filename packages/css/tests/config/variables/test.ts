@@ -47,4 +47,9 @@ test('rule variables', () => {
             test: { 70: '#000' }
         }
     }).create('b:input')?.text).toBe('.b\\:input{border:0.0625rem solid rgb(0 0 0)}')
+    expect(new MasterCSS({
+        variables: {
+            zero: 0
+        }
+    }).create('box-shadow:0|0|$(zero)|2|black')?.text).toContain('box-shadow:0rem 0rem 0rem 0.125rem rgb(0 0 0)')
 })
