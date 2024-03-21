@@ -12,7 +12,7 @@ import editSyntaxColors from './features/edit-syntax-colors'
 import { ColorPresentationParams } from 'vscode-languageserver'
 import hintSyntaxCompletions from './features/hint-syntax-completions'
 
-export default class MasterCSSLanguageService extends EventEmitter {
+export default class CSSLanguageService extends EventEmitter {
     css: MasterCSS
     settings: Settings
     config: Config

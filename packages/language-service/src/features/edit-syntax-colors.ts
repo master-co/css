@@ -1,11 +1,11 @@
 import { TextDocument } from 'vscode-languageserver-textdocument'
-import MasterCSSLanguageService from '../core'
+import CSSLanguageService from '../core'
 import { ColorPresentation } from 'vscode-languageserver-types'
 import { ColorPresentationParams } from 'vscode-languageserver/node'
 import convertColor from '../utils/convert-color'
 
 export default function editSyntaxColors(
-    this: MasterCSSLanguageService,
+    this: CSSLanguageService,
     document: TextDocument,
     color: ColorPresentationParams['color'],
     range: ColorPresentationParams['range']

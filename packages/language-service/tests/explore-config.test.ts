@@ -1,7 +1,7 @@
-import MasterCSSLanguageService from '../src/core'
+import CSSLanguageService from '../src/core'
 
 test('explore', async () => {
-    expect(new MasterCSSLanguageService({ cwd: __dirname }).css.customConfig.styles).toEqual({
+    expect(new CSSLanguageService({ cwd: __dirname }).css.customConfig.styles).toEqual({
         btn: 'inline-flex'
     })
 })

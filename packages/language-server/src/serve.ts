@@ -2,10 +2,10 @@ import { createConnection, TextDocuments, ProposedFeatures, InitializeParams, Di
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import MasterCSSLanguageService from '@master/css-language-service'
+import CSSLanguageService from '@master/css-language-service'
 
 export default function serve() {
-    const workspaceLanguageService: Record<string, MasterCSSLanguageService> = {}
+    const workspaceLanguageService: Record<string, CSSLanguageService> = {}
     const connection = createConnection(ProposedFeatures.all)
     const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument)
 
@@ -19,11 +19,11 @@ export default function serve() {
             scopeUri: workspaceURI,
             section: 'masterCSS'
         })
-        return new MasterCSSLanguageService({ settings, cwd })
+        return new CSSLanguageService({ settings, cwd })
     }
 
     // find the workspace language service for the given uri
-    function findCurrentLanguageService(uri: string): MasterCSSLanguageService | undefined {
+    function findCurrentLanguageService(uri: string): CSSLanguageService | undefined {
         for (const workspaceURI in workspaceLanguageService) {
             if (uri.startsWith(workspaceURI)) {
                 return workspaceLanguageService[workspaceURI]

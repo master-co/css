@@ -1,4 +1,4 @@
-import MasterCSSLanguageService from '../src/core'
+import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
 import { ColorInformation, ColorPresentation } from 'vscode-languageserver'
 
@@ -7,7 +7,7 @@ const simulateEditingColors = async ({ before, after }: { before: string, after:
     const afterContent = `export default () => <div className='fg:${after}'></div>`
     const beforeDoc = createDoc('tsx', beforeContent)
     const afterDoc = createDoc('tsx', afterContent)
-    const languageService = new MasterCSSLanguageService()
+    const languageService = new CSSLanguageService()
     const beforeColorInformation = (await languageService.onDocumentColor(beforeDoc))?.[0] as ColorInformation
     const afterColorInformation = (await languageService.onDocumentColor(afterDoc))?.[0] as ColorInformation
     expect(await languageService.onColorPresentation(beforeDoc, afterColorInformation.color, beforeColorInformation.range))

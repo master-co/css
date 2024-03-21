@@ -1,4 +1,4 @@
-import MasterCSSLanguageService from '../src/core'
+import CSSLanguageService from '../src/core'
 import getRange from '../src/utils/get-range'
 import createDoc from '../src/utils/create-doc'
 import { Position } from 'vscode-languageserver-textdocument'
@@ -9,7 +9,7 @@ test('generated CSS', async () => {
     const content = `export default () => <div className='${target}'></div>`
     const doc = createDoc('tsx', content)
     const range = getRange(target, doc)
-    const languageService = new MasterCSSLanguageService()
+    const languageService = new CSSLanguageService()
     const hover = await languageService.onHover(doc, range?.start as Position)
     expect(hover?.contents).toStrictEqual([
         {

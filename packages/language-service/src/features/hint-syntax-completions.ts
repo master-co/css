@@ -15,7 +15,7 @@ import { MasterCSS } from '@master/css'
 import { cssData } from 'vscode-css-languageservice/lib/umd/data/webCustomData'
 // @ts-expect-error
 import { CSSDataProvider } from 'vscode-css-languageservice/lib/umd/languageFacts/dataProvider'
-import MasterCSSLanguageService from '../core'
+import CSSLanguageService from '../core'
 
 let cssKeys: Array<string | CompletionItem> = []
 cssKeys = cssKeys.concat(masterCssOtherKeys)
@@ -25,7 +25,7 @@ masterCssKeyValues.forEach(x => {
 
 const masterCssKeys: Array<string | CompletionItem> = [...new Set(cssKeys)]
 
-export default function hintSyntaxCompletions(this: MasterCSSLanguageService, document: TextDocument, position: Position): CompletionItem[] | undefined {
+export default function hintSyntaxCompletions(this: CSSLanguageService, document: TextDocument, position: Position): CompletionItem[] | undefined {
     const language = document.uri.substring(document.uri.lastIndexOf('.') + 1)
     const checkResult = this.getPosition(document, position)
     const lineText: string = document.getText({

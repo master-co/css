@@ -7,10 +7,10 @@ import { css_beautify } from 'js-beautify/js/lib/beautify-css'
 import { cssData } from 'vscode-css-languageservice/lib/umd/data/webCustomData'
 // @ts-expect-error
 import { CSSDataProvider } from 'vscode-css-languageservice/lib/umd/languageFacts/dataProvider'
-import type MasterCSSLanguageService from '../core'
+import type CSSLanguageService from '../core'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 
-export default function inspectSyntax(this: MasterCSSLanguageService, document: TextDocument, position: Position): Hover | undefined {
+export default function inspectSyntax(this: CSSLanguageService, document: TextDocument, position: Position): Hover | undefined {
     const checkResult = this.getPosition(document, position)
     if (!checkResult) return
     const syntax = checkResult.instanceContent
