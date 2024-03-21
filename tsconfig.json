@@ -11,6 +11,7 @@
             "@master/css-extractor.webpack": [ "./node_modules/@master/css-extractor.webpack/src" ],
             "@master/css-language-server": [ "./node_modules/@master/css-language-server/src" ],
             "@master/css-language-service": [ "./node_modules/@master/css-language-service/src" ],
+            "@master/css-explore-config": [ "./node_modules/@master/css-explore-config/src" ],
             "@master/css.nuxt": [ "./node_modules/@master/css.nuxt/src/module.ts" ],
             "@master/css.react": [ "./node_modules/@master/css.react/src" ],
             "@master/css-runtime": [ "./node_modules/@master/css-runtime/src" ],

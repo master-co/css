@@ -59,6 +59,7 @@
         "@master/css-extractor.webpack": "workspace:^",
         "@master/css-language-server": "workspace:^",
         "@master/css-language-service": "workspace:^",
+        "@master/css-explore-config": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-validator": "workspace:^",
