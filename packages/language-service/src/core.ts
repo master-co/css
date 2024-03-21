@@ -1,4 +1,4 @@
-import { Config, MasterCSS } from '@master/css'
+import { MasterCSS } from '@master/css'
 import EventEmitter from 'node:events'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import settings, { type Settings } from './settings'
