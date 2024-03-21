@@ -25,24 +25,22 @@ masterCssKeyValues.forEach(x => {
 
 const masterCssKeys: Array<string | CompletionItem> = [...new Set(cssKeys)]
 
-export default function getSyntaxCompletionItems(this: MasterCSSLanguageService, document: TextDocument, position: Position): CompletionItem[] | undefined {
-    if (this.settings.suggestions && this.isDocAllowed(document)) {
-        const text = document.getText()
-        const language = document.uri.substring(document.uri.lastIndexOf('.') + 1)
-        const positionIndex = document.offsetAt(position) ?? 0
-        const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
-        const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
-        const checkResult = this.getPosition(text.substring(startIndex, endIndex), positionIndex, startIndex)
-        const lineText: string = document.getText({
-            start: { line: position.line, character: 0 },
-            end: { line: position.line, character: position.character },
-        }).trim()
-        const lastInstance = getLastInstance(lineText, position, language)
-        if (lastInstance.isInstance === true && checkResult) {
-            return getCompletionItem(lastInstance.lastKey, lastInstance.triggerKey, lastInstance.isStart, lastInstance.language, this.css)
-        } else if (lastInstance.isInstance === true && checkConfigColorsBlock(document, position) === true) {
-            return getColorsItem(this.css)
-        }
+export default function hintSyntaxCompletions(this: MasterCSSLanguageService, document: TextDocument, position: Position): CompletionItem[] {
+    const text = document.getText()
+    const language = document.uri.substring(document.uri.lastIndexOf('.') + 1)
+    const positionIndex = document.offsetAt(position) ?? 0
+    const startIndex = document.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
+    const endIndex = document.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
+    const checkResult = this.getPosition(text.substring(startIndex, endIndex), positionIndex, startIndex)
+    const lineText: string = document.getText({
+        start: { line: position.line, character: 0 },
+        end: { line: position.line, character: position.character },
+    }).trim()
+    const lastInstance = getLastInstance(lineText, position, language)
+    if (lastInstance.isInstance === true && checkResult) {
+        return getCompletionItem(lastInstance.lastKey, lastInstance.triggerKey, lastInstance.isStart, lastInstance.language, this.css)
+    } else if (lastInstance.isInstance === true && checkConfigColorsBlock(document, position) === true) {
+        return getColorsItem(this.css)
     }
 }
 

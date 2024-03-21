@@ -22,7 +22,7 @@
         '(?<=styles\\s*(?:=|:)\\s*{[\\s\\S]*)([^`]*)(`[^`]*`)'
     ],
     exclude: ['**/.git/**', '**/node_modules/**', '**/.hg/**'],
-    suggestions: true,
+    hintSyntaxCompletions: true,
     inspectSyntax: true,
     renderSyntaxColors: true,
     config: 'master.css'
@@ -34,7 +34,7 @@ export interface Settings {
     languages?: string[]
     classMatch?: string[]
     exclude?: string[]
-    suggestions?: boolean
+    hintSyntaxCompletions?: boolean
     inspectSyntax?: boolean
     renderSyntaxColors?: boolean
     config?: string

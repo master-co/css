@@ -7,10 +7,11 @@ import { minimatch } from 'minimatch'
 import { instancePattern } from './utils/regex'
 import { fileURLToPath } from 'node:url'
 import inspectSyntax from './features/inspect-syntax'
-import getSyntaxCompletionItems from './features/get-syntax-completion-items'
+import getSyntaxCompletionItems from './features/hint-syntax-completions'
 import renderSyntaxColors from './features/render-syntax-colors'
 import editSyntaxColors from './features/edit-syntax-colors'
 import { ColorPresentationParams } from 'vscode-languageserver'
+import hintSyntaxCompletions from './features/hint-syntax-completions'
 
 export default class MasterCSSLanguageService extends EventEmitter {
     css: MasterCSS
@@ -43,7 +44,11 @@ export default class MasterCSSLanguageService extends EventEmitter {
         }
     }
 
-    onCompletion = getSyntaxCompletionItems
+    onCompletion(textDocument: TextDocument, position: Position) {
+        if (this.settings.hintSyntaxCompletions && this.isDocAllowed(textDocument)) {
+            return hintSyntaxCompletions.call(this, textDocument, position)
+        }
+    }
 
     onHover(textDocument: TextDocument, position: Position) {
         if (this.settings.inspectSyntax && this.isDocAllowed(textDocument)) {
