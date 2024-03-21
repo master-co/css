@@ -1,5 +1,5 @@
 {
-    "name": "master-css-vscode-language-service",
+    "name": "master-css-vscode",
     "type": "module",
     "scripts": {
         "build": "techor build",
@@ -20,7 +20,7 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/language-service"
+        "directory": "packages/vscode"
     },
     "engines": {
         "vscode": "^1.86.0"

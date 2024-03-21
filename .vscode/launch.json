@@ -8,7 +8,7 @@
             "runtimeExecutable": "${execPath}",
             "args": [
                 "--disable-extensions",
-                "--extensionDevelopmentPath=${workspaceFolder}/packages/language-service.vscode"
+                "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode"
             ]
         }
     ]
