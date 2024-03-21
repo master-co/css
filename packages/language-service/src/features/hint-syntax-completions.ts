@@ -97,23 +97,18 @@ export function getLastInstance(lineText: string, position: Position, language: 
 }
 
 export function getCompletionItem(instance: string, triggerKey: string, isStart: boolean, language: string, css: MasterCSS = new MasterCSS()) {
-
     const cssDataProvider = new CSSDataProvider(cssData)
     const cssProperties = cssDataProvider.provideProperties()
-
-    let masterStyleCompletionItem: CompletionItem[] = []
+    const key = instance.split(':')[0].trim()
     const haveValue = instance.split(':').length
-    let key = instance.split(':')[0]
-    key = key.trim()
     const instanceLength = instance.split(':|@').length
     const last = instance.split(':|@')[instanceLength - 1]
-
     const mediaPattern = /[^\\s"]+@+([^\\s:"@]+)/g
     const elementsPattern = /[^\\s"]+::+([^\\s:"@]+)/g
-
-    let isColorful = false
     const isMedia = !(mediaPattern.exec(instance) === null && triggerKey !== '@')
     const isElements = !(elementsPattern.exec(instance) === null && triggerKey !== '::')
+    let masterStyleCompletionItem: CompletionItem[] = []
+    let isColorful = false
 
     const masterCssKeyCompletionItems: Array<CompletionItem> = []
     let masterCssValues: Array<string | CompletionItem> = []

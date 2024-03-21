@@ -1,3 +1,5 @@
-import serve from '@master/css-language-server'
+import CSSLanguageServer from '@master/css-language-server'
 
-serve()
+const server = new CSSLanguageServer()
+
+server.connect()
