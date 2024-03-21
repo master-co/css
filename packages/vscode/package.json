@@ -8,8 +8,8 @@
         "lint": "eslint src",
         "deploy": "mv ../../package.json ../../_package.json && pnpm dlx @vscode/vsce publish && mv ../../_package.json ../../package.json"
     },
-    "description": "Master CSS Language Service for Visual Studio Code",
-    "displayName": "Master CSS Language Service",
+    "description": "Master CSS for Visual Studio Code",
+    "displayName": "Master CSS",
     "author": "Aoyue Design LLC.",
     "funding": "https://css.master.co/docs/donate",
     "homepage": "https://rc.css.master.co/docs/installation/language-service",
