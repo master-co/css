@@ -9,7 +9,7 @@
         "test": "jest"
     },
     "license": "MIT",
-    "description": "Explore a Master CSS config file.",
+    "description": "A utility for exploring a Master CSS config file.",
     "author": "Aoyue Design LLC.",
     "funding": "https://css.master.co/docs/donate",
     "homepage": "https://css.master.co",

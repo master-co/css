@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">Explore a Master CSS config file</p>
+<p align="center">A utility for exploring a Master CSS config file</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">
