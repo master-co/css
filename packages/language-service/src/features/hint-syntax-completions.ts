@@ -8,7 +8,7 @@ import {
     masterCssCommonValues
 } from '../constant'
 
-import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver-types'
+import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import { MasterCSS } from '@master/css'
 // @ts-expect-error

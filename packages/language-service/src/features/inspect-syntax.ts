@@ -1,4 +1,4 @@
-import type { Hover, Range } from 'vscode-languageserver-types'
+import type { Hover, Range } from 'vscode-languageserver'
 import { Layer } from '@master/css'
 import { getCssEntryMarkdownDescription } from '../utils/get-css-entry-markdown-description'
 // @ts-expect-error

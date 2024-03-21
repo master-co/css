@@ -1,4 +1,4 @@
-import type { ColorInformation } from 'vscode-languageserver-types'
+import type { ColorInformation } from 'vscode-languageserver'
 import { instancePattern } from '../utils/regex'
 import CSSLanguageService from '../core'
 import { TextDocument } from 'vscode-languageserver-textdocument'
