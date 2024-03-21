@@ -171,6 +171,8 @@ test('variable/opacity', async () => {
 })
 
 test.todo('CSS color() function')
+test.todo('CSS color-mix() function')
+test.todo('click to switch color spaces')
 
 describe('color space', () => {
     test('rgb', async () => {

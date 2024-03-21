@@ -3,7 +3,7 @@ import { instancePattern } from '../utils/regex'
 import MasterCSSLanguageService from '../core'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { parse as parseColorToken, converter, type Color, type Rgb } from 'culori'
-import { Layer, ValueComponent } from '@master/css'
+import { Layer, type ValueComponent } from '@master/css'
 
 export default async function renderSyntaxColors(this: MasterCSSLanguageService, document: TextDocument): Promise<ColorInformation[] | undefined> {
     const text = document.getText() ?? ''
