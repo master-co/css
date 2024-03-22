@@ -88,31 +88,6 @@ export default class CSSLanguageServer {
             }
         })
 
-
-        // onCompletion(textDocument: TextDocument, position: Position) {
-        //     if (this.settings.hintSyntaxCompletions && this.isDocumentAllowed(textDocument)) {
-        //         return hintSyntaxCompletions.call(this, textDocument, position)
-        //     }
-        // }
-
-        // onHover(textDocument: TextDocument, position: Position) {
-        //     if (this.settings.inspectSyntax && this.isDocumentAllowed(textDocument)) {
-        //         return inspectSyntax.call(this, textDocument, position)
-        //     }
-        // }
-
-        // onDocumentColor(textDocument: TextDocument) {
-        //     if (this.settings.renderSyntaxColors && this.isDocumentAllowed(textDocument)) {
-        //         return renderSyntaxColors.call(this, textDocument)
-        //     }
-        // }
-
-        // onColorPresentation(textDocument: TextDocument, color: ColorPresentationParams['color'], range: ColorPresentationParams['range']) {
-        //     if (this.settings.renderSyntaxColors && this.isDocumentAllowed(textDocument)) {
-        //         return editSyntaxColors.call(this, textDocument, color, range)
-        //     }
-        // }
-
         this.connection.onHover((params) => {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {

@@ -13,9 +13,11 @@ const simulateHintingCompletions = (target: string) => {
         ?.sort((a: any, b: any) => a.sortText.localeCompare(b.sortText))
 }
 
-// it('hints selector', () => {
-//     expect(simulateHintingCompletions('text:center:')?.map(({ label }) => label)).toStrictEqual([])
-// })
+describe('selector', () => {
+    test(':', () => expect(simulateHintingCompletions('text:center:')?.[0]).toMatchObject({ insertText: 'active' }))
+    test('::', () => expect(simulateHintingCompletions('text:center::')?.[0]).toMatchObject({ insertText: 'after' }))
+    test('with semantic', () => expect(simulateHintingCompletions('block:')?.[0]).toMatchObject({ insertText: 'after' }))
+})
 
 describe('sorting', () => {
     test('selector', () => {
