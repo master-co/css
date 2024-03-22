@@ -36,7 +36,6 @@ export default function hintSyntaxCompletions(this: CSSLanguageService, document
         const masterCssKeyCompletionItems: Array<CompletionItem> = []
         let masterCssValues: Array<string | CompletionItem> = []
 
-        console.log(haveValue, triggerKey, lastKey, lineText)
         if (haveValue >= 2 && (triggerKey === ':' || triggerKey === '::')) {
             switch (triggerKey) {
                 case ':':

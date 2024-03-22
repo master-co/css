@@ -1,15 +1,25 @@
-import getPseudoClassCompletionItems from '../src/utils/get-pseudo-class-completion-items'
-import getPseudoElementCompletionItems from '../src/utils/get-pseudo-element-completion-items'
+import CSSLanguageService from '../src/core'
+import { hintSyntaxCompletions } from '../src/features'
+import createDoc from '../src/utils/create-doc'
+import getRange from '../src/utils/get-range'
 
-/* localeCompare almost equals to vscode completion items sorting */
+const simulateHintingCompletions = (target: string) => {
+    const content = `export default () => <div className='${target}'></div>`
+    const doc = createDoc('tsx', content)
+    const languageService = new CSSLanguageService({ hintSyntaxCompletions })
+    const range = getRange(target, doc)
+    return languageService.hintSyntaxCompletions(doc, range.end)
+        /* localeCompare equals to the real vscode completion items sorting */
+        ?.sort((a: any, b: any) => a.sortText.localeCompare(b.sortText))
+}
 
-describe('sorting', ()=> {
+// it('hints selector', () => {
+//     expect(simulateHintingCompletions('text:center:')?.map(({ label }) => label)).toStrictEqual([])
+// })
+
+describe('sorting', () => {
     test('selector', () => {
-        expect(
-            [...getPseudoClassCompletionItems(':'), ...getPseudoElementCompletionItems(':')]
-                .sort((a: any, b: any) => a.sortText?.localeCompare(b.sortText))
-                .map(({ label }) => label)
-        ).toStrictEqual([
+        expect(simulateHintingCompletions('text:center:')?.map(({ label }) => label)).toEqual([
             ':active',
             ':any-link',
             ':blank',
