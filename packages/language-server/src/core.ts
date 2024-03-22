@@ -62,7 +62,7 @@ export default class CSSLanguageServer {
                     completionProvider: {
                         resolveProvider: true,
                         workDoneProgress: false,
-                        triggerCharacters: [':', '@', '\'']
+                        triggerCharacters: [':', '::', '@', '\'']
                     },
                     colorProvider: true,
                     hoverProvider: true
