@@ -2,11 +2,8 @@ import { masterCssKeyValues, masterCssMedia, masterCssOtherKeys, masterCssType, 
 import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import { MasterCSS } from '@master/css'
-// @ts-expect-error
-import { cssData } from 'vscode-css-languageservice/lib/umd/data/webCustomData'
-// @ts-expect-error
-import { CSSDataProvider } from 'vscode-css-languageservice/lib/umd/languageFacts/dataProvider'
 import CSSLanguageService from '../core'
+import cssDataProvider from '../utils/css-data-provider'
 import getPseudoElementCompletionItems from '../utils/get-pseudo-element-completion-items'
 import getPseudoClassCompletionItems from '../utils/get-pseudo-class-completion-items'
 
@@ -27,30 +24,26 @@ export default function hintSyntaxCompletions(this: CSSLanguageService, document
     }).trim()
     const { isInstance, triggerKey, lastKey, isStart } = getLastInstance(lineText, position)
     if (isInstance === true && checkResult) {
-        const cssDataProvider = new CSSDataProvider(cssData)
-        const cssProperties = cssDataProvider.provideProperties()
         const key = lastKey.split(':')[0].trim()
         const haveValue = lastKey.split(':').length
         const instanceLength = lastKey.split(':|@').length
         const last = lastKey.split(':|@')[instanceLength - 1]
         const mediaPattern = /[^\\s"]+@+([^\\s:"@]+)/g
-        const elementsPattern = /[^\\s"]+::+([^\\s:"@]+)/g
         const isMedia = !(mediaPattern.exec(lastKey) === null && triggerKey !== '@')
-        const isElements = !(elementsPattern.exec(lastKey) === null && triggerKey !== '::')
         let completionItems: CompletionItem[] = []
         let isColorful = false
 
         const masterCssKeyCompletionItems: Array<CompletionItem> = []
         let masterCssValues: Array<string | CompletionItem> = []
 
-        console.log(haveValue, triggerKey, lastKey)
+        console.log(haveValue, triggerKey, lastKey, lineText)
         if (haveValue >= 2 && (triggerKey === ':' || triggerKey === '::')) {
             switch (triggerKey) {
                 case ':':
-                    completionItems.push(...getPseudoClassCompletionItems(), ...getPseudoElementCompletionItems())
+                    completionItems.push(...getPseudoClassCompletionItems(triggerKey), ...getPseudoElementCompletionItems(triggerKey))
                     break
                 case '::':
-                    completionItems.push(...getPseudoElementCompletionItems())
+                    completionItems.push(...getPseudoElementCompletionItems(triggerKey))
                     break
             }
             return completionItems
@@ -58,7 +51,7 @@ export default function hintSyntaxCompletions(this: CSSLanguageService, document
 
         masterCssKeyValues.forEach(x => {
             const fullKey = x.key[0]
-            const originalCssProperty = cssProperties.find((x: { name: string }) => x.name == fullKey)
+            const originalCssProperty = cssDataProvider.provideProperties().find((x: { name: string }) => x.name == fullKey)
             const originalCssValues = originalCssProperty?.values ?? []
             for (const masterKey of x.key) {
                 if (!masterCssKeyCompletionItems.find(existedValue => existedValue.label === masterKey + ':')) {
@@ -84,8 +77,8 @@ export default function hintSyntaxCompletions(this: CSSLanguageService, document
 
                 masterCssValues = masterCssValues.concat(
                     originalCssValues
-                        .filter((cssValue: { description: any }, index: any) => cssValue.description || (!cssValue.description && originalCssValues.indexOf(cssValue) === index))
-                        .map((cssValue: { name: string; description: any }) => ({
+                        .filter((cssValue, index) => cssValue.description || (!cssValue.description && originalCssValues.indexOf(cssValue) === index))
+                        .map((cssValue) => ({
                             label: cssValue.name.replace(/,\s/g, ',').replace(/\s/g, '|').replace(/["']/g, ''),
                             kind: 10,
                             documentation: cssValue?.description ?? ''

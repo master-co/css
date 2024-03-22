@@ -1,33 +1,26 @@
 import cssDataProvider from './css-data-provider'
 import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 
-// const nativeSelectors = [
-//     { label: 'lang()', kind: 3 },
-//     { label: 'has()', kind: 3 },
-//     { label: 'nth-child()', kind: 3 },
-//     { label: 'nth-last-child()', kind: 3 },
-//     { label: 'nth-of-type()', kind: 3 },
-//     { label: 'nth-last-of-type()', kind: 3 },
-//     { label: 'host()', kind: 3 },
-//     { label: 'host-context()', kind: 3 },
-//     { label: 'is()', kind: 3 },
-//     { label: 'not()', kind: 3 },
-//     { label: 'where()', kind: 3 }
-// ]
-
 const insertTextMode = 1
 const kind: CompletionItemKind = 3
 
-const nativeCompletionItems = cssDataProvider.providePseudoClasses()
-    .map((data) => ({
-        insertText: data.name,
-        label: data.name,
-        documentation: data.description,
-        insertTextMode,
-        kind,
-        data
-    } as CompletionItem))
-
-export default function getPseudoClassCompletionItems(): CompletionItem[] {
-    return nativeCompletionItems
+export default function getPseudoClassCompletionItems(triggerKey: string): CompletionItem[] {
+    return cssDataProvider.providePseudoClasses()
+        .map((data) => {
+            // fix https://github.com/microsoft/vscode-custom-data/issues/78
+            const name = /:(?:dir|has|is|nth-col|where)/.test(data.name) ? data.name + '()' : data.name
+            let sortText = name.startsWith(':-')
+                ? 'zz' + name.slice(2)
+                : name.replace(/^:/, '')
+            if (sortText.endsWith('()')) sortText = 'z' + sortText
+            return {
+                label: name,
+                insertText: name.slice(triggerKey.length),
+                sortText,
+                documentation: data.description,
+                insertTextMode,
+                kind,
+                data
+            } as CompletionItem
+        })
 }
