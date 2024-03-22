@@ -1,11 +1,12 @@
 import type { ColorInformation } from 'vscode-languageserver'
-import { instancePattern } from '../utils/regex'
-import CSSLanguageService from '../core'
+import { instancePattern } from './utils/regex'
+import CSSLanguageService from './core'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { parse as parseColorToken, converter, type Color, type Rgb } from 'culori'
 import { Layer, type ValueComponent } from '@master/css'
 
 export default async function renderSyntaxColors(this: CSSLanguageService, document: TextDocument): Promise<ColorInformation[] | undefined> {
+    if (!this.isDocumentAllowed(document)) return
     const text = document.getText() ?? ''
     const colorInformations: ColorInformation[] = []
     for (const instanceMatch of text.matchAll(instancePattern)) {

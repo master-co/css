@@ -54,6 +54,26 @@
             "import": "./dist/settings.mjs",
             "require": "./dist/settings.cjs",
             "types": "./dist/settings.d.ts"
+        },
+        "./edit-syntax-colors": {
+            "import": "./dist/edit-syntax-colors.mjs",
+            "require": "./dist/edit-syntax-colors.cjs",
+            "types": "./dist/edit-syntax-colors.d.ts"
+        },
+        "./hint-syntax-completions": {
+            "import": "./dist/hint-syntax-completions.mjs",
+            "require": "./dist/hint-syntax-completions.cjs",
+            "types": "./dist/hint-syntax-completions.d.ts"
+        },
+        "./inspect-syntax": {
+            "import": "./dist/inspect-syntax.mjs",
+            "require": "./dist/inspect-syntax.cjs",
+            "types": "./dist/inspect-syntax.d.ts"
+        },
+        "./render-syntax-colors": {
+            "import": "./dist/render-syntax-colors.mjs",
+            "require": "./dist/render-syntax-colors.cjs",
+            "types": "./dist/render-syntax-colors.d.ts"
         }
     },
     "typesVersions": {

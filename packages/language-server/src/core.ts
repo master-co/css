@@ -1,4 +1,4 @@
-import { createConnection, TextDocuments, ProposedFeatures, InitializeParams, DidChangeConfigurationNotification, CompletionItem, TextDocumentSyncKind, InitializeResult, WorkspaceFolder } from 'vscode-languageserver/node'
+import { createConnection, TextDocuments, ProposedFeatures, InitializeParams, DidChangeConfigurationNotification, CompletionItem, TextDocumentSyncKind, InitializeResult, WorkspaceFolder, TextDocumentIdentifier } from 'vscode-languageserver/node'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -8,6 +8,10 @@ import exploreConfig from '@master/css-explore-config'
 import extend from '@techor/extend'
 import settings from './settings'
 import { Config } from '@master/css'
+import inspectSyntax from '@master/css-language-service/inspect-syntax'
+import editSyntaxColors from '@master/css-language-service/edit-syntax-colors'
+import hintSyntaxCompletions from '../../language-service/src/hint-syntax-completions'
+import renderSyntaxColors from '@master/css-language-service/render-syntax-colors'
 
 export default class CSSLanguageServer {
     workspaceFolders: WorkspaceFolder[] = []
@@ -87,11 +91,36 @@ export default class CSSLanguageServer {
             }
         })
 
+
+        // onCompletion(textDocument: TextDocument, position: Position) {
+        //     if (this.settings.hintSyntaxCompletions && this.isDocumentAllowed(textDocument)) {
+        //         return hintSyntaxCompletions.call(this, textDocument, position)
+        //     }
+        // }
+
+        // onHover(textDocument: TextDocument, position: Position) {
+        //     if (this.settings.inspectSyntax && this.isDocumentAllowed(textDocument)) {
+        //         return inspectSyntax.call(this, textDocument, position)
+        //     }
+        // }
+
+        // onDocumentColor(textDocument: TextDocument) {
+        //     if (this.settings.renderSyntaxColors && this.isDocumentAllowed(textDocument)) {
+        //         return renderSyntaxColors.call(this, textDocument)
+        //     }
+        // }
+
+        // onColorPresentation(textDocument: TextDocument, color: ColorPresentationParams['color'], range: ColorPresentationParams['range']) {
+        //     if (this.settings.renderSyntaxColors && this.isDocumentAllowed(textDocument)) {
+        //         return editSyntaxColors.call(this, textDocument, color, range)
+        //     }
+        // }
+
         this.connection.onHover((params) => {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {
                 const document = this.documents.get(params.textDocument.uri)
-                if (document) return cssLanguageService.onHover(document, params.position)
+                if (document) return cssLanguageService.inspectSyntax(document, params.position)
             }
         })
 
@@ -99,7 +128,7 @@ export default class CSSLanguageServer {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {
                 const document = this.documents.get(params.textDocument.uri)
-                if (document) return cssLanguageService.onCompletion(document, params.position)
+                if (document) return cssLanguageService.hintSyntaxCompletions(document, params.position)
             }
         })
 
@@ -107,7 +136,7 @@ export default class CSSLanguageServer {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {
                 const document = this.documents.get(params.textDocument.uri)
-                if (document) return cssLanguageService.onDocumentColor(document)
+                if (document) return cssLanguageService.renderSyntaxColors(document)
             }
         })
 
@@ -115,7 +144,7 @@ export default class CSSLanguageServer {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {
                 const document = this.documents.get(params.textDocument.uri)
-                if (document) return cssLanguageService.onColorPresentation(document, params.color, params.range)
+                if (document) return cssLanguageService.editSyntaxColors(document, params.color, params.range)
             }
         })
 
@@ -133,7 +162,12 @@ export default class CSSLanguageServer {
     async createLanguageService(workspaceURI: string) {
         const { config, ...workspaceCSSLanguageServiceSettings } = await this.updateWorkspaceSettings(workspaceURI)
         const workspaceConfig = this.workspaceConfigs[workspaceURI]
-        return new CSSLanguageService({ ...workspaceCSSLanguageServiceSettings, config: workspaceConfig })
+        return new CSSLanguageService([
+            editSyntaxColors,
+            hintSyntaxCompletions,
+            inspectSyntax,
+            renderSyntaxColors
+        ], { ...workspaceCSSLanguageServiceSettings, config: workspaceConfig })
     }
 
     async updateWorkspaceSettings(workspaceURI: string) {

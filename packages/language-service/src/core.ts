@@ -5,44 +5,51 @@ import settings, { type Settings } from './settings'
 import { minimatch } from 'minimatch'
 import { instancePattern } from './utils/regex'
 import { fileURLToPath } from 'node:url'
-import inspectSyntax from './features/inspect-syntax'
-import renderSyntaxColors from './features/render-syntax-colors'
-import editSyntaxColors from './features/edit-syntax-colors'
-import { ColorPresentationParams } from 'vscode-languageserver'
-import hintSyntaxCompletions from './features/hint-syntax-completions'
+import type inspectSyntax from './inspect-syntax'
+import type renderSyntaxColors from './render-syntax-colors'
+import type editSyntaxColors from './edit-syntax-colors'
+import type hintSyntaxCompletions from './hint-syntax-completions'
 import extend from '@techor/extend'
+
+export declare type Features = typeof inspectSyntax | typeof renderSyntaxColors | typeof editSyntaxColors | typeof hintSyntaxCompletions
 
 export default class CSSLanguageService extends EventEmitter {
     css: MasterCSS
     settings: Settings
+    // @ts-expect-error
+    features: {
+        inspectSyntax: typeof inspectSyntax | undefined,
+        renderSyntaxColors: typeof renderSyntaxColors | undefined,
+        editSyntaxColors: typeof editSyntaxColors | undefined,
+        hintSyntaxCompletions: typeof hintSyntaxCompletions | undefined
+    } = {}
 
-    constructor(public customSettings?: Settings) {
+    inspectSyntax(document: TextDocument, position: Position) {
+        if (!this.isDocumentAllowed(document)) return
+        return this.features.inspectSyntax?.call(this, document, position)
+    }
+
+    renderSyntaxColors(document: TextDocument) {
+        if (!this.isDocumentAllowed(document)) return
+        return this.features.renderSyntaxColors?.call(this, document)
+    }
+
+    editSyntaxColors(document: TextDocument, color: any, range: any) {
+        if (!this.isDocumentAllowed(document)) return
+        return this.features.editSyntaxColors?.call(this, document, color, range)
+    }
+
+    hintSyntaxCompletions(document: TextDocument, position: Position) {
+        if (!this.isDocumentAllowed(document)) return
+        return this.features.hintSyntaxCompletions?.call(this, document, position)
+    }
+
+    constructor(features: Features[], public customSettings?: Settings) {
         super()
         this.settings = extend(settings, customSettings)
         this.css = new MasterCSS(this.settings.config)
-    }
-
-    onCompletion(textDocument: TextDocument, position: Position) {
-        if (this.settings.hintSyntaxCompletions && this.isDocAllowed(textDocument)) {
-            return hintSyntaxCompletions.call(this, textDocument, position)
-        }
-    }
-
-    onHover(textDocument: TextDocument, position: Position) {
-        if (this.settings.inspectSyntax && this.isDocAllowed(textDocument)) {
-            return inspectSyntax.call(this, textDocument, position)
-        }
-    }
-
-    onDocumentColor(textDocument: TextDocument) {
-        if (this.settings.renderSyntaxColors && this.isDocAllowed(textDocument)) {
-            return renderSyntaxColors.call(this, textDocument)
-        }
-    }
-
-    onColorPresentation(textDocument: TextDocument, color: ColorPresentationParams['color'], range: ColorPresentationParams['range']) {
-        if (this.settings.renderSyntaxColors && this.isDocAllowed(textDocument)) {
-            return editSyntaxColors.call(this, textDocument, color, range)
+        for (const feature of features) {
+            feature.bind(this)
         }
     }
 
@@ -91,7 +98,7 @@ export default class CSSLanguageService extends EventEmitter {
         return
     }
 
-    isDocAllowed(doc: TextDocument): boolean {
+    isDocumentAllowed(doc: TextDocument): boolean {
         if (!this.settings.exclude) return true
         for (const exclude of this.settings.exclude) {
             if (minimatch(fileURLToPath(doc.uri), exclude)) {

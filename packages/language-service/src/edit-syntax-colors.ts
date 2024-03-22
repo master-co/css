@@ -1,7 +1,7 @@
 import type { TextDocument } from 'vscode-languageserver-textdocument'
-import CSSLanguageService from '../core'
+import CSSLanguageService from './core'
 import type { ColorPresentationParams, ColorPresentation } from 'vscode-languageserver'
-import convertColor from '../utils/convert-color'
+import convertColor from './utils/convert-color'
 
 export default function editSyntaxColors(
     this: CSSLanguageService,
@@ -9,6 +9,7 @@ export default function editSyntaxColors(
     color: ColorPresentationParams['color'],
     range: ColorPresentationParams['range']
 ) {
+    if (!this.isDocumentAllowed(document)) return
     const colorPresentations: ColorPresentation[] = []
     const selectedColorToken = document.getText(range)
     const valueComponent = this.css.generate('color:' + selectedColorToken)[0]?.valueComponents[0]

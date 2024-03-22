@@ -6,7 +6,7 @@ import {
     masterCssOtherKeys,
     masterCssType,
     masterCssCommonValues
-} from '../constant'
+} from './constant'
 
 import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
@@ -15,7 +15,7 @@ import { MasterCSS } from '@master/css'
 import { cssData } from 'vscode-css-languageservice/lib/umd/data/webCustomData'
 // @ts-expect-error
 import { CSSDataProvider } from 'vscode-css-languageservice/lib/umd/languageFacts/dataProvider'
-import CSSLanguageService from '../core'
+import CSSLanguageService from './core'
 
 let cssKeys: Array<string | CompletionItem> = []
 cssKeys = cssKeys.concat(masterCssOtherKeys)
@@ -26,6 +26,7 @@ masterCssKeyValues.forEach(x => {
 const masterCssKeys: Array<string | CompletionItem> = [...new Set(cssKeys)]
 
 export default function hintSyntaxCompletions(this: CSSLanguageService, document: TextDocument, position: Position): CompletionItem[] | undefined {
+    if (!this.isDocumentAllowed(document)) return
     const language = document.uri.substring(document.uri.lastIndexOf('.') + 1)
     const checkResult = this.getPosition(document, position)
     const lineText: string = document.getText({
