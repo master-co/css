@@ -5,14 +5,10 @@ import settings, { type Settings } from './settings'
 import { minimatch } from 'minimatch'
 import { instancePattern } from './utils/regex'
 import { fileURLToPath } from 'node:url'
-import type inspectSyntax from './inspect-syntax'
-import type renderSyntaxColors from './render-syntax-colors'
-import type editSyntaxColors from './edit-syntax-colors'
-import type hintSyntaxCompletions from './hint-syntax-completions'
+import type { inspectSyntax, renderSyntaxColors, editSyntaxColors, hintSyntaxCompletions } from './features'
 import extend from '@techor/extend'
 
 export declare type Features = typeof inspectSyntax | typeof renderSyntaxColors | typeof editSyntaxColors | typeof hintSyntaxCompletions
-
 export default class CSSLanguageService extends EventEmitter {
     css: MasterCSS
     settings: Settings

@@ -1,13 +1,13 @@
 import type { Hover, Range } from 'vscode-languageserver'
 import { Layer } from '@master/css'
-import { getCssEntryMarkdownDescription } from './utils/get-css-entry-markdown-description'
+import { getCssEntryMarkdownDescription } from '../utils/get-css-entry-markdown-description'
 // @ts-expect-error
 import { css_beautify } from 'js-beautify/js/lib/beautify-css'
 // @ts-expect-error
 import { cssData } from 'vscode-css-languageservice/lib/umd/data/webCustomData'
 // @ts-expect-error
 import { CSSDataProvider } from 'vscode-css-languageservice/lib/umd/languageFacts/dataProvider'
-import type CSSLanguageService from './core'
+import type CSSLanguageService from '../core'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 
 export default function inspectSyntax(this: CSSLanguageService, document: TextDocument, position: Position): Hover | undefined {
