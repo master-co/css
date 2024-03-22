@@ -8,10 +8,7 @@ import exploreConfig from '@master/css-explore-config'
 import extend from '@techor/extend'
 import settings from './settings'
 import { Config } from '@master/css'
-import inspectSyntax from '@master/css-language-service/inspect-syntax'
-import editSyntaxColors from '@master/css-language-service/edit-syntax-colors'
-import hintSyntaxCompletions from '../../language-service/src/hint-syntax-completions'
-import renderSyntaxColors from '@master/css-language-service/render-syntax-colors'
+import { inspectSyntax, editSyntaxColors, hintSyntaxCompletions, renderSyntaxColors } from '@master/css-language-service/features'
 
 export default class CSSLanguageServer {
     workspaceFolders: WorkspaceFolder[] = []
@@ -162,12 +159,12 @@ export default class CSSLanguageServer {
     async createLanguageService(workspaceURI: string) {
         const { config, ...workspaceCSSLanguageServiceSettings } = await this.updateWorkspaceSettings(workspaceURI)
         const workspaceConfig = this.workspaceConfigs[workspaceURI]
-        return new CSSLanguageService([
+        return new CSSLanguageService({
             editSyntaxColors,
             hintSyntaxCompletions,
             inspectSyntax,
             renderSyntaxColors
-        ], { ...workspaceCSSLanguageServiceSettings, config: workspaceConfig })
+        }, { ...workspaceCSSLanguageServiceSettings, config: workspaceConfig })
     }
 
     async updateWorkspaceSettings(workspaceURI: string) {

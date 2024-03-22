@@ -1,4 +1,5 @@
 import { MasterCSS } from '@master/css'
+import extend from '@techor/extend'
 import EventEmitter from 'node:events'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import settings, { type Settings } from './settings'
@@ -6,19 +7,26 @@ import { minimatch } from 'minimatch'
 import { instancePattern } from './utils/regex'
 import { fileURLToPath } from 'node:url'
 import type { inspectSyntax, renderSyntaxColors, editSyntaxColors, hintSyntaxCompletions } from './features'
-import extend from '@techor/extend'
 
-export declare type Features = typeof inspectSyntax | typeof renderSyntaxColors | typeof editSyntaxColors | typeof hintSyntaxCompletions
+export declare type Features = {
+    inspectSyntax?: typeof inspectSyntax,
+    renderSyntaxColors?: typeof renderSyntaxColors,
+    editSyntaxColors?: typeof editSyntaxColors,
+    hintSyntaxCompletions?: typeof hintSyntaxCompletions
+}
+
 export default class CSSLanguageService extends EventEmitter {
     css: MasterCSS
     settings: Settings
-    // @ts-expect-error
-    features: {
-        inspectSyntax: typeof inspectSyntax | undefined,
-        renderSyntaxColors: typeof renderSyntaxColors | undefined,
-        editSyntaxColors: typeof editSyntaxColors | undefined,
-        hintSyntaxCompletions: typeof hintSyntaxCompletions | undefined
-    } = {}
+
+    constructor(
+        public features: Features = {},
+        public customSettings?: Settings
+    ) {
+        super()
+        this.settings = extend(settings, customSettings)
+        this.css = new MasterCSS(this.settings.config)
+    }
 
     inspectSyntax(document: TextDocument, position: Position) {
         if (!this.isDocumentAllowed(document)) return
@@ -38,15 +46,6 @@ export default class CSSLanguageService extends EventEmitter {
     hintSyntaxCompletions(document: TextDocument, position: Position) {
         if (!this.isDocumentAllowed(document)) return
         return this.features.hintSyntaxCompletions?.call(this, document, position)
-    }
-
-    constructor(features: Features[], public customSettings?: Settings) {
-        super()
-        this.settings = extend(settings, customSettings)
-        this.css = new MasterCSS(this.settings.config)
-        for (const feature of features) {
-            feature.bind(this)
-        }
     }
 
     getPosition(textDocument: TextDocument, position: Position, patterns?: string[]): {
