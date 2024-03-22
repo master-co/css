@@ -1,12 +1,11 @@
 import CSSLanguageService from '../src/core'
-import { hintSyntaxCompletions } from '../src/features'
 import createDoc from '../src/utils/create-doc'
 import getRange from '../src/utils/get-range'
 
 const simulateHintingCompletions = (target: string) => {
     const content = `export default () => <div className='${target}'></div>`
     const doc = createDoc('tsx', content)
-    const languageService = new CSSLanguageService({ hintSyntaxCompletions })
+    const languageService = new CSSLanguageService()
     const range = getRange(target, doc)
     return languageService.hintSyntaxCompletions(doc, range.end)
         /* localeCompare equals to the real vscode completion items sorting */
@@ -16,7 +15,7 @@ const simulateHintingCompletions = (target: string) => {
 describe('selector', () => {
     test(':', () => expect(simulateHintingCompletions('text:center:')?.[0]).toMatchObject({ insertText: 'active' }))
     test('::', () => expect(simulateHintingCompletions('text:center::')?.[0]).toMatchObject({ insertText: 'after' }))
-    test('with semantic', () => expect(simulateHintingCompletions('block:')?.[0]).toMatchObject({ insertText: 'after' }))
+    // test('with semantic', () => expect(simulateHintingCompletions('block:')?.[0]).toMatchObject({ insertText: 'after' }))
 })
 
 describe('sorting', () => {

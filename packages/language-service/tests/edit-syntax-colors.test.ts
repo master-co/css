@@ -1,6 +1,4 @@
 import CSSLanguageService from '../src/core'
-import editSyntaxColors from '../src/features/edit-syntax-colors'
-import renderSyntaxColors from '../src/features/render-syntax-colors'
 import createDoc from '../src/utils/create-doc'
 import { ColorInformation, ColorPresentation } from 'vscode-languageserver'
 
@@ -9,7 +7,7 @@ const simulateEditingColors = async ({ before, after }: { before: string, after:
     const afterContent = `export default () => <div className='fg:${after}'></div>`
     const beforeDoc = createDoc('tsx', beforeContent)
     const afterDoc = createDoc('tsx', afterContent)
-    const languageService = new CSSLanguageService({ editSyntaxColors, renderSyntaxColors })
+    const languageService = new CSSLanguageService()
     const beforeColorInformation = (await languageService.renderSyntaxColors(beforeDoc))?.[0] as ColorInformation
     const afterColorInformation = (await languageService.renderSyntaxColors(afterDoc))?.[0] as ColorInformation
     expect(await languageService.editSyntaxColors(beforeDoc, afterColorInformation.color, beforeColorInformation.range))

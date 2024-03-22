@@ -6,21 +6,16 @@ import settings, { type Settings } from './settings'
 import { minimatch } from 'minimatch'
 import { instancePattern } from './utils/regex'
 import { fileURLToPath } from 'node:url'
-import type { inspectSyntax, renderSyntaxColors, editSyntaxColors, hintSyntaxCompletions } from './features'
-
-export declare type Features = {
-    inspectSyntax?: typeof inspectSyntax,
-    renderSyntaxColors?: typeof renderSyntaxColors,
-    editSyntaxColors?: typeof editSyntaxColors,
-    hintSyntaxCompletions?: typeof hintSyntaxCompletions
-}
+import inspectSyntax from './features/inspect-syntax'
+import renderSyntaxColors from './features/render-syntax-colors'
+import editSyntaxColors from './features/edit-syntax-colors'
+import hintSyntaxCompletions from './features/hint-syntax-completions'
 
 export default class CSSLanguageService extends EventEmitter {
     css: MasterCSS
     settings: Settings
 
     constructor(
-        public features: Features = {},
         public customSettings?: Settings
     ) {
         super()
@@ -29,23 +24,23 @@ export default class CSSLanguageService extends EventEmitter {
     }
 
     inspectSyntax(document: TextDocument, position: Position) {
-        if (!this.isDocumentAllowed(document)) return
-        return this.features.inspectSyntax?.call(this, document, position)
+        if (this.settings.inspectSyntax && this.isDocumentAllowed(document))
+            return inspectSyntax?.call(this, document, position)
     }
 
     renderSyntaxColors(document: TextDocument) {
-        if (!this.isDocumentAllowed(document)) return
-        return this.features.renderSyntaxColors?.call(this, document)
+        if (this.settings.renderSyntaxColors && this.isDocumentAllowed(document))
+            return renderSyntaxColors?.call(this, document)
     }
 
     editSyntaxColors(document: TextDocument, color: any, range: any) {
-        if (!this.isDocumentAllowed(document)) return
-        return this.features.editSyntaxColors?.call(this, document, color, range)
+        if (this.settings.renderSyntaxColors && this.isDocumentAllowed(document))
+            return editSyntaxColors?.call(this, document, color, range)
     }
 
     hintSyntaxCompletions(document: TextDocument, position: Position) {
-        if (!this.isDocumentAllowed(document)) return
-        return this.features.hintSyntaxCompletions?.call(this, document, position)
+        if (this.settings.hintSyntaxCompletions && this.isDocumentAllowed(document))
+            return hintSyntaxCompletions?.call(this, document, position)
     }
 
     getPosition(textDocument: TextDocument, position: Position, patterns?: string[]): {

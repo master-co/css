@@ -3,14 +3,13 @@ import getRange from '../src/utils/get-range'
 import createDoc from '../src/utils/create-doc'
 import { Position } from 'vscode-languageserver-textdocument'
 import dedent from 'ts-dedent'
-import inspectSyntax from '../src/features/inspect-syntax'
 
 test('generated CSS', async () => {
     const target = 'text:center'
     const content = `export default () => <div className='${target}'></div>`
     const doc = createDoc('tsx', content)
     const range = getRange(target, doc)
-    const languageService = new CSSLanguageService({ inspectSyntax })
+    const languageService = new CSSLanguageService()
     const hover = await languageService.inspectSyntax(doc, range?.start as Position)
     expect(hover?.contents).toStrictEqual([
         {
