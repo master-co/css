@@ -1,11 +1,11 @@
 import { masterCssKeyValues, masterCssMedia, masterCssOtherKeys, masterCssType, masterCssCommonValues } from '../constant'
-import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import type { CompletionItem, CompletionItemKind, CompletionParams } from 'vscode-languageserver'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
-import { MasterCSS } from '@master/css'
 import CSSLanguageService from '../core'
 import cssDataProvider from '../utils/css-data-provider'
 import getPseudoElementCompletionItems from '../utils/get-pseudo-element-completion-items'
 import getPseudoClassCompletionItems from '../utils/get-pseudo-class-completion-items'
+import getColorCompletionItems from '../utils/get-color-completion-items'
 
 let cssKeys: Array<string | CompletionItem> = []
 cssKeys = cssKeys.concat(masterCssOtherKeys)
@@ -15,7 +15,7 @@ masterCssKeyValues.forEach(x => {
 
 const masterCssKeys: Array<string | CompletionItem> = [...new Set(cssKeys)]
 
-export default function hintSyntaxCompletions(this: CSSLanguageService, document: TextDocument, position: Position): CompletionItem[] | undefined {
+export default function hintSyntaxCompletions(this: CSSLanguageService, document: TextDocument, { position }: CompletionParams,): CompletionItem[] | undefined {
     const language = document.uri.substring(document.uri.lastIndexOf('.') + 1)
     const checkResult = this.getPosition(document, position)
     const lineText: string = document.getText({
@@ -35,7 +35,6 @@ export default function hintSyntaxCompletions(this: CSSLanguageService, document
 
         const masterCssKeyCompletionItems: Array<CompletionItem> = []
         let masterCssValues: Array<string | CompletionItem> = []
-
         if (haveValue >= 2 && (triggerKey === ':' || triggerKey === '::')) {
             switch (triggerKey) {
                 case ':':
@@ -139,9 +138,8 @@ export default function hintSyntaxCompletions(this: CSSLanguageService, document
         } else if (masterCssKeys.includes(key) && haveValue <= 2 && !(haveValue == 2 && triggerKey === ':')) {  //show value
             completionItems = completionItems.concat(getReturnItem(masterCssValues, 10))
             completionItems = completionItems.concat(getReturnItem(masterCssCommonValues as any, 13).map(x => { x.sortText = 'z' + x; return x }))
-
             if (isColorful) {
-                completionItems = completionItems.concat(getColorsItem(this.css))
+                completionItems = completionItems.concat(getColorCompletionItems(this.css))
             }
             if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerKey !== '@' && triggerKey !== ':') {
                 return HaveDash(last, completionItems)
@@ -154,7 +152,7 @@ export default function hintSyntaxCompletions(this: CSSLanguageService, document
         }
         return completionItems
     } else if (isInstance === true && checkConfigColorsBlock(document, position) === true) {
-        return getColorsItem(this.css)
+        return getColorCompletionItems(this.css)
     }
 }
 
@@ -232,47 +230,6 @@ export function getReturnItem(items: Array<string | CompletionItem>, kind: Compl
             })
         }
     })
-    return completionItems
-}
-
-export function getColorsItem(css: MasterCSS = new MasterCSS()): CompletionItem[] {
-    const completionItems: CompletionItem[] = []
-
-    for (const eachVariableName in css.variables) {
-        const eachVariable = css.variables[eachVariableName]
-        if (eachVariable.type === 'color') {
-
-            let colorValue
-            let colorSpace
-            if (eachVariable.modes) {
-                colorValue = Object.values(eachVariable.modes)[0].value
-                colorSpace = Object.values<any>(eachVariable.modes)[0].space
-            } else {
-                colorValue = eachVariable.value
-                colorSpace = eachVariable.space
-            }
-
-            let colorResult
-            switch (colorSpace) {
-                case 'rgb':
-                    colorResult = `rgb(${colorValue?.split(' ')?.slice(0, 3).join(',')})`
-                    break
-                case 'hsl':
-                    colorResult = `hsl(${colorValue?.split(' ')?.slice(0, 3).join(',')})`
-                    break
-                case 'hex':
-                    colorResult = `#${colorValue}`
-                    break
-            }
-
-            completionItems.push({
-                label: eachVariableName,
-                documentation: colorResult,
-                kind: 16,
-                sortText: eachVariableName
-            })
-        }
-    }
     return completionItems
 }
 

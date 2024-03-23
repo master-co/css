@@ -1,4 +1,4 @@
-import type { Hover, Range } from 'vscode-languageserver'
+import type { Hover, HoverParams, Range } from 'vscode-languageserver'
 import { Layer } from '@master/css'
 import { getCssEntryMarkdownDescription } from '../utils/get-css-entry-markdown-description'
 // @ts-expect-error
@@ -7,7 +7,7 @@ import type CSSLanguageService from '../core'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import cssDataProvider from '../utils/css-data-provider'
 
-export default function inspectSyntax(this: CSSLanguageService, document: TextDocument, position: Position): Hover | undefined {
+export default function inspectSyntax(this: CSSLanguageService, document: TextDocument, { position }: HoverParams): Hover | undefined {
     const checkResult = this.getPosition(document, position)
     if (!checkResult) return
     const syntax = checkResult.instanceContent

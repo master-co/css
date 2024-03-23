@@ -6,8 +6,7 @@ import convertColor from '../utils/convert-color'
 export default function editSyntaxColors(
     this: CSSLanguageService,
     document: TextDocument,
-    color: ColorPresentationParams['color'],
-    range: ColorPresentationParams['range']
+    { color, range }: ColorPresentationParams
 ) {
     const colorPresentations: ColorPresentation[] = []
     const selectedColorToken = document.getText(range)

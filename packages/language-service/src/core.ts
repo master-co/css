@@ -10,6 +10,7 @@ import inspectSyntax from './features/inspect-syntax'
 import renderSyntaxColors from './features/render-syntax-colors'
 import editSyntaxColors from './features/edit-syntax-colors'
 import hintSyntaxCompletions from './features/hint-syntax-completions'
+import { ColorPresentationParams, CompletionParams, DocumentColorParams, HoverParams } from 'vscode-languageserver'
 
 export default class CSSLanguageService extends EventEmitter {
     css: MasterCSS
@@ -23,24 +24,24 @@ export default class CSSLanguageService extends EventEmitter {
         this.css = new MasterCSS(this.settings.config)
     }
 
-    inspectSyntax(document: TextDocument, position: Position) {
+    inspectSyntax(document: TextDocument, params: HoverParams) {
         if (this.settings.inspectSyntax && this.isDocumentAllowed(document))
-            return inspectSyntax?.call(this, document, position)
+            return inspectSyntax?.call(this, document, params)
     }
 
-    renderSyntaxColors(document: TextDocument) {
+    renderSyntaxColors(document: TextDocument, params: DocumentColorParams) {
         if (this.settings.renderSyntaxColors && this.isDocumentAllowed(document))
-            return renderSyntaxColors?.call(this, document)
+            return renderSyntaxColors?.call(this, document, params)
     }
 
-    editSyntaxColors(document: TextDocument, color: any, range: any) {
+    editSyntaxColors(document: TextDocument, params: ColorPresentationParams) {
         if (this.settings.renderSyntaxColors && this.isDocumentAllowed(document))
-            return editSyntaxColors?.call(this, document, color, range)
+            return editSyntaxColors?.call(this, document, params)
     }
 
-    hintSyntaxCompletions(document: TextDocument, position: Position) {
+    hintSyntaxCompletions(document: TextDocument, params: CompletionParams) {
         if (this.settings.hintSyntaxCompletions && this.isDocumentAllowed(document))
-            return hintSyntaxCompletions?.call(this, document, position)
+            return hintSyntaxCompletions?.call(this, document, params)
     }
 
     getPosition(textDocument: TextDocument, position: Position, patterns?: string[]): {

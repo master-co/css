@@ -1,4 +1,4 @@
-import { createConnection, TextDocuments, ProposedFeatures, InitializeParams, DidChangeConfigurationNotification, CompletionItem, TextDocumentSyncKind, InitializeResult, WorkspaceFolder, TextDocumentIdentifier } from 'vscode-languageserver/node'
+import { createConnection, TextDocuments, ProposedFeatures, InitializeParams, DidChangeConfigurationNotification, TextDocumentSyncKind, InitializeResult, WorkspaceFolder, TextDocumentIdentifier } from 'vscode-languageserver/node'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -20,9 +20,6 @@ export default class CSSLanguageServer {
     constructor(
         public customSettings?: Settings
     ) {
-        let hasConfigurationCapability = false
-        let hasWorkspaceFolderCapability = false
-
         this.connection.onDidChangeConfiguration(this.revalidate)
         this.documents.onDidSave(async change => {
             // if the saved file is the master.css file, we need to refresh the css instance
@@ -42,56 +39,38 @@ export default class CSSLanguageServer {
                     this.workspaceFolders.push({ name: '', uri: params.rootUri })
                 }
             }
-
-            const capabilities = params.capabilities
-
-            // Does the client support the `workspace/configuration` request?
-            // If not, we fall back using global settings.
-            hasConfigurationCapability = !!(
-                capabilities.workspace && !!capabilities.workspace.configuration
-            )
-            hasWorkspaceFolderCapability = !!(
-                capabilities.workspace && !!capabilities.workspace.workspaceFolders
-            )
-
-            const result: InitializeResult = {
+            return {
                 capabilities: {
                     textDocumentSync: TextDocumentSyncKind.Incremental,
                     // Tell the client that this server supports code completion.
                     completionProvider: {
                         resolveProvider: true,
                         workDoneProgress: false,
-                        triggerCharacters: [':', '::', '@', '\'']
+                        triggerCharacters: [':', '::', '@', '\'', '"', ' ']
                     },
                     colorProvider: true,
-                    hoverProvider: true
-                }
-            }
-            if (hasWorkspaceFolderCapability) {
-                result.capabilities.workspace = {
-                    workspaceFolders: {
-                        supported: true
+                    hoverProvider: true,
+                    workspace: {
+                        workspaceFolders: {
+                            supported: true
+                        }
                     }
                 }
             }
-            return result
         })
 
         this.connection.onInitialized(async () => {
             await this.workspaceFolders.map(async (folder) => {
                 this.workspaceCSSLanguageService[folder.uri] = await this.createLanguageService(folder.uri)
             })
-            if (hasConfigurationCapability) {
-                // Register for all configuration changes.
-                this.connection.client.register(DidChangeConfigurationNotification.type, undefined)
-            }
+            this.connection.client.register(DidChangeConfigurationNotification.type, undefined)
         })
 
         this.connection.onHover((params) => {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {
                 const document = this.documents.get(params.textDocument.uri)
-                if (document) return cssLanguageService.inspectSyntax(document, params.position)
+                if (document) return cssLanguageService.inspectSyntax(document, params)
             }
         })
 
@@ -99,7 +78,10 @@ export default class CSSLanguageServer {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {
                 const document = this.documents.get(params.textDocument.uri)
-                if (document) return cssLanguageService.hintSyntaxCompletions(document, params.position)
+                console.log(params.context)
+                console.log(params.partialResultToken)
+                console.log(params.workDoneToken)
+                if (document) return cssLanguageService.hintSyntaxCompletions(document, params)
             }
         })
 
@@ -107,7 +89,7 @@ export default class CSSLanguageServer {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {
                 const document = this.documents.get(params.textDocument.uri)
-                if (document) return cssLanguageService.renderSyntaxColors(document)
+                if (document) return cssLanguageService.renderSyntaxColors(document, params)
             }
         })
 
@@ -115,15 +97,9 @@ export default class CSSLanguageServer {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {
                 const document = this.documents.get(params.textDocument.uri)
-                if (document) return cssLanguageService.editSyntaxColors(document, params.color, params.range)
+                if (document) return cssLanguageService.editSyntaxColors(document, params)
             }
         })
-
-        this.connection.onCompletionResolve(
-            (item: CompletionItem): CompletionItem => {
-                return item
-            }
-        )
 
         // Make the text document manager listen on the connection
         // for open, change and close text document events

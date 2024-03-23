@@ -165,7 +165,7 @@
                         "(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^`]*)(`[^`]*`)"
                     ]
                 },
-                "masterCSS.suggestions": {
+                "masterCSS.hintSyntaxCompletions": {
                     "type": "boolean",
                     "default": true
                 },

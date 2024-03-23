@@ -9,17 +9,22 @@ const simulateHintingCompletions = (target: string) => {
     const range = getRange(target, doc)
     return languageService.hintSyntaxCompletions(doc, range.end)
         /* localeCompare equals to the real vscode completion items sorting */
-        ?.sort((a: any, b: any) => a.sortText.localeCompare(b.sortText))
+        ?.sort((a, b) => {
+            const sortTextA = a.sortText || a.label
+            const sortTextB = b.sortText || b.label
+            return sortTextA.localeCompare(sortTextB)
+        })
 }
 
-describe('selector', () => {
+test.todo('types " should hint completions')
+test.todo('types   should hint completions')
+test.todo('types - should hint completions')
+
+describe('selectors', () => {
     test(':', () => expect(simulateHintingCompletions('text:center:')?.[0]).toMatchObject({ insertText: 'active' }))
     test('::', () => expect(simulateHintingCompletions('text:center::')?.[0]).toMatchObject({ insertText: 'after' }))
     // test('with semantic', () => expect(simulateHintingCompletions('block:')?.[0]).toMatchObject({ insertText: 'after' }))
-})
-
-describe('sorting', () => {
-    test('selector', () => {
+    test('sorting', () => {
         expect(simulateHintingCompletions('text:center:')?.map(({ label }) => label)).toEqual([
             ':active',
             ':any-link',
@@ -200,5 +205,11 @@ describe('sorting', () => {
             '::-webkit-validation-bubble-message',
             '::-webkit-validation-bubble-text-block',
         ])
+    })
+})
+
+describe('colors', () => {
+    test('sorting', () => {
+        // expect(simulateHintingCompletions('color:')?.map(({ label }) => label)).toEqual([])
     })
 })
