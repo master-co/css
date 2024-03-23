@@ -4,5 +4,5 @@ export default function getPosition(searchString: string, text: string) {
     const document = TextDocument.create('mockuri://test', 'plaintext', 1, text)
     const offset = text.indexOf(searchString)
     const position = document.positionAt(offset)
-    return { line: position.line, character: position.character }
+    return position
 }

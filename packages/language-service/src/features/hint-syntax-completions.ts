@@ -15,12 +15,16 @@ masterCssKeyValues.forEach(x => {
 
 const masterCssKeys: Array<string | CompletionItem> = [...new Set(cssKeys)]
 
-export default function hintSyntaxCompletions(this: CSSLanguageService, document: TextDocument, { position }: CompletionParams,): CompletionItem[] | undefined {
+export default function hintSyntaxCompletions(this: CSSLanguageService,
+    document: TextDocument,
+    position: CompletionParams['position'],
+    context: CompletionParams['context']
+): CompletionItem[] | undefined {
     const language = document.uri.substring(document.uri.lastIndexOf('.') + 1)
     const checkResult = this.getPosition(document, position)
     const lineText: string = document.getText({
         start: { line: position.line, character: 0 },
-        end: { line: position.line, character: position.character },
+        end: position,
     }).trim()
     const { isInstance, triggerKey, lastKey, isStart } = getLastInstance(lineText, position)
     if (isInstance === true && checkResult) {
@@ -151,9 +155,11 @@ export default function hintSyntaxCompletions(this: CSSLanguageService, document
             return HaveDash(last, completionItems)
         }
         return completionItems
-    } else if (isInstance === true && checkConfigColorsBlock(document, position) === true) {
-        return getColorCompletionItems(this.css)
     }
+    // todo
+    // else if (isInstance === true && checkConfigColorsBlock(document, position) === true) {
+    //     return getColorCompletionItems(this.css)
+    // }
 }
 
 // temporary

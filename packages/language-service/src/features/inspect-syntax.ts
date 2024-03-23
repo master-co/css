@@ -4,10 +4,10 @@ import { getCssEntryMarkdownDescription } from '../utils/get-css-entry-markdown-
 // @ts-expect-error
 import { css_beautify } from 'js-beautify/js/lib/beautify-css'
 import type CSSLanguageService from '../core'
-import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
+import type { TextDocument } from 'vscode-languageserver-textdocument'
 import cssDataProvider from '../utils/css-data-provider'
 
-export default function inspectSyntax(this: CSSLanguageService, document: TextDocument, { position }: HoverParams): Hover | undefined {
+export default function inspectSyntax(this: CSSLanguageService, document: TextDocument, position: HoverParams['position']): Hover | undefined {
     const checkResult = this.getPosition(document, position)
     if (!checkResult) return
     const syntax = checkResult.instanceContent

@@ -1,6 +1,6 @@
 import { serializeHex, serializeHex8, formatCss, type Rgb, modeLch, modeHsl, modeLab, modeHwb, modeOklab, modeOklch } from 'culori'
 
-export default function convertColor(rgb: Rgb, targetSpace: any): string | undefined {
+export default function convertColorSpace(rgb: Rgb, targetSpace: any): string | undefined {
     const alphaUsed = rgb.alpha !== 1
     const alphaToken = alphaUsed ? `/${rgb.alpha}` : ''
     if (rgb.r === 0 && rgb.g === 0 && rgb.b === 0) return 'black' + alphaToken

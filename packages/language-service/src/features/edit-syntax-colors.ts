@@ -1,36 +1,18 @@
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import CSSLanguageService from '../core'
 import type { ColorPresentationParams, ColorPresentation } from 'vscode-languageserver'
-import convertColor from '../utils/convert-color'
+import convertColorByToken from '../utils/convert-color-token'
 
 export default function editSyntaxColors(
     this: CSSLanguageService,
     document: TextDocument,
-    { color, range }: ColorPresentationParams
+    color: ColorPresentationParams['color'],
+    range: ColorPresentationParams['range']
 ) {
     const colorPresentations: ColorPresentation[] = []
     const selectedColorToken = document.getText(range)
-    const valueComponent = this.css.generate('color:' + selectedColorToken)[0]?.valueComponents[0]
-    let outputColorSpace = 'hex'
-    switch (valueComponent?.type) {
-        case 'function':
-            outputColorSpace = valueComponent.name
-            break
-        case 'variable':
-            outputColorSpace = valueComponent.variable?.space
-            break
-        case 'string':
-            outputColorSpace = 'hex'
-            break
-    }
-    const outputColorToken = convertColor({
-        r: color.red,
-        g: color.green,
-        b: color.blue,
-        alpha: color.alpha,
-        mode: 'rgb'
-    }, outputColorSpace)
-    if (outputColorToken)
-        colorPresentations.push({ label: outputColorToken, textEdit: { range, newText: outputColorToken } })
+    const targetColorToken = convertColorByToken(color, selectedColorToken, this.css)
+    if (targetColorToken)
+        colorPresentations.push({ label: targetColorToken, textEdit: { range, newText: targetColorToken } })
     return colorPresentations
 }

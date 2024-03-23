@@ -1,4 +1,4 @@
-import { createConnection, TextDocuments, ProposedFeatures, InitializeParams, DidChangeConfigurationNotification, TextDocumentSyncKind, InitializeResult, WorkspaceFolder, TextDocumentIdentifier } from 'vscode-languageserver/node'
+import { createConnection, TextDocuments, ProposedFeatures, InitializeParams, DidChangeConfigurationNotification, TextDocumentSyncKind, WorkspaceFolder } from 'vscode-languageserver/node'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -44,7 +44,7 @@ export default class CSSLanguageServer {
                     textDocumentSync: TextDocumentSyncKind.Incremental,
                     // Tell the client that this server supports code completion.
                     completionProvider: {
-                        resolveProvider: true,
+                        resolveProvider: false,
                         workDoneProgress: false,
                         triggerCharacters: [':', '::', '@', '\'', '"', ' ']
                     },
@@ -78,9 +78,6 @@ export default class CSSLanguageServer {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {
                 const document = this.documents.get(params.textDocument.uri)
-                console.log(params.context)
-                console.log(params.partialResultToken)
-                console.log(params.workDoneToken)
                 if (document) return cssLanguageService.hintSyntaxCompletions(document, params)
             }
         })

@@ -1,3 +1,4 @@
+import { Position } from 'vscode-languageserver-textdocument'
 import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
 import getRange from '../src/utils/get-range'
@@ -7,7 +8,10 @@ const simulateHintingCompletions = (target: string) => {
     const doc = createDoc('tsx', content)
     const languageService = new CSSLanguageService()
     const range = getRange(target, doc)
-    return languageService.hintSyntaxCompletions(doc, range.end)
+    return languageService.hintSyntaxCompletions(doc, range?.end as Position, {
+        triggerKind: 2, // todo
+        triggerCharacter: target.charAt(target.length - 1)
+    })
         /* localeCompare equals to the real vscode completion items sorting */
         ?.sort((a, b) => {
             const sortTextA = a.sortText || a.label
@@ -15,6 +19,8 @@ const simulateHintingCompletions = (target: string) => {
             return sortTextA.localeCompare(sortTextB)
         })
 }
+
+// it('types a', () => expect(simulateHintingCompletions('a')?.length).toBeDefined())
 
 test.todo('types " should hint completions')
 test.todo('types   should hint completions')
