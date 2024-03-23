@@ -49,6 +49,6 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
         if (cssHoverInfo) {
             contents.push(cssHoverInfo)
         }
+        return { contents, range }
     }
-    return { contents, range }
 }

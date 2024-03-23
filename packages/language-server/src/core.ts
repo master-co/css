@@ -70,7 +70,7 @@ export default class CSSLanguageServer {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {
                 const document = this.documents.get(params.textDocument.uri)
-                if (document) return cssLanguageService.inspectSyntax(document, params)
+                if (document) return cssLanguageService.inspectSyntax(document, params.position)
             }
         })
 
@@ -78,7 +78,7 @@ export default class CSSLanguageServer {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {
                 const document = this.documents.get(params.textDocument.uri)
-                if (document) return cssLanguageService.hintSyntaxCompletions(document, params)
+                if (document) return cssLanguageService.hintSyntaxCompletions(document, params.position, params.context)
             }
         })
 
@@ -86,7 +86,7 @@ export default class CSSLanguageServer {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {
                 const document = this.documents.get(params.textDocument.uri)
-                if (document) return cssLanguageService.renderSyntaxColors(document, params)
+                if (document) return cssLanguageService.renderSyntaxColors(document)
             }
         })
 
@@ -94,7 +94,7 @@ export default class CSSLanguageServer {
             const cssLanguageService = this.findWorkspaceCSSLanguageService(params.textDocument.uri)
             if (cssLanguageService) {
                 const document = this.documents.get(params.textDocument.uri)
-                if (document) return cssLanguageService.editSyntaxColors(document, params)
+                if (document) return cssLanguageService.editSyntaxColors(document, params.color, params.range)
             }
         })
 
