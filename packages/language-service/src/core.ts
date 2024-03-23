@@ -45,7 +45,7 @@ export default class CSSLanguageService extends EventEmitter {
 
     getPosition(textDocument: TextDocument, position: Position, patterns?: string[]): {
         index: { start: number, end: number },
-        instanceContent: string
+        token: string
     } | undefined {
         const positionIndex = textDocument.offsetAt(position) ?? 0
         const startIndex = textDocument.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
@@ -74,7 +74,7 @@ export default class CSSLanguageService extends EventEmitter {
                                     start: instanceStartIndex,
                                     end: instanceEndIndex
                                 },
-                                instanceContent: instanceMatch[0]
+                                token: instanceMatch[0]
                             }
                             return result
                         }

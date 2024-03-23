@@ -93,7 +93,7 @@
 
 //     const checkResult = getPosition(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
 //     if (checkResult) {
-//         const result = doHover(checkResult.instanceContent, indexToVsCodeRange(checkResult.index, document))
+//         const result = doHover(checkResult.token, indexToVsCodeRange(checkResult.index, document))
 //         if (result) {
 //             return {
 //                 range: vsCodeRangeToMonacoRange(result.range as any),
