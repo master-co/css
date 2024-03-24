@@ -2,8 +2,6 @@ import type { CompletionItem, CompletionParams } from 'vscode-languageserver'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import CSSLanguageService from '../core'
 import querySyntaxCompletions from '../utils/query-syntax-completions'
-import { TRIGGER_CHARACTERS } from '../common'
-import getRuleKeyCompletionItems from '../utils/get-rule-key-completion-items'
 
 export default function hintSyntaxCompletions(this: CSSLanguageService,
     document: TextDocument,

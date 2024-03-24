@@ -35,7 +35,7 @@ describe('keys', () => {
     test('~delay on invoked', () => expect(simulateHintingCompletions('"', false)?.find(({ label }) => label === '~delay:')).toMatchObject({ insertText: '~delay:' }))
     it('starts with @', () => expect(simulateHintingCompletions('@')?.find(({ label }) => label === '@delay:')).toMatchObject({ insertText: 'delay:' }))
     it('starts with ~', () => expect(simulateHintingCompletions('~')?.find(({ label }) => label === '~delay:')).toMatchObject({ insertText: 'delay:' }))
-
+    it('starts with a', () => expect(simulateHintingCompletions('a')?.find(({ label }) => label === 'abs:')).toMatchObject({ insertText: 'bs:' }))
 })
 
 describe('selectors', () => {
@@ -231,3 +231,10 @@ describe('colors', () => {
         // expect(simulateHintingCompletions('color:')?.map(({ label }) => label)).toEqual([])
     })
 })
+
+// enhanced
+
+/**
+ * <div></div> -> <div class=""></div>
+ */
+test.todo('emit class="" should hint completions')

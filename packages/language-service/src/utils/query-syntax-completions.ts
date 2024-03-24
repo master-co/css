@@ -51,28 +51,6 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS) {
     return completionItems
 }
 
-
-function getReturnItem(items: Array<string | CompletionItem>, kind: CompletionItemKind): CompletionItem[] {
-    const completionItems: CompletionItem[] = []
-    items.forEach(x => {
-        if (typeof x === 'string') {
-            completionItems.push({
-                label: x,
-                kind: kind,
-                insertText: x,
-                insertTextMode: 2
-            })
-        } else {
-            completionItems.push({
-                insertText: x.label,
-                insertTextMode: 2,
-                ...x
-            })
-        }
-    })
-    return completionItems
-}
-
 // function haveDash(str: string, itemList: CompletionItem[]): CompletionItem[] {
 //     const completionItem: CompletionItem[] = []
 //     if (str.split('-').length - 1 <= 0) {
