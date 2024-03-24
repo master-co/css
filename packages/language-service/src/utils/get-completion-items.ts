@@ -5,6 +5,7 @@ import cssDataProvider from './css-data-provider'
 import { masterCssCommonValues, masterCssKeyValues, masterCssMedia, masterCssOtherKeys, masterCssType } from '../constant'
 import { MasterCSS } from '@master/css'
 import getColorCompletionItems from './get-color-completion-items'
+import { triggerCharacters } from '../common'
 
 let cssKeys: Array<string | CompletionItem> = []
 cssKeys = cssKeys.concat(masterCssOtherKeys)
@@ -14,29 +15,26 @@ masterCssKeyValues.forEach(x => {
 
 const masterCssKeys: Array<string | CompletionItem> = [...new Set(cssKeys)]
 
-export default function getCompletionItems(q: string, triggerKind: CompletionTriggerKind | undefined, triggerKey: string | undefined, language: string, css: MasterCSS) {
+export default function getCompletionItems(q: string, triggerKind: CompletionTriggerKind | undefined, triggerCharacter: string | undefined, language: string, css: MasterCSS) {
+    const invoked = triggerCharacters.invoked.includes(triggerCharacter || '')
     const key = q.split(':')[0].trim()
     const haveValue = q.split(':').length
     const instanceLength = q.split(':|@').length
     const last = q.split(':|@')[instanceLength - 1]
     const mediaPattern = /[^\\s"]+@+([^\\s:"@]+)/g
-    const isMedia = !(mediaPattern.exec(q) === null && triggerKey !== '@')
+    const isMedia = !(mediaPattern.exec(q) === null && triggerCharacter !== '@')
     let completionItems: CompletionItem[] = []
     let isColorful = false
     const masterCssKeyCompletionItems: Array<CompletionItem> = []
     let masterCssValues: Array<string | CompletionItem> = []
-    if (haveValue >= 2 && (triggerKey === ':' || triggerKey === '::')) {
-        switch (triggerKey) {
-            case ':':
-                completionItems.push(...getPseudoClassCompletionItems(triggerKey), ...getPseudoElementCompletionItems(triggerKey))
-                break
-            case '::':
-                completionItems.push(...getPseudoElementCompletionItems(triggerKey))
-                break
-        }
-        return completionItems
+    switch (triggerCharacter) {
+        case '::':
+            completionItems.push(...getPseudoElementCompletionItems(triggerCharacter))
+            break
+        case ':':
+            completionItems.push(...getPseudoClassCompletionItems(triggerCharacter), ...getPseudoElementCompletionItems(triggerCharacter))
+            break
     }
-
     masterCssKeyValues.forEach(x => {
         const fullKey = x.key[0]
         const originalCssProperty = cssDataProvider.provideProperties().find((x: { name: string }) => x.name == fullKey)
@@ -96,7 +94,7 @@ export default function getCompletionItems(q: string, triggerKind: CompletionTri
         }
     })
 
-    if ((!masterCssKeys.includes(key)) && triggerKey !== '@' && triggerKey !== ':') {  //ex " background"
+    if ((!masterCssKeys.includes(key)) && triggerCharacter !== '@' && triggerCharacter !== ':') {  //ex " background"
         completionItems = completionItems.concat(masterCssKeyCompletionItems)
         completionItems = completionItems.concat(getReturnItem(Object.keys(css.config?.semantics ?? {}), 10))
 
@@ -110,29 +108,27 @@ export default function getCompletionItems(q: string, triggerKind: CompletionTri
         completionItems = completionItems.concat(getReturnItem(masterCssMedia as any, 10))
         // todo: refactor theme
         completionItems = completionItems.concat(getReturnItem(['light', 'dark'], 10))
-        if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerKey !== '@' && triggerKey !== ':') {
+        if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerCharacter !== '@' && triggerCharacter !== ':') {
             return haveDash('@' + last, completionItems)
         }
         return completionItems
     }
-    if (Object.keys(css.config?.semantics ?? {}).includes(key) && !masterCssKeyValues.find(x => x.key.includes(key))) {
-        if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerKey !== '@' && triggerKey !== ':') {
-            return haveDash(last, completionItems)
-        }
+
+    if (invoked) {
         return completionItems
-    } else if (masterCssKeys.includes(key) && haveValue <= 2 && !(haveValue == 2 && triggerKey === ':')) {  //show value
+    } else if (masterCssKeys.includes(key) && haveValue <= 2 && !(haveValue == 2 && triggerCharacter === ':')) {  //show value
         completionItems = completionItems.concat(getReturnItem(masterCssValues, 10))
         completionItems = completionItems.concat(getReturnItem(masterCssCommonValues as any, 13).map(x => { x.sortText = 'z' + x; return x }))
         if (isColorful) {
             completionItems = completionItems.concat(getColorCompletionItems(css))
         }
-        if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerKey !== '@' && triggerKey !== ':') {
+        if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerCharacter !== '@' && triggerCharacter !== ':') {
             return haveDash(last, completionItems)
         }
         return completionItems
     }
 
-    if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerKey !== '@' && triggerKey !== ':') {
+    if ((language == 'tsx' || language == 'vue' || language == 'jsx') && triggerCharacter !== '@' && triggerCharacter !== ':') {
         return haveDash(last, completionItems)
     }
     return completionItems

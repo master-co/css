@@ -12,8 +12,8 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
     if (!checkResult) return
     const syntax = checkResult.token
     const range: Range = {
-        start: document.positionAt(checkResult.index.start),
-        end: document.positionAt(checkResult.index.end)
+        start: document.positionAt(checkResult.range.start),
+        end: document.positionAt(checkResult.range.end)
     }
     const rules = this.css.generate(syntax)
     const css = new MasterCSS(this.settings?.config)

@@ -8,6 +8,7 @@ import exploreConfig from '@master/css-explore-config'
 import extend from '@techor/extend'
 import settings from './settings'
 import { Config } from '@master/css'
+import { serverCapabilities } from '@master/css-language-service/common'
 
 export default class CSSLanguageServer {
     workspaceFolders: WorkspaceFolder[] = []
@@ -40,22 +41,7 @@ export default class CSSLanguageServer {
                 }
             }
             return {
-                capabilities: {
-                    textDocumentSync: TextDocumentSyncKind.Incremental,
-                    // Tell the client that this server supports code completion.
-                    completionProvider: {
-                        resolveProvider: false,
-                        workDoneProgress: false,
-                        triggerCharacters: [':', '::', '@', '\'', '"', ' '],
-                    },
-                    colorProvider: true,
-                    hoverProvider: true,
-                    workspace: {
-                        workspaceFolders: {
-                            supported: true
-                        }
-                    }
-                }
+                capabilities: serverCapabilities
             }
         })
 

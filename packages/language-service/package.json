@@ -59,6 +59,11 @@
             "import": "./dist/features/index.mjs",
             "require": "./dist/features/index.cjs",
             "types": "./dist/features/index.d.ts"
+        },
+        "./common": {
+            "import": "./dist/common.mjs",
+            "require": "./dist/common.cjs",
+            "types": "./dist/common.d.ts"
         }
     },
     "typesVersions": {

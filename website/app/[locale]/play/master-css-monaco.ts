@@ -118,10 +118,10 @@
 //     const colorIndexSet = new Set()
 //     return colorIndexs
 //         .filter(item => {
-//             if (colorIndexSet.has(item.index.start)) {
+//             if (colorIndexSet.has(item.range.start)) {
 //                 return false
 //             } else {
-//                 colorIndexSet.add(item.index.start)
+//                 colorIndexSet.add(item.range.start)
 //                 return true
 //             }
 //         })
@@ -170,8 +170,8 @@
 // }
 
 // function indexToMonacoRange(index: { start: number, end: number }, document: monaco.editor.ITextModel) {
-//     const startPosition = document.getPositionAt(index.start)
-//     const endPosition = document.getPositionAt(index.end)
+//     const startPosition = document.getPositionAt(range.start)
+//     const endPosition = document.getPositionAt(range.end)
 //     return {
 //         startLineNumber: startPosition.lineNumber,
 //         startColumn: startPosition.column,
@@ -182,8 +182,8 @@
 
 // function indexToVsCodeRange(index: { start: number, end: number }, document: monaco.editor.ITextModel) {
 //     return {
-//         start: monacoPositionToVsCodePosition(document.getPositionAt(index.start)),
-//         end: monacoPositionToVsCodePosition(document.getPositionAt(index.end))
+//         start: monacoPositionToVsCodePosition(document.getPositionAt(range.start)),
+//         end: monacoPositionToVsCodePosition(document.getPositionAt(range.end))
 //     }
 // }
 
