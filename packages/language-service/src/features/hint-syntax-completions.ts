@@ -1,8 +1,9 @@
 import type { CompletionItem, CompletionParams } from 'vscode-languageserver'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import CSSLanguageService from '../core'
-import getCompletionItems from '../utils/get-completion-items'
+import querySyntaxCompletions from '../utils/query-syntax-completions'
 import { TRIGGER_CHARACTERS } from '../common'
+import getRuleKeyCompletionItems from '../utils/get-rule-key-completion-items'
 
 export default function hintSyntaxCompletions(this: CSSLanguageService,
     document: TextDocument,
@@ -14,9 +15,12 @@ export default function hintSyntaxCompletions(this: CSSLanguageService,
     const triggerCharacter = context?.triggerCharacter
     const triggerKind = context?.triggerKind
     const invoked = TRIGGER_CHARACTERS.invoked.includes(triggerCharacter || '')
-    console.log(context, checkResult?.token)
-    if (checkResult || invoked) {
-        return getCompletionItems(checkResult?.token || '', triggerKind, triggerCharacter, language, this.css)
+    const token = checkResult?.token
+    // todo: trigger getRuleCompletionItems() on invoked
+    if (invoked && !token) {
+        return getRuleKeyCompletionItems(triggerCharacter, this.css)
+    } else if (checkResult || invoked) {
+        return querySyntaxCompletions(token || '', this.css)
     }
     // todo
     // else if (isInstance === true && checkConfigColorsBlock(document, position) === true) {

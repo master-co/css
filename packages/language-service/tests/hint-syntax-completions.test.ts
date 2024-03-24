@@ -3,9 +3,9 @@ import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
 import getRange from '../src/utils/get-range'
 
-const simulateHintingCompletions = (target: string) => {
-    const content = `export default () => <div className='${target}'></div>`
-    const doc = createDoc('tsx', content)
+const simulateHintingCompletions = (target: string, includeQuotes = true) => {
+    const content = `<div class=${includeQuotes ? '"' : ''}${target}${includeQuotes ? '"' : ''}"></div>`
+    const doc = createDoc('html', content)
     const languageService = new CSSLanguageService()
     const range = getRange(target, doc)
     return languageService.hintSyntaxCompletions(doc, range?.end as Position, {
@@ -22,9 +22,21 @@ const simulateHintingCompletions = (target: string) => {
 
 // it('types a', () => expect(simulateHintingCompletions('a')?.length).toBeDefined())
 
-test.todo('types " should hint completions')
-test.todo('types   should hint completions')
-test.todo('types - should hint completions')
+it('types " should hint completions', () => expect(simulateHintingCompletions('"', false)?.length).toBeGreaterThan(0))
+it('types   should hint completions', () => expect(simulateHintingCompletions('text:center ')?.length).toBeGreaterThan(0))
+it('types "text:center" should not hint completions', () => expect(simulateHintingCompletions('text:center')?.length).toBe(0))
+
+test.todo('types any trigger characters in "" should not hints')
+test.todo(`types any trigger characters in '' should not hints`)
+
+describe('keys', () => {
+    // it('should not hint selectors', () => expect(simulateHintingCompletions('text:')?.[0]).not.toMatchObject({ insertText: 'active' }))
+    test('@delay on invoked', () => expect(simulateHintingCompletions('"', false)?.find(({ label }) => label === '@delay:')).toMatchObject({ insertText: '@delay:' }))
+    test('~delay on invoked', () => expect(simulateHintingCompletions('"', false)?.find(({ label }) => label === '~delay:')).toMatchObject({ insertText: '~delay:' }))
+    it('starts with @', () => expect(simulateHintingCompletions('@')?.find(({ label }) => label === '@delay:')).toMatchObject({ insertText: 'delay:' }))
+    it('starts with ~', () => expect(simulateHintingCompletions('~')?.find(({ label }) => label === '~delay:')).toMatchObject({ insertText: 'delay:' }))
+
+})
 
 describe('selectors', () => {
     test(':', () => expect(simulateHintingCompletions('text:center:')?.[0]).toMatchObject({ insertText: 'active' }))

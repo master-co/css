@@ -8,7 +8,7 @@ export const TRIGGER_CHARACTERS = {
     /**
      * Trigger selector hints
      */
-    selector: ['_', '>', ':'],
+    selector: [':', '_', '>', '+', '~'],
     /**
      * Trigger at hints
      */

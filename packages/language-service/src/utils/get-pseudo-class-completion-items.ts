@@ -4,7 +4,7 @@ import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 const insertTextMode = 1
 const kind: CompletionItemKind = 3
 
-export default function getPseudoClassCompletionItems(triggerKey: string): CompletionItem[] {
+export default function getPseudoClassCompletionItems(triggerKey = ''): CompletionItem[] {
     return cssDataProvider.providePseudoClasses()
         .map((data) => {
             // fix https://github.com/microsoft/vscode-custom-data/issues/78
