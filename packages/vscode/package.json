@@ -148,22 +148,12 @@
                     ],
                     "description": "Configure glob patterns to exclude from all Master Language Service features."
                 },
-                "masterCSS.classMatch": {
+                "masterCSS.classAttributes": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     },
-                    "default": [
-                        "(class(?:Name)?\\s?=\\s?)((?:\"[^\"]+\")|(?:'[^']+')|(?:`[^`]+`))",
-                        "(class(?:Name)?={)([^}]*)}",
-                        "(?:(\\$|(?:(?:element|el|style)\\.[^\\s.`]+)`)([^`]+)`)",
-                        "(style\\.(?:.*)\\()([^)]*)\\)",
-                        "(classList.(?:add|remove|replace|replace|toggle)\\()([^)]*)\\)",
-                        "(template\\s*\\:\\s*)((?:\"[^\"]+\")|(?:'[^']+')|(?:`[^`]+`))",
-                        "(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^']*)('[^']*')",
-                        "(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^\"]*)(\"[^\"]*\")",
-                        "(?<=classes\\s*(?:=|:)\\s*{[\\s\\S]*)([^`]*)(`[^`]*`)"
-                    ]
+                    "default": [ "class", "className", "ngClass" ]
                 },
                 "masterCSS.hintSyntaxCompletions": {
                     "type": "boolean",

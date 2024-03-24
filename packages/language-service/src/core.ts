@@ -4,7 +4,6 @@ import EventEmitter from 'node:events'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import settings, { type Settings } from './settings'
 import { minimatch } from 'minimatch'
-import { instancePattern } from './utils/regex'
 import { fileURLToPath } from 'node:url'
 import inspectSyntax from './features/inspect-syntax'
 import renderSyntaxColors from './features/render-syntax-colors'
@@ -43,45 +42,34 @@ export default class CSSLanguageService extends EventEmitter {
             return hintSyntaxCompletions?.call(this, ...params)
     }
 
-    getPosition(textDocument: TextDocument, position: Position, patterns?: string[]): {
-        range: { start: number, end: number },
-        token: string
-    } | undefined {
-        const positionIndex = textDocument.offsetAt(position) ?? 0
+    // todo unit tests
+    getClassPosition(textDocument: TextDocument, position: Position): { range: { start: number, end: number }, token: string } | undefined {
+        const positionIndex = textDocument.offsetAt(position)
         const startIndex = textDocument.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
         const endIndex = textDocument.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
         const text = textDocument.getText().substring(startIndex, endIndex)
-        let instanceMatch: RegExpExecArray | null
-        let classMatch: RegExpExecArray | null
-        if (!patterns) patterns = this.settings.classMatch
-        if (!patterns) return
-        for (const classRegexString of patterns) {
-            const classPattern = new RegExp(classRegexString, 'g')
-            while ((classMatch = classPattern.exec(text)) !== null) {
-                if ((classMatch.index <= (positionIndex - startIndex) && classMatch.index + classMatch[0].length >= (positionIndex - startIndex)) == true) {
-                    const classContentStartIndex = classMatch.index + classMatch[1].length
-                    instancePattern.lastIndex = 0
-                    while ((instanceMatch = instancePattern.exec(classMatch[2])) !== null) {
-                        const instanceStartIndex = classContentStartIndex + instanceMatch.index
-                        const instanceEndIndex = classContentStartIndex + instanceMatch.index + instanceMatch[0].length
-                        if (instanceStartIndex <= (positionIndex - startIndex) && instanceEndIndex >= (positionIndex - startIndex)) {
-                            return {
-                                range: {
-                                    start: instanceStartIndex,
-                                    end: instanceEndIndex
-                                },
-                                token: instanceMatch[0]
-                            }
-                        }
-                    }
+        const classAttributes = this.settings.classAttributes
+        if (!classAttributes?.length) throw new Error('classAttributes is not defined')
+        const regex = new RegExp(`\\b(?:${classAttributes.join('|')})\\s?=\\s?(['"\`])(.*?)\\1`, 'g')
+        let match: RegExpExecArray | null
+        let attrIndex
+        while ((match = regex.exec(text)) !== null) {
+            attrIndex = match.index + match[0].indexOf(match[2])
+            if (attrIndex <= positionIndex - startIndex && positionIndex - startIndex <= attrIndex + match[2].length) {
+                return {
+                    range: { start: startIndex + attrIndex, end: startIndex + attrIndex + match[2].length },
+                    token: match[2]
                 }
-                else if (classMatch.index > (positionIndex - startIndex)) {
-                    break
+            } else if (attrIndex === attrIndex + match[2].length) {
+                return {
+                    range: { start: positionIndex - startIndex, end: positionIndex - startIndex },
+                    token: ''
                 }
             }
         }
-        return
+        return undefined
     }
+
 
     isDocumentAllowed(doc: TextDocument): boolean {
         if (!this.settings.exclude) return true

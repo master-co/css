@@ -17,7 +17,7 @@
   - [`editor.quickSuggestions`](#editorquicksuggestions)
   - [`masterCSS.languages`](#mastercsslanguages)
   - [`masterCSS.files.exclude`](#mastercssfilesexclude)
-  - [`masterCSS.classMatch`](#mastercssclassmatch)
+  - [`masterCSS.classAttributes`](#mastercssclassmatch)
   - [`masterCSS.renderSyntaxColors: true`](#mastercsspreviewcolors-true)
   - [`masterCSS.inspectSyntax: true`](#mastercssinspectsyntax-true)
   - [`masterCSS.suggestions: true`](#mastercsssuggestions-true)
@@ -86,10 +86,10 @@ Configure a glob pattern to prevent Master CSS Language Service from being appli
 ],
 ```
 
-### `masterCSS.classMatch`
+### `masterCSS.classAttributes`
 Configure Regex patterns as conditions for triggering Suggestions and generating previews.
 ```json
-"masterCSS.classMatch": [
+"masterCSS.classAttributes": [
   "(class(?:Name)?\\s?=\\s?)((?:\"[^\"]+\")|(?:'[^']+')|(?:`[^`]+`))",
   "(class(?:Name)?={)([^}]*)}",
   "(?:(\\$|(?:(?:element|el)\\.[^\\s.`]+)`)([^`]+)`)",

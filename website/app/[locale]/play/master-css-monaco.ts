@@ -40,7 +40,7 @@
 //         ], 10))
 //     }
 
-//     const checkResult = getPosition(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
+//     const checkResult = getClassPosition(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classAttributes)
 
 //     const line = document.getValueInRange({
 //         startLineNumber: position.lineNumber,
@@ -91,7 +91,7 @@
 //     const startIndex = document.getOffsetAt({ lineNumber: position.lineNumber - 100, column: 0 }) ?? 0
 //     const endIndex = document.getOffsetAt({ lineNumber: position.lineNumber + 100, column: 0 }) ?? undefined
 
-//     const checkResult = getPosition(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classMatch)
+//     const checkResult = getClassPosition(text.substring(startIndex, endIndex), positionIndex, startIndex, settings.classAttributes)
 //     if (checkResult) {
 //         const result = doHover(checkResult.token, indexToVsCodeRange(checkResult.index, document))
 //         if (result) {
@@ -140,7 +140,7 @@
 //     const startIndex = document.getOffsetAt({ lineNumber: colorInfo.range.startLineNumber - 100, column: 0 }) ?? 0
 //     const endIndex = document.getOffsetAt({ lineNumber: colorInfo.range.startLineNumber + 100, column: 0 }) ?? undefined
 
-//     const checkResult = getPosition(text.substring(startIndex, endIndex), positionIndex, startIndex, colorRender)
+//     const checkResult = getClassPosition(text.substring(startIndex, endIndex), positionIndex, startIndex, colorRender)
 
 //     const documentColors = getColorPresentation({ color: colorInfo.color, range: monacoRangeToVsCodeRange(colorInfo.range) } as any, checkResult !== null)
 

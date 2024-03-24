@@ -26,8 +26,8 @@ it('types " should hint completions', () => expect(simulateHintingCompletions('"
 it('types   should hint completions', () => expect(simulateHintingCompletions('text:center ')?.length).toBeGreaterThan(0))
 it('types "text:center" should not hint completions', () => expect(simulateHintingCompletions('text:center')?.length).toBe(0))
 
-test.todo('types any trigger characters in "" should not hints')
-test.todo(`types any trigger characters in '' should not hints`)
+test.todo('types any trigger character in "" should not hint')
+test.todo(`types any trigger character in '' should not hint`)
 
 describe('keys', () => {
     // it('should not hint selectors', () => expect(simulateHintingCompletions('text:')?.[0]).not.toMatchObject({ insertText: 'active' }))

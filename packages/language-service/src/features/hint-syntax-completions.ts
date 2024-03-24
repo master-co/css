@@ -11,17 +11,10 @@ export default function hintSyntaxCompletions(this: CSSLanguageService,
     context: CompletionParams['context']
 ): CompletionItem[] | undefined {
     const language = document.uri.substring(document.uri.lastIndexOf('.') + 1)
-    const checkResult = this.getPosition(document, position)
-    const triggerCharacter = context?.triggerCharacter
-    const triggerKind = context?.triggerKind
-    const invoked = TRIGGER_CHARACTERS.invoked.includes(triggerCharacter || '')
-    const token = checkResult?.token
+    const checkResult = this.getClassPosition(document, position)
     // todo: trigger getRuleCompletionItems() on invoked
-    if (invoked && !token) {
-        return getRuleKeyCompletionItems(triggerCharacter, this.css)
-    } else if (checkResult || invoked) {
-        return querySyntaxCompletions(token || '', this.css)
-    }
+    if (checkResult !== undefined)
+        return querySyntaxCompletions(checkResult.token, this.css)
     // todo
     // else if (isInstance === true && checkConfigColorsBlock(document, position) === true) {
     //     return getColorCompletionItems(this.css)

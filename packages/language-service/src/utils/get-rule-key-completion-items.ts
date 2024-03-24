@@ -3,17 +3,16 @@ import { masterCssKeyValues } from '../constant'
 import cssDataProvider from './css-data-provider'
 import { MasterCSS } from '@master/css'
 
-export default function getRuleKeyCompletionItems(triggerCharacter = '', css: MasterCSS): CompletionItem[] {
+export default function getRuleKeyCompletionItems(q = '', css: MasterCSS): CompletionItem[] {
     const completionItems: CompletionItem[] = []
     masterCssKeyValues.forEach(x => {
         const fullKey = x.key[0]
         const originalCssProperty = cssDataProvider.provideProperties().find((x: { name: string }) => x.name == fullKey)
-        const originalCssValues = originalCssProperty?.values ?? []
         for (const key of x.key) {
             if (!completionItems.find(existedValue => existedValue.label === key + ':')) {
                 completionItems.push({
                     label: key + ':',
-                    insertText: key.replace(new RegExp(`^${triggerCharacter}`), '') + ':',
+                    insertText: key.replace(new RegExp(`^${q}`), '') + ':',
                     kind: 10,
                     documentation: originalCssProperty?.description ?? '',
                     command: {
