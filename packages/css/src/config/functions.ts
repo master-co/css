@@ -1,6 +1,6 @@
 import type { FunctionDefinition, FunctionDefinitions } from './'
 import type { Rule, StringValueComponent } from '../rule'
-import { BASE_UNIT_REGEX } from '../constants/base-unit-regex'
+import { BASE_UNIT_REGEX } from '../common'
 
 const functions: FunctionDefinitions = {
     $: {

@@ -1,7 +1,7 @@
 import cssEscape from 'css-shared/utils/css-escape'
-import { START_SYMBOLS } from '../constants/start-symbol'
 import type { Rule, RuleDefinition } from '../rule'
 import { Layer } from '../layer'
+import { VALUE_DELIMITERS } from '../common'
 
 export const BORDER_STYLES = ['none', 'auto', 'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
 
@@ -121,9 +121,9 @@ const rules = {
                         }
 
                         break
-                    } else if (char in START_SYMBOLS && (end !== '\'' && end !== '"')) {
+                    } else if (char in VALUE_DELIMITERS && (end !== '\'' && end !== '"')) {
                         i++
-                        analyze(START_SYMBOLS[char as keyof typeof START_SYMBOLS])
+                        analyze(VALUE_DELIMITERS[char as keyof typeof VALUE_DELIMITERS])
                     }
                 }
             })('')

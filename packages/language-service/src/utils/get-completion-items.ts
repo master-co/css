@@ -5,7 +5,7 @@ import cssDataProvider from './css-data-provider'
 import { masterCssCommonValues, masterCssKeyValues, masterCssMedia, masterCssOtherKeys, masterCssType } from '../constant'
 import { MasterCSS } from '@master/css'
 import getColorCompletionItems from './get-color-completion-items'
-import { triggerCharacters } from '../common'
+import { TRIGGER_CHARACTERS } from '../common'
 
 let cssKeys: Array<string | CompletionItem> = []
 cssKeys = cssKeys.concat(masterCssOtherKeys)
@@ -16,7 +16,7 @@ masterCssKeyValues.forEach(x => {
 const masterCssKeys: Array<string | CompletionItem> = [...new Set(cssKeys)]
 
 export default function getCompletionItems(q: string, triggerKind: CompletionTriggerKind | undefined, triggerCharacter: string | undefined, language: string, css: MasterCSS) {
-    const invoked = triggerCharacters.invoked.includes(triggerCharacter || '')
+    const invoked = TRIGGER_CHARACTERS.invoked.includes(triggerCharacter || '')
     const key = q.split(':')[0].trim()
     const haveValue = q.split(':').length
     const instanceLength = q.split(':|@').length

@@ -2,7 +2,7 @@ import type { CompletionItem, CompletionParams } from 'vscode-languageserver'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import CSSLanguageService from '../core'
 import getCompletionItems from '../utils/get-completion-items'
-import { triggerCharacters } from '../common'
+import { TRIGGER_CHARACTERS } from '../common'
 
 export default function hintSyntaxCompletions(this: CSSLanguageService,
     document: TextDocument,
@@ -13,7 +13,7 @@ export default function hintSyntaxCompletions(this: CSSLanguageService,
     const checkResult = this.getPosition(document, position)
     const triggerCharacter = context?.triggerCharacter
     const triggerKind = context?.triggerKind
-    const invoked = triggerCharacters.invoked.includes(triggerCharacter || '')
+    const invoked = TRIGGER_CHARACTERS.invoked.includes(triggerCharacter || '')
     console.log(context, checkResult?.token)
     if (checkResult || invoked) {
         return getCompletionItems(checkResult?.token || '', triggerKind, triggerCharacter, language, this.css)

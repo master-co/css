@@ -8,7 +8,7 @@ import exploreConfig from '@master/css-explore-config'
 import extend from '@techor/extend'
 import settings from './settings'
 import { Config } from '@master/css'
-import { serverCapabilities } from '@master/css-language-service/common'
+import { SERVER_CAPABILITIES } from '@master/css-language-service/common'
 
 export default class CSSLanguageServer {
     workspaceFolders: WorkspaceFolder[] = []
@@ -41,7 +41,7 @@ export default class CSSLanguageServer {
                 }
             }
             return {
-                capabilities: serverCapabilities
+                capabilities: SERVER_CAPABILITIES
             }
         })
 

@@ -52,6 +52,11 @@
             "require": "./dist/index.cjs",
             "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
+        },
+        "./common": {
+            "require": "./dist/common.cjs",
+            "import": "./dist/common.mjs",
+            "types": "./dist/common.d.ts"
         }
     },
     "bin": "./dist/bin/index.mjs",

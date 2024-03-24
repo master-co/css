@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import MasterCSS, { type Variable } from './core'
-import { START_SYMBOLS } from './constants/start-symbol'
 import cssEscape from 'css-shared/utils/css-escape'
 import { Layer } from './layer'
 import { type PropertiesHyphen } from 'csstype'
-import { BASE_UNIT_REGEX } from './constants/base-unit-regex'
+import { VALUE_DELIMITERS, BASE_UNIT_REGEX } from './common'
 
 export class Rule {
     readonly at: Record<string, AtComponent[]> = {}
@@ -518,7 +517,7 @@ export class Rule {
                         currentValue += eachValueComponent.token = eachValueComponent.text = eachValueComponent.name
                             + eachValueComponent.symbol
                             + this.resolveValue(eachValueComponent.children, functionDefinition?.unit ?? unit, bypassVariableNames, bypassParsing)
-                            + START_SYMBOLS[eachValueComponent.symbol as keyof typeof START_SYMBOLS]
+                            + VALUE_DELIMITERS[eachValueComponent.symbol as keyof typeof VALUE_DELIMITERS]
                     }
                     break
                 // todo: 應挪到 parseValues 階段處理才能支援 variables: { x: 'calc(20vw-30px)' } 這種情況，並且解析上可能會比較合理、精簡
@@ -710,7 +709,7 @@ export class Rule {
                 }
 
                 return i
-            } else if (!isString && val in START_SYMBOLS) {
+            } else if (!isString && val in VALUE_DELIMITERS) {
                 const functionName = currentValue
                 const newValueComponent: ValueComponent[][0] = { type: 'function', name: functionName, symbol: val, children: [], token: '' }
                 currentValueComponents.push(newValueComponent)
@@ -727,7 +726,7 @@ export class Rule {
                     ++i,
                     value,
                     functionDefinition?.unit ?? unit,
-                    START_SYMBOLS[val as keyof typeof START_SYMBOLS],
+                    VALUE_DELIMITERS[val as keyof typeof VALUE_DELIMITERS],
                     functionName || parentFunctionName || '',
                     bypassParsing || functionName === 'calc'
                 )

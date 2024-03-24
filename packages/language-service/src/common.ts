@@ -1,6 +1,6 @@
 import { TextDocumentSyncKind, ServerCapabilities } from 'vscode-languageserver'
 
-export const triggerCharacters = {
+export const TRIGGER_CHARACTERS = {
     /**
      * First call to trigger syntax hints
      */
@@ -8,23 +8,23 @@ export const triggerCharacters = {
     /**
      * Trigger selector hints
      */
-    selector: ['::', ':'],
+    selector: ['_', '>', ':'],
     /**
      * Trigger at hints
      */
     at: ['@']
 }
 
-export const serverCapabilities: ServerCapabilities = {
+export const SERVER_CAPABILITIES: ServerCapabilities = {
     textDocumentSync: TextDocumentSyncKind.Incremental,
     // Tell the client that this server supports code completion.
     completionProvider: {
         resolveProvider: false,
         workDoneProgress: false,
         triggerCharacters: [
-            ...triggerCharacters.invoked,
-            ...triggerCharacters.selector,
-            ...triggerCharacters.at
+            ...TRIGGER_CHARACTERS.invoked,
+            ...TRIGGER_CHARACTERS.selector,
+            ...TRIGGER_CHARACTERS.at
         ],
     },
     colorProvider: true,
