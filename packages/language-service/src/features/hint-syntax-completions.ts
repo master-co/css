@@ -9,10 +9,9 @@ export default function hintSyntaxCompletions(this: CSSLanguageService,
     context: CompletionParams['context']
 ): CompletionItem[] | undefined {
     const language = document.uri.substring(document.uri.lastIndexOf('.') + 1)
-    const checkResult = this.getClassPosition(document, position)
-    // todo: trigger getRuleCompletionItems() on invoked
-    if (checkResult !== undefined)
-        return querySyntaxCompletions(checkResult.token, this.css)
+    const classPosition = this.getClassPosition(document, position)
+    if (classPosition !== undefined)
+        return querySyntaxCompletions(classPosition.token, this.css)
     // todo
     // else if (isInstance === true && checkConfigColorsBlock(document, position) === true) {
     //     return getColorCompletionItems(this.css)

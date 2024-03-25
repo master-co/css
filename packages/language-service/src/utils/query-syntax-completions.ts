@@ -1,4 +1,4 @@
-import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import type { CompletionItem } from 'vscode-languageserver'
 import getPseudoClassCompletionItems from './get-pseudo-class-completion-items'
 import getPseudoElementCompletionItems from './get-pseudo-element-completion-items'
 import { masterCssKeyValues, masterCssOtherKeys } from '../constant'
@@ -13,21 +13,23 @@ masterCssKeyValues.forEach(x => {
 })
 
 export default function querySyntaxCompletions(q = '', css: MasterCSS) {
-    const lastCharacter = q.charAt(q.length - 1)
+    const fields = q.split(' ')
+    const field = fields[fields.length - 1]
+    const triggerCharacter = q.charAt(q.length - 1)
     const completionItems: CompletionItem[] = []
-    const invoked = lastCharacter === ' ' || q.length === 0
+    const invoked = triggerCharacter === ' ' || field.length === 0
     if (invoked) {
-        return getRuleKeyCompletionItems(q, css)
+        return getRuleKeyCompletionItems(css, triggerCharacter)
     }
-    const keyCompleted = new RegExp(`[${TRIGGER_CHARACTERS.selector.join('') + TRIGGER_CHARACTERS.at.join('')}]`).test(q.slice(1))
+    const keyCompleted = new RegExp(`[${TRIGGER_CHARACTERS.selector.join('') + TRIGGER_CHARACTERS.at.join('')}]`).test(field.slice(1))
     if (!keyCompleted) {
-        return getRuleKeyCompletionItems(q, css)
+        return getRuleKeyCompletionItems(css, triggerCharacter)
     }
-    if (TRIGGER_CHARACTERS.selector.includes(lastCharacter)) {
-        if (q.endsWith('::')) {
-            completionItems.push(...getPseudoElementCompletionItems('::'))
+    if (TRIGGER_CHARACTERS.selector.includes(triggerCharacter)) {
+        if (field.endsWith('::')) {
+            completionItems.push(...getPseudoElementCompletionItems(css, '::'))
         } else {
-            completionItems.push(...getPseudoClassCompletionItems(':'), ...getPseudoElementCompletionItems('::'))
+            completionItems.push(...getPseudoClassCompletionItems(css, ':'), ...getPseudoElementCompletionItems(css, '::'))
         }
     }
     // if (masterCssKeys.includes(key) && key !== null && isMedia === true) { //show media

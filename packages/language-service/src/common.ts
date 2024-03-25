@@ -1,4 +1,5 @@
 import { TextDocumentSyncKind, ServerCapabilities } from 'vscode-languageserver'
+import { AT_SIGN, SELECTOR_SIGNS } from '../../css/src/common'
 
 export const TRIGGER_CHARACTERS = {
     /**
@@ -8,11 +9,11 @@ export const TRIGGER_CHARACTERS = {
     /**
      * Trigger selector hints
      */
-    selector: [':', '_', '>', '+', '~'],
+    selector: SELECTOR_SIGNS,
     /**
      * Trigger at hints
      */
-    at: ['@']
+    at: [AT_SIGN]
 }
 
 export const SERVER_CAPABILITIES: ServerCapabilities = {

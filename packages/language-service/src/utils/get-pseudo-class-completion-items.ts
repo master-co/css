@@ -1,10 +1,11 @@
+import { MasterCSS } from '@master/css'
 import cssDataProvider from './css-data-provider'
 import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 
 const insertTextMode = 1
 const kind: CompletionItemKind = 3
 
-export default function getPseudoClassCompletionItems(triggerKey = ''): CompletionItem[] {
+export default function getPseudoClassCompletionItems(css: MasterCSS, sign = ''): CompletionItem[] {
     return cssDataProvider.providePseudoClasses()
         .map((data) => {
             // fix https://github.com/microsoft/vscode-custom-data/issues/78
@@ -15,7 +16,7 @@ export default function getPseudoClassCompletionItems(triggerKey = ''): Completi
             if (sortText.endsWith('()')) sortText = 'z' + sortText
             return {
                 label: name,
-                insertText: name.slice(triggerKey.length),
+                insertText: name.slice(sign.length),
                 sortText,
                 documentation: data.description,
                 insertTextMode,
