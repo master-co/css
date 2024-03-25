@@ -22,18 +22,15 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS) {
     if (invoked) {
         return getMainCompletionItems(css)
     }
-    const hasFirstColon = field.split(':').length > 1
     const fieldBeforeFirstColon = field.split(':')[0]
-    let mainCompleted = false
+    const styleNames = Object.keys(css.config.styles || {})
+    const semanticNames = Object.keys(css.config.semantics || {})
     // check by semantics and styles
-    if (hasFirstColon) {
-        const styleNames = Object.keys(css.config.styles || {})
-        const semanticNames = Object.keys(css.config.semantics || {})
-        mainCompleted = styleNames.includes(fieldBeforeFirstColon) || semanticNames.includes(fieldBeforeFirstColon)
-    }
+    let mainCompleted = styleNames.includes(fieldBeforeFirstColon) || semanticNames.includes(fieldBeforeFirstColon)
     if (!mainCompleted) {
         mainCompleted = new RegExp(`[${SELECTOR_SIGNS.join('') + AT_SIGN}]`).test(field.slice(1))
     }
+
     /**
      * The server capability sets '@' '~' as the trigger characters for at and adjacent selectors,
      * but these two characters are also the prefix symbols of `animation` and `transition`,

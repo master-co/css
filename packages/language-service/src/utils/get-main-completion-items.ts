@@ -13,7 +13,6 @@ export default function getMainCompletionItems(css: MasterCSS): CompletionItem[]
             if (!completionItems.find(existedValue => existedValue.label === key + ':')) {
                 completionItems.push({
                     label: key + ':',
-                    insertTextFormat: 2,
                     sortText: key,
                     kind: 10,
                     documentation: nativeCSSPropertyData?.description ?? '',
@@ -28,13 +27,8 @@ export default function getMainCompletionItems(css: MasterCSS): CompletionItem[]
     if (css.config.semantics) {
         for (const key in css.config.semantics) {
             completionItems.push({
-                label: key + ':',
-                kind: 10,
-                insertTextFormat: 2,
-                command: {
-                    title: 'triggerSuggest',
-                    command: 'editor.action.triggerSuggest'
-                }
+                label: key,
+                kind: 10
             })
         }
     }
@@ -42,12 +36,7 @@ export default function getMainCompletionItems(css: MasterCSS): CompletionItem[]
         for (const key in css.config.styles) {
             completionItems.push({
                 label: key,
-                kind: 10,
-                insertTextFormat: 2,
-                command: {
-                    title: 'triggerSuggest',
-                    command: 'editor.action.triggerSuggest'
-                }
+                kind: 10
             })
         }
     }

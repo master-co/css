@@ -50,24 +50,23 @@ export default class CSSLanguageService extends EventEmitter {
         const text = textDocument.getText().substring(startIndex, endIndex)
         const classAttributes = this.settings.classAttributes
         if (!classAttributes?.length) throw new Error('classAttributes is not defined')
-        const regex = new RegExp(`\\b(?:${classAttributes.join('|')})\\s?=\\s?(['"\`])(.*?)\\1`, 'g')
-        let match: RegExpExecArray | null
-        let attrIndex
-        while ((match = regex.exec(text)) !== null) {
-            attrIndex = match.index + match[0].indexOf(match[2])
-            if (attrIndex <= positionIndex - startIndex && positionIndex - startIndex <= attrIndex + match[2].length) {
+        const regex = new RegExp(`(\\b(?:${classAttributes.join('|')})\\s?=\\s?(['"\`]))(.*?)\\2`, 'g')
+        const classAttMatch = regex.exec(text)
+        if (classAttMatch) {
+            const attrIndex = classAttMatch.index + classAttMatch[1].length
+            if (attrIndex <= positionIndex - startIndex && positionIndex - startIndex <= attrIndex + classAttMatch[3].length) {
                 return {
-                    range: { start: startIndex + attrIndex, end: startIndex + attrIndex + match[2].length },
-                    token: match[2]
+                    range: { start: startIndex + attrIndex, end: startIndex + attrIndex + classAttMatch[3].length },
+                    token: classAttMatch[3]
                 }
-            } else if (attrIndex === attrIndex + match[2].length) {
+            } else if (attrIndex === attrIndex + classAttMatch[3].length) {
                 return {
                     range: { start: positionIndex - startIndex, end: positionIndex - startIndex },
                     token: ''
                 }
             }
         }
-        return undefined
+        return
     }
 
 

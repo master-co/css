@@ -56,9 +56,13 @@ describe('keys', () => {
         'easing:',
         'property:'
     ]))
-    it('semantic', () => expect(simulateHintingCompletions('a')?.find(({ label }) => label === 'abs:')).toMatchObject({ label: 'abs:' }))
-    test.todo('styles')
 })
+
+describe('semantics', () => {
+    it('types a', () => expect(simulateHintingCompletions('a')?.find(({ label }) => label === 'abs')).toMatchObject({ label: 'abs' }))
+})
+
+test.todo('styles')
 
 describe('selectors', () => {
     test(':', () => expect(simulateHintingCompletions('text:center:')?.[0]).toMatchObject({ insertText: 'active' }))
