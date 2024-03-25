@@ -1,4 +1,4 @@
-import { CompletionItem } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 import { masterCssKeyValues } from '../constant'
 import cssDataProvider from './css-data-provider'
 import { MasterCSS } from '@master/css'
@@ -13,7 +13,7 @@ export default function getValueCompletionItems(key: string, css: MasterCSS = ne
         const documentation = getCssEntryMarkdownDescription(value)
         completionItems.push({
             label: value.name,
-            kind: 10,
+            kind: CompletionItemKind.Value,
             documentation: documentation ? {
                 kind: 'markdown',
                 value: documentation
