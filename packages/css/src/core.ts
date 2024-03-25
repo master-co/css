@@ -2,7 +2,7 @@
 import { Rule, type NativeRule, type RuleDefinition, type RegisteredRule, AtFeatureComponent } from './rule'
 import type { Config, AnimationDefinitions } from './config'
 import { config as defaultConfig } from './config'
-import { Layer } from './layer'
+import Layer from './layer'
 import { hexToRgb } from './utils/hex-to-rgb'
 import { flattenObject } from './utils/flatten-object'
 import extendConfig from './functions/extend-config'

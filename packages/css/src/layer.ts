@@ -1,4 +1,4 @@
-export const enum Layer {
+const enum Layer {
     // semantic
     Semantic = -8,
     // native shorthand
@@ -18,3 +18,5 @@ export const enum Layer {
     // normal
     Normal = 0,
 }
+
+export default Layer

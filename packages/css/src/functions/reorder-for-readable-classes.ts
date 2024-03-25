@@ -1,4 +1,4 @@
-import { Layer } from '../layer'
+import Layer from '../layer'
 import type { Config } from '../config'
 import MasterCSS from '../core'
 

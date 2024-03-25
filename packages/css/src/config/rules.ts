@@ -1,6 +1,6 @@
 import cssEscape from 'css-shared/utils/css-escape'
 import type { Rule, RuleDefinition } from '../rule'
-import { Layer } from '../layer'
+import Layer from '../layer'
 import { VALUE_DELIMITERS } from '../common'
 
 export const BORDER_STYLES = ['none', 'auto', 'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
