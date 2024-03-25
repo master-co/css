@@ -4,7 +4,8 @@ import getPseudoElementCompletionItems from './get-pseudo-element-completion-ite
 import { masterCssKeyValues, masterCssOtherKeys } from '../constant'
 import { MasterCSS } from '@master/css'
 import { TRIGGER_CHARACTERS } from '../common'
-import getRuleKeyCompletionItems from './get-rule-key-completion-items'
+import getMainCompletionItems from './get-main-completion-items'
+import { AT_SIGN, SELECTOR_SIGNS } from '@master/css/common'
 
 let cssKeys: Array<string | CompletionItem> = []
 cssKeys = cssKeys.concat(masterCssOtherKeys)
@@ -19,11 +20,34 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS) {
     const completionItems: CompletionItem[] = []
     const invoked = triggerCharacter === ' ' || field.length === 0
     if (invoked) {
-        return getRuleKeyCompletionItems(css, triggerCharacter)
+        return getMainCompletionItems(css)
     }
-    const keyCompleted = new RegExp(`[${TRIGGER_CHARACTERS.selector.join('') + TRIGGER_CHARACTERS.at.join('')}]`).test(field.slice(1))
-    if (!keyCompleted) {
-        return getRuleKeyCompletionItems(css, triggerCharacter)
+    const hasFirstColon = field.split(':').length > 1
+    const fieldBeforeFirstColon = field.split(':')[0]
+    let mainCompleted = false
+    // check by semantics and styles
+    if (hasFirstColon) {
+        const styleNames = Object.keys(css.config.styles || {})
+        const semanticNames = Object.keys(css.config.semantics || {})
+        mainCompleted = styleNames.includes(fieldBeforeFirstColon) || semanticNames.includes(fieldBeforeFirstColon)
+    }
+    if (!mainCompleted) {
+        mainCompleted = new RegExp(`[${SELECTOR_SIGNS.join('') + AT_SIGN}]`).test(field.slice(1))
+    }
+    /**
+     * The server capability sets '@' '~' as the trigger characters for at and adjacent selectors,
+     * but these two characters are also the prefix symbols of `animation` and `transition`,
+     * and should be filtered to prevent hints all completions items.
+     * @example class="@"
+     * @example class="~"
+     */
+    if (!mainCompleted && (field.startsWith('@') || field.startsWith('~'))) {
+        return getMainCompletionItems(css)
+            .filter(completionItem => completionItem.label.startsWith(field))
+            .map((completionItem) => ({ ...completionItem, label: completionItem.label.slice(1) }))
+    }
+    if (!mainCompleted) {
+        return getMainCompletionItems(css)
     }
     if (TRIGGER_CHARACTERS.selector.includes(triggerCharacter)) {
         if (field.endsWith('::')) {

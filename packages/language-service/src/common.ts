@@ -1,5 +1,5 @@
 import { TextDocumentSyncKind, ServerCapabilities } from 'vscode-languageserver'
-import { AT_SIGN, SELECTOR_SIGNS } from '../../css/src/common'
+import { AT_SIGN, SELECTOR_SIGNS } from '@master/css/common'
 
 export const TRIGGER_CHARACTERS = {
     /**
