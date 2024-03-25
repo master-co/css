@@ -35,10 +35,10 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
         const fullKey = rule.id
         const originalCssProperty = cssProperties.find((x: { name: string }) => x.name == fullKey)
         if (rule.layer && [Layer.Core, Layer.CoreNative, Layer.CoreShorthand, Layer.CoreNativeShorthand].includes(rule.layer) && originalCssProperty) {
-            if (!originalCssProperty.references?.find((x: { name: string }) => x.name === 'Reference')) {
+            if (!originalCssProperty.references?.find((x: { name: string }) => x.name === 'Master CSS')) {
                 originalCssProperty.references = [
                     {
-                        name: 'Reference',
+                        name: 'Master CSS',
                         url: `https://rc.css.master.co/docs/${fullKey}`
                     },
                     ...(originalCssProperty?.references ?? []),

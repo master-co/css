@@ -25,10 +25,10 @@ export function getCssEntryMarkdownDescription(data: IPropertyData | IValueData)
     }
     if (data.references && data.references.length > 0) {
         if (result.length > 0) {
-            result += '\n\n'
+            result += '\n\nReference: '
         }
         result += data.references.map((r: any) => {
-            return `[${r.name}](${r.url})`
+            return `[${r.name.replace(' Reference', '')}](${r.url})`
         }).join(' | ')
     }
 

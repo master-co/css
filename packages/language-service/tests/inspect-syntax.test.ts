@@ -27,7 +27,7 @@ test('generated CSS', async () => {
 
             Syntax: start | end | left | right | center | justify | match\\-parent
 
-            [Reference](https://rc.css.master.co/docs/text-align) | [MDN Reference](https://developer.mozilla.org/docs/Web/CSS/text-align)
+            Reference: [Master CSS](https://rc.css.master.co/docs/text-align) | [MDN](https://developer.mozilla.org/docs/Web/CSS/text-align)
         `
     ])
     expect(hover?.range).toStrictEqual(range)
