@@ -1,5 +1,4 @@
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
-import { masterCssKeyValues } from '../constant'
 import cssDataProvider from './css-data-provider'
 import { MasterCSS } from '@master/css'
 import { getCssEntryMarkdownDescription } from './get-css-entry-markdown-description'

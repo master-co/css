@@ -2,7 +2,6 @@ import { Position } from 'vscode-languageserver-textdocument'
 import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
 import getRange from '../src/utils/get-range'
-import { Config } from '@master/css'
 import { Settings } from '../src/settings'
 
 const simulateHintingCompletions = (target: string, { quotes = true, settings }: { quotes?: boolean, settings?: Settings } = {}) => {
@@ -62,6 +61,7 @@ describe('keys', () => {
 
 describe('semantics', () => {
     it('types a', () => expect(simulateHintingCompletions('a')?.find(({ label }) => label === 'abs')).toMatchObject({ label: 'abs' }))
+    it('should remap to a native property', () => expect(simulateHintingCompletions('b')?.find(({ label }) => label === 'block')).toMatchObject({ detail: 'display: block' }))
 })
 
 describe('styles', () => {

@@ -2,7 +2,7 @@ import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 import cssDataProvider from './css-data-provider'
 import { MasterCSS } from '@master/css'
 import { getCssEntryMarkdownDescription } from './get-css-entry-markdown-description'
-import { IPropertyData, IValueData } from 'vscode-css-languageservice'
+import type { IPropertyData, IValueData } from 'vscode-css-languageservice'
 
 export default function getMainCompletionItems(css: MasterCSS = new MasterCSS()): CompletionItem[] {
     const nativeProperties = cssDataProvider.provideProperties()
@@ -34,6 +34,9 @@ export default function getMainCompletionItems(css: MasterCSS = new MasterCSS())
             const propValue = declarations[propName]
             let nativeCSSData: IPropertyData | IValueData | undefined
             let detail: string | undefined
+            /**
+             * Remaps to native CSS properties when only one property is declared
+             * */
             if (propsLength === 1) {
                 const nativeCSSPropertyData = nativeProperties.find(({ name }) => name === Object.keys(declarations)[0])
                 if (semanticName === propValue) {
