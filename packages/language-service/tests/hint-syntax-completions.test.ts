@@ -2,11 +2,13 @@ import { Position } from 'vscode-languageserver-textdocument'
 import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
 import getRange from '../src/utils/get-range'
+import { Config } from '@master/css'
+import { Settings } from '../src/settings'
 
-const simulateHintingCompletions = (target: string, includeQuotes = true) => {
-    const content = `<div class=${includeQuotes ? '"' : ''}${target}${includeQuotes ? '"' : ''}"></div>`
+const simulateHintingCompletions = (target: string, { quotes = true, settings }: { quotes?: boolean, settings?: Settings } = {}) => {
+    const content = `<div class=${quotes ? '"' : ''}${target}${quotes ? '"' : ''}"></div>`
     const doc = createDoc('html', content)
-    const languageService = new CSSLanguageService()
+    const languageService = new CSSLanguageService(settings)
     const range = getRange(target, doc)
     return languageService.hintSyntaxCompletions(doc, range?.end as Position, {
         triggerKind: 2, // todo
@@ -22,7 +24,7 @@ const simulateHintingCompletions = (target: string, includeQuotes = true) => {
 
 // it('types a', () => expect(simulateHintingCompletions('a')?.length).toBeDefined())
 
-it('types " should hint completions', () => expect(simulateHintingCompletions('"', false)?.length).toBeGreaterThan(0))
+it('types " should hint completions', () => expect(simulateHintingCompletions('"', { quotes: false })?.length).toBeGreaterThan(0))
 it('types   should hint completions', () => expect(simulateHintingCompletions('text:center ')?.length).toBeGreaterThan(0))
 it('types "text:center" should not hint completions', () => expect(simulateHintingCompletions('text:center')?.length).toBe(0))
 
@@ -31,8 +33,8 @@ test.todo(`types any trigger character in '' should not hint`)
 
 describe('keys', () => {
     // it('should not hint selectors', () => expect(simulateHintingCompletions('text:')?.[0]).not.toMatchObject({ insertText: 'active' }))
-    test('@delay on invoked', () => expect(simulateHintingCompletions('"', false)?.find(({ label }) => label === '@delay:')).toMatchObject({ label: '@delay:' }))
-    test('~delay on invoked', () => expect(simulateHintingCompletions('"', false)?.find(({ label }) => label === '~delay:')).toMatchObject({ label: '~delay:' }))
+    test('@delay on invoked', () => expect(simulateHintingCompletions('"', { quotes: false })?.find(({ label }) => label === '@delay:')).toMatchObject({ label: '@delay:' }))
+    test('~delay on invoked', () => expect(simulateHintingCompletions('"', { quotes: false })?.find(({ label }) => label === '~delay:')).toMatchObject({ label: '~delay:' }))
     it('starts with @', () => expect(simulateHintingCompletions('@')?.[0]).toMatchObject({ label: 'delay:' }))
     it('starts with @d and list related', () => expect(simulateHintingCompletions('@d')?.map(({ label }) => label)).toEqual([
         'delay:',
@@ -62,7 +64,17 @@ describe('semantics', () => {
     it('types a', () => expect(simulateHintingCompletions('a')?.find(({ label }) => label === 'abs')).toMatchObject({ label: 'abs' }))
 })
 
-test.todo('styles')
+describe('styles', () => {
+    const settings: Settings = {
+        config: {
+            styles: {
+                btn: 'inline-block'
+            }
+        }
+    }
+    it('contains btn', () => expect(simulateHintingCompletions('b', { settings })?.find(({ label }) => label === 'btn')).toMatchObject({ label: 'btn' }))
+    it('types btn: and should not hint', () => expect(simulateHintingCompletions('btn:', { settings })).toBe(undefined))
+})
 
 describe('selectors', () => {
     test(':', () => expect(simulateHintingCompletions('text:center:')?.[0]).toMatchObject({ insertText: 'active' }))

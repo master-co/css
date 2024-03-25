@@ -13,7 +13,7 @@ masterCssKeyValues.forEach(x => {
     cssKeys = cssKeys.concat(x.key)
 })
 
-export default function querySyntaxCompletions(q = '', css: MasterCSS) {
+export default function querySyntaxCompletions(q = '', css: MasterCSS = new MasterCSS()) {
     const fields = q.split(' ')
     const field = fields[fields.length - 1]
     const triggerCharacter = q.charAt(q.length - 1)
@@ -25,12 +25,14 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS) {
     const fieldBeforeFirstColon = field.split(':')[0]
     const styleNames = Object.keys(css.config.styles || {})
     const semanticNames = Object.keys(css.config.semantics || {})
+    const isStyle = styleNames.includes(fieldBeforeFirstColon)
+    const isSemantic = semanticNames.includes(fieldBeforeFirstColon)
     // check by semantics and styles
-    let mainCompleted = styleNames.includes(fieldBeforeFirstColon) || semanticNames.includes(fieldBeforeFirstColon)
-    if (!mainCompleted) {
-        mainCompleted = new RegExp(`[${SELECTOR_SIGNS.join('') + AT_SIGN}]`).test(field.slice(1))
+    let keyCompleted = isStyle || isSemantic
+    const valueCompleted = keyCompleted
+    if (!keyCompleted) {
+        keyCompleted = new RegExp(`[${SELECTOR_SIGNS.join('') + AT_SIGN}]`).test(field.slice(1))
     }
-
     /**
      * The server capability sets '@' '~' as the trigger characters for at and adjacent selectors,
      * but these two characters are also the prefix symbols of `animation` and `transition`,
@@ -38,14 +40,19 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS) {
      * @example class="@"
      * @example class="~"
      */
-    if (!mainCompleted && (field.startsWith('@') || field.startsWith('~'))) {
+    if (!keyCompleted && (field.startsWith('@') || field.startsWith('~'))) {
         return getMainCompletionItems(css)
             .filter(completionItem => completionItem.label.startsWith(field))
             .map((completionItem) => ({ ...completionItem, label: completionItem.label.slice(1) }))
     }
-    if (!mainCompleted) {
+    if (!keyCompleted) {
         return getMainCompletionItems(css)
     }
+    if (!valueCompleted && field.split(':')[1] === '') {
+        console.log('valueCompleted', valueCompleted)
+        return
+    }
+    if (isStyle) return
     if (TRIGGER_CHARACTERS.selector.includes(triggerCharacter)) {
         if (field.endsWith('::')) {
             completionItems.push(...getPseudoElementCompletionItems(css, '::'))
