@@ -6,6 +6,7 @@ import { MasterCSS } from '@master/css'
 import { TRIGGER_CHARACTERS } from '../common'
 import getMainCompletionItems from './get-main-completion-items'
 import { AT_SIGN, SELECTOR_SIGNS } from '@master/css/common'
+import getValueCompletionItems from './get-value-completion-items'
 
 let cssKeys: Array<string | CompletionItem> = []
 cssKeys = cssKeys.concat(masterCssOtherKeys)
@@ -22,7 +23,8 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = new Mast
     if (invoked) {
         return getMainCompletionItems(css)
     }
-    const fieldBeforeFirstColon = field.split(':')[0]
+    const subFields = field.split(':')
+    const fieldBeforeFirstColon = subFields[0]
     const styleNames = Object.keys(css.config.styles || {})
     const semanticNames = Object.keys(css.config.semantics || {})
     const isStyle = styleNames.includes(fieldBeforeFirstColon)
@@ -48,9 +50,8 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = new Mast
     if (!keyCompleted) {
         return getMainCompletionItems(css)
     }
-    if (!valueCompleted && field.split(':')[1] === '') {
-        console.log('valueCompleted', valueCompleted)
-        return
+    if (!valueCompleted && subFields[1] === '') {
+        return getValueCompletionItems(subFields[0], css)
     }
     if (isStyle) return
     if (TRIGGER_CHARACTERS.selector.includes(triggerCharacter)) {

@@ -75,11 +75,6 @@ export const masterCssKeyValues: MasterCssKey[] = [
     },
     //APPEARANCE
     {
-        key: ['font-color', 'font', 'f'],
-        colored: true,
-        values: []
-    },
-    {
         key: ['accent-color', 'accent'],
         colored: true,
         values: []
@@ -350,11 +345,6 @@ export const masterCssKeyValues: MasterCssKey[] = [
         key: ['font', 'f'],
         colored: false,
         values: ['caption', 'icon', 'menu', 'message-box', 'small-caption', 'status-bar']
-    },
-    {
-        key: ['font-color', 'font', 'f'],
-        colored: true,
-        values: []
     },
     {
         key: ['font-family', 'font', 'f'],

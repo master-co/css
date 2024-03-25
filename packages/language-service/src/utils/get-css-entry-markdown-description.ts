@@ -1,31 +1,33 @@
-export function getCssEntryMarkdownDescription(entry: any): string {
-    if (!entry?.description || entry?.description === '') {
+import type { IPropertyData, IValueData } from 'vscode-css-languageservice'
+
+export function getCssEntryMarkdownDescription(data: IPropertyData | IValueData): string {
+    if (!data.description || data.description === '') {
         return ''
     }
 
     let result = ''
-    if (entry.status) {
-        result += getEntryStatus(entry.status)
+    if (data.status) {
+        result += getEntryStatus(data.status)
     }
 
-    if (typeof entry.description === 'string') {
-        result += textToMarkedString(entry.description)
+    if (typeof data.description === 'string') {
+        result += textToMarkedString(data.description)
     } else {
-        result += entry.description.kind === 'markdown' ? entry.description.value : textToMarkedString(entry.description.value)
+        result += data.description.kind === 'markdown' ? data.description.value : textToMarkedString(data.description.value)
     }
 
-    const browserLabel = getBrowserLabel(entry.browsers)
+    const browserLabel = getBrowserLabel(data.browsers)
     if (browserLabel) {
         result += '\n\n(' + textToMarkedString(browserLabel) + ')'
     }
-    if ('syntax' in entry && entry.syntax) {
-        result += `\n\nSyntax: ${textToMarkedString(entry.syntax)}`
+    if ('syntax' in data && data.syntax) {
+        result += `\n\nSyntax: ${textToMarkedString(data.syntax)}`
     }
-    if (entry.references && entry.references.length > 0) {
+    if (data.references && data.references.length > 0) {
         if (result.length > 0) {
             result += '\n\n'
         }
-        result += entry.references.map((r: any) => {
+        result += data.references.map((r: any) => {
             return `[${r.name}](${r.url})`
         }).join(' | ')
     }
@@ -53,6 +55,7 @@ function getEntryStatus(status: string) {
             return ''
     }
 }
+
 function textToMarkedString(text: string) {
     text = text.replace(/[\\`*_{}[\]()#+\-.!]/g, '\\$&') // escape markdown syntax tokens: http://daringfireball.net/projects/markdown/syntax#backslash
     return text.replace(/</g, '&lt;').replace(/>/g, '&gt;')
