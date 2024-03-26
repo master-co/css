@@ -8,7 +8,6 @@ export default function getValueCompletionItems(key: string, css: MasterCSS = ne
     const completionItems: CompletionItem[] = []
     const nativeCSSPropertyData = nativeProperties.find((x: { name: string }) => x.name === key)
     if (!nativeCSSPropertyData) return completionItems
-    process.env.VSCODE_IPC_HOOK && console.time('getValueCompletionItems')
     nativeCSSPropertyData.values?.forEach(value => {
         completionItems.push({
             label: value.name,
@@ -22,6 +21,5 @@ export default function getValueCompletionItems(key: string, css: MasterCSS = ne
             detail: key + ': ' + value.name
         })
     })
-    process.env.VSCODE_IPC_HOOK && console.timeEnd('getValueCompletionItems')
     return completionItems
 }

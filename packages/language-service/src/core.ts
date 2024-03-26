@@ -48,27 +48,49 @@ export default class CSSLanguageService extends EventEmitter {
         const startIndex = textDocument.offsetAt({ line: position.line - 100, character: 0 }) ?? 0
         const endIndex = textDocument.offsetAt({ line: position.line + 100, character: 0 }) ?? undefined
         const text = textDocument.getText().substring(startIndex, endIndex)
+        const classPositionRegexes: RegExp[] = []
         const classAttributes = this.settings.classAttributes
-        if (!classAttributes?.length) throw new Error('classAttributes is not defined')
-        const regex = new RegExp(`(\\b(?:${classAttributes.join('|')})\\s?=\\s?(['"\`]))(.*?)\\2`, 'g')
-        const classAttMatch = regex.exec(text)
-        if (classAttMatch) {
-            const attrIndex = classAttMatch.index + classAttMatch[1].length
-            if (attrIndex <= positionIndex - startIndex && positionIndex - startIndex <= attrIndex + classAttMatch[3].length) {
-                return {
-                    range: { start: startIndex + attrIndex, end: startIndex + attrIndex + classAttMatch[3].length },
-                    token: classAttMatch[3]
-                }
-            } else if (attrIndex === attrIndex + classAttMatch[3].length) {
-                return {
-                    range: { start: positionIndex - startIndex, end: positionIndex - startIndex },
-                    token: ''
+        if (classAttributes?.length) {
+            const classAttributesPatten = classAttributes.join('|')
+            classPositionRegexes.push(
+                /**
+                 * @example <div class=""></div>
+                 * */
+                new RegExp(`(\\b(?:${classAttributesPatten})\\s?=\\s?)((?:"[^"]+")|(?:'[^']+')|(?:\`[^\`]+\`))`, 'g'),
+                /**
+                 * @example <div className={''}></div>
+                 * */
+                new RegExp(`(\\b(?:${classAttributesPatten})={)([^}]*)}`, 'g')
+            )
+        }
+        const classRegex = /[^\s:]+:\w*\(?((?<!\\)["'`])((?:\\\1|(?:(?!\1))[\S\s])*)((?<!\\)\1)\)?|[^\s"'`]+/g
+        let eachClassPostioinMatch: RegExpExecArray | null
+        let classMatch: RegExpExecArray | null
+        for (const eachClassPositionRegex of classPositionRegexes) {
+            while ((eachClassPostioinMatch = eachClassPositionRegex.exec(text)) !== null) {
+                if ((eachClassPostioinMatch.index <= (positionIndex - startIndex) && eachClassPostioinMatch.index + eachClassPostioinMatch[0].length >= (positionIndex - startIndex)) === true) {
+                    const attrStartIndex = eachClassPostioinMatch.index + eachClassPostioinMatch[1].length
+                    while ((classMatch = classRegex.exec(eachClassPostioinMatch[2])) !== null) {
+                        const classStartIndex = attrStartIndex + classMatch.index
+                        const classEndIndex = classStartIndex + classMatch[0].length
+                        if (classStartIndex <= positionIndex - startIndex && positionIndex - startIndex <= classEndIndex) {
+                            return {
+                                range: { start: classStartIndex, end: startIndex + classEndIndex },
+                                token: classMatch[0]
+                            }
+                        } else if (attrStartIndex === classEndIndex) {
+                            return {
+                                range: { start: attrStartIndex, end: attrStartIndex },
+                                token: ''
+                            }
+                        }
+                    }
+                } else if (eachClassPostioinMatch.index > (positionIndex - startIndex)) {
+                    break
                 }
             }
         }
-        return
     }
-
 
     isDocumentAllowed(doc: TextDocument): boolean {
         if (!this.settings.exclude) return true

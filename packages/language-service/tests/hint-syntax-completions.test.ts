@@ -305,3 +305,4 @@ describe('colors', () => {
  * <div></div> -> <div class=""></div>
  */
 test.todo('emit class="" should hint completions')
+test.todo('types { to hint completions for group syntax and fallback')

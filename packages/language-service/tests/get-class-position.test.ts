@@ -2,21 +2,7 @@ import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
 import getRange from '../src/utils/get-range'
 
-const simulateGettingClassPosition = (target: string) => {
-    const content = `<div class="${target}"></div>`
-    const doc = createDoc('html', content)
-    const range = getRange(target, doc)
-    const languageService = new CSSLanguageService()
-    expect(languageService.getClassPosition(doc, range.start)).toEqual({
-        range: {
-            start: range.start.character,
-            end: range.end.character
-        },
-        token: target
-    })
-}
-
-// it('types in class', async () => {
+// it('types', async () => {
 //     const content = `<div class=""></div>`
 //     const doc = createDoc('html', content)
 //     const position: Position = { line: 0, character: 12 }
@@ -30,8 +16,48 @@ const simulateGettingClassPosition = (target: string) => {
 //     })
 // })
 
-it('types a in class', () => {
-    simulateGettingClassPosition('a')
+it('types a single class', () => {
+    const target = 'class-a'
+    const contents = ['<div class="', target, '"></div>']
+    const doc = createDoc('html', contents.join(''))
+    const languageService = new CSSLanguageService()
+    expect(languageService.getClassPosition(doc, { line: 0, character: contents[0].length })).toEqual({
+        range: {
+            start: contents[0].length,
+            end: contents[0].length + target.length
+        },
+        token: target
+    })
+})
+
+it('types two classes', () => {
+    const target = 'class-b'
+    const contents = ['<div class="class-a ', target, '"></div>']
+    const doc = createDoc('html', contents.join(''))
+    const languageService = new CSSLanguageService()
+    expect(languageService.getClassPosition(doc, { line: 0, character: contents[0].length })).toEqual({
+        range: {
+            start: contents[0].length,
+            end: contents[0].length + target.length
+        },
+        token: target
+    })
+})
+
+describe('react', () => {
+    it('clsx', () => {
+        const target = 'class-b'
+        const contents = ['export default () => <div className={clsx("class-a","', target, '")}></div>']
+        const doc = createDoc('tsx', contents.join(''))
+        const languageService = new CSSLanguageService()
+        expect(languageService.getClassPosition(doc, { line: 0, character: contents[0].length })).toEqual({
+            range: {
+                start: contents[0].length,
+                end: contents[0].length + target.length
+            },
+            token: target
+        })
+    })
 })
 
 // test('basic', () => simulateGettingClassPosition('text:center'))
