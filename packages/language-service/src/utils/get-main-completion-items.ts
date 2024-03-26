@@ -7,6 +7,7 @@ import type { IPropertyData, IValueData } from 'vscode-css-languageservice'
 export default function getMainCompletionItems(css: MasterCSS = new MasterCSS()): CompletionItem[] {
     const nativeProperties = cssDataProvider.provideProperties()
     const completionItems: CompletionItem[] = []
+    process.env.VSCODE_IPC_HOOK && console.time('getMainCompletionItems')
     for (const ruleId in css.config.rules) {
         const eachRule = css.config.rules[ruleId]
         const nativeCSSPropertyData = nativeProperties.find(({ name }) => name === ruleId)
@@ -37,9 +38,13 @@ export default function getMainCompletionItems(css: MasterCSS = new MasterCSS())
              * Remaps to native CSS properties when only one property is declared
              * */
             if (propsLength === 1) {
-                const nativeCSSPropertyData = nativeProperties.find(({ name }) => name === Object.keys(declarations)[0])
+                const nativeCSSPropertyData = nativeProperties.find(({ name }) => name === propName)
                 if (semanticName === propValue) {
-                    nativeCSSData = nativeCSSPropertyData?.values?.find(({ name }) => name === propValue)
+                    nativeCSSData = nativeCSSPropertyData?.values?.find(({ name }) =>
+                        name === propValue
+                        // fix like inline-grid not found
+                        || name.replace(/^-(ms|moz)-/, '') === propValue
+                    )
                     detail = `${propName}: ${propValue}`
                 } else {
                     nativeCSSData = nativeCSSPropertyData
@@ -50,7 +55,7 @@ export default function getMainCompletionItems(css: MasterCSS = new MasterCSS())
                 label: semanticName,
                 kind: CompletionItemKind.Value,
                 documentation: getCSSDataDocumentation(nativeCSSData, {
-                    generatedCSS: generateCSS([semanticName], css.customConfig)
+                    generatedCSS: generateCSS([semanticName], css)
                 }),
                 detail,
             })
@@ -58,15 +63,17 @@ export default function getMainCompletionItems(css: MasterCSS = new MasterCSS())
     }
     if (css.config.styles) {
         for (const styleName in css.config.styles) {
+            const styleClasses = css.styles[styleName]
             completionItems.push({
                 label: styleName,
-                kind: CompletionItemKind.Property,
+                kind: CompletionItemKind.Value,
                 documentation: getCSSDataDocumentation({} as any, {
-                    generatedCSS: generateCSS([styleName], css.customConfig)
+                    generatedCSS: generateCSS([styleName], css)
                 }),
-                detail: 'style'
+                detail: styleClasses.join(' ') + ' (style)',
             })
         }
     }
+    process.env.VSCODE_IPC_HOOK && console.timeEnd('getMainCompletionItems')
     return completionItems
 }

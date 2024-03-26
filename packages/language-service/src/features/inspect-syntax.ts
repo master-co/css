@@ -1,5 +1,5 @@
 import type { Hover, HoverParams, Range } from 'vscode-languageserver'
-import { Layer } from '@master/css'
+import { Layer, generateCSS } from '@master/css'
 import { getCSSDataDocumentation } from '../utils/get-css-data-documentation'
 import type CSSLanguageService from '../core'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
@@ -15,16 +15,16 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
         end: document.positionAt(checkResult.range.end)
     }
     const rules = this.css.generate(syntax)
-    const css = new MasterCSS(this.settings?.config)
-    css.add(syntax)
     const rule = rules[0]
     const contents = []
     if (rule) {
-        /* preview the generated css */
-        contents.push({
-            language: 'css',
-            value: beautifyCSS(css.text)
-        })
+        const text = generateCSS([syntax], this.css)
+        if (text)
+            /* preview the generated css */
+            contents.push({
+                language: 'css',
+                value: beautifyCSS(text)
+            })
         /* reference and info about the syntax */
         const cssProperties = cssDataProvider.provideProperties()
         let cssHoverInfo: any = null

@@ -3,6 +3,7 @@ import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
 import getRange from '../src/utils/get-range'
 import { Settings } from '../src/settings'
+import dedent from 'ts-dedent'
 
 const simulateHintingCompletions = (target: string, { quotes = true, settings }: { quotes?: boolean, settings?: Settings } = {}) => {
     const content = `<div class=${quotes ? '"' : ''}${target}${quotes ? '"' : ''}"></div>`
@@ -61,7 +62,21 @@ describe('keys', () => {
 
 describe('semantics', () => {
     it('types a', () => expect(simulateHintingCompletions('a')?.find(({ label }) => label === 'abs')).toMatchObject({ label: 'abs' }))
-    it('should remap to a native property', () => expect(simulateHintingCompletions('b')?.find(({ label }) => label === 'block')).toMatchObject({ detail: 'display: block' }))
+    test('info', () => expect(simulateHintingCompletions('b')?.find(({ label }) => label === 'block')).toMatchObject({
+        detail: 'display: block',
+        documentation: {
+            kind: 'markdown',
+            value: dedent`
+                \`\`\`css
+                .block {
+                  display: block
+                }
+                \`\`\`
+
+                The element generates a block\\-level box
+            `
+        }
+    }))
 })
 
 describe('styles', () => {
@@ -72,7 +87,21 @@ describe('styles', () => {
             }
         }
     }
-    it('contains btn', () => expect(simulateHintingCompletions('b', { settings })?.find(({ label }) => label === 'btn')).toMatchObject({ label: 'btn' }))
+    it('info', () => expect(simulateHintingCompletions('b', { settings })?.find(({ label }) => label === 'btn')).toMatchObject({
+        detail: 'inline-block (style)',
+        documentation: {
+            kind: 'markdown',
+            value: dedent`
+                \`\`\`css
+                .inline-block,
+                .btn {
+                  display: inline-block
+                }
+                \`\`\`
+                \n
+            `
+        }
+    }))
     it('types btn: and should not hint', () => expect(simulateHintingCompletions('btn:', { settings })).toBe(undefined))
 })
 
