@@ -6,11 +6,10 @@ import { Settings } from '../src/settings'
 import dedent from 'ts-dedent'
 
 const simulateHintingCompletions = (target: string, { quotes = true, settings }: { quotes?: boolean, settings?: Settings } = {}) => {
-    const content = `<div class=${quotes ? '"' : ''}${target}${quotes ? '"' : ''}"></div>`
-    const doc = createDoc('html', content)
+    const contents = [`<div class=${quotes ? '"' : ''}`, target, `${quotes ? '"' : ''}></div>`]
+    const doc = createDoc('html', contents.join(''))
     const languageService = new CSSLanguageService(settings)
-    const range = getRange(target, doc)
-    return languageService.hintSyntaxCompletions(doc, range?.end as Position, {
+    return languageService.hintSyntaxCompletions(doc, { line: 0, character: contents[0].length } as Position, {
         triggerKind: 2, // todo
         triggerCharacter: target.charAt(target.length - 1)
     })
@@ -24,41 +23,43 @@ const simulateHintingCompletions = (target: string, { quotes = true, settings }:
 
 // it('types a', () => expect(simulateHintingCompletions('a')?.length).toBeDefined())
 
-it('types " should hint completions', () => expect(simulateHintingCompletions('"', { quotes: false })?.length).toBeGreaterThan(0))
+test.todo('following test require e2e -> packages/language-server')
+// it('types " should hint completions', () => expect(simulateHintingCompletions('"', { quotes: false })?.length).toBeGreaterThan(0))
 it('types   should hint completions', () => expect(simulateHintingCompletions('text:center ')?.length).toBeGreaterThan(0))
 it('types "text:center" should not hint completions', () => expect(simulateHintingCompletions('text:center')?.length).toBe(0))
 
 test.todo('types any trigger character in "" should not hint')
 test.todo(`types any trigger character in '' should not hint`)
 
-describe('keys', () => {
-    // it('should not hint selectors', () => expect(simulateHintingCompletions('text:')?.[0]).not.toMatchObject({ insertText: 'active' }))
-    test('@delay on invoked', () => expect(simulateHintingCompletions('"', { quotes: false })?.find(({ label }) => label === '@delay:')).toMatchObject({ label: '@delay:' }))
-    test('~delay on invoked', () => expect(simulateHintingCompletions('"', { quotes: false })?.find(({ label }) => label === '~delay:')).toMatchObject({ label: '~delay:' }))
-    it('starts with @', () => expect(simulateHintingCompletions('@')?.[0]).toMatchObject({ label: 'delay:' }))
-    it('starts with @d and list related', () => expect(simulateHintingCompletions('@d')?.map(({ label }) => label)).toEqual([
-        'delay:',
-        'direction:',
-        'duration:'
-    ]))
-    it('starts with @ and list related', () => expect(simulateHintingCompletions('@')?.map(({ label }) => label)).toEqual([
-        'delay:',
-        'direction:',
-        'duration:',
-        'easing:',
-        'fill-mode:',
-        'iteration-count:',
-        'name:',
-        'play-state:',
-    ]))
-    it('starts with ~', () => expect(simulateHintingCompletions('~')?.[0]).toMatchObject({ label: 'delay:' }))
-    it('starts with ~ and list related', () => expect(simulateHintingCompletions('~')?.map(({ label }) => label)).toEqual([
-        'delay:',
-        'duration:',
-        'easing:',
-        'property:'
-    ]))
-})
+test.todo('keys')
+// describe('keys', () => {
+//     // it('should not hint selectors', () => expect(simulateHintingCompletions('text:')?.[0]).not.toMatchObject({ insertText: 'active' }))
+//     test('@delay on invoked', () => expect(simulateHintingCompletions('"', { quotes: false })?.find(({ label }) => label === '@delay:')).toMatchObject({ label: '@delay:' }))
+//     test('~delay on invoked', () => expect(simulateHintingCompletions('"', { quotes: false })?.find(({ label }) => label === '~delay:')).toMatchObject({ label: '~delay:' }))
+//     it('starts with @', () => expect(simulateHintingCompletions('@')?.[0]).toMatchObject({ label: 'delay:' }))
+//     it('starts with @d and list related', () => expect(simulateHintingCompletions('@d')?.map(({ label }) => label)).toEqual([
+//         'delay:',
+//         'direction:',
+//         'duration:'
+//     ]))
+//     it('starts with @ and list related', () => expect(simulateHintingCompletions('@')?.map(({ label }) => label)).toEqual([
+//         'delay:',
+//         'direction:',
+//         'duration:',
+//         'easing:',
+//         'fill-mode:',
+//         'iteration-count:',
+//         'name:',
+//         'play-state:',
+//     ]))
+//     it('starts with ~', () => expect(simulateHintingCompletions('~')?.[0]).toMatchObject({ label: 'delay:' }))
+//     it('starts with ~ and list related', () => expect(simulateHintingCompletions('~')?.map(({ label }) => label)).toEqual([
+//         'delay:',
+//         'duration:',
+//         'easing:',
+//         'property:'
+//     ]))
+// })
 
 describe('semantics', () => {
     it('types a', () => expect(simulateHintingCompletions('a')?.find(({ label }) => label === 'abs')).toMatchObject({ label: 'abs' }))

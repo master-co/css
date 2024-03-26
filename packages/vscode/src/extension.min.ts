@@ -26,10 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }
 
-
     const langs = vscode.workspace.getConfiguration('masterCSS').languages
-
-
     const Languages: { scheme: 'file', language: string }[] = []
     langs.forEach((x: any) => {
         Languages.push({ scheme: 'file', language: x })

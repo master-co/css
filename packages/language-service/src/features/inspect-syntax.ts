@@ -40,7 +40,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
                     ...(originalCssProperty?.references ?? []),
                 ]
             }
-            cssHoverInfo = getCSSDataDocumentation(originalCssProperty)
+            cssHoverInfo = getCSSDataDocumentation(originalCssProperty)?.value
         }
         if (cssHoverInfo) {
             contents.push(cssHoverInfo)

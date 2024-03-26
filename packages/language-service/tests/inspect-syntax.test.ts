@@ -32,3 +32,6 @@ test('generated CSS', async () => {
     ])
     expect(hover?.range).toStrictEqual(range)
 })
+
+// todo: share with the getMainClassPosition.ts logic
+test.todo('get CSS data by semantic')

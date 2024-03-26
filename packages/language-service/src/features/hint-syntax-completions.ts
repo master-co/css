@@ -10,8 +10,18 @@ export default function hintSyntaxCompletions(this: CSSLanguageService,
 ): CompletionItem[] | undefined {
     const language = document.uri.substring(document.uri.lastIndexOf('.') + 1)
     const classPosition = this.getClassPosition(document, position)
-    if (classPosition !== undefined)
-        return querySyntaxCompletions(classPosition.token, this.css)
+    if (classPosition !== undefined) {
+        /**
+         * When the last trigger character is " " and classPosition exists,
+         * it means the user is preparing to enter the next class.
+         * @example <div class="class-a "></div>
+         *                              ^ cursor is here
+         * */
+        const token = context?.triggerCharacter === ' '
+            ? ''
+            : classPosition.token
+        return querySyntaxCompletions(token, this.css)
+    }
     // todo
     // else if (isInstance === true && checkConfigColorsBlock(document, position) === true) {
     //     return getColorCompletionItems(this.css)
