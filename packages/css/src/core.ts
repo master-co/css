@@ -465,7 +465,12 @@ export default class MasterCSS {
     /**
      * 根據蒐集到的所有 DOM class 重新 create
      */
-    refresh(customConfig: Config = this.customConfig) {
+    refresh(customConfig?: Config) {
+        if (customConfig) {
+            this.customConfig = customConfig
+        } else {
+            customConfig = this.customConfig
+        }
         if (!customConfig?.override) {
             // @ts-ignore
             this.config = extendConfig(defaultConfig, customConfig)
