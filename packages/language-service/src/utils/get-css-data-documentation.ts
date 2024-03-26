@@ -1,38 +1,43 @@
-import type { IPropertyData, IValueData } from 'vscode-css-languageservice'
+import type { IPropertyData, IValueData, MarkupContent } from 'vscode-css-languageservice'
+import beautifyCSS from './beautify-css'
 
-export function getCssEntryMarkdownDescription(data: IPropertyData | IValueData): string {
-    if (!data.description || data.description === '') {
-        return ''
-    }
-
-    let result = ''
+export function getCSSDataDocumentation(data?: IPropertyData | IValueData, additionalData?: any): MarkupContent | undefined {
+    if (!data) return
+    let value = ''
     if (data.status) {
-        result += getEntryStatus(data.status)
+        value += getEntryStatus(data.status)
     }
 
-    if (typeof data.description === 'string') {
-        result += textToMarkedString(data.description)
-    } else {
-        result += data.description.kind === 'markdown' ? data.description.value : textToMarkedString(data.description.value)
+    if (additionalData?.generatedCSS) {
+        value += '```css\n' + beautifyCSS(additionalData.generatedCSS) + '\n```\n\n'
     }
+
+    if (data.description)
+        if (typeof data.description === 'string') {
+            value += textToMarkedString(data.description)
+        } else {
+            value += data.description.kind === 'markdown' ? data.description.value : textToMarkedString(data.description.value)
+        }
 
     const browserLabel = getBrowserLabel(data.browsers)
     if (browserLabel) {
-        result += '\n\n(' + textToMarkedString(browserLabel) + ')'
+        value += '\n\n(' + textToMarkedString(browserLabel) + ')'
     }
     if ('syntax' in data && data.syntax) {
-        result += `\n\nSyntax: ${textToMarkedString(data.syntax)}`
+        value += `\n\nSyntax: ${textToMarkedString(data.syntax)}`
     }
     if (data.references && data.references.length > 0) {
-        if (result.length > 0) {
-            result += '\n\nReference: '
+        if (value.length > 0) {
+            value += '\n\nReference: '
         }
-        result += data.references.map((r: any) => {
+        value += data.references.map((r: any) => {
             return `[${r.name.replace(' Reference', '')}](${r.url})`
         }).join(' | ')
     }
-
-    return result
+    return value ? {
+        kind: 'markdown',
+        value
+    } : undefined
 }
 
 const browserNames = {
@@ -67,19 +72,19 @@ function getBrowserLabel(browsers: string[] = []): string | null {
 
     return browsers
         .map(b => {
-            let result = ''
+            let value = ''
             const matches = b.match(/([A-Z]+)(\d+)?/) ?? ''
 
             const name = matches[1]
             const version = matches[2]
 
             if (name in browserNames) {
-                result += browserNames[name as keyof typeof browserNames]
+                value += browserNames[name as keyof typeof browserNames]
             }
             if (version) {
-                result += ' ' + version
+                value += ' ' + version
             }
-            return result
+            return value
         })
         .join(', ')
 }

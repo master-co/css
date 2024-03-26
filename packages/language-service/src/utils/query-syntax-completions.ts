@@ -35,6 +35,7 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = new Mast
     if (!keyCompleted) {
         keyCompleted = new RegExp(`[${SELECTOR_SIGNS.join('') + AT_SIGN}]`).test(field.slice(1))
     }
+    // todo: starts with $
     /**
      * The server capability sets '@' '~' as the trigger characters for at and adjacent selectors,
      * but these two characters are also the prefix symbols of `animation` and `transition`,

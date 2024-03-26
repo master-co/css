@@ -1,7 +1,7 @@
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 import cssDataProvider from './css-data-provider'
-import { MasterCSS } from '@master/css'
-import { getCssEntryMarkdownDescription } from './get-css-entry-markdown-description'
+import { MasterCSS, generateCSS } from '@master/css'
+import { getCSSDataDocumentation } from './get-css-data-documentation'
 import type { IPropertyData, IValueData } from 'vscode-css-languageservice'
 
 export default function getMainCompletionItems(css: MasterCSS = new MasterCSS()): CompletionItem[] {
@@ -10,14 +10,13 @@ export default function getMainCompletionItems(css: MasterCSS = new MasterCSS())
     for (const ruleId in css.config.rules) {
         const eachRule = css.config.rules[ruleId]
         const nativeCSSPropertyData = nativeProperties.find(({ name }) => name === ruleId)
-        const documentation = nativeCSSPropertyData ? getCssEntryMarkdownDescription(nativeCSSPropertyData) : ''
         // todo: key alias
         completionItems.push({
             label: ruleId + ':',
             sortText: ruleId,
             kind: CompletionItemKind.Property,
-            documentation: documentation ? { kind: 'markdown', value: documentation } : undefined,
-            detail: nativeCSSPropertyData ? nativeCSSPropertyData.syntax : undefined,
+            documentation: getCSSDataDocumentation(nativeCSSPropertyData),
+            detail: nativeCSSPropertyData?.syntax,
             command: {
                 title: 'triggerSuggest',
                 command: 'editor.action.triggerSuggest'
@@ -47,20 +46,25 @@ export default function getMainCompletionItems(css: MasterCSS = new MasterCSS())
                     detail = nativeCSSPropertyData?.syntax
                 }
             }
-            const documentation = nativeCSSData ? getCssEntryMarkdownDescription(nativeCSSData) : ''
             completionItems.push({
                 label: semanticName,
-                kind: CompletionItemKind.Property,
-                documentation: documentation ? { kind: 'markdown', value: documentation } : undefined,
+                kind: CompletionItemKind.Value,
+                documentation: getCSSDataDocumentation(nativeCSSData, {
+                    generatedCSS: generateCSS([semanticName], css.customConfig)
+                }),
                 detail,
             })
         }
     }
     if (css.config.styles) {
-        for (const key in css.config.styles) {
+        for (const styleName in css.config.styles) {
             completionItems.push({
-                label: key,
-                kind: CompletionItemKind.Property
+                label: styleName,
+                kind: CompletionItemKind.Property,
+                documentation: getCSSDataDocumentation({} as any, {
+                    generatedCSS: generateCSS([styleName], css.customConfig)
+                }),
+                detail: 'style'
             })
         }
     }

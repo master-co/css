@@ -11,6 +11,8 @@ it('run server', async () => {
     expect(serverProcess).toBeDefined()
 })
 
+test.todo('modify and refresh config')
+
 afterAll(async () => {
     await serverProcess.destroy()
 }, 60000)

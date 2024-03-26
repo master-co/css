@@ -1,11 +1,10 @@
 import type { Hover, HoverParams, Range } from 'vscode-languageserver'
 import { Layer } from '@master/css'
-import { getCssEntryMarkdownDescription } from '../utils/get-css-entry-markdown-description'
-// @ts-expect-error
-import { css_beautify } from 'js-beautify/js/lib/beautify-css'
+import { getCSSDataDocumentation } from '../utils/get-css-data-documentation'
 import type CSSLanguageService from '../core'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import cssDataProvider from '../utils/css-data-provider'
+import beautifyCSS from '../utils/beautify-css'
 
 export default function inspectSyntax(this: CSSLanguageService, document: TextDocument, position: HoverParams['position']): Hover | undefined {
     const checkResult = this.getClassPosition(document, position)
@@ -24,10 +23,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
         /* preview the generated css */
         contents.push({
             language: 'css',
-            value: css_beautify(css.text, {
-                newline_between_rules: false,
-                indent_size: 2
-            })
+            value: beautifyCSS(css.text)
         })
         /* reference and info about the syntax */
         const cssProperties = cssDataProvider.provideProperties()
@@ -44,7 +40,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
                     ...(originalCssProperty?.references ?? []),
                 ]
             }
-            cssHoverInfo = getCssEntryMarkdownDescription(originalCssProperty)
+            cssHoverInfo = getCSSDataDocumentation(originalCssProperty)
         }
         if (cssHoverInfo) {
             contents.push(cssHoverInfo)
