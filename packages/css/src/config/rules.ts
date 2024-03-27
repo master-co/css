@@ -498,8 +498,7 @@ const rules = {
         layer: Layer.Native,
     } as RuleDefinition,
     'letter-spacing': {
-        // todo: new key 'tracking'
-        // key: 'tracking',
+        key: 'tracking',
         subkey: 'ls',
         layer: Layer.Native,
         unit: 'em'
