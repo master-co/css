@@ -8,7 +8,6 @@ import { flattenObject } from './utils/flatten-object'
 import extendConfig from './functions/extend-config'
 import { type PropertiesHyphen } from 'csstype'
 import './types/global' // fix: ../css/src/core.ts:1205:16 - error TS7017: Element implicitly has an 'any' type because type 'typeof globalThis' has no index signature.
-import { COLOR_VALUE_REGEX, NUMBER_VALUE_REGEX } from './common'
 
 type VariableValue =
     { type: 'string', value: string }
