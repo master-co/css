@@ -17,8 +17,8 @@ test('viewports', () => {
         queries: {
             'xss': 500
         }
-    }).add('hide@xss').text).toBe(
-        '@media (min-width:500px){.hide\\@xss{display:none}}'
+    }).add('hidden@xss').text).toBe(
+        '@media (min-width:500px){.hidden\\@xss{display:none}}'
     )
 })
 

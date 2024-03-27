@@ -11,9 +11,6 @@ const utilities = {
     round: {
         'border-radius': '50%'
     },
-    hide: {
-        display: 'none'
-    },
     hidden: {
         display: 'none'
     },
