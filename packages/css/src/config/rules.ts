@@ -504,8 +504,7 @@ const rules = {
         unit: 'em'
     } as RuleDefinition,
     'line-height': {
-        // todo: new key 'leading'
-        // key: 'leading',
+        key: 'leading',
         subkey: 'lh',
         layer: Layer.Native
     } as RuleDefinition,
