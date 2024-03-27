@@ -545,13 +545,18 @@ const rules = {
         ambiguousValues: ['underline', 'overline', 'line-through'],
         layer: Layer.Native,
     } as RuleDefinition,
-    // todo: prefix -webkit- to support Safari
     'text-decoration': {
         ambiguousKeys: ['text', 't'],
         ambiguousValues: ['underline', 'overline', 'line-through'],
         unit: 'rem',
         layer: Layer.NativeShorthand,
-        variables: ['text']
+        variables: ['text'],
+        declare(value) {
+            return {
+                '-webkit-text-decoration': value,
+                'text-decoration': value,
+            }
+        },
     } as RuleDefinition,
     'text-underline-offset': {
         ambiguousKeys: ['text-underline'],
