@@ -505,7 +505,7 @@ const rules = {
     } as RuleDefinition,
     'line-height': {
         key: 'leading',
-        subkey: 'lh',
+        subkey: 'line-h',
         layer: Layer.Native
     } as RuleDefinition,
     'object-fit': {
