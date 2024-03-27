@@ -630,7 +630,6 @@ const rules = {
         layer: Layer.NativeShorthand,
         variables: ['spacing']
     } as RuleDefinition,
-    // todo: truncate:1 truncate:2
     'max-height': {
         key: 'max-h',
         unit: 'rem',
@@ -1287,7 +1286,6 @@ const rules = {
         layer: Layer.NativeShorthand
     } as RuleDefinition,
     gradient: {
-        // todo: resolve fn values
         match: /^gradient\(/,
         layer: Layer.Shorthand,
         declare(value) {

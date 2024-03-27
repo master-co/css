@@ -4,7 +4,7 @@ test('group', () => {
     expect(new MasterCSS({ important: true }).create('{color:black!;bb:2|solid}')?.text).toBe('.\\{color\\:black\\!\\;bb\\:2\\|solid\\}{color:rgb(0 0 0)!important;border-bottom:0.125rem solid!important}')
     expect(new MasterCSS().create('{pt:calc(2.5em+60);mt:-60}_:where(h1,h2,h3,h4,h5,h6)')?.text).toBe('.\\{pt\\:calc\\(2\\.5em\\+60\\)\\;mt\\:-60\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){padding-top:calc(2.5em + 3.75rem);margin-top:-3.75rem}')
     expect(new MasterCSS().create('{line-height:calc(32-16);font-size:calc(32-16)}')?.text).toBe('.\\{line-height\\:calc\\(32-16\\)\\;font-size\\:calc\\(32-16\\)\\}{line-height:calc(32 - 16);font-size:calc(2rem - 1rem)}')
-    expect(new MasterCSS().create('{m:32;lh:1.5}')?.text).toBe('.\\{m\\:32\\;lh\\:1\\.5\\}{margin:2rem;line-height:1.5}')
+    expect(new MasterCSS().create('{m:32;leading:1.5}')?.text).toBe('.\\{m\\:32\\;leading\\:1\\.5\\}{margin:2rem;line-height:1.5}')
     expect(new MasterCSS({
         variables: {
             G: {
