@@ -912,7 +912,7 @@ const rules = {
         }
     } as RuleDefinition,
     'border-collapse': {
-        ambiguousKeys: ['border', 'p'],
+        ambiguousKeys: ['b', 'border'],
         ambiguousValues: ['collapse', 'separate'],
         layer: Layer.Native
     } as RuleDefinition,
