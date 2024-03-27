@@ -27,7 +27,6 @@ export default class MasterCSS {
     readonly ruleBy: Record<string, Rule> = {}
     readonly classesUsage: Record<string, number> = {}
     readonly config: Config
-    readonly SemanticRules: RegisteredRule[] = []
     readonly Rules: RegisteredRule[] = []
 
     constructor(
@@ -52,7 +51,6 @@ export default class MasterCSS {
         this.queries = {}
         this.animations = {}
         this.Rules.length = 0
-        this.SemanticRules.length = 0
         this.variablesNativeRules = {}
         this.hasKeyframesRule = false
         const colorVariableNames: Record<string, undefined> = {
@@ -313,44 +311,40 @@ export default class MasterCSS {
             handleSemanticName(eachSemanticName)
         }
 
-        if (semantics) {
-            Object.entries(semantics)
-                .sort((a: any, b: any) => a[0].localeCompare(b[0]))
-                .forEach(([id, declarations]: [string, PropertiesHyphen], index: number) => {
-                    this.SemanticRules.push({
-                        id: '.' + id,
-                        matchers: {
-                            arbitrary: new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm')
-                        },
-                        order: index,
-                        definition: {
-                            declarations,
-                            layer: Layer.Semantic
-                        }
-                    } as RegisteredRule)
-                })
-        }
-
-        if (rules) {
-            const rulesEntries = Object.entries(rules)
+        if (rules || semantics) {
+            const rulesEntries: [string, RuleDefinition][] = []
+            if (semantics) {
+                for (const semanticName in semantics) {
+                    const declarations = semantics[semanticName] as any
+                    rulesEntries.push([semanticName, { declarations, layer: Layer.Semantic }])
+                }
+            }
+            if (rules) {
+                rulesEntries.push(...Object.entries(rules) as [string, RuleDefinition][])
+            }
+            const rulesEntriesLength = rulesEntries.length
+            const colorNames = Object.keys(colorVariableNames)
+            rulesEntries
                 .sort((a: any, b: any) => {
                     if (a[1].layer !== b[1].layer) {
                         return (b[1].layer || 0) - (a[1].layer || 0)
                     }
                     return b[0].localeCompare(a[0])
-                }) as [string, RuleDefinition][]
-            const rulesEntriesLength = rulesEntries.length
-            const colorNames = Object.keys(colorVariableNames)
-            rulesEntries
-                .forEach(([id, eachRuleDefinition]: [string, RuleDefinition], index: number) => {
+                })
+                .forEach(([id, eachRuleDefinition], index: number) => {
                     const eachRegisteredRule: RegisteredRule = {
                         id,
                         variables: {},
                         matchers: {},
-                        order: this.SemanticRules.length + rulesEntriesLength - 1 - index,
+                        order: rulesEntriesLength - 1 - index,
                         definition: eachRuleDefinition
                     }
                     this.Rules.push(eachRegisteredRule)
+                    const { match, layer, key, subkey, ambiguousKeys, ambiguousValues } = eachRuleDefinition
+                    if (layer === Layer.Semantic) {
+                        eachRegisteredRule.id = '.' + id
+                        eachRegisteredRule.matchers.arbitrary = new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm')
+                    }
 
                     // todo: 不可使用 startsWith 判斷，應改為更精準的從 config.variables 取得目標變數群組，但 config.variables 中的值還沒被 resolve 像是 Array
                     const addResolvedVariables = (prefix: string) => {
@@ -375,7 +369,6 @@ export default class MasterCSS {
                     // 2. custom `config.variables`
                     addResolvedVariables(id)
 
-                    const { match, layer, key, subkey, ambiguousKeys, ambiguousValues } = eachRuleDefinition
                     const colorsPatten = colorNames.join('|')
                     const keyPatterns = []
                     if (layer === Layer.NativeShorthand || layer === Layer.Native) {
@@ -444,10 +437,6 @@ export default class MasterCSS {
         // 4. custom
         for (const eachRegisteredRule of this.Rules) {
             if (eachRegisteredRule.matchers.arbitrary?.test(className)) return eachRegisteredRule
-        }
-        // 5. semantic
-        for (const EachRegisteredSemanticRule of this.SemanticRules) {
-            if (EachRegisteredSemanticRule.matchers.arbitrary?.test(className)) return EachRegisteredSemanticRule
         }
     }
 
