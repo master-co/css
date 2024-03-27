@@ -3,13 +3,19 @@ import type { Rule, RuleDefinition } from '../rule'
 import Layer from '../layer'
 import { VALUE_DELIMITERS } from '../common'
 
-export const BORDER_STYLES = ['none', 'auto', 'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
+// keys
+const FONT_KEYS = ['font', 'f']
+const FLEX_KEYS = ['flex']
+const BORDER_KEYS = ['b', 'border']
+
+// values
+const BORDER_STYLE_VALUES = ['none', 'auto', 'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
 
 export const autofillSolidToValueComponent: RuleDefinition['transformValueComponents'] = function (valueComponents) {
     if (valueComponents.length < 2) return valueComponents
     const styleValueComponent = valueComponents.find((valueComponent) => {
-        return valueComponent.type === 'string' && BORDER_STYLES.includes(valueComponent.value) ||
-            valueComponent.type === 'variable' && BORDER_STYLES.includes(valueComponent.variable?.value)
+        return valueComponent.type === 'string' && BORDER_STYLE_VALUES.includes(valueComponent.value) ||
+            valueComponent.type === 'variable' && BORDER_STYLE_VALUES.includes(valueComponent.variable?.value)
     })
     if (!styleValueComponent) {
         valueComponents.push(
@@ -19,6 +25,8 @@ export const autofillSolidToValueComponent: RuleDefinition['transformValueCompon
     }
     return valueComponents
 }
+
+// todo try to remove numeric and recognize unit instead
 
 const rules = {
     group: {
@@ -155,21 +163,27 @@ const rules = {
         }
     } as RuleDefinition,
     'font-size': {
-        match: ['f(?:ont)?'],
+        keys: FONT_KEYS,
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
     'font-weight': {
-        match: ['f(?:ont)?', ['bolder']],
+        keys: FONT_KEYS,
+        values: ['bolder'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'font-family': {
-        match: ['f(?:ont)?'],
+        keys: FONT_KEYS,
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'font-smoothing': {
-        match: ['f(?:ont)?', ['antialiased', 'subpixel-antialiased']],
+        keys: FONT_KEYS,
+        values: ['antialiased', 'subpixel-antialiased'],
+        ambiguous: true,
         layer: Layer.CoreNative,
         declare(value) {
             switch (value) {
@@ -187,23 +201,23 @@ const rules = {
         }
     } as RuleDefinition,
     'font-style': {
-        match: ['f(?:ont)?', ['normal', 'italic', 'oblique']],
+        keys: FONT_KEYS,
+        values: ['normal', 'italic', 'oblique'],
+        ambiguous: true,
         layer: Layer.CoreNative,
         unit: 'deg'
     } as RuleDefinition,
     'font-variant-numeric': {
-        match: ['f(?:ont)?', ['ordinal', 'slashed-zero', 'lining-nums', 'oldstyle-nums', 'proportional-nums', 'tabular-nums', 'diagonal-fractions', 'stacked-fractions']],
+        keys: FONT_KEYS,
+        values: ['ordinal', 'slashed-zero', 'lining-nums', 'oldstyle-nums', 'proportional-nums', 'tabular-nums', 'diagonal-fractions', 'stacked-fractions'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'font-variant': {
-        layer: Layer.CoreNativeShorthand
+        layer: Layer.CoreNativeShorthand,
     },
-    'font-feature-settings': {
-        match: /^font-feature:/,
-        layer: Layer.CoreNative
-    } as RuleDefinition,
     font: {
-        match: /^f:/,
+        keys: FONT_KEYS,
         layer: Layer.CoreNativeShorthand,
         variables: [
             'font-family',
@@ -214,39 +228,43 @@ const rules = {
             'line-height'
         ]
     } as RuleDefinition,
+    'font-feature-settings': {
+        keys: ['font-feature'],
+        layer: Layer.CoreNative
+    } as RuleDefinition,
     color: {
-        match: /^(?:color|fg):/,
+        keys: ['fg'],
         layer: Layer.CoreNative,
         colored: true,
-        variables: ['text']
+        variables: ['text', 't']
     } as RuleDefinition,
     // margin
     'margin-left': {
-        match: /^ml:/,
+        keys: ['ml'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'margin-right': {
-        match: /^mr:/,
+        keys: ['mr'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'margin-top': {
-        match: /^mt:/,
+        keys: ['mt'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'margin-bottom': {
-        match: /^mb:/,
+        keys: ['mb'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'margin-x': {
-        match: /^(?:mx|margin-x):/,
+        keys: ['mx'],
         unit: 'rem',
         layer: Layer.CoreShorthand,
         declare(value) {
@@ -258,7 +276,7 @@ const rules = {
         variables: ['spacing']
     } as RuleDefinition,
     'margin-y': {
-        match: /^(?:my|margin-y):/,
+        keys: ['my'],
         unit: 'rem',
         layer: Layer.CoreShorthand,
         declare(value) {
@@ -270,57 +288,57 @@ const rules = {
         variables: ['spacing']
     } as RuleDefinition,
     margin: {
-        match: /^m:/,
+        keys: ['m'],
         unit: 'rem',
         layer: Layer.CoreNativeShorthand,
         variables: ['spacing']
     } as RuleDefinition,
     // margin inline
     'margin-inline-start': {
-        match: /^mis:/,
+        keys: ['mis'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'margin-inline-end': {
-        match: /^mie:/,
+        keys: ['mie'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'margin-inline': {
-        match: /^mi:/,
+        keys: ['mi'],
         unit: 'rem',
         layer: Layer.CoreNativeShorthand,
         variables: ['spacing']
     } as RuleDefinition,
     // padding
     'padding-left': {
-        match: /^pl:/,
+        keys: ['pl'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'padding-right': {
-        match: /^pr:/,
+        keys: ['pr'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'padding-top': {
-        match: /^pt:/,
+        keys: ['pt'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'padding-bottom': {
-        match: /^pb:/,
+        keys: ['pb'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'padding-x': {
-        match: /^(?:px|padding-x):/,
+        keys: ['px'],
         unit: 'rem',
         layer: Layer.CoreShorthand,
         declare(value) {
@@ -332,7 +350,7 @@ const rules = {
         variables: ['spacing']
     } as RuleDefinition,
     'padding-y': {
-        match: /^(?:py|padding-y):/,
+        keys: ['py'],
         unit: 'rem',
         layer: Layer.CoreShorthand,
         declare(value) {
@@ -344,78 +362,89 @@ const rules = {
         variables: ['spacing']
     } as RuleDefinition,
     padding: {
-        match: /^p:/,
+        keys: ['p'],
         unit: 'rem',
         layer: Layer.CoreNativeShorthand,
         variables: ['spacing']
     } as RuleDefinition,
     // padding inline
     'padding-inline-start': {
-        match: /^pis:/,
+        keys: ['pis'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'padding-inline-end': {
-        match: /^pie:/,
+        keys: ['pie'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'padding-inline': {
-        match: /^pi:/,
+        keys: ['pi'],
         unit: 'rem',
         layer: Layer.CoreNativeShorthand,
         variables: ['spacing']
     } as RuleDefinition,
     // flex
     'flex-basis': {
+        keys: FLEX_KEYS,
+        ambiguous: true,
         unit: 'rem',
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'flex-wrap': {
-        match: ['flex', ['wrap', 'nowrap', 'wrap-reverse']],
+        keys: FLEX_KEYS,
+        values: ['wrap', 'nowrap', 'wrap-reverse'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'flex-grow': {
+        keys: FLEX_KEYS,
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'flex-shrink': {
+        keys: FLEX_KEYS,
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'flex-direction': {
-        match: ['flex', ['row', 'row-reverse', 'column', 'column-reverse']],
+        keys: FLEX_KEYS,
+        values: ['row', 'row-reverse', 'column', 'column-reverse'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     flex: {
+        keys: FLEX_KEYS,
         layer: Layer.CoreNativeShorthand
     } as RuleDefinition,
     display: {
-        match: /^d:/,
+        keys: ['d'],
         layer: Layer.CoreNative,
     } as RuleDefinition,
     width: {
-        match: /^w:/,
+        keys: ['w'],
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
     height: {
-        match: /^h:/,
+        keys: ['h'],
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
     'min-width': {
-        match: /^min-w:/,
+        keys: ['min-w'],
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
     'min-height': {
-        match: /^min-h:/,
+        keys: ['min-h'],
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
     size: {
-        match: /^size:/,
+        keys: ['size'],
         layer: Layer.CoreShorthand,
         unit: 'rem',
         declare(_value, valueComponents) {
@@ -431,7 +460,7 @@ const rules = {
         }
     } as RuleDefinition,
     'min-size': {
-        match: /^min:/,
+        keys: ['min'],
         layer: Layer.CoreShorthand,
         unit: 'rem',
         declare(_value, valueComponents) {
@@ -447,7 +476,7 @@ const rules = {
         }
     } as RuleDefinition,
     'max-size': {
-        match: /^max:/,
+        keys: ['max'],
         layer: Layer.CoreShorthand,
         unit: 'rem',
         declare(_value, valueComponents) {
@@ -463,11 +492,11 @@ const rules = {
         }
     } as RuleDefinition,
     'box-sizing': {
-        match: /^box:/,
+        keys: ['box'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'box-decoration-break': {
-        match: ['box-decoration', ['slice', 'clone']],
+        keys: ['box-decoration'],
         layer: Layer.CoreNative,
         declare(value) {
             return {
@@ -488,73 +517,106 @@ const rules = {
     'counter-reset': {
         layer: Layer.CoreNative,
     } as RuleDefinition,
+    // todo: new key 'tracking'
     'letter-spacing': {
-        match: /^ls:/,
+        keys: ['ls'],
         layer: Layer.CoreNative,
         unit: 'em'
     } as RuleDefinition,
     'line-height': {
-        match: /^lh:/,
+        keys: ['lh'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'object-fit': {
-        match: ['(?:object|obj)', ['contain', 'cover', 'fill', 'scale-down']],
+        keys: ['object', 'obj'],
+        values: ['contain', 'cover', 'fill', 'scale-down'],
+        ambiguous: true,
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'object-position': {
-        match: ['(?:object|obj)', ['top', 'bottom', 'right', 'left', 'center']],
+        keys: ['object', 'obj'],
+        values: ['top', 'bottom', 'right', 'left', 'center'],
+        ambiguous: true,
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'text-align': {
-        match: ['t(?:ext)?', ['justify', 'center', 'left', 'right', 'start', 'end']],
+        keys: ['text', 't'],
+        values: ['justify', 'center', 'left', 'right', 'start', 'end'],
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'text-decoration-color': {
-        match: ['text-decoration'],
-        layer: Layer.CoreNative,
+        keys: ['text-decoration'],
+        ambiguous: true,
         colored: true,
-        variables: ['text']
+        layer: Layer.CoreNative,
+        variables: ['text', 't']
     } as RuleDefinition,
     'text-decoration-style': {
-        match: ['t(?:ext)?', ['solid', 'double', 'dotted', 'dashed', 'wavy']],
+        keys: ['text-decoration'],
+        values: ['solid', 'double', 'dotted', 'dashed', 'wavy'],
+        ambiguous: true,
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'text-decoration-thickness': {
-        match: ['text-decoration', ['from-font']],
+        keys: ['text-decoration'],
+        values: ['from-font'],
+        ambiguous: true,
         numeric: true,
         layer: Layer.CoreNative,
         unit: 'em'
     } as RuleDefinition,
     'text-decoration-line': {
-        match: ['t(?:ext)?', ['none', 'underline', 'overline', 'line-through']],
+        keys: ['text-decoration'],
+        values: ['underline', 'overline', 'line-through'],
+        ambiguous: true,
         layer: Layer.CoreNative,
     } as RuleDefinition,
+    // todo: prefix -webkit- to support Safari
     'text-decoration': {
-        match: ['t(?:ext)?', ['underline', 'overline', 'line-through']],
+        keys: ['text', 't'],
+        values: ['underline', 'overline', 'line-through'],
+        ambiguous: true,
         unit: 'rem',
         colored: true,
         layer: Layer.CoreNativeShorthand,
-        variables: ['text']
+        variables: ['text', 't']
     } as RuleDefinition,
     'text-underline-offset': {
+        keys: ['text-underline'],
+        ambiguous: true,
         unit: 'rem',
         layer: Layer.CoreNative,
         variables: ['spacing']
     } as RuleDefinition,
+    // todo: add text-underline-position
+    // 'text-underline-position': {
+    //     keys: ['text-underline'],
+    //     values: ['front-font', 'under', 'left', 'right'],
+    //     ambiguous: true,
+    //     layer: Layer.CoreNative
+    // } as RuleDefinition,
     'text-overflow': {
-        match: ['t(?:ext)?', ['ellipsis', 'clip']],
+        keys: ['text', 't'],
+        values: ['ellipsis', 'clip'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'text-orientation': {
-        match: ['t(?:ext)?', ['mixed', 'upright', 'sideways-right', 'sideways', 'use-glyph-orientation']],
+        keys: ['text', 't'],
+        values: ['mixed', 'upright', 'sideways-right', 'sideways', 'use-glyph-orientation'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'text-transform': {
-        match: ['t(?:ext)?', ['uppercase', 'lowercase', 'capitalize']],
+        keys: ['text', 't'],
+        values: ['uppercase', 'lowercase', 'capitalize'],
+        ambiguous: true,
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'text-rendering': {
-        match: ['t(?:ext)?', ['optimizeSpeed', 'optimizeLegibility', 'geometricPrecision']],
+        keys: ['text', 't'],
+        values: ['optimizespeed', 'optimizelegibility', 'geometricprecision'],
+        ambiguous: true,
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'text-indent': {
@@ -562,11 +624,11 @@ const rules = {
         layer: Layer.CoreNative
     } as RuleDefinition,
     'vertical-align': {
-        match: /^(?:v|vertical):/,
+        keys: ['vertical', 'v'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     columns: {
-        match: /^(?:columns|cols):/,
+        keys: ['cols'],
         layer: Layer.CoreNativeShorthand
     } as RuleDefinition,
     'white-space': {
@@ -597,8 +659,9 @@ const rules = {
         layer: Layer.CoreNativeShorthand,
         variables: ['spacing']
     } as RuleDefinition,
+    // todo: truncate:1 truncate:2
     lines: {
-        match: /^lines:/,
+        keys: ['lines'],
         declare(value) {
             return {
                 overflow: 'hidden',
@@ -608,15 +671,15 @@ const rules = {
                 '-webkit-box-orient': 'vertical',
                 '-webkit-line-clamp': value
             }
-        }
+        },
     } as RuleDefinition,
     'max-height': {
-        match: /^max-h:/,
+        keys: ['max-h'],
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
     'max-width': {
-        match: /^max-w:/,
+        keys: ['max-w'],
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
@@ -669,7 +732,7 @@ const rules = {
         layer: Layer.CoreNativeShorthand
     } as RuleDefinition,
     'z-index': {
-        match: /^z:/,
+        keys: ['z'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     position: {
@@ -718,7 +781,8 @@ const rules = {
         colored: true
     } as RuleDefinition,
     'text-size': {
-        match: ['t(?:ext)?'],
+        keys: ['text', 't'],
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         declare(value) {
@@ -730,7 +794,8 @@ const rules = {
         }
     } as RuleDefinition,
     'text-fill-color': {
-        match: ['(?:text-fill|text|t)'],
+        keys: ['text', 't'],
+        ambiguous: true,
         layer: Layer.CoreNative,
         colored: true,
         variables: ['text'],
@@ -741,7 +806,9 @@ const rules = {
         }
     } as RuleDefinition,
     'text-stroke-width': {
-        match: ['text-stroke', ['thin', 'medium', 'thick']],
+        keys: ['text-stroke'],
+        values: ['thin', 'medium', 'thick'],
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreNative,
@@ -752,10 +819,11 @@ const rules = {
         },
     } as RuleDefinition,
     'text-stroke-color': {
-        match: ['text-stroke'],
+        keys: ['text-stroke'],
+        ambiguous: true,
         layer: Layer.CoreNative,
         colored: true,
-        variables: ['text'],
+        variables: ['text', 't'],
         declare(value) {
             return {
                 '-webkit-text-stroke-color': value
@@ -772,7 +840,7 @@ const rules = {
         }
     } as RuleDefinition,
     'box-shadow': {
-        match: /^s(?:hadow)?:/,
+        keys: ['shadow', 's'],
         unit: 'rem',
         layer: Layer.CoreNative,
         colored: true
@@ -781,15 +849,20 @@ const rules = {
         layer: Layer.CoreNative
     } as RuleDefinition,
     'transform-box': {
-        match: ['transform'],
+        keys: ['transform'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'transform-style': {
-        match: ['transform', ['flat', 'preserve-3d']],
+        keys: ['transform'],
+        values: ['flat', 'preserve-3d'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'transform-origin': {
-        match: ['transform', ['top', 'bottom', 'right', 'left', 'center']],
+        keys: ['transform'],
+        values: ['top', 'bottom', 'right', 'left', 'center'],
+        ambiguous: true,
         numeric: true,
         unit: 'px',
         layer: Layer.CoreNative
@@ -803,20 +876,20 @@ const rules = {
         variables: ['spacing']
     } as RuleDefinition,
     'transition-property': {
-        match: /^~property:/,
+        keys: ['~property'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'transition-timing-function': {
-        match: /^~easing:/,
+        keys: ['~easing'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'transition-duration': {
-        match: /^~duration:/,
+        keys: ['~duration'],
         layer: Layer.CoreNative,
         unit: 'ms'
     } as RuleDefinition,
     'transition-delay': {
-        match: /^~delay:/,
+        keys: ['~delay'],
         layer: Layer.CoreNative,
         unit: 'ms'
     } as RuleDefinition,
@@ -834,37 +907,37 @@ const rules = {
         layer: Layer.CoreNativeShorthand
     } as RuleDefinition,
     'animation-delay': {
-        match: /^@delay:/,
+        keys: ['@delay'],
         layer: Layer.CoreNative,
         unit: 'ms'
     } as RuleDefinition,
     'animation-direction': {
-        match: /^@direction:/,
+        keys: ['@direction'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'animation-duration': {
-        match: /^@duration:/,
+        keys: ['@duration'],
         layer: Layer.CoreNative,
         unit: 'ms'
     } as RuleDefinition,
     'animation-fill-mode': {
-        match: /^@fill:/,
+        keys: ['@fill'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'animation-iteration-count': {
-        match: /^@iteration:/,
+        keys: ['@iteration'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'animation-name': {
-        match: /^@name:/,
+        keys: ['@name'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'animation-play-state': {
-        match: /^@play:/,
+        keys: ['@play'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'animation-timing-function': {
-        match: /^@easing:/,
+        keys: ['@easing'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     animation: {
@@ -881,36 +954,39 @@ const rules = {
         }
     } as RuleDefinition,
     'border-collapse': {
-        match: ['b(?:order)?', ['collapse', 'separate']],
+        keys: BORDER_KEYS,
+        values: ['collapse', 'separate'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'border-spacing': {
         unit: 'rem',
-        layer: Layer.CoreNative
+        layer: Layer.CoreNative,
+        variables: ['spacing']
     } as RuleDefinition,
     // border color
     'border-top-color': {
-        match: ['b(?:t|order-top(?:-color)?)'],
+        keys: ['bt', 'border-top'],
         layer: Layer.CoreNative,
         colored: true
     } as RuleDefinition,
     'border-bottom-color': {
-        match: ['b(?:b|order-bottom(?:-color)?)'],
+        keys: ['bb', 'border-bottom'],
         layer: Layer.CoreNative,
         colored: true
     } as RuleDefinition,
     'border-left-color': {
-        match: ['b(?:l|order-left(?:-color)?)'],
+        keys: ['bl', 'border-left'],
         layer: Layer.CoreNative,
         colored: true
     } as RuleDefinition,
     'border-right-color': {
-        match: ['b(?:r|order-right(?:-color)?)'],
+        keys: ['br', 'border-right'],
         layer: Layer.CoreNative,
         colored: true
     } as RuleDefinition,
     'border-x-color': {
-        match: ['b(?:x|order-x(?:-color)?)'],
+        keys: ['bx', 'border-x'],
         layer: Layer.CoreShorthand,
         colored: true,
         declare(value) {
@@ -921,7 +997,7 @@ const rules = {
         }
     } as RuleDefinition,
     'border-y-color': {
-        match: ['b(?:y|order-y(?:-color)?)'],
+        keys: ['by', 'border-y'],
         layer: Layer.CoreShorthand,
         colored: true,
         declare(value) {
@@ -932,33 +1008,33 @@ const rules = {
         }
     } as RuleDefinition,
     'border-color': {
-        match: ['b(?:order)?(?:-color)?'],
+        keys: ['b', 'border'],
         layer: Layer.CoreNativeShorthand,
         colored: true
     } as RuleDefinition,
     // border radius
     'border-top-left-radius': {
-        match: /^r(?:tl|lt):/,
+        keys: ['rtl'],
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
     'border-top-right-radius': {
-        match: /^r(?:tr|rt):/,
+        keys: ['rtr'],
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
     'border-bottom-left-radius': {
-        match: /^r(?:bl|lb):/,
+        keys: ['rbl'],
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
     'border-bottom-right-radius': {
-        match: /^r(?:br|rb):/,
+        keys: ['rbr'],
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
     'border-top-radius': {
-        match: /^rt:/,
+        keys: ['rt'],
         unit: 'rem',
         layer: Layer.CoreShorthand,
         declare(value) {
@@ -969,7 +1045,7 @@ const rules = {
         }
     } as RuleDefinition,
     'border-bottom-radius': {
-        match: /^rb:/,
+        keys: ['rb'],
         unit: 'rem',
         layer: Layer.CoreShorthand,
         declare(value) {
@@ -980,7 +1056,7 @@ const rules = {
         }
     } as RuleDefinition,
     'border-left-radius': {
-        match: /^rl:/,
+        keys: ['rl'],
         unit: 'rem',
         layer: Layer.CoreShorthand,
         declare(value) {
@@ -991,7 +1067,7 @@ const rules = {
         }
     } as RuleDefinition,
     'border-right-radius': {
-        match: /^rr:/,
+        keys: ['rr'],
         unit: 'rem',
         layer: Layer.CoreShorthand,
         declare(value) {
@@ -1002,29 +1078,39 @@ const rules = {
         }
     } as RuleDefinition,
     'border-radius': {
-        match: /^r:/,
+        keys: ['r'],
         unit: 'rem',
         layer: Layer.CoreNativeShorthand
     } as RuleDefinition,
     // border style
     'border-top-style': {
-        match: ['b(?:t|order-top(?:-style)?)', BORDER_STYLES],
+        keys: ['bt', 'border-top'],
+        values: BORDER_STYLE_VALUES,
+        ambiguous: true,
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'border-bottom-style': {
-        match: ['b(?:b|order-bottom(?:-style)?)', BORDER_STYLES],
+        keys: ['bb', 'border-bottom'],
+        values: BORDER_STYLE_VALUES,
+        ambiguous: true,
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'border-left-style': {
-        match: ['b(?:l|order-left(?:-style)?)', BORDER_STYLES],
+        keys: ['bl', 'border-left'],
+        values: BORDER_STYLE_VALUES,
+        ambiguous: true,
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'border-right-style': {
-        match: ['b(?:r|order-right(?:-style)?)', BORDER_STYLES],
+        keys: ['br', 'border-right'],
+        values: BORDER_STYLE_VALUES,
+        ambiguous: true,
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'border-x-style': {
-        match: ['b(?:x|order-x(?:-style)?)', BORDER_STYLES],
+        keys: ['bx', 'border-x'],
+        values: BORDER_STYLE_VALUES,
+        ambiguous: true,
         layer: Layer.CoreShorthand,
         declare(value) {
             return {
@@ -1034,7 +1120,9 @@ const rules = {
         }
     } as RuleDefinition,
     'border-y-style': {
-        match: ['b(?:y|order-y(?:-style)?)', BORDER_STYLES],
+        keys: ['by', 'border-y'],
+        values: BORDER_STYLE_VALUES,
+        ambiguous: true,
         layer: Layer.CoreShorthand,
         declare(value) {
             return {
@@ -1044,36 +1132,43 @@ const rules = {
         }
     } as RuleDefinition,
     'border-style': {
-        match: ['b(?:order)?(?:-style)?', BORDER_STYLES],
+        keys: ['b'],
+        values: BORDER_STYLE_VALUES,
+        ambiguous: true,
         layer: Layer.CoreNativeShorthand
     } as RuleDefinition,
     // border width
     'border-top-width': {
-        match: ['b(?:t|order-top(?:-width)?)'],
+        keys: ['bt'],
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'border-bottom-width': {
-        match: ['b(?:b|order-bottom(?:-width)?)'],
+        keys: ['bb'],
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'border-left-width': {
-        match: ['b(?:l|order-left(?:-width)?)'],
+        keys: ['bl'],
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'border-right-width': {
-        match: ['b(?:r|order-right(?:-width)?)'],
+        keys: ['br'],
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreNative,
     } as RuleDefinition,
     'border-x-width': {
-        match: ['b(?:x|order-x(?:-width)?)'],
+        keys: ['bx'],
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreShorthand,
@@ -1085,7 +1180,8 @@ const rules = {
         }
     } as RuleDefinition,
     'border-y-width': {
-        match: ['b(?:y|order-y(?:-width)?)'],
+        keys: ['by'],
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreShorthand,
@@ -1097,67 +1193,79 @@ const rules = {
         }
     } as RuleDefinition,
     'border-width': {
-        match: ['b(?:order)?(?:-width)?'],
+        keys: ['b'],
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreNativeShorthand
     } as RuleDefinition,
     // border image
     'border-image-outset': {
+        keys: ['border-image'],
+        ambiguous: true,
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
     'border-image-repeat': {
-        match: ['border-image', ['stretch', 'repeat', 'round', 'space']],
+        keys: ['border'],
+        values: ['stretch', 'repeat', 'round', 'space'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'border-image-slice': {
+        keys: ['border'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'border-image-source': {
-        match: ['border-image', ['url', 'linear-gradient', 'radial-gradient', 'repeating-linear-gradient', 'repeating-radial-gradient', 'conic-gradient']],
+        keys: ['border'],
+        values: ['url', 'linear-gradient', 'radial-gradient', 'repeating-linear-gradient', 'repeating-radial-gradient', 'conic-gradient'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'border-image-width': {
-        match: ['border-image', ['auto']],
+        keys: ['border'],
+        values: ['auto'],
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
     'border-image': {
+        keys: ['border'],
         layer: Layer.CoreNativeShorthand
     } as RuleDefinition,
     // border
     'border-top': {
-        match: /^bt:/,
+        keys: ['bt'],
         layer: Layer.CoreNativeShorthand,
         unit: 'rem',
         colored: true,
         transformValueComponents: autofillSolidToValueComponent,
     } as RuleDefinition,
     'border-bottom': {
-        match: /^bb:/,
+        keys: ['bb'],
         layer: Layer.CoreNativeShorthand,
         unit: 'rem',
         colored: true,
         transformValueComponents: autofillSolidToValueComponent,
     } as RuleDefinition,
     'border-left': {
-        match: /^bl:/,
+        keys: ['bl'],
         layer: Layer.CoreNativeShorthand,
         unit: 'rem',
         colored: true,
         transformValueComponents: autofillSolidToValueComponent,
     } as RuleDefinition,
     'border-right': {
-        match: /^br:/,
+        keys: ['br'],
         layer: Layer.CoreNativeShorthand,
         unit: 'rem',
         colored: true,
         transformValueComponents: autofillSolidToValueComponent,
     } as RuleDefinition,
     'border-x': {
-        match: /^(?:bx|border-x):/,
+        keys: ['bx'],
         unit: 'rem',
         colored: true,
         layer: Layer.CoreShorthand,
@@ -1170,7 +1278,7 @@ const rules = {
         }
     } as RuleDefinition,
     'border-y': {
-        match: /^(?:by|border-y):/,
+        keys: ['by'],
         unit: 'rem',
         colored: true,
         layer: Layer.CoreShorthand,
@@ -1183,26 +1291,32 @@ const rules = {
         }
     } as RuleDefinition,
     border: {
-        match: /^b:/,
+        keys: ['b'],
         unit: 'rem',
         colored: true,
         layer: Layer.CoreNativeShorthand,
         transformValueComponents: autofillSolidToValueComponent,
     } as RuleDefinition,
     'background-attachment': {
-        match: ['(?:bg|background)', ['fixed', 'local', 'scroll']],
+        keys: ['bg'],
+        values: ['fixed', 'local', 'scroll'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'background-blend-mode': {
+        keys: ['bg-blend'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'background-color': {
-        match: ['(?:bg|background)'],
+        keys: ['bg'],
         layer: Layer.CoreNative,
+        ambiguous: true,
         colored: true
     } as RuleDefinition,
     'background-clip': {
-        match: ['(?:bg|background)', ['text']],
+        keys: ['bg-clip'],
+        // todo: text should be listed in completion list
+        // values: ['text'],
         layer: Layer.CoreNative,
         declare(value) {
             return {
@@ -1212,36 +1326,44 @@ const rules = {
         }
     } as RuleDefinition,
     'background-origin': {
-        match: ['(?:bg|background)'],
+        keys: ['bg-origin'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'background-position': {
-        match: ['(?:bg|background)', ['top', 'bottom', 'right', 'left', 'center']],
+        keys: ['bg'],
+        values: ['top', 'bottom', 'right', 'left', 'center'],
+        ambiguous: true,
         layer: Layer.CoreNative,
         unit: 'px'
     } as RuleDefinition,
     'background-repeat': {
-        match: ['(?:bg|background)', ['space', 'round', 'repeat', 'no-repeat', 'repeat-x', 'repeat-y']],
+        keys: ['bg'],
+        values: ['space', 'round', 'repeat', 'no-repeat', 'repeat-x', 'repeat-y'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'background-size': {
-        match: ['(?:bg|background)', ['auto', 'cover', 'contain']],
+        keys: ['bg'],
+        values: ['auto', 'cover', 'contain'],
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreNative
     } as RuleDefinition,
     'background-image': {
+        // todo: resolve fn values
         match: ['(?:bg|background)', ['(?:url|linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient)\\(.*\\)']],
         layer: Layer.CoreNative
     } as RuleDefinition,
     background: {
-        match: /^bg:/,
+        keys: ['bg'],
         colored: true,
         layer: Layer.CoreNativeShorthand
     } as RuleDefinition,
     gradient: {
+        // todo: resolve fn values
         match: /^gradient\(/,
-        layer: Layer.CoreNative,
+        layer: Layer.CoreShorthand,
         colored: true,
         declare(value) {
             return {
@@ -1250,11 +1372,11 @@ const rules = {
         }
     } as RuleDefinition,
     'mix-blend-mode': {
-        match: /^blend:/,
+        keys: ['blend'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'backdrop-filter': {
-        match: /^bd:/,
+        keys: ['bd'],
         layer: Layer.CoreNative,
         colored: true,
         declare(value) {
@@ -1265,12 +1387,12 @@ const rules = {
         }
     } as RuleDefinition,
     filter: {
+        // todo: resolve fn
         match: /^(?:blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)\(/,
         layer: Layer.CoreNative,
         colored: true
     } as RuleDefinition,
     fill: {
-        match: /^fill:/,
         layer: Layer.CoreNative,
         colored: true
     } as RuleDefinition,
@@ -1282,12 +1404,12 @@ const rules = {
         variables: ['spacing']
     } as RuleDefinition,
     'stroke-width': {
-        match: ['stroke(?:-width)?'],
+        keys: ['stroke'],
+        ambiguous: true,
         numeric: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     stroke: {
-        match: ['stroke'],
         layer: Layer.CoreNative,
         colored: true
     } as RuleDefinition,
@@ -1314,24 +1436,26 @@ const rules = {
         layer: Layer.CoreNative
     } as RuleDefinition,
     'grid-column-start': {
-        match: /^grid-col(?:umn)?-start:/,
+        keys: ['grid-col-start'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'grid-column-end': {
-        match: /^grid-col(?:umn)?-end:/,
+        keys: ['grid-col-end'],
         layer: Layer.CoreNative
     } as RuleDefinition,
-    'grid-column': {
-        match: /^grid-col(?:umn)?(?:-span)?:/,
-        layer: Layer.CoreNativeShorthand,
+    'grid-column-span': {
+        keys: ['grid-col-span'],
+        layer: Layer.CoreShorthand,
         transformValue(value) {
-            return this.keyToken.slice(-5, -1) === 'span' && value !== 'auto'
-                ? 'span' + ' ' + value + '/' + 'span' + ' ' + value
-                : value
+            return 'span' + ' ' + value + '/' + 'span' + ' ' + value
         }
     } as RuleDefinition,
+    'grid-column': {
+        keys: ['grid-col'],
+        layer: Layer.CoreNativeShorthand,
+    } as RuleDefinition,
     'grid-columns': {
-        match: /^grid-col(?:umn)?s:/,
+        keys: ['grid-cols'],
         declare(value) {
             return {
                 display: 'grid',
@@ -1350,17 +1474,17 @@ const rules = {
     'grid-row-end': {
         layer: Layer.CoreNative
     } as RuleDefinition,
-    'grid-row': {
-        match: /^grid-row-span:/,
-        layer: Layer.CoreNativeShorthand,
+    'grid-row-span': {
+        layer: Layer.CoreShorthand,
         transformValue(value) {
-            return this.keyToken.slice(-5, -1) === 'span' && value !== 'auto'
-                ? 'span' + ' ' + value + '/' + 'span' + ' ' + value
-                : value
+            return 'span' + ' ' + value + '/' + 'span' + ' ' + value
         }
     } as RuleDefinition,
+    'grid-row': {
+        layer: Layer.CoreNativeShorthand
+    } as RuleDefinition,
     'grid-rows': {
-        match: /^grid-rows:/,
+        keys: ['grid-rows'],
         declare(value) {
             return {
                 display: 'grid',
@@ -1375,11 +1499,11 @@ const rules = {
         layer: Layer.Core
     } as RuleDefinition,
     'grid-auto-columns': {
-        match: /^grid-auto-cols:/,
+        keys: ['grid-auto-cols'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'grid-auto-flow': {
-        match: /^grid-flow:/,
+        keys: ['grid-flow'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'grid-auto-rows': {
@@ -1389,7 +1513,7 @@ const rules = {
         layer: Layer.CoreNative
     } as RuleDefinition,
     'grid-template-columns': {
-        match: /^grid-template-cols:/,
+        keys: ['grid-template-cols'],
         layer: Layer.CoreNative,
         unit: 'rem'
     } as RuleDefinition,
@@ -1407,13 +1531,13 @@ const rules = {
         layer: Layer.CoreNativeShorthand
     } as RuleDefinition,
     'column-gap': {
-        match: /^gap-x:/,
+        keys: ['gap-x'],
         unit: 'rem',
         layer: Layer.CoreNative,
         variables: ['spacing']
     } as RuleDefinition,
     'row-gap': {
-        match: /^gap-y:/,
+        keys: ['gap-y'],
         unit: 'rem',
         layer: Layer.CoreNative,
         variables: ['spacing']
@@ -1424,7 +1548,7 @@ const rules = {
         variables: ['spacing']
     } as RuleDefinition,
     order: {
-        match: /^o:/,
+        keys: ['o'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'break-inside': {
@@ -1437,35 +1561,35 @@ const rules = {
         layer: Layer.CoreNative
     } as RuleDefinition,
     'aspect-ratio': {
-        match: /^aspect:/,
+        keys: ['aspect'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'column-span': {
-        match: /^col-span:/,
+        keys: ['col-span'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'align-content': {
-        match: /^ac:/,
+        keys: ['align-content', 'ac'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'align-items': {
-        match: /^ai:/,
+        keys: ['align-items', 'ai'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'align-self': {
-        match: /^as:/,
+        keys: ['align-self', 'as'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'justify-content': {
-        match: /^jc:/,
+        keys: ['justify-content', 'jc'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'justify-items': {
-        match: /^ji:/,
+        keys: ['justify-items', 'ji'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'justify-self': {
-        match: /^js:/,
+        keys: ['justify-self', 'js'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'place-content': {
@@ -1478,14 +1602,19 @@ const rules = {
         layer: Layer.CoreNativeShorthand
     } as RuleDefinition,
     'list-style-position': {
-        match: ['list-style', ['inside', 'outside']],
+        keys: ['list-style'],
+        values: ['inside', 'outside'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'list-style-type': {
-        match: ['list-style', ['disc', 'decimal']],
+        keys: ['list-style'],
+        values: ['disc', 'decimal'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'list-style-image': {
+        // todo: resolve fn values
         match: ['list-style', ['(?:url|linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient)\\(.*\\)']],
         layer: Layer.CoreNative
     } as RuleDefinition,
@@ -1493,7 +1622,8 @@ const rules = {
         layer: Layer.CoreNativeShorthand
     } as RuleDefinition,
     'outline-color': {
-        match: ['outline'],
+        keys: ['outline'],
+        ambiguous: true,
         layer: Layer.CoreNative,
         colored: true
     } as RuleDefinition,
@@ -1503,11 +1633,15 @@ const rules = {
         variables: ['spacing']
     } as RuleDefinition,
     'outline-style': {
-        match: ['outline', BORDER_STYLES],
+        keys: ['outline'],
+        values: BORDER_STYLE_VALUES,
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'outline-width': {
-        match: ['outline', ['medium', 'thick', 'thin']],
+        keys: ['outline'],
+        values: ['medium', 'thick', 'thin'],
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreNative
@@ -1525,7 +1659,7 @@ const rules = {
         transformValueComponents: autofillSolidToValueComponent
     } as RuleDefinition,
     'accent-color': {
-        match: /^accent:/,
+        keys: ['accent'],
         layer: Layer.CoreNative,
         colored: true
     } as RuleDefinition,
@@ -1533,41 +1667,41 @@ const rules = {
         layer: Layer.CoreNative
     } as RuleDefinition,
     'caret-color': {
-        match: /^caret:/,
+        keys: ['caret'],
         layer: Layer.CoreNative,
         colored: true,
-        variables: ['text']
+        variables: ['text', 't']
     } as RuleDefinition,
     'scroll-behavior': {
         layer: Layer.CoreNative
     } as RuleDefinition,
     // scroll margin
     'scroll-margin-left': {
-        match: /^scroll-ml:/,
+        keys: ['scroll-ml'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'scroll-margin-right': {
-        match: /^scroll-mr:/,
+        keys: ['scroll-mr'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'scroll-margin-top': {
-        match: /^scroll-mt:/,
+        keys: ['scroll-mt'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'scroll-margin-bottom': {
-        match: /^scroll-mb:/,
+        keys: ['scroll-mb'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'scroll-margin-x': {
-        match: /^(?:scroll-margin-x|scroll-mx):/,
+        keys: ['scroll-mx'],
         unit: 'rem',
         layer: Layer.CoreShorthand,
         declare(value) {
@@ -1579,7 +1713,7 @@ const rules = {
         variables: ['spacing']
     } as RuleDefinition,
     'scroll-margin-y': {
-        match: /^(?:scroll-margin-y|scroll-my):/,
+        keys: ['scroll-my'],
         unit: 'rem',
         layer: Layer.CoreShorthand,
         declare(value) {
@@ -1591,38 +1725,38 @@ const rules = {
         variables: ['spacing']
     } as RuleDefinition,
     'scroll-margin': {
-        match: /^scroll-m:/,
+        keys: ['scroll-m'],
         unit: 'rem',
         layer: Layer.CoreNativeShorthand,
         variables: ['spacing']
     } as RuleDefinition,
     // scroll padding
     'scroll-padding-left': {
-        match: /^scroll-pl:/,
+        keys: ['scroll-pl'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'scroll-padding-right': {
-        match: /^scroll-pr:/,
+        keys: ['scroll-pr'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'scroll-padding-top': {
-        match: /^scroll-pt:/,
+        keys: ['scroll-pt'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'scroll-padding-bottom': {
-        match: /^scroll-pb:/,
+        keys: ['scroll-pb'],
         layer: Layer.CoreNative,
         unit: 'rem',
         variables: ['spacing']
     } as RuleDefinition,
     'scroll-padding-x': {
-        match: /^(?:scroll-padding-x|scroll-px):/,
+        keys: ['scroll-px'],
         unit: 'rem',
         layer: Layer.CoreShorthand,
         declare(value) {
@@ -1634,7 +1768,7 @@ const rules = {
         variables: ['spacing']
     } as RuleDefinition,
     'scroll-padding-y': {
-        match: /^(?:scroll-padding-y|scroll-py):/,
+        keys: ['scroll-py'],
         unit: 'rem',
         layer: Layer.CoreShorthand,
         declare(value) {
@@ -1646,40 +1780,48 @@ const rules = {
         variables: ['spacing']
     } as RuleDefinition,
     'scroll-padding': {
-        match: /^scroll-p:/,
+        keys: ['scroll-p'],
         unit: 'rem',
         layer: Layer.CoreNativeShorthand,
         variables: ['spacing']
     } as RuleDefinition,
     // scroll snap
     'scroll-snap-align': {
-        match: ['scroll-snap', ['start', 'end', 'center']],
+        keys: ['scroll-snap'],
+        values: ['start', 'end', 'center'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'scroll-snap-stop': {
-        match: ['scroll-snap', ['normal', 'always']],
+        keys: ['scroll-snap'],
+        values: ['normal', 'always'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'scroll-snap-type': {
-        match: ['scroll-snap', ['x', 'y', 'block', 'inline', 'both']],
+        keys: ['scroll-snap'],
+        values: ['x', 'y', 'block', 'inline', 'both'],
+        ambiguous: true,
         layer: Layer.CoreNative
     } as RuleDefinition,
     'will-change': {
         layer: Layer.CoreNative
     } as RuleDefinition,
     'writing-mode': {
-        match: /^writing:/,
+        keys: ['writing'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     direction: {
         layer: Layer.CoreNative
     } as RuleDefinition,
     'shape-outside': {
+        // todo: resolve fn values
         match: ['shape', ['(?:inset|circle|ellipse|polygon|url|linear-gradient)\\(.*\\)']],
         layer: Layer.CoreNative
     } as RuleDefinition,
     'shape-margin': {
-        match: ['shape'],
+        keys: ['shape'],
+        ambiguous: true,
         numeric: true,
         unit: 'rem',
         layer: Layer.CoreNative,
@@ -1689,7 +1831,7 @@ const rules = {
         layer: Layer.CoreNative
     } as RuleDefinition,
     'clip-path': {
-        match: /^clip:/,
+        keys: ['clip'],
         layer: Layer.CoreNative
     } as RuleDefinition,
     quotes: {
