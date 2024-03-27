@@ -1,7 +1,6 @@
 import { Position } from 'vscode-languageserver-textdocument'
 import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
-import getRange from '../src/utils/get-range'
 import { Settings } from '../src/settings'
 import dedent from 'ts-dedent'
 

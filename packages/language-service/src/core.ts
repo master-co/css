@@ -62,7 +62,7 @@ export default class CSSLanguageService extends EventEmitter {
                 new RegExp(`(\\b(?:${classAttributesPatten})=)({[^}]*})`, 'g')
             )
         }
-        const classRegex = /[^\s:]+:\w*\(?((?<!\\)["'`])((?:\\\1|(?:(?!\1))[\S\s])*)((?<!\\)\1)\)?|[^\s"'`]+/g
+        const classRegex = /[^\s:]+:\w*\(?((?<!\\)["'`])((?:\\\1|(?:(?!\1))\S)*)((?<!\\)\1)\)?|[^\s"'`]+/g
         let eachClassPostioinMatch: RegExpExecArray | null
         let classMatch: RegExpExecArray | null
         for (const eachClassPositionRegex of classPositionRegexes) {
