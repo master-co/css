@@ -59,7 +59,7 @@ export default class MasterCSS {
             transparent: undefined
         }
 
-        const { styles, selectors, variables, semantics, queries, rules, animations } = this.config
+        const { styles, selectors, variables, utilities, queries, rules, animations } = this.config
 
         function escapeString(str: string) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -265,14 +265,14 @@ export default class MasterCSS {
         }
 
         const flattedStyles: Record<string, string> = styles ? flattenObject(styles) : {}
-        const semanticNames = Object.keys(flattedStyles)
-        const handleSemanticName = (semanticName: string) => {
-            if (Object.prototype.hasOwnProperty.call(this.styles, semanticName))
+        const utilityNames = Object.keys(flattedStyles)
+        const handleUtilityName = (utilityName: string) => {
+            if (Object.prototype.hasOwnProperty.call(this.styles, utilityName))
                 return
 
-            const currentClass: string[] = this.styles[semanticName] = []
+            const currentClass: string[] = this.styles[utilityName] = []
 
-            const className = flattedStyles[semanticName]
+            const className = flattedStyles[utilityName]
             if (!className)
                 return
 
@@ -284,11 +284,11 @@ export default class MasterCSS {
                 const handle = (className: string) => {
                     if (Object.prototype.hasOwnProperty.call(this.stylesBy, className)) {
                         const currentRelation = this.stylesBy[className]
-                        if (!currentRelation.includes(semanticName)) {
-                            currentRelation.push(semanticName)
+                        if (!currentRelation.includes(utilityName)) {
+                            currentRelation.push(utilityName)
                         }
                     } else {
-                        this.stylesBy[className] = [semanticName]
+                        this.stylesBy[className] = [utilityName]
                     }
 
                     if (!currentClass.includes(className)) {
@@ -296,8 +296,8 @@ export default class MasterCSS {
                     }
                 }
 
-                if (semanticNames.includes(eachClassName)) {
-                    handleSemanticName(eachClassName)
+                if (utilityNames.includes(eachClassName)) {
+                    handleUtilityName(eachClassName)
 
                     for (const parentClassName of this.styles[eachClassName]) {
                         handle(parentClassName)
@@ -307,16 +307,16 @@ export default class MasterCSS {
                 }
             }
         }
-        for (const eachSemanticName of semanticNames) {
-            handleSemanticName(eachSemanticName)
+        for (const eachUtilityName of utilityNames) {
+            handleUtilityName(eachUtilityName)
         }
 
-        if (rules || semantics) {
+        if (rules || utilities) {
             const rulesEntries: [string, RuleDefinition][] = []
-            if (semantics) {
-                for (const semanticName in semantics) {
-                    const declarations = semantics[semanticName] as any
-                    rulesEntries.push([semanticName, { declarations, layer: Layer.Semantic }])
+            if (utilities) {
+                for (const utilityName in utilities) {
+                    const declarations = utilities[utilityName] as any
+                    rulesEntries.push([utilityName, { declarations, layer: Layer.Utility }])
                 }
             }
             if (rules) {
@@ -341,7 +341,7 @@ export default class MasterCSS {
                     }
                     this.Rules.push(eachRegisteredRule)
                     const { match, layer, key, subkey, ambiguousKeys, ambiguousValues } = eachRuleDefinition
-                    if (layer === Layer.Semantic) {
+                    if (layer === Layer.Utility) {
                         eachRegisteredRule.id = '.' + id
                         eachRegisteredRule.matchers.arbitrary = new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm')
                     }

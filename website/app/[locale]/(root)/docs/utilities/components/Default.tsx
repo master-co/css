@@ -1,4 +1,4 @@
-import { semantics } from '@master/css'
+import { utilities } from '@master/css'
 import InlineCode from 'websites/components/InlineCode'
 
 export default () => <table>
@@ -10,21 +10,21 @@ export default () => <table>
     </thead>
     <tbody>
         {
-            Object.keys(semantics)
-                .map((eachSemanticName) => {
+            Object.keys(utilities)
+                .map((eachUtilityName) => {
                     // @ts-ignore
-                    const eachSemantic = semantics[eachSemanticName]
+                    const eachUtility = utilities[eachUtilityName]
                     return (
-                        <tr key={eachSemanticName}>
+                        <tr key={eachUtilityName}>
                             <td>
-                                <InlineCode lang="mcss">{eachSemanticName}</InlineCode>
+                                <InlineCode lang="mcss">{eachUtilityName}</InlineCode>
                             </td>
                             <td>
                                 <InlineCode lang="css" className="white-space:pre">{
-                                    Object.keys(eachSemantic)
-                                        .map((eachSemanticKey) => {
-                                            const eachSemanticValue = (eachSemantic as any)[eachSemanticKey]
-                                            return `${eachSemanticKey}: ${eachSemanticValue};`
+                                    Object.keys(eachUtility)
+                                        .map((eachUtilityKey) => {
+                                            const eachUtilityValue = (eachUtility as any)[eachUtilityKey]
+                                            return `${eachUtilityKey}: ${eachUtilityValue};`
                                         })
                                         .join('\n')
                                 }</InlineCode>

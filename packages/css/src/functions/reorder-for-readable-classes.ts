@@ -22,11 +22,11 @@ export default function reorderForReadableClasses(classes: string[], options?: {
         // 只保留樣式語法相關的 rules, 排除 keyframes 與 variables 在外
         .filter(eachRule => eachRule.layer)
         .sort((a, b) => {
-            if (a.layer === Layer.Semantic && b.layer !== Layer.Semantic) {
-                // 如果 a 是 Layer.Semantic 而 b 不是，则 a 应该排在 b 前面
+            if (a.layer === Layer.Utility && b.layer !== Layer.Utility) {
+                // 如果 a 是 Layer.Utility 而 b 不是，则 a 应该排在 b 前面
                 return -1
-            } else if (a.layer !== Layer.Semantic && b.layer === Layer.Semantic) {
-                // 如果 b 是 Layer.Semantic 而 a 不是，则 b 应该排在 a 前面
+            } else if (a.layer !== Layer.Utility && b.layer === Layer.Utility) {
+                // 如果 b 是 Layer.Utility 而 a 不是，则 b 应该排在 a 前面
                 return 1
             } else if (a.id !== b.id) {
                 return a.className.localeCompare(b.className)

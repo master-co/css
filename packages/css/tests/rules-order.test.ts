@@ -13,7 +13,7 @@ it('checks that different input sources should have the same output', () => {
         'b:0'
     ]
     const output = [
-        // semantics
+        // utilities
         { className: 'block' },
         { className: 'fixed' },
         { className: 'round' },

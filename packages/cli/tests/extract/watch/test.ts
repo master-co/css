@@ -44,7 +44,7 @@ const config: Config = {
         primary: '$(blue)'
     },
     rules: {},
-    semantics: {},
+    utilities: {},
     queries: {},
     animations: {},
     selectors: {},

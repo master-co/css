@@ -1,10 +1,10 @@
 import config from './config'
 
-test('semantics', () => {
+test('utilities', () => {
     expect(new MasterCSS(config).create('show')?.text).toBe('.show{display:block}')
     expect(new MasterCSS().create('gradient-text')?.text).toBe('.gradient-text{-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text}')
     expect(new MasterCSS({
-        semantics: {
+        utilities: {
             '@my-animation': {
                 animation: '1s linear infinite rotate'
             }

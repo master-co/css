@@ -30,7 +30,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
         let cssHoverInfo: any = null
         const fullKey = rule.id
         const originalCssProperty = cssProperties.find((x: { name: string }) => x.name == fullKey)
-        if (rule.layer && rule.layer !== Layer.Semantic && originalCssProperty) {
+        if (rule.layer && rule.layer !== Layer.Utility && originalCssProperty) {
             if (!originalCssProperty.references?.find((x: { name: string }) => x.name === 'Master CSS')) {
                 originalCssProperty.references = [
                     {

@@ -25,10 +25,10 @@ export default function getMainCompletionItems(css: MasterCSS = new MasterCSS())
         })
     }
 
-    // todo: test remap semantic to native css property
-    if (css.config.semantics) {
-        for (const semanticName in css.config.semantics) {
-            const declarations = css.config.semantics[semanticName]
+    // todo: test remap utility to native css property
+    if (css.config.utilities) {
+        for (const utilityName in css.config.utilities) {
+            const declarations = css.config.utilities[utilityName]
             const propsLength = Object.keys(declarations).length
             const propName = Object.keys(declarations)[0] as keyof typeof declarations
             const propValue = declarations[propName]
@@ -39,7 +39,7 @@ export default function getMainCompletionItems(css: MasterCSS = new MasterCSS())
              * */
             if (propsLength === 1) {
                 const nativeCSSPropertyData = nativeProperties.find(({ name }) => name === propName)
-                if (semanticName === propValue) {
+                if (utilityName === propValue) {
                     nativeCSSData = nativeCSSPropertyData?.values?.find(({ name }) =>
                         name === propValue
                         // fix like inline-grid not found
@@ -52,10 +52,10 @@ export default function getMainCompletionItems(css: MasterCSS = new MasterCSS())
                 }
             }
             completionItems.push({
-                label: semanticName,
+                label: utilityName,
                 kind: CompletionItemKind.Value,
                 documentation: getCSSDataDocumentation(nativeCSSData, {
-                    generatedCSS: generateCSS([semanticName], css)
+                    generatedCSS: generateCSS([utilityName], css)
                 }),
                 detail,
             })

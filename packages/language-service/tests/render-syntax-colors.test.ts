@@ -62,7 +62,7 @@ test('should ignore single #', async () => {
     expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([])
 })
 
-test('should ignore semantic', async () => {
+test('should ignore utility', async () => {
     const target = 'block'
     const content = `export default () => <div className='fg:${target}'></div>`
     const doc = createDoc('tsx', content)

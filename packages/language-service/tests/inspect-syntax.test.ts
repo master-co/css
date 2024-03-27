@@ -34,4 +34,4 @@ test('generated CSS', async () => {
 })
 
 // todo: share with the getMainClassPosition.ts logic
-test.todo('get CSS data by semantic')
+test.todo('get CSS data by utility')

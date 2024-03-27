@@ -13,7 +13,7 @@ export default async function renderSyntaxColors(this: CSSLanguageService, docum
         const instanceStartIndex = instanceMatch.index
         const syntax = instanceMatch[0]
         const rule = this.css.generate(syntax)[0]
-        if (rule && rule.layer !== Layer.Semantic) {
+        if (rule && rule.layer !== Layer.Utility) {
             const keyTokenLength = rule.keyToken.length
             let currentLength = 0
             const resolveValueComponent = (valueComponent: ValueComponent) => {

@@ -1,6 +1,6 @@
 import queries from './queries'
 import selectors from './selectors'
-import semantics from './semantics'
+import utilities from './utilities'
 import animations from './animations'
 import variables from './variables'
 import rules from './rules'
@@ -11,7 +11,7 @@ import type { Rule, RuleDefinition, ValueComponent } from '../rule'
 const config: Config = {
     queries,
     selectors,
-    semantics,
+    utilities,
     rules,
     functions,
     animations,
@@ -28,7 +28,7 @@ export {
     config,
     queries,
     selectors,
-    semantics,
+    utilities,
     rules,
     functions,
     animations,
@@ -44,7 +44,7 @@ export type MediaQueryDefinitions = { [key: string]: number | string | MediaQuer
 export type StyleDefinitions = { [key: string]: string | StyleDefinitions }
 export type RuleDefinitions = { [key in keyof typeof rules | string]?: RuleDefinition }
 export type VariableDefinitions = { [key in keyof typeof rules]?: VariableDefinition | VariableValue } & { [key: string]: VariableDefinition | VariableValue }
-export type SemanticDefinitions = { [key in keyof typeof semantics]?: PropertiesHyphen } & { [key: string]: PropertiesHyphen }
+export type UtilityDefinitions = { [key in keyof typeof utilities]?: PropertiesHyphen } & { [key: string]: PropertiesHyphen }
 export interface FunctionDefinition {
     unit?: string
     transform?(this: Rule, value: string, bypassVariableNames: string[]): string | ValueComponent[]
@@ -56,7 +56,7 @@ export interface Config {
     styles?: StyleDefinitions
     queries?: MediaQueryDefinitions
     selectors?: SelectorDefinitions
-    semantics?: SemanticDefinitions
+    utilities?: UtilityDefinitions
     variables?: VariableDefinitions
     rules?: RuleDefinitions
     rootSize?: number

@@ -38,7 +38,7 @@ export class Rule {
         let stateToken: string
         let prefixToken: string | undefined
 
-        if (layer === Layer.Semantic) {
+        if (layer === Layer.Utility) {
             // TODO: id 使用其他方式傳遞
             stateToken = className.slice(id.length - 1)
         } else {

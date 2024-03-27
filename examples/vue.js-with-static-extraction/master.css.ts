@@ -4,7 +4,7 @@ export default {
     styles: {},
     rules: {},
     variables: {},
-    semantics: {},
+    utilities: {},
     queries: {},
     animations: {},
     selectors: {},

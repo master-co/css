@@ -3,7 +3,7 @@ module.exports = {
     styles: {},
     rules: {},
     variables: {},
-    semantics: {},
+    utilities: {},
     breakpoints: {},
     queries: {},
     keyframes: {},

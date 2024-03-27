@@ -3,7 +3,7 @@ export default {
     styles: {},
     rules: {},
     variables: {},
-    semantics: {},
+    utilities: {},
     breakpoints: {},
     queries: {},
     keyframes: {},

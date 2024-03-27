@@ -29,7 +29,7 @@
 //             'viewports',
 //             'queries',
 //             'selectors',
-//             'semantics',
+//             'utilities',
 //             'values',
 //             'rootSize',
 //             'scope',

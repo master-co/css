@@ -19,11 +19,11 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = new Mast
     const subFields = field.split(':')
     const fieldBeforeFirstColon = subFields[0]
     const styleNames = Object.keys(css.config.styles || {})
-    const semanticNames = Object.keys(css.config.semantics || {})
+    const utilityNames = Object.keys(css.config.utilities || {})
     const isStyle = styleNames.includes(fieldBeforeFirstColon)
-    const isSemantic = semanticNames.includes(fieldBeforeFirstColon)
-    // check by semantics and styles
-    let keyCompleted = isStyle || isSemantic
+    const isUtility = utilityNames.includes(fieldBeforeFirstColon)
+    // check by utilities and styles
+    let keyCompleted = isStyle || isUtility
     const valueCompleted = keyCompleted
     if (!keyCompleted) {
         keyCompleted = new RegExp(`[${SELECTOR_SIGNS.join('') + AT_SIGN}]`).test(field.slice(1))

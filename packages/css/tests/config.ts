@@ -69,7 +69,7 @@ export default {
             '@light': '$(fade@light)'
         }
     },
-    semantics: {
+    utilities: {
         show: {
             display: 'block'
         },

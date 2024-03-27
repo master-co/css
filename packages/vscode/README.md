@@ -31,7 +31,7 @@
 ## Features
 
 ### Code-completion
-Smart suggestions for style names, values, semantics and selectors.
+Smart suggestions for style names, values, utilities and selectors.
 
 ![code-completion](https://user-images.githubusercontent.com/33840671/185128193-de6c0550-7fa6-4b2d-842c-72f6b79e6d8f.gif)
 

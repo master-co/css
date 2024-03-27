@@ -60,7 +60,7 @@ test.todo('keys')
 //     ]))
 // })
 
-describe('semantics', () => {
+describe('utilities', () => {
     it('types a', () => expect(simulateHintingCompletions('a')?.find(({ label }) => label === 'abs')).toMatchObject({ label: 'abs' }))
     test('info', () => expect(simulateHintingCompletions('b')?.find(({ label }) => label === 'block')).toMatchObject({
         detail: 'display: block',
@@ -108,7 +108,7 @@ describe('styles', () => {
 describe('selectors', () => {
     test(':', () => expect(simulateHintingCompletions('text:center:')?.[0]).toMatchObject({ insertText: 'active' }))
     test('::', () => expect(simulateHintingCompletions('text:center::')?.[0]).toMatchObject({ insertText: 'after' }))
-    // test('with semantic', () => expect(simulateHintingCompletions('block:')?.[0]).toMatchObject({ insertText: 'after' }))
+    // test('with utility', () => expect(simulateHintingCompletions('block:')?.[0]).toMatchObject({ insertText: 'after' }))
     test('sorting', () => {
         expect(simulateHintingCompletions('text:center:')?.map(({ label }) => label)).toEqual([
             ':active',

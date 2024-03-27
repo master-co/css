@@ -1,13 +1,28 @@
 const enum Layer {
-    // semantic
-    Semantic = -4,
-    // native shorthand
+    /**
+     * utility classes
+     * @example block, inline
+     */
+    Utility = -4,
+    /**
+     * native shorthand
+     * @example border, padding, margin
+     */
     NativeShorthand = -3,
-    // shorthand
+    /**
+     * shorthand
+     * @example px, py, mx, my
+     */
     Shorthand = -2,
-    // native
+    /**
+     * native properties
+     * @example color, background-color, font-size
+     */
     Native = -1,
-    // normal
+    /**
+     * normal
+     * @example grid-cols
+     */
     Normal = 0,
 }
 

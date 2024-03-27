@@ -1,4 +1,4 @@
-const semantics = {
+const utilities = {
     square: {
         'aspect-ratio': '1/1'
     },
@@ -11,10 +11,10 @@ const semantics = {
     round: {
         'border-radius': '50%'
     },
-    hidden: {
+    hide: {
         display: 'none'
     },
-    hide: {
+    hidden: {
         display: 'none'
     },
     block: {
@@ -189,4 +189,4 @@ const semantics = {
     }
 } as const
 
-export default semantics
+export default utilities
