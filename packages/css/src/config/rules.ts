@@ -564,12 +564,11 @@ const rules = {
         layer: Layer.Native,
         variables: ['spacing']
     } as RuleDefinition,
-    // todo: add text-underline-position
-    // 'text-underline-position': {
-    //     ambiguousKeys: ['text-underline'],
-    //     ambiguousValues:['front-font', 'under', 'left', 'right'],
-    //     layer: Layer.Native
-    // } as RuleDefinition,
+    'text-underline-position': {
+        ambiguousKeys: ['text-underline'],
+        ambiguousValues:['front-font', 'under', 'left', 'right'],
+        layer: Layer.Native
+    } as RuleDefinition,
     'text-overflow': {
         ambiguousKeys: ['text', 't'],
         ambiguousValues: ['ellipsis', 'clip'],
