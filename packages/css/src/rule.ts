@@ -862,7 +862,7 @@ export interface RegisteredRule {
 }
 
 export interface RuleDefinition {
-    layer?: Layer
+    layer: Layer
     match?: RegExp | [string, string[]?]
     key?: string
     subkey?: string

@@ -24,7 +24,7 @@ export const autofillSolidToValueComponent: RuleDefinition['transformValueCompon
 const rules = {
     group: {
         match: /^(?:.+?[*_>~+])?\{.+?\}/,
-        layer: Layer.Normal,
+        layer: Layer.Shorthand,
         analyze(className: string) {
             let i = 0
             for (; i < className.length; i++) {
@@ -631,18 +631,6 @@ const rules = {
         variables: ['spacing']
     } as RuleDefinition,
     // todo: truncate:1 truncate:2
-    lines: {
-        declare(value) {
-            return {
-                overflow: 'hidden',
-                display: '-webkit-box',
-                'overflow-wrap': 'break-word',
-                'text-overflow': 'ellipsis',
-                '-webkit-box-orient': 'vertical',
-                '-webkit-line-clamp': value
-            }
-        },
-    } as RuleDefinition,
     'max-height': {
         key: 'max-h',
         unit: 'rem',
@@ -759,7 +747,8 @@ const rules = {
                 'font-size': value,
                 'line-height': `calc(${value} + ${diff}em)`
             }
-        }
+        },
+        layer: Layer.Shorthand
     } as RuleDefinition,
     'text-fill-color': {
         ambiguousKeys: ['text', 't'],
@@ -802,6 +791,20 @@ const rules = {
                 '-webkit-text-stroke': value
             }
         }
+    } as RuleDefinition,
+    'text-truncate': {
+        subkey: 'lines',
+        declare(value) {
+            return {
+                overflow: 'hidden',
+                display: '-webkit-box',
+                'overflow-wrap': 'break-word',
+                'text-overflow': 'ellipsis',
+                '-webkit-box-orient': 'vertical',
+                '-webkit-line-clamp': value
+            }
+        },
+        layer: Layer.Shorthand,
     } as RuleDefinition,
     'box-shadow': {
         key: 'shadow',
@@ -1387,7 +1390,7 @@ const rules = {
                     + '(' + 0 + ',' + 1 + 'fr' + '))',
             }
         },
-        layer: Layer.Normal
+        layer: Layer.Shorthand
     } as RuleDefinition,
     'grid-row-start': {
         layer: Layer.Native
@@ -1421,7 +1424,7 @@ const rules = {
                     + '(' + 0 + ',' + 1 + 'fr' + '))',
             }
         },
-        layer: Layer.Normal
+        layer: Layer.Shorthand
     } as RuleDefinition,
     'grid-auto-columns': {
         key: 'grid-auto-cols',
