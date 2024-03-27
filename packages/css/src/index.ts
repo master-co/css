@@ -12,5 +12,6 @@ export { default as areRuleQueriesEqual } from './functions/are-rule-queries-equ
 export { default as areRuleSelectorsEqual } from './functions/are-rule-selectors-equal'
 export { default as areRuleStatesEqual } from './functions/are-rule-states-equal'
 export { default as areRulesDuplicated } from './functions/are-rules-duplicated'
+export { default as generateCSS } from './functions/generate-css'
 
 export type { NativeRule, MediaFeatureComponent, MediaQuery } from './rule'

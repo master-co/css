@@ -1,20 +1,12 @@
 const enum Layer {
     // semantic
-    Semantic = -8,
+    Semantic = -4,
     // native shorthand
-    CoreNativeShorthand = -7,
-    // native shorthand
-    NativeShorthand = -6,
+    NativeShorthand = -3,
     // shorthand
-    CoreShorthand = -5,
-    // shorthand
-    Shorthand = -4,
+    Shorthand = -2,
     // native
-    CoreNative = -3,
-    // native
-    Native = -2,
-    // normal
-    Core = -1,
+    Native = -1,
     // normal
     Normal = 0,
 }

@@ -47,7 +47,6 @@ export type VariableDefinitions = { [key in keyof typeof rules]?: VariableDefini
 export type SemanticDefinitions = { [key in keyof typeof semantics]?: PropertiesHyphen } & { [key: string]: PropertiesHyphen }
 export interface FunctionDefinition {
     unit?: string
-    colored?: boolean
     transform?(this: Rule, value: string, bypassVariableNames: string[]): string | ValueComponent[]
 }
 export type FunctionDefinitions = { [key: string]: FunctionDefinition }

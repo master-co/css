@@ -8,6 +8,7 @@ import { flattenObject } from './utils/flatten-object'
 import extendConfig from './functions/extend-config'
 import { type PropertiesHyphen } from 'csstype'
 import './types/global' // fix: ../css/src/core.ts:1205:16 - error TS7017: Element implicitly has an 'any' type because type 'typeof globalThis' has no index signature.
+import { COLOR_VALUE_REGEX, NUMBER_VALUE_REGEX } from './common'
 
 type VariableValue =
     { type: 'string', value: string }
@@ -27,8 +28,8 @@ export default class MasterCSS {
     readonly ruleBy: Record<string, Rule> = {}
     readonly classesUsage: Record<string, number> = {}
     readonly config: Config
-    readonly RegisteredSemanticRules: RegisteredRule[] = []
-    readonly RegisteredRules: RegisteredRule[] = []
+    readonly SemanticRules: RegisteredRule[] = []
+    readonly Rules: RegisteredRule[] = []
 
     constructor(
         public customConfig: Config = defaultConfig
@@ -51,8 +52,8 @@ export default class MasterCSS {
         this.variables = {}
         this.queries = {}
         this.animations = {}
-        this.RegisteredRules.length = 0
-        this.RegisteredSemanticRules.length = 0
+        this.Rules.length = 0
+        this.SemanticRules.length = 0
         this.variablesNativeRules = {}
         this.hasKeyframesRule = false
         const colorVariableNames: Record<string, undefined> = {
@@ -317,9 +318,11 @@ export default class MasterCSS {
             Object.entries(semantics)
                 .sort((a: any, b: any) => a[0].localeCompare(b[0]))
                 .forEach(([id, declarations]: [string, PropertiesHyphen], index: number) => {
-                    this.RegisteredSemanticRules.push({
+                    this.SemanticRules.push({
                         id: '.' + id,
-                        match: new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm'),
+                        matchers: {
+                            arbitrary: new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm')
+                        },
                         order: index,
                         definition: {
                             declarations,
@@ -344,11 +347,11 @@ export default class MasterCSS {
                     const eachRegisteredRule: RegisteredRule = {
                         id,
                         variables: {},
-                        order: this.RegisteredSemanticRules.length + rulesEntriesLength - 1 - index,
+                        matchers: {},
+                        order: this.SemanticRules.length + rulesEntriesLength - 1 - index,
                         definition: eachRuleDefinition
                     }
-                    this.RegisteredRules.push(eachRegisteredRule)
-                    const match = eachRuleDefinition.match
+                    this.Rules.push(eachRegisteredRule)
 
                     // todo: 不可使用 startsWith 判斷，應改為更精準的從 config.variables 取得目標變數群組，但 config.variables 中的值還沒被 resolve 像是 Array
                     const addResolvedVariables = (prefix: string) => {
@@ -373,36 +376,51 @@ export default class MasterCSS {
                     // 2. custom `config.variables`
                     addResolvedVariables(id)
 
-                    if (match) {
-                        if (Array.isArray(match)) {
-                            const [key, values = []] = match
-                            const valueMatches = []
-                            if (values.length) {
-                                valueMatches.push(`(?:${values.join('|')})(?![a-zA-Z0-9-])`)
-                            }
-                            if (Object.keys(eachRegisteredRule.variables).length) {
-                                valueMatches.push(
-                                    `(?:${Object.keys(eachRegisteredRule.variables).join('|')})(?![a-zA-Z0-9-])`,
-                                )
-                            }
-                            if (eachRuleDefinition.colored) {
-                                valueMatches.push(
-                                    '#',
-                                    '(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla)\\(.*\\)',
-                                    `(?:${colorNames.join('|')})(?![a-zA-Z0-9-])`,
-                                )
-                            }
-                            if (eachRuleDefinition.numeric) {
-                                valueMatches.push('[\\d\\.]', '(?:max|min|calc|clamp)\\(.*\\)')
-                            }
-                            if (valueMatches.length)
-                                eachRegisteredRule.match = new RegExp(`^${key}:(?:${valueMatches.join('|')})[^|]*?(?:@|$)`)
-                        } else {
-                            eachRegisteredRule.match = match as RegExp
-                        }
+                    const { match, layer, key, subkey, ambiguousKeys, ambiguousValues } = eachRuleDefinition
+                    const colorsPatten = colorNames.join('|')
+                    const keyPatterns = []
+                    if (layer === Layer.NativeShorthand || layer === Layer.Native) {
+                        keyPatterns.push(id)
                     }
-                },
-                )
+                    if (!match) {
+                        if (!key && !subkey) {
+                            keyPatterns.push(id)
+                        } else if (key || subkey) {
+                            if (key) keyPatterns.push(key)
+                            if (subkey) keyPatterns.push(subkey)
+                            if (layer === Layer.Shorthand) {
+                                keyPatterns.push(id)
+                            }
+                        }
+                        if (ambiguousKeys?.length) {
+                            const ambiguousKeyPattern = ambiguousKeys.length > 1 ? `(?:${ambiguousKeys.join('|')})` : ambiguousKeys[0]
+                            const variableKeys = Object.keys(eachRegisteredRule.variables)
+                            if (ambiguousValues?.length) {
+                                const ambiguousValuePatterns = []
+                                for (const eachAmbiguousValue of ambiguousValues) {
+                                    if (eachAmbiguousValue instanceof RegExp) {
+                                        ambiguousValuePatterns.push(eachAmbiguousValue.source.replace('\\$colors', colorsPatten))
+                                    } else {
+                                        ambiguousValuePatterns.unshift(`${eachAmbiguousValue}\\b`)
+                                    }
+                                }
+                                eachRegisteredRule.matchers.value = new RegExp(`^${ambiguousKeyPattern}:(?:${ambiguousValuePatterns.join('|')})[^|]*?(?:@|$)`)
+                            }
+                            if (variableKeys.length) {
+                                eachRegisteredRule.matchers.variable = new RegExp(`^${ambiguousKeyPattern}:(?:${variableKeys.join('|')}(?![a-zA-Z0-9-]))[^|]*?(?:@|$)`)
+                            }
+                        }
+                        // if (id === 'background-clip') {
+                        //     console.log(eachRegisteredRule)
+                        // }
+                    } else {
+                        eachRegisteredRule.matchers.arbitrary = match as RegExp
+                    }
+                    eachRegisteredRule.key = key || id
+                    if (keyPatterns.length) {
+                        eachRegisteredRule.matchers.key = new RegExp(`^${keyPatterns.length > 1 ? `(${keyPatterns.join('|')})` : keyPatterns[0]}:`)
+                    }
+                })
         }
     }
 
@@ -412,25 +430,25 @@ export default class MasterCSS {
      * @returns css text
      */
     match(className: string): RegisteredRule | undefined {
-        // 1. rules
-        for (const eachRegisteredRule of this.RegisteredRules) {
-            if (
-                eachRegisteredRule.match?.test(className) ||
-                (
-                    eachRegisteredRule.definition.layer === Layer.Native ||
-                    eachRegisteredRule.definition.layer === Layer.NativeShorthand ||
-                    eachRegisteredRule.definition.layer === Layer.CoreNative ||
-                    eachRegisteredRule.definition.layer === Layer.CoreNativeShorthand
-                ) && className.startsWith(eachRegisteredRule.id + ':')
-            ) {
-                return eachRegisteredRule
-            }
+        // 1. variable
+        for (const eachRegisteredRule of this.Rules) {
+            if (eachRegisteredRule.matchers.variable?.test(className)) return eachRegisteredRule
         }
-        // 2. semantic rules
-        for (const EachRegisteredSemanticRule of this.RegisteredSemanticRules) {
-            if (EachRegisteredSemanticRule.match?.test(className)) {
-                return EachRegisteredSemanticRule
-            }
+        // 2. value
+        for (const eachRegisteredRule of this.Rules) {
+            if (eachRegisteredRule.matchers.value?.test(className)) return eachRegisteredRule
+        }
+        // 3. full key
+        for (const eachRegisteredRule of this.Rules) {
+            if (eachRegisteredRule.matchers.key?.test(className)) return eachRegisteredRule
+        }
+        // 4. custom
+        for (const eachRegisteredRule of this.Rules) {
+            if (eachRegisteredRule.matchers.arbitrary?.test(className)) return eachRegisteredRule
+        }
+        // 5. semantic
+        for (const EachRegisteredSemanticRule of this.SemanticRules) {
+            if (EachRegisteredSemanticRule.matchers.arbitrary?.test(className)) return EachRegisteredSemanticRule
         }
     }
 

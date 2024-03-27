@@ -1,12 +1,13 @@
 import { Config, Layer } from '../../../src'
+import { NUMBER_VALUE_REGEX } from '../../../src/common'
 
 const customConfig: Config = {
     override: true,
     rootSize: 10,
     rules: {
         'font-size': {
-            match: ['custom'],
-            numeric: true,
+            key: 'custom',
+            ambiguousValues: [NUMBER_VALUE_REGEX],
             unit: 'rem',
             layer: Layer.Normal,
         }

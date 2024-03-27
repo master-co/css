@@ -4,7 +4,6 @@ import { BASE_UNIT_REGEX } from '../common'
 
 const functions: FunctionDefinitions = {
     $: {
-        colored: true,
         transform(value) {
             let name: string
             let fallback!: string
@@ -242,9 +241,9 @@ const functions: FunctionDefinitions = {
     rgba: { unit: '' },
     hsl: { unit: '' },
     hsla: { unit: '' },
-    color: { unit: '', colored: true },
-    'color-contrast': { unit: '', colored: true },
-    'color-mix': { unit: '', colored: true },
+    color: { unit: '' },
+    'color-contrast': { unit: '' },
+    'color-mix': { unit: '' },
     hwb: { unit: '' },
     lab: { unit: '' },
     lch: { unit: '' },
@@ -252,12 +251,12 @@ const functions: FunctionDefinitions = {
     oklch: { unit: '' },
     clamp: { unit: '' },
     repeat: { unit: '' },
-    'linear-gradient': { colored: true },
-    'radial-gradient': { colored: true },
-    'conic-gradient': { colored: true },
-    'repeating-linear-gradient': { colored: true },
-    'repeating-radial-gradient': { colored: true },
-    'repeating-conic-gradient': { colored: true }
+    'linear-gradient': {},
+    'radial-gradient': {},
+    'conic-gradient': {},
+    'repeating-linear-gradient': {},
+    'repeating-radial-gradient': {},
+    'repeating-conic-gradient': {}
 }
 
 export default functions

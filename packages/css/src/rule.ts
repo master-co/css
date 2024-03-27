@@ -3,7 +3,7 @@ import MasterCSS, { type Variable } from './core'
 import cssEscape from 'css-shared/utils/css-escape'
 import Layer from './layer'
 import { type PropertiesHyphen } from 'csstype'
-import { VALUE_DELIMITERS, BASE_UNIT_REGEX } from './common'
+import { VALUE_DELIMITERS, BASE_UNIT_REGEX, UNIT_REGEX } from './common'
 
 export class Rule {
     readonly at: Record<string, AtComponent[]> = {}
@@ -23,9 +23,8 @@ export class Rule {
     ) {
         Object.assign(this, RegisteredRule)
         const { id, definition } = RegisteredRule
-        const { analyze, transformValue, declare, transformValueComponents, create, layer, unit, colored } = definition
+        const { analyze, transformValue, declare, transformValueComponents, create, layer, unit } = definition
         this.layer = layer as Layer
-        this.colored = !!colored
         if (!definition.unit) definition.unit = ''
         if (!definition.separators) definition.separators = [',']
         const { scope, important, modeDriver } = css.config
@@ -663,7 +662,7 @@ export class Rule {
                         }
                     }
                     handleVariable(currentValue)
-                    if (!handled && this.colored) {
+                    if (!handled) {
                         const [colorName, alpha] = currentValue.split('/')
                         handleVariable(colorName, alpha)
                     }
@@ -714,13 +713,7 @@ export class Rule {
                 const newValueComponent: ValueComponent[][0] = { type: 'function', name: functionName, symbol: val, children: [], token: '' }
                 currentValueComponents.push(newValueComponent)
                 currentValue = ''
-
                 const functionDefinition = val === '(' ? this.css.config.functions?.[functionName] : undefined
-                if (!this.colored && functionDefinition?.colored) {
-                    // @ts-ignore
-                    this.colored = true
-                }
-
                 i = this.parseValues(
                     newValueComponent.children,
                     ++i,
@@ -792,7 +785,7 @@ export class Rule {
                 const [dividend, divisor] = token.split('/')
                 return { value: (+dividend / +divisor) * 100, unit: '%', type: 'number' }
             }
-            const matches = token.match(/^([+-.]?\d+(\.?\d+)?)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x|fr|db|st)?$/)
+            const matches = token.match(UNIT_REGEX)
             // ['0.5deg', '0.5', 'deg', index: 0, input: '0.5deg', groups: undefined]
             if (matches) {
                 value = +matches[1]
@@ -839,7 +832,6 @@ export interface VariableValueComponent { text?: string, token: string, type: 'v
 export interface SeparatorValueComponent { text?: string, token: string, type: 'separator', value: string }
 
 export interface Rule extends RegisteredRule {
-    colored: boolean
     token: string
     vendorPrefixSelectors: Record<string, string[]>
     vendorSuffixSelectors: Record<string, string[]>
@@ -857,7 +849,13 @@ export interface Rule extends RegisteredRule {
 
 export interface RegisteredRule {
     id: string
-    match?: RegExp
+    key?: string
+    matchers: {
+        key?: RegExp
+        variable?: RegExp
+        value?: RegExp
+        arbitrary?: RegExp
+    }
     variables?: any
     order: number
     definition: RuleDefinition
@@ -866,13 +864,13 @@ export interface RegisteredRule {
 export interface RuleDefinition {
     layer?: Layer
     match?: RegExp | [string, string[]?]
+    key?: string
+    subkey?: string
+    ambiguousKeys?: string[]
+    ambiguousValues?: (RegExp | string)[]
     variables?: string[]
     separators?: string[]
-    shorthand?: string
-    colored?: boolean
-    numeric?: boolean
     unit?: any
-    native?: boolean
     declarations?: PropertiesHyphen
     analyze?: (this: Rule, className: string) => [valueToken: string, prefixToken?: string]
     transformValue?(this: Rule, value: string): string
