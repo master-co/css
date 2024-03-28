@@ -1,7 +1,7 @@
 import { MasterCSS } from '@master/css'
 import extend from '@techor/extend'
 import EventEmitter from 'node:events'
-import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
+import type { Position } from 'vscode-languageserver-protocol'
 import settings, { type Settings } from './settings'
 import { minimatch } from 'minimatch'
 import { fileURLToPath } from 'node:url'
@@ -9,6 +9,7 @@ import inspectSyntax from './features/inspect-syntax'
 import renderSyntaxColors from './features/render-syntax-colors'
 import editSyntaxColors from './features/edit-syntax-colors'
 import hintSyntaxCompletions from './features/hint-syntax-completions'
+import { TextDocument } from 'vscode-languageserver-textdocument'
 
 export default class CSSLanguageService extends EventEmitter {
     css: MasterCSS

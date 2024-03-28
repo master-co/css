@@ -1,7 +1,7 @@
-import type { ColorInformation, ColorPresentationParams, DocumentColorParams } from 'vscode-languageserver'
+import type { ColorInformation } from 'vscode-languageserver-protocol'
 import { instancePattern } from '../utils/regex'
 import CSSLanguageService from '../core'
-import { TextDocument } from 'vscode-languageserver-textdocument'
+import type { TextDocument } from 'vscode-languageserver-textdocument'
 import { parse as parseColorToken, converter, type Color, type Rgb } from 'culori'
 import { Layer, type ValueComponent } from '@master/css'
 

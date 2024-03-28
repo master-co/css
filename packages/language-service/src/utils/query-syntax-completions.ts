@@ -1,10 +1,10 @@
-import type { CompletionItem } from 'vscode-languageserver'
+import type { CompletionItem } from 'vscode-languageserver-protocol'
 import getPseudoClassCompletionItems from './get-pseudo-class-completion-items'
 import getPseudoElementCompletionItems from './get-pseudo-element-completion-items'
 import { MasterCSS } from '@master/css'
 import { TRIGGER_CHARACTERS } from '../common'
 import getMainCompletionItems from './get-main-completion-items'
-import { AT_SIGN, SELECTOR_SIGNS } from '@master/css/common'
+import { AT_SIGN, SELECTOR_SIGNS } from '@master/css'
 import getValueCompletionItems from './get-value-completion-items'
 
 export default function querySyntaxCompletions(q = '', css: MasterCSS = new MasterCSS()) {

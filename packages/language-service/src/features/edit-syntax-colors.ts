@@ -1,6 +1,6 @@
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import CSSLanguageService from '../core'
-import type { ColorPresentationParams, ColorPresentation } from 'vscode-languageserver'
+import type { ColorPresentationParams, ColorPresentation } from 'vscode-languageserver-protocol'
 import convertColorByToken from '../utils/convert-color-token'
 
 export default function editSyntaxColors(

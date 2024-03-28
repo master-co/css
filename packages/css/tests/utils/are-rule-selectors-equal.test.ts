@@ -1,4 +1,4 @@
-import areRuleSelectorsEqual from '../../src/functions/are-rule-selectors-equal'
+import areRuleSelectorsEqual from '../../src/utils/are-rule-selectors-equal'
 
 test('suffix selectors', () => {
     expect(areRuleSelectorsEqual(

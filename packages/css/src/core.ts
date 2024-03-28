@@ -3,9 +3,9 @@ import { Rule, type NativeRule, type RuleDefinition, type RegisteredRule, AtFeat
 import type { Config, AnimationDefinitions } from './config'
 import { config as defaultConfig } from './config'
 import Layer from './layer'
-import { hexToRgb } from './utils/hex-to-rgb'
+import hexToRgb from './utils/hex-to-rgb'
 import { flattenObject } from './utils/flatten-object'
-import extendConfig from './functions/extend-config'
+import extendConfig from './utils/extend-config'
 import { type PropertiesHyphen } from 'csstype'
 import './types/global' // fix: ../css/src/core.ts:1205:16 - error TS7017: Element implicitly has an 'any' type because type 'typeof globalThis' has no index signature.
 

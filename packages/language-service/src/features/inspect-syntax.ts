@@ -1,4 +1,4 @@
-import type { Hover, HoverParams, Range } from 'vscode-languageserver'
+import type { Hover, HoverParams, Range } from 'vscode-languageserver-protocol'
 import { Layer, generateCSS } from '@master/css'
 import { getCSSDataDocumentation } from '../utils/get-css-data-documentation'
 import type CSSLanguageService from '../core'

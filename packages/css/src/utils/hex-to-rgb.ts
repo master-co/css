@@ -1,4 +1,4 @@
-export function hexToRgb(hex: string) {
+export default function hexToRgb(hex: string) {
     if (hex.startsWith('#')) {
         hex = hex.slice(1)
     }

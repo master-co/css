@@ -1,4 +1,4 @@
-import cssLanguageServiceSettings, { type Settings as CSSLanguageServiceSettings } from '@master/css-language-service/settings'
+import cssLanguageServiceSettings, { type Settings as CSSLanguageServiceSettings } from '@master/css-language-service'
 
 const settings: Settings = {
     ...cssLanguageServiceSettings,

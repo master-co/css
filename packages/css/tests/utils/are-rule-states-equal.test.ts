@@ -1,4 +1,4 @@
-import areRuleStatesEqual from '../../src/functions/are-rule-states-equal'
+import areRuleStatesEqual from '../../src/utils/are-rule-states-equal'
 
 test('states', () => {
     expect(areRuleStatesEqual(

@@ -1,4 +1,4 @@
-import areRulesDuplicated from '../../src/functions/are-rules-duplicated'
+import areRulesDuplicated from '../../src/utils/are-rules-duplicated'
 
 test('rules', () => {
     expect(areRulesDuplicated(

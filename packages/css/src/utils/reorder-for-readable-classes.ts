@@ -1,5 +1,4 @@
 import Layer from '../layer'
-import type { Config } from '../config'
 import MasterCSS from '../core'
 
 /**
@@ -8,13 +7,7 @@ import MasterCSS from '../core'
  * @param options
  * @returns consistent classes
  */
-export default function reorderForReadableClasses(classes: string[], options?: { css?: MasterCSS, config?: Config }) {
-    let css: MasterCSS
-    if (options?.css) {
-        css = options?.css
-    } else {
-        css = new MasterCSS(options?.config)
-    }
+export default function reorderForReadableClasses(classes: string[], css = new MasterCSS()) {
     for (const eachClass of classes) {
         css.add(eachClass)
     }

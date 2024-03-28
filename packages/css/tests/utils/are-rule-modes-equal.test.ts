@@ -1,4 +1,4 @@
-import areRuleModesEqual from '../../src/functions/are-rule-modes-equal'
+import areRuleModesEqual from '../../src/utils/are-rule-modes-equal'
 
 test('mode', () => {
     expect(areRuleModesEqual(

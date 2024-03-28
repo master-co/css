@@ -1,4 +1,4 @@
-import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import cssDataProvider from './css-data-provider'
 import { MasterCSS, generateCSS } from '@master/css'
 import { getCSSDataDocumentation } from './get-css-data-documentation'

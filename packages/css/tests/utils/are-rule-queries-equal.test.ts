@@ -1,4 +1,4 @@
-import areRuleQueriesEqual from '../../src/functions/are-rule-queries-equal'
+import areRuleQueriesEqual from '../../src/utils/are-rule-queries-equal'
 
 test('min-width', () => {
     expect(areRuleQueriesEqual(

@@ -4,7 +4,7 @@ import getMasterCSS from './get-css'
 
 export default function runReorderValidClasses(classNames: string[], config: string | object): string[] {
     const currentCSS = getMasterCSS(config)
-    return reorderForReadableClasses(classNames, { css: currentCSS })
+    return reorderForReadableClasses(classNames, currentCSS)
         .filter((eachOrderedClassName) => classNames.includes(eachOrderedClassName))
 }
 

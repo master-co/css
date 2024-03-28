@@ -1,6 +1,6 @@
 import convertColorSpace from './convert-color-space'
 import type { MasterCSS } from '@master/css'
-import { ColorPresentationParams } from 'vscode-languageserver'
+import { ColorPresentationParams } from 'vscode-languageserver-protocol'
 
 export default function convertColorByToken(color: ColorPresentationParams['color'], colorToken: string, css: MasterCSS) {
     const valueComponent = css.generate('color:' + colorToken)[0]?.valueComponents[0]

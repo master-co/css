@@ -1,6 +1,6 @@
 import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
-import { ColorInformation, ColorPresentation } from 'vscode-languageserver'
+import { ColorInformation, ColorPresentation } from 'vscode-languageserver-protocol'
 
 const simulateEditingColors = async ({ before, after }: { before: string, after: string }) => {
     const beforeContent = `export default () => <div className='fg:${before}'></div>`

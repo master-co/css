@@ -1,4 +1,4 @@
-import type { CompletionItem, CompletionParams } from 'vscode-languageserver'
+import type { CompletionItem, CompletionParams } from 'vscode-languageserver-protocol'
 import type { Position, TextDocument } from 'vscode-languageserver-textdocument'
 import CSSLanguageService from '../core'
 import querySyntaxCompletions from '../utils/query-syntax-completions'

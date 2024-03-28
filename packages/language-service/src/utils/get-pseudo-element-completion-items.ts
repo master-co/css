@@ -1,6 +1,6 @@
 import { MasterCSS } from '@master/css'
 import cssDataProvider from './css-data-provider'
-import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import type { CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 
 const insertTextMode = 1
 const kind: CompletionItemKind = 3

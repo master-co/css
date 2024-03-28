@@ -1,5 +1,5 @@
 import { MasterCSS } from '@master/css'
-import { CompletionItemKind, type CompletionItem } from 'vscode-languageserver'
+import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 
 export default function getColorCompletionItems(css: MasterCSS = new MasterCSS()): CompletionItem[] {
     const completionItems: CompletionItem[] = []
