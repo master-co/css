@@ -863,7 +863,7 @@ export interface RegisteredRule {
 
 export interface RuleDefinition {
     layer: Layer
-    match?: RegExp | [string, string[]?]
+    matcher?: RegExp
     key?: string
     subkey?: string
     ambiguousKeys?: string[]

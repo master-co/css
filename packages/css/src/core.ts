@@ -340,7 +340,7 @@ export default class MasterCSS {
                         definition: eachRuleDefinition
                     }
                     this.Rules.push(eachRegisteredRule)
-                    const { match, layer, key, subkey, ambiguousKeys, ambiguousValues } = eachRuleDefinition
+                    const { matcher, layer, key, subkey, ambiguousKeys, ambiguousValues } = eachRuleDefinition
                     if (layer === Layer.Utility) {
                         eachRegisteredRule.id = '.' + id
                         eachRegisteredRule.matchers.arbitrary = new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm')
@@ -374,7 +374,7 @@ export default class MasterCSS {
                     if (layer === Layer.NativeShorthand || layer === Layer.Native) {
                         keyPatterns.push(id)
                     }
-                    if (!match) {
+                    if (!matcher) {
                         if (!key && !subkey) {
                             keyPatterns.push(id)
                         } else if (key || subkey) {
@@ -406,7 +406,7 @@ export default class MasterCSS {
                         //     console.log(eachRegisteredRule)
                         // }
                     } else {
-                        eachRegisteredRule.matchers.arbitrary = match as RegExp
+                        eachRegisteredRule.matchers.arbitrary = matcher as RegExp
                     }
                     eachRegisteredRule.key = key || id
                     if (keyPatterns.length) {
@@ -422,19 +422,31 @@ export default class MasterCSS {
      * @returns css text
      */
     match(className: string): RegisteredRule | undefined {
-        // 1. variable
+        /**
+         * 1. variable
+         * @example fg:primary bg:blue
+         */
         for (const eachRegisteredRule of this.Rules) {
             if (eachRegisteredRule.matchers.variable?.test(className)) return eachRegisteredRule
         }
-        // 2. value
+        /**
+         * 2. value (ambiguous.key * ambiguous.values)
+         * @example bg:current box:content font:12
+         */
         for (const eachRegisteredRule of this.Rules) {
             if (eachRegisteredRule.matchers.value?.test(className)) return eachRegisteredRule
         }
-        // 3. full key
+        /**
+         * 3. full key
+         * @example text-align:center color:blue-40
+         */
         for (const eachRegisteredRule of this.Rules) {
             if (eachRegisteredRule.matchers.key?.test(className)) return eachRegisteredRule
         }
-        // 4. custom
+        /**
+         * 4. arbitrary
+         * @example custom RegExp, utility
+         */
         for (const eachRegisteredRule of this.Rules) {
             if (eachRegisteredRule.matchers.arbitrary?.test(className)) return eachRegisteredRule
         }

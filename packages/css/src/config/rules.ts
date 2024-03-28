@@ -23,7 +23,7 @@ export const autofillSolidToValueComponent: RuleDefinition['transformValueCompon
 
 const rules = {
     group: {
-        match: /^(?:.+?[*_>~+])?\{.+?\}/,
+        matcher: /^(?:.+?[*_>~+])?\{.+?\}/,
         layer: Layer.Shorthand,
         analyze(className: string) {
             let i = 0
@@ -146,7 +146,7 @@ const rules = {
         }
     } as RuleDefinition,
     variable: {
-        match: /^\$[\w-]+:/, // don't use 'rem' as default, because css variable is common API
+        matcher: /^\$[\w-]+:/, // don't use 'rem' as default, because css variable is common API
         layer: Layer.Normal,
         declare(value) {
             return {
@@ -830,7 +830,7 @@ const rules = {
         layer: Layer.Native
     } as RuleDefinition,
     transform: {
-        match: /^(?:translate|scale|skew|rotate|perspective|matrix)(?:3d|[XYZ])?\(/,
+        matcher: /^(?:translate|scale|skew|rotate|perspective|matrix)(?:3d|[XYZ])?\(/,
         layer: Layer.Native,
         analyze(className: string) {
             return [className.startsWith('transform') ? className.slice(10) : className]
@@ -856,7 +856,7 @@ const rules = {
         unit: 'ms'
     } as RuleDefinition,
     transition: {
-        match: /^~[^!*>+~:[@_]+\|/,
+        matcher: /^~[^!*>+~:[@_]+\|/,
         analyze(className: string) {
             if (className.startsWith('~')) {
                 return [className.slice(1)]
@@ -903,7 +903,7 @@ const rules = {
         layer: Layer.Native
     } as RuleDefinition,
     animation: {
-        match: /^@[^!*>+~:[@_]+\|/,
+        matcher: /^@[^!*>+~:[@_]+\|/,
         layer: Layer.NativeShorthand,
         analyze(className: string) {
             if (className.startsWith('@')) {
@@ -1286,7 +1286,7 @@ const rules = {
         layer: Layer.NativeShorthand
     } as RuleDefinition,
     gradient: {
-        match: /^gradient\(/,
+        matcher: /^gradient\(/,
         layer: Layer.Shorthand,
         declare(value) {
             return {
@@ -1309,7 +1309,7 @@ const rules = {
         }
     } as RuleDefinition,
     filter: {
-        match: /^(?:blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)\(/,
+        matcher: /^(?:blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)\(/,
         layer: Layer.Native,
     } as RuleDefinition,
     fill: {
