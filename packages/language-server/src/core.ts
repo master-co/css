@@ -1,4 +1,4 @@
-import { createConnection, TextDocuments, ProposedFeatures, InitializeParams, DidChangeConfigurationNotification, TextDocumentSyncKind, WorkspaceFolder } from 'vscode-languageserver/node'
+import { createConnection, TextDocuments, ProposedFeatures, InitializeParams, DidChangeConfigurationNotification, WorkspaceFolder } from 'vscode-languageserver/node'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'path'
 import { fileURLToPath } from 'url'
