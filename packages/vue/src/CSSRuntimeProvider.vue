@@ -6,7 +6,7 @@ import { RuntimeCSS } from '@master/css-runtime';
 const runtimeCSSSymbol = Symbol('runtime-css');
 const props = defineProps<{
     config?: Config | Promise<any>;
-    root?: Document | ShadowRoot;
+    root?: Document | ShadowRoot | null; // null for Element.shadowRoot
 }>();
 
 const runtimeCSS = ref<RuntimeCSS | undefined>(undefined);

@@ -6,7 +6,7 @@
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     export let config: Config | Promise<any> | undefined;
-    export let root: Document | ShadowRoot | undefined;
+    export let root: Document | ShadowRoot | undefined | null; // null for Element.shadowRoot
 
     const runtimeCSSSymbol = Symbol('runtime-css');
     const runtimeCSS = writable<RuntimeCSS | undefined>(undefined);

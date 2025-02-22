@@ -11,9 +11,9 @@ export const RuntimeCSSContext = createContext<RuntimeCSS | undefined>(undefined
 export const useRuntimeCSS = () => useContext(RuntimeCSSContext)
 
 export default function CSSRuntimeProvider(props: {
-    children: ReactNode,
+    children?: ReactNode,
     config?: Config | Promise<any>,
-    root?: Document | ShadowRoot
+    root?: Document | ShadowRoot | null // null for Element.shadowRoot
 }) {
     const runtimeCSS = useRef<RuntimeCSS>(undefined)
 
