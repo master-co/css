@@ -18,7 +18,7 @@ export default class Layer {
         if (!this.css.rules.includes(this)) {
             this.css.rules.push(this)
             const nativeSheet = this.css.style?.sheet
-            if (nativeSheet && !this.native) {
+            if (nativeSheet && !this.native?.parentStyleSheet) {
                 const insertedIndex = nativeSheet.insertRule(this.text, nativeSheet.cssRules.length)
                 this.native = nativeSheet.cssRules.item(insertedIndex) as CSSLayerBlockRule
             }
@@ -74,7 +74,7 @@ export default class Layer {
             const indexOfLayer = this.css.rules.indexOf(this)
             this.css.rules.splice(indexOfLayer, 1)
             const nativeSheet = this.css.style?.sheet
-            if (nativeSheet && this.native) {
+            if (nativeSheet && this.native?.parentStyleSheet) {
                 const foundIndex = findNativeCSSRuleIndex(nativeSheet.cssRules, this.native)
                 if (foundIndex !== -1) {
                     nativeSheet.deleteRule(foundIndex)
