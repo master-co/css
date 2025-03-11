@@ -99,89 +99,102 @@ export class RuntimeCSS extends MasterCSS {
         // @ts-expect-error readonly
         this.observer = new MutationObserver((mutationRecords) => {
             // console.clear()
-            // console.log('-----------')
-            // const test = 'swiper-slide-next'
-            // console.log(`${test}: ${this.classUsages.get(test)}`)
+            // const test = ''
+            // if (test) {
+            //     console.log('')
+            //     console.log(`${test}: ${this.classUsages.get(test)}`)
+            // }
             const eachClassUsages = new Map()
-            const updatedAttrElements = new Set<Element>()
-            const updatedConnectedElements = new Set<Element>()
-            const updatedElements = new Set<Element>()
+            const targetFirstAttrMutationRecord = new Map<Element, MutationRecord>()
 
             const updateClassUsage = (classes: Set<string> | string[] | DOMTokenList, isAdding = false) => {
                 const usage = isAdding ? 1 : -1
                 classes.forEach((className) => {
-                    // if (className === test) console.log(`  ${isAdding ? '+' : '-'} ${className} ${(eachClassUsages.get(className) || 0) + usage}`, target)
                     eachClassUsages.set(className, (eachClassUsages.get(className) || 0) + usage)
                 })
             }
 
-            const updateElementTree = (element: Element, adding: boolean) => {
-                if (element.isConnected) {
-                    updatedConnectedElements.add(element)
-                }
-                updatedElements.add(element)
-                updateClassUsage(element.classList, adding)
-                for (const child of element.children) {
-                    updateElementTree(child as Element, adding)
+            const connectedStatusMap = new Map<Element, { change: number, mutationRecord: MutationRecord }>()
+            const disconnectedStatusMap = new Map<Element, { change: number, mutationRecord: MutationRecord }>()
+            const recordStatus = (target: Element, mutationRecord: MutationRecord, map: Map<Element, { change: number, mutationRecord: MutationRecord }>, adding: boolean) => {
+                const status = map.get(target)
+                if (status) {
+                    status.change += adding ? 1 : -1
+                    status.mutationRecord = mutationRecord
+                } else {
+                    map.set(target, { change: adding ? 1 : -1, mutationRecord })
                 }
             }
 
-            // console.log('///')
-
-            mutationRecords.forEach((mutation) => {
-                const target = mutation.target as Element
-                switch (mutation.type) {
+            mutationRecords.forEach((mutationRecord) => {
+                const target = mutationRecord.target as Element
+                switch (mutationRecord.type) {
                     case 'attributes':
-                        const oldClassList = mutation.oldValue ? mutation.oldValue.split(/\s+/) : []
-                        const newClassList = target.classList
-                        const addedClasses: string[] = []
-                        newClassList.forEach(c => {
-                            if (!oldClassList.includes(c)) addedClasses.push(c)
-                        })
-                        // const removedClasses = oldClassList.filter(c => !newClassList.contains(c))
-                        // if (addedClasses.length) console.log('[attribute]', '[add]', addedClasses, target)
-                        // if (removedClasses.length) console.log('[attribute]', '[remove]', removedClasses, target)
+                        if (!targetFirstAttrMutationRecord.has(target)) {
+                            targetFirstAttrMutationRecord.set(target, mutationRecord)
+                        }
                         break
                     case 'childList':
-                        // if (mutation.addedNodes.length) console.log('[childList]', '[add]', mutation.addedNodes)
-                        // if (mutation.removedNodes.length) console.log('[childList]', '[remove]', mutation.removedNodes)
+                        const targetStatusMap = target.isConnected ? connectedStatusMap : disconnectedStatusMap
+                        mutationRecord.addedNodes.forEach((node) =>
+                            'classList' in node && recordStatus(node as Element, mutationRecord, targetStatusMap, true)
+                        )
+                        mutationRecord.removedNodes.forEach((node) =>
+                            'classList' in node && recordStatus(node as Element, mutationRecord, targetStatusMap, false)
+                        )
                         break
                 }
             })
 
-            // console.log('///')
+            const updatedTargetChangeMap = new Map<Element, number>()
 
-            mutationRecords.forEach((mutation) => {
-                const target = mutation.target as Element
-                switch (mutation.type) {
-                    case 'attributes':
-                        /**
-                         * We only need to determine the first attribute record of the same target,
-                         * because the first record has the original old class name.
-                         *
-                         * The target is skipped if it is contained in the unhandled childList.
-                         */
-                        if (updatedAttrElements.has(target) || updatedElements.has(target)) return
-                        updatedAttrElements.add(target)
-                        const oldClassList = mutation.oldValue ? mutation.oldValue.split(/\s+/) : []
-                        const newClassList = target.classList
-                        const addedClasses: string[] = []
-                        newClassList.forEach(c => {
-                            if (!oldClassList.includes(c)) addedClasses.push(c)
+            const updateTarget = (target: Element, adding: boolean) => {
+                const change = updatedTargetChangeMap.get(target) || 0
+                const newChange = change + (adding ? 1 : -1)
+                if (newChange >= -1 && newChange <= 1) {
+                    updatedTargetChangeMap.set(target, newChange)
+                    const firstAttrMutationRecord = targetFirstAttrMutationRecord.get(target)
+                    if (firstAttrMutationRecord) {
+                        targetFirstAttrMutationRecord.delete(target)
+                    }
+                    if (adding) {
+                        updateClassUsage(target.classList, adding)
+                    } else {
+                        if (firstAttrMutationRecord) {
+                            updateClassUsage(firstAttrMutationRecord.oldValue ? firstAttrMutationRecord.oldValue.split(/\s+/) : [], adding)
+                        } else {
+                            updateClassUsage(target.classList, adding)
+                        }
+                        disconnectedStatusMap.forEach((disconnectedTargetStatus, disconnectedTarget) => {
+                            if (disconnectedTargetStatus.mutationRecord.target === target && disconnectedTargetStatus.change !== 0) {
+                                updateTarget(disconnectedTarget, disconnectedTargetStatus.change > 0)
+                            }
                         })
-                        const removedClasses = oldClassList.filter(c => !newClassList.contains(c))
-                        // if (addedClasses.length) console.log('[attribute]', '[add]', addedClasses, target)
-                        if (addedClasses.length) updateClassUsage(addedClasses, true)
-                        // if (removedClasses.length) console.log('[attribute]', '[remove]', removedClasses, target)
-                        if (removedClasses.length) updateClassUsage(removedClasses, false)
-                        break
-                    case 'childList':
-                        if (updatedConnectedElements.has(target)) return
-                        // if (mutation.addedNodes.length) console.log('[childList]', '[add]', mutation.addedNodes)
-                        mutation.addedNodes.forEach((node) => 'classList' in node && updateElementTree(node as Element, true))
-                        // if (mutation.removedNodes.length) console.log('[childList]', '[remove]', mutation.removedNodes)
-                        mutation.removedNodes.forEach((node) => 'classList' in node && updateElementTree(node as Element, false))
-                        break
+                    }
+                    for (const child of target.children) {
+                        updateTarget(child as Element, adding)
+                    }
+                }
+            }
+
+            connectedStatusMap.forEach(({ change }, target) => change !== 0 && updateTarget(target, change > 0))
+
+            targetFirstAttrMutationRecord.forEach((mutation, target) => {
+                if (!target.isConnected) return
+                const oldClassList = mutation.oldValue ? mutation.oldValue.split(/\s+/) : []
+                const newClassList = target.classList
+                const addedClasses: string[] = []
+                newClassList.forEach(c => {
+                    if (!oldClassList.includes(c)) addedClasses.push(c)
+                })
+                const removedClasses = oldClassList.filter(c => !newClassList.contains(c))
+                if (addedClasses.length) {
+                    // console.log('[attribute]', '[add]   ', addedClasses, target)
+                    updateClassUsage(addedClasses, true)
+                }
+                if (removedClasses.length) {
+                    // console.log('[attribute]', '[remove]', removedClasses, target)
+                    updateClassUsage(removedClasses, false)
                 }
             })
 
@@ -224,12 +237,17 @@ export class RuntimeCSS extends MasterCSS {
             //     }
             // })
 
-            // // 與 this.classUsages 比較並且打印不同的部分
             // for (const className in safeClassUsages) {
             //     if (this.classUsages.get(className) !== safeClassUsages[className]) {
             //         throw new Error(`[css] ${className} ${this.classUsages.get(className)} (correct: ${safeClassUsages[className]})`)
             //     }
             // }
+
+            // this.classUsages.forEach((count, className) => {
+            //     if (!Object.prototype.hasOwnProperty.call(safeClassUsages, className)) {
+            //         throw new Error(`[css] ${className} ${count} (correct: 0)`)
+            //     }
+            // })
             // end: debug
         })
 
