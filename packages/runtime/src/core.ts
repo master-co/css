@@ -1,4 +1,4 @@
-import { MasterCSS, config as defaultConfig, Rule, SyntaxLayer } from '@master/css'
+import { MasterCSS, config as defaultConfig, Rule, SyntaxLayer, RuleNode } from '@master/css'
 import { type Config, SyntaxRule } from '@master/css'
 
 import './types/global'
@@ -18,6 +18,12 @@ export class RuntimeCSS extends MasterCSS {
     ) {
         super(customConfig)
         this.init()
+        this.supportVendors = new Set()
+        const styleDeclaration = document.documentElement.style
+        if ('webkitTransform' in styleDeclaration) this.supportVendors.add('webkit')
+        if ('MozTransform' in styleDeclaration) this.supportVendors.add('moz')
+        if ('msTransform' in styleDeclaration) this.supportVendors.add('ms')
+        if ('OTransform' in styleDeclaration) this.supportVendors.add('o')
     }
 
     init() {
@@ -268,17 +274,17 @@ export class RuntimeCSS extends MasterCSS {
     }
 
     hydrate(nativeCSSRules: CSSRuleList) {
-        const cssSyntaxLayerBlockRules: CSSLayerBlockRule[] = []
+        const cssLayerRules: CSSLayerBlockRule[] = []
         for (let i = 0; i < nativeCSSRules.length; i++) {
             const eachNativeCSSRule = nativeCSSRules[i]
             if (eachNativeCSSRule.constructor.name === 'CSSLayerBlockRule') {
-                const cssLayerBlockRule = eachNativeCSSRule as CSSLayerBlockRule
+                const eachCSSLayerRule = eachNativeCSSRule as CSSLayerBlockRule
                 if ((eachNativeCSSRule as CSSLayerBlockRule).name === 'theme') {
-                    this.themeLayer.native = cssLayerBlockRule
+                    this.themeLayer.native = eachCSSLayerRule
                     let variableRule: Rule | undefined
                     let lastVariableName: string | undefined
-                    for (let j = 0; j < cssLayerBlockRule.cssRules.length; j++) {
-                        const cssRule = cssLayerBlockRule.cssRules[j]
+                    for (let j = 0; j < eachCSSLayerRule.cssRules.length; j++) {
+                        const cssRule = eachCSSLayerRule.cssRules[j]
                         const variableCSSRule = (cssRule.constructor.name === 'CSSMediaRule'
                             ? (cssRule as CSSMediaRule).cssRules[0]
                             : cssRule) as CSSStyleRule
@@ -296,7 +302,7 @@ export class RuntimeCSS extends MasterCSS {
                     }
                     if (this.themeLayer.rules.length) this.rules.push(this.themeLayer)
                 } else {
-                    cssSyntaxLayerBlockRules.push(cssLayerBlockRule)
+                    cssLayerRules.push(eachCSSLayerRule)
                 }
             } else if (eachNativeCSSRule.constructor.name === 'CSSLayerStatementRule') {
                 this.layerStatementRule.nodes[0].native = eachNativeCSSRule as CSSLayerStatementRule
@@ -312,107 +318,91 @@ export class RuntimeCSS extends MasterCSS {
             }
         }
 
-        for (const cssLayerBlockRule of cssSyntaxLayerBlockRules) {
-            const handleSyntaxLayer = (layer: SyntaxLayer) => {
-                layer.native = cssLayerBlockRule
-                for (let j = 0; j < cssLayerBlockRule.cssRules.length; j++) {
-                    const cssRule = cssLayerBlockRule.cssRules[j] as CSSStyleRule
-                    const createSyntaxRule = (cssRule: CSSStyleRule): SyntaxRule | undefined => {
-                        if (cssRule.selectorText) {
-                            const syntaxRule = this.createFromSelectorText(cssRule.selectorText)[0]
-                            if (syntaxRule) return syntaxRule
-                        } else if (cssRule.cssRules) {
-                            for (const eachCSSRule of cssRule.cssRules) {
-                                const syntaxRule = createSyntaxRule(eachCSSRule as CSSStyleRule)
-                                if (syntaxRule) return syntaxRule
+        const createSyntaxRules = (cssRule: CSSStyleRule): SyntaxRule[] | undefined => {
+            if (cssRule.selectorText) {
+                return this.createFromSelectorText(cssRule.selectorText)
+            } else if (cssRule.cssRules) {
+                for (const eachCSSRule of cssRule.cssRules) {
+                    const syntaxRules = createSyntaxRules(eachCSSRule as CSSStyleRule)
+                    if (syntaxRules?.length) {
+                        return syntaxRules
+                    }
+                }
+            }
+        }
+
+        for (const eachCSSLayerRule of cssLayerRules) {
+            const eachCSSRules = Array.from(eachCSSLayerRule.cssRules)
+            let layer: SyntaxLayer
+            switch (eachCSSLayerRule.name) {
+                case 'base':
+                    layer = this.baseLayer
+                    break
+                case 'preset':
+                    layer = this.presetLayer
+                    break
+                case 'components':
+                    layer = this.componentsLayer
+                    break
+                default:
+                    layer = this.generalLayer
+                    break
+            }
+            layer.native = eachCSSLayerRule
+            eachCSSRules.forEach((eachCSSRule) => {
+                const syntaxRules = createSyntaxRules(eachCSSRule as CSSStyleRule)
+                if (syntaxRules) {
+                    const retrieveNative = (selectorText: string) => {
+                        for (let eachTargetCSSRuleIndex = 0; eachTargetCSSRuleIndex < eachCSSRules.length; eachTargetCSSRuleIndex++) {
+                            const eachTargetCSSRule = eachCSSRules[eachTargetCSSRuleIndex]
+                            const matchSelector = (eachSelectorText: string) => {
+                                if (eachSelectorText.replace(/,\s+/g, ',') === selectorText) {
+                                    eachCSSRules.splice(eachTargetCSSRuleIndex, 1)
+                                    return true
+                                }
+                                return false
+                            }
+                            if (eachTargetCSSRule instanceof CSSStyleRule) {
+                                if (matchSelector(eachTargetCSSRule.selectorText!)) {
+                                    return eachTargetCSSRule
+                                }
+                            } else if (eachTargetCSSRule instanceof CSSMediaRule) {
+                                for (let eachMediaChildRuleIndex = 0; eachMediaChildRuleIndex < eachTargetCSSRule.cssRules.length; eachMediaChildRuleIndex++) {
+                                    const eachMediaChildRule = eachTargetCSSRule.cssRules[eachMediaChildRuleIndex]
+                                    if (eachMediaChildRule instanceof CSSStyleRule) {
+                                        if (matchSelector(eachMediaChildRule.selectorText!)) {
+                                            return eachTargetCSSRule
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-                    const syntaxRule = createSyntaxRule(cssRule)
-                    if (syntaxRule) {
+                    for (const syntaxRule of syntaxRules) {
                         layer.rules.push(syntaxRule)
                         layer.insertVariables(syntaxRule)
                         layer.insertAnimations(syntaxRule)
-                        for (const eachNode of syntaxRule.nodes) {
-                            if (!eachNode.native) eachNode.native = cssRule
-                        }
-                    } else {
-                        cssLayerBlockRule.deleteRule?.(j--)
-                        console.error(`Cannot recognize the CSS rule in the ${layer.name} layer. \`${cssRule.cssText}\` (https://rc.css.master.co/messages/hydration-errors)`)
+                        syntaxRule.nodes.forEach((node) => {
+                            const native = retrieveNative(node.selectorText!)
+                            if (native) {
+                                node.native = native
+                            } else {
+                                console.error(`Cannot retrieve the CSS rule for \`${node.selectorText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                            }
+                        })
+                    }
+                } else {
+                    console.error(`Cannot recognize the CSS rule \`${eachCSSRule.cssText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                }
+            })
+            for (const eachRule of layer.rules) {
+                for (let k = eachRule.nodes.length - 1; k >= 0; k--) {
+                    if (!eachRule.nodes[k].native) {
+                        eachRule.nodes.splice(k, 1)
                     }
                 }
-                for (const eachRule of layer.rules) {
-                    for (let k = eachRule.nodes.length - 1; k >= 0; k--) {
-                        if (!eachRule.nodes[k].native) {
-                            eachRule.nodes.splice(k, 1)
-                        }
-                    }
-                }
-                if (layer.rules.length) this.rules.push(layer)
             }
-            switch (cssLayerBlockRule.name) {
-                case 'base':
-                    handleSyntaxLayer(this.baseLayer)
-                    break
-                case 'preset':
-                    handleSyntaxLayer(this.presetLayer)
-                    break
-                case 'components':
-                    this.componentsLayer.native = cssLayerBlockRule
-                    let stylePreText: string
-                    const createSyntaxRules = (cssRule: any): SyntaxRule[] | undefined => {
-                        if (cssRule.selectorText) {
-                            const syntaxRules = this.createFromSelectorText(cssRule.selectorText)
-                            if (syntaxRules.length) {
-                                stylePreText = cssRule.selectorText + '{'
-                                return syntaxRules
-                            }
-                        } else if (cssRule.cssRules) {
-                            for (const eachCSSRule of cssRule.cssRules) {
-                                const syntaxRules = this.createFromSelectorText((eachCSSRule as CSSStyleRule).selectorText)
-                                if (syntaxRules) return syntaxRules
-                            }
-                        }
-                    }
-                    for (let j = 0; j < cssLayerBlockRule.cssRules.length; j++) {
-                        const cssRule = cssLayerBlockRule.cssRules[j] as CSSStyleRule
-                        const syntaxRules = createSyntaxRules(cssRule)
-                        if (syntaxRules) {
-                            let matched = false
-                            for (const eachSyntaxRule of syntaxRules) {
-                                for (const node of eachSyntaxRule.nodes) {
-                                    if (!node.native && node.text.includes(stylePreText!)) {
-                                        node.native = cssRule
-                                        if (!this.componentsLayer.rules.includes(eachSyntaxRule)) {
-                                            this.componentsLayer.rules.push(eachSyntaxRule)
-                                            this.componentsLayer.insertVariables(eachSyntaxRule)
-                                            this.componentsLayer.insertAnimations(eachSyntaxRule)
-                                        }
-                                        matched = true
-                                        break
-                                    }
-                                }
-                                if (matched)
-                                    break
-                            }
-                        } else {
-                            cssLayerBlockRule?.deleteRule?.(j--)
-                            console.error(`Cannot recognize the CSS rule in the components layer. \`${cssRule.cssText}\` (https://rc.css.master.co/messages/hydration-errors)`)
-                        }
-                    }
-                    for (const eachRule of this.componentsLayer.rules) {
-                        for (let k = eachRule.nodes.length - 1; k >= 0; k--) {
-                            if (!eachRule.nodes[k].native) {
-                                eachRule.nodes.splice(k, 1)
-                            }
-                        }
-                    }
-                    if (this.componentsLayer.rules.length) this.rules.push(this.componentsLayer)
-                    break
-                case 'general':
-                    handleSyntaxLayer(this.generalLayer)
-                    break
-            }
+            if (layer.rules.length) this.rules.push(layer)
         }
     }
 

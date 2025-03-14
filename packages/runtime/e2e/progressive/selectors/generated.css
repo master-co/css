@@ -1,0 +1,20 @@
+@layer base, theme, preset, components, general;
+
+@layer general {
+    .block\:\:before\,\:\:after::before,
+    .block\:\:before\,\:\:after::after {
+        display: block
+    }
+
+    .hidden\:\:slider-thumb::-webkit-slider-thumb {
+        display: none
+    }
+
+    .hidden\:\:slider-thumb::-moz-range-thumb {
+        display: none
+    }
+
+    .content\:external\:\:after::after {
+        content: " ↗"
+    }
+}

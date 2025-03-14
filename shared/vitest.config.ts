@@ -14,6 +14,7 @@ const config: ViteUserConfig = {
         forceRerunTriggers: [
             'vitest.config.*',
             'vite.config.*',
+            '**/*generated.css',
             'package.json'
         ]
     },
