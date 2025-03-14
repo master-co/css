@@ -1,5 +1,3 @@
- 
-// @ts-expect-error
 import { lexer, parse, walk, property as propertyName } from 'css-tree'
 import { type SyntaxError } from './types/syntax-error'
 
@@ -34,7 +32,7 @@ export default function validateCSS(text: string, parseOptions = {
 }
 
 
-function isTargetError(error: SyntaxError) {
+function isTargetError(error: SyntaxError | null) {
     if (!error) {
         return null
     }
@@ -53,7 +51,7 @@ export function validateAtrule(node: { name: any; prelude: any; block: { childre
     const errors = []
     let error
 
-    if (error = isTargetError(lexer.checkAtruleName(atrule))) {
+    if (error = isTargetError((lexer as any).checkAtruleName(atrule))) {
         errors.push(Object.assign(error, {
             atrule
         }))
@@ -85,7 +83,7 @@ export function validateAtrulePrelude(atrule: string, prelude: any) {
     const errors = []
     let error: SyntaxError | null
 
-    if (error = isTargetError(lexer.checkAtrulePrelude(atrule, prelude))) {
+    if (error = isTargetError((lexer as any).checkAtrulePrelude(atrule, prelude))) {
         errors.push(Object.assign(error, {
             atrule
         }))
@@ -104,7 +102,7 @@ export function validateAtruleDescriptor(atrule: any, descriptor: string, value:
     const errors = []
     let error
 
-    if (error = isTargetError(lexer.checkAtruleDescriptorName(atrule, descriptor))) {
+    if (error = isTargetError((lexer as any).checkAtruleDescriptorName(atrule, descriptor))) {
         errors.push(Object.assign(error, {
             atrule,
             descriptor
@@ -131,7 +129,7 @@ export function validateDeclaration(property: string, value: any) {
         return errors
     }
 
-    if (error = isTargetError(lexer.checkPropertyName(property))) {
+    if (error = isTargetError((lexer as any).checkPropertyName(property))) {
         errors.push(Object.assign(error, {
             property
         }))
