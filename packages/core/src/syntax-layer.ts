@@ -299,22 +299,24 @@ export default class SyntaxLayer extends Layer {
                     const addNative = (mode: string, _variable: TypeVariable) => {
                         let isDefaultMode = false
                         let preifxCssRuleText: string
+                        let selectorText: string
                         let endCurlyBracketCount = 1
                         if (mode) {
                             switch (this.css.config.modes?.[mode]) {
                                 case 'media':
-                                    preifxCssRuleText = `@media(prefers-color-scheme:${mode}){:root`
+                                    selectorText = ':root'
+                                    preifxCssRuleText = `@media(prefers-color-scheme:${mode}){${selectorText}`
                                     endCurlyBracketCount++
                                     break
                                 case 'host':
-                                    preifxCssRuleText = `:host(.${mode})`
+                                    preifxCssRuleText = selectorText = `:host(.${mode})`
                                     if (!variable.value && this.css.config.defaultMode === mode) {
                                         preifxCssRuleText += ',:host'
                                         isDefaultMode = true
                                     }
                                     break
                                 case 'class':
-                                    preifxCssRuleText = `.${mode}`
+                                    preifxCssRuleText = selectorText = `.${mode}`
                                     if (!variable.value && this.css.config.defaultMode === mode) {
                                         preifxCssRuleText += ',:root'
                                         isDefaultMode = true
@@ -324,12 +326,13 @@ export default class SyntaxLayer extends Layer {
                                     return
                             }
                         } else {
-                            preifxCssRuleText = ':root'
+                            preifxCssRuleText = selectorText = ':root'
                         }
 
                         const cssRuleText = `${preifxCssRuleText}{--${eachVariableName}:${String(_variable.value)}${'}'.repeat(endCurlyBracketCount)}`
                         if (isDefaultMode) {
                             newRule.nodes.unshift({
+                                selectorText,
                                 text: cssRuleText
                             })
                         } else {

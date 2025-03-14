@@ -13,6 +13,7 @@ import Layer from './layer'
 import NonLayer from './non-layer'
 import { ColorVariable, DefinedRule, Variable } from './types/syntax'
 import { AnimationDefinitions, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
+import { Vendors } from './types/common'
 
 export default class MasterCSS {
     static config: Config = defaultConfig
@@ -77,7 +78,7 @@ export default class MasterCSS {
                 const eachResolvedSelectorText = resolvedSelectors[eachSelectorName]
                 const regexp = new RegExp(escapeString(eachSelectorName) + '(?![a-z-])')
                 for (const eachNewSelectorText of Array.isArray(eachResolvedSelectorText) ? eachResolvedSelectorText : [eachResolvedSelectorText]) {
-                    const vendor = eachNewSelectorText.match(/^::-[a-z]+-/m)?.[0] ?? ''
+                    const vendor = eachNewSelectorText.match(/^:(?::)?-(webkit|moz|ms|o)-/m)?.[1] ?? ''
                     let selectorValues = this.selectors[vendor]
                     if (!selectorValues) {
                         selectorValues = this.selectors[vendor] = []
@@ -517,6 +518,101 @@ export default class MasterCSS {
         return syntaxRules.filter(eachSyntax => eachSyntax?.text) as SyntaxRule[]
     }
 
+    generateVendorSelectors(selectorText: string) {
+        const vendorSelectors: Record<string, string[]> = {}
+        const transformSelector = (selectorText: string, selectorValues: [RegExp, string[]][], selectors: string[], matched: boolean) => {
+            for (const [regexp, newSelectorTexts] of selectorValues) {
+                if (regexp.test(selectorText)) {
+                    for (const eachNewSelectorText of newSelectorTexts) {
+                        transformSelector(selectorText.replace(regexp, eachNewSelectorText), selectorValues, selectors, true)
+                    }
+                    return
+                }
+            }
+
+            if (matched) {
+                selectors.push(selectorText)
+            }
+        }
+        const spacedSelectorToken = (selectorText: string) => {
+            // 1. \'123\'
+            // 2. [href='http://localhost']
+            const transformedSelectorText =
+                selectorText.split(/(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/)
+                    .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/(^|[^_])_(?!_)/g, '$1 '))
+                    .join('')
+            const selectors: string[] = []
+
+            let currentSelector = ''
+            let symbolCount = 0
+            for (let i = 0; i < transformedSelectorText.length; i++) {
+                const char = transformedSelectorText[i]
+                if (char === '\\') {
+                    currentSelector += char + transformedSelectorText[++i]
+                    continue
+                }
+                if (!symbolCount && char === ',') {
+                    selectors.push(currentSelector)
+                    currentSelector = ''
+                } else {
+                    currentSelector += char
+
+                    if (symbolCount && char === ')') {
+                        symbolCount--
+                    } else if (char === '(') {
+                        symbolCount++
+                    }
+                }
+            }
+            if (currentSelector) {
+                selectors.push(currentSelector)
+            }
+
+            return selectors
+        }
+        const transformedSelectors: string[] = []
+        if ('' in this.selectors) {
+            transformSelector(selectorText, this.selectors[''], transformedSelectors, true)
+        } else {
+            transformedSelectors.push(selectorText)
+        }
+
+        const unspacedVendorSelectors: Record<string, string[]> = {}
+        for (const [vendor, selectorValues] of Object.entries(this.selectors)) {
+            if (!vendor) continue
+            const newUnspacedVendorSelectors: string | any[] = []
+            for (const eachTransformedSelector of transformedSelectors) {
+                transformSelector(eachTransformedSelector, selectorValues, newUnspacedVendorSelectors, false)
+            }
+            if (newUnspacedVendorSelectors.length) {
+                unspacedVendorSelectors[vendor] = newUnspacedVendorSelectors
+            }
+        }
+
+        const insertVendorSelectors = (vendor: string, selectorTexts: string[]) => {
+            const groupedSelectorTexts = selectorTexts.reduce((arr: string[], eachSuffixSelector) => {
+                arr.push(...spacedSelectorToken(eachSuffixSelector))
+                return arr
+            }, [])
+            if (vendor in vendorSelectors) {
+                vendorSelectors[vendor].push(...groupedSelectorTexts)
+            } else {
+                vendorSelectors[vendor] = groupedSelectorTexts
+            }
+        }
+
+        const vendors = Object.keys(unspacedVendorSelectors)
+        if (vendors.length) {
+            for (const eachVendor of vendors) {
+                insertVendorSelectors(eachVendor, unspacedVendorSelectors[eachVendor])
+            }
+        } else {
+            insertVendorSelectors('', transformedSelectors)
+        }
+
+        return vendorSelectors
+    }
+
     /**
      * Create syntax rule from given class name
      * @param className
@@ -551,7 +647,7 @@ export default class MasterCSS {
                             className += nextChar
                             continue
                         }
-                    } else if (['.', '#', '[', '!', '*', '>', '+', '~', ':'].includes(char)) {
+                    } else if (['.', '#', '[', '!', '*', '>', '+', '~', ':', ','].includes(char)) {
                         break
                     }
                     className += char
@@ -658,6 +754,7 @@ export default class MasterCSS {
 export const masterCSSs: MasterCSS[] = []
 
 export default interface MasterCSS {
+    supportVendors: Set<Vendors>
     style: HTMLStyleElement | null
     components: Record<string, string[]>
     selectors: Record<string, [RegExp, string[]][]>

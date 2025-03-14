@@ -52,12 +52,13 @@ export default class Layer {
 
             for (let i = 0; i < rule.nodes.length;) {
                 try {
-                    const nativeRule = rule.nodes[i]
-                    this.native.insertRule(nativeRule.text, cssRuleIndex)
-                    nativeRule.native = this.native.cssRules[cssRuleIndex++]
+                    const node = rule.nodes[i]
+                    const insertedIndex = this.native.insertRule(node.text, cssRuleIndex)
+                    node.native = this.native.cssRules.item(insertedIndex) as CSSRule
+                    cssRuleIndex++
                     i++
                 } catch (error) {
-                    console.error(error)
+                    console.error(error, rule.nodes[i])
                     rule.nodes.splice(i, 1)
                 }
             }

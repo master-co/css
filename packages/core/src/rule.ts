@@ -15,5 +15,8 @@ export class Rule {
 
 export interface RuleNode {
     text: string
+    selectorText?: string
     native?: CSSRule
+    suffixSelectors?: string[]
+    prefixSelectors?: string[]
 }

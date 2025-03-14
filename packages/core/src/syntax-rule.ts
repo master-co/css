@@ -4,9 +4,10 @@ import cssEscape from 'shared/utils/css-escape'
 import SyntaxRuleType from './syntax-rule-type'
 import { type PropertiesHyphen } from 'csstype'
 import { VALUE_DELIMITERS, BASE_UNIT_REGEX, UNIT_REGEX } from './common'
-import { Rule } from './rule'
+import { Rule, RuleNode } from './rule'
 import Layer from './layer'
 import type { AtComponent, ColorVariable, NumericValueComponent, DefinedRule, ValueComponent, VariableValueComponent } from './types/syntax'
+import { Vendors } from './types/common'
 
 export class SyntaxRule extends Rule {
 
@@ -35,7 +36,7 @@ export class SyntaxRule extends Rule {
         const { analyze, transformValue, declare, transformValueComponents, create, type, unit } = definition
         this.type = type as SyntaxRuleType
         const { scope, important, modes } = css.config
-        const { selectors, at, animations } = css
+        const { at, animations } = css
 
         if (create) create.call(this, name)
 
@@ -73,112 +74,15 @@ export class SyntaxRule extends Rule {
         this.stateToken = stateToken
 
         // 3. prefix selector
-        const generateVendorSelectors = (selectorText: string, vendorSelectors: Record<string, string[]>) => {
-            const transformSelector = (selectorText: string, selectorValues: [RegExp, string[]][], selectors: string[], matched: boolean) => {
-                for (const [regexp, newSelectorTexts] of selectorValues) {
-                    if (regexp.test(selectorText)) {
-                        for (const eachNewSelectorText of newSelectorTexts) {
-                            transformSelector(selectorText.replace(regexp, eachNewSelectorText), selectorValues, selectors, true)
-                        }
-                        return
-                    }
-                }
-
-                if (matched) {
-                    selectors.push(selectorText)
-                }
-            }
-            const spacedSelectorToken = (selectorText: string) => {
-                // 1. \'123\'
-                // 2. [href='http://localhost']
-                const transformedSelectorText =
-                    selectorText.split(/(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/)
-                        .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/(^|[^_])_(?!_)/g, '$1 '))
-                        .join('')
-                const selectors: string[] = []
-
-                let currentSelector = ''
-                let symbolCount = 0
-                for (let i = 0; i < transformedSelectorText.length; i++) {
-                    const char = transformedSelectorText[i]
-                    if (char === '\\') {
-                        currentSelector += char + transformedSelectorText[++i]
-                        continue
-                    }
-                    currentSelector += char
-                    if (symbolCount && char === ')') {
-                        symbolCount--
-                    } else if (char === '(') {
-                        symbolCount++
-                    }
-                }
-                if (currentSelector) {
-                    selectors.push(currentSelector)
-                }
-
-                return selectors
-            }
-
-            const transformedSelectors: string[] = []
-            if ('' in selectors) {
-                transformSelector(selectorText, selectors[''], transformedSelectors, true)
-            } else {
-                transformedSelectors.push(selectorText)
-            }
-
-            const unspacedVendorSelectors: Record<string, string[]> = {}
-            for (const [vendor, selectorValues] of Object.entries(selectors)) {
-                if (!vendor)
-                    continue
-
-                const newUnspacedVendorSelectors: string | any[] = []
-                for (const eachTransformedSelector of transformedSelectors) {
-                    transformSelector(eachTransformedSelector, selectorValues, newUnspacedVendorSelectors, false)
-                }
-
-                if (newUnspacedVendorSelectors.length) {
-                    unspacedVendorSelectors[vendor] = newUnspacedVendorSelectors
-                }
-            }
-
-            const insertVendorSelectors = (vendor: string, selectorTexts: string[]) => {
-                const groupedSelectorTexts = selectorTexts.reduce((arr: string[], eachSuffixSelector) => {
-                    arr.push(...spacedSelectorToken(eachSuffixSelector))
-                    return arr
-                }, [])
-
-                if (vendor in vendorSelectors) {
-                    vendorSelectors[vendor].push(...groupedSelectorTexts)
-                } else {
-                    vendorSelectors[vendor] = groupedSelectorTexts
-                }
-            }
-
-            const vendors = Object.keys(unspacedVendorSelectors)
-            if (vendors.length) {
-                for (const eachVendor of vendors) {
-                    insertVendorSelectors(eachVendor, unspacedVendorSelectors[eachVendor])
-                }
-            } else {
-                insertVendorSelectors('', transformedSelectors)
-            }
-        }
-
         if (prefixToken) {
-            this.vendorPrefixSelectors = {}
-            generateVendorSelectors(prefixToken, this.vendorPrefixSelectors)
-        } else {
-            this.vendorPrefixSelectors = { '': [''] }
+            this.vendorPrefixSelectors = css.generateVendorSelectors(prefixToken)
         }
 
         // 4. suffix selector
         const stateTokens = stateToken.split('@')
         const suffixSelector = stateTokens[0]
         if (suffixSelector) {
-            this.vendorSuffixSelectors = {}
-
-            generateVendorSelectors(suffixSelector, this.vendorSuffixSelectors)
-
+            this.vendorSuffixSelectors = css.generateVendorSelectors(suffixSelector)
             for (const suffixSelectors of Object.values(this.vendorSuffixSelectors)) {
                 for (const eachSuffixSelector of suffixSelectors) {
                     const SORTED_SELECTORS = [':disabled', ':active', ':focus', ':hover']
@@ -192,24 +96,12 @@ export class SyntaxRule extends Rule {
                     }
                 }
             }
-        } else {
-            this.vendorSuffixSelectors = { '': [''] }
         }
 
         // selector combinations
         const suffixSelectorVendorsByPrefixSelectorVendor: Record<string, string[]> = {}
-        const isPrefixSelectorWithoutVendor = Object.prototype.hasOwnProperty.call(this.vendorPrefixSelectors, '')
-        const isSuffixSelectorWithoutVendor = Object.prototype.hasOwnProperty.call(this.vendorSuffixSelectors, '')
-        if (isPrefixSelectorWithoutVendor) {
-            suffixSelectorVendorsByPrefixSelectorVendor[''] = isSuffixSelectorWithoutVendor
-                ? ['']
-                : Object.keys(this.vendorSuffixSelectors)
-        } else {
-            if (isSuffixSelectorWithoutVendor) {
-                for (const vendor in this.vendorPrefixSelectors) {
-                    suffixSelectorVendorsByPrefixSelectorVendor[vendor] = ['']
-                }
-            } else {
+        if (this.vendorPrefixSelectors) {
+            if (this.vendorSuffixSelectors) {
                 for (const prefixSelectorVendor in this.vendorPrefixSelectors) {
                     const suffixSelectorVendors: string[] = suffixSelectorVendorsByPrefixSelectorVendor[prefixSelectorVendor] = []
                     if (Object.prototype.hasOwnProperty.call(this.vendorSuffixSelectors, prefixSelectorVendor)) {
@@ -220,7 +112,15 @@ export class SyntaxRule extends Rule {
                         }
                     }
                 }
+            } else {
+                for (const vendor in this.vendorPrefixSelectors) {
+                    suffixSelectorVendorsByPrefixSelectorVendor[vendor] = ['']
+                }
             }
+        } else {
+            suffixSelectorVendorsByPrefixSelectorVendor[''] = this.vendorSuffixSelectors
+                ? Object.keys(this.vendorSuffixSelectors)
+                : ['']
         }
 
         // 5. atTokens
@@ -418,14 +318,22 @@ export class SyntaxRule extends Rule {
         if (propertiesText.length) {
             for (const prefixSelectorVendor in suffixSelectorVendorsByPrefixSelectorVendor) {
                 for (const eachSuffixSelectorVendor of suffixSelectorVendorsByPrefixSelectorVendor[prefixSelectorVendor]) {
+                    const prefixSelectors = this.vendorPrefixSelectors?.[prefixSelectorVendor]
+                    const suffixSelectors = this.vendorSuffixSelectors?.[eachSuffixSelectorVendor]
+                    if (this.css.supportVendors) {
+                        if (prefixSelectorVendor && !this.css.supportVendors?.has(prefixSelectorVendor as Vendors) ||
+                            eachSuffixSelectorVendor && !this.css.supportVendors?.has(eachSuffixSelectorVendor as Vendors)
+                        ) {
+                            continue
+                        }
+                    }
                     let prefixText = ''
                     if (this.direction) {
                         prefixText += '[dir=' + this.direction + '] '
                     }
-
-                    const prefixSelectors = this.vendorPrefixSelectors[prefixSelectorVendor]
-                    const suffixSelectors = this.vendorSuffixSelectors[eachSuffixSelectorVendor]
-                    const prefixTexts = prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText)
+                    const prefixTexts = prefixSelectors ?
+                        prefixSelectors.map(eachPrefixSelector => eachPrefixSelector + prefixText)
+                        : [prefixText]
                     const getCssText = (name: string) =>
                         prefixTexts
                             .map(eachPrefixText => {
@@ -441,17 +349,20 @@ export class SyntaxRule extends Rule {
                             .reduce((arr: string[], eachPrefixText) => {
                                 arr.push(
                                     suffixSelectors
-                                        .reduce((_arr: string[], eachSuffixSelector) => {
-                                            _arr.push(eachPrefixText + '.' + cssEscape(name) + eachSuffixSelector)
-                                            return _arr
-                                        }, [])
-                                        .join(',')
+                                        ? suffixSelectors
+                                            .reduce((_arr: string[], eachSuffixSelector) => {
+                                                _arr.push(eachPrefixText + '.' + cssEscape(name) + eachSuffixSelector)
+                                                return _arr
+                                            }, [])
+                                            .join(',')
+                                        : eachPrefixText + '.' + cssEscape(name)
                                 )
                                 return arr
                             }, [])
                             .join(',')
 
-                    let cssText = getCssText(fixedClass ?? name)
+                    const selectorText = getCssText(fixedClass ?? name)
+                    let cssText = selectorText
                         + '{'
                         + propertiesText.join(';')
                         + '}'
@@ -468,7 +379,11 @@ export class SyntaxRule extends Rule {
                         cssText = `@media(prefers-color-scheme:${this.mode}){` + cssText + '}'
                     }
 
-                    this.nodes.push({ text: cssText })
+                    const node: RuleNode = { text: cssText, selectorText }
+                    if (prefixSelectors) node.prefixSelectors = prefixSelectors
+                    if (suffixSelectors) node.suffixSelectors = suffixSelectors
+                    this.nodes.push(node)
+
                 }
             }
         }
