@@ -28,6 +28,7 @@ const units = {
     play: {},
     roadmap: {},
     sponsor: {},
+    'design-system': {},
 }
 
 export default units
