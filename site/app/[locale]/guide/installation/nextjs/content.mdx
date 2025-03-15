@@ -43,7 +43,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                     {
                         name: 'Terminal',
                         lang: 'bash',
-                        children: `
+                        code: `
                             npm create next-app --app --ts
                             cd __project__
                         `
@@ -51,7 +51,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                     {
                         name: 'Terminal (pages/)',
                         lang: 'bash',
-                        children: `
+                        code: `
                             npm create next-app --ts
                             cd __project__
                         `
@@ -98,7 +98,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                     {
                         name: 'app/layout.tsx',
                         lang: 'tsx',
-                        children: `
+                        code: `
                             import './globals.css'
                             +import CSSRuntimeProvider from '@master/css.react'
                             +import config from '../master.css'
@@ -124,7 +124,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                     {
                         name: 'pages/_app.tsx',
                         lang: 'tsx',
-                        children: `
+                        code: `
                             import '../styles/globals.css'
                             import type { AppProps } from 'next/app'
                             +import dynamic from 'next/dynamic'
@@ -157,7 +157,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                     {
                         name: 'package.json',
                         lang: 'js',
-                        children: `
+                        code: `
                             {
                                 "scripts": {
                                     "dev": "next dev",
@@ -172,7 +172,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                     {
                         name: 'pages/_document.tsx',
                         lang: 'tsx',
-                        children: `
+                        code: `
                             import NextDocument, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
                             +import { renderCSS } from '@master/css-server'
                             +import { config } from '../master.css'

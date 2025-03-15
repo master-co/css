@@ -8,7 +8,7 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
             cli && {
                 ...othersProps,
                 name: 'master.css-extractor.js', lang: 'js',
-                children: dedent`
+                code: `
                     ${imports ? `import { ${imports} } from '@master/css-extractor'` : ''}
                     /** @type {import('@master/css-extractor').Options} */
                     export default {
@@ -20,7 +20,7 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
             vite && {
                 ...othersProps,
                 name: 'vite.config.ts', lang: 'ts',
-                children: dedent`
+                code: `
                     ${imports ? `import { ${imports} } from '@master/css-extractor'` : ''}
                     import masterCSSExtractor from '@master/css-extractor.vite'
 
@@ -40,7 +40,7 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
             webpack && {
                 ...othersProps,
                 name: 'webpack.config.js', lang: 'js',
-                children: dedent`
+                code: `
                     ${imports ? `const { ${imports} } = require('@master/css-extractor')` : ''}
                     const CSSExtractorPlugin = require('@master/css-extractor.webpack')
 

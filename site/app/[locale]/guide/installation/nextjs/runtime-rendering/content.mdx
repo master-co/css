@@ -43,7 +43,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                     {
                         name: 'Terminal',
                         lang: 'bash',
-                        children: `
+                        code: `
                             npm create next-app --app --ts
                             cd __project__
                         `
@@ -51,7 +51,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                     {
                         name: 'Terminal (pages/)',
                         lang: 'bash',
-                        children: `
+                        code: `
                             npm create next-app --ts
                             cd __project__
                         `
@@ -96,7 +96,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                     {
                         name: 'app/layout.tsx',
                         lang: 'tsx',
-                        children: `
+                        code: `
                             import './globals.css'
                             +import CSSRuntimeProvider from '@master/css.react'
                             +import config from '../master.css'
@@ -122,7 +122,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                     {
                         name: 'pages/_app.tsx',
                         lang: 'tsx',
-                        children: `
+                        code: `
                             import '../styles/globals.css'
                             import type { AppProps } from 'next/app'
                             +import CSSRuntimeProvider from '@master/css.react'

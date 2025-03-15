@@ -4,7 +4,7 @@ export default () => <CodeTabs>{[
     {
         name: 'iife.html',
         lang: 'html',
-        children: `
+        code: `
         <!DOCTYPE html>
         <html lang="en" style="display: none">
         <head>
@@ -31,7 +31,7 @@ export default () => <CodeTabs>{[
     {
         name: 'esm.html',
         lang: 'html',
-        children: `
+        code: `
         <!DOCTYPE html>
         <html lang="en" style="display: none">
         <head>
