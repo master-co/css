@@ -703,6 +703,9 @@ const rules = {
         type: SyntaxRuleType.Native,
         unit: 'em'
     } as SyntaxRuleDefinition,
+    hyphens: {
+        type: SyntaxRuleType.Native
+    } as SyntaxRuleDefinition,
     'user-drag': {
         type: SyntaxRuleType.Native,
         declare(value) {
