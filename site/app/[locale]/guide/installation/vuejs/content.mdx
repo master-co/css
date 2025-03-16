@@ -79,14 +79,14 @@ A full-stack framework, such as [Nuxt.js](/guide/installation/nuxtjs), is recomm
         <StepR>
             ```html name=src/App.vue
             <script setup lang="ts">
-            +import CSSRuntimeProvider from '@master/css.vue'
-            +import config from '../master.css'
+            import CSSRuntimeProvider from '@master/css.vue'
+            import config from '../master.css'
             </script>
 
             <template>
-            +    <CSSRuntimeProvider :config="config">
+                <CSSRuntimeProvider :config="config">
                     …
-            +    </CSSRuntimeProvider>
+                </CSSRuntimeProvider>
             </template>
             ```
         </StepR>

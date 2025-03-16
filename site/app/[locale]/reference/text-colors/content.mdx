@@ -41,7 +41,7 @@ Add a color to the text variables group.
 export default {
     variables: {
         text: {
-+            primary: '#000'
+            primary: '#000' /* [!code ++] */
         }
     }
 }
@@ -56,15 +56,15 @@ See the [Color Customization](/reference/colors#customization) documentation to 
 Apply the defined `text-*` variables using the inherited rules <Heirs />.
 ```html
 <html class="**light**">
--    <body class="fg:$(text-neutral)">equals</body>
--    <body class="fg:text-neutral">equals</body>
-+    <body class="fg:neutral"></body>
+    <body class="fg:$(text-neutral)">equals</body> <!-- [!code --] -->
+    <body class="fg:text-neutral">equals</body> <!-- [!code --] -->
+    <body class="fg:neutral"></body> <!-- [!code ++] -->
 </html>
 ```
 (!) Typically, we set the [foreground color](/reference/color) of elements using `fg:color` rather than the [text-specific](/reference/text-fill-color) `text:color`.
 ```html
--<p class="text:pink">text-fill-color properity</p>
-+<p class="fg:pink">color properity</p>
+<p class="text:pink">text-fill-color properity</p> <!-- [!code --] -->
+<p class="fg:pink">color properity</p> <!-- [!code ++] -->
 ```
 
 ### Apply text color to any syntax

@@ -96,7 +96,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
             ```js name=vite.config.js
             import { defineConfig } from 'vite'
             import laravel from 'laravel-vite-plugin'
-            +import masterCSSExtractor from '@master/css-extractor.vite'
+            import masterCSSExtractor from '@master/css-extractor.vite' /* [!code ++] */
 
             export default defineConfig({
                 plugins: [
@@ -104,9 +104,9 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                         input: ['resources/css/app.css', 'resources/js/app.js'],
                         refresh: true,
                     }),
-            +        masterCSSExtractor({
-            +            sources: ['resources/views/**/*.php']
-            +        })
+                    masterCSSExtractor({ // [!code ++]
+                        sources: ['resources/views/**/*.php'] // [!code ++]
+                    }) // [!code ++]
                 ],
             })
             ```
@@ -120,7 +120,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         <StepR>
             ```js name=resources/js/app.js
             import './bootstrap'
-            +import '.virtual/master.css'
+            import '.virtual/master.css' /* [!code ++] */
             ```
         </StepR>
     </Step>
@@ -135,7 +135,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
             <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
                 <head>
                     …
-            +        @vite('resources/js/app.js')
+                    @vite('resources/js/app.js') // [!code ++]
                 </head>
                 …
             </html>

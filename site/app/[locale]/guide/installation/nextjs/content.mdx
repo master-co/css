@@ -100,8 +100,8 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                         lang: 'tsx',
                         code: `
                             import './globals.css'
-                            +import CSSRuntimeProvider from '@master/css.react'
-                            +import config from '../master.css'
+                            import CSSRuntimeProvider from '@master/css.react' // [!code ++]
+                            import config from '../master.css' // [!code ++]
 
                             export const metadata = {
                                 title: 'Create Next App',
@@ -110,11 +110,11 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
 
                             export default function RootLayout({ children }: { children: React.ReactNode }) {
                                 return (
-                            +        <html lang="en" style={process.env.NODE_ENV === 'development' ? { display: 'none' } : undefined}>
+                                    <html lang="en" style={process.env.NODE_ENV === 'development' ? { display: 'none' } : undefined}>
                                         <body>
-                            +               <CSSRuntimeProvider config={config}>
+                                           <CSSRuntimeProvider config={config}>
                                                 {children}
-                            +               </CSSRuntimeProvider>
+                                           </CSSRuntimeProvider>
                                         </body>
                                     </html>
                                 )
@@ -127,15 +127,15 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                         code: `
                             import '../styles/globals.css'
                             import type { AppProps } from 'next/app'
-                            +import dynamic from 'next/dynamic'
+                            import dynamic from 'next/dynamic' // [!code ++]
 
-                            +const CSSRuntimeProvider = dynamic(() => import('@master/css.react').then((m) => m.CSSRuntimeProvider))
+                            const CSSRuntimeProvider = dynamic(() => import('@master/css.react').then((m) => m.CSSRuntimeProvider)) // [!code ++]
 
                             export default function App({ Component, pageProps }: AppProps) {
                                 return (
-                            +        <CSSRuntimeProvider config={import('../master.css')}>
-                            +            <Component {...pageProps} />
-                            +        </CSSRuntimeProvider>
+                                    <CSSRuntimeProvider config={import('../master.css')}>
+                                        <Component {...pageProps} />
+                                    </CSSRuntimeProvider>
                                 )
                             }
                         `
@@ -161,8 +161,8 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                             {
                                 "scripts": {
                                     "dev": "next dev",
-                        -            "build": "next build",
-                        +            "build": "next build && mcss render \\".next/**/*.html\\"",
+                                    "build": "next build", // [!code ++]
+                                    "build": "next build && mcss render \\".next/**/*.html\\"", // [!code ++]
                                     "start": "next start",
                                     "lint": "next lint"
                                 }
@@ -174,8 +174,8 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                         lang: 'tsx',
                         code: `
                             import NextDocument, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
-                            +import { renderCSS } from '@master/css-server'
-                            +import { config } from '../master.css'
+                            import { renderCSS } from '@master/css-server' // [!code ++]
+                            import { config } from '../master.css' // [!code ++]
 
                             export default function Document() {
                                 return (
@@ -189,19 +189,19 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                                 )
                             }
 
-                            +Document.getInitialProps = async (ctx: DocumentContext) => {
-                            +    const initialProps = await NextDocument.getInitialProps(ctx)
-                            +    const css = renderCSS(initialProps.html, config)
-                            +    return {
-                            +        ...initialProps,
-                            +        components: (
-                            +            <>
-                            +                <style id="master" dangerouslySetInnerHTML={{ __html: css.text }}></style>
-                            +                {initialProps.styles}
-                            +            </>
-                            +        )
-                            +    }
-                            +}
+                            Document.getInitialProps = async (ctx: DocumentContext) => {
+                                const initialProps = await NextDocument.getInitialProps(ctx)
+                                const css = renderCSS(initialProps.html, config)
+                                return {
+                                    ...initialProps,
+                                    components: (
+                                        <>
+                                            <style id="master" dangerouslySetInnerHTML={{ __html: css.text }}></style>
+                                            {initialProps.styles}
+                                        </>
+                                    )
+                                }
+                            }
                         `
                     }
                 ]}

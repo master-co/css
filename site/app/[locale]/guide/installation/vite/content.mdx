@@ -84,10 +84,10 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         <StepR>
             ```ts name=main.ts
             …
-            +   import { initCSSRuntime } from '@master/css-runtime';
-            +   import config from 'master.css';
+            import { initCSSRuntime } from '@master/css-runtime'; /* [!code ++] */
+            import config from 'master.css'; /* [!code ++] */
 
-            +   initCSSRuntime(config)
+            initCSSRuntime(config) /* [!code ++] */
             ```
         </StepR>
     </Step>
@@ -122,7 +122,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         <html lang="en" style="display: none">
             …
             <body>
-        +        <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
+                <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
                 …
             </body>
         </html>

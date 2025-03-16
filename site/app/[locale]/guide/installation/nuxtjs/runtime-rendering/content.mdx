@@ -74,16 +74,16 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
             - Initialize the runtime engine using `CSSRuntimeProvider`
         </StepL>
         <StepR>
-            ```html name=app.vue
+            ```vue name=app.vue
             <script setup lang="ts">
-            +import CSSRuntimeProvider from '@master/css.vue'
-            +import config from './master.css'
+            import CSSRuntimeProvider from '@master/css.vue' /* [!code ++] */
+            import config from './master.css' /* [!code ++] */
             </script>
 
             <template>
-            +    <CSSRuntimeProvider :config="config">
+                <CSSRuntimeProvider :config="config">
                     …
-            +    </CSSRuntimeProvider>
+                </CSSRuntimeProvider>
             </template>
             ```
         </StepR>
@@ -96,13 +96,13 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
         <StepR>
             ```js name=nuxt.config.js
             export default defineNuxtConfig({
-            +    app: {
-            +        head: {
-            +            script: [
-            +                { innerHTML: 'document.documentElement.style.display = "none"' }
-            +            ]
-            +        }
-            +    }
+                app: { /* [!code ++] */
+                    head: { /* [!code ++] */
+                        script: [ /* [!code ++] */
+                            { innerHTML: 'document.documentElement.style.display = "none"' } /* [!code ++] */
+                        ] /* [!code ++] */
+                    } /* [!code ++] */
+                } /* [!code ++] */
             })
             ```
         </StepR>

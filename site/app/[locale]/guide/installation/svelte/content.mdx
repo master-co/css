@@ -81,11 +81,11 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
 
             export default defineConfig({
                 plugins: [sveltekit()],
-            +    server: {
-            +        fs: {
-            +            allow: ['./master.css.ts']
-            +        }
-            +    }
+                server: { /* [!code ++] */
+                    fs: { /* [!code ++] */
+                        allow: ['./master.css.ts'] /* [!code ++] */
+                    } /* [!code ++] */
+                } /* [!code ++] */
             })
             ```
         </StepR>
@@ -103,21 +103,21 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         <StepR>
             ```svelte name=src/routes/%2Blayout.svelte
             <script lang="ts">
-            +    import { onMount, type ComponentType } from "svelte";
-            +    import { Fragment } from "@master/css.svelte";
-            +    import type { CSSRuntimeProvider as CSSProviderType } from "@master/css.svelte";
+                import { onMount, type ComponentType } from "svelte"; /* [!code ++] */
+                import { Fragment } from "@master/css.svelte"; /* [!code ++] */
+                import type { CSSRuntimeProvider as CSSProviderType } from "@master/css.svelte"; /* [!code ++] */
                 …
 
-            +    let CSSRuntimeProvider: ComponentType<CSSProviderType> = Fragment as any;
+                let CSSRuntimeProvider: ComponentType<CSSProviderType> = Fragment as any; /* [!code ++] */
 
-            +    onMount(async () => {
-            +        CSSRuntimeProvider = (await import("@master/css.svelte")).default;
-            +    });
+                onMount(async () => { /* [!code ++] */
+                    CSSRuntimeProvider = (await import("@master/css.svelte")).default; /* [!code ++] */
+                }); /* [!code ++] */
             </script>
 
-            +<svelte:component this={CSSRuntimeProvider} config={import('../../master.css')}>
+            <svelte:component this={CSSRuntimeProvider} config={import('../../master.css')}>
                 <slot />
-            +</svelte:component>
+            </svelte:component>
             ```
         </StepR>
     </Step>
@@ -128,13 +128,13 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         </StepL>
         <StepR>
             ```ts name=src/hooks.server.ts
-            +import { render } from '@master/css-server'
-            +import { config } from '../master.css'
+            import { render } from '@master/css-server' /* [!code ++] */
+            import { config } from '../master.css' /* [!code ++] */
 
             /** @type {import('@sveltejs/kit').Handle} */
             export async function handle({ event, resolve }) {
                 return await resolve(event, {
-            +        transformPageChunk: ({ html }) => render(html, config).html
+                    transformPageChunk: ({ html }) => render(html, config).html /* [!code ++] */
                 })
             }
             ```
@@ -155,7 +155,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         ### <StepNum />Start using Master CSS
         Now style your first element using Master CSS syntax!
         ```svelte name=src/routes/%2Bpage.svelte
-        +<h1 class="font:40 fg:blue font:heavy italic m:12x text:center">Hello World</h1>
+        <h1 class="font:40 fg:blue font:heavy italic m:12x text:center">Hello World</h1>
         ```
         Open your browser to watch the changes.
         <HelloWorld url="localhost:5173" />

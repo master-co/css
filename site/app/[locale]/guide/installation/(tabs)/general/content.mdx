@@ -32,10 +32,10 @@ The easiest way to use Master CSS from scratch is to initialize the [runtime eng
         </StepL>
         <StepR>
             ```js name=main.js
-            + import { initCSSRuntime } from '@master/css-runtime'
-            + import config from './master.css'
+            import { initCSSRuntime } from '@master/css-runtime' /* [!code ++] */
+            import config from './master.css' /* [!code ++] */
 
-            + initCSSRuntime(config)
+            initCSSRuntime(config) /* [!code ++] */
             ```
         </StepR>
     </Step>
@@ -48,7 +48,7 @@ The easiest way to use Master CSS from scratch is to initialize the [runtime eng
         <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-        +    <script src="/main.js"></script>
+            <script src="/main.js"></script> <!-- [!code ++] -->
         </head>
         <body>
             <h1 class="**font:40** **font:heavy** **italic** **m:12x** **text:center**">Hello World</h1>

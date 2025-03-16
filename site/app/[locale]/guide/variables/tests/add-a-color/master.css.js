@@ -1,5 +1,5 @@
 export default {
     variables: {
-/*+*/   primary: '#000'
+        primary: '#000' /* [!code ++] */
     }
 }

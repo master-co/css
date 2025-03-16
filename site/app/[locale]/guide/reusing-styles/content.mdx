@@ -7,12 +7,15 @@ This guide also provides specialized solutions tailored for frameworks.
 
 ## Abstracting styles
 As usual, you can split the styles into multiple files for management. When the project is small in scale, you don't necessarily have to insist on splitting style files.
-```treeview
-🗂️ styles
-|-- 📄 button.ts
-`-- 📄 card.ts
-📄 master.css.ts
-```
+<ExplorerView>
+{[
+    { name: 'styles', children: [
+        { name: 'button.ts' },
+        { name: 'card.ts' }
+    ]},
+    { name: 'master.css.ts' }
+]}
+</ExplorerView>
 
 ### Create button styles
 Let's implement a rich button.
@@ -87,13 +90,15 @@ We define [variables and modes](/guide/variables-and-modes) to create tokens sup
 
 ## Componentization
 In addition to [abstract styles](#abstract-styles), we provide a CSS-in-JS style utility, [Master Styled](https://github.com/master-co/styled), to help you create a component with classes in one line. It supports Vanilla js, React, and Vue.
-
-```treeview
-🗂️ components
-|-- 📄 Button.tsx
-`-- 📄 Card.tsx
-📄 master.css.ts
-```
+<ExplorerView>
+{[
+    { name: 'components', children: [
+        { name: 'Button.tsx' },
+        { name: 'Card.tsx' }
+    ]},
+    { name: 'master.css.ts' }
+]}
+</ExplorerView>
 
 ### Create a button component
 You can define type-safe styles and corresponding classes for style properties.
@@ -145,11 +150,10 @@ export default function Page() {
     const Section = styled.section`bg:slate-90 text:white p:15x|20x`
     return (
         <>
--           <section className="bg:slate-90 text:white p:15x|20x">...</section>
--           <section className="bg:slate-90 text:white p:15x|20x">...</section>
-+           <Section>...</Section>
-+           <Section>...</Section>
-            ...
+            <section className="bg:slate-90 text:white p:15x|20x">...</section> {/* [!code --] */}
+            <section className="bg:slate-90 text:white p:15x|20x">...</section> {/* [!code --] */}
+            <Section>...</Section> {/* [!code ++] */}
+            <Section>...</Section> {/* [!code ++] */}
         </>
     )
 }

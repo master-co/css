@@ -78,19 +78,19 @@ A full-stack framework, such as [Next.js](/guide/installation/nextjs), [Remix](/
             - Add `css display: none` in `html <html>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content)
         </StepL>
         <StepR>
-            ```ts name=src/main.tsx
+            ```tsx name=src/main.tsx
             import React from 'react'
             import ReactDOM from 'react-dom/client'
             import App from './App'
             import './index.css'
-            +import CSSRuntimeProvider from '@master/css.react'
-            +import config from '../master.css'
+            import CSSRuntimeProvider from '@master/css.react' /* [!code ++] */
+            import config from '../master.css' /* [!code ++] */
 
             ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                 <React.StrictMode>
-            +        <CSSRuntimeProvider config={config}>
+                    <CSSRuntimeProvider config={config}>
                         <App />
-            +        </CSSRuntimeProvider>
+                    </CSSRuntimeProvider>
                 </React.StrictMode>,
             )
             ```

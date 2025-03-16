@@ -98,8 +98,8 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                         lang: 'tsx',
                         code: `
                             import './globals.css'
-                            +import CSSRuntimeProvider from '@master/css.react'
-                            +import config from '../master.css'
+                            import CSSRuntimeProvider from '@master/css.react' // [!code ++]
+                            import config from '../master.css' // [!code ++]
 
                             export const metadata = {
                                 title: 'Create Next App',
@@ -108,11 +108,11 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
 
                             export default function RootLayout({ children }: { children: React.ReactNode }) {
                                 return (
-                            +        <html lang="en" style={{ display: 'none' }}>
+                                    <html lang="en" style={{ display: 'none' }}>
                                         <body>
-                            +               <CSSRuntimeProvider config={config}>
+                                           <CSSRuntimeProvider config={config}>
                                                 {children}
-                            +               </CSSRuntimeProvider>
+                                           </CSSRuntimeProvider>
                                         </body>
                                     </html>
                                 )
@@ -125,14 +125,13 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                         code: `
                             import '../styles/globals.css'
                             import type { AppProps } from 'next/app'
-                            +import CSSRuntimeProvider from '@master/css.react'
-                            +import config from '../master.css'
-
+                            import CSSRuntimeProvider from '@master/css.react' // [!code +]
+                            import config from '../master.css' // [!code ++]
                             export default function App({ Component, pageProps }: AppProps) {
                                 return (
-                            +        <CSSRuntimeProvider config={config}>
-                            +            <Component {...pageProps} />
-                            +        </CSSRuntimeProvider>
+                                    <CSSRuntimeProvider config={config}>
+                                        <Component {...pageProps} />
+                                    </CSSRuntimeProvider>
                                 )
                             }
                         `

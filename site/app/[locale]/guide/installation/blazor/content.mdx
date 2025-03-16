@@ -97,10 +97,10 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         <StepR>
             ```js name=npm_packages/src/index.js
             …
-            +   import { initCSSRuntime } from '@master/css-runtime';
-            +   import config from 'master.css';
+            import { initCSSRuntime } from '@master/css-runtime'; // [!code ++]
+            import config from 'master.css'; // [!code ++]
 
-            +   initCSSRuntime(config)
+            initCSSRuntime(config) // [!code ++]
             ```
         </StepR>
     </Step>
@@ -120,7 +120,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
                                 ...
                                 scripts: {
                                     ...
-                            +        "build": "webpack ./src/index.js --output-path ../wwwroot/js --output-filename index.bundle.js --mode=development"
+                                    "build": "webpack ./src/index.js --output-path ../wwwroot/js --output-filename index.bundle.js --mode=development" // [!code ++]
                                 }
                             }
                         `
@@ -143,10 +143,10 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
                         code: `
                             <Project>
                                 ...
-                            +    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-                            +        <Exec Command="npm install" WorkingDirectory="npm_packages" />
-                            +        <Exec Command="npm run build" WorkingDirectory="npm_packages" />
-                            +    </Target>
+                                <Target Name="PreBuild" BeforeTargets="PreBuildEvent"> <!-- [!code ++] -->
+                                    <Exec Command="npm install" WorkingDirectory="npm_packages" /> <!-- [!code ++] -->
+                                    <Exec Command="npm run build" WorkingDirectory="npm_packages" /> <!-- [!code ++] -->
+                                </Target> <!-- [!code ++] -->
                                 ...
                             </Project>
                         `
@@ -172,7 +172,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
                                 <body>
                                     ...
                                     <script src="_framework/blazor.server.js"></script>
-                            +        <script src="js/index.bundle.js"></script>
+                                    <script src="js/index.bundle.js"></script> <!-- [!code ++] -->
                                 </body>
                             </html>
                         `
@@ -214,9 +214,9 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
 
                         <PageTitle>Index</PageTitle>
 
-                        +<h1 class="font:40 font:heavy italic m:12x text:center">
-                        +    Hello World
-                        +</h1>
+                        <h1 class="font:40 font:heavy italic m:12x text:center"> <!-- [!code ++] -->
+                            Hello World <!-- [!code ++] -->
+                        </h1> <!-- [!code ++] -->
 
                         Welcome to your new app.
 

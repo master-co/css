@@ -48,9 +48,9 @@ One of the most unique, the [progressive rendering](/guide/rendering-modes/progr
     …
     <!-- Generate only the critical CSS required for the page. -->
     <style id="master">
-+       .block {
-+           display: block
-+       }
+        .block { /* [!code ++] */
+            display: block /* [!code ++] */
+        } /* [!code ++] */
     </style>
     <script src="https://cdn.master.co/css-runtime@rc" defer></script>
 </head>

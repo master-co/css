@@ -74,16 +74,16 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
             - Add `css display: none` to `html <html>` to [avoid FOUC](/guide/flash-of-unstyled-content)
         </StepL>
         <StepR>
-            ```html name=src/layouts/Layout.astro
+            ```astro name=src/layouts/Layout.astro
             <html style="**display: none**">
                 <head>
                     …
-            +        <script>
-            +            import { initCSSRuntime } from "@master/css";
-            +            import config from "../../master.css";
+                    <script> // [!code ++]
+                        import { initCSSRuntime } from "@master/css"; // [!code ++]
+                        import config from "../../master.css"; // [!code ++]
 
-            +            initCSSRuntime(config);
-            +        </script>
+                        initCSSRuntime(config); // [!code ++]
+                    </script> <!-- [!code ++] -->
                 </head>
                 …
             <html>
@@ -104,7 +104,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
     <Step>
         ### <StepNum />Start using Master CSS
         Now style your first element using Master CSS syntax!
-        ```html name=src/pages/index.astro
+        ```astro name=src/pages/index.astro
         ---
         import Layout from '../layouts/Layout.astro';
         ---

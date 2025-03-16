@@ -76,12 +76,12 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
             ```ts name=vite.config.ts
             import { defineConfig } from 'vite'
             import react from '@vitejs/plugin-react'
-            +import masterCSSExtractor from '@master/css-extractor.vite'
+            import masterCSSExtractor from '@master/css-extractor.vite' /* [!code ++] */
 
             export default defineConfig({
                 plugins: [
                     react(),
-            +        masterCSSExtractor()
+                    masterCSSExtractor() /* [!code ++] */
                 ],
             })
             ```
@@ -95,7 +95,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         <StepR>
             ```tsx name=main.tsx
             …
-            +import '.virtual/master.css';
+            import '.virtual/master.css'; /* [!code ++] */
             ```
         </StepR>
     </Step>

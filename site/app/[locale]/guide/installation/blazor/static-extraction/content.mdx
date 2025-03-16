@@ -57,14 +57,14 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         </StepL>
         <StepR>
             ```js name=vite.config.ts
-            +import { defineConfig } from 'vite'
-            +import masterCSSExtractor from '@master/css-extractor.vite'
+            import { defineConfig } from 'vite' // [!code ++]
+            import masterCSSExtractor from '@master/css-extractor.vite' // [!code ++]
 
-            +export default defineConfig({
-            +    plugins: [
-            +        masterCSSExtractor()
-            +    ]
-            +})
+            export default defineConfig({ // [!code ++]
+                plugins: [ // [!code ++]
+                    masterCSSExtractor() // [!code ++]
+                ] // [!code ++]
+            }) // [!code ++]
             ```
         </StepR>
     </Step>
@@ -76,7 +76,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         <StepR>
             ```ts name=main.ts
             …
-            +import '.virtual:master.css';
+            import '.virtual:master.css'; // [!code ++]
             ```
         </StepR>
     </Step>
@@ -99,7 +99,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         <html lang="en" style="display: none">
             …
             <body>
-        +        <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
+                <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1> <!-- [!code ++] -->
                 …
             </body>
         </html>

@@ -9,11 +9,14 @@ Officially integrated packages or extensions will automatically read the __maste
 
 ## One root master.css.js
 Whether it's a single repository or a monorepo, create a __master.css.js__ file in the root directory for your design system.
-```treeview
-🗂️ src
-📄 eslint.config.js
-📄 master.css.js
-```
+<ExplorerView>
+{[
+    { name: 'src', children: [
+        { name: 'eslint.config.js' },
+        { name: 'master.css.js' }
+    ]}
+]}
+</ExplorerView>
 The language service will create at least a root workspace regardless of whether `master.css.*` exists.
 
 ---
@@ -22,15 +25,20 @@ The language service will create at least a root workspace regardless of whether
 When there are different design systems or complex requirements in a monorepo, you may need to create __master.css.js__ and __eslint.config.js__ for multiple folders to serve as [workspaces](/reference/language-server#workspaces).
 
 (i) This will create two workspaces, `/` and `/apps/a`.
-```treeview
-🗂️ apps
-|-- 🗂️ a
-|   |-- 📄 eslint.config.js
-|   `-- 📄 master.css.js
-`-- 🗂️ b
-📄 eslint.config.js
-📄 master.css.js
-```
+<ExplorerView>
+{[
+    { name: 'apps', children: [
+        { name: 'a', children: [
+            { name: 'eslint.config.js' },
+            { name: 'master.css.js' }
+        ]},
+        { name: 'b' }
+    ]},
+    { name: 'eslint.config.js' },
+    { name: 'master.css.js' }
+]}
+</ExplorerView>
+
 Note that `/apps/b` will be considered part of the root workspace `/`.
 
 ### Shared the configuration
@@ -52,15 +60,20 @@ export default {
 Regardless of whether there is a specific workspace configuration, exporting the configuration is necessary when the workspace exists in __eslint.config.js__.
 
 (x) Forgot to create __/apps/a/master.css.js__ in the workspace and export the root configuration.
-```treeview
-🗂️ apps
-|-- 🗂️ a
-|   |-- 📄 eslint.config.js
--|   `-- 📄 master.css.js
-`-- 🗂️ b
-📄 eslint.config.js
-📄 master.css.js
-```
+<ExplorerView>
+{[
+    { name: 'apps', children: [
+        { name: 'a', children: [
+            { name: 'eslint.config.js' },
+            { name: 'master.css.js' }
+        ]},
+        { name: 'b' }
+    ]},
+    { name: 'eslint.config.js' },
+    { name: 'master.css.js' }
+]}
+</ExplorerView>
+
 Unless this workspace is not using Master CSS, this is a common oversight.
 
 Finally, using a monorepo and having multiple workspaces doesn't mean you have to create multiple configurations, in most cases, you just need [one root master.css.js](#one-root-mastercssjs).

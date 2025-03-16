@@ -76,14 +76,14 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         </StepL>
         <StepR>
             ```ts name=vite.config.ts
-            +import { defineConfig } from 'vite'
-            +import masterCSSExtractor from '@master/css-extractor.vite'
+            import { defineConfig } from 'vite'
+            import masterCSSExtractor from '@master/css-extractor.vite' /* [!code ++] */
 
-            +export default defineConfig({
-            +    plugins: [
-            +        masterCSSExtractor()
-            +    ]
-            +})
+            export default defineConfig({
+                plugins: [
+                    masterCSSExtractor() /* [!code ++] */
+                ]
+            })
             ```
         </StepR>
     </Step>
@@ -97,7 +97,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
             <script>
                 import Header from './Header.svelte';
                 import './styles.css';
-            +    import '.virtual/master.css';
+                import '.virtual/master.css'; /* [!code ++] */
             </script>
             …
             ```
@@ -118,7 +118,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         ### <StepNum />Start using Master CSS
         Now style your first element using Master CSS syntax!
         ```svelte name=src/routes/%2Bpage.svelte
-        +<h1 class="font:40 fg:blue font:heavy italic m:12x text:center">Hello World</h1>
+        <h1 class="font:40 fg:blue font:heavy italic m:12x text:center">Hello World</h1>
         ```
         Open your browser to watch the changes.
         <HelloWorld url="localhost:5173" />

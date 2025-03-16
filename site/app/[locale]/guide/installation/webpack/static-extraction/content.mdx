@@ -76,31 +76,31 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         </StepL>
         <StepR>
             ```js name=webpack.config.js
-            + const path = require('path')
-            + const HtmlWebpackPlugin = require('html-webpack-plugin')
-            + const CSSExtractorPlugin = require('@master/css-extractor.webpack')
+            const path = require('path')
+            const HtmlWebpackPlugin = require('html-webpack-plugin')
+            const CSSExtractorPlugin = require('@master/css-extractor.webpack')
 
-            + module.exports = {
-            +     entry: './src/index.js',
-            +     output: {
-            +         filename: 'bundle.js',
-            +         path: path.join(__dirname, 'dist')
-            +     },
-            +     plugins: [
-            +         new HtmlWebpackPlugin({
-            +             template: path.join(__dirname, 'src/index.html')
-            +         }),
-            +         new CSSExtractorPlugin({ sources: ['./src/index.html'] })
-            +     ],
-            +     devServer: {
-            +         watchFiles: ['src/**/*']
-            +     },
-            +     module: {
-            +         rules: [
-            +             { test: /\.css$/, use: ['style-loader', 'css-loader'] }
-            +         ]
-            +     }
-            + }
+            module.exports = {
+                entry: './src/index.js',
+                output: {
+                    filename: 'bundle.js',
+                    path: path.join(__dirname, 'dist')
+                },
+                plugins: [
+                    new HtmlWebpackPlugin({
+                        template: path.join(__dirname, 'src/index.html')
+                    }),
+                    new CSSExtractorPlugin({ sources: ['./src/index.html'] })
+                ],
+                devServer: {
+                    watchFiles: ['src/**/*']
+                },
+                module: {
+                    rules: [
+                        { test: /\.css$/, use: ['style-loader', 'css-loader'] }
+                    ]
+                }
+            }
             ```
         </StepR>
     </Step>
@@ -111,15 +111,15 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         </StepL>
         <StepR>
             ```html name=src/index.html
-            +<!doctype html>
-            +<html lang="en">
-            +<head>
-            +    <meta charset="utf-8" />
-            +</head>
-            +<body>
-            +    <h1>Hello World</h1>
-            +</body>
-            +</html>
+            <!doctype html>
+            <html lang="en">
+            <head>
+                <meta charset="utf-8" />
+            </head>
+            <body>
+                <h1>Hello World</h1>
+            </body>
+            </html>
             ```
         </StepR>
     </Step>
@@ -130,7 +130,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         </StepL>
         <StepR>
             ```js name=src/index.js
-            + import '.virtual/master.css';
+            import '.virtual/master.css';
             ```
         </StepR>
     </Step>
@@ -143,8 +143,8 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
             ```js name=package.json
             {
                 "scripts": {
-            +        "dev": "webpack serve --mode development",
-            +        "build": "webpack --mode production"
+                    "dev": "webpack serve --mode development",
+                    "build": "webpack --mode production"
                 }
             }
             ```

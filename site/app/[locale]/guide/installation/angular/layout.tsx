@@ -20,7 +20,7 @@ export default async function Layout(props: any) {
             <Tabs className="mb:8x">
                 <Tab href='/guide/installation/angular'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>
                 <Tab href='/guide/installation/angular/runtime-rendering'>{$('Runtime Rendering')}</Tab>
-                <Tab href='/guide/installation/angular/static-extraction' disabled>{$('Static Extraction')}</Tab>
+                <Tab href='/guide/installation/angular/static-extraction'>{$('Static Extraction')}</Tab>
             </Tabs>
             {props.children}
         </DocLayout >

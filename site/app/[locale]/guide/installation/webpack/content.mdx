@@ -76,24 +76,24 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         </StepL>
         <StepR>
             ```js name=webpack.config.js
-            + const path = require('path')
-            + const HtmlWebpackPlugin = require('html-webpack-plugin')
+            const path = require('path')
+            const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-            + module.exports = {
-            +     entry: './src/index.js',
-            +     output: {
-            +         filename: 'bundle.js',
-            +         path: path.join(__dirname, 'dist')
-            +     },
-            +     plugins: [
-            +         new HtmlWebpackPlugin({
-            +             template: path.join(__dirname, '')
-            +         })
-            +     ],
-            +     devServer: {
-            +         watchFiles: ['src/**/*']
-            +     }
-            + }
+            module.exports = {
+                entry: './src/index.js',
+                output: {
+                    filename: 'bundle.js',
+                    path: path.join(__dirname, 'dist')
+                },
+                plugins: [
+                    new HtmlWebpackPlugin({
+                        template: path.join(__dirname, '')
+                    })
+                ],
+                devServer: {
+                    watchFiles: ['src/**/*']
+                }
+            }
             ```
         </StepR>
     </Step>
@@ -104,16 +104,16 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         </StepL>
         <StepR>
             ```html name=src/index.html
-            +<!doctype html>
-            +<html lang="en" style="display: none">
-            +<head>
-            +    <meta charset="utf-8" />
-            +    <script src="./index.js"></script>
-            +</head>
-            +<body>
-            +    <h1>Hello World</h1>
-            +</body>
-            +</html>
+            <!doctype html>
+            <html lang="en" style="display: none">
+            <head>
+                <meta charset="utf-8" />
+                <script src="./index.js"></script>
+            </head>
+            <body>
+                <h1>Hello World</h1>
+            </body>
+            </html>
             ```
         </StepR>
     </Step>
@@ -124,10 +124,10 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         </StepL>
         <StepR>
             ```js name=src/index.js
-            +   import { initCSSRuntime } from '@master/css-runtime';
-            +   import config from '../master.css.js';
+            import { initCSSRuntime } from '@master/css-runtime';
+            import config from '../master.css.js';
 
-            +   initCSSRuntime(config);
+            initCSSRuntime(config);
             ```
         </StepR>
     </Step>
@@ -140,8 +140,8 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
             ```js name=package.json
             {
                 "scripts": {
-            +        "dev": "webpack serve --mode development",
-            +        "build": "webpack --mode production"
+                    "dev": "webpack serve --mode development",
+                    "build": "webpack --mode production"
                 }
             }
             ```

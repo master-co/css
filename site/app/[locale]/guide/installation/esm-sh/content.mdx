@@ -16,7 +16,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
             <link rel="stylesheet" href="https://esm.sh/@master/normal.css@rc?css">
             <link rel="modulepreload" href="https://esm.sh/@master/css-runtime@rc">
             <script type="module">
-        +        import { initCSSRuntime } from 'https://esm.sh/@master/css-runtime@rc'
+                import { initCSSRuntime } from 'https://esm.sh/@master/css-runtime@rc' <!-- [!code ++] -->
                 initCSSRuntime({
                     variables: {
                         primary: '#000000'

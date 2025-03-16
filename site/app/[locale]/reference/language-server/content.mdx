@@ -27,23 +27,29 @@ Specify the workspace where the independent [`CSSLanguageService`](/reference/la
 By default `auto`, a new workspace is automatically created based on the location of the `master.css.*` configuration file.
 
 (i) Automatically create `/` and `/apps/a` workspaces.
-```treeview
-+root
-|-- 🗂️ apps
-+|   |-- 🗂️ a
-|   |   `-- 📄 master.css.js
-|   `-- 🗂️ b
-`-- 📄 master.css.js
-```
+<ExplorerView>
+{[
+    { name: 'apps', children: [
+        { name: 'a', children: [
+            { name: 'master.css.js' }
+        ]},
+        { name: 'b' }
+    ]},
+    { name: 'master.css.js' }
+]}
+</ExplorerView>
 
 (i) A root workspace will still be automatically created without a root configuration.
-```treeview
-+root
-|-- 🗂️ apps
-+|   |-- 🗂️ a
-|   |   `-- 📄 master.css.js
-|   `-- 🗂️ b
-```
+<ExplorerView>
+{[
+    { name: 'apps', children: [
+        { name: 'a', children: [
+            { name: 'master.css.js' }
+        ]},
+        { name: 'b' }
+    ]}
+]}
+</ExplorerView>
 In most cases, keeping the default `'auto'` is sufficient, but you can also manually specify the workspace.
 
 Specify `/apps/b` as a workspace:
@@ -53,14 +59,17 @@ Specify `/apps/b` as a workspace:
 }
 ```
 It creates `/` and `/apps/b` workspaces.
-```treeview
-+root
-|-- 🗂️ apps
-|   |-- 🗂️ a
-|   |   `-- 📄 master.css.js
-+|   `-- 🗂️ b
-`-- 📄 master.css.js
-```
+<ExplorerView>
+{[
+    { name: 'apps', children: [
+        { name: 'a', children: [
+            { name: 'master.css.js' }
+        ]},
+        { name: 'b' }
+    ]},
+    { name: 'master.css.js' }
+]}
+</ExplorerView>
 
 ### `.verbose`
 Print all console logs.

@@ -1,5 +1,5 @@
 export default {
     variables: {
-/*+*/   secondary: '$(blue-60)'
+        secondary: '$(blue-60)' /* secondary */ /* [!code ++] */
     }
 }

@@ -20,7 +20,7 @@ export default () => <CodeTabs>{[
                     }
                 }
             </script>
-        +    <script src="https://cdn.master.co/css-runtime@rc"></script>
+            <script src="https://cdn.master.co/css-runtime@rc"></script><!-- [!code ++] -->
         </head>
         <body>
             <h1 class="**fg:primary** **font:40** **font:heavy** **italic** **m:12x** **text:center**">Hello World</h1>
@@ -40,14 +40,14 @@ export default () => <CodeTabs>{[
             <link rel="stylesheet" href="https://cdn.master.co/normal.css">
             <link rel="preload" as="style" href="https://cdn.master.co/normal.css">
             <link rel="modulepreload" href="https://cdn.master.co/css-runtime@rc/+esm">
-        +    <script type="module">
-        +        import { initCSSRuntime } from 'https://cdn.master.co/css-runtime@rc/+esm'
-        +        initCSSRuntime({
-        +            variables: {
-        +                primary: '#000000'
-        +            }
-        +       })
-        +    </script>
+            <script type="module"> // [!code ++]
+                import { initCSSRuntime } from 'https://cdn.master.co/css-runtime@rc/+esm' // [!code ++]
+                initCSSRuntime({ // [!code ++]
+                    variables: { // [!code ++]
+                        primary: '#000000' // [!code ++]
+                    } // [!code ++]
+               }) // [!code ++]
+            </script> <!-- [!code ++] -->
         </head>
         <body>
             <h1 class="**fg:primary** **font:40** **font:heavy** **italic** **m:12x** **text:center**">Hello World</h1>

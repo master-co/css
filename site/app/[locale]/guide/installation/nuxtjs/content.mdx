@@ -76,16 +76,16 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             `@master/css.vue` and `master.css.ts` will not be included in the page's initial JavaScript bundle.
         </StepL>
         <StepR>
-            ```html name=app.vue
+            ```vue name=app.vue
             <script setup lang="ts">
-            +import { defineAsyncComponent } from 'vue'
-            +const CSSRuntimeProvider = defineAsyncComponent(async () => (await import('@master/css.vue')).CSSRuntimeProvider)
+            import { defineAsyncComponent } from 'vue' /* [!code ++] */
+            const CSSRuntimeProvider = defineAsyncComponent(async () => (await import('@master/css.vue')).CSSRuntimeProvider) /* [!code ++] */
             </script>
 
             <template>
-            +    <CSSRuntimeProvider :config="import('./master.css')">
+                <CSSRuntimeProvider :config="import('./master.css')">
                     …
-            +    </CSSRuntimeProvider>
+                </CSSRuntimeProvider>
             </template>
             ```
         </StepR>
@@ -100,7 +100,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             ```ts name=nuxt.config.ts
             export default defineNuxtConfig({
                 modules: [
-            +        '@master/css.nuxt'
+                    '@master/css.nuxt' // [!code ++]
                 ]
             })
             ```
@@ -120,7 +120,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     <Step>
         ### <StepNum />Start using Master CSS
         Now style your first element using Master CSS syntax!
-        ```html name=app.vue
+        ```vue name=app.vue
         <template>
             <h1 class="**font:40** **font:heavy** **italic** **m:12x** **text:center**">Hello World</h1>
         </template>

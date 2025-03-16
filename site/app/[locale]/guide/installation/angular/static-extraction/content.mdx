@@ -83,16 +83,16 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         </StepL>
         <StepR>
             ```js name=webpack.config.js
-            +const CSSExtractorPlugin = require('@master/css-extractor.webpack')
+            const CSSExtractorPlugin = require('@master/css-extractor.webpack') // [!code ++]
 
-            +module.exports = (config) => {
-            +    config.plugins.push(
-            +        new CSSExtractorPlugin({
-            +            sources: ['src/index.html']
-            +       })
-            +    )
-            +    return config
-            +}
+            module.exports = (config) => { // [!code ++]
+                config.plugins.push( // [!code ++]
+                    new CSSExtractorPlugin({ // [!code ++]
+                        sources: ['src/index.html'] // [!code ++]
+                    }) // [!code ++]
+                ) // [!code ++]
+                return config // [!code ++]
+            } // [!code ++]
             ```
         </StepR>
     </Step>
@@ -115,22 +115,22 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                                             …,
                                             "architect": {
                                                 "build": {
-                            -                        "builder": "@angular-devkit/build-angular:browser",
-                            +                        "builder": "@angular-builders/custom-webpack:browser",
+                                                     "builder": "@angular-devkit/build-angular:browser", // [!code --]
+                                                     "builder": "@angular-builders/custom-webpack:browser", // [!code ++]
                                                      "options": {
-                            +                            "customWebpackConfig": {
-                            +                                "path": "./webpack.config.js"
-                            +                            },
+                                                         "customWebpackConfig": { // [!code ++]
+                                                             "path": "./webpack.config.js" // [!code ++]
+                                                         }, // [!code ++]
                                                         …
                                                     },
                                                     …
                                                 },
                                                 "serve": {
-                            -                        "builder": "@angular-devkit/build-angular:dev-server",
-                            +                        "builder": "@angular-builders/custom-webpack:dev-server",
-                            +                        "options": {
-                            +                            "browserTarget": "my-project:build"
-                            +                        },
+                                                     "builder": "@angular-devkit/build-angular:dev-server", // [!code --]
+                                                     "builder": "@angular-builders/custom-webpack:dev-server", // [!code ++]
+                                                     "options": { // [!code ++]
+                                                         "browserTarget": "my-project:build" // [!code ++]
+                                                     }, // [!code ++]
                                                     …
                                                 },
                                                 …
@@ -155,7 +155,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         <StepR>
             ```css name=src/styles.css
             /* You can add global styles to this file, and also import other style files */
-            + @import '.virtual/master.css';
+            @import '.virtual/master.css'; /* [!code ++] */
             ```
         </StepR>
     </Step>

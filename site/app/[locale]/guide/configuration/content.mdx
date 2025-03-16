@@ -54,8 +54,8 @@ Extend custom or external configuration.
 ```js name=master.css.js
 export default {
     extends: [
-+        require('@master/ui'),
-+        require('./styles/btn.css'),
+        require('@master/ui'),// [!code ++]
+        require('./styles/btn.css'),// [!code ++]
         …
     ]
 }
@@ -69,7 +69,7 @@ Make all generated CSS declarations `!important`.
 (!|) Using `js important: true` should be considered as a last option, as it's a compromise.
 ```js name=master.css.js
 export default {
-+    important: true
+    important: true// [!code ++]
 }
 ```
 Generated CSS:
@@ -89,7 +89,7 @@ Customize your configuration to override all [default configuration](https://git
 <DocProp defaultValue="false" types={['boolean']} />
 ```js name=master.css.js
 export default {
-+    override: true
+    override: true// [!code ++]
 }
 ```
 We've carefully preset some [configurations](https://github.com/master-co/css/tree/rc/packages/core/src/config") to enhance the syntax; usually, you'll extend it.
@@ -102,15 +102,15 @@ Specify the conversion factor for `rem` and `em`.
 Here's a common use case with `rootSize: 10`:
 ```js name=master.css.js
 export default {
-+    rootSize: 10
+    rootSize: 10// [!code ++]
 }
 ```
 
 Generated CSS rules:
 ```css
 .font\:16 {
--    font-size: 1rem;   /* rootSize: 16 */
-+    font-size: 1.6rem; /* rootSize: 10 */
+    font-size: 1rem;   /* rootSize: 16 */ /* [!code --] */
+    font-size: 1.6rem; /* rootSize: 10 */ /* [!code ++] */
 }
 ```
 
@@ -140,7 +140,7 @@ Limit the generated CSS rules to a specific scope with CSS selectors.
 (!|) Don't make it part of your coding style, but as a last resort to solve problems.
 ```js name=master.css.js
 export default {
-+    scope: '#app'
+    scope: '#app'/* [!code ++] */
 }
 ```
 All Master CSS syntax will only be applied if the `<body id="app">`.
@@ -203,7 +203,7 @@ Sets how the theme should drive and generate CSS rules.
 ```js name=master.css.js
 export default {
     modes: {
-+        dark: 'class'
+        dark: 'class'/* [!code ++] */
     }
 }
 ```
@@ -216,7 +216,7 @@ Generated CSS:
 ```js name=master.css.js
 export default {
     modes: {
-+        dark: 'media'
+        dark: 'media'/* [!code ++] */
     }
 }
 ```
@@ -229,7 +229,7 @@ Generated CSS:
 ```js name=master.css.js
 export default {
     modes: {
-+        dark: 'host'
+        dark: 'host'/* [!code ++] */
     }
 }
 ```

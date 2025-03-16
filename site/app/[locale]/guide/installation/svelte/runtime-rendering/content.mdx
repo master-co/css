@@ -81,11 +81,11 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
 
             export default defineConfig({
                 plugins: [sveltekit()],
-            +    server: {
-            +        fs: {
-            +            allow: ['./master.css.ts']
-            +        }
-            +    }
+                server: { /* [!code ++] */
+                    fs: { /* [!code ++] */
+                        allow: ['./master.css.ts'] /* [!code ++] */
+                    } /* [!code ++] */
+                } /* [!code ++] */
             })
             ```
         </StepR>
@@ -98,14 +98,14 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
         <StepR>
             ```svelte name=src/routes/%2Blayout.svelte
                 <script>
-                +    import CSSRuntimeProvider from "@master/css.svelte";
-                +    import config from '../../master.css';
+                    import CSSRuntimeProvider from "@master/css.svelte"; /* [!code ++] */
+                    import config from '../../master.css'; /* [!code ++] */
                     import Header from "./Header.svelte";
                     import "./styles.css";
                 </script>
-                +<svelte:component this={CSSRuntimeProvider} config={config}>
+                <svelte:component this={CSSRuntimeProvider} config={config}>
                     <slot />
-                +</svelte:component>
+                </svelte:component>
             ```
         </StepR>
     </Step>
@@ -116,9 +116,9 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
         </StepL>
         <StepR>
             ```html name=src/app.html
-                <!DOCTYPE html>
-                <html lang="en" style="**display:none**">
-                …
+            <!DOCTYPE html>
+            <html lang="en" style="**display:none**">
+            …
             ```
         </StepR>
     </Step>
@@ -137,7 +137,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
         ### <StepNum />Start using Master CSS
         Now style your first element using Master CSS syntax!
         ```svelte name=src/routes/%2Bpage.svelte
-        +<h1 class="font:40 fg:blue font:heavy italic m:12x text:center">Hello World</h1>
+        <h1 class="font:40 fg:blue font:heavy italic m:12x text:center">Hello World</h1>
         ```
         Open your browser to watch the changes.
         <HelloWorld url="localhost:5173" />

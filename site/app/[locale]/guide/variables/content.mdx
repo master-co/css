@@ -16,8 +16,8 @@ import { variables } from '@master/css'
 export default {
     variables: {
         'font-family': {
-+            sans: ['Inter', ...variables['font-family'].sans],
-+            mono: ['Fira Code', ...variables['font-family'].mono]
+            sans: ['Inter', ...variables['font-family'].sans], /* [!code ++] */
+            mono: ['Fira Code', ...variables['font-family'].mono] /* [!code ++] */
         }
     }
 }
@@ -115,11 +115,11 @@ Sets multiple shades for a single color.
 ```js name=master.css.js
 export default {
     variables: {
-+        primary: {
-+            '': '#1192e8', // primary
-+            10: '#e5f6ff', // primary-10
-+            20: '#bae6ff', // primary-20
-+        }
+        primary: { /* [!code ++] */
+            '': '#1192e8', /* primary */ /* [!code ++] */
+            10: '#e5f6ff', /* primary-10 */ /* [!code ++] */
+            20: '#bae6ff', /* primary-20 */ /* [!code ++] */
+        } /* [!code ++] */
     }
 }
 ```
@@ -146,7 +146,7 @@ By default, theme variables [drive](/guide/configuration#default-mode) inheritan
 ```js name=master.css.js
 export default {
     variables: {
-+        blue: '#4589ff'
+        blue: '#4589ff' /* [!code ++] */
     }
 }
 ```
@@ -214,10 +214,10 @@ The [spacing and sizing](/reference/spacing-and-sizing) system is constructed us
 export default {
     variables: {
         spacing: {
--            '1x': 4,
--            '2x': 8,
--            ...,
--            '100x': 400
+            '1x': 4, /* [!code --] */
+            '2x': 8, /* [!code --] */
+            ..., /* [!code --] */
+            '100x': 400 /* [!code --] */
         }
     }
 }
@@ -235,7 +235,7 @@ Customize your spacing [variables](/guide/variables), in `xs~xl`.
 export default {
     variables: {
         spacing: {
-+            md: 20
+            md: 20 /* [!code ++] */
         }
     }
 }
@@ -250,8 +250,8 @@ Apply the defined `spacing` variables using the inherited rules like `margin-top
 export default {
     variables: {
         spacing: {
--            1: 4,
--            2: 8
+            1: 4, /* [!code ++] */
+            2: 8 /* [!code ++] */
         }
     }
 }

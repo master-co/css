@@ -22,7 +22,7 @@
             import globals from 'globals';
             import { fileURLToPath } from 'node:url'
             import ts from 'typescript-eslint'
-            +import css from '@master/eslint-config-css'
+            import css from '@master/eslint-config-css' /* [!code ++] */
 
             const gitignorePath = fileURLToPath(new URL("./.gitignore", import.meta.url))
 
@@ -47,7 +47,7 @@
                         }
                     }
                 },
-            +    css
+                css// [!code ++]
             )
             ```
         </StepL>

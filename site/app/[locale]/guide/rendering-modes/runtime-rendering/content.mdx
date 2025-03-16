@@ -6,7 +6,7 @@ We've created a tiny JavaScript package `@master/css-runtime` that can be import
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-+    <script src="https://cdn.master.co/css-runtime@rc"></script>
+    <script src="https://cdn.master.co/css-runtime@rc"></script> <!-- [!code ++] -->
     …
 </head>
 <body>
@@ -31,13 +31,13 @@ The following continuous DOM manipulation takes you to understand the behavior o
         ```
         A new node `html <h1>` is inserted into the DOM tree:
         ```html
-        +<h1 class="text:center">Hello World</h1>
+        <h1 class="text:center">Hello World</h1> <!-- [!code ++] -->
         ```
         The runtime engine observes a new node with the class `text:center` and generates the corresponding CSS rule:
         ```css
-        +.text\:center {
-        +    text-align: center
-        +}
+        .text\:center { /* [!code ++] */
+            text-align: center /* [!code ++] */
+        } /* [!code ++] */
         ```
     </Step>
     <Step>
@@ -51,9 +51,9 @@ The following continuous DOM manipulation takes you to understand the behavior o
         ```
         The runtime engine observes that `html <h1>` adds the new class name `font:48` and generates the corresponding CSS rules:
         ```css
-        +.font\:48 {
-        +    font-size: 3rem
-        +}
+        .font\:48 { /* [!code ++] */
+            font-size: 3rem /* [!code ++] */
+        } /* [!code ++] */
 
         .text\:center {
             text-align: center
@@ -75,9 +75,9 @@ The following continuous DOM manipulation takes you to understand the behavior o
             font-size: 3rem
         }
 
-        -.text\:center {
-        -    text-align: center
-        -}
+        .text\:center { /* [!code --] */
+            text-align: center /* [!code --] */
+        } /* [!code --] */
         ```
     </Step>
     <Step>
@@ -87,13 +87,13 @@ The following continuous DOM manipulation takes you to understand the behavior o
         ```
         Remove the `html <h1>` with class `font:48`
         ```html
-        +<h1 class="font:48">Hello World</h1>
+        <h1 class="font:48">Hello World</h1> <!-- [!code ++] -->
         ```
         The runtime engine observes that the `html <h1>` element with the class name `font:48` is removed and removes the corresponding CSS rule:
         ```css
-        -.font\:48 {
-        -    font-size: 3rem
-        -}
+        .font\:48 { /* [!code --] */
+            font-size: 3rem /* [!code --] */
+        } /* [!code --] */
         ```
     </Step>
     <Step>
@@ -114,7 +114,7 @@ Where are the generated CSS rules inserted? The runtime engine appends `html <st
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.master.co/css-runtime@rc"></script>
-+    <style id="master"></style>
+    <style id="master"></style> <!-- [!code ++] -->
 </head>
 ```
 

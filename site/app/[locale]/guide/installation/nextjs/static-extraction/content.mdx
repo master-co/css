@@ -93,21 +93,21 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         </StepL>
         <StepR>
             ```js name=next.config.js
-            +const CSSExtractorPlugin = require('@master/css-extractor.webpack')
+            const CSSExtractorPlugin = require('@master/css-extractor.webpack') // [!code ++]
 
-            +/** @type {import('webpack').Configuration} */
-            +const webpackConfig = {
-            +    plugins: [
-            +        new CSSExtractorPlugin()
-            +    ]
-            +}
+            /** @type {import('webpack').Configuration} */
+            const webpackConfig = { // [!code ++]
+                plugins: [ // [!code ++]
+                    new CSSExtractorPlugin() // [!code ++]
+                ] // [!code ++]
+            } // [!code ++]
 
             /** @type {import('next').NextConfig} */
             const nextConfig = {
-            +    webpack: (config) => {
-            +        config.plugins.push(...webpackConfig.plugins)
-            +        return config
-            +    }
+                webpack: (config) => { // [!code ++]
+                    config.plugins.push(...webpackConfig.plugins) // [!code ++]
+                    return config // [!code ++]
+                } // [!code ++]
             }
 
             module.exports = nextConfig
@@ -126,7 +126,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                         name: 'app/globals.css',
                         lang: 'css',
                         code: `
-                            +@import '.virtual/master.css';
+                            @import '.virtual/master.css'; /* [!code ++] */
                             …
                         `
                     },
@@ -134,7 +134,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                         name: 'styles/globals.css',
                         lang: 'css',
                         code: `
-                            +@import '.virtual/master.css';
+                            @import '.virtual/master.css'; /* [!code ++] */
                             …
                         `
                     }

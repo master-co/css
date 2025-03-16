@@ -77,10 +77,10 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             ```ts name=src/main.ts
             import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
             import { AppModule } from './app/app.module';
-            +import { initCSSRuntime } from '@master/css-runtime';
-            +import config from '../master.css';
+            import { initCSSRuntime } from '@master/css-runtime'; // [!code ++]
+            import config from '../master.css'; // [!code ++]
 
-            +initCSSRuntime(config);
+            initCSSRuntime(config); // [!code ++]
 
             platformBrowserDynamic().bootstrapModule(AppModule)
                 .catch(err => console.error(err));
@@ -105,22 +105,22 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         </StepL>
         <StepR>
             ```ts name=server.ts
-            +import { render } from '@master/css-server';
-            +import config from './master.css';
+            import { render } from '@master/css-server'; // [!code ++]
+            import config from './master.css'; // [!code ++]
             …
             export function app() {
                 …
                 server.get('*', (req, res) => {
                     …
-            -        res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
-            +        res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] },
-            +            (error: Error, html: string) => {
-            +                error
-            +                    ? console.error(error)
-            +                    : res.send(render(html, config).html)
-            +            }
-            +        )
-            +    });
+                    res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] }); // [!code --]
+                    res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] }, // [!code ++]
+                        (error: Error, html: string) => { // [!code ++]
+                            error // [!code ++]
+                                ? console.error(error) // [!code ++]
+                                : res.send(render(html, config).html) // [!code ++]
+                        } // [!code ++]
+                    ) // [!code ++]
+                }); // [!code ++]
             }
             ```
         </StepR>

@@ -15,15 +15,15 @@ Learn more about [style declarations](/guide/style-declarations).
 ### Colon instead of dash
 Use a colon `:`, similar to native CSS, to separate property names from values, rather than a dash `-`.
 ```html
--<p class="text-center"></p>
-+<p class="text:center"></p>
+<p class="text-center"></p> <!-- [!code --] -->
+<p class="text:center"></p> <!-- [!code ++] -->
 ```
 
 ### Delimiter instead of underscore
 To avoid conflicts with spaces in `class="a b"`, use the delimiter `|` to separate parameters within property values, instead of an underscore `_`.
 ```html
--<div class="shadow-[0_1px_2px_-3px_rgba(0,0,0,0.3)]"></div>
-+<div class="shadow:0|1|2|-3|rgba(0,0,0,.3)"></div>
+<div class="shadow-[0_1px_2px_-3px_rgba(0,0,0,0.3)]"></div> <!-- [!code --] -->
+<div class="shadow:0|1|2|-3|rgba(0,0,0,.3)"></div> <!-- [!code ++] -->
 ```
 You can observe that the reduced contrast of the delimiter `|`, as highlighted in Master's [syntax highlighting](/guide/language-service) above, is intentional to provide a smoother visual appearance that closely resembles native CSS's whitespace separator ` `:
 ```css
@@ -36,21 +36,21 @@ In Tailwind, identical values for different properties may have different constr
 
 Master automatically converts units according to the characteristics of different properties and input values, making styles more predictable.
 ```html
--<div class="p-4">`4` means `1rem` in Tailwind</div>
-+<div class="p:4x"></div>
+<div class="p-4">`4` means `1rem` in Tailwind</div> <!-- [!code --] -->
+<div class="p:4x"></div> <!-- [!code ++] -->
 <div class="p:16">alternative</div>
 <div class="p:1rem">alternative</div>
 ```
 Whether to use `1/2` to represent `50%` depends on your preference, for example, when setting `height:`.
 ```html
--<div class="h-1/2"></div>
-+<div class="h:1/2"></div>
+<div class="h-1/2"></div> <!-- [!code --] -->
+<div class="h:1/2"></div> <!-- [!code ++] -->
 <div class="h:50%">alternative</div>
 ```
 Let's consider another example with `border-radius`.
 ```html
--<div class="rounded-md">`md` means `0.375rem` in Tailwind</div>
-+<div class="r:6"></div>
+<div class="rounded-md">`md` means `0.375rem` in Tailwind</div> <!-- [!code --] -->
+<div class="r:6"></div> <!-- [!code ++] -->
 <div class="r:.375rem">alternative</div>
 ```
 If you don't prefer the abbreviated notation like `p:`, `r:`, you can use the full names, such as `padding:`, `border-radius:`.
@@ -58,14 +58,14 @@ If you don't prefer the abbreviated notation like `p:`, `r:`, you can use the fu
 ### Decimal or percentage
 Equivalent to native `opacity: 0.2;`.
 ```html
--<div class="opacity-20">`20` means `0.2` in Tailwind</div>
-+<div class="opacity:.2"></div>
+<div class="opacity-20">`20` means `0.2` in Tailwind</div> <!-- [!code --] -->
+<div class="opacity:.2"></div> <!-- [!code ++] -->
 <div class="opacity:0.2">alternative</div>
 ```
 You can use decimals or percentages to adjust the opacity of colors.
 ```html
--<div class="bg-sky-500/75"></div>
-+<div class="bg:sky-50/.75"></div>
+<div class="bg-sky-500/75"></div> <!-- [!code --] -->
+<div class="bg:sky-50/.75"></div> <!-- [!code ++] -->
 <div class="bg:sky-50/75%">alternative</div>
 ```
 
@@ -75,21 +75,21 @@ You can use decimals or percentages to adjust the opacity of colors.
 ### Suffixed with `:hover`
 Add pseudo-classes after the main body.
 ```html
-- <div class="hover:bg-sky-700"></div>
+<div class="hover:bg-sky-700"></div> <!-- [!code --] -->
 <div class="bg:sky-70:hover"></div>
 ```
 
 ### Suffixed with `::placeholder`
 Add pseudo-elements after the main body.
 ```html
-- <div class="placeholder:italic"></div>
+<div class="placeholder:italic"></div> <!-- [!code --] -->
 <div class="italic::placeholder"></div>
 ```
 
 ### Suffixed with `[data-attribute]`
 Add data attributes after the main body.
 ```html
-- <div data-size="large" class="data-[size=large]:text-lg"></div>
+<div data-size="large" class="data-[size=large]:text-lg"></div> <!-- [!code --] -->
 <div data-size="large" class="text:18[data-size=large]"></div>
 ```
 
@@ -99,7 +99,7 @@ Add data attributes after the main body.
 ### Suffixed with `@md`
 Add responsive breakpoints after the main body.
 ```html
-- <div class="md:text-left"></div>
+<div class="md:text-left"></div> <!-- [!code --] -->
 <div class="text:left@md"></div>
 ```
 You can even use operators like `html @sm&<md`, see the [Responsive Design](/guide/responsive-design) guide.
@@ -107,7 +107,7 @@ You can even use operators like `html @sm&<md`, see the [Responsive Design](/gui
 ### Suffixed with `@landscape`
 Add media queries after the main body.
 ```html
-- <div class="landscape:hidden"></div>
+<div class="landscape:hidden"></div> <!-- [!code --] -->
 <div class="hidden@landscape"></div>
 ```
 Not just media queries but feature queries and [more](/guide/syntax).
@@ -118,18 +118,18 @@ Not just media queries but feature queries and [more](/guide/syntax).
 ### Add screens
 Define responsive breakpoints using variable [screens](/guide/variables#add-a-screen-size).
 ```js name=master.css.js
--/** @type {import('tailwindcss').Config} */
--module.exports = {
--    theme: {
--        screens: {
--            'sm': '640px',
--            'md': '768px',
--            'lg': '1024px',
--            'xl': '1280px',
--            '2xl': '1536px'
--        }
--    }
--}
+/** @type {import('tailwindcss').Config} */ /* [!code --] */
+module.exports = { /* [!code --] */
+    theme: { /* [!code --] */
+        screens: { /* [!code --] */
+            'sm': '640px', /* [!code --] */
+            'md': '768px', /* [!code --] */
+            'lg': '1024px', /* [!code --] */
+            'xl': '1280px', /* [!code --] */
+            '2xl': '1536px' /* [!code --] */
+        } /* [!code --] */
+    } /* [!code --] */
+} /* [!code --] */
 /** @type {import('@master/css').Config} */
 export default {
     variables: {
@@ -145,17 +145,17 @@ export default {
 ```
 (x) No longer need redundant screen options.
 ```js name=tailwind.config.js
--module.exports = {
--    theme: {
--        screens: {
--            'sm': {'min': '640px', 'max': '767px'},
--            'md': {'min': '768px', 'max': '1023px'},
--            'lg': {'min': '1024px', 'max': '1279px'},
--            'xl': {'min': '1280px', 'max': '1535px'},
--            '2xl': {'min': '1536px'},
--        },
--    }
--}
+module.exports = { /* [!code --] */
+    theme: { /* [!code --] */
+        screens: { /* [!code --] */
+            'sm': {'min': '640px', 'max': '767px'}, /* [!code --] */
+            'md': {'min': '768px', 'max': '1023px'}, /* [!code --] */
+            'lg': {'min': '1024px', 'max': '1279px'}, /* [!code --] */
+            'xl': {'min': '1280px', 'max': '1535px'}, /* [!code --] */
+            '2xl': {'min': '1536px'}, /* [!code --] */
+        }, /* [!code --] */
+    } /* [!code --] */
+} /* [!code --] */
 ```
 (o) Liberate flexibility with [syntax-first](/guide/responsive-design#syntax-first).
 ```html
@@ -165,16 +165,16 @@ export default {
 ### Add media queries
 Using [at-rules](/guide/syntax#at-rules) to define media queries, feature queries, and even container queries.
 ```js name=master.css.js
--/** @type {import('tailwindcss').Config} */
--module.exports = {
--    theme: {
--        extend: {
--           screens: {
--               'tall': { 'raw': '(min-height: 800px)' },
--           }
--        }
--    }
--}
+/** @type {import('tailwindcss').Config} */ /* [!code --] */
+module.exports = { /* [!code --] */
+    theme: { /* [!code --] */
+        extend: { /* [!code --] */
+           screens: { /* [!code --] */
+               'tall': { 'raw': '(minheight: 800px)' }, /* [!code --] */
+           } /* [!code --] */
+        } /* [!code --] */
+    } /* [!code --] */
+} /* [!code --] */
 /** @type {import('@master/css').Config} */
 export default {
     at: {
@@ -189,13 +189,13 @@ export default {
 ### Alternative to `@apply`
 Use [components](/guide/components) to abstract styles instead of `@apply`.
 ```css name=main.css
-- @tailwind base;
-- @tailwind components;
-- @tailwind utilities;
+@tailwind base; /* [!code --] */
+@tailwind components; /* [!code --] */
+@tailwind utilities; /* [!code --] */
 
-- .btn {
--      @apply py-2 px-5 bg-white hover:bg-black;
-- }
+.btn { /* [!code --] */
+     @apply py-2 px-5 bg-white hover:bg-black; /* [!code --] */
+} /* [!code --] */
 ```
 ```js name=master.css.js
 /** @type {import('@master/css').Config} */
@@ -212,8 +212,8 @@ export default {
 ### Gap instead of space
 To add space between boxes use [`gap:`](/reference/gap) instead of `space-`.
 ```html
--<div class="flex space-x-4 space-y-4">
-+<div class="flex gap:4x">
+<div class="flex space-x-4 space-y-4"> <!-- [!code --] -->
+<div class="flex gap:4x"> <!-- [!code ++] -->
     <div>01</div>
     <div>02</div>
 </div>

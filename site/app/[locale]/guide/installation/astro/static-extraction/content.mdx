@@ -73,14 +73,14 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         </StepL>
         <StepR>
             ```js name=astro.config.mjs
-            + import masterCSSExtractor from '@master/css-extractor.vite'
+            import masterCSSExtractor from '@master/css-extractor.vite' // [!code ++]
 
             export default defineNuxtConfig({
-            +    vite: {
-            +        plugins: [
-            +            masterCSSExtractor()
-            +        ]
-            +    }
+                vite: { // [!code ++]
+                    plugins: [ // [!code ++]
+                        masterCSSExtractor() // [!code ++]
+                    ] // [!code ++]
+                } // [!code ++]
             })
             ```
         </StepR>
@@ -91,13 +91,13 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
             Import the virtual CSS module `.virtual/master.css` into the `src/layouts/Layout.astro`.
         </StepL>
         <StepR>
-            ```js name=src/layouts/Layout.astro
+            ```astro name=src/layouts/Layout.astro
             ---
             export interface Props {
                 title: string;
             }
 
-            +import ".virtual/master.css";
+            import ".virtual/master.css"; // [!code ++]
 
             const { title } = Astro.props;
             ---
@@ -118,7 +118,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
     <Step>
         ### <StepNum />Start using Master CSS
         Now style your first element using Master CSS syntax!
-        ```html name=src/pages/index.astro
+        ```astro name=src/pages/index.astro
         ---
         import Layout from '../layouts/Layout.astro';
         ---

@@ -95,10 +95,10 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         <StepR>
             ```js name=resources/js/app.js
             import './bootstrap'
-            + import { initCSSRuntime } from '@master/css-runtime'
-            + import config from 'master.css'
+            import { initCSSRuntime } from '@master/css-runtime' // [!code ++]
+            import config from 'master.css' // [!code ++]
 
-            + initCSSRuntime(config)
+            initCSSRuntime(config) // [!code ++]
             ```
         </StepR>
     </Step>
@@ -115,7 +115,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
             <html style="**display: none**" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
                 <head>
                     …
-            +        @vite('resources/js/app.js')
+                    @vite('resources/js/app.js') // [!code ++]
                 </head>
                 …
             </html>

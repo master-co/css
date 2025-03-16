@@ -6,19 +6,19 @@
 The Master CSS Runtime has been separated from the `@master/css` package and is now available as `@master/css-runtime`.
 #### General installation
 ```js
--import { init } from '@master/css';
-+import { initCSSRuntime } from '@master/css-runtime'
-+import config from './master.css' // your custom master css config
+import { init } from '@master/css'; /* [!code --] */
+import { initCSSRuntime } from '@master/css-runtime' /* [!code ++] */
+import config from './master.css' /* [!code ++] */
 
--init()
-+initCSSRuntime(config)
+init() /* [!code --] */
+initCSSRuntime(config) /* [!code ++] */
 ```
 To fully step in, check out the [General Installation](/guide/installation/general) documentation.
 
 #### Using CDNs
 ```html
--<script src="https://cdn.master.co/css"></script>
-+<script src="https://cdn.master.co/css-runtime@rc"></script>
+<script src="https://cdn.master.co/css"></script> <!-- [!code --] -->
+<script src="https://cdn.master.co/css-runtime@rc"></script> <!-- [!code ++] -->
 ```
 To fully step in, check out the [Using CDNs](/guide/installation/cdn) documentation.
 
@@ -26,15 +26,15 @@ To fully step in, check out the [Using CDNs](/guide/installation/cdn) documentat
 The Master CSS Renderer has been separated from the `@master/css` package and is now available as `@master/css-server`.
 ```js name=server.js
 import * as express from 'express'
--import { Style, StyleSheet } from '@master/css'
--import { render } from '@master/css/render'
-+import { render } from '@master/css-server'
+import { Style, StyleSheet } from '@master/css' /* [!code --] */
+import { render } from '@master/css/render' /* [!code --] */
+import { render } from '@master/css-server' /* [!code ++] */
 
 app.get('/', function(req, res) {
     res.render('index.html', (error, html) => {
         if (err) console.log(err)
--        return render(html, { StyleSheet }).html
-+        return render(html).html
+        return render(html, { StyleSheet }).html /* [!code --] */
+        return render(html).html /* [!code ++] */
     })
 })
 ```
@@ -46,24 +46,24 @@ Learn how to enable Master CSS progressive rendering in frameworks with [guides]
 ### Using new custom variables
 Deprecate extended `colors` and `values` ​​in favor of the new `config.variables`.
 ```js name=master.css.js
--import { Style } from '@master/css'
+import { Style } from '@master/css' /* [!code --] */
 
--Style.extend('colors', {
--   primary: '#000000'
--})
+Style.extend('colors', { /* [!code --] */
+   primary: '#000000' /* [!code --] */
+}) /* [!code --] */
 
--Style.extend('values', {
--   'spacing-md': 20
--})
+Style.extend('values', { /* [!code --] */
+   'spacing-md': 20 /* [!code --] */
+}) /* [!code --] */
 
-+export default {
-+    variables: {
-+        primary: '#000000',
-+        spacing: {
-+            md: 20
-+        }
-+    }
-+}
+export default { /* [!code ++] */
+    variables: { /* [!code ++] */
+        primary: '#000000', /* [!code ++] */
+        spacing: { /* [!code ++] */
+            md: 20 /* [!code ++] */
+        } /* [!code ++] */
+    } /* [!code ++] */
+} /* [!code ++] */
 ```
 Apply the variables:
 ```html
@@ -78,24 +78,24 @@ In v2, you can apply the [default animations](/guide/configuration#animations) o
 ```
 We built in commonly used animations, and the `@master/keyframes.css` package is deprecated.
 ```css name=main.css
--@import '@master/keyframes.css';
+@import '@master/keyframes.css'; /* [!code --] */
 ```
 To customize keyframes, check out the [Animations](/guide/configuration#animations) documentation.
 
 ### Using abstract styles
 Deprecate extended `classes` ​​in favor of `config.components`.
 ```js name=master.css.js
--import { Style } from '@master/css'
+import { Style } from '@master/css' /* [!code --] */
 
--Style.extend('classes', {
--   btn: '…'
--})
+Style.extend('classes', { /* [!code --] */
+   btn: '…' /* [!code --] */
+}) /* [!code --] */
 
-+export default {
-+    components: {
-+        btn: '…'
-+    }
-+}
+export default { /* [!code ++] */
+    components: { /* [!code ++] */
+        btn: '…' /* [!code ++] */
+    } /* [!code ++] */
+} /* [!code ++] */
 ```
 Apply the style:
 ```html
@@ -106,31 +106,31 @@ To learn more, check out the [Components](/guide/components) documentation.
 ### Merging media queries
 Deprecate extended `breakpoints` and `queries` ​​in favor of `config.at`.
 ```js name=master.css.js
--import { Style } from '@master/css'
+import { Style } from '@master/css' /* [!code --] */
 
--Style.extend('breakpoints', {
--   laptop: '1024px'
--})
+Style.extend('breakpoints', { /* [!code --] */
+   laptop: '1024px' /* [!code --] */
+}) /* [!code --] */
 
--Style.extend('queries', {
--   watch: '(max-device-width:42mm) and (min-device-width:38mm)'
--})
+Style.extend('queries', { /* [!code --] */
+   watch: '(max-device-width:42mm) and (min-device-width:38mm)' /* [!code --] */
+}) /* [!code --] */
 
-+export default {
-+    at: {
-+        laptop: 1024,
-+        watch: '(max-device-width:42mm) and (min-device-width:38mm)'
-+    }
-+}
+export default { /* [!code ++] */
+    at: { /* [!code ++] */
+        laptop: 1024, /* [!code ++] */
+        watch: '(max-device-width:42mm) and (min-device-width:38mm)' /* [!code ++] */
+    } /* [!code ++] */
+} /* [!code ++] */
 ```
 To learn more, check out the [at-rules](/guide/syntax#at-rules) documentation.
 
 ### Unknown tokens as themes
 Deprecated `colorSchemes` and considered unknown media query tokens as themes.
 ```js name=master.css.js
-- import { Style } from '@master/css'
+import { Style } from '@master/css' /* [!code --] */
 
-- Style.colorSchemes.push('ocean');
+Style.colorSchemes.push('ocean'); /* [!code --] */
 ```
 Apply a custom `ocean` theme:
 ```html
@@ -143,17 +143,17 @@ Apply a custom `ocean` theme:
 ### Renamed `font:color` to `fg:color`
 The color property in CSS generally refers to the foreground color of elements such as text and borders. It is more appropriate to use `color:` or the acronym `fg:` for this purpose.
 ```html
--<p class="font:blue-60"></p>
-+<p class="fg:blue-60"></p>
+<p class="font:blue-60"></p> <!-- [!code --] -->
+<p class="fg:blue-60"></p> <!-- [!code ++] -->
 ```
 
 ### Default colors are based on themes
 In v1, the default value for `color` was linked to `color-50`. In v2, the default colors have been updated to align with the Master Design System theme colors, which are determined by variable themes like `light` or `dark`.
 ```html
--<p class="fg:blue"></p>
-+<div class="light">
-+    <p class="fg:blue">No longer equal to `blue-50`.</p>
-+</div>
+<p class="fg:blue"></p> <!-- [!code --] -->
+<div class="light"> <!-- [!code ++] -->
+    <p class="fg:blue">No longer equal to `blue-50`.</p> <!-- [!code ++] -->
+</div> <!-- [!code ++] -->
 ```
 
 To learn more, check out:
@@ -187,15 +187,15 @@ If you want to access native CSS variables, use `var(--key)`.
 ### Removed color mid-values
 v2 no longer supports 1 to 99 shades for each color.
 ```html
--<div class="bg:blue-2"></div>
--<div class="bg:blue-4"></div>
+<div class="bg:blue-2"></div> <!-- [!code --] -->
+<div class="bg:blue-4"></div> <!-- [!code --] -->
 <div class="bg:blue-5"></div>
 -...
 <div class="bg:blue-10"></div>
 -...
 <div class="bg:blue-20"></div>
 ...
--<div class="bg:blue-98"></div>
+<div class="bg:blue-98"></div> <!-- [!code --] -->
 ```
 Initially, we wanted to support a wide range of colors through the LAB color model to provide flexibility, but its color gamut was limited.
 
@@ -208,8 +208,8 @@ See the [Colors](/reference/colors) documentation.
 
 Also, we inverted the colors, which was probably the most painful change from v1 to v2.
 ```html
--<div class="bg:blue-60"></div>
-+<div class="bg:blue-40"></div>
+<div class="bg:blue-60"></div> <!-- [!code --] -->
+<div class="bg:blue-40"></div> <!-- [!code ++] -->
 ```
 
 ---
