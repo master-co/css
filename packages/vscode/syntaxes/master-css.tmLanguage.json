@@ -1,4 +1,5 @@
 {
+    "$schema": "https://json.schemastore.org/tmLanguage",
     "name": "master-css",
     "scopeName": "source.master-css",
     "patterns": [
