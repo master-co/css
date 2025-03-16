@@ -1,14 +1,8 @@
-'use client'
-
-import clsx from 'clsx'
-import Demo from 'internal/components/Demo'
 import Code from 'internal/components/Code'
-import Bg from 'internal/components/Bg'
+import BasicDemo from './BasicDemo'
 
-export default (props: any) =>
+export default ({ className }: any) =>
     <>
-        <Demo>
-            <Bg {...props} className={clsx(props.className, 'aspect:3/1 size:auto|12x')} />
-        </Demo>
-        <Code lang="html">{`<div class="**${props.className}**">…</div>`}</Code>
+        <BasicDemo className={className} />
+        <Code lang="html">{`<div class="**${className}**">…</div>`}</Code>
     </>

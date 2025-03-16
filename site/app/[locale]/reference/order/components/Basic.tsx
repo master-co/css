@@ -1,18 +1,10 @@
 import Code from 'internal/components/Code'
-import clsx from 'clsx'
-import Demo from 'internal/components/Demo'
-import DemoPanel from 'internal/components/DemoPanel'
+import BasicDemo from './BasicDemo'
 
 export default ({ className }: any) => {
     return (
         <>
-            <Demo>
-                <div className="flex gap:10">
-                    <div className="app-box app-neutral">1</div>
-                    <div className={clsx(className, 'app-box accent')}>2</div>
-                    <div className="app-box app-neutral">3</div>
-                </div>
-            </Demo>
+            <BasicDemo className={className} />
             <Code lang="html">{`
                 <div class="flex">
                     <div>1</div>

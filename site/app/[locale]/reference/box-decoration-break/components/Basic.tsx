@@ -1,8 +1,5 @@
-import Demo from 'internal/components/Demo'
-import DemoPanel from 'internal/components/DemoPanel'
-import Image from 'next/image'
-import clsx from 'clsx'
 import Code from 'internal/components/Code'
+import BasicDemo from './BasicDemo'
 
 export default ({ className }: any) => {
     if (className === 'box-decoration:slice') {
@@ -10,16 +7,7 @@ export default ({ className }: any) => {
     }
     return (
         <>
-            <Demo>
-                <div className='flex:0'>
-                    <span className={clsx(
-                        className,
-                        'fg:white font:32 font:extrabold gradient(90deg,#FAD961|0%,#F76B1C|100%) px:3x tracking:-.25'
-                    )}>
-                        Box Decoration Break
-                    </span>
-                </div>
-            </Demo>
+            <BasicDemo className={className} />
             <Code lang="html">{`<span class="**${className}**">Box Decoration Break</span>`}</Code>
         </>
     )
