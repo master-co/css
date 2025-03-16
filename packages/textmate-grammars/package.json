@@ -1,0 +1,31 @@
+{
+    "name": "@master/css-textmate-grammars",
+    "license": "MIT",
+    "description": "Master CSS TextMate Grammars",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://rc.css.master.co/sponsor",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/textmate-grammars"
+    },
+    "keywords": [
+        "textmate",
+        "grammar",
+        "css",
+        "language",
+        "syntax",
+        "mastercss"
+    ],
+    "files": [
+        "*.json"
+    ],
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    }
+}

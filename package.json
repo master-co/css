@@ -66,6 +66,7 @@
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-validator": "workspace:^",
+        "@master/css-textmate-grammars": "workspace:^",
         "@master/css.nuxt": "workspace:^",
         "@master/css.react": "workspace:^",
         "@master/css.svelte": "workspace:^",

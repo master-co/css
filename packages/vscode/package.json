@@ -3,10 +3,12 @@
     "type": "module",
     "scripts": {
         "build": "techor build",
+        "prepare": "tsx prepare",
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
-        "vscode:publish": "vsce publish --pre-release"
+        "vscode:package": "vsce package --no-dependencies --follow-symlinks",
+        "vscode:publish": "vsce publish --no-dependencies --follow-symlinks --pre-release"
     },
     "version": "2.0.11",
     "description": "Master CSS for Visual Studio Code",
@@ -23,7 +25,7 @@
         "directory": "packages/vscode"
     },
     "engines": {
-        "vscode": "^1.96.0"
+        "vscode": "^1.98.0"
     },
     "activationEvents": [
         "onStartupFinished"
@@ -73,11 +75,11 @@
             {
                 "language": "master-css",
                 "scopeName": "source.master-css",
-                "path": "./syntaxes/master-css.tmLanguage.json"
+                "path": "./syntaxes/core.json"
             },
             {
                 "scopeName": "source.master-css.injection-class",
-                "path": "./syntaxes/master-css.injection-class.tmLanguage.json",
+                "path": "./syntaxes/injection-class.json",
                 "injectTo": [
                     "source",
                     "text"
@@ -85,7 +87,7 @@
             },
             {
                 "scopeName": "source.master-css.injection-react",
-                "path": "./syntaxes/master-css.injection-react.tmLanguage.json",
+                "path": "./syntaxes/injection-react.json",
                 "injectTo": [
                     "source.js.jsx",
                     "source.ts.tsx",
@@ -96,14 +98,14 @@
             },
             {
                 "scopeName": "source.master-css.injection-vue",
-                "path": "./syntaxes/master-css.injection-vue.tmLanguage.json",
+                "path": "./syntaxes/injection-vue.json",
                 "injectTo": [
                     "source.vue"
                 ]
             },
             {
                 "scopeName": "source.master-css.injection-js",
-                "path": "./syntaxes/master-css.injection-js.tmLanguage.json",
+                "path": "./syntaxes/injection-js.json",
                 "injectTo": [
                     "source.js.jsx",
                     "source.ts.tsx",
@@ -121,7 +123,7 @@
             },
             {
                 "scopeName": "source.master-css.injection-string",
-                "path": "./syntaxes/master-css.injection-string.tmLanguage.json",
+                "path": "./syntaxes/injection-string.json",
                 "injectTo": [
                     "source.js.jsx",
                     "source.ts.tsx",
@@ -268,8 +270,8 @@
     },
     "devDependencies": {
         "@master/css-language-server": "workspace:^",
-        "@types/vscode": "^1.96.0",
-        "@vscode/vsce": "^3.2.1",
+        "@types/vscode": "^1.98.0",
+        "@vscode/vsce": "^3.3.0",
         "shared": "workspace:^",
         "vscode-languageclient": "^9.0.1"
     }
