@@ -33,7 +33,9 @@ import DocMenuButton from 'internal/components/DocMenuButton'
 import { useLocale } from 'internal/contexts/locale'
 import { useTranslation } from 'internal/contexts/i18n'
 import HeaderContent from 'internal/components/HeaderContent'
-import { useApp } from '~/internal/contexts/app'
+import highlighterPromise, { themes } from 'internal/utils/highlighter'
+import { useApp } from 'internal/contexts/app'
+import { shikiToMonaco } from '@shikijs/monaco'
 
 const ShareButton = dynamic(() => import('./components/ShareButton'))
 
@@ -90,6 +92,7 @@ export default function Play(props: any) {
     const preview = useMemo(() => searchParams?.get('preview'), [searchParams])
     const shareItem: PlayShare = useMemo(() => props.shareItem || template, [props.shareItem, template])
     const tab = useMemo(() => searchParams?.get('tab') || shareItem.files[0].title, [searchParams, shareItem.files])
+    const getTheme = useCallback(() => themeMode.value === 'dark' ? themes.dark : themes.light, [themeMode.value])
 
     const getSearchPath = useCallback((name?: string, value?: any) => {
         const urlSearchParams = new URLSearchParams(searchParams?.toString())
@@ -356,13 +359,22 @@ export default function Play(props: any) {
         setVersion(event.target.value)
     }
 
-    const editorOnMount = async (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
+    const registerShiki = useCallback(async (monaco: Monaco) => {
+        monaco.languages.html.htmlDefaults.setOptions(editorHTMLOptions)
+        const highlighter = await highlighterPromise
+        shikiToMonaco(highlighter, monaco)
+        monaco.editor.setTheme(getTheme())
+    }, [getTheme])
+
+    const editorOnMount = useCallback(async (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
         // TODO: 須確認是否可由 @monaco-editor/react 的相關 API 改寫，不要用 monaco-editor
-        const { languages } = await import('monaco-editor')
         editorRef.current = editor
         monacoRef.current = monaco
+        await registerShiki(monaco)
+        // const [{ languages }] = await Promise.all([
+        //     import('monaco-editor'),
+        // ])
 
-        languages.html.htmlDefaults.setOptions(editorHTMLOptions)
 
         // const {
         //     CompletionItemProvider,
@@ -487,9 +499,8 @@ export default function Play(props: any) {
         //         }
         //     }
         // })
-
         previewIframeRef?.current?.contentWindow?.postMessage({ type: 'editorReady' }, window.location.origin)
-    }
+    }, [registerShiki])
 
     const width = useMemo(() => (!layout || layout === '2') ? '50%' : '100%', [layout])
     const height = useMemo(() => (!layout || layout === '2') ? '100%' : '50%', [layout])
@@ -670,7 +681,7 @@ export default function Play(props: any) {
                             )}
                             height="100%"
                             width="100%"
-                            theme={'vs-' + themeMode.value}
+                            theme={getTheme()}
                             defaultValue={tabFile.content}
                             defaultLanguage={tabFile.language}
                             path={tabFile.id}
@@ -722,10 +733,11 @@ export default function Play(props: any) {
                             <Editor
                                 height="100%"
                                 width="100%"
-                                theme={'vs-' + themeMode.value}
+                                theme={getTheme()}
                                 defaultValue={generatedCSSText}
                                 value={generatedCSSText}
                                 language="css"
+                                beforeMount={registerShiki}
                                 options={{
                                     ...editorOptions,
                                     readOnly: true
