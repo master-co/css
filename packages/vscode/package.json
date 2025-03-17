@@ -2,8 +2,8 @@
     "name": "master-css-vscode",
     "type": "module",
     "scripts": {
-        "build": "techor build",
-        "prepare": "tsx prepare",
+        "build": "techor build && pnpm generate",
+        "generate": "tsx generate",
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
@@ -64,10 +64,11 @@
                 "id": "master-css",
                 "aliases": [
                     "master-css",
-                    "mastercss"
+                    "mastercss",
+                    "mcss"
                 ],
                 "extensions": [
-                    ".mastercss"
+                    ".mcss"
                 ]
             }
         ],
@@ -270,6 +271,7 @@
     },
     "devDependencies": {
         "@master/css-language-server": "workspace:^",
+        "@master/css-textmate-grammars": "workspace:^",
         "@types/vscode": "^1.98.0",
         "@vscode/vsce": "^3.3.0",
         "shared": "workspace:^",
