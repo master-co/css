@@ -74,13 +74,12 @@
         ],
         "grammars": [
             {
-                "language": "master-css",
                 "scopeName": "source.master-css",
-                "path": "./syntaxes/core.json"
+                "path": "./syntaxes/master-css.json"
             },
             {
                 "scopeName": "source.master-css.injection-class",
-                "path": "./syntaxes/injection-class.json",
+                "path": "./syntaxes/master-css.injection-class.json",
                 "injectTo": [
                     "source",
                     "text"
@@ -88,7 +87,7 @@
             },
             {
                 "scopeName": "source.master-css.injection-react",
-                "path": "./syntaxes/injection-react.json",
+                "path": "./syntaxes/master-css.injection-react.json",
                 "injectTo": [
                     "source.js.jsx",
                     "source.ts.tsx",
@@ -99,14 +98,17 @@
             },
             {
                 "scopeName": "source.master-css.injection-vue",
-                "path": "./syntaxes/injection-vue.json",
+                "path": "./syntaxes/master-css.injection-vue.json",
                 "injectTo": [
                     "source.vue"
                 ]
             },
             {
                 "scopeName": "source.master-css.injection-js",
-                "path": "./syntaxes/injection-js.json",
+                "path": "./syntaxes/master-css.injection-js.json",
+                "embeddedLanguages": {
+                    "meta.embedded.block.master-css.class": "master-css"
+                },
                 "injectTo": [
                     "source.js.jsx",
                     "source.ts.tsx",
@@ -117,14 +119,11 @@
                     "source.ts",
                     "source.svelte",
                     "source.vue"
-                ],
-                "embeddedLanguages": {
-                    "meta.embedded.block.master-css.class": "master-css"
-                }
+                ]
             },
             {
                 "scopeName": "source.master-css.injection-string",
-                "path": "./syntaxes/injection-string.json",
+                "path": "./syntaxes/master-css.injection-string.json",
                 "injectTo": [
                     "source.js.jsx",
                     "source.ts.tsx",

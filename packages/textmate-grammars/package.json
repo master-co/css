@@ -1,5 +1,12 @@
 {
     "name": "@master/css-textmate-grammars",
+    "type": "module",
+    "scripts": {
+        "build": "techor build \"src/**/*.ts\" --external .json",
+        "dev": "pnpm build --watch",
+        "lint": "eslint",
+        "type-check": "tsc --noEmit"
+    },
     "license": "MIT",
     "description": "Master CSS TextMate Grammars",
     "author": "Aoyue Design LLC.",
@@ -21,7 +28,22 @@
         "syntax",
         "mastercss"
     ],
+    "sideEffects": false,
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        },
+        "./*.json": "./*.json"
+    },
     "files": [
+        "dist",
         "*.json"
     ],
     "publishConfig": {
