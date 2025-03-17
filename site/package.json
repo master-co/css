@@ -27,6 +27,7 @@
         "uvcanvas": "^0.2.2"
     },
     "devDependencies": {
+        "@shikijs/monaco": "^3.2.1",
         "eslint": "^9.22.0",
         "internal": "workspace:^",
         "tsx": "^4.19.3",
