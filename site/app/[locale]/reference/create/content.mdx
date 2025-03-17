@@ -7,41 +7,15 @@ import MASTER_CSS_TS_RAW from '~/site/../packages/create/src/master.css.ts.js'
 ## Setup
 ### Create a config file
 Initialize Master CSS in an existing project.
-<CodeTabs showControls>
-{[
-    {
-        name: 'npm', lang: 'bash',
-        code: 'npm create @master/css@rc',
-    },
-    {
-        name: 'pnpm', lang: 'bash',
-        code: 'pnpm create @master/css@rc',
-    },
-    {
-        name: 'yarn', lang: 'bash',
-        code: 'yarn create @master/css@rc',
-    }
-]}
-</CodeTabs>
+```bash action=create
+@master/css@rc
+```
 
 ### Create a new app
 Or you can specify an argument to create a new project, which by default uses the [blank example](https://github.com/master-co/css/tree/rc/examples/blank).
-<CodeTabs showControls>
-{[
-    {
-        name: 'npm', lang: 'bash',
-        code: 'npm create @master/css@rc __project__',
-    },
-    {
-        name: 'pnpm', lang: 'bash',
-        code: 'pnpm create @master/css@rc __project__',
-    },
-    {
-        name: 'yarn', lang: 'bash',
-        code: 'yarn create @master/css@rc __project__',
-    }
-]}
-</CodeTabs>
+```bash action=create
+@master/css@rc __project__
+```
 
 ---
 
@@ -49,8 +23,8 @@ Or you can specify an argument to create a new project, which by default uses th
 ### `create --ext esm`
 Specify creating a `master.css.mjs` file in ECMAScript Modules format. If `package.json` is set `"type": "module"` will be enabled automatically.
 <DocProp defaultValue="auto" types={['boolean']} />
-```bash name=Terminal
-npm create @master/css@rc **--ext esm**
+```bash action=create
+@master/css@rc **--ext esm**
 ```
 <details>
     <summary>View the generated file</summary>
@@ -64,8 +38,8 @@ npm create @master/css@rc **--ext esm**
 ### `create --ext cjs`
 Specify creating a `master.css.js` file in CommonJS format.
 <DocProp defaultValue="auto" types={['boolean']} />
-```bash name=Terminal
-npm create @master/css@rc **--ext cjs**
+```bash action=create
+@master/css@rc **--ext cjs**
 ```
 <details>
     <summary>View the generated file</summary>
@@ -79,8 +53,8 @@ npm create @master/css@rc **--ext cjs**
 ### `create --ext ts`
 Specify creating a `master.css.ts` file in TypeScript format. Automatically enabled if `tsconfig.json` exists.
 <DocProp defaultValue="auto" types={['boolean']} />
-```bash name=Terminal
-npm create @master/css@rc **--ext ts**
+```bash action=create
+@master/css@rc **--ext ts**
 ```
 <details>
     <summary>View the generated file</summary>
@@ -94,20 +68,20 @@ npm create @master/css@rc **--ext ts**
 ### `create --example`
 Create a Master CSS App using [official examples](https://github.com/master-co/css/tree/rc/examples).
 <DocProp defaultValue="'blank'" types={['string']} />
-```bash name=Terminal
-npm create @master/css@rc __project__ **--example react**
+```bash action=create
+@master/css@rc __project__ **--example react**
 ```
 
 ### `create --pm`
 Manually specify the package manager you are using.
 <DocProp defaultValue="auto" types={['string']} />
-```bash name=Terminal
-npm create @master/css@rc **--pm bun**
+```bash action=create
+@master/css@rc **--pm bun**
 ```
 
 ### `create -o, --override`
 Override the existing Master CSS config file.
 <DocProp defaultValue="false" types={['boolean']} />
-```bash name=Terminal
-npm create @master/css@rc **--override**
+```bash action=create
+@master/css@rc **--override**
 ```
