@@ -1,0 +1,76 @@
+## Installation [sr-only]
+```bash action=install
+@master/css-textmate-grammars
+```
+It allows styling (syntax highlighting) and to make the text editor “smart” about which context the caret is in.
+
+---
+
+## Basic usage
+### Import the grammars
+The `grammars` array object is compatible with both [VSCode's](https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide) `contributes.grammars` configuration and [Shiki's](https://shiki.matsu.io/guide/load-lang#custom-language-aliases) `LanguageRegistration[]`.
+```js
+import grammars from '@master/css-textmate-grammars'
+```
+
+---
+
+## Integrating
+### Shiki
+[Shiki](https://shiki.matsu.io/) is a beautiful syntax highlighter. It uses TextMate grammars to provide syntax highlighting for a wide range of languages. You can use the Master CSS TextMate grammars with Shiki to provide syntax highlighting for Master CSS.
+```ts name=highlighter.ts
+import { createHighlighter } from 'shiki'
+import masterCSSGrammars from '@master/css-textmate-grammars'
+
+const highlighter = await createHighlighter({
+    langs: [
+        'html',
+        'css',
+        'json',
+        'javascript',
+        'typescript',
+        'jsx',
+        'tsx',
+        'vue',
+        'svelte',
+        'astro',
+        'bash',
+        'markdown',
+        ...masterCSSGrammars
+    ],
+    langAlias: {
+        mcss: 'master-css'
+    }
+})
+
+export default highlighter
+```
+Highlight a string:
+```ts
+highlighter.codeToHtml('text:center font:32@md', { lang: 'mcss' })
+```
+```mcss
+text:center font:32@md
+```
+Highlight a template:
+```ts
+highlighter.codeToHtml(html, { lang: 'html' })
+```
+```html
+<div class="text:center font:32@md">
+    <p>Master CSS</p>
+</div>
+```
+
+### Monaco Editor
+The [Monaco Editor](https://github.com/microsoft/monaco-editor) is the fully featured code editor from VS Code. Integrate Monaco Editor based on the above [shiki](#shiki) setup.
+```ts
+import { shikiToMonaco } from '@shikijs/monaco'
+import * as monaco from 'monaco-editor-core'
+import highlighter from './highlighter'
+
+// ...
+
+shikiToMonaco(highlighter, monaco)
+```
+See the [@shikijs/monaco](https://shiki.matsu.io/packages/monaco) documentation.

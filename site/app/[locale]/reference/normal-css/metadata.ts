@@ -2,9 +2,14 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Normal CSS',
-    description: 'Normalize browser\'s styles ~600B.',
+    description: 'Normalize modern browser styles.',
     category: 'Integration',
-    fileURL: import.meta.url
+    fileURL: import.meta.url,
+    package: {
+        repo: 'master-co/normal.css',
+        npm: '@master/normal.css',
+        source: 'https://github.com/master-co/normal.css'
+    }
 })
 
 export default metadata

@@ -4,7 +4,11 @@ const metadata = define({
     title: 'Language Service',
     description: 'The language service reference for Master CSS.',
     category: 'Integration',
-    fileURL: import.meta.url
+    fileURL: import.meta.url,
+    package: {
+        npm: '@master/css-language-service',
+        source: 'https://github.com/master-co/css/tree/rc/packages/language-service'
+    }
 })
 
 export default metadata
