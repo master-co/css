@@ -19,7 +19,8 @@ Use the `ping` animation to indicate that the shop is open.
 </Demo>
 ```html
 <svg class="inline-block fill:green-40 size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
-    <circle class="**@ping|1s|infinite** transform:center" cx="4" cy="4" r="4" />
+    <!-- @MARK @ping|1s|infinite -->
+    <circle class="@ping|1s|infinite transform:center" cx="4" cy="4" r="4" />
     <circle cx="4" cy="4" r="4" />
 </svg>
 ```
@@ -41,7 +42,8 @@ Use the counterclockwise `rotate` animation to indicate that data is being resto
     </div>
 </Demo>
 ```html
-<svg class="**@rotate|1s|linear|reverse|infinite**" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+<!-- @MARK @rotate|1s|linear|reverse|infinite -->
+<svg class="@rotate|1s|linear|reverse|infinite" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
     <path d="M15 4.55a8 8 0 0 0 -6 14.9m0 -4.45v5h-5"></path>
     <path d="M18.37 7.16l0 .01"></path>
@@ -75,14 +77,14 @@ Use the `fade` animation on SVG paths with regular delays to create a loading sp
 ```html
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-    <path class="**@fade|1s|ease-out|reverse|infinite|0s**" d="M7.75 7.75l-2.15 -2.15"></path>
-    <path class="**@fade|1s|ease-out|reverse|infinite|.125s**" d="M12 6l0 -3"></path>
-    <path class="**@fade|1s|ease-out|reverse|infinite|.25s**" d="M16.25 7.75l2.15 -2.15"></path>
-    <path class="**@fade|1s|ease-out|reverse|infinite|.375s**" d="M18 12l3 0"></path>
-    <path class="**@fade|1s|ease-out|reverse|infinite|.5s**" d="M16.25 16.25l2.15 2.15"></path>
-    <path class="**@fade|1s|ease-out|reverse|infinite|.625s**" d="M12 18l0 3"></path>
-    <path class="**@fade|1s|ease-out|reverse|infinite|.75s**" d="M7.75 16.25l-2.15 2.15"></path>
-    <path class="**@fade|1s|ease-out|reverse|infinite|.875s**" d="M6 12l-3 0"></path>
+    <path class="@fade|1s|ease-out|reverse|infinite|0s" d="M7.75 7.75l-2.15 -2.15"></path>
+    <path class="@fade|1s|ease-out|reverse|infinite|.125s" d="M12 6l0 -3"></path>
+    <path class="@fade|1s|ease-out|reverse|infinite|.25s" d="M16.25 7.75l2.15 -2.15"></path>
+    <path class="@fade|1s|ease-out|reverse|infinite|.375s" d="M18 12l3 0"></path>
+    <path class="@fade|1s|ease-out|reverse|infinite|.5s" d="M16.25 16.25l2.15 2.15"></path>
+    <path class="@fade|1s|ease-out|reverse|infinite|.625s" d="M12 18l0 3"></path>
+    <path class="@fade|1s|ease-out|reverse|infinite|.75s" d="M7.75 16.25l-2.15 2.15"></path>
+    <path class="@fade|1s|ease-out|reverse|infinite|.875s" d="M6 12l-3 0"></path>
 </svg>
 ```
 

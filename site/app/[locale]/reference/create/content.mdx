@@ -22,7 +22,7 @@ Or you can specify an argument to create a new project, which by default uses th
 Specify creating a `master.css.mjs` file in ECMAScript Modules format. If `package.json` is set `"type": "module"` will be enabled automatically.
 <DocProp defaultValue="auto" types={['boolean']} />
 ```bash action=create
-@master/css@rc **--ext esm**
+@master/css@rc --ext esm
 ```
 <details>
     <summary>View the generated file</summary>
@@ -37,7 +37,7 @@ Specify creating a `master.css.mjs` file in ECMAScript Modules format. If `packa
 Specify creating a `master.css.js` file in CommonJS format.
 <DocProp defaultValue="auto" types={['boolean']} />
 ```bash action=create
-@master/css@rc **--ext cjs**
+@master/css@rc --ext cjs
 ```
 <details>
     <summary>View the generated file</summary>
@@ -52,7 +52,7 @@ Specify creating a `master.css.js` file in CommonJS format.
 Specify creating a `master.css.ts` file in TypeScript format. Automatically enabled if `tsconfig.json` exists.
 <DocProp defaultValue="auto" types={['boolean']} />
 ```bash action=create
-@master/css@rc **--ext ts**
+@master/css@rc --ext ts
 ```
 <details>
     <summary>View the generated file</summary>
@@ -67,19 +67,19 @@ Specify creating a `master.css.ts` file in TypeScript format. Automatically enab
 Create a Master CSS App using [official examples](https://github.com/master-co/css/tree/rc/examples).
 <DocProp defaultValue="'blank'" types={['string']} />
 ```bash action=create
-@master/css@rc __project__ **--example react**
+@master/css@rc project --example react
 ```
 
 ### `create --pm`
 Manually specify the package manager you are using.
 <DocProp defaultValue="auto" types={['string']} />
 ```bash action=create
-@master/css@rc **--pm bun**
+@master/css@rc --pm bun
 ```
 
 ### `create -o, --override`
 Override the existing Master CSS config file.
 <DocProp defaultValue="false" types={['boolean']} />
 ```bash action=create
-@master/css@rc **--override**
+@master/css@rc --override
 ```

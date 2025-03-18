@@ -10,7 +10,8 @@ The most typical example is using a pseudo-element to add an indicator ` ↗` af
     </DemoPanel>
 </Demo>
 ```html
-<article class="**content:'\00a0↗'_:where(a[href^='http'])::after**">
+<!-- @MARK content:'\00a0↗'_:where(a[href^='http'])::after -->
+<article class="content:'\00a0↗'_:where(a[href^='http'])::after">
     …<a target="_blank" href="https://www.example.com">our website</a>…
 </article>
 ```
@@ -35,7 +36,8 @@ export default {
 ```
 Apply your custom fonts:
 ```html
-<a class="content:**external**::after">…</a>
+<!-- @MARK external -->
+<a class="content:external::after">…</a>
 ```
 
 ---

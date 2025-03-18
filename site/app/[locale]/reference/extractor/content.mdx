@@ -96,11 +96,11 @@ import { extractLatentClasses } from '@master/css-extractor'
 const content: string = `
     import { setupCounter } from './counter'
 
-    **const** **counterElement** = document.querySelector<HTMLButtonElement>('#counter')
-    **const** **syntax** = '**block**'
-    counterElement?.classList.add('**~transform|.3s**', '**translateY(-5):hover**', **syntax**)
+    const counterElement = document.querySelector<HTMLButtonElement>('#counter')
+    const syntax = 'block'
+    counterElement?.classList.add('~transform|.3s', 'translateY(-5):hover', syntax)
 
-    **setupCounter(counterElement!)**
+    setupCounter(counterElement!)
 `
 const result = extractLatentClasses(content)
 ```

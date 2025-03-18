@@ -48,14 +48,16 @@ export default {
 ```
 Apply the custom color:
 ```html
-<p class="fg:**primary**"></p>
+<!-- @MARK primary -->
+<p class="fg:primary"></p>
 ```
 See the [Color Customization](/reference/colors#customization) documentation to learn more about color variable behavior.
 
 ### Apply a text color
 Apply the defined `text-*` variables using the inherited rules <Heirs />.
 ```html
-<html class="**light**">
+<!-- @MARK light -->
+<html class="light">
     <body class="fg:$(text-neutral)">equals</body> <!-- [!code --] -->
     <body class="fg:text-neutral">equals</body> <!-- [!code --] -->
     <body class="fg:neutral"></body> <!-- [!code ++] -->
@@ -70,11 +72,13 @@ Apply the defined `text-*` variables using the inherited rules <Heirs />.
 ### Apply text color to any syntax
 Besides inheriting the above rules, you can use `text-*` to access global text color variables in other syntax.
 ```html
-<svg class="stroke:**text-light**"></svg>
+<!-- @MARK text-light -->
+<svg class="stroke:text-light"></svg>
 ```
 
 ### Escape inherited text colors
 Use `$(blue)` to apply `variables.blue` instead of `variables.text.blue`.
 ```html
-<p class="fg:**$(blue)**">…</p>
+<!-- @MARK $(blue) -->
+<p class="fg:$(blue)">…</p>
 ```

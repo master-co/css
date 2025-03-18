@@ -13,7 +13,8 @@ Use `static`to position an element according to the normal flow of the document.
     </code>
 </Demo>
 ```html
-<div class="**static** p:20">
+<!-- @MARK static -->
+<div class="static p:20">
     <div>static parent</div>
     <div class="abs left:10 bottom:10">abs child</div>
 </div>
@@ -29,7 +30,8 @@ Use `rel`to position an element according to the normal flow of the document, an
     </div>
 </Demo>
 ```html
-<div class="**rel** p:20 top:30 left:20">
+<!-- @MARK rel -->
+<div class="rel p:20 top:30 left:20">
     <div>relative parent</div>
 </div>
 ```
@@ -43,9 +45,11 @@ Use `abs`to remove an element from the normal flow of the document, and the elem
     </code>
 </Demo>
 ```html
-<div class="**rel** p:12x">
+<!-- @MARK rel -->
+<div class="rel p:12x">
     <div>relative parent</div>
-    <div class="**abs** left:0 top:0">abs child</div>
+    <!-- @MARK abs -->
+    <div class="abs left:0 top:0">abs child</div>
 </div>
 ```
 
@@ -75,7 +79,8 @@ Use `fixed`to remove an element from the normal flow of the document. The elemen
 </Demo>
 ```html
 <div>
-    <input type="search" class="**fixed**">
+    <!-- @MARK fixed -->
+    <input type="search" class="fixed">
     <ul>
         <li>
             <div class="rel">
@@ -120,7 +125,8 @@ Use `sticky`to position an element base on scroll position. It&#39;s like place 
 ```html
 <ul class="overflow:auto">
     …
-    <li class="**sticky** top:0">
+    <!-- @MARK sticky -->
+    <li class="sticky top:0">
         <img src="…">
         <div>Joy</div>
         …

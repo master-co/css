@@ -37,20 +37,23 @@ Set the typeface of an element using the `font-family:` syntax.
     </DemoPanel>
 </Demo>
 ```html
-<p class="**font-family:cursive**">Heavy boxes perform quick waltzes and jigs.</p>
+<!-- @MARK font-family:cursive -->
+<p class="font-family:cursive">Heavy boxes perform quick waltzes and jigs.</p>
 ```
 In practice, you wouldn't arbitrarily set the font family within the template; instead, you would unify your fonts through [custom variables](/guide/variables#add-fonts).
 
 ### Apply fonts globally
 Relying on the `font-family` inherited behavior, you can set the entire page font in `html <body>`.
 ```html
-<body class="**font:sans**">…</body>
+<!-- @MARK font:sans -->
+<body class="font:sans">…</body>
 ```
 
 ### Resolve whitespaces in the value
 Whitespace is used in the class attribute of the template to separate different classes. To replace whitespaces ` ` with non-breaking spaces `\00a0`.
 ```html
-<p class="font-family:'Open**\00a0**Sans'">…</p>
+<!-- @MARK font-family:'Open\00a0Sans' -->
+<p class="font-family:'Open\00a0Sans'">…</p>
 ```
 Is it not very kind to use `\00a0` in markup?
 
@@ -67,7 +70,8 @@ export default {
 ```
 Apply your custom fonts:
 ```html
-<p class="font:**open-sans**">…</p>
+<!-- @MARK open-sans -->
+<p class="font:open-sans">…</p>
 ```
 
 ---
@@ -78,9 +82,10 @@ Apply styles based on different states using [selectors](/guide/state-selectors)
 <div class="font:mono:hover font:mono@sm font:mono@dark font:mono@print">…</div>
 ```
 ### Apply fonts to specified elements
-Use the `mcss _:where(code,pre)` to select specified elements and apply the font.
+Use the `mcss _:is(code,pre)` to select specified elements and apply the font.
 ```html
-<body class="**font:mono_:where(code,pre)**">…</body>
+<!-- @MARK font:mono_:is(code,pre) -->
+<body class="font:mono_:is(code,pre)">…</body>
 ```
 
 ---

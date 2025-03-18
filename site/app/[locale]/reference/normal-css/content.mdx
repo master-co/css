@@ -170,7 +170,8 @@ An instantly responsive UI enables users to confidently press each button withou
 
 (x) Disabling `user-scalable=no` can harm user experience, accessibility, and mobile-friendliness and have negative SEO implications.
 ```html
-<meta name="viewport" content="width=device-width, **user-scalable=no**">
+<!-- @MARK user-scalable=no -->
+<meta name="viewport" content="width=device-width, user-scalable=no">
 ```
 
 ---
@@ -213,5 +214,6 @@ Browsers default these elements to `inline` display. `block` can be centered usi
 
 For media that needs to overflow the container, you can cancel the maximum width by selecting descendants:
 ```html
-<article class="**max-w:none_:where(img)**">…</article>
+<!-- @MARK max-w:none_:where(img) -->
+<article class="max-w:none_:where(img)">…</article>
 ```

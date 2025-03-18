@@ -38,10 +38,12 @@ Specify which markup attributes should provide features of the Master CSS syntax
 
 By default, the `class` and `className` attributes in HTML and JSX provide language features.
 ```html name=html
-<div class="**target**"></div>
+<!-- @MARK target -->
+<div class="target"></div>
 ```
 ```jsx name=jsx
-<div className="**target**"></div>
+// @MARK target
+<div className="target"></div>
 ```
 This only matches attributes with string tokens, such as `class=""` or `class=''`. For markup binding or assignment forms see the next option.
 
@@ -51,19 +53,24 @@ Specify which markup attributes with bindings should provide features of the Mas
 
 By default, we have matched the class attribute bindings for popular frameworks.
 ```jsx name=jsx
-<div className={isActive && "**target**"}></div>
+// @MARK target
+<div className={isActive && "target"}></div>
 ```
 ```html name=vue
-<div :class="{ '**target**': isActive }"></div>
+// @MARK target
+<div :class="{ 'target': isActive }"></div>
 ```
 ```svelte name=svelte
-<div class={isActive && "**target**"}></div>
+<!-- @MARK target -->
+<div class={isActive && "target"}></div>
 ```
-```jsx name=astro
-<div class:list={isActive && "**target**"}></div>
+```astro name=astro
+<!-- @MARK target -->
+<div class:list={isActive && "target"}></div>
 ```
-```html name=angular
-<div [ngClass]="isActive && '**target**'"></div>
+```angular-html name=angular
+<!-- @MARK target -->
+<div [ngClass]="isActive && 'target'"></div>
 ```
 
 ### `.classFunctions`
@@ -74,18 +81,22 @@ Specify which function arguments should provide features of the Master CSS synta
 ```js
 import clsx from 'clsx'
 
-clsx('**target-1**', '**target-2**');
+/* @MARK target-1 *//* @MARK target-2 */
+clsx('target-1', 'target-2');
 ```
 `classList`:
 ```js
-element.classList.add('**target**');
-element.classList.remove('**target**');
+// @MARK target
+element.classList.add('target');
+// @MARK target
+element.classList.remove('target');
 ```
 [`styled`](https://github.com/master-co/styled):
 ```js
 import styled from '@master/styled.react'
 
-const Button = styled.button`**target-1** **target-2**`
+/* @MARK target-1 *//* @MARK target-2 */
+const Button = styled.button`target-1 target-2`
 ```
 
 ### `.classDeclarations`
@@ -97,14 +108,16 @@ Object properties:
 /** @type {import('@master/css').Config} */
 export default {
     components: {
-        btn: '**target**'
+        // @MARK target
+        btn: 'target'
     }
 }
 ```
 Variable declarations:
 ```js
 const components = {
-    btn: '**target**'
+    // @MARK target
+    btn: 'target'
 }
 ```
 

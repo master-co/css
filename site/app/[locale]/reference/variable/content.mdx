@@ -21,7 +21,7 @@ and the element contains an encapsulated style like this:
 ```
 Elements in the shadow DOM cannot be selected via descendant selectors, but you can:
 ```html
-<test-element class="**$button-bg**:red **$button-bg**:pink@sm">
+<test-element class="$button-bg:red $button-bg:pink@sm">
     ▼ #shadow-root (open)
         <button part="button"></button>
 </test-element>
