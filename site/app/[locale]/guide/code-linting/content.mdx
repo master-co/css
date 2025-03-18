@@ -35,7 +35,8 @@ In the past, you added utility classes to your templates unsafely, lacking the c
 
 (x) <span className="text:error">Invalid value for \`font\` property.</span>
 ```html
-<div class="**font:**">…</div>
+<!-- @MARK font: -->
+<div class="font:">…</div>
 ```
 This is helpful if you make a typo or are unfamiliar with Master CSS syntax!
 
@@ -47,7 +48,8 @@ You can also restrict teams to using [configuration](/guide/configuration) to cr
 
 (x) <span className="text:error">"btn" is not a valid or known class.</span>
 ```html
-<button class="**btn**">…</button>
+<!-- @MARK btn -->
+<button class="btn">…</button>
 ```
 (o) Fix this @master/css/class-validation problem using the Master CSS syntax.
 ```html
@@ -57,7 +59,7 @@ You can also restrict teams to using [configuration](/guide/configuration) to cr
 ```js name=master.css.js
 export default {
     components: {
-        btn: 'inline-flex px:4x'// [!code ++]
+        btn: 'inline-flex px:4x'// [!code highlight]
     }
 }
 ```
@@ -74,7 +76,8 @@ The class you added may collide with existing classes due to human error or havi
 
 (!) <span className="text:warning">"m:10" applies the same CSS declarations as "m:20".</span><br/><span className="text:warning">"m:20" applies the same CSS declarations as "m:10".</span>
 ```html
-<div class="**m:10** **m:20**">…</div>
+<!-- @MARK m:10 m:20 -->
+<div class="m:10 m:20">…</div>
 ```
 (o) Fix this @master/css/class-collision problem by removing other colliding classes.
 ```html
@@ -84,10 +87,12 @@ It can also detect whether declarations with the same selector and media query s
 
 (!) <span className="text:warning">"m:40@sm" applies the same CSS declarations as "m:50@sm".</span><br/><span className="text:warning">"m:50@sm" applies the same CSS declarations as "m:40@sm".</span>
 ```html
-<div class="**m:40@sm** **m:50@sm**">…</div>
+<!-- @MARK m:40@sm m:50@sm -->
+<div class="m:40@sm m:50@sm">…</div>
 ```
 (o) Fix this @master/css/class-collision problem by removing other colliding classes.
 ```html
+<!-- @MARK m:50@sm -->
 <div class="m:50@sm">…</div>
 ```
 
@@ -102,15 +107,17 @@ You may be using [clsx](https://github.com/lukeed/clsx) or [class variant](https
 import clsx from 'clsx'
 
 export default () => (
-    <h1 className={clsx('**display:bloc**')}>Hello World</h1>
+    // @MARK display:bloc
+    <h1 className={clsx('display:bloc')}>Hello World</h1>
 )
 ```
 (x) <span className="text:error">Invalid value for `text-align` property.</span>
 ```tsx
 import styled from '@master/styled.react'
 
-const H1 = styled.h1`**text-align:cente**`
+// @MARK text-align:cente
+const Block = styled`text-align:cente`
 
-export default () => <H1>Hello World</H1>
+export default () => <Block>Hello World</Block>
 ```
 Common JavaScript utility names are supported by [default](/reference/eslint#calleematching).

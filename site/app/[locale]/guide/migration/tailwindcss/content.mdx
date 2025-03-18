@@ -27,7 +27,7 @@ To avoid conflicts with spaces in `class="a b"`, use the delimiter `|` to separa
 ```
 You can observe that the reduced contrast of the delimiter `|`, as highlighted in Master's [syntax highlighting](/guide/language-service) above, is intentional to provide a smoother visual appearance that closely resembles native CSS's whitespace separator ` `:
 ```css
-div { box-shadow: 0rem** **0.0625rem** **0.125rem** **-0.1875rem** **rgba(0,0,0,.3) }
+div { box-shadow: 0rem 0.0625rem 0.125rem -0.1875rem rgba(0,0,0,.3) }
 ```
 We believe that `|` conveys a stronger separation meaning than `_`.
 
@@ -159,7 +159,8 @@ module.exports = { /* [!code --] */
 ```
 (o) Liberate flexibility with [syntax-first](/guide/responsive-design#syntax-first).
 ```html
-<div class="hidden**@sm&<md**">
+<!-- @MARK @sm&<md -->
+<div class="hidden@sm&<md">
 ```
 
 ### Add media queries

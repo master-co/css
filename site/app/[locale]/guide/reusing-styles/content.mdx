@@ -43,11 +43,16 @@ To apply the button sizes.
     <button className="btn btn-xl yellow touch-yellow">Submit</button>
 </Demo>
 ```html
-<button class="btn **btn-xs** …">Submit</button>
-<button class="btn **btn-sm** …">Submit</button>
-<button class="btn **btn-md** …">Submit</button>
-<button class="btn **btn-lg** …">Submit</button>
-<button class="btn **btn-xl** …">Submit</button>
+<!-- @MARK btn-xs -->
+<button class="btn btn-xs …">Submit</button>
+<!-- @MARK btn-sm -->
+<button class="btn btn-sm …">Submit</button>
+<!-- @MARK btn-md -->
+<button class="btn btn-md …">Submit</button>
+<!-- @MARK btn-lg -->
+<button class="btn btn-lg …">Submit</button>
+<!-- @MARK btn-xl -->
+<button class="btn btn-xl …">Submit</button>
 ```
 To apply the button sizes that are finely tuned for rounded styles.
 <Demo className="gap:8x">
@@ -58,11 +63,16 @@ To apply the button sizes that are finely tuned for rounded styles.
     <button className="btn btn-rounded-xl yellow touch-yellow">Submit</button>
 </Demo>
 ```html
-<button class="btn **btn-rounded-xs** …">Submit</button>
-<button class="btn **btn-rounded-sm** …">Submit</button>
-<button class="btn **btn-rounded-md** …">Submit</button>
-<button class="btn **btn-rounded-lg** …">Submit</button>
-<button class="btn **btn-rounded-xl** …">Submit</button>
+<!-- @MARK btn-rounded-xs -->
+<button class="btn btn-rounded-xs …">Submit</button>
+<!-- @MARK btn-rounded-sm -->
+<button class="btn btn-rounded-sm …">Submit</button>
+<!-- @MARK btn-rounded-md -->
+<button class="btn btn-rounded-md …">Submit</button>
+<!-- @MARK btn-rounded-lg -->
+<button class="btn btn-rounded-lg …">Submit</button>
+<!-- @MARK btn-rounded-xl -->
+<button class="btn btn-rounded-xl …">Submit</button>
 ```
 To design a scalable style, you should ensure the single responsibility of class composition; otherwise, you may end up using a lot of `!important` to override rules or the `@preset` layer to lower default styles, ultimately leading to chaotic styles.
 
@@ -83,7 +93,8 @@ We define [variables and modes](/guide/variables-and-modes) to create tokens sup
     <button className="btn btn-md yellow touch-yellow">Submit</button>
 </Demo>
 ```html
-<button class="btn btn-md **yellow** **touch-yellow**">Submit</button>
+<!-- @MARK yellow touch-yellow -->
+<button class="btn btn-md yellow touch-yellow">Submit</button>
 ```
 
 ---

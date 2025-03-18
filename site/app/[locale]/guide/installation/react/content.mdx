@@ -66,7 +66,7 @@ A full-stack framework, such as [Next.js](/guide/installation/nextjs), [Remix](/
         </StepL>
         <StepR>
             ```bash action=install
-            **@master/css.react@rc**
+            @master/css.react@rc
             ```
         </StepR>
     </Step>
@@ -104,7 +104,8 @@ A full-stack framework, such as [Next.js](/guide/installation/nextjs), [Remix](/
         <StepR>
             ```html name=index.html
                 <!DOCTYPE html>
-                <html lang="en" style="**display: none**">
+                <!-- @MARK display: none -->
+                <html lang="en" style="display: none">
                 …
             ```
         </StepR>
@@ -126,7 +127,7 @@ A full-stack framework, such as [Next.js](/guide/installation/nextjs), [Remix](/
         ```tsx name=src/App.tsx
         export default function App() {
             return (
-                <h1 className="**font:40** **font:heavy** **italic** **m:12x** **text:center**">Hello World</h1>
+                <h1 className="font:40 font:heavy italic m:12x text:center">Hello World</h1>
             )
         }
         ```

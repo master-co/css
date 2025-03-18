@@ -71,7 +71,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
         </StepL>
         <StepR>
             ```bash action=install
-            **@master/css-runtime@rc**
+            @master/css-runtime@rc
             ```
         </StepR>
     </Step>
@@ -102,7 +102,8 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
         <StepR>
             ```html name=src/index.html
             <!doctype html>
-            <html lang="en" style="**display: none**">
+            <!-- @MARK display: none -->
+            <html lang="en" style="display: none">
             ```
         </StepR>
     </Step>
@@ -121,7 +122,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
         ### <StepNum />Start using Master CSS
         Now style your first element using Master CSS syntax!
         ```html name=src/app/app.component.html
-        <h1 class="**font:40** **font:heavy** **italic** **m:12x** **text:center**">Hello World</h1>
+        <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
         ```
         Open your browser to watch the changes.
         <HelloWorld url="localhost:3000" />

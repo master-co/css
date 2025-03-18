@@ -3,7 +3,8 @@
     <IFrame src="/examples/responsive-gallery" height={360} />
 </ResizeZone>
 ```html
-<div class="grid-cols:2 grid-cols:3**@xs** grid-cols:4**@sm** grid-cols:5**@md** …">…</div>
+<!-- @MARK @xs @sm @md -->
+<div class="grid-cols:2 grid-cols:3@xs grid-cols:4@sm grid-cols:5@md …">…</div>
 ```
 The syntax in Master CSS allows for the conditional application of styles at different viewports, with up to [11 predefined screen sizes](/reference/screens) available, from `4xs` ~ `4xl`. This comprehensive coverage caters to the modern web layout scenario.
 
@@ -29,9 +30,11 @@ Gradually adjust the UI for larger viewports.
 
 (wand) Increase the font size to `32/16rem` when the viewport width is larger than `1024px`.
 ```html
-<p class="font:24 **font:32@md** …">
+<!-- @MARK font:32@md -->
+<p class="font:24 font:32@md …">
 <!-- equals to -->
-<p class="font:24 **font:32@>=md** …">
+ <!-- @MARK font:32@>=md -->
+<p class="font:24 font:32@>=md …">
 ```
 Generated CSS:
 <Class2CSS>
@@ -55,7 +58,8 @@ Gradually adjust the UI for smaller viewports.
 
 (wand) Decrease the font size to `24/16rem` when the viewport width is less than `1024px`.
 ```html
-<p class="font:32 **font:24@<md** …">
+<!-- @MARK font:24@<md -->
+<p class="font:32 font:24@<md …">
 ```
 Generated CSS:
 <Class2CSS>
@@ -101,7 +105,8 @@ Master CSS provides a variety of operators to help you apply styles at different
 ### Viewport width is at least N
 To apply styles above a certain viewport width, you can either use the `@N` or `@>=N` operators.
 ```html
-<div class="hidden**@>=sm**">
+<!-- @MARK @>=sm -->
+<div class="hidden@>=sm">
 ```
 Generated CSS:
 <Class2CSS>
@@ -109,7 +114,8 @@ Generated CSS:
 </Class2CSS>
 (o) Alternative and recommended:
 ```html
-<div class="hidden**@sm**">
+<!-- @MARK @sm -->
+<div class="hidden@sm">
 ```
 Generated CSS:
 <Class2CSS>
@@ -119,7 +125,8 @@ Generated CSS:
 ### Viewport width exceeds N
 To apply styles when a certain viewport width is exceeded, you can use the `>` operator.
 ```html
-<div class="hidden**@>sm**">
+<!-- @MARK @>sm -->
+<div class="hidden@>sm">
 ```
 Generated CSS:
 <Class2CSS>
@@ -129,7 +136,8 @@ Generated CSS:
 ### Viewport width is at most N
 To apply styles when less than or equal to a certain viewport width, use the `<=` operator.
 ```html
-<div class="hidden**@<=sm**">
+<!-- @MARK @<=sm -->
+<div class="hidden@<=sm">
 ```
 Generated CSS:
 <Class2CSS>
@@ -139,7 +147,8 @@ Generated CSS:
 ### Viewport width is less than N
 To apply styles when less than a certain viewport width, use the `<` operator.
 ```html
-<div class="hidden**@<sm**">
+<!-- @MARK @<sm -->
+<div class="hidden@<sm">
 ```
 Generated CSS:
 <Class2CSS>
@@ -149,7 +158,8 @@ Generated CSS:
 ### Within the viewport width range
 To apply styles more flexibly, you can use the `&` logical operator along with the comparison operators `>`, `<`, `=`, `>=`, `<=`>.
 ```html
-<div class="hidden**@sm&<md**">
+<!-- @MARK @sm&<md -->
+<div class="hidden@sm&<md">
 ```
 Generated CSS:
 <Class2CSS>
@@ -162,5 +172,6 @@ Occasionally, addressing glitches or layouts within a certain range of viewports
 ## Create a responsive container
 Fixed element width to a screen size as a responsive container.
 ```html
-<div class="**max-w:screen-sm@sm** **max-w:screen-md@md** **max-w:screen-lg@lg** …">…</div>
+<!-- @MARK max-w:screen-sm@sm max-w:screen-md@md max-w:screen-lg@lg -->
+<div class="max-w:screen-sm@sm max-w:screen-md@md max-w:screen-lg@lg …">…</div>
 ```

@@ -83,7 +83,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         </StepL>
         <StepR>
             ```bash action=install
-            **@master/css-runtime@rc**
+            @master/css-runtime@rc
             ```
         </StepR>
     </Step>
@@ -112,7 +112,8 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         <StepR>
             ```html name=resources/views/layouts/welcome.blade.php
             <!DOCTYPE html>
-            <html style="**display: none**" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+            <!-- @MARK display: none -->
+            <html style="display: none" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
                 <head>
                     …
                     @vite('resources/js/app.js') // [!code ++]
@@ -150,7 +151,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         ```html name=resources/views/layouts/welcome.blade.php
         …
         <body>
-            <h1 class="**font:40** **font:heavy** **italic** **m:12x** **text:center**">
+            <h1 class="font:40 font:heavy italic m:12x text:center">
                 Hello World
             </h1>
         </body>

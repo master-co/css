@@ -44,7 +44,8 @@ Master CSS has built-in commonly used CSS properties, and you hardly need to ext
 ### Support the new CSS property
 Assuming that a brand new CSS property of `new-property` has just been launched, you can use it ahead of time through [arbitrary property declarations](/guide/style-declarations#arbitrary-properties) `{}` before we include it in the core rules:
 ```html
-<div class="**{new-property:value}**">…</div>
+<!-- @MARK {new-property:value} -->
+<div class="{new-property:value}">…</div>
 ```
 Generated CSS:
 ```css
@@ -54,7 +55,8 @@ Generated CSS:
 ```
 Once we support it, you can omit the `{}`:
 ```html
-<div class="**new-property:value**">…</div>
+<!-- @MARK new-property:value -->
+<div class="new-property:value">…</div>
 ```
 Generated CSS:
 ```css
@@ -68,11 +70,12 @@ Master CSS will extract the applied selector string according to the syntax stru
 
 This means that the selector can be used with the most standard syntax right away, as long as the browser supports it.
 ```html
-<form class="outline:2|solid|red**:has(:checked)**">…</form>
+<!-- @MARK :has(:checked) -->
+<form class="outline:2|red:has(:checked)">…</form>
 ```
 Generated CSS:
 <Class2CSS>
-{['outline:2|solid|red:has(:checked)']}
+{['outline:2|red:has(:checked)']}
 </Class2CSS>
 
 {/* ## CSS feature query */}

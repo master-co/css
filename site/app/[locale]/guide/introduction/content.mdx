@@ -8,7 +8,7 @@ Under the hood, Master CSS automatically adds [vendor prefixes](/guide/browser-s
     <h1 className="fg:indigo fg:red:hover font:32 font:40@sm font:heavy m:10x text:center">Hello World</h1>
 </Demo>
 ```html name=hero.html
-<h1 class="**fg:indigo** **fg:red:hover** **font:32** **font:40@sm** **font:heavy** **m:10x** **text:center**">
+<h1 class="fg:indigo fg:red:hover font:32 font:40@sm font:heavy m:10x text:center">
     Hello World
 </h1>
 ```
@@ -55,7 +55,8 @@ One of the most unique, the [progressive rendering](/guide/rendering-modes/progr
     <script src="https://cdn.master.co/css-runtime@rc" defer></script>
 </head>
 <body>
-    <h1 class="**block**">Hello World</h1>
+    <!-- @MARK block -->
+    <h1 class="block">Hello World</h1>
 </body>
 </html>
 ```
@@ -95,9 +96,10 @@ Have you ever felt anxious about adding styles to class attributes? Master CSS w
 
 (x) <span className="text:error">Invalid value for \`font\` property.</span>
 ```html
-<div class="**font:**">…</div>
+<!-- @MARK font: -->
+<div class="font:">…</div>
 ```
-This is just a piece of cake; we also allow you to **enforce consistent class ordering**, **legitimate class checks**, **class collision checks**, and checks for JavaScript utilities like **`clsx()`**.
+This is just a piece of cake; we also allow you to **enforce consistent class ordering**, **legitimate class checks**, **class collision checks**, and checks for JavaScript utilities like `clsx()`.
 
 To learn more, check out the [Code Linting](/guide/code-linting) documentation.
 

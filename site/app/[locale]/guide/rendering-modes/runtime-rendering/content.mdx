@@ -6,7 +6,7 @@ We've created a tiny JavaScript package `@master/css-runtime` that can be import
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.master.co/css-runtime@rc"></script> <!-- [!code ++] -->
+    <script src="https://cdn.master.co/css-runtime@rc"></script> <!-- [!code highlight] -->
     …
 </head>
 <body>
@@ -26,8 +26,9 @@ The following continuous DOM manipulation takes you to understand the behavior o
     <Step>
         #### <StepNum />Insert an element with a Master CSS class name into the DOM
         ```js
-            const h1 = document.createElement('h1')
-            h1.className = '**text:center**'
+        const h1 = document.createElement('h1')
+        // @MARK text:center
+        h1.className = 'text:center'
         ```
         A new node `html <h1>` is inserted into the DOM tree:
         ```html
@@ -43,11 +44,13 @@ The following continuous DOM manipulation takes you to understand the behavior o
     <Step>
         #### <StepNum />Added Master CSS class names to elements in links
         ```js
-        h1.classList.add('**font:48**')
+        // @MARK font:48
+        h1.classList.add('font:48')
         ```
         Add class name `font:48` to `html <h1>`
         ```html
-        <h1 class="text:center **font:48**">Hello World</h1>
+        <!-- @MARK font:48 -->
+        <h1 class="text:center font:48">Hello World</h1>
         ```
         The runtime engine observes that `html <h1>` adds the new class name `font:48` and generates the corresponding CSS rules:
         ```css
@@ -63,7 +66,8 @@ The following continuous DOM manipulation takes you to understand the behavior o
     <Step>
         #### <StepNum />Remove the Master CSS class name from the connected element
         ```js
-        h1.classList.remove('**text:center**')
+        // @MARK text:center
+        h1.classList.remove('text:center')
         ```
         Remove class name `text:center` from `html <h1>`
         ```html

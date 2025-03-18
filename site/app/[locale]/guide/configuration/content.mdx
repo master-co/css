@@ -75,12 +75,15 @@ export default {
 Generated CSS:
 ```css
 .hidden {
-    display: none **!important**;
+    /* @MARK !important */
+    display: none !important;
 }
 
 .full {
-    width: 100% **!important**;
-    height: 100% **!important**;
+    /* @MARK !important */
+    width: 100% !important;
+    /* @MARK !important */
+    height: 100% !important;
 }
 ```
 
@@ -146,18 +149,22 @@ export default {
 All Master CSS syntax will only be applied if the `<body id="app">`.
 ```html
 <html>
-<body id="**app**">
-    <div class="**mt:1** **text:center**"></div>
+<!-- @MARK app -->
+<body id="app">
+    <!-- @MARK mt:1 text:center -->
+    <div class="mt:1 text:center"></div>
 </body>
 </html>
 ```
 Generated CSS:
 ```css
-**#app** .mt\:1 {
+/* @MARK #app */
+#app .mt\:1 {
     margin-top: 0.0625rem
 }
 
-**#app** .text\:center {
+/* @MARK #app */
+#app .text\:center {
     text-align: center
 }
 ```

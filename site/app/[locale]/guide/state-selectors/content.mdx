@@ -4,13 +4,16 @@ import animals from 'internal/data/animals'
 ## Features [sr-only]
 ```html
 <!-- Set foreground to blue on hover -->
-<div class="fg:blue**:hover**">
+<!-- @MARK :hover -->
+<div class="fg:blue:hover">
 
 <!-- Set border to red on input invalid -->
-<input class="border:red**:invalid**" />
+<!-- @MARK :invalid -->
+<input class="border:red:invalid" />
 
 <!-- Set background to white on expanded -->
-<details class="bg:white**[open]**" open>
+<!-- @MARK [open] -->
+<details class="bg:white[open]" open>
 …
 ```
 Master CSS allows you to suffix, such as [pseudo-classes](#pseudo-classes), [pseudo-elements](#pseudo-elements), [compound states](#compound-states), etc., to apply styles on different conditions.
@@ -18,13 +21,15 @@ Master CSS allows you to suffix, such as [pseudo-classes](#pseudo-classes), [pse
 ### Multiple states
 Master CSS allows the same property to have different states on the same element.
 ```html
-<h2 class="**font:18** **font:24@sm** **font:32@md** …">
+<!-- @MARK font:18 --><!-- @MARK font:24@sm --><!-- @MARK font:32@md -->
+<h2 class="font:18 font:24@sm font:32@md …">
 ```
 
 ### Stackable states
 Master CSS allows the same style declaration with multiple state conditions.
 ```html
-<div class="**bg:blue-20:hover@md@dark** …">
+<!-- @MARK bg:blue-20:hover@md@dark -->
+<div class="bg:blue-20:hover@md@dark …">
 ```
 
 ---
@@ -38,7 +43,8 @@ Style elements with different interactive appearances on `:hover`, `:active`, an
     <button className="bg:indigo bg:pink:hover bg:purple:active px:18 h:40 font:14 font:semibold fg:white r:4 inline-flex align-items:center">Submit</button>
 </Demo>
 ```html
-<button class="bg:indigo bg:pink**:hover** bg:purple**:active**">Submit</button>
+<!-- @MARK :hover --><!-- @MARK :active -->
+<button class="bg:indigo bg:pink:hover bg:purple:active">Submit</button>
 ```
 
 ### First, last, even
@@ -62,7 +68,8 @@ Select and style elements using `:first`, `:last`, `:odd`, `:even`, and `:nth(N)
 </Demo>
 ```html
 <ul class="…">
-    <li class="bg:slate-5**:even**@light bg:gray-90**:even**@dark …">…</li>
+    <!-- @MARK :even --><!-- @MARK :even -->
+    <li class="bg:slate-5:even@light bg:gray-90:even@dark …">…</li>
 </ul>
 ```
 
@@ -74,7 +81,8 @@ Style controls using `:valid`, `:invalid`, `:required` based on form validations
     <input type="email" className="b:red:invalid b:green:valid b:1|lightest outline:0 h:48 font:14 px:16 bg:panel r:5 max-w:300" defaultValue="aron@master." />
 </Demo>
 ```html
-<input class="b:red**:invalid** b:green**:valid** b:1|solid …" type="email" />
+<!-- @MARK :invalid --><!-- @MARK :invalid -->
+<input class="b:red:invalid b:green:valid b:1|solid …" type="email" />
 ```
 
 ---
@@ -88,7 +96,8 @@ Attach pseudo-elements to an element using `::before` and `::after`.
     </DemoPanel>
 </Demo>
 ```html
-<div class="content:open-quote**::before** content:close-quote**::after** …">
+<!-- @MARK ::before --><!-- @MARK ::after -->
+<div class="content:open-quote::before content:close-quote::after …">
     Be the change you wish to see in the world.
 </div>
 ```
@@ -109,7 +118,8 @@ Beautify the scrollbar of an element using `::scrollbar`, `::scrollbar-thumb`, `
     </div>
 </Demo>
 ```html
-<div class="size:6**::scrollbar** bg:gray/.2**::scrollbar-thumb** overflow-x:auto …">
+<!-- @MARK scrollbar --><!-- @MARK ::scrollbar-thumb -->
+<div class="size:6::scrollbar bg:gray/.2::scrollbar-thumb overflow-x:auto …">
 ```
 
 ---

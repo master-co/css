@@ -15,11 +15,31 @@
 - css -> `css body { background: red; }`
 - mcss -> `mcss text:center`
 
-### Mark added and removed lines
+### Code lines added and removed
 ```ts
 console.log('hewwo') // [!code --]
 console.log('hello') // [!code ++]
 console.log('goodbye')
+```
+
+### Code line highlight
+```ts
+console.log('hewwo')
+console.log('hello') // [!code highlight]
+console.log('goodbye')
+```
+
+### Code line focus
+```ts
+console.log('hewwo')
+console.log('hello') // [!code focus]
+console.log('goodbye')
+```
+
+### Code mark words
+```ts
+// @MARK bar
+const foo = 'bar'
 ```
 
 ---

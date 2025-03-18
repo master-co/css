@@ -74,7 +74,8 @@ To learn more, check out the [custom variables](/guide/variables).
 ### Using new custom animations
 In v2, you can apply the [default animations](/guide/configuration#animations) out of the box:
 ```html
-<div class="**@ping|1s|infinite**"></div>
+<!-- @MARK @ping|1s|infinite -->
+<div class="@ping|1s|infinite"></div>
 ```
 We built in commonly used animations, and the `@master/keyframes.css` package is deprecated.
 ```css name=main.css
@@ -134,7 +135,8 @@ Style.colorSchemes.push('ocean'); /* [!code --] */
 ```
 Apply a custom `ocean` theme:
 ```html
-<div class="bg:cyan-50**@ocean**"></div>
+<!-- @MARK @ocean -->
+<div class="bg:cyan-50@ocean"></div>
 ```
 
 ---
@@ -174,11 +176,13 @@ export default {
 }
 ```
 ```html
-<div class="content:**$(key)**">"`"</div>
+<!-- @MARK $(key) -->
+<div class="content:$(key)">"`"</div>
 ```
 If you want to access native CSS variables, use `var(--key)`.
 ```html
-<div class="content:**var(--key)**">var(--key)</div>
+<!-- @MARK var(--key) -->
+<div class="content:var(--key)">var(--key)</div>
 ```
 
 ---

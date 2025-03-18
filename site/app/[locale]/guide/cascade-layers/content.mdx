@@ -50,7 +50,8 @@ Without `@preset`, you would have to always add `css !important` whenever you cu
 
 (x) Don't add brand-related preset styles to the base layer.
 ```html
-<body class="**font:mono_:is(code,pre)@base**">…</body>
+<!-- @MARK font:mono_:is(code,pre)@base -->
+<body class="font:mono_:is(code,pre)@base">…</body>
 ```
 The preset layer styles should be built on top of the base layer.
 
@@ -61,7 +62,8 @@ You can override the [components](/guide/components) by adding general syntax, w
 
 For example, add `flex` to override the display declaration `inline-flex` of the button.
 ```html
-<button class="**btn** **flex**">Submit</button>
+<!-- @MARK btn flex -->
+<button class="btn flex">Submit</button>
 ```
 Generated CSS:
 ```css

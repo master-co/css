@@ -115,7 +115,8 @@ You always keep your mind alert to prevent making mistakes, as the more similar 
 
 (o) Let Master CSS handle the prioritization automatically for you.
 ```html
-<h1 class="**text:right@md** **text:center@lg**">
+<!-- @MARK text:right@md text:center@lg -->
+<h1 class="text:right@md text:center@lg">
 ```
 No matter how you write the Master CSS syntax, the correct CSS rules will be generated:
 ```css
@@ -142,12 +143,14 @@ In web development, UI design is typically measured using pixels (px). However, 
 | rem | 0.75  | 0.875 | 1     | 1.125 | 1.25  | 1.375 | 1.5   | 1.625 | 1.75  |
 
 ```html
-<h1 class="**font:1.5rem**">
+<!-- @MARK font:1.5rem -->
+<h1 class="font:1.5rem">
 ```
 
 (o) Omit the text size unit and rely on the default conversion.
 ```html
-<h1 class="**font:24**">
+<!-- @MARK font:24 -->
+<h1 class="font:24">
 ```
 Generated CSS
 ```css
@@ -165,7 +168,8 @@ This not only improves productivity but also simplifies syntax markup in class a
 
 (o) You can now easily control style states in markup.
 ```html
-<button class="font:14 font:20**@md** opacity:.5**[disabled]**" disabled>Bravo!</button>
+<!-- @MARK @md [disabled] -->
+<button class="font:14 font:20@md opacity:.5[disabled]" disabled>Bravo!</button>
 ```
 
 (o) Build a visually consistent UI with [design tokens](/variables-and-modes).

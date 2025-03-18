@@ -13,7 +13,8 @@ When you [pre-render](/guide/rendering-modes/progressive-rendering) the page, th
 
 (o) Include `css display: none` in the `html <html>` to avoid FOUC.
 ```html
-<html style="**display: none**">…</html>
+<!-- @MARK display: none -->
+<html style="display: none">…</html>
 ```
 Once the style is injected, the engine will remove the above and notify the browser that the page can be displayed.
 
