@@ -1,7 +1,7 @@
 'use client'
 
 import type { editor } from 'monaco-editor'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
 import { snackbar } from 'internal/utils/snackbar'
 import dedent from 'ts-dedent'
@@ -33,9 +33,9 @@ import DocMenuButton from 'internal/components/DocMenuButton'
 import { useLocale } from 'internal/contexts/locale'
 import { useTranslation } from 'internal/contexts/i18n'
 import HeaderContent from 'internal/components/HeaderContent'
-import highlighterPromise, { themes } from 'internal/utils/highlighter'
+import createHighlighter, { themes } from 'internal/utils/create-highlighter'
 import { useApp } from 'internal/contexts/app'
-import { shikiToMonaco } from '@shikijs/monaco'
+import { shikiToMonaco, HighlighterGeneric } from '@shikijs/monaco'
 
 const ShareButton = dynamic(() => import('./components/ShareButton'))
 
@@ -93,6 +93,7 @@ export default function Play(props: any) {
     const shareItem: PlayShare = useMemo(() => props.shareItem || template, [props.shareItem, template])
     const tab = useMemo(() => searchParams?.get('tab') || shareItem.files[0].title, [searchParams, shareItem.files])
     const getTheme = useCallback(() => themeMode.value === 'dark' ? themes.dark : themes.light, [themeMode.value])
+    const [highlighter, setHighlighter] = useState<HighlighterGeneric>()
 
     const getSearchPath = useCallback((name?: string, value?: any) => {
         const urlSearchParams = new URLSearchParams(searchParams?.toString())
@@ -361,10 +362,14 @@ export default function Play(props: any) {
 
     const registerShiki = useCallback(async (monaco: Monaco) => {
         monaco.languages.html.htmlDefaults.setOptions(editorHTMLOptions)
-        const highlighter = await highlighterPromise
-        shikiToMonaco(highlighter, monaco)
+        if (highlighter) {
+            highlighter.dipose()
+        }
+        const newHighlighter = await createHighlighter()
+        setHighlighter(newHighlighter)
+        shikiToMonaco(newHighlighter, monaco)
         monaco.editor.setTheme(getTheme())
-    }, [getTheme])
+    }, [getTheme, highlighter])
 
     const editorOnMount = useCallback(async (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
         // TODO: 須確認是否可由 @monaco-editor/react 的相關 API 改寫，不要用 monaco-editor
