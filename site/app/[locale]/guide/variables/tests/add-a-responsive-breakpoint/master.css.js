@@ -1,7 +1,7 @@
 export default {
     variables: {
         screen: {
-            desktop: 1280 /* desktop */ /* [!code ++] */
+            desktop: 1280 /* desktop */ /* [!code highlight] */
         }
     }
 }

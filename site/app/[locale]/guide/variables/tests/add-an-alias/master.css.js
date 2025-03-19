@@ -1,5 +1,5 @@
 export default {
     variables: {
-        secondary: '$(blue-60)' /* secondary */ /* [!code ++] */
+        secondary: '$(blue-60)' /* secondary */ /* [!code highlight] */
     }
 }
