@@ -10,7 +10,8 @@ export async function generateStaticParams() {
 import pageCategories from '~/site/.categories/reference.json'
 
 export default function Layout({ children }: {
-    code: React.ReactElement
+    code: React.ReactElement,
+    children: React.ReactElement
 }) {
     return (
         <Body className="bg:base">

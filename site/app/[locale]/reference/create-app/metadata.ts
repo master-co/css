@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Create',
+    title: 'Create App',
     description: 'Set up or create a modern web app by running one command.',
     category: 'Integration',
     order: 1,

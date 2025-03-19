@@ -10,7 +10,7 @@ export async function generateStaticParams() {
 import pageCategories from '~/site/.categories/messages.json'
 
 export default async function Layout({ children }: {
-    code: React.ReactElement
+    children: React.ReactElement
 }) {
     return (
         <Body className="bg:base">
