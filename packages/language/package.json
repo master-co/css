@@ -1,5 +1,5 @@
 {
-    "name": "@master/css-textmate-grammars",
+    "name": "@master/css-language",
     "type": "module",
     "scripts": {
         "build": "techor build \"src/**/*.ts\" --external .json",
@@ -18,14 +18,15 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/textmate-grammars"
+        "directory": "packages/language"
     },
     "keywords": [
         "textmate",
-        "grammar",
+        "grammars",
+        "syntaxes",
         "css",
+        "mcss",
         "language",
-        "syntax",
         "mastercss"
     ],
     "sideEffects": false,
@@ -40,11 +41,20 @@
             "import": "./dist/index.mjs",
             "require": "./dist/index.cjs"
         },
-        "./*.json": "./*.json"
+        "./declaration": {
+            "types": "./dist/declaration.d.ts",
+            "import": "./dist/declaration.mjs",
+            "require": "./dist/declaration.cjs"
+        },
+        "./grammars": {
+            "types": "./dist/grammars.d.ts",
+            "import": "./dist/grammars.mjs",
+            "require": "./dist/grammars.cjs"
+        }
     },
     "files": [
         "dist",
-        "*.json"
+        "grammars"
     ],
     "publishConfig": {
         "access": "public",

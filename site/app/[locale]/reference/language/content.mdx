@@ -1,0 +1,105 @@
+## Installation [sr-only]
+```bash action=install
+@master/css-language
+```
+It allows styling (syntax highlighting) and to make the text editor “smart” about which context the caret is in.
+
+---
+
+## Basic usage
+### Import the textmate grammars
+The `grammars` array object is compatible with [Shiki](https://shiki.matsu.io/guide/load-lang) `LanguageRegistration[]`.
+```js
+import { grammars } from '@master/css-language'
+```
+Or import the grammars module:
+```js
+import grammars from '@master/css-language/grammars'
+```
+<details>
+    <summary>View the grammars source</summary>
+    <div>
+        <Code lang="ts">{require('!!raw-loader!~/packages/language/src/grammars.ts').default}</Code>
+    </div>
+</details>
+
+### Import the language declaration
+```js
+import { declaration } from '@master/css-language'
+```
+Or import the declaration module:
+```js
+import declaration from '@master/css-language/declaration'
+```
+<details>
+    <summary>View the declaration source</summary>
+    <div>
+        <Code lang="ts">{require('!!raw-loader!~/packages/language/src/declaration.ts').default}</Code>
+    </div>
+</details>
+
+---
+
+## Integrating
+### Shiki
+[Shiki](https://shiki.matsu.io/) is a beautiful syntax highlighter. It uses TextMate grammars to provide syntax highlighting for a wide range of languages. You can use the Master CSS TextMate grammars with Shiki to provide syntax highlighting for Master CSS.
+```ts name=highlighter.ts
+import { createHighlighterCore } from 'shiki/core'
+import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
+import masterCSSLangDeclaration from '@master/css-language/declaration'
+
+export default function createHighlighter() {
+    const langAlias: Record<string, string> = {}
+    masterCSSLangDeclaration.aliases.forEach(alias => {
+        langAlias[alias] = masterCSSLangDeclaration.id
+    })
+    return createHighlighterCore({
+        langs: [
+            import('@shikijs/langs/html'),
+            import('@shikijs/langs/javascript'),
+            ...,
+            import('@master/css-language/grammars') // [!code highlight]
+        ],
+        themes: [
+            import('@shikijs/themes/dracula'),
+            ...
+        ],
+        langAlias,
+        engine: createJavaScriptRegexEngine(),
+    })
+}
+
+export const themes = {
+    dark: 'dracula',
+    light: 'min-light'
+}
+```
+Highlight a string:
+```ts
+highlighter.codeToHtml('text:center font:32@md', { lang: 'mcss' })
+```
+```mcss
+text:center font:32@md
+```
+Highlight a template:
+```ts
+highlighter.codeToHtml(html, { lang: 'html' })
+```
+```html
+<div class="text:center font:32@md">
+    <p>Master CSS</p>
+</div>
+```
+
+### Monaco Editor
+The [Monaco Editor](https://github.com/microsoft/monaco-editor) is the fully featured code editor from VS Code. Integrate Monaco Editor based on the above [shiki](#shiki) setup.
+```ts
+import { shikiToMonaco } from '@shikijs/monaco'
+import * as monaco from 'monaco-editor-core'
+import highlighter from './highlighter'
+
+// ...
+
+shikiToMonaco(highlighter, monaco)
+```
+See the [@shikijs/monaco](https://shiki.matsu.io/packages/monaco) documentation.

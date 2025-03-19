@@ -4,7 +4,7 @@ import glob from 'fast-glob'
 export default {
     build: {
         input: {
-            external: glob.sync('./grammars/*.json', { absolute: true })
+            external: glob.sync('./syntaxes/*.json', { absolute: true })
         }
     }
 } as Config

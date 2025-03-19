@@ -237,7 +237,11 @@
                     "default": [
                         "clsx",
                         "cva",
+                        "ctl",
+                        "cv",
                         "class",
+                        "classnames",
+                        "classVariant",
                         "styled(?:\\s+)?(?:\\.\\w+)?",
                         "classList(?:\\s+)?\\.(?:add|remove|toggle|replace)"
                     ]
@@ -270,7 +274,7 @@
     },
     "devDependencies": {
         "@master/css-language-server": "workspace:^",
-        "@master/css-textmate-grammars": "workspace:^",
+        "@master/css-language": "workspace:^",
         "@types/vscode": "^1.98.0",
         "@vscode/vsce": "^3.3.0",
         "shared": "workspace:^",

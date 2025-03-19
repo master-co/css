@@ -25,7 +25,7 @@ const developerToolPackages = [
     await import('~/packages/language-server/package.json'),
     await import('~/packages/language-service/package.json'),
     await import('~/packages/vscode/package.json'),
-    await import('~/packages/textmate-grammars/package.json'),
+    await import('~/packages/language/package.json'),
 ]
 
 const solutionPackages = [

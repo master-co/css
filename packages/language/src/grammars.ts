@@ -1,17 +1,21 @@
-import core from '../grammars/master-css.json'
-import injectionClass from '../grammars/master-css.injection-class.json'
-import injectionJS from '../grammars/master-css.injection-js.json'
-import injectionReact from '../grammars/master-css.injection-react.json'
-import injectionString from '../grammars/master-css.injection-string.json'
-import injectionVue from '../grammars/master-css.injection-vue.json'
+import core from '../syntaxes/master-css.json'
+import injectionClass from '../syntaxes/master-css.injection-class.json'
+import injectionJS from '../syntaxes/master-css.injection-js.json'
+import injectionReact from '../syntaxes/master-css.injection-react.json'
+import injectionString from '../syntaxes/master-css.injection-string.json'
+import injectionVue from '../syntaxes/master-css.injection-vue.json'
 import type { LanguageRegistration } from 'shiki/types'
+import declaration from './declaration'
 
 export declare type Grammar = {
     embeddedLanguages?: Record<string, string>
 } & LanguageRegistration
 
 const grammars = [
-    core,
+    {
+        ...core,
+        aliases: declaration.aliases
+    },
     {
         ...injectionClass,
         injectTo: [
