@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Border Collapse',
+    title: 'border-collapse',
     description: 'Setting whether table cell have shared or separate borders.',
     category: 'Syntax',
     unfinished: true,

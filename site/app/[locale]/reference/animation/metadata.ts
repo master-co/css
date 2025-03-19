@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Animation',
+    title: 'animation',
     description: 'Applying an animation between styles.',
     category: 'Syntax',
     canIUseLink: 'https://caniuse.com/?search=animation',

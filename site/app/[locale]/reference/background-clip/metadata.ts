@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Background Clip',
+    title: 'background-clip',
     description: 'Controlling how clip the background.',
     category: 'Syntax',
     unfinished: true,

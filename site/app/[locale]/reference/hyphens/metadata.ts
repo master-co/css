@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Hyphens',
+    title: 'hyphens',
     description: 'Set how to split words to improve the layout of paragraphs.',
     category: 'Syntax',
     unfinished: true,

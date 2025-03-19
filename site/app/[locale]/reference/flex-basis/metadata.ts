@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Flex Basis',
+    title: 'flex-basis',
     description: 'Setting the initial main size of a flex item.',
     category: 'Syntax',
     unfinished: true,

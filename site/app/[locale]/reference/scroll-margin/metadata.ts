@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Scroll Margin',
+    title: 'scroll-margin',
     description: 'Setting the scroll margin of an element.',
     category: 'Syntax',
     unfinished: true,

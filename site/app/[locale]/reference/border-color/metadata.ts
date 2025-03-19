@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Border Color',
+    title: 'border-color',
     description: 'Setting the color of an element’s border.',
     category: 'Syntax',
     unfinished: true,

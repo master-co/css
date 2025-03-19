@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Appearance',
+    title: 'appearance',
     description: 'Controlling the native appearance of UI controls.',
     category: 'Syntax',
     unfinished: true,

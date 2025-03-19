@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Text Align',
+    title: 'text-align',
     description: 'Setting the text alignment of an element.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Break Before',
+    title: 'break-before',
     description: 'Controlling how page, column, or region breaks should occur before the specified element.',
     category: 'Syntax',
     unfinished: true,

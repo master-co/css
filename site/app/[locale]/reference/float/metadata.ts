@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Float',
+    title: 'float',
     description: 'Placing an element on the left or right side of its container.',
     category: 'Syntax',
     canIUseLink: 'https://caniuse.com/?search=float',

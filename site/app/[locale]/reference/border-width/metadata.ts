@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Border Width',
+    title: 'border-width',
     description: 'Setting the width of an element’s border.',
     category: 'Syntax',
     unfinished: true,

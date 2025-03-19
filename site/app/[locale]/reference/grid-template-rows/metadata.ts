@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Grid Template Rows',
+    title: 'grid-template-rows',
     description: 'Creating rows in a grid layout.',
     category: 'Syntax',
     unfinished: true,

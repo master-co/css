@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Animation Direction',
+    title: 'animation-direction',
     description: 'Setting the direction of the animation.',
     category: 'Syntax',
     canIUseLink: 'https://caniuse.com/?search=animation-direction',

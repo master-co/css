@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Text Size',
+    title: 'text-size',
     description: 'Style utility for setting the font size with a golden-ratio line height.',
     category: 'Syntax',
     unfinished: true,

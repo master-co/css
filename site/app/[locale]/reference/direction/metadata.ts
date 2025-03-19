@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Direction',
+    title: 'direction',
     description: 'Setting the direction of text.',
     category: 'Syntax',
     canIUseLink: 'https://caniuse.com/?search=direction',

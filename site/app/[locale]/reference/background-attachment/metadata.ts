@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Background Attachment',
+    title: 'background-attachment',
     description: 'Setting whether position of background image is fixed when scrolling.',
     category: 'Syntax',
     unfinished: true,

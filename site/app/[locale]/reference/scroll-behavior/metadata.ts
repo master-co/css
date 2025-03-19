@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Scroll Behavior',
+    title: 'scroll-behavior',
     description: 'Setting the scrolling behavior for a scrolling box.',
     category: 'Syntax',
     unfinished: true,

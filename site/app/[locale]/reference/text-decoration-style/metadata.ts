@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Text Decoration Style',
+    title: 'text-decoration-style',
     description: 'Setting the style of the decoration line that is used on text.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Break After',
+    title: 'break-after',
     description: 'Controlling how page, column, or region breaks should occur after an element.',
     category: 'Syntax',
     unfinished: true,

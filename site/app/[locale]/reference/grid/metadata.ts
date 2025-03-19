@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Grid',
+    title: 'grid',
     description: 'Setting layout of grid system.',
     category: 'Syntax',
     unfinished: true,

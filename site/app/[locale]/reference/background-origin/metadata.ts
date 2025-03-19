@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Background Origin',
+    title: 'background-origin',
     description: 'Setting the background\'s origin.',
     category: 'Syntax',
     unfinished: true,

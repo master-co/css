@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Stroke',
+    title: 'stroke',
     description: 'Setting the outline color of an SVG shape.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Margin',
+    title: 'margin',
     description: 'Setting the margin area on all four sides of an element.',
     category: 'Syntax',
     unfinished: true,

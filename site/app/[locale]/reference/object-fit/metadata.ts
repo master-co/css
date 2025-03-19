@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Object Fit',
+    title: 'object-fit',
     description: 'Setting how the content should be resized to fit its container.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Border',
+    title: 'border',
     description: 'Setting an element’s border.',
     category: 'Syntax',
     unfinished: true,

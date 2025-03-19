@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Isolation',
+    title: 'isolation',
     description: 'Controlling whether an element should create a new stacking context.',
     category: 'Syntax',
     unfinished: true,

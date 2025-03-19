@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Text Wrap',
+    title: 'text-wrap',
     description: 'Controlling how text inside an element is wrapped.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Height',
+    title: 'height',
     description: 'Setting an element’s height.',
     category: 'Syntax',
     unfinished: true,

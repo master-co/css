@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Text Indent',
+    title: 'text-indent',
     description: 'Setting indentation of the first line.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Flex Direction',
+    title: 'flex-direction',
     description: 'Setting the direction of flex items.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Background',
+    title: 'background',
     description: 'Setting all background style properties at once.',
     category: 'Syntax',
     unfinished: true,

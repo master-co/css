@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Grid Auto Flow',
+    title: 'grid-auto-flow',
     description: 'Controlling how auto-placed items get inserted in the grid.',
     category: 'Syntax',
     unfinished: true,

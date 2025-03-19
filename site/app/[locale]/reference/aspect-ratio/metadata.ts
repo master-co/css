@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Aspect Ratio',
+    title: 'aspect-ratio',
     description: 'Setting the ratio for the box.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Padding',
+    title: 'padding',
     description: 'Setting the padding area on all four sides of an element.',
     category: 'Syntax',
     unfinished: true,

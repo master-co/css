@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Outline',
+    title: 'outline',
     description: 'Setting all the outline properties at once.',
     category: 'Syntax',
     unfinished: true,

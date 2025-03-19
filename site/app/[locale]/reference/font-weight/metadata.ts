@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Font Weight',
+    title: 'font-weight',
     description: 'Setting the weight of the font.',
     category: 'Syntax',
     unfinished: true,

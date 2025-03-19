@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'List Style Position',
+    title: 'list style-position',
     description: 'Setting the position of the list item marker.',
     category: 'Syntax',
     unfinished: true,

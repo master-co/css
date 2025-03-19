@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Content',
+    title: 'content',
     description: 'Replacing an element with a generated value.',
     category: 'Syntax',
     unfinished: true,

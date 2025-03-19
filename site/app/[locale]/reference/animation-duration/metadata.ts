@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Animation Duration',
+    title: 'animation-duration',
     description: 'Setting the length of time that an animation takes to complete one cycle.',
     category: 'Syntax',
     unfinished: true,

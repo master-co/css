@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Flex Grow',
+    title: 'flex-grow',
     description: 'Setting how flex items grow.',
     category: 'Syntax',
     unfinished: true,

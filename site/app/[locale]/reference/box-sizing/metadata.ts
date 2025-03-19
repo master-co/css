@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Box Sizing',
+    title: 'box-sizing',
     description: 'Setting how the total width and height of an element is calculated.',
     category: 'Syntax',
     unfinished: true,

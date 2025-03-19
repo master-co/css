@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Transform',
+    title: 'transform',
     description: 'Controlling rotate, scale, skew, or translate an element.',
     category: 'Syntax',
     unfinished: true,

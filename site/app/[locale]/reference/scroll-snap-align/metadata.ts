@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Scroll Snap Align',
+    title: 'scroll-snap-align',
     description: 'Setting the scroll snap position.',
     category: 'Syntax',
     unfinished: true,

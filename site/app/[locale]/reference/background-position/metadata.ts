@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Background Position',
+    title: 'background-position',
     description: 'Setting the initial position for background image.',
     category: 'Syntax',
     unfinished: true,

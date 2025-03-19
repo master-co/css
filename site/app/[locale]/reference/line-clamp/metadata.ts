@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Line Clamp',
+    title: 'line-clamp',
     description: 'Limiting the contents of a container to the specified number of lines.',
     category: 'Syntax',
     unfinished: true,

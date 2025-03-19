@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Text Fill Color',
+    title: 'text-fill-color',
     description: 'Setting the color of text.',
     category: 'Syntax',
     unfinished: true,

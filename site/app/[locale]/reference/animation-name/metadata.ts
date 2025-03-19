@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Animation Name',
+    title: 'animation-name',
     description: 'Setting the names of the animation.',
     category: 'Syntax',
     unfinished: true,

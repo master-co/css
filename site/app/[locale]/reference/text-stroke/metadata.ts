@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Text Stroke',
+    title: 'text-stroke',
     description: 'Setting the width and color of strokes for text characters.',
     category: 'Syntax',
     unfinished: true,

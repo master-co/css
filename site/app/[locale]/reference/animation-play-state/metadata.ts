@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Animation Play State',
+    title: 'animation-play-state',
     description: 'Setting whether an animation is running or paused.',
     category: 'Syntax',
     canIUseLink: 'https://caniuse.com/?search=animation-play-state',

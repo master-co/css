@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Clip Path',
+    title: 'clip-path',
     description: 'Creating a clipping region.',
     category: 'Syntax',
     unfinished: true,

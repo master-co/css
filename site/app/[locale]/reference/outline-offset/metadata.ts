@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Outline Offset',
+    title: 'outline-offset',
     description: 'Setting the spacing between an outline and the border of an element.',
     category: 'Syntax',
     unfinished: true,

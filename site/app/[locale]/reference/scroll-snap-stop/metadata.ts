@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Scroll Snap Stop',
+    title: 'scroll-snap-stop',
     description: 'Setting whether scroll container is pass over snap positions.',
     category: 'Syntax',
     unfinished: true,

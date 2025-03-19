@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Order',
+    title: 'order',
     description: 'Changing the order of item in flex or grid container.',
     category: 'Syntax',
     unfinished: true,

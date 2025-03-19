@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Mix Blend Mode',
+    title: 'mix-blend-mode',
     description: 'Setting how an element\'s content should blend with its parent background.',
     category: 'Syntax',
     unfinished: true,

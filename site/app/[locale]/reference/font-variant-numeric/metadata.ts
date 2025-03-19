@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Font Variant Numeric',
+    title: 'font-variant-numeric',
     description: 'Controlling the usage of alternate glyphs for numbers, fractions, and ordinal markers.',
     category: 'Syntax',
     unfinished: true,

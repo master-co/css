@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Background Size',
+    title: 'background-size',
     description: 'Setting the size of the background image.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Opacity',
+    title: 'opacity',
     description: 'Setting the opacity of an element.',
     category: 'Syntax',
     unfinished: true,

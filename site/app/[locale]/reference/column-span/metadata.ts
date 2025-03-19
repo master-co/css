@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Column Span',
+    title: 'column-span',
     description: 'Setting how elements span across multiple columns.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Min Height',
+    title: 'min-height',
     description: 'Setting the minimum height of an element.',
     category: 'Syntax',
     unfinished: true,

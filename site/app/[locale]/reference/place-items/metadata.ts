@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Place Items',
+    title: 'place-items',
     description: 'Setting align-items and justify-items at the same time.',
     category: 'Syntax',
     unfinished: true,

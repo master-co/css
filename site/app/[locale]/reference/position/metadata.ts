@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Position',
+    title: 'position',
     description: 'Setting an element is positioned in a document.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Color',
+    title: 'color',
     description: 'Setting foreground color of an element.',
     category: 'Syntax',
     canIUseLink: 'https://caniuse.com/?search=color',

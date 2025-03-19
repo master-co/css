@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Overscroll Behavior',
+    title: 'overscroll-behavior',
     description: 'Setting what a browser does when reaching the boundary of a scrolling area.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Inset',
+    title: 'inset',
     description: 'Setting distance between an element and the parent element.',
     category: 'Syntax',
     unfinished: true,

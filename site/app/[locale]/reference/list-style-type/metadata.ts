@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'List Style Type',
+    title: 'list style-type',
     description: 'Setting the style of the list item marker.',
     category: 'Syntax',
     unfinished: true,

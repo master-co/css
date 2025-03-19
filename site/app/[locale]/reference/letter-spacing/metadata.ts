@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Letter Spacing',
+    title: 'letter-spacing',
     description: 'Setting the spacing between text characters.',
     category: 'Syntax',
     unfinished: true,

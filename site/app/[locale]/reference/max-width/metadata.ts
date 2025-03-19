@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Max Width',
+    title: 'max-width',
     description: 'Setting the maximum width of an element.',
     category: 'Syntax',
     unfinished: true,

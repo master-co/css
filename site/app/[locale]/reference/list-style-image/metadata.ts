@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'List Style Image',
+    title: 'list style-image',
     description: 'Replacing the list item marker with an image.',
     category: 'Syntax',
     unfinished: true,

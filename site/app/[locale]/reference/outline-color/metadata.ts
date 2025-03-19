@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Outline Color',
+    title: 'outline-color',
     description: 'Setting the color of an element’s outline.',
     category: 'Syntax',
     unfinished: true,

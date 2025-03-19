@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Flex Shrink',
+    title: 'flex-shrink',
     description: 'Setting how flex items shrink.',
     category: 'Syntax',
     unfinished: true,

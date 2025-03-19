@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Accent Color',
+    title: 'accent-color',
     description: 'Setting the accent color of user interface elements or controls.',
     category: 'Syntax',
     unfinished: true,

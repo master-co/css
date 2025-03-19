@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Text Shadow',
+    title: 'text-shadow',
     description: 'Adding shadows to text.',
     category: 'Syntax',
     unfinished: true,

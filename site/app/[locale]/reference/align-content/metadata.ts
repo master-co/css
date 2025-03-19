@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Align Content',
+    title: 'align-content',
     description: 'Controlling how multiple rows or columns are aligned along its cross axis.',
     category: 'Syntax',
     unfinished: true,

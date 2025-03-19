@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Contain',
+    title: 'contain',
     description: 'Providing performance benefits by limiting calculations of layout.',
     category: 'Syntax',
     unfinished: true,

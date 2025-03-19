@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Font Smoothing',
+    title: 'font-smoothing',
     description: 'Controlling the font smoothing of an element.',
     category: 'Syntax',
     unfinished: true,

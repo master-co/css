@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Grid Template Areas',
+    title: 'grid-template-areas',
     description: 'Setting areas in the grid container',
     category: 'Syntax',
     unfinished: true,

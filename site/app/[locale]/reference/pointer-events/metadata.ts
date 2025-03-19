@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Pointer Events',
+    title: 'pointer-events',
     description: 'Setting whether an element reacts to pointer events.',
     category: 'Syntax',
     unfinished: true,

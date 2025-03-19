@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Text Transform',
+    title: 'text-transform',
     description: 'Controlling capitalization of text.',
     category: 'Syntax',
     canIUseLink: 'https://caniuse.com/?search=text-transform',

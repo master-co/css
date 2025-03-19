@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Object Position',
+    title: 'object-position',
     description: 'Setting the alignment of the selected replaced element within the element\'s box.',
     category: 'Syntax',
     unfinished: true,

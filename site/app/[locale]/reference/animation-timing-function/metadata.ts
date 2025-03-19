@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Animation Timing Function',
+    title: 'animation-timing-function',
     description: 'Setting speed curve of the animation.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Break Inside',
+    title: 'break-inside',
     description: 'Controlling how page, column, or region breaks should occur within the specified element.',
     category: 'Syntax',
     unfinished: true,

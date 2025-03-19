@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Resize',
+    title: 'resize',
     description: 'Setting whether an element is resizable.',
     category: 'Syntax',
     unfinished: true,

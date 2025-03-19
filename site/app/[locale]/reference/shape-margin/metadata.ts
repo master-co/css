@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Shape Margin',
+    title: 'shape-margin',
     description: 'Setting a margin for a CSS shape.',
     category: 'Syntax',
     unfinished: true,

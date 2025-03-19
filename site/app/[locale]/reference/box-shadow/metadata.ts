@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Box Shadow',
+    title: 'box-shadow',
     description: 'Adding shadow effects around an element.',
     category: 'Syntax',
     unfinished: true,

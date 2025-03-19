@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Font Family',
+    title: 'font-family',
     description: 'Setting the font for an element.',
     category: 'Syntax',
     canIUseLink: 'https://caniuse.com/?search=font-family',

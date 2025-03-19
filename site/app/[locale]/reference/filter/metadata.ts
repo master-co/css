@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Filter',
+    title: 'filter',
     description: 'Applying graphic effects to an element.',
     category: 'Syntax',
     unfinished: true,

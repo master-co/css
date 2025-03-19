@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Font',
+    title: 'font',
     description: 'Setting font properties of an element.',
     category: 'Syntax',
     unfinished: true,

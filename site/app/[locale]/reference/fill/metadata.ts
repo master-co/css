@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Fill',
+    title: 'fill',
     description: 'Setting the color of an SVG shape.',
     category: 'Syntax',
     unfinished: true,

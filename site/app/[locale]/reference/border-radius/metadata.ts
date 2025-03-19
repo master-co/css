@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Border Radius',
+    title: 'border-radius',
     description: 'Setting radius of an element’s corners.',
     category: 'Syntax',
     unfinished: true,

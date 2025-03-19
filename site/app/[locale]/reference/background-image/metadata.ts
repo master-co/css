@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Background Image',
+    title: 'background-image',
     description: 'Setting background images on an element.',
     category: 'Syntax',
     unfinished: true,

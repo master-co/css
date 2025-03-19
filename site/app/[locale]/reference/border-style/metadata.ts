@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Border Style',
+    title: 'border-style',
     description: 'Setting the line style for an element’s border.',
     category: 'Syntax',
     unfinished: true,

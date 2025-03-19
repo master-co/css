@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Max Height',
+    title: 'max-height',
     description: 'Setting the maximum height of an element.',
     category: 'Syntax',
     unfinished: true,

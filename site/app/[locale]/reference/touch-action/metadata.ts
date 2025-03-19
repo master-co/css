@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Touch Action',
+    title: 'touch-action',
     description: 'Setting how an element\'s region can be manipulated by a touchscreen user.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Grid Area',
+    title: 'grid-area',
     description: 'Setting a size and location within a grid.',
     category: 'Syntax',
     unfinished: true,

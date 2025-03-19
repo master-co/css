@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Scroll Padding',
+    title: 'scroll-padding',
     description: 'Setting the scroll padding of an element.',
     category: 'Syntax',
     unfinished: true,

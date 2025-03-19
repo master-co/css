@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Text Decoration Thickness',
+    title: 'text-decoration-thickness',
     description: 'Setting thickness of the decoration line.',
     category: 'Syntax',
     unfinished: true,

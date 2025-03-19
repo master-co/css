@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Stroke Width',
+    title: 'stroke-width',
     description: 'Setting the width of the stroke to be applied to the SVG shape.',
     category: 'Syntax',
     unfinished: true,

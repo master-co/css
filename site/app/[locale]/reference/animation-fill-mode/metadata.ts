@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Animation Fill Mode',
+    title: 'animation-fill-mode',
     description: 'Setting how a CSS animation applies styles to its target before and after its execution.',
     category: 'Syntax',
     unfinished: true,

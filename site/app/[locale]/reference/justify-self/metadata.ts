@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Justify Self',
+    title: 'justify-self',
     description: 'Controlling how an individual item is aligned along its inline axis.',
     category: 'Syntax',
     unfinished: true,

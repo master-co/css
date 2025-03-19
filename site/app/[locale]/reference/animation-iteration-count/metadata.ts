@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Animation Iteration Count',
+    title: 'animation-iteration-count',
     description: 'Setting the number of times an animation should be played.',
     category: 'Syntax',
     canIUseLink: 'https://caniuse.com/?search=animation-iteration-count',

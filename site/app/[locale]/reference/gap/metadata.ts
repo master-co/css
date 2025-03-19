@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Gap',
+    title: 'gap',
     description: 'Setting the gutters between rows and columns.',
     category: 'Syntax',
     unfinished: true,

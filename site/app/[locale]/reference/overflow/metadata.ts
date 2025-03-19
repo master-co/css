@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Overflow',
+    title: 'overflow',
     description: 'Controlling the desired behavior for an element\'s overflow.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Flex Wrap',
+    title: 'flex-wrap',
     description: 'Setting how flex items wrap.',
     category: 'Syntax',
     unfinished: true,

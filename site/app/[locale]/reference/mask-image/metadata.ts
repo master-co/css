@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Mask Image',
+    title: 'mask-image',
     description: 'Setting the image that is used as mask layer for an element.',
     category: 'Syntax',
     unfinished: true,

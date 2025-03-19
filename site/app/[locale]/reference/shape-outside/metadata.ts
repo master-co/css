@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Shape Outside',
+    title: 'shape-outside',
     description: 'Setting a shape around which adjacent inline content should wrap.',
     category: 'Syntax',
     unfinished: true,

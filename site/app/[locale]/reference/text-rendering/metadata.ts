@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Text Rendering',
+    title: 'text-rendering',
     description: 'Setting what to optimize when rendering text.',
     category: 'Syntax',
     unfinished: true,

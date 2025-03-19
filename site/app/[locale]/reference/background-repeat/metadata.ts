@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Background Repeat',
+    title: 'background-repeat',
     description: 'Setting how background images are repeated.',
     category: 'Syntax',
     unfinished: true,

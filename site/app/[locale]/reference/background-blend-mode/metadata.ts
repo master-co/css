@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Background Blend Mode',
+    title: 'background-blend-mode',
     description: 'Setting how an element\'s background images should blend with the background color.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Text Overflow',
+    title: 'text-overflow',
     description: 'Handling how hidden overflow content.',
     category: 'Syntax',
     unfinished: true,

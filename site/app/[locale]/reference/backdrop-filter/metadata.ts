@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Backdrop Filter',
+    title: 'backdrop-filter',
     description: 'Style syntax for applying filter effects to the area behind an target element.',
     category: 'Syntax',
     unfinished: true,

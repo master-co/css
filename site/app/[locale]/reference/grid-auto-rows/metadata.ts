@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Grid Auto Rows',
+    title: 'grid-auto-rows',
     description: 'Setting the size of the grid rows.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Font Feature Settings',
+    title: 'font-feature-settings',
     description: 'Controlling advanced typographic features in OpenType fonts.',
     category: 'Syntax',
     unfinished: true,

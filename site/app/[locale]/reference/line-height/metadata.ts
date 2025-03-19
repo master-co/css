@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Line Height',
+    title: 'line-height',
     description: 'Setting the height of a line box.',
     category: 'Syntax',
     unfinished: true,

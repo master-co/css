@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Display',
+    title: 'display',
     description: 'Controlling the element\'s inner and outer display types.',
     category: 'Syntax',
     unfinished: true,

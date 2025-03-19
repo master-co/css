@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Clear',
+    title: 'clear',
     description: 'Moving an element below floating elements instead of floating to the left or right.',
     category: 'Syntax',
     unfinished: true,

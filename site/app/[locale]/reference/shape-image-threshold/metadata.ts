@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Shape Image Threshold',
+    title: 'shape-image-threshold',
     description: 'Setting the alpha channel threshold for a CSS shape.',
     category: 'Syntax',
     unfinished: true,

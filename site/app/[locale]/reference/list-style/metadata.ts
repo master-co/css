@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'List Style',
+    title: 'list-style',
     description: 'Setting all the list style properties at once.',
     category: 'Syntax',
     unfinished: true,

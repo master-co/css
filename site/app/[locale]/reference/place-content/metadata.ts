@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Place Content',
+    title: 'place-content',
     description: 'Setting align-content and justify-content at the same time.',
     category: 'Syntax',
     unfinished: true,

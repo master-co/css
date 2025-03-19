@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Caret Color',
+    title: 'caret-color',
     description: 'Setting the color of the cursor in text input.',
     category: 'Syntax',
     unfinished: true,

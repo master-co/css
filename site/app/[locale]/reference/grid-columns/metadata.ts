@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Grid Columns',
+    title: 'grid-columns',
     description: 'Style utility for creating multiple grid columns.',
     category: 'Syntax',
     unfinished: true,

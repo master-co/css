@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Columns',
+    title: 'columns',
     description: 'Setting the number of columns within the container.',
     category: 'Syntax',
     canIUseLink: 'https://caniuse.com/?search=columns',
