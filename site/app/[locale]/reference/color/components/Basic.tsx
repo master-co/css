@@ -6,5 +6,8 @@ import BasicDemo from './BasicDemo'
 export default ({ className }: any) =>
     <>
         <BasicDemo className={className} />
-        <Code lang="html">{`<p class="**${className}**">Heavy boxes perform quick waltzes and jigs.</p>`}</Code>
+        <Code lang="html">{`
+            <!-- @MARK ${className} -->
+            <p class="${className}">Heavy boxes perform quick waltzes and jigs.</p>
+        `}</Code>
     </>

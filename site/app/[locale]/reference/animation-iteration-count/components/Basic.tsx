@@ -13,7 +13,8 @@ export default ({ className }: any) => {
                 <IconRotateClockwise className={clsx(className, 'app-icon-primary size:12x stroke:.5')} />
             </Demo>
             <Code lang="html">{`
-                <svg class="**${className}**">…</svg>
+                <!-- @MARK ${className} -->
+                <svg class="${className}">…</svg>
             `}</Code>
         </>
     )

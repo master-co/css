@@ -8,7 +8,10 @@ export default ({ className }: any) => {
     return (
         <>
             <BasicDemo className={className} />
-            <Code lang="html">{`<span class="**${className}**">Box Decoration Break</span>`}</Code>
+            <Code lang="html">{`
+                <!-- @MARK ${className} -->
+                <span class="${className}">Box Decoration Break</span>
+            `}</Code>
         </>
     )
 }

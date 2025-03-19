@@ -6,7 +6,8 @@ export default ({ className }: any) => {
         <>
             <BasicDemo className={className} />
             <Code lang="html">{`
-                <svg class="**${className}** ${className.includes('running') ? '@float|3s|ease-in-out|infinite|paused' : '@float|3s|ease-in-out|infinite'}">…</svg>
+                <!-- @MARK ${className} -->
+                <svg class="${className} ${className.includes('running') ? '@float|3s|ease-in-out|infinite|paused' : '@float|3s|ease-in-out|infinite'}">…</svg>
             `}</Code>
         </>
     )

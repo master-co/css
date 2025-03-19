@@ -6,7 +6,8 @@ export default ({ className }: any) => {
         <>
             <BasicDemo className={className} />
             <Code lang="html">{`
-                <div class="**${className}**">Hover Me</div>
+                <!-- @MARK ${className} -->
+                <div class="${className}">Hover Me</div>
             `}</Code>
         </>
     )

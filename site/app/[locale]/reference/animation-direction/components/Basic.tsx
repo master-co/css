@@ -18,7 +18,8 @@ export default ({ className }: any) => {
                 {className === '@direction:alt-reverse' && <IconRefresh className={iconClassName} />}
             </Demo>
             <Code lang="html">{`
-                <svg class="**${className}** @rotate|1s|linear|infinite">…</svg>
+                <!-- @MARK ${className} -->
+                <svg class="${className} @rotate|1s|linear|infinite">…</svg>
             `}</Code>
         </>
     )

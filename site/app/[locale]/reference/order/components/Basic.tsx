@@ -8,7 +8,8 @@ export default ({ className }: any) => {
             <Code lang="html">{`
                 <div class="flex">
                     <div>1</div>
-                    <div class="**${className}**">2</div>
+                    <!-- @MARK ${className} -->
+                    <div class="${className}">2</div>
                     <div>3</div>
                 </div>
             `}</Code>
