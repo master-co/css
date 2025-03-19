@@ -24,7 +24,8 @@ export default {
 ```
 Apply the defined `font-family` variables. For example, presetting the global fonts in `html <body>`:
 ```html
-<body class="**font:sans** **font:mono_:where(code,pre)** font-feature:'salt'">…</body>
+<!-- @MARK font:sans --><!-- @MARK font:mono_:where(code,pre) -->
+<body class="font:sans font:mono_:where(code,pre) font-feature:'salt'">…</body>
 ```
 Don't forget to add the [font faces](/reference/fonts#font-faces).
 
@@ -47,7 +48,8 @@ export default {
 ```
 Apply them using the relevant syntax:
 ```html
-<div class="**bg:primary-5** **fg:primary-60**">…</div>
+<!-- @MARK bg:primary-5 --><!-- @MARK fg:primary-60 -->
+<div class="bg:primary-5 fg:primary-60">…</div>
 ```
 
 ### Add a color
@@ -81,7 +83,8 @@ Apply it using color-related syntax like [`fg:`](/reference/color).
 </details>
 (x) Color variables with opacity cannot use `/alpha` to change the opacity.
 ```html
-<div class="fg:**primary/.5**">…</div>
+<!-- @MARK primary/.5 -->
+<div class="fg:primary/.5">…</div>
 ```
 
 ### Add a color alias
@@ -125,7 +128,8 @@ export default {
 ```
 Apply it using color-related syntax like [`fill:`](/reference/fill).
 ```html
-<svg class="**fill:primary-20** …">20</svg>
+<!-- @MARK fill:primary-20 -->
+<svg class="fill:primary-20 …">20</svg>
 ```
 
 ### Add colors based on modes
@@ -170,11 +174,13 @@ The [screen](/reference/screens) in the variable is a reserved section. In addit
 
 Apply default screen variables using any syntax, such as [`width`](/reference/width) and [`max-width`](/reference/max-width).
 ```html
-<div class="**w:screen-sm** **max-w:screen-lg**">…</div>
+<!-- @MARK w:screen-sm --><!-- @MARK max-w:screen-lg -->
+<div class="w:screen-sm max-w:screen-lg">…</div>
 ```
 Conditionally apply styles using default screen variables as responsive breakpoints.
 ```html
-<div class="font:24 font:32**@sm** font:48**@md**">…</div>
+<!-- @MARK @sm --><!-- @MARK @md -->
+<div class="font:24 font:32@sm font:48@md">…</div>
 ```
 The responsive breakpoints can be flexibly used with operators, see the [responsive design](/guide/responsive-design) documentation.
 
@@ -203,11 +209,16 @@ And it can be used as a responsive breakpoint:
 ## Spacing and Sizing
 The [spacing and sizing](/reference/spacing-and-sizing) system is constructed using a [base unit](/guide/configuration#baseunit) of **4 pixels**. For visual consistency, you can use the multiplier unit `x` to apply spacing with the same scale.
 ```html
-<div class="m:**1x**">4px, margin: 0.25rem</div>
-<div class="p:**2x**">8px, padding: 0.5rem</div>
-<div class="w:**8x**">32px, width: 2rem</div>
-<div class="gap:**3x**">12px, gap: 0.75rem</div>
-<div class="size:**6x**">24px, width: 1.5rem; height: 1.5rem</div>
+<!-- @MARK 1x -->
+<div class="m:1x">4px, margin: 0.25rem</div>
+<!-- @MARK 2x -->
+<div class="p:2x">8px, padding: 0.5rem</div>
+<!-- @MARK 8x -->
+<div class="w:8x">32px, width: 2rem</div>
+<!-- @MARK 3x -->
+<div class="gap:3x">12px, gap: 0.75rem</div>
+<!-- @MARK 6x -->
+<div class="size:6x">24px, width: 1.5rem; height: 1.5rem</div>
 ```
 (x) It's no longer necessary to define the spacing scale one by one as in the traditional way.
 ```js name=master.css.js
@@ -224,9 +235,12 @@ export default {
 ```
 For other intermediate values, `0`, `1`, `2`, ..., we tend to use unitless tokens:
 ```html
-<div class="m:**0**">0px, margin: 0rem</div>
-<div class="p:**1**">1px, padding: 0.0625rem</div>
-<div class="w:**2**">2px, width: 0.125rem</div>
+<!-- @MARK 0 -->
+<div class="m:0">0px, margin: 0rem</div>
+<!-- @MARK 1 -->
+<div class="p:1">1px, padding: 0.0625rem</div>
+<!-- @MARK 2 -->
+<div class="w:2">2px, width: 0.125rem</div>
 ```
 
 ### Add a spacing
@@ -242,7 +256,8 @@ export default {
 ```
 Apply the defined `spacing` variables using the inherited rules like `margin-top` and `padding`.
 ```html
-<div class="**mt:md** **p:md**">…</div>
+<!-- @MARK mt:md --><!-- @MARK p:md -->
+<div class="mt:md p:md">…</div>
 ```
 
 (x) Do not use numerical values as tokens.

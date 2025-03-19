@@ -1,6 +1,15 @@
-export const code1 = `<p class="**padding-top:1rem** **padding-bottom:1rem** **padding-left:2rem** **padding-right:2rem** **border-width:.0625rem** **border-color:red** **border-style:solid**">`
-export const code2 = `<p class="**padding:16|32** **border:1|solid|red**">`
-export const code3 = `<p class="**p:16|32** **b:1|red**">`
+export const code1 = `
+    <!-- @MARK padding-top:1rem --><!-- @MARK padding-bottom:1rem --><!-- @MARK padding-left:2rem --><!-- @MARK padding-right:2rem --><!-- @MARK border-width:.0625rem --><!-- @MARK border-color:red --><!-- @MARK border-style:solid -->
+    <p class="padding-top:1rem padding-bottom:1rem padding-left:2rem padding-right:2rem border-width:.0625rem border-color:red border-style:solid">
+`
+export const code2 = `
+    <!-- @MARK padding:16|32 --><!-- @MARK border:1|red -->
+    <p class="padding:16|32 border:1|red">
+`
+export const code3 = `
+    <!-- @MARK p:16|32 --><!-- @MARK b:1|red -->
+    <p class="p:16|32 b:1|red">
+`
 
 Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">|</span><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">|</span><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">…</span></span></span></span></span></code>
 
@@ -23,12 +32,12 @@ You can't use CSS whitespace in class attributes because it's used to separate d
 
 (o) Use `|` delimiters instead of whitespaces between CSS parameter values.
 ```html
-<div class="m:10**|**20**|**30**|**40"></div>
+<div class="m:10|20|30|40"></div>
 ```
 Review native CSS:
 ```css
 div {
-    margin: 0.625rem** **1.25rem** **1.875rem** **2.5rem
+    margin: 0.625rem 1.25rem 1.875rem 2.5rem
 }
 ```
 [Master CSS Syntax Highlighting](/guide/language-service) uses light gray to reduce the contrast of the `|` delimiter, making it visually smoother and closer to the native CSS whitespace delimiter ` `.

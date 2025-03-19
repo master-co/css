@@ -1,5 +1,11 @@
-export const code1 = `<div class="w:**calc(100%-1rem)** h:**var(--size-sm)** bg:**rgba(0,0,0,.5)**">`
-export const code2 = `<div class="w:**calc(100%-16)** h:**$(size-sm)** bg:rgba(0,0,0,.5)">`
+export const code1 = `
+    <!-- @MARK calc(100%-1rem) --><!-- @MARK var(--size-sm) --><!-- @MARK rgba(0,0,0,.5) -->
+    <div class="w:calc(100%-1rem) h:var(--size-sm) bg:rgba(0,0,0,.5)">
+`
+export const code2 = `
+    <!-- @MARK calc(100%-16) --><!-- @MARK $(size-sm) --><!-- @MARK black/.5 -->
+    <div class="w:calc(100%-16) h:$(size-sm) bg:black/.5">
+`
 
 Declare native [functions](/guide/rules#functions) directly; that's how flexible it is.
 <Code lang="html">

@@ -11,9 +11,11 @@ export default () => (
                 priority={true}
                 alt="hello world"
             />
-            <h1 className="abs @flash|3s|infinite blend:overlay fg:white font:7vw font:40@xs font:heavy height:fit inset:0 m:auto text:center">
-                Hello, World!
-            </h1>
+            <div className="abs @flash|3s|infinite blend:overlay height:fit inset:0 m:auto">
+                <h1 className="fg:white font:7vw font:40@xs font:heavy m:0 text:center">
+                    Hello, World!
+                </h1>
+            </div>
         </div>
     </Demo>
 )

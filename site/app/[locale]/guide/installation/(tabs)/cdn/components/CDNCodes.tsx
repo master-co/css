@@ -23,7 +23,7 @@ export default () => <CodeTabs>{[
             <script src="https://cdn.master.co/css-runtime@rc"></script><!-- [!code ++] -->
         </head>
         <body>
-            <h1 class="**fg:primary** **font:40** **font:heavy** **italic** **m:12x** **text:center**">Hello World</h1>
+            <h1 class="fg:primary font:40 font:heavy italic m:12x text:center">Hello World</h1>
         </body>
         </html>
     `
@@ -50,7 +50,7 @@ export default () => <CodeTabs>{[
             </script> <!-- [!code ++] -->
         </head>
         <body>
-            <h1 class="**fg:primary** **font:40** **font:heavy** **italic** **m:12x** **text:center**">Hello World</h1>
+            <h1 class="fg:primary font:40 font:heavy italic m:12x text:center">Hello World</h1>
         </body>
         </html>
     `

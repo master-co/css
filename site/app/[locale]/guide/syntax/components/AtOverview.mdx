@@ -1,7 +1,8 @@
 <Code lang="js" name="master.css.js">{require('!!raw-loader!../tests/add-a-media-query/master.css.js').default}</Code>
 (!) You wouldn't want to write full media queries within the markup.
 ```html
-<div class="aspect:2/1**@media(orientation:landscape)**">…</div>
+<!-- @MARK @media(orientation:landscape) -->
+<div class="aspect:2/1@media(orientation:landscape)">…</div>
 ```
 (o) Employ concise yet semantically meaningful markup.
 <Code lang="html">{require('!!raw-loader!../tests/add-a-media-query/template.html').default}</Code>

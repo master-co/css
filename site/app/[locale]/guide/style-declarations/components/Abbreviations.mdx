@@ -1,5 +1,11 @@
-export const code1 = `<p class="**font-size:1rem** **margin-top:32** **justify-content:center**">`
-export const code2 = `<p class="**f:16** **mt:32** **jc:center**">`
+export const code1 = `
+    <!-- @MARK font-size:1rem --><!-- @MARK margin-top:32 --><!-- @MARK justify-content:center -->
+    <p class="font-size:1rem margin-top:32 justify-content:center">
+`
+export const code2 = `
+    <!-- @MARK f:16 --><!-- @MARK mt:32 --><!-- @MARK jc:center -->
+    <p class="f:16 mt:32 jc:center">
+`
 
 Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> → <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">pn</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
 
@@ -15,10 +21,22 @@ Property names are still too long on class names?
 
 Using abbreviations depends on team conventions or personal habits. Not every style property supports abbreviations, but some sensible abbreviations are recommended.
 
-export const code3 = `<div class="**width:32** **height:32** **border-radius:5** **z-index:10** **margin-top:1** **margin-bottom:1** **padding-left:1** **padding-right:1**">`
-export const code4 = `<div class="**w:32** **h:32** **r:5** **z:10** **mt:1** **mb:1** **pl:1** **pr:1**">`
-export const code5 = `<div class="w:32 h:32 r:5 z:10 **my:1** **px:1**">`
-export const code6 = `<div class="**size:32** r:5 z:10 my:1 px:1">`
+export const code3 = `
+    <!-- @MARK width:32 --><!-- @MARK height:32 --><!-- @MARK border-radius:5 --><!-- @MARK z-index:10 --><!-- @MARK margin-top:1 --><!-- @MARK margin-bottom:1 --><!-- @MARK padding-left:1 --><!-- @MARK padding-right:1 -->
+    <div class="width:32 height:32 border-radius:5 z-index:10 margin-top:1 margin-bottom:1 padding-left:1 padding-right:1">
+`
+export const code4 = `
+    <!-- @MARK w:32 --><!-- @MARK h:32 --><!-- @MARK r:5 --><!-- @MARK z:10 --><!-- @MARK mt:1 --><!-- @MARK mb:1 --><!-- @MARK pl:1 --><!-- @MARK pr:1 -->
+    <div class="w:32 h:32 r:5 z:10 mt:1 mb:1 pl:1 pr:1">
+`
+export const code5 = `
+    <!-- @MARK my:1 --><!-- @MARK px:1 -->
+    <div class="w:32 h:32 r:5 z:10 my:1 px:1">
+`
+export const code6 = `
+    <!-- @MARK size:32 -->
+    <div class="size:32 r:5 z:10 my:1 px:1">
+`
 
 <Code lang="html">
     {code3}
