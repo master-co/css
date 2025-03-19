@@ -4,6 +4,7 @@ const metadata = define({
     title: 'font-family',
     description: 'Setting the font for an element.',
     category: 'Syntax',
+    type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=font-family',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/font-family',
     fileURL: import.meta.url

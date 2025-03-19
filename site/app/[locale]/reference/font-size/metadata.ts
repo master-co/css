@@ -4,6 +4,7 @@ const metadata = define({
     title: 'font-size',
     description: 'Setting the font size of elements.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=font-size',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/font-size',

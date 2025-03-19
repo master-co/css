@@ -4,6 +4,7 @@ const metadata = define({
     title: 'outline-color',
     description: 'Setting the color of an element’s outline.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=outline-color',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/outline-color',

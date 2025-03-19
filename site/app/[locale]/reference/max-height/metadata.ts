@@ -4,6 +4,7 @@ const metadata = define({
     title: 'max-height',
     description: 'Setting the maximum height of an element.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=max-height',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/max-height',

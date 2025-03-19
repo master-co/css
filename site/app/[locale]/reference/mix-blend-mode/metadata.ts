@@ -4,6 +4,7 @@ const metadata = define({
     title: 'mix-blend-mode',
     description: 'Setting how an element\'s content should blend with its parent background.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=mix-blend-mode',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode',

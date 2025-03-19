@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Applying Conditionally',
+    title: 'Conditional Queries',
     description: 'Apply styles based on theme, print, and other modes and queries.',
     category: 'Syntax Tutorial',
     order: 3,

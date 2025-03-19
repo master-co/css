@@ -4,6 +4,7 @@ const metadata = define({
     title: 'background-position',
     description: 'Setting the initial position for background image.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=background-position',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-position',

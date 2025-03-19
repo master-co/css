@@ -4,6 +4,7 @@ const metadata = define({
     title: 'font',
     description: 'Setting font properties of an element.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=font',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/font',

@@ -4,6 +4,7 @@ const metadata = define({
     title: 'screen-readers',
     description: 'Style utility for imporving the accessibility with screen readers.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     fileURL: import.meta.url
 })

@@ -4,6 +4,7 @@ const metadata = define({
     title: 'text-decoration-style',
     description: 'Setting the style of the decoration line that is used on text.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=text-decoration-style',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-style',

@@ -4,6 +4,7 @@ const metadata = define({
     title: 'vertical-align',
     description: 'Setting vertical alignment.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=vertical-align',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align',

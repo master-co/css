@@ -4,6 +4,7 @@ const metadata = define({
     title: 'animation-name',
     description: 'Setting the names of the animation.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=animation-name',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/animation-name',

@@ -4,6 +4,7 @@ const metadata = define({
     title: 'background-origin',
     description: 'Setting the background\'s origin.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=background-origin',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-origin',

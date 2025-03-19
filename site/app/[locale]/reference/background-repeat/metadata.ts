@@ -4,6 +4,7 @@ const metadata = define({
     title: 'background-repeat',
     description: 'Setting how background images are repeated.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=background-repeat',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-repeat',

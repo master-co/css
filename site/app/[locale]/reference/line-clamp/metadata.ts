@@ -4,6 +4,7 @@ const metadata = define({
     title: 'line-clamp',
     description: 'Limiting the contents of a container to the specified number of lines.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=line-clamp',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/line-clamp',

@@ -4,6 +4,7 @@ const metadata = define({
     title: 'background',
     description: 'Setting all background style properties at once.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=background',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/background',

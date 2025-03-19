@@ -4,6 +4,7 @@ const metadata = define({
     title: 'box-shadow',
     description: 'Adding shadow effects around an element.',
     category: 'Syntax',
+    type: 'entity',
     unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=box-shadow',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow',

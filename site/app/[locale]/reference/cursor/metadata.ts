@@ -4,6 +4,7 @@ const metadata = define({
     title: 'cursor',
     description: 'Setting the mouse cursor style.',
     category: 'Syntax',
+    type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=cursor',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/cursor',
     fileURL: import.meta.url
