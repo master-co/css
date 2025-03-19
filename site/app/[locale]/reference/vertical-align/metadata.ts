@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Vertical Align',
+    title: 'vertical-align',
     description: 'Setting vertical alignment.',
     category: 'Syntax',
     unfinished: true,

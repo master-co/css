@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Transform Style',
+    title: 'transform-style',
     description: 'Setting how children of an element are rendered in the 3D space.',
     category: 'Syntax',
     unfinished: true,

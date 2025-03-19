@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Width',
+    title: 'width',
     description: 'Setting an element’s width.',
     category: 'Syntax',
     unfinished: true,

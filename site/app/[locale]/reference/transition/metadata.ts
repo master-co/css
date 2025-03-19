@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Transition',
+    title: 'transition',
     description: 'Controlling animation speed when changing CSS properties.',
     category: 'Syntax',
     unfinished: true,

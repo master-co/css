@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'White Space',
+    title: 'white-space',
     description: 'Controlling how whitespace and line breaks within an element are handled.',
     category: 'Syntax',
     unfinished: true,

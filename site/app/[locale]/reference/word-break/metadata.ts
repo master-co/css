@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Word Break',
+    title: 'word-break',
     description: 'Setting whether words should break.',
     category: 'Syntax',
     unfinished: true,

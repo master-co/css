@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Transform Origin',
+    title: 'transform-origin',
     description: 'Setting the origin for an element’s transformations.',
     category: 'Syntax',
     unfinished: true,

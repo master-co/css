@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Transition Delay',
+    title: 'transition-delay',
     description: 'Setting a time to delay before starting transition.',
     category: 'Syntax',
     unfinished: true,

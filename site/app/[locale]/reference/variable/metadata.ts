@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Variable',
+    title: 'variable',
     description: 'CSS variables defined specific values to be reused throughout a document.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Writing Mode',
+    title: 'writing-mode',
     description: 'Setting different writing mode.',
     category: 'Syntax',
     unfinished: true,

@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'User Select',
+    title: 'user-select',
     description: 'Controlling whether the user can select text.',
     category: 'Syntax',
     unfinished: true,

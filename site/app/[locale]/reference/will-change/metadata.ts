@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Will Change',
+    title: 'will-change',
     description: 'Setting how an element is expected to change in the browser.',
     category: 'Syntax',
     unfinished: true,

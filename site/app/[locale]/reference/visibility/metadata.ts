@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Visibility',
+    title: 'visibility',
     description: 'Controlling whether an element is visible.',
     category: 'Syntax',
     unfinished: true,

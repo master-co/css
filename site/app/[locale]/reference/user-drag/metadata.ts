@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'User Drag',
+    title: 'user-drag',
     description: 'Controlling whether the user can drag element.',
     category: 'Syntax',
     unfinished: true,

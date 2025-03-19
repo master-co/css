@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Transition Duration',
+    title: 'transition-duration',
     description: 'Setting the length of time a transition should takes to complete.',
     category: 'Syntax',
     unfinished: true,

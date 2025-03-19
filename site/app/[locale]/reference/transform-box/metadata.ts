@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Transform Box',
+    title: 'transform-box',
     description: 'Defining the layout box to which transform and transform-origin properties relate.',
     category: 'Syntax',
     unfinished: true,

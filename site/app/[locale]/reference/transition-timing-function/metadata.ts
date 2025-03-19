@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Transition Timing Function',
+    title: 'transition-timing-function',
     description: 'Setting speed curve of the transition effect.',
     category: 'Syntax',
     unfinished: true,

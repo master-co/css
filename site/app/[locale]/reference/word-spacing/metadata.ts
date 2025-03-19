@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Word Spacing',
+    title: 'word-spacing',
     description: 'Setting the spacing between words.',
     category: 'Syntax',
     unfinished: true,

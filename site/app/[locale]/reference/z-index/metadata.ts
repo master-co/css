@@ -1,7 +1,7 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Z Index',
+    title: 'z-index',
     description: 'Set the z-order of a positioned element.',
     category: 'Syntax',
     unfinished: true,
