@@ -11,6 +11,5 @@ export default (props: Props) => create({
     props,
     metadata,
     title: 'Styled Components',
-    // eslint-disable-next-line @next/next/no-img-element
     icon: <img src={require('!!url-loader!internal/images/styled-components.png').default} width={216} height={216} alt="styled components" />
 })

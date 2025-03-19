@@ -9,7 +9,7 @@ export async function generateMetadata(props: any, parent: any) {
 }
 
 export default async function Layout({ children }: {
-    code: React.ReactElement
+    children: React.ReactElement
 }) {
     return (
         <Body className="bg:base">

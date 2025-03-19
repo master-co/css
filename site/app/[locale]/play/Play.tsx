@@ -35,7 +35,8 @@ import { useTranslation } from 'internal/contexts/i18n'
 import HeaderContent from 'internal/components/HeaderContent'
 import createHighlighter, { themes } from 'internal/utils/create-highlighter'
 import { useApp } from 'internal/contexts/app'
-import { shikiToMonaco, HighlighterGeneric } from '@shikijs/monaco'
+import { shikiToMonaco } from '@shikijs/monaco'
+import type { ShikiInternal } from 'shiki'
 
 const ShareButton = dynamic(() => import('./components/ShareButton'))
 
@@ -93,7 +94,7 @@ export default function Play(props: any) {
     const shareItem: PlayShare = useMemo(() => props.shareItem || template, [props.shareItem, template])
     const tab = useMemo(() => searchParams?.get('tab') || shareItem.files[0].title, [searchParams, shareItem.files])
     const getTheme = useCallback(() => themeMode.value === 'dark' ? themes.dark : themes.light, [themeMode.value])
-    const [highlighter, setHighlighter] = useState<HighlighterGeneric>()
+    const [highlighter, setHighlighter] = useState<ShikiInternal<any, any>>()
 
     const getSearchPath = useCallback((name?: string, value?: any) => {
         const urlSearchParams = new URLSearchParams(searchParams?.toString())
@@ -363,7 +364,7 @@ export default function Play(props: any) {
     const registerShiki = useCallback(async (monaco: Monaco) => {
         monaco.languages.html.htmlDefaults.setOptions(editorHTMLOptions)
         if (highlighter) {
-            highlighter.dipose()
+            highlighter.dispose()
         }
         const newHighlighter = await createHighlighter()
         setHighlighter(newHighlighter)

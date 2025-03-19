@@ -5,7 +5,10 @@
     "scripts": {
         "prepare-app": "tsx --env-file=.env ../internal/scripts/prepare-app",
         "dev": "pnpm prepare-app && next dev",
-        "build": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm prepare-app && cd ../ && pnpm build && cd site && next build && node ../packages/cli/dist/bin/index.mjs render \".next/**/*.html\"",
+        "build": "pnpm prepare-app && pnpm build:repo && pnpm build:next && pnpm build:css",
+        "build:repo": "cd ../ && pnpm build && cd site",
+        "build:next": "cross-env NODE_OPTIONS=--max-old-space-size=16384 next build",
+        "build:css": "node ../packages/cli/dist/bin/index.mjs render \".next/**/*.html\"",
         "start": "next start",
         "lint": "next lint",
         "type-check": "tsc --noEmit"
