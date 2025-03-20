@@ -2,7 +2,7 @@
     "name": "@master/css-language",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --external .json",
+        "build": "techor build \"src/**/*.ts\"",
         "dev": "pnpm build --watch",
         "lint": "eslint",
         "type-check": "tsc --noEmit"
