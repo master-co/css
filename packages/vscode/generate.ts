@@ -1,12 +1,10 @@
-import path from 'node:path'
 import editJsonFile from 'edit-json-file'
 import syncFolder from '~/internal/utils/sync-folder'
-import { grammars, declaration } from '../language/src'
 import settings from '../language-server/src/settings'
+import { grammars, declaration } from '../language/src'
+import { fileURLToPath } from 'node:url'
 
-const cwd = process.cwd()
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
-const pkg = editJsonFile(path.join(cwd, './package.json'), { stringify_width: 4 })
+const pkg = editJsonFile(fileURLToPath(new URL('./package.json', import.meta.url)), { stringify_width: 4 })
 
 pkg.set('contributes.languages', [declaration])
 
@@ -87,4 +85,4 @@ pkg.set('contributes.configuration', {
 
 pkg.save()
 
-syncFolder(path.join(__dirname, '../language/syntaxes'), path.join(cwd, './syntaxes'))
+syncFolder(fileURLToPath(new URL('../language/syntaxes', import.meta.url)), fileURLToPath(new URL('./syntaxes', import.meta.url)))
