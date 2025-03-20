@@ -1,5 +1,5 @@
 import editJsonFile from 'edit-json-file'
-import syncFolder from '~/internal/utils/sync-folder'
+import copyOrSymlink from '~/internal/utils/copy-or-symlink'
 import settings from '../language-server/src/settings'
 import { grammars, declaration } from '../language/src'
 import { fileURLToPath } from 'node:url'
@@ -85,4 +85,4 @@ pkg.set('contributes.configuration', {
 
 pkg.save()
 
-syncFolder(fileURLToPath(new URL('../language/syntaxes', import.meta.url)), fileURLToPath(new URL('./syntaxes', import.meta.url)))
+copyOrSymlink(fileURLToPath(new URL('../language/syntaxes', import.meta.url)), fileURLToPath(new URL('./syntaxes', import.meta.url)))
