@@ -1,9 +1,7 @@
 @layer base, theme, preset, components, general;
 
 @layer theme {
-
-    .light,
-    :root {
+    .light, :root {
         --primary: 0 0 0
     }
 
@@ -16,9 +14,11 @@
     .fg\:primary {
         color: rgb(var(--primary))
     }
+
     .bg\:primary {
         background-color: rgb(var(--primary))
     }
+
     .fill\:primary {
         fill: rgb(var(--primary))
     }

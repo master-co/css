@@ -6,7 +6,6 @@
         "dev": "pnpm build --watch",
         "e2e": "playwright test",
         "e2e:watch": "nodemon -e js,mjs,ts,html,css --watch dist --watch e2e --exec playwright test",
-        "test": "vitest",
         "type-check": "tsc --noEmit",
         "lint": "eslint"
     },
@@ -58,9 +57,6 @@
     },
     "devDependencies": {
         "@playwright/test": "^1.49.1",
-        "@types/cssom": "^0.4.3",
-        "css-tree": "^3.1.0",
-        "cssom": "^0.5.0",
         "shared": "workspace:^"
     }
 }
