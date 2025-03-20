@@ -20,7 +20,7 @@
         "@master/css": "workspace:^",
         "@master/css-explore-config": "workspace:^",
         "@master/css-language-service": "workspace:^",
-        "@techor/extend": "^3.1.7",
+        "@techor/extend": "^3.2.0",
         "fast-glob": "^3.3.2",
         "js-beautify": "^1.15.1",
         "nanoid": "^5.0.6",

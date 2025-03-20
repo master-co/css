@@ -41,8 +41,14 @@
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
-            "require": "./dist/index.cjs",
-            "import": "./dist/index.mjs"
+            "require": {
+                "development": "./dist/index.development.cjs",
+                "default": "./dist/index.cjs"
+            },
+            "import": {
+                "development": "./dist/index.development.mjs",
+                "default": "./dist/index.mjs"
+            }
         }
     },
     "files": [
@@ -53,7 +59,8 @@
         "provenance": true
     },
     "dependencies": {
-        "@master/css": "workspace:^"
+        "@master/css": "workspace:^",
+        "@master/css-devtools-hook": "workspace:^"
     },
     "devDependencies": {
         "@playwright/test": "^1.49.1",
