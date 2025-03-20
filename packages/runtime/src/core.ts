@@ -1,5 +1,5 @@
 import { MasterCSS, config as defaultConfig, Rule, SyntaxLayer } from '@master/css'
-import { type Config, SyntaxRule } from '@master/css'
+import { type Config } from '@master/css'
 
 import './types/global'
 
