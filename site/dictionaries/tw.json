@@ -1,5 +1,5 @@
 {
-    "The CSS language and framework for rapidly building modern and high-performance websites.": "一個 CSS 語言兼框架，用於快速打造現代且具高效能的網站。",
+    "The CSS language and framework for rapidly building modern and high-performance websites.": "一個 CSS 語言兼框架，快速打造現代且具高效能的網站。",
     "Updates": "更新",
     "updated": "更新於",
     "Daily": "日常",
@@ -107,7 +107,7 @@
     "Reusing Styles": "重用設計",
     "Markup-driven": "標記驅動",
     "Markup-driven CSS": "標記驅動 CSS",
-    "Rendering Modes of Master CSS": "Master CSS 的編譯模式",
+    "Rendering Modes of Master CSS": "Master CSS 編譯模式",
     "Creating Variables": "創建變數",
     "Minimizing CSS": "最小化 CSS",
     "Preloading critical resources": "預先載入關鍵資源",
