@@ -273,10 +273,11 @@ export class RuntimeCSS extends MasterCSS {
         return this
     }
 
-    hydrate(nativeCSSRules: CSSRuleList) {
+    hydrate(nativeLayerRules: CSSRuleList) {
         const cssLayerRules: CSSLayerBlockRule[] = []
-        for (let i = 0; i < nativeCSSRules.length; i++) {
-            const eachNativeCSSRule = nativeCSSRules[i]
+        const checkSheet = new CSSStyleSheet()
+        for (let i = 0; i < nativeLayerRules.length; i++) {
+            const eachNativeCSSRule = nativeLayerRules[i]
             if (eachNativeCSSRule.constructor.name === 'CSSLayerBlockRule') {
                 const eachCSSLayerRule = eachNativeCSSRule as CSSLayerBlockRule
                 if ((eachNativeCSSRule as CSSLayerBlockRule).name === 'theme') {
@@ -317,22 +318,8 @@ export class RuntimeCSS extends MasterCSS {
                 this.animationsNonLayer.usages[animationRule.name] = 0
             }
         }
-
-        const createSyntaxRules = (cssRule: CSSStyleRule): SyntaxRule[] | undefined => {
-            if (cssRule.selectorText) {
-                return this.createFromSelectorText(cssRule.selectorText)
-            } else if (cssRule.cssRules) {
-                for (const eachCSSRule of cssRule.cssRules) {
-                    const syntaxRules = createSyntaxRules(eachCSSRule as CSSStyleRule)
-                    if (syntaxRules?.length) {
-                        return syntaxRules
-                    }
-                }
-            }
-        }
-
         for (const eachCSSLayerRule of cssLayerRules) {
-            const eachCSSRules = Array.from(eachCSSLayerRule.cssRules)
+            const nativeLayerRules = Array.from(eachCSSLayerRule.cssRules)
             let layer: SyntaxLayer
             switch (eachCSSLayerRule.name) {
                 case 'base':
@@ -349,60 +336,45 @@ export class RuntimeCSS extends MasterCSS {
                     break
             }
             layer.native = eachCSSLayerRule
-            eachCSSRules.forEach((eachCSSRule) => {
-                const syntaxRules = createSyntaxRules(eachCSSRule as CSSStyleRule)
-                if (syntaxRules) {
-                    const retrieveNative = (selectorText: string) => {
-                        for (let eachTargetCSSRuleIndex = 0; eachTargetCSSRuleIndex < eachCSSRules.length; eachTargetCSSRuleIndex++) {
-                            const eachTargetCSSRule = eachCSSRules[eachTargetCSSRuleIndex]
-                            const matchSelector = (eachSelectorText: string) => {
-                                if (eachSelectorText.replace(/,\s+/g, ',') === selectorText) {
-                                    eachCSSRules.splice(eachTargetCSSRuleIndex, 1)
-                                    return true
-                                }
-                                return false
-                            }
-                            if (eachTargetCSSRule instanceof CSSStyleRule) {
-                                if (matchSelector(eachTargetCSSRule.selectorText!)) {
-                                    return eachTargetCSSRule
-                                }
-                            } else if (eachTargetCSSRule instanceof CSSMediaRule) {
-                                for (let eachMediaChildRuleIndex = 0; eachMediaChildRuleIndex < eachTargetCSSRule.cssRules.length; eachMediaChildRuleIndex++) {
-                                    const eachMediaChildRule = eachTargetCSSRule.cssRules[eachMediaChildRuleIndex]
-                                    if (eachMediaChildRule instanceof CSSStyleRule) {
-                                        if (matchSelector(eachMediaChildRule.selectorText!)) {
-                                            return eachTargetCSSRule
-                                        }
+            for (const eachNativeRule of nativeLayerRules) {
+                const selectorText = this.getSelectorText(eachNativeRule)
+                if (!selectorText) {
+                    console.error(`Cannot get the selector text from \`${eachNativeRule.cssText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                    continue
+                }
+                const createdRules = this.createFromSelectorText(selectorText)
+                if (createdRules) {
+                    for (const createdRule of createdRules) {
+                        layer.rules.push(createdRule)
+                        layer.insertVariables(createdRule)
+                        layer.insertAnimations(createdRule)
+                        createdRule.nodes.forEach((node) => {
+                            const createdNodeNativeRule = checkSheet.cssRules.item(checkSheet.insertRule(node.text))
+                            if (createdNodeNativeRule) {
+                                for (const eachFindingNativeRule of nativeLayerRules) {
+                                    if (createdNodeNativeRule.cssText === eachFindingNativeRule.cssText) {
+                                        node.native = eachFindingNativeRule
+                                        nativeLayerRules.splice(nativeLayerRules.indexOf(eachFindingNativeRule), 1)
+                                        return
                                     }
                                 }
                             }
-                        }
-                    }
-                    for (const syntaxRule of syntaxRules) {
-                        layer.rules.push(syntaxRule)
-                        layer.insertVariables(syntaxRule)
-                        layer.insertAnimations(syntaxRule)
-                        syntaxRule.nodes.forEach((node) => {
-                            const native = retrieveNative(node.selectorText!)
-                            if (native) {
-                                node.native = native
-                            } else {
-                                console.error(`Cannot retrieve the CSS rule for \`${node.selectorText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
-                            }
+                            console.error(`Cannot retrieve CSS rule for \`${node.selectorText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
                         })
                     }
                 } else {
-                    console.error(`Cannot recognize the CSS rule \`${eachCSSRule.cssText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
-                }
-            })
-            for (const eachRule of layer.rules) {
-                for (let k = eachRule.nodes.length - 1; k >= 0; k--) {
-                    if (!eachRule.nodes[k].native) {
-                        eachRule.nodes.splice(k, 1)
-                    }
+                    console.error(`Cannot recognize \`${eachNativeRule.cssText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
                 }
             }
             if (layer.rules.length) this.rules.push(layer)
+        }
+    }
+
+    getSelectorText(cssRule: CSSRule): string | undefined {
+        if ('selectorText' in cssRule) {
+            return cssRule.selectorText as string
+        } else if ('cssRules' in cssRule) {
+            return this.getSelectorText((cssRule.cssRules as CSSRuleList).item(0)!)
         }
     }
 

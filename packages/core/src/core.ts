@@ -656,7 +656,6 @@ export default class MasterCSS {
                 if (syntaxRules.length) return syntaxRules
             }
         }
-        return []
     }
 
     /**
