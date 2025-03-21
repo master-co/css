@@ -112,7 +112,7 @@ export default function Play(props: any) {
     const pushShallowURL = useCallback((name?: string, value?: any) => {
         const newPath = getSearchPath(name, value)
         window.history.pushState(null, '', newPath)
-    }, [router, getSearchPath])
+    }, [getSearchPath])
 
     const generateDatabaseShareItem = useCallback((target: any) => ({
         files: target.files,
@@ -150,17 +150,17 @@ export default function Play(props: any) {
         const onResize = () => {
             if (window.innerWidth >= variables.screen.md) {
                 if (tab === 'Preview' || tab === 'Generated CSS') {
-                    pushShallowURL(getSearchPath('tab', shareItem.files[0].title))
+                    pushShallowURL('tab', shareItem.files[0].title)
                 }
             } else {
-                pushShallowURL(getSearchPath('preview', ''))
+                pushShallowURL('preview', '')
             }
         }
         window.addEventListener('resize', onResize, { passive: true })
         return () => {
             window.removeEventListener('resize', onResize)
         }
-    }, [tab, shareItem.files, router, getSearchPath])
+    }, [tab, shareItem.files, router, pushShallowURL])
 
     /**
      * 需避免即時編輯 HTML, Config 或切換 Theme 時更新 previewHTML，否則 Preview 將重載並造成視覺閃爍
@@ -348,7 +348,7 @@ export default function Play(props: any) {
         setSharing(false)
         copyShareLink(newSharePathname)
         window.history.pushState(null, '', newSharePathname)
-    }, [copyShareLink, generateDatabaseShareItem, locale, router, shareItem, shareable])
+    }, [copyShareLink, generateDatabaseShareItem, locale, shareItem, shareable])
 
     const responsive = useMemo(() => {
         return preview === 'responsive'
@@ -630,7 +630,7 @@ export default function Play(props: any) {
                     </button>
                     <span className='hidden'>{preview}</span>
                     <div className='hidden@<md bg:frame-light h:1em mx:4x w:1'></div>
-                    <LanguageButton className="app-header-icon hidden@<md" locale={locale} />
+                    <LanguageButton className="app-header-icon hidden@<md" />
                     <ThemeButton className="app-header-icon hidden@<md mr:-12"
                         onChange={(theme: string) => {
                             previewIframeRef?.current?.contentWindow?.postMessage({
