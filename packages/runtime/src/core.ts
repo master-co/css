@@ -224,7 +224,11 @@ export class RuntimeCSS extends MasterCSS {
                 }
             })
 
-            globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('mutated', mutationRecords, eachClassUsages, this)
+            globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('mutated', {
+                records: mutationRecords,
+                classUsages: eachClassUsages,
+                runtimeCSS: this
+            })
 
         })
 
