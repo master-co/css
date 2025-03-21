@@ -6,7 +6,7 @@ const metadata = define({
     category: 'Package',
     fileURL: import.meta.url,
     package: {
-        npm: '@master/create-cli',
+        npm: '@master/create-css',
         source: 'https://github.com/master-co/css/tree/rc/packages/cli'
     }
 })
