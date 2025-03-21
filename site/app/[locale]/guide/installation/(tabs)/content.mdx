@@ -1,42 +1,67 @@
-import brands from 'internal/data/brands'
+The easiest way to use Master CSS from scratch is to initialize the [runtime engine](/guide/rendering-modes/runtime-rendering) directly in the application's entry file.
 
-Installation guides for popular frameworks and build tools integrated with [rendering modes](/guide/rendering-modes) of Master CSS.
-
-## Web frameworks
-<IconButtons url="/guide/installation">
-    {brands.filter(({ name }) => ['Next.js', 'Svelte', 'Nuxt.js', 'Laravel', 'Astro', 'Remix', 'Blazor', 'React', 'Vue.js', 'Angular'].includes(name))}
-</IconButtons>
-
-## Build tools
-<IconButtons url="/guide/installation">
-    {brands.filter(({ name }) => ['Vite', 'Webpack'].includes(name))}
-</IconButtons>
-
-## CDN providers
-<IconButtons url="/guide/installation">
-    {brands.filter(({ name }) => ['esm.sh'].includes(name))}
-</IconButtons>
-
----
+## Installation [sr-only]
 
 <StepSection>
     <Step $row>
         <StepL>
-            ### <StepNum />Start in one step
-            Quickly create a blank Master CSS project locally with hot updates using the official CLI.
+            ### <StepNum />Install Master CSS
+            Install Master CSS Runtime into your project via package managers.
         </StepL>
         <StepR>
-            ```bash name=Terminal
-            npm create @master/css@rc <project>
-            cd <project>
-            npm run dev --open
+            ```bash action=install
+            @master/css-runtime@rc
             ```
         </StepR>
-        <StepEnd/>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Initialize configuration file
+            Run the command to create a configuration file [master.css.js](/guide/configuration).
+        </StepL>
+        <StepR>
+            ```bash action=create
+            @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS runtime engine
+            Import and initialize the runtime engine in the entry file, such as `main.js`:
+        </StepL>
+        <StepR>
+            ```js name=main.js
+            import { initCSSRuntime } from '@master/css-runtime' /* [!code ++] */
+            import config from './master.css' /* [!code ++] */
+
+            initCSSRuntime(config) /* [!code ++] */
+            ```
+        </StepR>
+    </Step>
+    <Step>
+        ### <StepNum />Start using Master CSS
+        Now style your first element using Master CSS syntax!
+        ```html name=index.html
+        <!DOCTYPE html>
+        <!-- @MARK hidden -->
+        <html lang="en" hidden>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <script src="/main.js"></script> <!-- [!code highlight] -->
+        </head>
+        <body>
+            <!-- @MARK font:40 font:heavy italic m:12x text:center -->
+            <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
+        </body>
+        </html>
+        ```
+        Open your browser to watch the changes.
+        <HelloWorld />
     </Step>
 </StepSection>
 
 ---
 
-Don't have a preferred framework or tool yet? Try the [online playground](/play) or copy and paste [CDN](/guide/installation/cdn) to quickly start using Master CSS.
-
+Get stuck? Check out our [web framework](/guide/installation/guides#web-frameworks) or [build tool](/guide/installation/guides#build-tools) guides for better starting points and recommendations.
