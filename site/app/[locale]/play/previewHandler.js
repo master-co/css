@@ -4,19 +4,19 @@ let prevCSSText = ''
 let prevHtmlContent = ''
 
 const updateCSSText = (force) => {
-    let runtimeCSS;
+    let cssRuntime;
     let cssText;
     if (
-        runtimeCSS = window.runtimeCSS || window.cssRuntime || window.MasterCSS && window.MasterCSS.root
+        cssRuntime = window.runtimeCSS || window.cssRuntime || window.MasterCSS && window.MasterCSS.root
     ) {
-        cssText = runtimeCSS.text
+        cssText = cssRuntime.text
     } else if (
         // support v1
-        runtimeCSS = window.MasterStyleSheet && window.MasterStyleSheet.root
+        cssRuntime = window.MasterStyleSheet && window.MasterStyleSheet.root
     ) {
-        cssText = runtimeCSS.styles.map(({ text }) => text).join('');
+        cssText = cssRuntime.styles.map(({ text }) => text).join('');
     }
-    if (runtimeCSS) {
+    if (cssRuntime) {
         if (prevCSSText !== cssText || force) {
             prevCSSText = cssText
             parent.postMessage(

@@ -4,10 +4,10 @@ import init from '../init'
 test('progressive', async ({ page }) => {
     await init(page)
     await page.evaluate(() => {
-        globalThis.runtimeCSS.destroy()
+        globalThis.cssRuntime.destroy()
     })
     expect(await page.evaluate(() => {
-        globalThis.runtimeCSS.destroy()
+        globalThis.cssRuntime.destroy()
         return document.getElementById('master')
     })).toBeDefined()
 })

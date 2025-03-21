@@ -1,10 +1,10 @@
-import type RuntimeCSS from '@master/css-runtime'
+import type CSSRuntime from '@master/css-runtime'
 import './types/global'
 
 export declare type HookEventCallbackMap = {
     'mutated': (context: {
         classUsages: Map<string, number>,
-        runtimeCSS: RuntimeCSS,
+        cssRuntime: CSSRuntime,
         records: MutationRecord[]
     }) => void
 }

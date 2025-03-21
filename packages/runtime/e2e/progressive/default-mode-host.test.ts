@@ -17,5 +17,5 @@ test('prerender', async ({ page }) => {
             light: 'host'
         }
     })
-    expect(css_beautify(await page.evaluate(() => globalThis.runtimeCSS.themeLayer.text))).toEqual(text)
+    expect(css_beautify(await page.evaluate(() => globalThis.cssRuntime.themeLayer.text))).toEqual(text)
 })

@@ -36,11 +36,11 @@ const variables = {
 
 test.beforeEach(async ({ page }) => {
     await init(page)
-    await page.evaluate((variables) => globalThis.runtimeCSS.refresh({ variables }), variables)
+    await page.evaluate((variables) => globalThis.cssRuntime.refresh({ variables }), variables)
 })
 
 test('make sure not to extend variables deeply', async ({ page }) => {
-    expect(await page.evaluate(() => globalThis.runtimeCSS.config.variables?.first)).toEqual(variables.first)
+    expect(await page.evaluate(() => globalThis.cssRuntime.config.variables?.first)).toEqual(variables.first)
 })
 
 test('expects the variable output', async ({ page }) => {
@@ -51,7 +51,7 @@ test('expects the variable output', async ({ page }) => {
             p.classList.add('bg:first')
             document.body.append(p)
             await new Promise(resolve => setTimeout(resolve, 0))
-            return globalThis.runtimeCSS.text
+            return globalThis.cssRuntime.text
         }),
         {
             theme: ':root{--first:17 17 17}.dark{--first:34 34 34}.light{--first:51 51 51}',
@@ -69,7 +69,7 @@ test('expects the variable output', async ({ page }) => {
             'accent:sixth'
         )
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.runtimeCSS.text
+        return globalThis.cssRuntime.text
     })
     expect(text).toMatch(/\.dark\{[^}]*--second:68 68 68[^}]*\}/)
     expect(text).toMatch(/\.light,:root\{[^}]*--second:85 85 85[^}]*\}/)
@@ -90,7 +90,7 @@ test('expects the variable output', async ({ page }) => {
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('bg:second')
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.runtimeCSS.text
+        return globalThis.cssRuntime.text
     })
     expect(text).toMatch(/\.dark\{[^}]*--second:68 68 68[^}]*\}/)
     expect(text).toMatch(/\.light,:root\{[^}]*--second:85 85 85[^}]*\}/)
@@ -98,7 +98,7 @@ test('expects the variable output', async ({ page }) => {
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('b:third')
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.runtimeCSS.text
+        return globalThis.cssRuntime.text
     })
     expect(text).not.toMatch(/:root\{[^}]*--third:102 102 102[^}]*\}/)
     expect(text).not.toMatch(/\.light\{[^}]*--third:119 119 119[^}]*\}/)
@@ -106,7 +106,7 @@ test('expects the variable output', async ({ page }) => {
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('{outline:fourth;accent:fifth}')
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.runtimeCSS.text
+        return globalThis.cssRuntime.text
     })
     expect(text).not.toMatch(/:root\{[^}]*--fourth:136 136 136[^}]*\}/)
     expect(text).not.toMatch(/\.dark\{[^}]*--fourth:153 153 153[^}]*\}/)
@@ -117,7 +117,7 @@ test('expects the variable output', async ({ page }) => {
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('fg:second')
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.runtimeCSS.text
+        return globalThis.cssRuntime.text
     })
     expect(text).not.toMatch(/\.dark\{[^}]*--second:68 68 68[^}]*\}/)
     expect(text).not.toMatch(/\.light,:root\{[^}]*--second:85 85 85[^}]*\}/)
@@ -125,7 +125,7 @@ test('expects the variable output', async ({ page }) => {
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('bg:first')
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.runtimeCSS.text
+        return globalThis.cssRuntime.text
     })
     expect(text).not.toMatch(/:root\{[^}]*--first:17 17 17[^}]*\}/)
     expect(text).not.toMatch(/\.dark\{[^}]*--first:34 34 34[^}]*\}/)
@@ -134,7 +134,7 @@ test('expects the variable output', async ({ page }) => {
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('accent:sixth')
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.runtimeCSS.text
+        return globalThis.cssRuntime.text
     })
     expectLayers(text, {})
 })

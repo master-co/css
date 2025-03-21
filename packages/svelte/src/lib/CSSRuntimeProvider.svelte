@@ -2,14 +2,14 @@
     import { onMount, setContext } from 'svelte';
     import { writable, get } from 'svelte/store';
     import type { Config } from '@master/css';
-    import { RuntimeCSS } from '@master/css-runtime';
+    import { CSSRuntime } from '@master/css-runtime';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     export let config: Config | Promise<any> | undefined;
     export let root: Document | ShadowRoot | undefined | null; // null for Element.shadowRoot
 
     const runtimeCSSSymbol = Symbol('runtime-css');
-    const runtimeCSS = writable<RuntimeCSS | undefined>(undefined);
+    const cssRuntime = writable<CSSRuntime | undefined>(undefined);
 
     const resolveConfig = async () => {
         const configModule = await config;
@@ -19,7 +19,7 @@
     const initialize = async (signal: AbortSignal) => {
         const resolvedConfig = await resolveConfig();
         if (signal.aborted) return;
-        runtimeCSS.set(new RuntimeCSS(root ?? document, resolvedConfig).observe());
+        cssRuntime.set(new CSSRuntime(root ?? document, resolvedConfig).observe());
     };
 
     let controller: AbortController | null = null;
@@ -30,9 +30,9 @@
 
         return () => {
             controller?.abort();
-            const currentRuntimeCSS = get(runtimeCSS);
+            const currentRuntimeCSS = get(cssRuntime);
             currentRuntimeCSS?.destroy();
-            runtimeCSS.set(undefined);
+            cssRuntime.set(undefined);
         };
     });
 
@@ -41,7 +41,7 @@
         const controller = new AbortController();
         const resolvedConfig = await resolveConfig();
         if (controller.signal.aborted) return;
-        const currentRuntimeCSS = get(runtimeCSS);
+        const currentRuntimeCSS = get(cssRuntime);
         if (currentRuntimeCSS) {
             currentRuntimeCSS.refresh(resolvedConfig);
         }
@@ -50,16 +50,16 @@
     $: (async () => {
         if (!root) return;
         const controller = new AbortController();
-        const currentRuntimeCSS = get(runtimeCSS);
+        const currentRuntimeCSS = get(cssRuntime);
         if (controller.signal.aborted) return;
         if (currentRuntimeCSS) {
             currentRuntimeCSS.destroy();
-            runtimeCSS.set(undefined);
+            cssRuntime.set(undefined);
             initialize(controller.signal);
         }
     })();
 
-    setContext(runtimeCSSSymbol, runtimeCSS);
+    setContext(runtimeCSSSymbol, cssRuntime);
 </script>
 
 <slot />

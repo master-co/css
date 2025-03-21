@@ -13,8 +13,8 @@ test('selectors', async ({ page, browserName }) => {
     const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8')
     await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
     await init(page, generatedCSS, config)
-    expect((await page.evaluate(() => runtimeCSS.rules)).map(({ name }) => name)).toEqual(['layer-statement', 'general'])
-    expect(await page.evaluate(() => runtimeCSS.generalLayer.rules.find((rule) => rule.name === 'hidden@light'))).toMatchObject({
+    expect((await page.evaluate(() => cssRuntime.rules)).map(({ name }) => name)).toEqual(['layer-statement', 'general'])
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden@light'))).toMatchObject({
         nodes: [
             {
                 text: '.light .hidden\\@light{display:none}',
@@ -23,7 +23,7 @@ test('selectors', async ({ page, browserName }) => {
             }
         ]
     })
-    expect(await page.evaluate(() => runtimeCSS.generalLayer.rules.find((rule) => rule.name === 'hidden@light')?.nodes[0]?.native?.cssText))
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden@light')?.nodes[0]?.native?.cssText))
         .toBe('.light .hidden\\@light { display: none; }')
 
 })

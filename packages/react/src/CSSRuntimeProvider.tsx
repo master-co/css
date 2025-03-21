@@ -1,13 +1,13 @@
 'use client'
 
 import type { Config } from '@master/css'
-import { RuntimeCSS } from '@master/css-runtime'
+import { CSSRuntime } from '@master/css-runtime'
 import { createContext, useContext, useRef, useCallback, ReactNode } from 'react'
 import { useUpdateEffect, useIsomorphicLayoutEffect } from 'react-use'
 // fix: ReferenceError: React is not defined
 import React from 'react'
 
-export const RuntimeCSSContext = createContext<RuntimeCSS | undefined>(undefined)
+export const RuntimeCSSContext = createContext<CSSRuntime | undefined>(undefined)
 export const useRuntimeCSS = () => useContext(RuntimeCSSContext)
 
 export default function CSSRuntimeProvider(props: {
@@ -15,7 +15,7 @@ export default function CSSRuntimeProvider(props: {
     config?: Config | Promise<any>,
     root?: Document | ShadowRoot | null // null for Element.shadowRoot
 }) {
-    const runtimeCSS = useRef<RuntimeCSS>(undefined)
+    const cssRuntime = useRef<CSSRuntime>(undefined)
 
     const resolveConfig = useCallback(async () => {
         const configModule = await props.config
@@ -25,7 +25,7 @@ export default function CSSRuntimeProvider(props: {
     const initialize = useCallback(async (signal: AbortSignal) => {
         const resolvedConfig = await resolveConfig()
         if (signal.aborted) return
-        runtimeCSS.current = new RuntimeCSS(props.root ?? document, resolvedConfig).observe()
+        cssRuntime.current = new CSSRuntime(props.root ?? document, resolvedConfig).observe()
     }, [props.root, resolveConfig])
 
     /** onMounted */
@@ -34,8 +34,8 @@ export default function CSSRuntimeProvider(props: {
         initialize(controller.signal)
         return () => {
             controller.abort()
-            runtimeCSS.current?.destroy()
-            runtimeCSS.current = undefined
+            cssRuntime.current?.destroy()
+            cssRuntime.current = undefined
         }
     }, [])
 
@@ -45,8 +45,8 @@ export default function CSSRuntimeProvider(props: {
         (async () => {
             const resolvedConfig = await resolveConfig()
             if (controller.signal.aborted) return
-            if (runtimeCSS.current) {
-                runtimeCSS.current.refresh(resolvedConfig)
+            if (cssRuntime.current) {
+                cssRuntime.current.refresh(resolvedConfig)
             }
         })()
         return () => {
@@ -59,9 +59,9 @@ export default function CSSRuntimeProvider(props: {
         const controller = new AbortController();
         (async () => {
             if (controller.signal.aborted) return
-            if (runtimeCSS.current) {
-                runtimeCSS.current.destroy()
-                runtimeCSS.current = undefined
+            if (cssRuntime.current) {
+                cssRuntime.current.destroy()
+                cssRuntime.current = undefined
                 initialize(controller.signal)
             }
         })()
@@ -70,5 +70,5 @@ export default function CSSRuntimeProvider(props: {
         }
     }, [initialize, props.root])
 
-    return <RuntimeCSSContext.Provider value={runtimeCSS.current}>{props.children}</RuntimeCSSContext.Provider>
+    return <RuntimeCSSContext.Provider value={cssRuntime.current}>{props.children}</RuntimeCSSContext.Provider>
 }

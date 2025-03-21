@@ -13,5 +13,5 @@ test('theme', async ({ page, browserName }) => {
     const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8')
     await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
     await init(page, generatedCSS, config)
-    expect(await page.evaluate(() => runtimeCSS.themeLayer.usages)).toEqual({ primary: 3 })
+    expect(await page.evaluate(() => cssRuntime.themeLayer.usages)).toEqual({ primary: 3 })
 })

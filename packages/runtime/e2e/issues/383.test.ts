@@ -10,15 +10,15 @@ test('383', async ({ page }) => {
         `
     })
     await init(page, '@layer base, theme, preset, components, general;')
-    expect(await page.evaluate(() => globalThis.runtimeCSS.generalLayer?.native?.parentStyleSheet)).toBeDefined()
+    expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer?.native?.parentStyleSheet)).toBeDefined()
     await page.evaluate(() => {
         document.body.innerHTML = ``
     })
-    expect(await page.evaluate(() => globalThis.runtimeCSS.generalLayer?.native?.parentStyleSheet)).toBeNull()
+    expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer?.native?.parentStyleSheet)).toBeNull()
     await page.evaluate(() => {
         document.body.innerHTML = `
             <div class="font:bold fg:red"></div>
         `
     })
-    expect(await page.evaluate(() => globalThis.runtimeCSS.generalLayer?.native?.parentStyleSheet)).toBeDefined()
+    expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer?.native?.parentStyleSheet)).toBeDefined()
 })

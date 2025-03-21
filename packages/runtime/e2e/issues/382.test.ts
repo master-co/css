@@ -33,7 +33,7 @@ test('O to O', async ({ page }) => {
         p1c3.classList.add('p1c3-1')
         document.body.appendChild(p1)
     })
-    expect(await page.evaluate(() => Object.fromEntries(globalThis.runtimeCSS.classUsages))).toStrictEqual({
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.classUsages))).toStrictEqual({
         'p1': 1,
         'p1c1': 1,
         'p1c2': 1,
@@ -70,7 +70,7 @@ test('O to X', async ({ page }) => {
         p1c3.remove()
         p1c3.classList.add('p1c3-1')
     })
-    expect(await page.evaluate(() => Object.fromEntries(globalThis.runtimeCSS.classUsages))).toStrictEqual({})
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.classUsages))).toStrictEqual({})
 })
 
 test('X to O', async ({ page }) => {
@@ -98,7 +98,7 @@ test('X to O', async ({ page }) => {
         p1c3.remove()
         p1c3.classList.add('p1c3-1')
     })
-    expect(await page.evaluate(() => Object.fromEntries(globalThis.runtimeCSS.classUsages))).toStrictEqual({
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.classUsages))).toStrictEqual({
         'p1': 1,
         'p1c1': 1,
         'p1c2': 1,
@@ -133,5 +133,5 @@ test('X to X', async ({ page }) => {
         p1c3.classList.add('p1c3-1')
         p1.remove()
     })
-    expect(await page.evaluate(() => Object.fromEntries(globalThis.runtimeCSS.classUsages))).toStrictEqual({})
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.classUsages))).toStrictEqual({})
 })

@@ -30,7 +30,7 @@ const hook = globalThis.__MASTER_CSS_DEVTOOLS_HOOK__
 const onMutated = (context) => {
   console.log('CSS Mutations:', context.records)
   console.log('Class usages:', context.classUsages)
-  console.log('RuntimeCSS instance:', context.runtimeCSS)
+  console.log('CSSRuntime instance:', context.cssRuntime)
 }
 
 hook.on('mutated', onMutated)
@@ -46,7 +46,7 @@ hook.on('mutated', onMutated)
 Register a listener for a specific event.
 ```ts
 hook.on('mutated', (context) => {
-    console.log(context.records, context.classUsages, context.runtimeCSS)
+    console.log(context.records, context.classUsages, context.cssRuntime)
 })
 ```
 
@@ -62,7 +62,7 @@ Manually trigger an event. Typically used internally.
 hook.emit('mutated', {
     records: mutationRecords,
     classUsages: classUsages,
-    runtimeCSS: runtimeCSS
+    cssRuntime: cssRuntime
 })
 ```
 

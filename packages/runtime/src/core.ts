@@ -5,7 +5,7 @@ import { installHook } from '@master/css-devtools-hook'
 import './types/global'
 import startDebug from './debug'
 
-export class RuntimeCSS extends MasterCSS {
+export class CSSRuntime extends MasterCSS {
     // @ts-expect-error
     readonly host: Element
     readonly observing = false
@@ -30,23 +30,23 @@ export class RuntimeCSS extends MasterCSS {
     }
 
     init() {
-        const existingRuntimeCSS = (globalThis as any).runtimeCSSs.find((eachCSS: RuntimeCSS) => eachCSS.root === this.root)
-        if (existingRuntimeCSS) throw new Error('Cannot create multiple RuntimeCSS instances for the same root element.')
+        const existingRuntimeCSS = (globalThis as any).cssRuntimes.find((eachCSS: CSSRuntime) => eachCSS.root === this.root)
+        if (existingRuntimeCSS) throw new Error('Cannot create multiple CSSRuntime instances for the same root element.')
         const rootConstructorName = this.root?.constructor.name
         if (rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document') {
             // @ts-ignore
-            (this.root as Document).defaultView.globalThis.runtimeCSS = this
+            (this.root as Document).defaultView.globalThis.cssRuntime = this
             // @ts-ignore readonly
             this.container = (this.root as Document).head
             // @ts-ignore readonly
             this.host = (this.root as Document).documentElement
         } else {
             // @ts-ignore readonly
-            this.container = this.root as RuntimeCSS['container']
+            this.container = this.root as CSSRuntime['container']
             // @ts-ignore readonly
             this.host = (this.root as ShadowRoot).host
         }
-        runtimeCSSs.push(this)
+        cssRuntimes.push(this)
     }
 
     /**
@@ -227,7 +227,7 @@ export class RuntimeCSS extends MasterCSS {
             globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('mutated', {
                 records: mutationRecords,
                 classUsages: eachClassUsages,
-                runtimeCSS: this
+                cssRuntime: this
             })
 
         })
@@ -382,17 +382,17 @@ export class RuntimeCSS extends MasterCSS {
 
     destroy() {
         this.disconnect()
-        runtimeCSSs.splice(runtimeCSSs.indexOf(this), 1)
+        cssRuntimes.splice(cssRuntimes.indexOf(this), 1)
         return this
     }
 }
 
-export const runtimeCSSs: RuntimeCSS[] = [];
+export const cssRuntimes: CSSRuntime[] = [];
 
 (() => {
     installHook()
-    globalThis.RuntimeCSS = RuntimeCSS
-    globalThis.runtimeCSSs = runtimeCSSs
+    globalThis.CSSRuntime = CSSRuntime
+    globalThis.cssRuntimes = cssRuntimes
 })()
 
 if (process.env.NODE_ENV === 'development') {

@@ -13,9 +13,9 @@ test('components', async ({ page }) => {
     const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8')
     await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
     await init(page, generatedCSS, config)
-    expect((await page.evaluate(() => runtimeCSS.rules)).map(({ name }) => name)).toEqual(['layer-statement', 'components'])
+    expect((await page.evaluate(() => cssRuntime.rules)).map(({ name }) => name)).toEqual(['layer-statement', 'components'])
 
-    expect(await page.evaluate(() => runtimeCSS.componentsLayer.rules.find((rule) => rule.name === 'bg:black'))).toMatchObject({
+    expect(await page.evaluate(() => cssRuntime.componentsLayer.rules.find((rule) => rule.name === 'bg:black'))).toMatchObject({
         nodes: [
             {
                 text: '.btn{background-color:rgb(0 0 0)}',
@@ -24,10 +24,10 @@ test('components', async ({ page }) => {
             }
         ]
     })
-    expect(await page.evaluate(() => runtimeCSS.componentsLayer.rules.find((rule) => rule.name === 'bg:black')?.nodes[0]?.native?.cssText))
+    expect(await page.evaluate(() => cssRuntime.componentsLayer.rules.find((rule) => rule.name === 'bg:black')?.nodes[0]?.native?.cssText))
         .toBe('.btn { background-color: rgb(0, 0, 0); }')
 
-    expect(await page.evaluate(() => runtimeCSS.componentsLayer.rules.find((rule) => rule.name === 'block::both'))).toMatchObject({
+    expect(await page.evaluate(() => cssRuntime.componentsLayer.rules.find((rule) => rule.name === 'block::both'))).toMatchObject({
         nodes: [
             {
                 text: '.btn::before,.btn::after{display:block}',
@@ -36,10 +36,10 @@ test('components', async ({ page }) => {
             }
         ]
     })
-    expect(await page.evaluate(() => runtimeCSS.componentsLayer.rules.find((rule) => rule.name === 'block::both')?.nodes[0]?.native?.cssText))
+    expect(await page.evaluate(() => cssRuntime.componentsLayer.rules.find((rule) => rule.name === 'block::both')?.nodes[0]?.native?.cssText))
         .toBe('.btn::before, .btn::after { display: block; }')
 
-    expect(await page.evaluate(() => runtimeCSS.componentsLayer.rules.find((rule) => rule.name === 'bg:black@sm'))).toMatchObject({
+    expect(await page.evaluate(() => cssRuntime.componentsLayer.rules.find((rule) => rule.name === 'bg:black@sm'))).toMatchObject({
         nodes: [
             {
                 text: '@media (min-width:834px){.btn\\@sm{background-color:rgb(0 0 0)}}',
@@ -48,10 +48,10 @@ test('components', async ({ page }) => {
             }
         ]
     })
-    expect(await page.evaluate(() => runtimeCSS.componentsLayer.rules.find((rule) => rule.name === 'bg:black@sm')?.nodes[0]?.native?.cssText))
+    expect(await page.evaluate(() => cssRuntime.componentsLayer.rules.find((rule) => rule.name === 'bg:black@sm')?.nodes[0]?.native?.cssText))
         .toBe('@media (min-width: 834px) {\n  .btn\\@sm { background-color: rgb(0, 0, 0); }\n}')
 
-    expect(await page.evaluate(() => runtimeCSS.componentsLayer.rules.find((rule) => rule.name === 'block::both@sm'))).toMatchObject({
+    expect(await page.evaluate(() => cssRuntime.componentsLayer.rules.find((rule) => rule.name === 'block::both@sm'))).toMatchObject({
         nodes: [
             {
                 text: '@media (min-width:834px){.btn\\@sm::before,.btn\\@sm::after{display:block}}',
@@ -60,6 +60,6 @@ test('components', async ({ page }) => {
             }
         ]
     })
-    expect(await page.evaluate(() => runtimeCSS.componentsLayer.rules.find((rule) => rule.name === 'block::both@sm')?.nodes[0]?.native?.cssText))
+    expect(await page.evaluate(() => cssRuntime.componentsLayer.rules.find((rule) => rule.name === 'block::both@sm')?.nodes[0]?.native?.cssText))
         .toBe('@media (min-width: 834px) {\n  .btn\\@sm::before, .btn\\@sm::after { display: block; }\n}')
 })

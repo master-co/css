@@ -6,37 +6,37 @@
 ---
 
 ## Interfaces
-### `RuntimeCSS`
+### `CSSRuntime`
 The `Runtime` extends the [`MasterCSS`](/reference/core#mastercss) and only works in the browser environment.
 ```ts
-import { RuntimeCSS } from '@master/css-runtime'
+import { CSSRuntime } from '@master/css-runtime'
 
-const runtimeCSS = new RuntimeCSS(config)
+const cssRuntime = new CSSRuntime(config)
 ```
 
-### `runtime.root`
+### `cssRuntime.root`
 Observe the root element.
 <DocProp defaultValue="document" types={['Document', 'ShadowRoot']} />
 
-### `runtime.host`
+### `cssRuntime.host`
 Observe the root's host element, usually `js this.root.host` or `js document.documentElement`.
 <DocProp defaultValue="auto" types={['Element']} readonly />
 
-### `runtime.container`
+### `cssRuntime.container`
 Container for inserting style `html <style>`.
 <DocProp defaultValue="auto" types={['HTMLElement', 'ShadowRoot']} readonly />
 
-### `runtime.observing`
+### `cssRuntime.observing`
 Observation state. `js true` after `js .observe()`; `js false` after `js .disconnect()`.
 <DocProp defaultValue="auto" types={['boolean']} readonly />
 
-### `runtime.observe()`
+### `cssRuntime.observe()`
 Observe the `class` attribute changes of `js this.root` and all descendant elements.
 <DocFn>
     {[ { name: 'return', type: 'this' } ]}
 </DocFn>
 
-### `runtime.disconnect()`
+### `cssRuntime.disconnect()`
 Cancel the previous `.observe()` of `js this.root`.
 <DocFn>
     {[
@@ -45,7 +45,7 @@ Cancel the previous `.observe()` of `js this.root`.
     ]}
 </DocFn>
 
-### `runtime.refresh()`
+### `cssRuntime.refresh()`
 Refresh the Master Runtime CSS with the configuration.
 <DocFn>
     {[
@@ -54,28 +54,28 @@ Refresh the Master Runtime CSS with the configuration.
     ]}
 </DocFn>
 
-### `runtime.reset()`
+### `cssRuntime.reset()`
 Clear all rules and styles and reset to initial.
 <DocFn>
     {[ { name: 'return', type: 'this' } ]}
 </DocFn>
 
-### `runtime.destroy()`
-Destroy and remove the current instance from `globalThis.runtimeCSSs`.
+### `cssRuntime.destroy()`
+Destroy and remove the current instance from `globalThis.cssRuntimes`.
 <DocFn>
     {[ { name: 'return', type: 'this' } ]}
 </DocFn>
 
-### `globalThis.runtimeCSS`
+### `globalThis.cssRuntime`
 Record the registered root `document` Runtime CSS instance; the field will be recorded only after executing `js css.observe()`.
-<DocProp types={['RuntimeCSS']} />
+<DocProp types={['CSSRuntime']} />
 
-### `globalThis.runtimeCSSs`
-All objects instantiated via `js new RuntimeCSS()`.
-<DocProp defaultValue="[]" types={['RuntimeCSS[]']} />
+### `globalThis.cssRuntimes`
+All objects instantiated via `js new CSSRuntime()`.
+<DocProp defaultValue="[]" types={['CSSRuntime[]']} />
 
-### `globalThis.RuntimeCSS`
-<DocProp defaultValue="RuntimeCSS" types={['typeof RuntimeCSS']} />
+### `globalThis.CSSRuntime`
+<DocProp defaultValue="CSSRuntime" types={['typeof CSSRuntime']} />
 
 ### `initCSSRuntime()`
 Initializes the Master CSS runtime rendering engine.
@@ -92,7 +92,7 @@ const css = initCSSRuntime()
 ```
 Equivalent to:
 ```ts
-import { RuntimeCSS } from '@master/css-runtime'
+import { CSSRuntime } from '@master/css-runtime'
 
-const runtimeCSS = new RuntimeCSS().observe()
+const cssRuntime = new CSSRuntime().observe()
 ```

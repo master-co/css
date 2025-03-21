@@ -13,6 +13,6 @@ const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8'
 test('comprehensive', async ({ page }) => {
     await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
     await init(page, generatedCSS, config)
-    const rules = await page.evaluate(() => globalThis.runtimeCSS.rules)
+    const rules = await page.evaluate(() => globalThis.cssRuntime.rules)
     expect(rules.map(({ name }) => name)).toEqual(['layer-statement', 'theme', 'fade', 'base', 'preset', 'components', 'general'])
 })

@@ -13,8 +13,8 @@ test('selectors', async ({ page, browserName }) => {
     const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8')
     await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
     await init(page, generatedCSS, config)
-    expect((await page.evaluate(() => runtimeCSS.rules)).map(({ name }) => name)).toEqual(['layer-statement', 'general'])
-    expect(await page.evaluate(() => runtimeCSS.generalLayer.rules.find((rule) => rule.name === 'block::before,::after'))).toMatchObject({
+    expect((await page.evaluate(() => cssRuntime.rules)).map(({ name }) => name)).toEqual(['layer-statement', 'general'])
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'block::before,::after'))).toMatchObject({
         nodes: [
             {
                 text: '.block\\:\\:before\\,\\:\\:after::before,.block\\:\\:before\\,\\:\\:after::after{display:block}',
@@ -24,11 +24,11 @@ test('selectors', async ({ page, browserName }) => {
             }
         ]
     })
-    expect(await page.evaluate(() => runtimeCSS.generalLayer.rules.find((rule) => rule.name === 'block::before,::after')?.nodes[0]?.native?.cssText))
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'block::before,::after')?.nodes[0]?.native?.cssText))
         .toBe('.block\\:\\:before\\,\\:\\:after::before, .block\\:\\:before\\,\\:\\:after::after { display: block; }')
 
     if (browserName === 'firefox') {
-        expect(await page.evaluate(() => runtimeCSS.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb'))).toMatchObject({
+        expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb'))).toMatchObject({
             nodes: [
                 {
                     text: '.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}',
@@ -40,12 +40,12 @@ test('selectors', async ({ page, browserName }) => {
                 }
             ]
         })
-        expect(await page.evaluate(() => runtimeCSS.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[0]?.native?.cssText))
+        expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[0]?.native?.cssText))
             .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }')
-        expect(await page.evaluate(() => runtimeCSS.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[1]?.native?.cssText))
+        expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[1]?.native?.cssText))
             .toBe('.hidden\\:\\:slider-thumb::-moz-range-thumb { display: none; }')
     } else {
-        expect(await page.evaluate(() => runtimeCSS.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb'))).toMatchObject({
+        expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb'))).toMatchObject({
             nodes: [
                 {
                     text: '.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}',
@@ -53,7 +53,7 @@ test('selectors', async ({ page, browserName }) => {
                 }
             ]
         })
-        expect(await page.evaluate(() => runtimeCSS.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[0]?.native?.cssText))
+        expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[0]?.native?.cssText))
             .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }')
     }
 })

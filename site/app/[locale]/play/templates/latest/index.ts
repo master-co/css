@@ -32,10 +32,10 @@ export default {
                     const { name, content } = event.data;
                     switch (name) {
                         case 'master.css.js':
-                            const runtimeCSS = window.runtimeCSS;
-                            if (runtimeCSS) {
+                            const cssRuntime = window.cssRuntime;
+                            if (cssRuntime) {
                                 eval(content.replace(/(export default|export const config =)/, 'config ='));
-                                runtimeCSS.refresh(config);
+                                cssRuntime.refresh(config);
                             };
                     }
                 })
