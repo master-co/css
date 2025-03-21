@@ -18,7 +18,6 @@ test('destroy on progressive', async ({ page }) => {
     expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer.rules.length)).toBe(0)
     expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(1)
     await page.evaluate(() => {
-        globalThis.cssRuntime.init()
         globalThis.cssRuntime.observe()
         document.body.classList.add('block')
         document.body.classList.add('font:bold')
