@@ -9,9 +9,9 @@ import dayjs from 'dayjs'
 
 export const dynamic = 'force-static'
 export const revalidate = false
+const app = initializeApp(firebaseConfig)
 
 export async function generateMetadata(props: any, parent: any) {
-    const app = initializeApp(firebaseConfig)
     const db = getFirestore(app)
     const { shareId } = await props.params
     const shareItemRef = doc(db, `sandbox/${shareId}`)
@@ -32,7 +32,6 @@ export async function generateMetadata(props: any, parent: any) {
 }
 
 export default async function Page(props: any) {
-    const app = initializeApp(firebaseConfig)
     const db = getFirestore(app)
     const { shareId, locale } = props.params
     if (!shareId) {

@@ -37,6 +37,7 @@ import createHighlighter, { themes } from 'internal/utils/create-highlighter'
 import { useApp } from 'internal/contexts/app'
 import { shikiToMonaco } from '@shikijs/monaco'
 import type { ShikiInternal } from 'shiki'
+import { get } from 'http'
 
 const ShareButton = dynamic(() => import('./components/ShareButton'))
 
@@ -108,6 +109,11 @@ export default function Play(props: any) {
         return pathname + (searchParamsStr ? '?' + searchParamsStr : '')
     }, [pathname, searchParams])
 
+    const pushShallowURL = useCallback((name?: string, value?: any) => {
+        const newPath = getSearchPath(name, value)
+        window.history.pushState(null, '', newPath)
+    }, [router, getSearchPath])
+
     const generateDatabaseShareItem = useCallback((target: any) => ({
         files: target.files,
         dependencies: template?.dependencies,
@@ -144,10 +150,10 @@ export default function Play(props: any) {
         const onResize = () => {
             if (window.innerWidth >= variables.screen.md) {
                 if (tab === 'Preview' || tab === 'Generated CSS') {
-                    router.push(getSearchPath('tab', shareItem.files[0].title))
+                    pushShallowURL(getSearchPath('tab', shareItem.files[0].title))
                 }
             } else {
-                router.push(getSearchPath('preview', ''))
+                pushShallowURL(getSearchPath('preview', ''))
             }
         }
         window.addEventListener('resize', onResize, { passive: true })
@@ -341,7 +347,7 @@ export default function Play(props: any) {
         setShareable(false)
         setSharing(false)
         copyShareLink(newSharePathname)
-        router.push(newSharePathname)
+        window.history.pushState(null, '', newSharePathname)
     }, [copyShareLink, generateDatabaseShareItem, locale, router, shareItem, shareable])
 
     const responsive = useMemo(() => {
@@ -369,7 +375,9 @@ export default function Play(props: any) {
         const newHighlighter = await createHighlighter()
         setHighlighter(newHighlighter)
         shikiToMonaco(newHighlighter, monaco)
-        monaco.editor.setTheme(getTheme())
+        setTimeout(() => {
+            monaco.editor.setTheme(getTheme())
+        })
     }, [getTheme, highlighter])
 
     const editorOnMount = useCallback(async (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
@@ -565,7 +573,7 @@ export default function Play(props: any) {
                         {sharing && <span className="ml:10">{$('Sharing ...')}</span>}
                     </ShareButton>}
                     {(shareId || shareable) && <div className='hidden@<md bg:frame-light h:1em mx:4x w:1'></div>}
-                    <Link className="app-header-icon hidden@<md" href={getSearchPath('layout', layout ? '' : '2')}>
+                    <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout ? '' : '2')}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
                                 '~transform|.2s',
@@ -576,8 +584,8 @@ export default function Play(props: any) {
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
                             <path d="M12 4l0 16"></path>
                         </svg>
-                    </Link>
-                    <Link className="app-header-icon hidden@<md" href={getSearchPath('layout', layout === '3' ? '4' : '3')}>
+                    </button>
+                    <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout === '3' ? '4' : '3')}>
                         <svg className={clsx({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate(90)')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
                                 '~transform|.2s',
@@ -588,38 +596,38 @@ export default function Play(props: any) {
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
                             <path d="M12 4l0 16"></path>
                         </svg>
-                    </Link>
-                    <Link className="app-header-icon hidden@<md" href={getSearchPath('layout', '5')}>
+                    </button>
+                    <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', '5')}>
                         <svg xmlns="http://www.w3.org/2000/svg" className={clsx(layout === '5' && 'stroke:accent')} width="22" height="22" strokeWidth="1.2" viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
                             <path d="M4 9l16 0"></path>
                             <rect className={layout === '5' ? 'fill:accent/.15' : 'fill:text-lightest/.2'} width="16" height="11" stroke='none' transform="translate(4 9)" />
                         </svg>
-                    </Link>
+                    </button>
                     <span className='hidden'>{layout}</span>
                     <div className='hidden@<md bg:frame-light h:1em mx:4x w:1'></div>
                     {/* preview: desktop */}
-                    <Link className="app-header-icon hidden@<md" href={getSearchPath('preview', '')}>
+                    <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', '')}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
                             'stroke:1.3 stroke:current',
                             !preview ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
                         )} />
-                    </Link>
+                    </button>
                     {/* preview: responsive */}
-                    <Link className="app-header-icon hidden@<md" href={getSearchPath('preview', 'responsive')}>
+                    <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', 'responsive')}>
                         <IconDeviceMobile width="22" height="22" className={clsx(
                             'stroke:1.3 stroke:current',
                             responsive ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
                         )} />
-                    </Link>
+                    </button>
                     {/* preview: css */}
-                    <Link className="app-header-icon hidden@<md" href={getSearchPath('preview', 'css')}>
+                    <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', 'css')}>
                         <IconBrandCss3 width="22" height="22" className={clsx(
                             'stroke:1.3 stroke:current',
                             preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
                         )} />
-                    </Link>
+                    </button>
                     <span className='hidden'>{preview}</span>
                     <div className='hidden@<md bg:frame-light h:1em mx:4x w:1'></div>
                     <LanguageButton className="app-header-icon hidden@<md" locale={locale} />
@@ -666,15 +674,15 @@ export default function Play(props: any) {
                 >
                     <Tabs className="flex:0|0|auto" contentClassName="px:30">
                         {shareItem.files.map((file, index) => (
-                            <Tab href={getSearchPath('tab', index === 0 ? '' : file.title)} size="sm" key={file.id} active={tab === file.title}>
+                            <Tab onClick={() => pushShallowURL('tab', index === 0 ? '' : file.title)} size="sm" key={file.id} active={tab === file.title}>
                                 {file.title || ''}
                             </Tab>
                         ))}
                         {/* mobile couldn't support tab active */}
-                        <Tab href={getSearchPath('tab', 'Generated CSS')} size="sm" className="hidden@md" active={tab === 'Generated CSS'}>
+                        <Tab onClick={() => pushShallowURL('tab', 'Generated CSS')} size="sm" className="hidden@md" active={tab === 'Generated CSS'}>
                             Generated CSS
                         </Tab>
-                        <Tab href={getSearchPath('tab', 'Preview')} className="hidden@sm" size="sm" active={tab === 'Preview'}>
+                        <Tab onClick={() => pushShallowURL('tab', 'Preview')} className="hidden@sm" size="sm" active={tab === 'Preview'}>
                             Preview
                         </Tab>
                     </Tabs>
