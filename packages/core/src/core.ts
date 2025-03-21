@@ -5,7 +5,6 @@ import hexToRgb from './utils/hex-to-rgb'
 import { flattenObject } from './utils/flatten-object'
 import extendConfig from './utils/extend-config'
 import { type PropertiesHyphen } from 'csstype'
-import './types/global' // fix: ../css/src/core.ts:1205:16 - error TS7017: Element implicitly has an 'any' type because type 'typeof globalThis' has no index signature.
 import SyntaxLayer from './syntax-layer'
 import { Rule } from './rule'
 import SyntaxRuleType from './syntax-rule-type'
@@ -14,6 +13,7 @@ import NonLayer from './non-layer'
 import { ColorVariable, DefinedRule, Variable } from './types/syntax'
 import { AnimationDefinitions, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
 import { Vendors } from './types/common'
+import registerGlobal from './register-global'
 
 export default class MasterCSS {
     static config: Config = defaultConfig
@@ -47,9 +47,6 @@ export default class MasterCSS {
             ? extendConfig(customConfig)
             : extendConfig(defaultConfig, customConfig)
         this.resolve()
-        if (this.constructor === MasterCSS) {
-            masterCSSs.push(this)
-        }
     }
 
     resolve() {
@@ -696,7 +693,6 @@ export default class MasterCSS {
     destroy() {
         this.reset()
         this.classUsages.clear()
-        masterCSSs.splice(masterCSSs.indexOf(this), 1)
         return this
     }
 
@@ -750,8 +746,6 @@ export default class MasterCSS {
     }
 }
 
-export const masterCSSs: MasterCSS[] = []
-
 export default interface MasterCSS {
     supportVendors: Set<Vendors>
     style: HTMLStyleElement | null
@@ -762,7 +756,6 @@ export default interface MasterCSS {
     animations: Record<string, AnimationDefinitions>
 }
 
-(() => {
-    globalThis.MasterCSS = MasterCSS
-    globalThis.masterCSSs = masterCSSs
-})()
+(function (MasterCSS) {
+    registerGlobal(MasterCSS)
+})(MasterCSS)
