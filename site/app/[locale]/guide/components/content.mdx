@@ -1,6 +1,6 @@
 ### Overview [sr-only]
 Traditionally, we define components like `.btn` or `.card` by writing CSS rules. In Master CSS, we use `config.components` to abstract and make them more flexible.
-<Code lang="js" name="master.css.js">{require('./tests/apply-styles/master.css.js?text').default}</Code>
+<Code lang="js" name="master.css.js">{require('./tests/apply-styles/master.css.js?raw').default}</Code>
 An abstract style consists of one or more syntaxes, you can provide a class name for this set of classes and reuse it anywhere.
 
 (click) Try making the viewport width smaller
@@ -8,11 +8,11 @@ An abstract style consists of one or more syntaxes, you can provide a class name
     <IFrame src="/examples/responsive-button" height={138} />
 </ResizeZone>
 You can even conditionally apply abstract styles via at-rules:
-<Code lang="html">{require('./tests/apply-styles/template.html?text').default}</Code>
+<Code lang="html">{require('./tests/apply-styles/template.html?raw').default}</Code>
 <details>
     <summary>Generated CSS</summary>
     <div>
-        <Code lang="css" beautify>{require('./tests/apply-styles/generated.css?text').default}</Code>
+        <Code lang="css" beautify>{require('./tests/apply-styles/generated.css?raw').default}</Code>
     </div>
 </details>
 
@@ -31,7 +31,7 @@ Create an abstract style with [state selectors](/guide/state-selectors) and [app
 <details>
     <summary>Generated CSS</summary>
     <div>
-        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-style-with-states/generated.css?text').default}</Code>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-style-with-states/generated.css?raw').default}</Code>
     </div>
 </details>
 
@@ -43,7 +43,7 @@ Apply the components:
 <details>
     <summary>Generated CSS</summary>
     <div>
-        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-styles-in-a-nested-structure/generated.css?text').default}</Code>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-styles-in-a-nested-structure/generated.css?raw').default}</Code>
     </div>
 </details>
 The empty string `''` represents an outer style, much like Sass's `&`.
@@ -62,6 +62,6 @@ You can see that `b` inherits the text lime color of `a`:
 <details>
     <summary>Generated CSS</summary>
     <div>
-        <Code lang="css" beautify>{require('!!raw-loader!./tests/extend-an-existing-style/generated.css?text').default}</Code>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/extend-an-existing-style/generated.css?raw').default}</Code>
     </div>
 </details>
