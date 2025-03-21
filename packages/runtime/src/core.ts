@@ -1,7 +1,9 @@
 import { MasterCSS, config as defaultConfig, Rule, SyntaxLayer } from '@master/css'
 import { type Config } from '@master/css'
+import { installHook } from '@master/css-devtools-hook'
 
 import './types/global'
+import startDebug from './debug'
 
 export class RuntimeCSS extends MasterCSS {
     // @ts-expect-error
@@ -24,6 +26,7 @@ export class RuntimeCSS extends MasterCSS {
         if ('MozTransform' in styleDeclaration) this.supportVendors.add('moz')
         if ('msTransform' in styleDeclaration) this.supportVendors.add('ms')
         if ('OTransform' in styleDeclaration) this.supportVendors.add('o')
+        installHook()
     }
 
     init() {
@@ -221,40 +224,8 @@ export class RuntimeCSS extends MasterCSS {
                 }
             })
 
-            // start: debug
-            // const safeClassUsages: any = {};
-            // ((this.root.constructor.name === 'HTMLDocument') ? this.host : this.container)
-            //     .querySelectorAll('[class]')
-            //     .forEach((element) => {
-            //         element.classList.forEach((className) => {
-            //             if (Object.prototype.hasOwnProperty.call(safeClassUsages, className)) {
-            //                 safeClassUsages[className]++
-            //             } else {
-            //                 safeClassUsages[className] = 1
-            //             }
-            //         })
-            //     })
+            globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('mutated', mutationRecords, eachClassUsages, this)
 
-            // this.host.classList.forEach((className) => {
-            //     if (Object.prototype.hasOwnProperty.call(safeClassUsages, className)) {
-            //         safeClassUsages[className]++
-            //     } else {
-            //         safeClassUsages[className] = 1
-            //     }
-            // })
-
-            // for (const className in safeClassUsages) {
-            //     if (this.classUsages.get(className) !== safeClassUsages[className]) {
-            //         throw new Error(`[css] ${className} ${this.classUsages.get(className)} (correct: ${safeClassUsages[className]})`)
-            //     }
-            // }
-
-            // this.classUsages.forEach((count, className) => {
-            //     if (!Object.prototype.hasOwnProperty.call(safeClassUsages, className)) {
-            //         throw new Error(`[css] ${className} ${count} (correct: 0)`)
-            //     }
-            // })
-            // end: debug
         })
 
         this.observer.observe(this.root, {
@@ -415,6 +386,11 @@ export class RuntimeCSS extends MasterCSS {
 export const runtimeCSSs: RuntimeCSS[] = [];
 
 (() => {
+    installHook()
     globalThis.RuntimeCSS = RuntimeCSS
     globalThis.runtimeCSSs = runtimeCSSs
 })()
+
+if (process.env.NODE_ENV === 'development') {
+    startDebug()
+}
