@@ -1,7 +1,7 @@
 import Tabs, { Tab } from 'internal/components/Tabs'
 import { createTranslation } from 'internal/utils/i18n'
 import DocLayout from 'internal/layouts/doc'
-import metadata from './guides/metadata'
+import metadata from './metadata'
 
 import pageCategories from '~/site/.categories/guide.json'
 
@@ -12,7 +12,7 @@ export default async function Layout(props: any) {
         <DocLayout {...props} pageCategories={pageCategories} pageDirname={__dirname} metadata={metadata}>
             <Tabs className="mb:8x">
                 <Tab href='/guide/installation'>{$('General')}</Tab>
-                <Tab href='/guide/installation/guides'>{$('Guides')}</Tab>
+                <Tab href='/guide/installation/integrations'>{$('Integrations')}</Tab>
                 <Tab href='/guide/installation/cdn'>{$('CDN')}</Tab>
                 <Tab href='/guide/installation/download' disabled>{$('Download')}</Tab>
             </Tabs>
