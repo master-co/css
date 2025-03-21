@@ -44,11 +44,12 @@ The easiest way to use Master CSS from scratch is to initialize the [runtime eng
         Now style your first element using Master CSS syntax!
         ```html name=index.html
         <!DOCTYPE html>
-        <html lang="en">
+        <!-- @MARK hidden -->
+        <html lang="en" hidden>
         <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <script src="/main.js"></script> <!-- [!code ++] -->
+            <script src="/main.js"></script> <!-- [!code highlight] -->
         </head>
         <body>
             <!-- @MARK font:40 font:heavy italic m:12x text:center -->

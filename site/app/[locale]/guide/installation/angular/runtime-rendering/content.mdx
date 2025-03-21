@@ -97,13 +97,13 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
     <Step $row>
         <StepL>
             ### <StepNum />Prevent flash of unstyled content
-            Add `css display: 'none'` in `html <html>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) caused by the runtime engine not yet injecting CSS rules.
+            Add `html <html hidden>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) caused by the runtime engine not yet injecting CSS rules.
         </StepL>
         <StepR>
             ```html name=src/index.html
             <!doctype html>
-            <!-- @MARK display: none -->
-            <html lang="en" style="display: none">
+            <!-- @MARK hidden -->
+            <html lang="en" hidden>
             ```
         </StepR>
     </Step>

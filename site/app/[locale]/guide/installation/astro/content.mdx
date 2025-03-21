@@ -71,12 +71,12 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
             Modify `src/layouts/Layout.astro`:
             - Import your custom configuration `master.css.ts`
             - Initialize the runtime engine
-            - Add `css display: none` to `html <html>` to [avoid FOUC](/guide/flash-of-unstyled-content)
+            - Add `html <html hidden>` to [avoid FOUC](/guide/flash-of-unstyled-content)
         </StepL>
         <StepR>
             ```astro name=src/layouts/Layout.astro
-            <!-- @MARK display: none -->
-            <html style="display: none">
+            <!-- @MARK hidden -->
+            <html hidden>
                 <head>
                     …
                     <script> // [!code ++]

@@ -88,7 +88,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             Register Master CSS with official `CSSRuntimeProvider` and provide instance context.
             1. Use `next/dynamic` to load `CSSRuntimeProvider`
             2. Dynamic `js import('../master.css')`
-            3. Add `css display: 'none'` in `html <html>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) during development
+            3. Add `html <html hidden>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) during development
 
             `@master/css.react` and `master.css.js` will not be included in the page's initial JavaScript bundle.
         </StepL>
@@ -110,7 +110,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
 
                             export default function RootLayout({ children }: { children: React.ReactNode }) {
                                 return (
-                                    <html lang="en" style={process.env.NODE_ENV === 'development' ? { display: 'none' } : undefined}>
+                                    <html lang="en" hidden={process.env.NODE_ENV === 'development'}>
                                         <body>
                                            <CSSRuntimeProvider config={config}>
                                                 {children}

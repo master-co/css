@@ -11,14 +11,14 @@ The unstyled state can occur in a flash if the browser doesn't block rendering w
 ### Prevent premature rendering
 When you [pre-render](/guide/rendering-modes/progressive-rendering) the page, the required styles will be included during the page load. FOUC occurs when using only [runtime rendering](/guide/rendering-modes/runtime-rendering).
 
-(o) Include `css display: none` in the `html <html>` to avoid FOUC.
+(o) Add `html <html hidden>` to avoid FOUC.
 ```html
-<!-- @MARK display: none -->
-<html style="display: none">…</html>
+<!-- @MARK hidden -->
+<html hidden>…</html>
 ```
 Once the style is injected, the engine will remove the above and notify the browser that the page can be displayed.
 
-The initialization is typically completed within milliseconds, and you don't need to worry about the impact of `css display: none` as it's instantaneous.
+The initialization is typically completed within milliseconds, and you don't need to worry about the impact of `hidden` as it's instantaneous.
 
 By [preloading critical resources](/guide/preload-critical-resources), there will be a bonus effect.
 

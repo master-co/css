@@ -12,7 +12,7 @@ export default function RootLayout({ children }: Readonly<{
     children: ReactNode;
 }>) {
     return (
-        <html lang="en" style={{ display: 'none' }}>
+        <html lang="en" hidden>
             <body>
                 <CSSRuntimeProvider config={config}>
                     {children}

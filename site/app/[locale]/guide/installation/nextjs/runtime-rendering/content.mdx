@@ -88,7 +88,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
             Register Master CSS with official `CSSRuntimeProvider` and provide instance context.
             1. Register the `CSSRuntimeProvider`
             2. Import the config `../master.css`
-            3. Add `css display: 'none'` in `html <html>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content)
+            3. Add `html <html hidden>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content)
         </StepL>
         <StepR>
             <CodeTabs>
@@ -108,7 +108,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
 
                             export default function RootLayout({ children }: { children: React.ReactNode }) {
                                 return (
-                                    <html lang="en" style={{ display: 'none' }}>
+                                    <html lang="en" hidden>
                                         <body>
                                            <CSSRuntimeProvider config={config}>
                                                 {children}

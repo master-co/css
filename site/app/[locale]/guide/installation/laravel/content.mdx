@@ -107,13 +107,13 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
             ### <StepNum />Set up your view layout
             Include the following in your `resources/views/layouts/welcome.blade.php`:
             - Import the entry by adding `@vite('resources/js/app.js')`
-            - Add `css display: none` to `html <html>` to [avoid FOUC](/guide/flash-of-unstyled-content)
+            - Add `html <html hidden>` to [avoid FOUC](/guide/flash-of-unstyled-content)
         </StepL>
         <StepR>
             ```html name=resources/views/layouts/welcome.blade.php
             <!DOCTYPE html>
-            <!-- @MARK display: none -->
-            <html style="display: none" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+            <!-- @MARK hidden -->
+            <html hidden lang="{{ str_replace('_', '-', app()->getLocale()) }}">
                 <head>
                     …
                     @vite('resources/js/app.js') // [!code ++]

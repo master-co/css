@@ -10,7 +10,8 @@ export default function RootClient(props: {
     children: React.ReactElement,
     locale: typeof i18n.locales[number],
     style?: React.CSSProperties,
-    translations: any
+    translations: any,
+    hidden?: boolean,
 }) {
     return (
         <RootLayout {...props} app={app} cssConfig={cssConfig} redirects={redirects} />

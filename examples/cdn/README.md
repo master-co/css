@@ -68,7 +68,7 @@
 
 ```html
 <!DOCTYPE html>
-<html lang="en" style="display: none">
+<html lang="en" hidden>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

@@ -225,7 +225,7 @@ export default class CSSRuntime extends MasterCSS {
         })
 
         if (!this.progressive) {
-            (this.host as HTMLElement).style.removeProperty('display')
+            this.host.removeAttribute('hidden')
         }
         // @ts-ignore
         this.observing = true
