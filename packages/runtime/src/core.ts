@@ -1,16 +1,11 @@
 import { MasterCSS, config as defaultConfig, Rule, SyntaxLayer } from '@master/css'
 import { type Config } from '@master/css'
-import { installHook } from '@master/css-devtools-hook'
+import registerGlobal from './register-global'
 
-import './types/global'
-import startDebug from './debug'
-
-export class CSSRuntime extends MasterCSS {
-    // @ts-expect-error
+export default class CSSRuntime extends MasterCSS {
     readonly host: Element
     readonly observing = false
     readonly progressive = false
-    // @ts-expect-error
     readonly container: HTMLElement | ShadowRoot
     readonly observer?: MutationObserver
 
@@ -19,34 +14,22 @@ export class CSSRuntime extends MasterCSS {
         public customConfig: Config = defaultConfig
     ) {
         super(customConfig)
-        this.init()
+        const rootConstructorName = root?.constructor.name
+        if (rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document') {
+            (this.root as Document).defaultView!.globalThis.cssRuntime = this
+            this.container = (this.root as Document).head
+            this.host = (this.root as Document).documentElement
+        } else {
+            this.container = this.root as CSSRuntime['container']
+            this.host = (this.root as ShadowRoot).host
+        }
         this.supportVendors = new Set()
         const styleDeclaration = document.documentElement.style
         if ('webkitTransform' in styleDeclaration) this.supportVendors.add('webkit')
         if ('MozTransform' in styleDeclaration) this.supportVendors.add('moz')
         if ('msTransform' in styleDeclaration) this.supportVendors.add('ms')
         if ('OTransform' in styleDeclaration) this.supportVendors.add('o')
-        installHook()
-    }
-
-    init() {
-        const existingRuntimeCSS = (globalThis as any).cssRuntimes.find((eachCSS: CSSRuntime) => eachCSS.root === this.root)
-        if (existingRuntimeCSS) throw new Error('Cannot create multiple CSSRuntime instances for the same root element.')
-        const rootConstructorName = this.root?.constructor.name
-        if (rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document') {
-            // @ts-ignore
-            (this.root as Document).defaultView.globalThis.cssRuntime = this
-            // @ts-ignore readonly
-            this.container = (this.root as Document).head
-            // @ts-ignore readonly
-            this.host = (this.root as Document).documentElement
-        } else {
-            // @ts-ignore readonly
-            this.container = this.root as CSSRuntime['container']
-            // @ts-ignore readonly
-            this.host = (this.root as ShadowRoot).host
-        }
-        cssRuntimes.push(this)
+        globalThis.cssRuntimes.push(cssRuntime)
     }
 
     /**
@@ -382,19 +365,11 @@ export class CSSRuntime extends MasterCSS {
 
     destroy() {
         this.disconnect()
-        cssRuntimes.splice(cssRuntimes.indexOf(this), 1)
+        globalThis.cssRuntimes.splice(globalThis.cssRuntimes.indexOf(this), 1)
         return this
     }
 }
 
-export const cssRuntimes: CSSRuntime[] = [];
-
-(() => {
-    installHook()
-    globalThis.CSSRuntime = CSSRuntime
-    globalThis.cssRuntimes = cssRuntimes
-})()
-
-if (process.env.NODE_ENV === 'development') {
-    startDebug()
-}
+(function (CSSRuntime) {
+    registerGlobal(CSSRuntime)
+})(CSSRuntime)

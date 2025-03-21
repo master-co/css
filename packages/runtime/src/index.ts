@@ -1,2 +1,2 @@
-export { CSSRuntime, CSSRuntime as default } from './core'
-export { default as initCSSRuntime } from './init-css-runtime'
+export { default as CSSRuntime, default } from './core'
+export { default as initCSSRuntime } from './init'

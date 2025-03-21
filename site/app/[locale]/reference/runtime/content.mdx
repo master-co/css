@@ -9,7 +9,7 @@
 ### `CSSRuntime`
 The `Runtime` extends the [`MasterCSS`](/reference/core#mastercss) and only works in the browser environment.
 ```ts
-import { CSSRuntime } from '@master/css-runtime'
+import CSSRuntime from '@master/css-runtime'
 
 const cssRuntime = new CSSRuntime(config)
 ```
@@ -92,7 +92,7 @@ const css = initCSSRuntime()
 ```
 Equivalent to:
 ```ts
-import { CSSRuntime } from '@master/css-runtime'
+import CSSRuntime from '@master/css-runtime'
 
 const cssRuntime = new CSSRuntime().observe()
 ```

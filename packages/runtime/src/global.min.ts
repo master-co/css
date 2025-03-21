@@ -1,4 +1,4 @@
-import initCSSRuntime from './init-css-runtime'
+import initCSSRuntime from './init'
 
 const customConfigs = window.masterCSSConfigs
 const customConfig = window.masterCSSConfig
