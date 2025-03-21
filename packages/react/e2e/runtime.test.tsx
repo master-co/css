@@ -14,7 +14,7 @@ test('Runtime - class changed', async ({ page, mount }) => {
 
     await runtimeComponentInstance.unmount()
     expect(await page.evaluate(() => globalThis.cssRuntime.style)).toBeNull()
-    expect(await page.evaluate(() => globalThis.cssRuntimes.length)).toBe(0)
+    expect(await page.evaluate(() => globalThis.CSSRuntime.instances.has(document))).toBeFalsy()
 })
 
 test('Runtime - config changed', async ({ page, mount }) => {
@@ -33,7 +33,14 @@ test('Runtime - root changed', async ({ page, mount }) => {
 
     const $button = await page.$('#root-btn')
     await $button?.click()
-    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntimes[0].classCounts))).toEqual({
+    expect(await page.evaluate(() => {
+        const shadowRoot = document.getElementById('container')?.shadowRoot
+        if (shadowRoot) {
+            const runtime = globalThis.CSSRuntime.instances.get(shadowRoot)
+            if (!runtime) return
+            return Object.fromEntries(runtime.classCounts)
+        }
+    })).toEqual({
         'f:1000': 1
     })
 })

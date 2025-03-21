@@ -25,6 +25,6 @@
     <CSSRuntimeProvider :root="root" :config="config">
         <button id="config-btn" class="btn" @click="config = {}"></button>
         <button id="root-btn" @click="root = shadowRoot"></button>
-        <div :ref="el => containerRef = el"></div>
+        <div id="container" :ref="el => containerRef = el"></div>
     </CSSRuntimeProvider>
 </template>

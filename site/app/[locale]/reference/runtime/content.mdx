@@ -14,6 +14,10 @@ import CSSRuntime from '@master/css-runtime'
 const cssRuntime = new CSSRuntime(config)
 ```
 
+### `CSSRuntime.instances`
+All objects instantiated via `js new WeakMap()`.
+<DocProp defaultValue="[]" types={['WeakMap<Document | ShadowRoot, CSSRuntime>']} />
+
 ### `cssRuntime.root`
 Observe the root element.
 <DocProp defaultValue="document" types={['Document', 'ShadowRoot']} />
@@ -69,10 +73,6 @@ Destroy and remove the current instance from `globalThis.cssRuntimes`.
 ### `globalThis.cssRuntime`
 Record the registered root `document` Runtime CSS instance; the field will be recorded only after executing `js css.observe()`.
 <DocProp types={['CSSRuntime']} />
-
-### `globalThis.cssRuntimes`
-All objects instantiated via `js new CSSRuntime()`.
-<DocProp defaultValue="[]" types={['CSSRuntime[]']} />
 
 ### `globalThis.CSSRuntime`
 <DocProp defaultValue="CSSRuntime" types={['typeof CSSRuntime']} />

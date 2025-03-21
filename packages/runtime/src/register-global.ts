@@ -5,7 +5,6 @@ import startDebug from './debug'
 
 declare global {
     var CSSRuntime: typeof Core
-    var cssRuntimes: Core[]
     var cssRuntime: Core
     var masterCSSConfig: Config
     var masterCSSConfigs: Config[]
@@ -13,7 +12,6 @@ declare global {
 
 export default function registerGlobal(CSSRuntime: typeof Core) {
     if (!globalThis.CSSRuntime) globalThis.CSSRuntime = CSSRuntime
-    if (!globalThis.cssRuntimes) globalThis.cssRuntimes = []
     installHook()
     if (process.env.NODE_ENV === 'development') {
         startDebug()

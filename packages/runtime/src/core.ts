@@ -3,6 +3,7 @@ import { type Config } from '@master/css'
 import registerGlobal from './register-global'
 
 export default class CSSRuntime extends MasterCSS {
+    static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
     readonly host: Element
     readonly observing = false
     readonly progressive = false
@@ -29,7 +30,7 @@ export default class CSSRuntime extends MasterCSS {
         if ('MozTransform' in styleDeclaration) this.supportVendors.add('moz')
         if ('msTransform' in styleDeclaration) this.supportVendors.add('ms')
         if ('OTransform' in styleDeclaration) this.supportVendors.add('o')
-        globalThis.cssRuntimes.push(cssRuntime)
+        globalThis.CSSRuntime.instances.set(this.root, this)
     }
 
     /**
@@ -365,7 +366,7 @@ export default class CSSRuntime extends MasterCSS {
 
     destroy() {
         this.disconnect()
-        globalThis.cssRuntimes.splice(globalThis.cssRuntimes.indexOf(this), 1)
+        globalThis.CSSRuntime.instances.delete(this.root)
         return this
     }
 }

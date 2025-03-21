@@ -1,7 +1,6 @@
 import CSSRuntimeProvider from '../src'
 import { useState, useEffect, useRef } from 'react'
 import type { Config } from '@master/css'
-import React from 'react'
 
 export default function Runtime() {
     const [config, setConfig] = useState<Config>({
@@ -28,6 +27,6 @@ export default function Runtime() {
     return <CSSRuntimeProvider root={root} config={config}>
         <button id="config-btn" className="btn" onClick={() => setConfig({})}></button>
         <button id="root-btn" onClick={() => setRoot(shadowRoot)}></button>
-        <div ref={containerRef}></div>
+        <div id="container" ref={containerRef}></div>
     </CSSRuntimeProvider>
 }
