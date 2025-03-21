@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'CLI',
     description: 'Command line interface for Master CSS.',
-    category: 'Integration',
+    category: 'Package',
     fileURL: import.meta.url,
     package: {
         npm: '@master/create-cli',

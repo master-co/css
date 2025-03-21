@@ -1,0 +1,79 @@
+## Installation [sr-only]
+```bash action=install
+@master/css-devtools-hook
+```
+It is especially useful for building devtools extensions or debugging runtime styling behavior.
+
+---
+
+## Basic usage
+### Import and attach to `globalThis`
+Typically, you will expose the hook globally so devtools or browser extensions can access it:
+```ts
+import devToolsHook, { type DevToolsHook } from '@master/css-devtools-hook'
+
+// expose on the global object
+declare global {
+    var __MASTER_CSS_DEVTOOLS_HOOK__: DevToolsHook
+}
+
+if (!globalThis.__MASTER_CSS_DEVTOOLS_HOOK__) {
+    globalThis.__MASTER_CSS_DEVTOOLS_HOOK__ = devToolsHook
+}
+```
+By default, `@master/css-runtime` will automatically attach to the hook when it is available.
+
+### Listen to runtime changes
+This allows you to monitor and respond to dynamic style changes, such as class additions or removals, tracked by `@master/css-runtime`.
+```ts
+const hook = globalThis.__MASTER_CSS_DEVTOOLS_HOOK__
+const onMutated = (context) => {
+  console.log('CSS Mutations:', context.records)
+  console.log('Class usages:', context.classUsages)
+  console.log('RuntimeCSS instance:', context.runtimeCSS)
+}
+
+hook.on('mutated', onMutated)
+
+// later, if needed
+// hook.off('mutated', onMutated)
+```
+
+---
+
+## Interfaces
+### `hook.on(event, callback)`
+Register a listener for a specific event.
+```ts
+hook.on('mutated', (context) => {
+    console.log(context.records, context.classUsages, context.runtimeCSS)
+})
+```
+
+### `hook.off(event, callback)`
+Removes a previously registered listener.
+```ts
+hook.off('mutated', onMutated)
+```
+
+### `hook.emit(event, context)`
+Manually trigger an event. Typically used internally.
+```ts
+hook.emit('mutated', {
+    records: mutationRecords,
+    classUsages: classUsages,
+    runtimeCSS: runtimeCSS
+})
+```
+
+---
+
+## Summary
+### Best Practice
+- Always check if the hook exists before using it in a browser context.
+- Avoid leaving unnecessary listeners running; clean them up when not needed.
+- Use the hook only in development builds or behind feature flags.
+
+### Inspiration
+- Similar in purpose to `__REACT_DEVTOOLS_GLOBAL_HOOK__` and `__VUE_DEVTOOLS_GLOBAL_HOOK__`.
+- Helps build developer tooling and browser extensions for monitoring Master CSS runtime changes.

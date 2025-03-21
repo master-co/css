@@ -14,7 +14,7 @@ const units = {
             'Overview',
             'Design Token',
             'Syntax',
-            'Integration'
+            'Package'
         ]
     },
     messages: {

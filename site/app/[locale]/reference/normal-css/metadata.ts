@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'Normal CSS',
     description: 'Normalize modern browser styles.',
-    category: 'Integration',
+    category: 'Package',
     fileURL: import.meta.url,
     package: {
         repo: 'master-co/normal.css',
