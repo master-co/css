@@ -4,14 +4,14 @@ import { installHook } from '@master/css-devtools-hook'
 export default function startDebug() {
     log('debug mode is enabled by default in development.')
     const hook = installHook()
-    hook.on('mutated', ({ records, classUsages, cssRuntime }) => {
-        const actualClassUsages: any = {}
+    hook.on('mutated', ({ records, classCounts, cssRuntime }) => {
+        const actualClassCounts: any = {}
         let errored = false
         const resolveClass = (className: string) => {
-            if (Object.prototype.hasOwnProperty.call(actualClassUsages, className)) {
-                actualClassUsages[className]++
+            if (Object.prototype.hasOwnProperty.call(actualClassCounts, className)) {
+                actualClassCounts[className]++
             } else {
-                actualClassUsages[className] = 1
+                actualClassCounts[className] = 1
             }
         }
         ((cssRuntime.root.constructor.name === 'HTMLDocument') ? cssRuntime.host : cssRuntime.container)
@@ -22,17 +22,17 @@ export default function startDebug() {
 
         cssRuntime.host.classList.forEach(resolveClass)
 
-        for (const className in actualClassUsages) {
-            const eachCount = cssRuntime.classUsages.get(className)
-            const eachActualUsage = actualClassUsages[className]
-            if (eachCount !== eachActualUsage) {
-                log.error(`Count mismatch for`, { class: className, expected: eachActualUsage, received: eachCount })
+        for (const className in actualClassCounts) {
+            const eachCount = cssRuntime.classCounts.get(className)
+            const eachActualCount = actualClassCounts[className]
+            if (eachCount !== eachActualCount) {
+                log.error(`Count mismatch for`, { class: className, expected: eachActualCount, received: eachCount })
                 errored = true
             }
         }
 
-        cssRuntime.classUsages.forEach((eachCount, className) => {
-            if (!Object.prototype.hasOwnProperty.call(actualClassUsages, className)) {
+        cssRuntime.classCounts.forEach((eachCount, className) => {
+            if (!Object.prototype.hasOwnProperty.call(actualClassCounts, className)) {
                 log.error(`Count mismatch for`, { class: className, expected: 0, received: eachCount })
                 errored = true
             }
@@ -40,7 +40,7 @@ export default function startDebug() {
 
         if (errored) {
             console.debug('Records:', records)
-            console.debug('Counts:', classUsages)
+            console.debug('Counts:', classCounts)
         }
     })
 }

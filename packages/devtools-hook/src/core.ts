@@ -3,7 +3,7 @@ import './types/global'
 
 export declare type HookEventCallbackMap = {
     'mutated': (context: {
-        classUsages: Map<string, number>,
+        classCounts: Map<string, number>,
         cssRuntime: CSSRuntime,
         records: MutationRecord[]
     }) => void

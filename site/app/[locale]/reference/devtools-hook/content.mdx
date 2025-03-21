@@ -29,7 +29,7 @@ This allows you to monitor and respond to dynamic style changes, such as class a
 const hook = globalThis.__MASTER_CSS_DEVTOOLS_HOOK__
 const onMutated = (context) => {
   console.log('CSS Mutations:', context.records)
-  console.log('Class usages:', context.classUsages)
+  console.log('Class usages:', context.classCounts)
   console.log('CSSRuntime instance:', context.cssRuntime)
 }
 
@@ -46,7 +46,7 @@ hook.on('mutated', onMutated)
 Register a listener for a specific event.
 ```ts
 hook.on('mutated', (context) => {
-    console.log(context.records, context.classUsages, context.cssRuntime)
+    console.log(context.records, context.classCounts, context.cssRuntime)
 })
 ```
 
@@ -61,7 +61,7 @@ Manually trigger an event. Typically used internally.
 ```ts
 hook.emit('mutated', {
     records: mutationRecords,
-    classUsages: classUsages,
+    classCounts: classCounts,
     cssRuntime: cssRuntime
 })
 ```

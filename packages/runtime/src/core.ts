@@ -62,10 +62,10 @@ export default class CSSRuntime extends MasterCSS {
         const firstConnectedElementsClasses = new Map<Element, string[]>()
         const addClasses = (element: Element) => {
             element.classList.forEach((className) => {
-                if (this.classUsages.has(className)) {
-                    this.classUsages.set(className, this.classUsages.get(className)! + 1)
+                if (this.classCounts.has(className)) {
+                    this.classCounts.set(className, this.classCounts.get(className)! + 1)
                 } else {
-                    this.classUsages.set(className, 1)
+                    this.classCounts.set(className, 1)
                     this.add(className)
                 }
                 const classes = firstConnectedElementsClasses.get(element)
@@ -94,15 +94,15 @@ export default class CSSRuntime extends MasterCSS {
             // const test = ''
             // if (test) {
             //     console.log('')
-            //     console.log(`${test}: ${this.classUsages.get(test)}`)
+            //     console.log(`${test}: ${this.classCounts.get(test)}`)
             // }
-            const eachClassUsages = new Map()
+            const eachClassCounts = new Map()
             const targetFirstAttrMutationRecord = new Map<Element, MutationRecord>()
 
-            const updateClassUsage = (classes: Set<string> | string[] | DOMTokenList, isAdding = false) => {
+            const updateClassCount = (classes: Set<string> | string[] | DOMTokenList, isAdding = false) => {
                 const usage = isAdding ? 1 : -1
                 classes.forEach((className) => {
-                    eachClassUsages.set(className, (eachClassUsages.get(className) || 0) + usage)
+                    eachClassCounts.set(className, (eachClassCounts.get(className) || 0) + usage)
                 })
             }
 
@@ -150,12 +150,12 @@ export default class CSSRuntime extends MasterCSS {
                         targetFirstAttrMutationRecord.delete(target)
                     }
                     if (adding) {
-                        updateClassUsage(target.classList, adding)
+                        updateClassCount(target.classList, adding)
                     } else {
                         if (firstAttrMutationRecord) {
-                            updateClassUsage(firstAttrMutationRecord.oldValue ? firstAttrMutationRecord.oldValue.split(/\s+/) : [], adding)
+                            updateClassCount(firstAttrMutationRecord.oldValue ? firstAttrMutationRecord.oldValue.split(/\s+/) : [], adding)
                         } else {
-                            updateClassUsage(target.classList, adding)
+                            updateClassCount(target.classList, adding)
                         }
                         disconnectedStatusMap.forEach((disconnectedTargetStatus, disconnectedTarget) => {
                             if (disconnectedTargetStatus.mutationRecord.target === target && disconnectedTargetStatus.change !== 0) {
@@ -182,34 +182,34 @@ export default class CSSRuntime extends MasterCSS {
                 const removedClasses = oldClassList.filter(c => !newClassList.contains(c))
                 if (addedClasses.length) {
                     // console.log('[attribute]', '[add]   ', addedClasses, target)
-                    updateClassUsage(addedClasses, true)
+                    updateClassCount(addedClasses, true)
                 }
                 if (removedClasses.length) {
                     // console.log('[attribute]', '[remove]', removedClasses, target)
-                    updateClassUsage(removedClasses, false)
+                    updateClassCount(removedClasses, false)
                 }
             })
 
             /**
              * Merge the class usage changes into the current class usage map.
              */
-            eachClassUsages.forEach((countChange, className) => {
-                let currentCount = this.classUsages.get(className) || 0
+            eachClassCounts.forEach((countChange, className) => {
+                let currentCount = this.classCounts.get(className) || 0
                 let newCount = currentCount + countChange
                 if (newCount > 0) {
-                    this.classUsages.set(className, newCount)
+                    this.classCounts.set(className, newCount)
                     if (currentCount === 0) {
                         this.add(className)
                     }
                 } else {
-                    this.classUsages.delete(className)
+                    this.classCounts.delete(className)
                     this.remove(className)
                 }
             })
 
             globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('mutated', {
                 records: mutationRecords,
-                classUsages: eachClassUsages,
+                classCounts: eachClassCounts,
                 cssRuntime: this
             })
 
@@ -346,7 +346,7 @@ export default class CSSRuntime extends MasterCSS {
         // @ts-ignore
         this.observing = false
         this.reset()
-        this.classUsages.clear()
+        this.classCounts.clear()
         if (!this.progressive) {
             this.style?.remove()
             this.style = null
