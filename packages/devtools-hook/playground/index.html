@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+        window.masterCSSConfig = {
+            selectors: {
+                '::both': ['::before', '::after'],
+            },
+            components: {
+                btn: 'bg:black block::both'
+            }
+        }
+    </script>
+    <style id="master">
+        @layer components {
+            .btn::before,
+            .btn::after {
+                display: block
+            }
+
+            .btn {
+                background-color: rgb(0 0 0);
+            }
+
+            @media (min-width: 834px) {
+                .btn\@sm::before,
+                .btn\@sm::after {
+                    display: block;
+                }
+            }
+
+            @media (min-width: 834px) {
+                .btn\@sm {
+                    background-color: rgb(0, 0, 0);
+                }
+            }
+        }
+    </style>
+    <script type="module" src="src/main.ts"></script>
+</head>
+
+<body>
+    <button class="btn btn@sm">button</button>
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+{
+    "name": "@master/css-devtools-hook",
+    "type": "module",
+    "scripts": {
+        "build": "techor build",
+        "dev": "pnpm build --watch",
+        "e2e": "playwright test",
+        "e2e:watch": "nodemon -e js,mjs,ts,html,css --watch dist --watch e2e --exec playwright test",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint"
+    },
+    "license": "MIT",
+    "description": "Devtools hook for Master CSS",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://rc.css.master.co/sponsor",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/devtools-hook"
+    },
+    "keywords": [
+        "css",
+        "mastercss",
+        "master",
+        "devtools",
+        "hook",
+        "plugin",
+        "extension"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.cjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "browser": "./dist/global.min.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "require": "./dist/index.cjs",
+            "import": "./dist/index.mjs"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    },
+    "devDependencies": {
+        "@master/css-runtime": "workspace:^",
+        "@playwright/test": "^1.49.1",
+        "shared": "workspace:^"
+    }
+}
