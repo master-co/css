@@ -1,3 +1,2 @@
-export { getRuntimeCSS } from './get-runtime-css'
-export { default as Fragment } from './Fragment.svelte'
+export { getCSSRuntime } from './get-css-runtime'
 export { default, default as CSSRuntimeProvider } from './CSSRuntimeProvider.svelte'
