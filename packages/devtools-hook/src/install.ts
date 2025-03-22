@@ -5,3 +5,7 @@ export default function installHook(global: any = globalThis) {
     if (hook) return hook
     return global.__MASTER_CSS_DEVTOOLS_HOOK__ = devToolsHook
 }
+
+declare global {
+    var __MASTER_CSS_DEVTOOLS_HOOK__: DevToolsHook
+}

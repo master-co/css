@@ -33,7 +33,7 @@ const onMutated = (context) => {
   console.log('CSSRuntime instance:', context.cssRuntime)
 }
 
-hook.on('mutated', onMutated)
+hook.on('runtime:mutated', onMutated)
 
 // later, if needed
 // hook.off('mutated', onMutated)
@@ -66,10 +66,18 @@ hook.emit('mutated', {
 })
 ```
 
+### `EventCallbacks`
+The type definition for the available event callbacks.
+<Code lang="ts">{require('!!raw-loader!~/packages/devtools-hook/src/types/event-callbacks.ts').default}</Code>
+
+### `EventNames`
+The type definition for the available event names.
+<Code lang="ts">{require('!!raw-loader!~/packages/devtools-hook/src/types/event-names.ts').default}</Code>
+
 ---
 
 ## Summary
-### Best Practice
+### Best Practices
 - Always check if the hook exists before using it in a browser context.
 - Avoid leaving unnecessary listeners running; clean them up when not needed.
 - Use the hook only in development builds or behind feature flags.

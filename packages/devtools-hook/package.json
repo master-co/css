@@ -54,6 +54,7 @@
     },
     "devDependencies": {
         "@master/css-runtime": "workspace:^",
+        "@master/css": "workspace:^",
         "@playwright/test": "^1.49.1",
         "shared": "workspace:^"
     }

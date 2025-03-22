@@ -31,6 +31,7 @@ export default class CSSRuntime extends MasterCSS {
         if ('msTransform' in styleDeclaration) this.supportVendors.add('ms')
         if ('OTransform' in styleDeclaration) this.supportVendors.add('o')
         globalThis.CSSRuntime.instances.set(this.root, this)
+        __MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:created', { cssRuntime: this })
     }
 
     /**
@@ -60,7 +61,6 @@ export default class CSSRuntime extends MasterCSS {
             this.layerStatementRule.nodes[0].native = this.style!.sheet!.cssRules.item(0) as CSSLayerStatementRule
         }
 
-        const firstConnectedElementsClasses = new Map<Element, string[]>()
         const addClasses = (element: Element) => {
             element.classList.forEach((className) => {
                 if (this.classCounts.has(className)) {
@@ -68,12 +68,6 @@ export default class CSSRuntime extends MasterCSS {
                 } else {
                     this.classCounts.set(className, 1)
                     this.add(className)
-                }
-                const classes = firstConnectedElementsClasses.get(element)
-                if (classes) {
-                    classes.push(className)
-                } else {
-                    firstConnectedElementsClasses.set(element, [className])
                 }
             })
         }
@@ -208,7 +202,7 @@ export default class CSSRuntime extends MasterCSS {
                 }
             })
 
-            globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('mutated', {
+            globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:mutated', {
                 records: mutationRecords,
                 classCounts: eachClassCounts,
                 cssRuntime: this
@@ -229,6 +223,7 @@ export default class CSSRuntime extends MasterCSS {
         }
         // @ts-ignore
         this.observing = true
+        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:observed', { cssRuntime: this })
         return this
     }
 
@@ -327,6 +322,7 @@ export default class CSSRuntime extends MasterCSS {
             }
             if (layer.rules.length) this.rules.push(layer)
         }
+        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:hydrated', { cssRuntime: this })
     }
 
     getSelectorText(cssRule: CSSRule): string | undefined {
@@ -352,6 +348,7 @@ export default class CSSRuntime extends MasterCSS {
             this.style?.remove()
             this.style = null
         }
+        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:disconnected', { cssRuntime: this })
         return this
     }
 
@@ -361,12 +358,14 @@ export default class CSSRuntime extends MasterCSS {
             this.style!.sheet.deleteRule(i)
         }
         super.refresh(customConfig)
+        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:refreshed', { cssRuntime: this, customConfig })
         return this
     }
 
     destroy() {
         this.disconnect()
         globalThis.CSSRuntime.instances.delete(this.root)
+        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:destroyed', { cssRuntime: this })
         return this
     }
 }
