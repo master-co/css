@@ -13,23 +13,10 @@ export const useCSSRuntime = () => useContext(CSSRuntimeContext)
 export default function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
     const cssRuntime = useRef<CSSRuntime>(undefined)
 
-    const resolveConfig = useCallback(async () => {
-        const configModule = await props.config
-        return configModule?.config || configModule?.default || configModule
-    }, [props.config])
-
-    const initialize = useCallback(async (signal: AbortSignal) => {
-        const resolvedConfig = await resolveConfig()
-        if (signal.aborted) return
-        cssRuntime.current = new CSSRuntime(props.root ?? document, resolvedConfig).observe()
-    }, [props.root, resolveConfig])
-
     /** onMounted */
     useIsomorphicLayoutEffect(() => {
-        const controller = new AbortController()
-        initialize(controller.signal)
+        cssRuntime.current = new CSSRuntime(props.root ?? document, props.config).observe()
         return () => {
-            controller.abort()
             cssRuntime.current?.destroy()
             cssRuntime.current = undefined
         }
@@ -37,34 +24,19 @@ export default function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
 
     /** on config change */
     useUpdateEffect(() => {
-        const controller = new AbortController();
-        (async () => {
-            const resolvedConfig = await resolveConfig()
-            if (controller.signal.aborted) return
-            if (cssRuntime.current) {
-                cssRuntime.current.refresh(resolvedConfig)
-            }
-        })()
-        return () => {
-            controller.abort()
+        if (cssRuntime.current) {
+            cssRuntime.current.refresh(props.config)
         }
-    }, [props.config, resolveConfig])
+    }, [props.config])
 
     /** on root change */
     useUpdateEffect(() => {
-        const controller = new AbortController();
-        (async () => {
-            if (controller.signal.aborted) return
-            if (cssRuntime.current) {
-                cssRuntime.current.destroy()
-                cssRuntime.current = undefined
-                initialize(controller.signal)
-            }
-        })()
-        return () => {
-            controller.abort()
+        if (cssRuntime.current) {
+            cssRuntime.current.destroy()
+            cssRuntime.current = undefined
+            cssRuntime.current = new CSSRuntime(props.root ?? document, props.config).observe()
         }
-    }, [initialize, props.root])
+    }, [props.root])
 
     return <CSSRuntimeContext.Provider value={cssRuntime.current}>{props.children}</CSSRuntimeContext.Provider>
 }
