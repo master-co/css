@@ -11,7 +11,7 @@ export default async function Layout({ children, params }: {
     const translations = importTranslations(locale)
     return (
         <RootClient locale={locale} translations={translations}>
-            <HTML locale={locale} hidden>
+            <HTML locale={locale}>
                 {children}
             </HTML>
         </RootClient>
