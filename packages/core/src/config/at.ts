@@ -7,6 +7,8 @@ const at = {
     portrait: 'media (orientation:portrait)',
     motion: 'media (prefers-reduced-motion:no-preference)',
     'reduced-motion': 'media (prefers-reduced-motion:reduce)',
+    base: 'layer base',
+    preset: 'layer preset',
 }
 
 export default at
