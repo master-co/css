@@ -135,10 +135,11 @@ export default class SyntaxLayer extends Layer {
 
                             if (matchStartIndex !== -1) {
                                 for (let i = matchEndIndex; i >= matchStartIndex; i--) {
-                                    const value = (this.rules[i].at.media?.find(({ name }: any) => name === 'min-width') as AtFeatureComponent).value
-                                    if (value > minWidthFeature.value) {
+                                    const feature = (this.rules[i].at.media?.find(({ name }: any) => name === 'min-width') as AtFeatureComponent)
+                                    if (!feature) continue
+                                    if (feature.value > minWidthFeature.value) {
                                         matchEndIndex = i - 1
-                                    } else if (value < minWidthFeature.value) {
+                                    } else if (feature.value < minWidthFeature.value) {
                                         matchStartIndex = i + 1
                                         break
                                     }
@@ -173,10 +174,11 @@ export default class SyntaxLayer extends Layer {
 
                             if (matchStartIndex !== -1) {
                                 for (let i = matchEndIndex; i >= matchStartIndex; i--) {
-                                    const value = (this.rules[i].at.media?.find(({ name }: any) => name === 'max-width') as AtFeatureComponent).value
-                                    if (value < maxWidthFeature.value) {
+                                    const feature = (this.rules[i].at.media?.find(({ name }: any) => name === 'max-width') as AtFeatureComponent)
+                                    if (!feature) continue
+                                    if (feature.value < maxWidthFeature.value) {
                                         matchEndIndex = i - 1
-                                    } else if (value > maxWidthFeature.value) {
+                                    } else if (feature.value > maxWidthFeature.value) {
                                         matchStartIndex = i + 1
                                         break
                                     }

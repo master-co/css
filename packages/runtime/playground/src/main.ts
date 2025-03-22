@@ -1,4 +1,6 @@
-import '../../src/global.min'
+import { initCSSRuntime } from '../../src'
+
+initCSSRuntime()
 
 // const p1 = document.getElementById('p1') as HTMLHeadElement
 
