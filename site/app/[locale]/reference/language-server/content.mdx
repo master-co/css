@@ -7,7 +7,8 @@ import settings from '~/site/../packages/language-server/src/settings'
 
 ---
 
-## Usage
+## Basic usage
+### Create a language server
 The main body of this package is the class `CSSLanguageServer`, which is built on top of [VSCode Language Server](https://github.com/Microsoft/vscode-languageserver-node ).
 ```js
 import CSSLanguageServer from '@master/css-language-server'
@@ -18,13 +19,14 @@ Check out the [source code](https://github.com/master-co/css/blob/rc/packages/la
 
 ---
 
-## Settings
+## API Reference
+### `settings`
 The default language server settings. It inherits the [language service settings](/reference/language-service#settings).
 ```js
 import { settings } from '@master/css-language-server'
 ```
 
-### `.workspaces`
+### `settings.workspaces`
 Specify the workspace where the independent [`CSSLanguageService`](/reference/language-service#csslanguageservice) should be created, always including the root workspace. See the [Monorepo](/guide/monorepo) documentation to understand the purpose of this option.
 <DocProp defaultValue={settings.workspaces} types={["FastGlobPattern[] | 'auto'"]} />
 
@@ -75,6 +77,6 @@ It creates `/` and `/apps/b` workspaces.
 ]}
 </ExplorerView>
 
-### `.verbose`
+### `settings.verbose`
 Print all console logs.
 <DocProp defaultValue={JSON.stringify(settings.verbose)} types={['boolean']} />

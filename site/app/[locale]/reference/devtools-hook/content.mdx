@@ -2,13 +2,14 @@
 ```bash action=install
 @master/css-devtools-hook
 ```
-It is especially useful for building devtools extensions or debugging runtime styling behavior.
+The `@master/css-devtools-hook` package provides a global hook for monitoring runtime style changes.
+It is especially useful for building developer tools extensions or debugging in real time.
 
 ---
 
 ## Basic usage
 ### Import and attach to `globalThis`
-Typically, you will expose the hook globally so devtools or browser extensions can access it:
+You’ll typically expose the hook globally so that devtools or browser extensions can interact with it:
 ```ts
 import devToolsHook, { type DevToolsHook } from '@master/css-devtools-hook'
 
@@ -21,10 +22,10 @@ if (!globalThis.__MASTER_CSS_DEVTOOLS_HOOK__) {
     globalThis.__MASTER_CSS_DEVTOOLS_HOOK__ = devToolsHook
 }
 ```
-By default, `@master/css-runtime` will automatically attach to the hook when it is available.
+By default, `@master/css-runtime` will automatically detect and attach to this hook when present.
 
 ### Listen to runtime changes
-This allows you to monitor and respond to dynamic style changes, such as class additions or removals, tracked by `@master/css-runtime`.
+Once the hook is attached, you can subscribe to runtime changes — such as class additions, removals, or lifycycle hooks — emitted by `@master/css-runtime`.
 ```ts
 const hook = globalThis.__MASTER_CSS_DEVTOOLS_HOOK__
 const onMutated = (context) => {
@@ -41,7 +42,7 @@ hook.on('runtime:mutated', onMutated)
 
 ---
 
-## Interfaces
+## API Reference
 ### `hook.on(event, callback)`
 Register a listener for a specific event.
 ```ts
@@ -78,10 +79,11 @@ The type definition for the available event names.
 
 ## Summary
 ### Best Practices
-- Always check if the hook exists before using it in a browser context.
 - Avoid leaving unnecessary listeners running; clean them up when not needed.
 - Use the hook only in development builds or behind feature flags.
+- Keep your event handlers lightweight to avoid performance issues during frequent mutations.
 
 ### Inspiration
 - Similar in purpose to `__REACT_DEVTOOLS_GLOBAL_HOOK__` and `__VUE_DEVTOOLS_GLOBAL_HOOK__`.
-- Helps build developer tooling and browser extensions for monitoring Master CSS runtime changes.
+- Enables building browser extensions or devtools panels to visualize and monitor dynamic style changes.
+- Ideal for teams developing complex CSS setups and needing insight into runtime styling behavior.

@@ -7,7 +7,8 @@ import settings from '~/site/../packages/language-service/src/settings'
 
 ---
 
-## Usage
+## Basic usage
+### Create a language service
 The main body of this package is the class `CSSLanguageService`, which encapsulates the language service features.
 ```js
 import CSSLanguageService from '@master/css-language-service'
@@ -18,21 +19,22 @@ Check out the [source code](https://github.com/master-co/css/blob/rc/packages/la
 
 ---
 
-## Settings
+## API Reference
+### `settings`
 The default language service settings.
 ```js
 import { settings } from '@master/css-language-service'
 ```
 
-### `.includedLanguages`
+### `settings.includedLanguages`
 Set which languages ​​should provide language services.
 <DocProp defaultValue={settings.includedLanguages} types={['string[]']} />
 
-### `.exclude`
+### `settings.exclude`
 Set a glob pattern to prevent specific folders or files from providing language services.
 <DocProp defaultValue={settings.exclude} types={['string[]']} />
 
-### `.classAttributes`
+### `settings.classAttributes`
 Specify which markup attributes should provide features of the Master CSS syntax.
 <DocProp defaultValue={JSON.stringify(settings.classAttributes)} types={['string[]']} />
 
@@ -47,7 +49,7 @@ By default, the `class` and `className` attributes in HTML and JSX provide langu
 ```
 This only matches attributes with string tokens, such as `class=""` or `class=''`. For markup binding or assignment forms see the next option.
 
-### `.classAttributeBindings`
+### `settings.classAttributeBindings`
 Specify which markup attributes with bindings should provide features of the Master CSS syntax.
 <DocProp defaultValue={JSON.stringify(settings.classAttributeBindings)} types={['Record<string, [string, string] | false>']} />
 
@@ -73,7 +75,7 @@ By default, we have matched the class attribute bindings for popular frameworks.
 <div [ngClass]="isActive && 'target'"></div>
 ```
 
-### `.classFunctions`
+### `settings.classFunctions`
 Specify which function arguments should provide features of the Master CSS syntax.
 <DocProp defaultValue={JSON.stringify(settings.classFunctions)} types={['string[]']} />
 
@@ -99,7 +101,7 @@ import styled from '@master/styled.react'
 const Button = styled.button`target-1 target-2`
 ```
 
-### `.classDeclarations`
+### `settings.classDeclarations`
 Specify which variable declarations or object properties should provide features of the Master CSS syntax.
 <DocProp types={['string[]']} defaultValue={JSON.stringify(settings.classDeclarations)} />
 
@@ -121,18 +123,18 @@ const components = {
 }
 ```
 
-### `.suggestSyntax`
+### `settings.suggestSyntax`
 Enable syntax suggestions.
 <DocProp defaultValue={JSON.stringify(settings.suggestSyntax)} types={['boolean']} />
 
-### `.inspectSyntax`
+### `settings.inspectSyntax`
 Enable syntax inspection.
 <DocProp defaultValue={JSON.stringify(settings.inspectSyntax)} types={['boolean']} />
 
-### `.renderSyntaxColors`
+### `settings.renderSyntaxColors`
 Enable syntax color rendering.
 <DocProp defaultValue={JSON.stringify(settings.renderSyntaxColors)} types={['boolean']} />
 
-### `.editSyntaxColors`
+### `settings.editSyntaxColors`
 Enable syntax color editing.
 <DocProp defaultValue={JSON.stringify(settings.editSyntaxColors)} types={['boolean']} />

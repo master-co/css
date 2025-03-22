@@ -7,7 +7,8 @@ import settings from '~/site/../packages/eslint-plugin/src/settings'
 
 ---
 
-## Configuring
+## Basic usage
+### Setup ESLint configuration
 Use the latest flat configuration. As an example of checking Master CSS syntax in TypeScript and HTML files:
 ```js name=eslint.config.js
 import css from '@master/eslint-config-css' /* [!code ++] */
@@ -42,8 +43,8 @@ For the legacy configuration, see the [legacy example](https://github.com/master
 
 ---
 
-## Rules
-### `class-order`
+## API Reference
+### `rules.class-order`
 Enforce a consistent and logical order of classes.
 ```js name=eslint.config.js
 export default [
@@ -55,7 +56,7 @@ export default [
 ]
 ```
 
-### `class-validation`
+### `rules.class-validation`
 Detect syntax errors early when writing classes.
 ```js name=eslint.config.js
 export default [
@@ -79,7 +80,7 @@ export default [
 ]
 ```
 
-### `class-collision`
+### `rules.class-collision`
 Avoid applying classes with the same CSS declaration.
 ```js name=eslint.config.js
 export default [
@@ -91,10 +92,7 @@ export default [
 ]
 ```
 
----
-
-## Settings
-### `classAttributes`
+### `settings.classAttributes`
 Specify the element attribute containing classes.
 <Code lang="js" name="eslint.config.js" beautify>
 {`
@@ -110,7 +108,7 @@ Specify the element attribute containing classes.
 `}
 </Code>
 
-### `classFunctions`
+### `settings.classFunctions`
 Specify the names of the function to check its arguments.
 <Code lang="js" name="eslint.config.js" beautify>
 {`
@@ -126,7 +124,7 @@ Specify the names of the function to check its arguments.
 `}
 </Code>
 
-### `classDeclarations`
+### `settings.classDeclarations`
 Specify the names of the variable/member to check its declarations.
 <Code lang="js" name="eslint.config.js" beautify>
 {`
@@ -142,7 +140,7 @@ Specify the names of the variable/member to check its declarations.
 `}
 </Code>
 
-### `ignoredKeys`
+### `settings.ignoredKeys`
 Specifies object keys to ignore checking.
 <Code lang="js" name="eslint.config.js" beautify>
 {`
@@ -158,7 +156,7 @@ Specifies object keys to ignore checking.
 `}
 </Code>
 
-### `config`
+### `settings.config`
 Specify a custom Master CSS configuration or path. By default, it reads a module named `master.css.*` based on the current working directory.
 <Code lang="js" name="eslint.config.js">
 {`
