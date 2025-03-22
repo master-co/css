@@ -1,4 +1,4 @@
-## Overview [sr-only]
+## Understanding all layers [sr-only]
 Master CSS analyzes the syntax and inserts it into the appropriate layer, allowing you to focus on the UI without worrying about style precedence.
 <LayersDefault />
 
@@ -8,13 +8,13 @@ Here is an example that covers all layers:
 Generated CSS:
 <Code lang="css" beautify>{require('./tests/overview/generated.css?raw').default}</Code>
 
-- `css @layer base, theme, preset, components, general;` declares the order of the style layers. The cascade priority follows this order, where layers declared later override earlier ones if there are conflicting styles.
-- `css @layer base { … }` generates rules based on the syntax with `@base` (`mcss list-style:none_ul@base`).
-- `css @layer theme { … }` generates rules based on used variable values (`primary`) and `config.variables`.
-- `css @layer preset { … }` generates rules based on the syntax with `@preset` (`mcss text:16_p@preset`).
-- `css @layer components { … }` generates rules based on used abstract components (`mcss btn`) and `config.components`.
-- `css @layer general { … }` generates rules based on used general styles (`mcss flex`, `mcss @fade|1s`).
-- All keyframes rules are generated into the top-level.
+- The first line defines the cascade order. Layers declared later will override earlier ones in case of conflicts.
+- **Base** — rules from `@base` (e.g., `mcss list-style:none_ul@base`).
+- **Theme** — rules from variables and `config.variables`.
+- **Preset** — rules from `@preset` syntax (e.g., `mcss text:16_p@preset`).
+- **Components** — rules from abstract components and `config.components`.
+- **General** — rules from common utilities (e.g., `mcss flex`, `mcss @fade|1s`).
+- All keyframes are placed at the top level.
 
 ---
 
@@ -100,14 +100,14 @@ This way, you can set preset styles for multiple targets at once while still bei
 ## Summary
 By leveraging CSS cascade layers, you can structure your styles for better maintainability and prevent unwanted overrides.
 
-If styles conflict, the order of priority is: **General > Components > Theme > Preset > Base**.
+If styles conflict, the order of priority: **General** > **Components** > **Theme** > **Preset** > **Base**.
 
 ### Responsibilities
-1. Use `css @layer base {}` or `@base` for global resets and normalization.
-1. Use `css @layer preset {}` or `@preset` for brand-specific defaults.
+1. Use the base layer for global resets and normalization.
+1. Use the preset layer for brand-specific defaults.
 1. Other layers are automatically generated based on your syntax and configuration.
 
-### Principles
+### Best Practices
 1. Create base styles via CSS files and packages instead of defining a lot of `@base` syntax.
 1. Create preset styles based on base styles.
 1. Create component styles based on base and preset styles.
