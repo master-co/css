@@ -62,6 +62,8 @@
     "Search documents by title, content …": "搜尋文件標題、內容 …",
     "$SearchNotFound": "找不到符合<1>\"{{keyword}}\"</1>的結果",
     "Docs": "文件",
+    "Package": "套件",
+    "Design Token": "設計標記",
     "UI": "用戶介面",
     "Roadmap": "路線圖",
     "Play": "試玩",
