@@ -85,12 +85,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS runtime engine
-            Register Master CSS with official `CSSRuntimeProvider` and provide instance context.
-            1. Use `next/dynamic` to load `CSSRuntimeProvider`
-            2. Dynamic `js import('../master.css')`
-            3. Add `html <html hidden>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) during development
-
-            `@master/css.react` and `master.css.js` will not be included in the page's initial JavaScript bundle.
+            Register Master CSS Runtime with official `CSSRuntimeProvider` and provide instance context.
         </StepL>
         <StepR>
             <CodeTabs>
@@ -127,13 +122,13 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                         code: `
                             import '../styles/globals.css'
                             import type { AppProps } from 'next/app'
+                            import CSSRuntimeProvider from '@master/css.react' // [!code +]
                             import dynamic from 'next/dynamic' // [!code ++]
-
-                            const CSSRuntimeProvider = dynamic(() => import('@master/css.react').then((m) => m.CSSRuntimeProvider)) // [!code ++]
+                            import config from '../master.css' // [!code ++]
 
                             export default function App({ Component, pageProps }: AppProps) {
                                 return (
-                                    <CSSRuntimeProvider config={import('../master.css')}>
+                                    <CSSRuntimeProvider config={config}>
                                         <Component {...pageProps} />
                                     </CSSRuntimeProvider>
                                 )
@@ -175,7 +170,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                         code: `
                             import NextDocument, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
                             import { renderCSS } from '@master/css-server' // [!code ++]
-                            import { config } from '../master.css' // [!code ++]
+                            import config from '../master.css' // [!code ++]
 
                             export default function Document() {
                                 return (

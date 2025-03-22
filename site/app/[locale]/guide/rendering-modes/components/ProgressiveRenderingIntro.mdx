@@ -1,7 +1,7 @@
 import { IconPackageImport, IconDevicesBolt, IconAdjustments } from '@tabler/icons-react'
 import clsx from 'clsx'
 
-Master CSS [Progressive Rendering](/guide/rendering-modes/progressive-rendering) scans the rendered HTML ahead of time, **server-side** or **at build time**, generates the corresponding **CSS rules for each page**, and **lazy loads** the runtime engine to keep track of the dynamic class names.
+Master CSS [Progressive Rendering](/guide/rendering-modes/progressive-rendering) scans the rendered HTML ahead of time, **server-side** or **at build time**, generates the corresponding **CSS rules for each page**, and **defer loads** the runtime engine to keep track of the dynamic class names.
 <div className="flex flex:wrap@<sm gap:12x my:14x">
     <Features className={clsx(props.img ? 'w:35%@sm' : 'grid-cols:3@sm')}>
         <Feature>
@@ -9,7 +9,7 @@ Master CSS [Progressive Rendering](/guide/rendering-modes/progressive-rendering)
             <div>
                 **Faster page loading**
 
-                <p className="text:16!">Non-rendering-blocking internal CSS and lazy loading</p>
+                <p className="text:16!">Non-rendering-blocking internal CSS and defer loading</p>
             </div>
         </Feature>
         <Feature>
