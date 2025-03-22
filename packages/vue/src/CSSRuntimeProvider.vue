@@ -3,7 +3,7 @@ import { ref, provide, onMounted, onUnmounted, watch, onWatcherCleanup } from 'v
 import type { Config } from '@master/css';
 import { CSSRuntime } from '@master/css-runtime';
 
-const runtimeCSSSymbol = Symbol('runtime-css');
+const cssRuntimeSymbol = Symbol('css-runtime');
 const props = defineProps<{
     config?: Config | Promise<any>;
     root?: Document | ShadowRoot | null; // null for Element.shadowRoot
@@ -57,7 +57,7 @@ watch(() => props.root, () => {
     onWatcherCleanup(controller.abort)
 })
 
-provide(runtimeCSSSymbol, cssRuntime.value)
+provide(cssRuntimeSymbol, cssRuntime.value)
 </script>
 
 <template>
