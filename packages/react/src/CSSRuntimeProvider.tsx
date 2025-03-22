@@ -1,20 +1,16 @@
 'use client'
 
-import type { Config } from '@master/css'
 import { CSSRuntime } from '@master/css-runtime'
 import { createContext, useContext, useRef, useCallback, ReactNode } from 'react'
 import { useUpdateEffect, useIsomorphicLayoutEffect } from 'react-use'
+import type CSSRuntimeProviderProps from './types/provider-props'
 // fix: ReferenceError: React is not defined
 import React from 'react'
 
-export const RuntimeCSSContext = createContext<CSSRuntime | undefined>(undefined)
-export const useRuntimeCSS = () => useContext(RuntimeCSSContext)
+export const CSSRuntimeContext = createContext<CSSRuntime | undefined>(undefined)
+export const useCSSRuntime = () => useContext(CSSRuntimeContext)
 
-export default function CSSRuntimeProvider(props: {
-    children?: ReactNode,
-    config?: Config | Promise<any>,
-    root?: Document | ShadowRoot | null // null for Element.shadowRoot
-}) {
+export default function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
     const cssRuntime = useRef<CSSRuntime>(undefined)
 
     const resolveConfig = useCallback(async () => {
@@ -70,5 +66,5 @@ export default function CSSRuntimeProvider(props: {
         }
     }, [initialize, props.root])
 
-    return <RuntimeCSSContext.Provider value={cssRuntime.current}>{props.children}</RuntimeCSSContext.Provider>
+    return <CSSRuntimeContext.Provider value={cssRuntime.current}>{props.children}</CSSRuntimeContext.Provider>
 }
