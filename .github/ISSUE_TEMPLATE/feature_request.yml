@@ -1,7 +1,6 @@
 name: '✨ Feature'
 description: Propose a new feature
-title: '✨ '
-labels: [feature]
+type: Feature
 
 body:
     - type: markdown

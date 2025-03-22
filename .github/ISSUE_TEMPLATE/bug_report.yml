@@ -1,7 +1,6 @@
 name: "🐞 Bug"
 description: Report a bug
-title: '🐞 '
-labels: [bug]
+type: Bug
 
 body:
   - type: markdown

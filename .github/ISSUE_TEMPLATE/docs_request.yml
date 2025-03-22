@@ -1,7 +1,6 @@
 name: '📄 Documentation'
 description: A request to update or improve documentation
-title: '📄 '
-labels: [documentation]
+type: Docs
 
 body:
     - type: textarea

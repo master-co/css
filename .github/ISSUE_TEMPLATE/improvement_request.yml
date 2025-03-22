@@ -1,7 +1,6 @@
 name: '💖 Improvement'
 description: Propose improvements to existing functionality or architecture.
-title: '💖 '
-labels: [improvement]
+type: Improvement
 
 body:
     - type: markdown
