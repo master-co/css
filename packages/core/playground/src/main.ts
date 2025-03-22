@@ -1,3 +1,7 @@
 import MasterCSS from '../../src'
 
-console.log(new MasterCSS().createFromSelectorText('.mt\\:0_hr\\+\\*\\@preset hr + *'))
+console.log(new MasterCSS({
+    components: {
+        btn: 'block@preset'
+    }
+}).generate('btn')[0].text)
