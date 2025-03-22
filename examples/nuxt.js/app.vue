@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue'
-const CSSRuntimeProvider = defineAsyncComponent(async () => (await import('@master/css.vue')).CSSRuntimeProvider)
+import CSSRuntimeProvider from '@master/css.vue'
+import config from './master.css'
 </script>
 
 <template>
-    <CSSRuntimeProvider :config="import('./master.css')">
+    <CSSRuntimeProvider :config="config">
         <NuxtWelcome class="{font:32!;font:heavy!;my:20;tracking:-.02em}_h1@sm" />
     </CSSRuntimeProvider>
 </template>

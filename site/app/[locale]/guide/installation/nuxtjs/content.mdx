@@ -70,20 +70,17 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS runtime engine
-            1. Dynamic `js import('@master/css.vue')`
-            2. Dynamic `js import('../master.css')`
-
-            `@master/css.vue` and `master.css.ts` will not be included in the page's initial JavaScript bundle.
+            Register Master CSS Runtime with official `CSSRuntimeProvider` and provide instance context.
         </StepL>
         <StepR>
             ```vue name=app.vue
             <script setup lang="ts">
-            import { defineAsyncComponent } from 'vue' /* [!code ++] */
-            const CSSRuntimeProvider = defineAsyncComponent(async () => (await import('@master/css.vue')).CSSRuntimeProvider) /* [!code ++] */
+            import CSSRuntimeProvider from '@master/css.vue' /* [!code ++] */
+            import config from './master.css' /* [!code ++] */
             </script>
 
             <template>
-                <CSSRuntimeProvider :config="import('./master.css')">
+                <CSSRuntimeProvider :config="config">
                     …
                 </CSSRuntimeProvider>
             </template>
