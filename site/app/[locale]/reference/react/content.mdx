@@ -1,0 +1,37 @@
+## Installation [sr-only]
+```bash action=install
+@master/css.react
+```
+The package provides a convenient React provider and context for using `@master/css-runtime` in React applications.
+
+---
+
+## API Reference
+### `<CSSRuntimeProvider>`
+The `CSSRuntimeProvider` will automatically initialize a `CSSRuntime` instance and manage it according to changes in config or root element.
+```tsx
+import CSSRuntimeProvider from '@master/css.react'
+import config from './master.css'
+
+export default function App({ children }) {
+    return (
+        <CSSRuntimeProvider config={config}>
+            {children}
+        </CSSRuntimeProvider>
+    )
+}
+```
+
+### `CSSRuntimeProviderProps`
+<Code lang="ts">{require('!!raw-loader!~/packages/react/src/types/provider-props.ts').default}</Code>
+
+### `useCSSRuntime()`
+Access to the [`CSSRuntime`](/reference/runtime) instance.
+```tsx
+import { useCSSRuntime } from '@master/css.react'
+
+export function YourComponent() {
+    const cssRuntime = useCSSRuntime()
+    // ...
+}
+```
