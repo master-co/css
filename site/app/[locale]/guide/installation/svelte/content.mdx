@@ -94,30 +94,21 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         <StepL>
             ### <StepNum />Set up CSS runtime engine
             Register Master CSS and provide instance context in `src/routes/+layout.svelte`:
-            1. Dynamic `js import("@master/css.svelte")`
-            2. Dynamic `js import('../master.css')`
-            3. Use `Fragment` to keep the content pre-rendered
+            1. Import `js CSSRuntimeProvider`
+            2. Import `js config`
 
             `@master/css.svelte` and `master.css.ts` will not be included in the page's initial JavaScript bundle.
         </StepL>
         <StepR>
             ```svelte name=src/routes/%2Blayout.svelte
             <script lang="ts">
-                import { onMount, type ComponentType } from "svelte"; /* [!code ++] */
-                import { Fragment } from "@master/css.svelte"; /* [!code ++] */
-                import type { CSSRuntimeProvider as CSSProviderType } from "@master/css.svelte"; /* [!code ++] */
-                …
-
-                let CSSRuntimeProvider: ComponentType<CSSProviderType> = Fragment as any; /* [!code ++] */
-
-                onMount(async () => { /* [!code ++] */
-                    CSSRuntimeProvider = (await import("@master/css.svelte")).default; /* [!code ++] */
-                }); /* [!code ++] */
+                import CSSRuntimeProvider from "@master/css.svelte"; /* [!code ++] */
+                import config from "../../master.css";[!code ++] */ /* [!code ++] */
             </script>
 
-            <svelte:component this={CSSRuntimeProvider} config={import('../../master.css')}>
+            <CSSRuntimeProvider config={config}>
                 <slot />
-            </svelte:component>
+            </CSSRuntimeProvider>
             ```
         </StepR>
     </Step>
@@ -129,7 +120,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         <StepR>
             ```ts name=src/hooks.server.ts
             import { render } from '@master/css-server' /* [!code ++] */
-            import { config } from '../master.css' /* [!code ++] */
+            import config from '../master.css' /* [!code ++] */
 
             /** @type {import('@sveltejs/kit').Handle} */
             export async function handle({ event, resolve }) {
