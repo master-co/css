@@ -1,15 +1,17 @@
+
+---
+
+## Preload runtime engine
 (!|) The browser loads the runtime engine only after downloading and parsing the stylesheet.
 <Image src={require('~/site/public/images/no-preload-network.png').default} placeholder="blur" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
 It may experience defers in downloading and initializing until the first contentful paint if the [runtime engine](/guide/rendering-modes/runtime-rendering) hasn't been preloaded.
 
-### Preload runtime engine
-(o) Use `html <link rel="preload" …>` to preload the critical resources.
-
+(o) Use `html <link rel="preload">` to preload the critical resources.
 ```html
 <!DOCTYPE html>
 <html lang="en" hidden>
 <head>
-    <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc"> <!-- [!code ++] -->
+    <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc"> <!-- [!code highlight] -->
     <link rel="preload" as="style" href="https://cdn.master.co/normal.css">
     <link rel="stylesheet" href="https://cdn.master.co/normal.css">
     <script src="https://cdn.master.co/css-runtime@rc"></script>
@@ -22,6 +24,30 @@ Now the runtime engine is preloaded, so the download happens in parallel with th
 <Image src={require('~/site/public/images/preload-network.png').default} placeholder="blur" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
 
 You are telling the browser that you would like to fetch it sooner than the browser would otherwise discover it.
+
+---
+
+## Defer runtime engine
+(o) Defer the runtime engine, because the critical CSS has already been pre-rendered on the page.
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- @MARK defer -->
+    <script src="https://cdn.master.co/css-runtime@rc" defer></script>
+</head>
+</html>
+```
+
+(x) Do not preload the runtime engine in progressive rendering mode.
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc"> <!-- [!code --] -->
+</head>
+</html>
+```
 
 ---
 
