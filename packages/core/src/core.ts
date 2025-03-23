@@ -5,10 +5,10 @@ import hexToRgb from './utils/hex-to-rgb'
 import { flattenObject } from './utils/flatten-object'
 import extendConfig from './utils/extend-config'
 import { type PropertiesHyphen } from 'csstype'
-import SyntaxLayer from './syntax-layer'
 import { Rule } from './rule'
 import SyntaxRuleType from './syntax-rule-type'
 import Layer from './layer'
+import SyntaxLayer from './syntax-layer'
 import NonLayer from './non-layer'
 import { ColorVariable, DefinedRule, Variable } from './types/syntax'
 import { AnimationDefinitions, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
@@ -29,6 +29,15 @@ export default class MasterCSS {
     readonly componentsLayer = new SyntaxLayer('components', this)
     readonly generalLayer = new SyntaxLayer('general', this)
 
+    constructor(
+        public customConfig?: Config
+    ) {
+        this.config = customConfig?.override
+            ? extendConfig(customConfig)
+            : extendConfig(defaultConfig, customConfig)
+        this.resolve()
+    }
+
     get text() {
         return this.rules
             .sort((a, b) => {
@@ -38,15 +47,6 @@ export default class MasterCSS {
                 return indexA - indexB
             })
             .map(({ text }) => text).join('')
-    }
-
-    constructor(
-        public customConfig?: Config
-    ) {
-        this.config = customConfig?.override
-            ? extendConfig(customConfig)
-            : extendConfig(defaultConfig, customConfig)
-        this.resolve()
     }
 
     resolve() {

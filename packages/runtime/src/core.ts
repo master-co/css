@@ -1,16 +1,22 @@
-import { MasterCSS, config as defaultConfig, Rule, SyntaxLayer } from '@master/css'
+import { MasterCSS, config as defaultConfig, Rule } from '@master/css'
 import { type Config } from '@master/css'
 import registerGlobal from './register-global'
 import { HydrateResult } from './types'
+import RuntimeLayer from './layer'
+import RuntimeSyntaxLayer, { RuntimeSyntaxLayerInstance } from './syntax-layer'
 
 export default class CSSRuntime extends MasterCSS {
     static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
     readonly host: Element
     readonly observing = false
     readonly progressive = false
-    readonly hydrated = false
     readonly container: HTMLElement | ShadowRoot
     readonly observer?: MutationObserver
+    readonly baseLayer = new RuntimeSyntaxLayer('base', this)
+    readonly themeLayer = new RuntimeLayer('theme', this)
+    readonly presetLayer = new RuntimeSyntaxLayer('preset', this)
+    readonly componentsLayer = new RuntimeSyntaxLayer('components', this)
+    readonly generalLayer = new RuntimeSyntaxLayer('general', this)
 
     constructor(
         public root: Document | ShadowRoot = document,
@@ -289,7 +295,8 @@ export default class CSSRuntime extends MasterCSS {
         }
         for (const eachCSSLayerRule of cssLayerRules) {
             const nativeLayerRules = Array.from(eachCSSLayerRule.cssRules)
-            let layer: SyntaxLayer
+            // TODO: type error
+            let layer: RuntimeSyntaxLayerInstance
             switch (eachCSSLayerRule.name) {
                 case 'base':
                     layer = this.baseLayer

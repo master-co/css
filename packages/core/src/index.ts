@@ -13,6 +13,9 @@ export { default as MasterCSS, default } from './core'
 export * from './types/config'
 export * from './types/syntax'
 
+// factories
+export { default as withSyntaxLayer } from './factories/with-syntax-layer'
+
 // functions
 export { default as extendConfig } from './utils/extend-config'
 export { default as reorderForReadableClasses } from './utils/reorder-for-readable-classes'
