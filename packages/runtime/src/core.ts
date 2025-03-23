@@ -1,12 +1,14 @@
 import { MasterCSS, config as defaultConfig, Rule, SyntaxLayer } from '@master/css'
 import { type Config } from '@master/css'
 import registerGlobal from './register-global'
+import { HydrateResult } from './types'
 
 export default class CSSRuntime extends MasterCSS {
     static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
     readonly host: Element
     readonly observing = false
     readonly progressive = false
+    readonly hydrated = false
     readonly container: HTMLElement | ShadowRoot
     readonly observer?: MutationObserver
 
@@ -41,6 +43,8 @@ export default class CSSRuntime extends MasterCSS {
      */
     observe() {
         if (this.observing) return this
+
+        // 1. Check if the stylesheet is progressive.
         if (this.root.styleSheets)
             for (const sheet of this.root.styleSheets) {
                 const { ownerNode } = sheet
@@ -51,37 +55,45 @@ export default class CSSRuntime extends MasterCSS {
                     break
                 }
             }
+
+        // 2. Count the classes in the host and its children.
+        const connectedNames = new Set<string>()
+        const increaseClassCount = (className: string) => {
+            const count = this.classCounts.get(className) || 0
+            if (!count) {
+                connectedNames.add(className)
+            }
+            this.classCounts.set(className, count + 1)
+        }
+
+        this.host.classList.forEach(increaseClassCount);
+
+        ((this.root.constructor.name === 'HTMLDocument') ? this.host : this.container)
+            .querySelectorAll('[class]')
+            .forEach((element) => element.classList.forEach(increaseClassCount))
+
+        // 3. Hydrate the existing CSS rules or create a new one.
         if (this.progressive) {
-            this.hydrate(this.style!.sheet!.cssRules)
+            const hydrateResult = this.hydrate(this.style!.sheet!.cssRules)
+            // Add the connected class names that are not hydrated yet.
+            for (const eachConnectedName of connectedNames) {
+                if (hydrateResult.allSyntaxRules.find((rule) => (rule.fixedClass || rule.name) === eachConnectedName)) continue
+                this.add(eachConnectedName)
+                if (process.env.NODE_ENV === 'development') {
+                    // Basically, the style#master should have all the prerendered CSS rules that are connected in the DOM.
+                    console.debug(`The class \`${eachConnectedName}\` was added via script before calling hydrate, or the corresponding CSS rule were not properly pre-rendered.`)
+                }
+            }
         } else {
             this.style = document.createElement('style')
             this.style.id = 'master'
             this.container.append(this.style)
             this.style.sheet!.insertRule(this.layerStatementRule.text)
             this.layerStatementRule.nodes[0].native = this.style!.sheet!.cssRules.item(0) as CSSLayerStatementRule
+            for (const eachConnectedName of connectedNames) {
+                this.add(eachConnectedName)
+            }
         }
-
-        const addClasses = (element: Element) => {
-            element.classList.forEach((className) => {
-                if (this.classCounts.has(className)) {
-                    this.classCounts.set(className, this.classCounts.get(className)! + 1)
-                } else {
-                    this.classCounts.set(className, 1)
-                    this.add(className)
-                }
-            })
-        }
-
-        addClasses(this.host);
-
-        /**
-         * 待所有 DOM 結構完成解析後，開始繪製 Rule 樣式
-         */
-        ((this.root.constructor.name === 'HTMLDocument') ? this.host : this.container)
-            .querySelectorAll('[class]')
-            .forEach((element) => {
-                addClasses(element)
-            })
 
         // @ts-expect-error readonly
         this.observer = new MutationObserver((mutationRecords) => {
@@ -230,6 +242,9 @@ export default class CSSRuntime extends MasterCSS {
     hydrate(nativeLayerRules: CSSRuleList) {
         const cssLayerRules: CSSLayerBlockRule[] = []
         const checkSheet = new CSSStyleSheet()
+        const result: HydrateResult = {
+            allSyntaxRules: []
+        }
         for (let i = 0; i < nativeLayerRules.length; i++) {
             const eachNativeCSSRule = nativeLayerRules[i]
             if (eachNativeCSSRule.constructor.name === 'CSSLayerBlockRule') {
@@ -285,9 +300,12 @@ export default class CSSRuntime extends MasterCSS {
                 case 'components':
                     layer = this.componentsLayer
                     break
-                default:
+                case 'general':
                     layer = this.generalLayer
                     break
+                default:
+                    console.error(`Cannot recognize the layer \`${eachCSSLayerRule.name}\`. (https://rc.css.master.co/messages/hydration-errors)`)
+                    continue
             }
             layer.native = eachCSSLayerRule
             for (const eachNativeRule of nativeLayerRules) {
@@ -302,6 +320,7 @@ export default class CSSRuntime extends MasterCSS {
                         layer.rules.push(createdRule)
                         layer.insertVariables(createdRule)
                         layer.insertAnimations(createdRule)
+                        result.allSyntaxRules.push(createdRule)
                         createdRule.nodes.forEach((node) => {
                             const createdNodeNativeRule = checkSheet.cssRules.item(checkSheet.insertRule(node.text))
                             if (createdNodeNativeRule) {
@@ -322,7 +341,8 @@ export default class CSSRuntime extends MasterCSS {
             }
             if (layer.rules.length) this.rules.push(layer)
         }
-        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:hydrated', { cssRuntime: this })
+        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:hydrated', { cssRuntime: this, result })
+        return result
     }
 
     getSelectorText(cssRule: CSSRule): string | undefined {
