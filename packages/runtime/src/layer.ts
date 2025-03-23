@@ -4,7 +4,7 @@ import CSSRuntime from './core'
 
 export default class RuntimeLayer extends Layer {
     readonly rules: Rule[] = []
-    readonly usages: Record<string, number> = {}
+    readonly tokenCounts = new Map<string, number>()
     native: CSSLayerBlockRule | null = null
 
     constructor(

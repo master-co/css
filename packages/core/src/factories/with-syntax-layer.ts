@@ -1,4 +1,5 @@
 import Layer from '../layer'
+import NonLayer from '../non-layer'
 import { Rule } from '../rule'
 import { SyntaxRule } from '../syntax-rule'
 import { AtFeatureComponent, TypeVariable } from '../types/syntax'
@@ -270,20 +271,23 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
         delete(key: string) {
             const syntaxRule = super.delete(key) as SyntaxRule | undefined
             if (!syntaxRule) return
+            const deleteLayerToken = (layerToken: string, layer: Layer | NonLayer) => {
+                const count = layer.tokenCounts.get(layerToken) ?? 0
+                if (count <= 1) {
+                    layer.delete(layerToken)
+                    layer.tokenCounts.delete(layerToken)
+                } else {
+                    layer.tokenCounts.set(layerToken, count - 1)
+                }
+            }
             if (syntaxRule.variableNames) {
                 for (const eachVariableName of syntaxRule.variableNames) {
-                    if (!--this.css.themeLayer.usages[eachVariableName]) {
-                        this.css.themeLayer.delete(eachVariableName)
-                        delete this.css.themeLayer.usages[eachVariableName]
-                    }
+                    deleteLayerToken(eachVariableName, this.css.themeLayer)
                 }
             }
             if (syntaxRule.animationNames) {
                 for (const eachKeyframeName of syntaxRule.animationNames) {
-                    if (!--this.css.animationsNonLayer.usages[eachKeyframeName]) {
-                        this.css.animationsNonLayer.delete(eachKeyframeName)
-                        delete this.css.animationsNonLayer.usages[eachKeyframeName]
-                    }
+                    deleteLayerToken(eachKeyframeName, this.css.animationsNonLayer)
                 }
             }
             syntaxRule.definition.delete?.call(syntaxRule, syntaxRule.name)
@@ -295,7 +299,8 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                 for (const eachVariableName of syntaxRule.variableNames) {
                     const variable = this.css.variables[eachVariableName]
                     if (this.css.themeLayer.rules.find(({ name }) => name === eachVariableName)) {
-                        this.css.themeLayer.usages[eachVariableName]++
+                        const count = this.css.themeLayer.tokenCounts.get(eachVariableName) || 0
+                        this.css.themeLayer.tokenCounts.set(eachVariableName, count + 1)
                     } else {
                         const newRule = new Rule(eachVariableName)
                         const addNative = (mode: string, _variable: TypeVariable) => {
@@ -352,7 +357,7 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                             }
                         }
                         this.css.themeLayer.insert(newRule)
-                        this.css.themeLayer.usages[eachVariableName] = 1
+                        this.css.themeLayer.tokenCounts.set(eachVariableName, 1)
                     }
                 }
             }
@@ -362,7 +367,8 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
             if (syntaxRule.animationNames) {
                 for (const eachAnimationName of syntaxRule.animationNames) {
                     if (this.css.animationsNonLayer.rules.find(({ name }) => name === eachAnimationName)) {
-                        this.css.animationsNonLayer.usages[eachAnimationName]++
+                        const count = this.css.animationsNonLayer.tokenCounts.get(eachAnimationName) || 0
+                        this.css.animationsNonLayer.tokenCounts.set(eachAnimationName, count + 1)
                     } else {
                         this.css.animationsNonLayer.insert(
                             new Rule(eachAnimationName, [
@@ -376,10 +382,10 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                                 }
                             ])
                         )
-                        this.css.animationsNonLayer.usages[eachAnimationName] = 1
+                        this.css.animationsNonLayer.tokenCounts.set(eachAnimationName, 1)
                     }
                 }
             }
         }
     }
-  }
+}

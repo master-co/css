@@ -25,7 +25,7 @@ test('expects the animation output', async ({ page, browserName }) => {
             '{@zoom|1s;f:16}'
         )
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.animationsNonLayer.usages)).toMatchObject({
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toMatchObject({
         fade: 1,
         flash: 1,
         float: 1,
@@ -38,7 +38,7 @@ test('expects the animation output', async ({ page, browserName }) => {
     })
     // TODO: firefox -> 1
     if (browserName !== 'firefox') {
-        expect(await page.evaluate(() => globalThis.cssRuntime.animationsNonLayer.usages)).toMatchObject({
+        expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toMatchObject({
             zoom: 2,
         })
     }
@@ -102,7 +102,7 @@ test('expects the animation output', async ({ page, browserName }) => {
         const p = document.getElementById('mp')
         p?.classList.remove('@zoom|1s')
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.animationsNonLayer.usages)).toEqual({ zoom: 1 })
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toEqual({ zoom: 1 })
     expect(await page.evaluate(() => globalThis.cssRuntime.text)).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
@@ -111,7 +111,7 @@ test('expects the animation output', async ({ page, browserName }) => {
 
     // TODO: firefox -> 1
     if (browserName !== 'firefox') {
-        expect(await page.evaluate(() => globalThis.cssRuntime.animationsNonLayer.usages)).toMatchObject({})
+        expect(await page.evaluate(() => globalThis.cssRuntime.animationsNonLayer.tokenCounts)).toMatchObject({})
         expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
     }
 })

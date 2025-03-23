@@ -3,7 +3,7 @@ import MasterCSS from './core'
 
 export default class Layer {
     readonly rules: Rule[] = []
-    readonly usages: Record<string, number> = {}
+    readonly tokenCounts = new Map<string, number>()
 
     constructor(
         public name: string,
@@ -43,8 +43,7 @@ export default class Layer {
         if (indexOfLayer !== -1) {
             this.css.rules.splice(indexOfLayer, 1)
         }
-        // @ts-expect-error
-        this.usages = {}
+        this.tokenCounts.clear()
     }
 
     get text(): string {

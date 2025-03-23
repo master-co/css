@@ -30,7 +30,7 @@ Once the hook is attached, you can subscribe to runtime changes — such as clas
 const hook = globalThis.__MASTER_CSS_DEVTOOLS_HOOK__
 const onMutated = (context) => {
   console.log('CSS Mutations:', context.records)
-  console.log('Class usages:', context.classCounts)
+  console.log('Class counts:', context.classCounts)
   console.log('CSSRuntime instance:', context.cssRuntime)
 }
 

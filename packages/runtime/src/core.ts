@@ -269,7 +269,7 @@ export default class CSSRuntime extends MasterCSS {
                             lastVariableName = variableName
                             variableRule = new Rule(variableName)
                             this.themeLayer.rules.push(variableRule)
-                            this.themeLayer.usages[variableRule.name] = 0
+                            this.themeLayer.tokenCounts.set(variableRule.name, 0)
                         }
                         variableRule?.nodes.push({
                             native: cssRule,
@@ -290,7 +290,7 @@ export default class CSSRuntime extends MasterCSS {
                 }])
                 this.animationsNonLayer.rules.push(animationRule)
                 this.rules.push(animationRule)
-                this.animationsNonLayer.usages[animationRule.name] = 0
+                this.animationsNonLayer.tokenCounts.set(animationRule.name, 0)
             }
         }
         for (const eachCSSLayerRule of cssLayerRules) {

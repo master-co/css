@@ -4,7 +4,7 @@ import { Rule } from './rule'
 
 export default class NonLayer {
     readonly rules: Rule[] = []
-    readonly usages: Record<string, number> = {}
+    readonly tokenCounts = new Map<string, number>()
 
     constructor(
         public css: MasterCSS
@@ -59,7 +59,6 @@ export default class NonLayer {
             }
         }
         this.rules.length = 0
-        // @ts-expect-error
-        this.usages = {}
+        this.tokenCounts.clear()
     }
 }
