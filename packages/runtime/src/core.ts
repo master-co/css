@@ -17,6 +17,7 @@ export default class CSSRuntime extends MasterCSS {
     readonly presetLayer = new RuntimeSyntaxLayer('preset', this)
     readonly componentsLayer = new RuntimeSyntaxLayer('components', this)
     readonly generalLayer = new RuntimeSyntaxLayer('general', this)
+    readonly classCounts = new Map<string, number>()
 
     constructor(
         public root: Document | ShadowRoot = document,
@@ -295,7 +296,6 @@ export default class CSSRuntime extends MasterCSS {
         }
         for (const eachCSSLayerRule of cssLayerRules) {
             const nativeLayerRules = Array.from(eachCSSLayerRule.cssRules)
-            // TODO: type error
             let layer: RuntimeSyntaxLayerInstance
             switch (eachCSSLayerRule.name) {
                 case 'base':
@@ -385,6 +385,13 @@ export default class CSSRuntime extends MasterCSS {
             this.style!.sheet.deleteRule(i)
         }
         super.refresh(customConfig)
+        /**
+         * 拿當前所有的 classNames 按照最新的 colors, config.rules 匹配並生成新的 style
+         * 所以 refresh 過後 rules 可能會變多也可能會變少
+         */
+        this.classCounts.forEach((_, className) => {
+            this.add(className)
+        })
         globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:refreshed', { cssRuntime: this, customConfig })
         return this
     }

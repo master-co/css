@@ -21,4 +21,5 @@ test('prerender', async ({ page }) => {
         }
     })
     expect(css_beautify(await page.evaluate(() => globalThis.cssRuntime.themeLayer.text))).toEqual(text)
+    expect(await page.evaluate(() => globalThis.cssRuntime.themeLayer.native?.cssRules.length)).toEqual(2)
 })
