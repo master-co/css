@@ -1,6 +1,13 @@
 import { initCSSRuntime } from '../../src'
 
-initCSSRuntime()
+initCSSRuntime({
+    selectors: {
+        '::both': ['::before', '::after'],
+    },
+    components: {
+        btn: 'bg:black block::both'
+    }
+})
 
 // const p1 = document.getElementById('p1') as HTMLHeadElement
 

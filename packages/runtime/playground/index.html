@@ -4,16 +4,6 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script>
-        window.masterCSSConfig = {
-            selectors: {
-                '::both': ['::before', '::after'],
-            },
-            components: {
-                btn: 'bg:black block::both'
-            }
-        }
-    </script>
     <style id="master">
         @layer components {
             .btn::before,
@@ -43,6 +33,8 @@
 </head>
 
 <body>
+    <button class="btn btn@sm">button</button>
+    <button class="btn btn@sm">button</button>
     <button class="btn btn@sm">button</button>
 </body>
 

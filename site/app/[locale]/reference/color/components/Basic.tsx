@@ -1,5 +1,3 @@
-'use client'
-
 import Code from 'internal/components/Code'
 import BasicDemo from './BasicDemo'
 
