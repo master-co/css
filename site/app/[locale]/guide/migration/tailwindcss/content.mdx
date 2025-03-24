@@ -117,19 +117,21 @@ Not just media queries but feature queries and [more](/guide/syntax).
 ## Configuration
 ### Add screens
 Define responsive breakpoints using variable [screens](/guide/variables#add-a-screen-size).
+```js name=tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+    theme: {
+        screens: {
+            'sm': '640px',
+            'md': '768px',
+            'lg': '1024px',
+            'xl': '1280px',
+            '2xl': '1536px'
+        }
+    }
+}
+```
 ```js name=master.css.js
-/** @type {import('tailwindcss').Config} */ /* [!code --] */
-module.exports = { /* [!code --] */
-    theme: { /* [!code --] */
-        screens: { /* [!code --] */
-            'sm': '640px', /* [!code --] */
-            'md': '768px', /* [!code --] */
-            'lg': '1024px', /* [!code --] */
-            'xl': '1280px', /* [!code --] */
-            '2xl': '1536px' /* [!code --] */
-        } /* [!code --] */
-    } /* [!code --] */
-} /* [!code --] */
 /** @type {import('@master/css').Config} */
 export default {
     variables: {
@@ -145,17 +147,17 @@ export default {
 ```
 (x) No longer need redundant screen options.
 ```js name=tailwind.config.js
-module.exports = { /* [!code --] */
-    theme: { /* [!code --] */
-        screens: { /* [!code --] */
-            'sm': {'min': '640px', 'max': '767px'}, /* [!code --] */
-            'md': {'min': '768px', 'max': '1023px'}, /* [!code --] */
-            'lg': {'min': '1024px', 'max': '1279px'}, /* [!code --] */
-            'xl': {'min': '1280px', 'max': '1535px'}, /* [!code --] */
-            '2xl': {'min': '1536px'}, /* [!code --] */
-        }, /* [!code --] */
-    } /* [!code --] */
-} /* [!code --] */
+module.exports = {
+    theme: {
+        screens: {
+            'sm': {'min': '640px', 'max': '767px'},
+            'md': {'min': '768px', 'max': '1023px'},
+            'lg': {'min': '1024px', 'max': '1279px'},
+            'xl': {'min': '1280px', 'max': '1535px'},
+            '2xl': {'min': '1536px'},
+        },
+    }
+}
 ```
 (o) Liberate flexibility with [syntax-first](/guide/responsive-design#syntax-first).
 ```html
@@ -165,17 +167,19 @@ module.exports = { /* [!code --] */
 
 ### Add media queries
 Using [at-rules](/guide/syntax#at-rules) to define media queries, feature queries, and even container queries.
+```js name=tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+    theme: {
+        extend: {
+           screens: {
+               'tall': { 'raw': '(minheight: 800px)' },
+           }
+        }
+    }
+}
+```
 ```js name=master.css.js
-/** @type {import('tailwindcss').Config} */ /* [!code --] */
-module.exports = { /* [!code --] */
-    theme: { /* [!code --] */
-        extend: { /* [!code --] */
-           screens: { /* [!code --] */
-               'tall': { 'raw': '(minheight: 800px)' }, /* [!code --] */
-           } /* [!code --] */
-        } /* [!code --] */
-    } /* [!code --] */
-} /* [!code --] */
 /** @type {import('@master/css').Config} */
 export default {
     at: {
@@ -190,13 +194,13 @@ export default {
 ### Alternative to `@apply`
 Use [components](/guide/components) to abstract styles instead of `@apply`.
 ```css name=main.css
-@tailwind base; /* [!code --] */
-@tailwind components; /* [!code --] */
-@tailwind utilities; /* [!code --] */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-.btn { /* [!code --] */
-     @apply py-2 px-5 bg-white hover:bg-black; /* [!code --] */
-} /* [!code --] */
+.btn {
+    @apply py-2 px-5 bg-white hover:bg-black;
+}
 ```
 ```js name=master.css.js
 /** @type {import('@master/css').Config} */
