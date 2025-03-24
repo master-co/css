@@ -4,26 +4,32 @@ export default function registerLifecycleDebugger() {
     const hook = globalThis.__MASTER_CSS_DEVTOOLS_HOOK__
 
     hook.on('runtime:created', ({ cssRuntime }) => {
-        log.debug('Runtime created:', cssRuntime)
+        log.debug('created', cssRuntime)
     })
 
     hook.on('runtime:hydrated', ({ cssRuntime }) => {
-        log.debug('Runtime hydrated:', cssRuntime)
+        log.debug('hydrated', cssRuntime)
     })
 
     hook.on('runtime:observed', ({ cssRuntime }) => {
-        log.debug('Runtime observed:', cssRuntime)
+        log.debug('observed', cssRuntime)
+        if (cssRuntime.progressive) {
+            log.info('Progressive rendering is adopted.')
+            log.debug('pre-rendered CSS', cssRuntime.style)
+        } else {
+            log.info('Runtime rendering is adopted.')
+        }
     })
 
     hook.on('runtime:refreshed', ({ cssRuntime, customConfig }) => {
-        log.debug('Runtime refreshed:', cssRuntime, customConfig)
+        log.debug('refreshed', cssRuntime, customConfig)
     })
 
     hook.on('runtime:disconnected', ({ cssRuntime }) => {
-        log.debug('Runtime disconnected:', cssRuntime)
+        log.debug('disconnected', cssRuntime)
     })
 
     hook.on('runtime:destroyed', ({ cssRuntime }) => {
-        log.debug('Runtime destroyed:', cssRuntime)
+        log.debug('destroyed', cssRuntime)
     })
 }

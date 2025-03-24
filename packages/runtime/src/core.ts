@@ -50,19 +50,19 @@ export default class CSSRuntime extends MasterCSS {
      */
     observe() {
         if (this.observing) return this
-
         // 1. Check if the stylesheet is progressive.
         if (this.root.styleSheets)
             for (const sheet of this.root.styleSheets) {
                 const { ownerNode } = sheet
                 if (ownerNode && (ownerNode as HTMLStyleElement).id === 'master') {
                     this.style = ownerNode as HTMLStyleElement
-                    // @ts-ignore
-                    this.progressive = true
+                    if (this.style.sheet?.cssRules.length) {
+                        // @ts-ignore
+                        this.progressive = true
+                    }
                     break
                 }
             }
-
         // 2. Count the classes in the host and its children.
         const connectedNames = new Set<string>()
         const increaseClassCount = (className: string) => {
@@ -72,9 +72,7 @@ export default class CSSRuntime extends MasterCSS {
             }
             this.classCounts.set(className, count + 1)
         }
-
         this.host.classList.forEach(increaseClassCount);
-
         ((this.root.constructor.name === 'HTMLDocument') ? this.host : this.container)
             .querySelectorAll('[class]')
             .forEach((element) => element.classList.forEach(increaseClassCount))
@@ -101,7 +99,6 @@ export default class CSSRuntime extends MasterCSS {
                 this.add(eachConnectedName)
             }
         }
-
         // @ts-expect-error readonly
         this.observer = new MutationObserver((mutationRecords) => {
             const eachClassCounts = new Map()
@@ -207,7 +204,6 @@ export default class CSSRuntime extends MasterCSS {
                 classCounts: eachClassCounts,
                 cssRuntime: this
             })
-
         })
 
         this.observer.observe(this.root, {
@@ -221,6 +217,7 @@ export default class CSSRuntime extends MasterCSS {
         if (!this.progressive) {
             this.host.removeAttribute('hidden')
         }
+
         // @ts-ignore
         this.observing = true
         globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:observed', { cssRuntime: this })
