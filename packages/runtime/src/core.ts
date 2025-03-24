@@ -295,7 +295,6 @@ export default class CSSRuntime extends MasterCSS {
             }
         }
         for (const eachCSSLayerRule of cssLayerRules) {
-            const nativeLayerRules = Array.from(eachCSSLayerRule.cssRules)
             let layer: RuntimeSyntaxLayerInstance
             switch (eachCSSLayerRule.name) {
                 case 'base':
@@ -315,10 +314,16 @@ export default class CSSRuntime extends MasterCSS {
                     continue
             }
             layer.native = eachCSSLayerRule
-            for (const eachNativeRule of nativeLayerRules) {
-                const selectorText = this.getSelectorText(eachNativeRule)
+            const unresolvedCSSRules = new Map<string, CSSRule>()
+            for (const rule of eachCSSLayerRule.cssRules) {
+                unresolvedCSSRules.set(rule.cssText, rule)
+            }
+
+            for (const eachNativeLayerRule of eachCSSLayerRule.cssRules) {
+                if (!unresolvedCSSRules.has(eachNativeLayerRule.cssText)) continue
+                const selectorText = this.getSelectorText(eachNativeLayerRule)
                 if (!selectorText) {
-                    console.error(`Cannot get the selector text from \`${eachNativeRule.cssText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                    console.error(`Cannot get the selector text from \`${eachNativeLayerRule.cssText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
                     continue
                 }
                 const createdRules = this.createFromSelectorText(selectorText)
@@ -331,19 +336,18 @@ export default class CSSRuntime extends MasterCSS {
                         createdRule.nodes.forEach((node) => {
                             const createdNodeNativeRule = checkSheet.cssRules.item(checkSheet.insertRule(node.text))
                             if (createdNodeNativeRule) {
-                                for (const eachFindingNativeRule of nativeLayerRules) {
-                                    if (createdNodeNativeRule.cssText === eachFindingNativeRule.cssText) {
-                                        node.native = eachFindingNativeRule
-                                        nativeLayerRules.splice(nativeLayerRules.indexOf(eachFindingNativeRule), 1)
-                                        return
-                                    }
+                                const match = unresolvedCSSRules.get(createdNodeNativeRule.cssText)
+                                if (match) {
+                                    node.native = match
+                                    unresolvedCSSRules.delete(createdNodeNativeRule.cssText)
+                                    return
                                 }
                             }
                             console.error(`Cannot retrieve CSS rule for \`${node.selectorText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
                         })
                     }
                 } else {
-                    console.error(`Cannot recognize \`${eachNativeRule.cssText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                    console.error(`Cannot recognize \`${eachNativeLayerRule.cssText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
                 }
             }
             if (layer.rules.length) this.rules.push(layer)
@@ -353,10 +357,10 @@ export default class CSSRuntime extends MasterCSS {
     }
 
     getSelectorText(cssRule: CSSRule): string | undefined {
-        if ('selectorText' in cssRule) {
+        if (cssRule instanceof CSSStyleRule) {
             return cssRule.selectorText as string
-        } else if ('cssRules' in cssRule) {
-            return this.getSelectorText((cssRule.cssRules as CSSRuleList).item(0)!)
+        } else if (cssRule instanceof CSSGroupingRule) {
+            return this.getSelectorText((cssRule.cssRules).item(0)!)
         }
     }
 

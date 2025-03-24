@@ -1,4 +1,4 @@
-@layer base, components;
+@layer base, theme, preset, components, general;
 
 @layer components {
     .btn::before,

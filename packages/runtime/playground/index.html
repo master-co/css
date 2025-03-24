@@ -5,27 +5,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style id="master">
-        @layer components {
-            .btn::before,
-            .btn::after {
-                display: block
+        @layer base, theme, preset, components, general;
+
+        @layer general {
+            .flex {
+                display: flex
             }
 
-            .btn {
-                background-color: rgb(0 0 0);
+            .\@fade\|1s {
+                animation: fade 1s
+            }
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 0
             }
 
-            @media (min-width: 834px) {
-                .btn\@sm::before,
-                .btn\@sm::after {
-                    display: block;
-                }
-            }
-
-            @media (min-width: 834px) {
-                .btn\@sm {
-                    background-color: rgb(0, 0, 0);
-                }
+            to {
+                opacity: 1
             }
         }
     </style>
@@ -33,9 +31,9 @@
 </head>
 
 <body>
-    <button class="btn btn@sm">button</button>
-    <button class="btn btn@sm">button</button>
-    <button class="btn btn@sm">button</button>
+    <button class="flex @fade|1s">button</button>
+    <button class="flex @fade|1s">button</button>
+    <button class="flex @fade|1s">button</button>
 </body>
 
 </html>
