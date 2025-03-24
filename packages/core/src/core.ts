@@ -494,24 +494,25 @@ export default class MasterCSS {
      * @returns SyntaxRule[]
      */
     generate(className: string, mode?: string): SyntaxRule[] {
-        let syntaxRules: SyntaxRule[] = []
-        if (Object.prototype.hasOwnProperty.call(this.components, className)) {
-            syntaxRules = this.components[className].map((eachSyntax) => this.create(eachSyntax, className, mode)) as SyntaxRule[]
-        } else {
-            const atIndex = className.indexOf('@')
-            if (atIndex !== -1) {
-                const name = className.slice(0, atIndex)
-                if (Object.prototype.hasOwnProperty.call(this.components, name)) {
-                    const atToken = className.slice(atIndex)
-                    syntaxRules = this.components[name].map((eachSyntax) => this.create(eachSyntax + atToken, className, mode)) as SyntaxRule[]
-                } else {
-                    syntaxRules = [this.create(className, undefined, mode)] as SyntaxRule[]
-                }
-            } else {
-                syntaxRules = [this.create(className, undefined, mode)] as SyntaxRule[]
+        const comp = this.components[className]
+        if (comp) {
+            return comp
+                .map((eachSyntax) => this.create(eachSyntax, className, mode))
+                .filter((rule) => rule?.text) as SyntaxRule[]
+        }
+        const atIndex = className.indexOf('@')
+        if (atIndex !== -1) {
+            const name = className.slice(0, atIndex)
+            const compForName = this.components[name]
+            if (compForName) {
+                const atToken = className.slice(atIndex)
+                return compForName
+                    .map((eachSyntax) => this.create(eachSyntax + atToken, className, mode))
+                    .filter((rule) => rule?.text) as SyntaxRule[]
             }
         }
-        return syntaxRules.filter(eachSyntax => eachSyntax?.text) as SyntaxRule[]
+        const fallback = this.create(className, undefined, mode)
+        return fallback && fallback.text ? [fallback] : []
     }
 
     generateVendorSelectors(selectorText: string) {
@@ -627,26 +628,26 @@ export default class MasterCSS {
      */
     createFromSelectorText(selectorText: string) {
         const selectorTextSplits = selectorText.split(' ')
+        const stopChars = /[.#\[!\*>+~:,\s]/
         for (let i = 0; i < selectorTextSplits.length; i++) {
             const eachField = selectorTextSplits[i]
             const modeSelector = this.getModeSelector(eachField)
             if (i === 0 && eachField === modeSelector) continue
-            if (eachField[0] === '.') {
+            if (eachField.startsWith('.')) {
                 const eachFieldName = eachField.slice(1)
                 let className = ''
-                for (let l = 0; l < eachFieldName.length; l++) {
+                let l = 0
+                while (l < eachFieldName.length) {
                     const char = eachFieldName[l]
                     const nextChar = eachFieldName[l + 1]
-                    if (char === '\\') {
-                        l++
-                        if (nextChar !== '\\') {
-                            className += nextChar
-                            continue
-                        }
-                    } else if (['.', '#', '[', '!', '*', '>', '+', '~', ':', ','].includes(char)) {
-                        break
+                    if (char === '\\' && nextChar) {
+                        className += nextChar
+                        l += 2
+                        continue
                     }
+                    if (stopChars.test(char)) break
                     className += char
+                    l++
                 }
                 const syntaxRules = this.generate(className)
                 if (syntaxRules.length) return syntaxRules
