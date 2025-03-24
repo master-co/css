@@ -5,6 +5,9 @@ import generate from 'internal/utils/generate-metadata'
 import Body from '~/internal/layouts/body'
 import DocHeader from '~/internal/components/DocHeader'
 
+export const dynamic = 'force-static'
+export const revalidate = false
+
 export async function generateMetadata(props: any, parent: any) {
     return await generate(metadata, props, parent)
 }
