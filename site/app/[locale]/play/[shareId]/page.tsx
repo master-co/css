@@ -6,6 +6,7 @@ import { getFirestore, doc, getDoc } from '@firebase/firestore/lite'
 import metadata from '../metadata'
 import generate from 'internal/utils/generate-metadata'
 import dayjs from 'dayjs'
+import AvoidFOUCScript from '~/internal/components/AvoidFOUCScript'
 
 export const dynamic = 'force-static'
 export const revalidate = false
@@ -43,7 +44,10 @@ export default async function Page(props: any) {
     if (data.exists()) {
         shareItem = data.data() as PlayShare
         return (
-            <Play shareItem={shareItem} shareId={shareId} />
+            <>
+                <AvoidFOUCScript />
+                <Play shareItem={shareItem} shareId={shareId} />
+            </>
         )
     } else {
         notFound()
