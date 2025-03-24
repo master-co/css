@@ -104,22 +104,14 @@ export default class CSSRuntime extends MasterCSS {
 
         // @ts-expect-error readonly
         this.observer = new MutationObserver((mutationRecords) => {
-            // console.clear()
-            // const test = ''
-            // if (test) {
-            //     console.log('')
-            //     console.log(`${test}: ${this.classCounts.get(test)}`)
-            // }
             const eachClassCounts = new Map()
             const targetFirstAttrMutationRecord = new Map<Element, MutationRecord>()
-
             const updateClassCount = (classes: Set<string> | string[] | DOMTokenList, isAdding = false) => {
                 const usage = isAdding ? 1 : -1
                 classes.forEach((className) => {
                     eachClassCounts.set(className, (eachClassCounts.get(className) || 0) + usage)
                 })
             }
-
             const connectedStatusMap = new Map<Element, { change: number, mutationRecord: MutationRecord }>()
             const disconnectedStatusMap = new Map<Element, { change: number, mutationRecord: MutationRecord }>()
             const recordStatus = (target: Element, mutationRecord: MutationRecord, map: Map<Element, { change: number, mutationRecord: MutationRecord }>, adding: boolean) => {
@@ -130,8 +122,12 @@ export default class CSSRuntime extends MasterCSS {
                 } else {
                     map.set(target, { change: adding ? 1 : -1, mutationRecord })
                 }
+                for (const child of target.children) {
+                    if ('classList' in child) {
+                        recordStatus(child as Element, mutationRecord, map, adding)
+                    }
+                }
             }
-
             mutationRecords.forEach((mutationRecord) => {
                 const target = mutationRecord.target as Element
                 switch (mutationRecord.type) {
@@ -151,40 +147,27 @@ export default class CSSRuntime extends MasterCSS {
                         break
                 }
             })
-
-            const updatedTargetChangeMap = new Map<Element, number>()
-
             const updateTarget = (target: Element, adding: boolean) => {
-                const change = updatedTargetChangeMap.get(target) || 0
-                const newChange = change + (adding ? 1 : -1)
-                if (newChange >= -1 && newChange <= 1) {
-                    updatedTargetChangeMap.set(target, newChange)
-                    const firstAttrMutationRecord = targetFirstAttrMutationRecord.get(target)
+                const firstAttrMutationRecord = targetFirstAttrMutationRecord.get(target)
+                if (firstAttrMutationRecord) {
+                    targetFirstAttrMutationRecord.delete(target)
+                }
+                if (adding) {
+                    updateClassCount(target.classList, adding)
+                } else {
                     if (firstAttrMutationRecord) {
-                        targetFirstAttrMutationRecord.delete(target)
-                    }
-                    if (adding) {
-                        updateClassCount(target.classList, adding)
+                        updateClassCount(firstAttrMutationRecord.oldValue ? firstAttrMutationRecord.oldValue.split(/\s+/) : [], adding)
                     } else {
-                        if (firstAttrMutationRecord) {
-                            updateClassCount(firstAttrMutationRecord.oldValue ? firstAttrMutationRecord.oldValue.split(/\s+/) : [], adding)
-                        } else {
-                            updateClassCount(target.classList, adding)
+                        updateClassCount(target.classList, adding)
+                    }
+                    disconnectedStatusMap.forEach((disconnectedTargetStatus, disconnectedTarget) => {
+                        if (disconnectedTargetStatus.mutationRecord.target === target && disconnectedTargetStatus.change !== 0) {
+                            updateTarget(disconnectedTarget, disconnectedTargetStatus.change > 0)
                         }
-                        disconnectedStatusMap.forEach((disconnectedTargetStatus, disconnectedTarget) => {
-                            if (disconnectedTargetStatus.mutationRecord.target === target && disconnectedTargetStatus.change !== 0) {
-                                updateTarget(disconnectedTarget, disconnectedTargetStatus.change > 0)
-                            }
-                        })
-                    }
-                    for (const child of target.children) {
-                        updateTarget(child as Element, adding)
-                    }
+                    })
                 }
             }
-
             connectedStatusMap.forEach(({ change }, target) => change !== 0 && updateTarget(target, change > 0))
-
             targetFirstAttrMutationRecord.forEach((mutation, target) => {
                 if (!target.isConnected) return
                 const oldClassList = mutation.oldValue ? mutation.oldValue.split(/\s+/) : []
@@ -195,11 +178,9 @@ export default class CSSRuntime extends MasterCSS {
                 })
                 const removedClasses = oldClassList.filter(c => !newClassList.contains(c))
                 if (addedClasses.length) {
-                    // console.log('[attribute]', '[add]   ', addedClasses, target)
                     updateClassCount(addedClasses, true)
                 }
                 if (removedClasses.length) {
-                    // console.log('[attribute]', '[remove]', removedClasses, target)
                     updateClassCount(removedClasses, false)
                 }
             })

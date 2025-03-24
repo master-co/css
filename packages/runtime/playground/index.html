@@ -1,39 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" hidden>
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style id="master">
-        @layer base, theme, preset, components, general;
-
-        @layer general {
-            .flex {
-                display: flex
-            }
-
-            .\@fade\|1s {
-                animation: fade 1s
-            }
-        }
-
-        @keyframes fade {
-            0% {
-                opacity: 0
-            }
-
-            to {
-                opacity: 1
-            }
-        }
-    </style>
     <script type="module" src="src/main.ts"></script>
 </head>
 
 <body>
-    <button class="flex @fade|1s">button</button>
-    <button class="flex @fade|1s">button</button>
-    <button class="flex @fade|1s">button</button>
+    <ul class="a">a
+        <li class="b">b
+            <ul class="c">c</ul>
+        </li>
+    </ul>
 </body>
 
 </html>
