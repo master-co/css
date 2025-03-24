@@ -49,13 +49,13 @@ export default function getMainCompletionItems(css: MasterCSS = new MasterCSS())
              * @example @ animation and ~ transition
              */
             if (eachDefinedRule.definition?.sign && eachDefinedRule.definition.includeAnimations) {
-                for (const animationName in css.animations) {
+                css.animations.forEach((animation, animationName) => {
                     completionItems.push({
                         ...eachCompletionItem,
                         label: eachDefinedRule.definition.sign + animationName + '|1s',
                         kind: CompletionItemKind.Value
                     })
-                }
+                })
             }
 
             if (eachDefinedRule.definition?.ambiguousKeys?.length) {
@@ -87,16 +87,17 @@ export default function getMainCompletionItems(css: MasterCSS = new MasterCSS())
     })
 
     if (css.config.components) {
-        for (const styleName in css.config.components) {
-            const styleClasses = css.components[styleName]
+        for (const componentClass in css.config.components) {
+            const componentTokens = css.components.get(componentClass)
+            if (!componentTokens) continue
             completionItems.push({
-                label: styleName,
+                label: componentClass,
                 kind: CompletionItemKind.Value,
                 documentation: getCSSDataDocumentation({} as any, {
-                    generatedCSS: generateCSS([styleName], css),
+                    generatedCSS: generateCSS([componentClass], css),
                     docs: '/guide/components'
                 }),
-                detail: styleClasses.join(' ') + ' (style)',
+                detail: componentTokens.join(' ') + ' (style)',
             })
         }
     }

@@ -6,7 +6,7 @@ import { type PropertiesHyphen } from 'csstype'
 import { VALUE_DELIMITERS, BASE_UNIT_REGEX, UNIT_REGEX } from './common'
 import { Rule, RuleNode } from './rule'
 import Layer from './layer'
-import type { AtComponent, ColorVariable, NumericValueComponent, DefinedRule, ValueComponent, VariableValueComponent } from './types/syntax'
+import type { AtComponent, ColorVariable, NumericValueComponent, DefinedRule, ValueComponent, VariableValueComponent, Variable } from './types/syntax'
 import { Vendors } from './types/common'
 
 export class SyntaxRule extends Rule {
@@ -59,7 +59,7 @@ export class SyntaxRule extends Rule {
             }
             this.valueComponents = []
             const parsedValueIndex = this.parseValues(this.valueComponents, 0, valueToken, unit, '', undefined, false,
-                definition.includeAnimations ? Object.keys(this.css.animations) : []
+                definition.includeAnimations ? Array.from(this.css.animations.keys()) : []
             )
             this.valueToken = valueToken.slice(0, parsedValueIndex)
             stateToken = valueToken.slice(parsedValueIndex)
@@ -156,8 +156,8 @@ export class SyntaxRule extends Rule {
                             if (atComponentToken === '&') {
                                 atComponents.push({ type: 'operator', token: atComponentToken, value: 'and' })
                             } else if (atComponentToken.startsWith('')) {
-                                const targetAt = at[atComponentToken]
-                                if (targetAt && typeof targetAt === 'string') {
+                                const targetAt = at.get(atComponentToken)
+                                if (typeof targetAt === 'string') {
                                     const match = targetAt.match(queryTypeRegExp)
                                     queryType = match ? match[1] : ''
                                     if (!queryType) throw new Error(`Invalid query '${atComponentToken}': '${targetAt}'`)
@@ -190,7 +190,7 @@ export class SyntaxRule extends Rule {
                                         = extremumOperator
                                             ? atComponentToken.replace(extremumOperator, '')
                                             : atComponentToken
-                                    const viewport = at[token]
+                                    const viewport = at.get(token)
                                     switch (featureName) {
                                         case 'max-width':
                                         case 'min-width':
@@ -289,7 +289,7 @@ export class SyntaxRule extends Rule {
                         .split(':')[1]
                         .split('!important')[0]
                         .split(' ')
-                        .filter(eachValue => eachValue in this.css.animations && (!this.animationNames || !this.animationNames.includes(eachValue)))
+                        .filter(eachValue => this.css.animations.has(eachValue) && (!this.animationNames || !this.animationNames.includes(eachValue)))
                     if (animationNames.length) {
                         if (!this.animationNames) {
                             this.animationNames = []
@@ -435,10 +435,10 @@ export class SyntaxRule extends Rule {
                     break
                 // todo: 應挪到 parseValues 階段處理才能支援 variables: { x: 'calc(20vw-30px)' } 這種情況，並且解析上可能會比較合理、精簡
                 case 'variable':
-                    const variable = this.css.variables[eachValueComponent.name]
+                    const variable = this.css.variables.get(eachValueComponent.name)
                     if (variable) {
                         const handleVariable = (
-                            normalHandler: (variable: MasterCSS['variables'][0]) => void,
+                            normalHandler: (variable: Variable) => void,
                             varHandler: () => void
                         ) => {
                             if (variable.modes) {
@@ -554,16 +554,16 @@ export class SyntaxRule extends Rule {
                 let handled = false
                 if (!isVarFunction || currentValueComponents.length) {
                     const handleVariable = (variableName: string, alpha?: string) => {
+                        const globalVariableValue = this.css.variables.get(variableName)
+
                         const variable = Object.prototype.hasOwnProperty.call(this.variables, variableName)
                             ? this.variables[variableName]
-                            : Object.prototype.hasOwnProperty.call(this.css.variables, variableName)
-                                ? this.css.variables[variableName]
-                                : undefined
+                            : globalVariableValue
                         if (variable) {
                             const name = variable.name ?? variableName
                             if (!bypassVariableNames.includes(name)) {
                                 handled = true
-                                const valueComponent: VariableValueComponent = { type: 'variable', name, variable: this.css.variables[name], token: currentValue }
+                                const valueComponent: VariableValueComponent = { type: 'variable', name, variable: this.css.variables.get(name), token: currentValue }
                                 if (alpha) valueComponent.alpha = alpha
                                 currentValueComponents.push(valueComponent)
                             }

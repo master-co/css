@@ -39,7 +39,7 @@ describe.concurrent('with themes', () => {
 
     it.concurrent('checks resolved colors', () => {
         const css = new MasterCSS(config)
-        expect(css.variables.primary).toEqual({
+        expect(css.variables.get('primary')).toEqual({
             name: 'primary',
             key: 'primary',
             type: 'color',

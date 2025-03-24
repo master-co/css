@@ -49,8 +49,8 @@ test.concurrent('variables', () => {
             }
         }
     })
-    expect(css.variables['a-1']).toMatchObject({ type: 'string', value: 'test', group: 'a' })
-    expect(css.variables['a-b-2']).toMatchObject({ type: 'string', value: 'test', group: 'a.b' })
+    expect(css.variables.get('a-1')).toMatchObject({ type: 'string', value: 'test', group: 'a' })
+    expect(css.variables.get('a-b-2')).toMatchObject({ type: 'string', value: 'test', group: 'a.b' })
     expect(css.definedRules.find(({ id }) => id === 'content')).toMatchObject({
         definition: {
             key: 'content',

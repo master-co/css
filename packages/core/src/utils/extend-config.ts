@@ -3,67 +3,47 @@ import type { AnimationDefinitions, Config } from '../types/config'
 
 // todo: split resolveConfig into a function
 export default function extendConfig(...configs: (Config | undefined)[]) {
-    const formatConfig = (config: Config) => {
+    const formatConfig = (config: Config): Config => {
         const clonedConfig: Config = extend({}, config)
         const formatDeeply = (obj: Record<string, any>) => {
-            for (const key in obj) {
-                const value = obj[key]
+            Object.entries(obj).forEach(([key, value]) => {
                 if (typeof value === 'object' && !Array.isArray(value)) {
                     formatDeeply(value)
                 } else if (key && !key.startsWith('@')) {
                     obj[key] = { '': value }
                 }
+            })
+        }
+        ['components', 'at', 'variables'].forEach((key) => {
+            if (clonedConfig[key as keyof Config]) {
+                formatDeeply(clonedConfig[key as keyof Config] as Record<string, any>)
             }
-        }
-        if (clonedConfig.components) {
-            formatDeeply(clonedConfig.components)
-        }
-        if (clonedConfig.at) {
-            formatDeeply(clonedConfig.at)
-        }
-        if (clonedConfig.variables) {
-            formatDeeply(clonedConfig.variables)
-        }
+        })
+
         return clonedConfig
     }
-
-    const formattedConfigs: Config[] = []
-    for (const eachConfig of configs) {
-        if (!eachConfig) continue
-        (function getConfigsDeeply(config: Config) {
-            if (config.extends?.length) {
-                for (const eachExtend of config.extends) {
-                    getConfigsDeeply('config' in eachExtend ? eachExtend.config : eachExtend)
-                }
-            }
-            formattedConfigs.push(formatConfig(config))
-        })(eachConfig)
-    }
-
-    let extendedConfig: Config = {
-        animations: {},
-        components: {},
-        at: {},
-        variables: {},
-    }
-    for (const currentFormattedConfig of formattedConfigs) {
-        for (const key in currentFormattedConfig) {
-            switch (key) {
-                case 'animations':
-                    if (currentFormattedConfig.animations) {
-                        Object.assign(extendedConfig.animations as AnimationDefinitions, currentFormattedConfig.animations)
-                    }
-                    break
-                default:
-                    if (currentFormattedConfig[key as keyof Config]) {
-                        extendedConfig = extend(extendedConfig, { [key]: currentFormattedConfig[key as keyof Config] })
-                    }
-            }
-            // if (Object.prototype.hasOwnProperty.call(currentFormattedConfig.components, key)) {
-            //     Object.assign(extendedConfig.components[key], currentFormattedConfig.components[key])
-            // }
+    const collectConfigs = (config: Config | undefined, result: Config[] = []): Config[] => {
+        if (!config) return result
+        if (config.extends?.length) {
+            config.extends.forEach((ext) =>
+                collectConfigs('config' in ext ? ext.config : ext, result)
+            )
         }
+        result.push(formatConfig(config))
+        return result
     }
-
-    return extendedConfig
+    const formattedConfigs = configs.reduce<Config[]>((acc, config) => collectConfigs(config, acc), [])
+    return formattedConfigs.reduce<Config>(
+        (extendedConfig, currentConfig) => {
+            Object.entries(currentConfig).forEach(([key, value]) => {
+                if (key === 'animations' && value) {
+                    Object.assign(extendedConfig.animations as AnimationDefinitions, value)
+                } else if (value) {
+                    extendedConfig = extend(extendedConfig, { [key]: value })
+                }
+            })
+            return extendedConfig
+        },
+        { animations: {}, components: {}, at: {}, variables: {} }
+    )
 }

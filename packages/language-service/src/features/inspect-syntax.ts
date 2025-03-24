@@ -14,7 +14,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
         start: document.positionAt(classPosition.range.start),
         end: document.positionAt(classPosition.range.end)
     }
-    const componentClasses = this.css.components[token]
+    const componentClasses = this.css.components.get(token)
     if (componentClasses) {
         const documentation = getCSSDataDocumentation({} as any, {
             generatedCSS: generateCSS([token], this.css),

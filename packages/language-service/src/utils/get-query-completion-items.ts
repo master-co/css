@@ -31,63 +31,62 @@ export default function getQueryCompletionItems(css: MasterCSS = new MasterCSS()
             }
         )
     }
-    Object.entries(css.at)
-        .forEach(([name, value]) => {
-            const completionItem: Omit<CompletionItem, 'label'> = {
-                filterText: name,
-                insertText: name,
-                documentation: getCSSDataDocumentation(undefined, {
-                    generatedCSS: generateCSS([syntax + name], css),
-                    docs: '/guide/syntax#at-rules'
+    css.at.forEach((value, name) => {
+        const completionItem: Omit<CompletionItem, 'label'> = {
+            filterText: name,
+            insertText: name,
+            documentation: getCSSDataDocumentation(undefined, {
+                generatedCSS: generateCSS([syntax + name], css),
+                docs: '/guide/syntax#at-rules'
+            })
+        }
+        if ([AT_SIGN, ...QUERY_LOGICAL_OPERATORS].includes(triggerCharacter)) {
+            if (typeof value === 'number') {
+                completionItems.push({
+                    ...completionItem,
+                    label: triggerCharacter + name,
+                    sortText: String(value).padStart(8, '0'),
+                    filterText: name,
+                    insertText: name,
+                    documentation: getCSSDataDocumentation(undefined, {
+                        generatedCSS: generateCSS([syntax + name], css),
+                        docs: '/guide/syntax#at-rules'
+                    }),
+                    detail: `screen width ${'>='} ${value}px`,
+                    kind: CompletionItemKind.Keyword
                 })
-            }
-            if ([AT_SIGN, ...QUERY_LOGICAL_OPERATORS].includes(triggerCharacter)) {
-                if (typeof value === 'number') {
-                    completionItems.push({
+            } else {
+                completionItems.push(
+                    {
                         ...completionItem,
                         label: triggerCharacter + name,
-                        sortText: String(value).padStart(8, '0'),
-                        filterText: name,
-                        insertText: name,
-                        documentation: getCSSDataDocumentation(undefined, {
-                            generatedCSS: generateCSS([syntax + name], css),
-                            docs: '/guide/syntax#at-rules'
-                        }),
-                        detail: `screen width ${'>='} ${value}px`,
-                        kind: CompletionItemKind.Keyword
-                    })
-                } else {
-                    completionItems.push(
-                        {
-                            ...completionItem,
-                            label: triggerCharacter + name,
-                            detail: value,
-                            sortText: name,
-                            kind: CompletionItemKind.Keyword,
-                        }
-                    )
-                }
-            } else if (QUERY_COMPARISON_OPERATORS.includes(triggerCharacter)) {
-                if (typeof value === 'number') {
-                    const prevComparisonCharacter = syntax.charAt(syntax.length - 2)
-                    const comparisonCharacter = prevComparisonCharacter === '>' || prevComparisonCharacter === '<'
-                        ? prevComparisonCharacter + triggerCharacter
-                        : triggerCharacter
-                    completionItems.push({
-                        ...completionItem,
-                        label: comparisonCharacter + name,
-                        sortText: comparisonCharacter + String(value).padStart(8, '0'),
-                        filterText: name,
-                        insertText: name,
-                        documentation: getCSSDataDocumentation(undefined, {
-                            generatedCSS: generateCSS([syntax + name], css),
-                            docs: '/guide/syntax#at-rules'
-                        }),
-                        detail: `screen width ${comparisonCharacter} ${value}px`,
-                        kind: CompletionItemKind.Keyword
-                    })
-                }
+                        detail: value,
+                        sortText: name,
+                        kind: CompletionItemKind.Keyword,
+                    }
+                )
             }
-        })
+        } else if (QUERY_COMPARISON_OPERATORS.includes(triggerCharacter)) {
+            if (typeof value === 'number') {
+                const prevComparisonCharacter = syntax.charAt(syntax.length - 2)
+                const comparisonCharacter = prevComparisonCharacter === '>' || prevComparisonCharacter === '<'
+                    ? prevComparisonCharacter + triggerCharacter
+                    : triggerCharacter
+                completionItems.push({
+                    ...completionItem,
+                    label: comparisonCharacter + name,
+                    sortText: comparisonCharacter + String(value).padStart(8, '0'),
+                    filterText: name,
+                    insertText: name,
+                    documentation: getCSSDataDocumentation(undefined, {
+                        generatedCSS: generateCSS([syntax + name], css),
+                        docs: '/guide/syntax#at-rules'
+                    }),
+                    detail: `screen width ${comparisonCharacter} ${value}px`,
+                    kind: CompletionItemKind.Keyword
+                })
+            }
+        }
+    })
     return sortCompletionItems(completionItems)
 }

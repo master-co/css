@@ -20,7 +20,7 @@ it.concurrent('config extends', () => {
             '': 'font:200'
         },
     })
-    expect(css.variables.first).toMatchObject({
+    expect(css.variables.get('first')).toMatchObject({
         name: 'first',
         key: 'first',
         type: 'color',
@@ -43,7 +43,7 @@ it.concurrent('config extends', () => {
             }
         }
     })
-    expect(css.variables.second).toMatchObject({
+    expect(css.variables.get('second')).toMatchObject({
         type: 'color',
         space: 'rgb',
         modes: {
@@ -59,7 +59,7 @@ it.concurrent('config extends', () => {
             }
         }
     })
-    expect(css.variables.third).toMatchObject({
+    expect(css.variables.get('third')).toMatchObject({
         type: 'color',
         space: 'rgb',
         value: '0 0 0',
@@ -71,7 +71,7 @@ it.concurrent('config extends', () => {
             }
         }
     })
-    expect(css.variables['third-2']).toMatchObject({
+    expect(css.variables.get('third-2')).toMatchObject({
         type: 'color',
         space: 'rgb',
         modes: {
@@ -82,7 +82,7 @@ it.concurrent('config extends', () => {
             }
         }
     })
-    expect(css.variables.fourth).toMatchObject({
+    expect(css.variables.get('fourth')).toMatchObject({
         type: 'color',
         space: 'rgb',
         value: '17 17 17',

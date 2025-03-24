@@ -27,6 +27,11 @@ export default class MasterCSS {
     readonly presetLayer = new SyntaxLayer('preset', this)
     readonly componentsLayer = new SyntaxLayer('components', this)
     readonly generalLayer = new SyntaxLayer('general', this)
+    readonly components = new Map<string, string[]>()
+    readonly selectors = new Map<string, [RegExp, string[]][]>()
+    readonly variables = new Map<string, Variable>()
+    readonly at = new Map<string, string | number>()
+    readonly animations = new Map<string, AnimationDefinitions>()
 
     constructor(
         public customConfig?: Config
@@ -49,11 +54,11 @@ export default class MasterCSS {
     }
 
     resolve() {
-        this.components = {}
-        this.selectors = {}
-        this.variables = {}
-        this.at = {}
-        this.animations = {}
+        this.components.clear()
+        this.selectors.clear()
+        this.variables.clear()
+        this.at.clear()
+        this.animations.clear()
         this.definedRules.length = 0
 
         const colorVariableNames: Record<string, undefined> = {
@@ -75,9 +80,9 @@ export default class MasterCSS {
                 const regexp = new RegExp(escapeString(eachSelectorName) + '(?![a-z-])')
                 for (const eachNewSelectorText of Array.isArray(eachResolvedSelectorText) ? eachResolvedSelectorText : [eachResolvedSelectorText]) {
                     const vendor = eachNewSelectorText.match(/^:(?::)?-(webkit|moz|ms|o)-/m)?.[1] ?? ''
-                    let selectorValues = this.selectors[vendor]
+                    let selectorValues = this.selectors.get(vendor)
                     if (!selectorValues) {
-                        selectorValues = this.selectors[vendor] = []
+                        this.selectors.set(vendor, selectorValues = [])
                     }
                     let currentSelectValue = selectorValues.find(([_valueRegexp]) => _valueRegexp === regexp)
                     if (!currentSelectValue) {
@@ -90,7 +95,7 @@ export default class MasterCSS {
         }
 
         if (variables) {
-            const unexecutedAliasVariable: Record<string, Record<string, () => void>> = {}
+            const aliasVariableModeResolvers = new Map<string, Record<string, () => void>>
             const resolveVariable = (variableDefinition: VariableDefinition, name: string[], mode?: string) => {
                 if (variableDefinition === undefined || variableDefinition === null) return
                 const addVariable = (
@@ -124,12 +129,12 @@ export default class MasterCSS {
                      * resolve `variables.screen-*` to `at.*`
                      */
                     if (variable.name.startsWith('screen-') && variable.type === 'number') {
-                        this.at[variable.name.slice(7)] = variable.value
+                        this.at.set(variable.name.slice(7), variable.value)
                     }
                     const currentMode = replacedMode ?? mode
                     if (currentMode !== undefined) {
-                        if (Object.prototype.hasOwnProperty.call(this.variables, flatName)) {
-                            const foundVariable = this.variables[flatName]
+                        const foundVariable = this.variables.get(flatName)
+                        if (foundVariable) {
                             if (currentMode) {
                                 if (!foundVariable.modes) {
                                     foundVariable.modes = {}
@@ -153,13 +158,13 @@ export default class MasterCSS {
                                 if (variable.type === 'color') {
                                     newVariable.space = variable.space
                                 }
-                                this.variables[flatName] = newVariable
+                                this.variables.set(flatName, newVariable)
                             } else {
-                                this.variables[flatName] = variable
+                                this.variables.set(flatName, variable)
                             }
                         }
                     } else {
-                        this.variables[flatName] = variable
+                        this.variables.set(flatName, variable)
                     }
                 }
                 if (typeof variableDefinition === 'object') {
@@ -182,21 +187,21 @@ export default class MasterCSS {
                     const aliasResult = /^\$\((.*?)\)(?: ?\/ ?(.+?))?$/.exec(variableDefinition)
                     const flatName = name.join('-')
                     if (aliasResult) {
-                        if (!Object.prototype.hasOwnProperty.call(unexecutedAliasVariable, flatName)) {
-                            unexecutedAliasVariable[flatName] = {}
+                        let aliasVariableModeResolver = aliasVariableModeResolvers.get(flatName)
+                        if (!aliasVariableModeResolver) {
+                            aliasVariableModeResolvers.set(flatName, aliasVariableModeResolver = {})
                         }
-                        unexecutedAliasVariable[flatName][mode as string] = () => {
-                            delete unexecutedAliasVariable[flatName][mode as string]
-
+                        aliasVariableModeResolver[mode as string] = () => {
+                            delete aliasVariableModeResolver[mode as string]
                             const [alias, aliasMode] = aliasResult[1].split('@')
                             if (alias) {
-                                if (Object.prototype.hasOwnProperty.call(unexecutedAliasVariable, alias)) {
-                                    for (const mode of Object.keys(unexecutedAliasVariable[alias])) {
-                                        unexecutedAliasVariable[alias][mode]?.()
+                                const eachAliasModeVariableResolver = aliasVariableModeResolvers.get(alias)
+                                if (eachAliasModeVariableResolver) {
+                                    for (const mode of Object.keys(eachAliasModeVariableResolver)) {
+                                        eachAliasModeVariableResolver[mode]?.()
                                     }
                                 }
-
-                                const aliasVariable = this.variables[alias]
+                                const aliasVariable = this.variables.get(alias)
                                 if (aliasVariable) {
                                     if (aliasMode === undefined && aliasVariable.modes) {
                                         addVariable(
@@ -253,20 +258,24 @@ export default class MasterCSS {
                 resolveVariable(variables[parnetKey], [parnetKey])
             }
             // todo: address to the target variable
-            for (const name of Object.keys(unexecutedAliasVariable)) {
-                for (const mode of Object.keys(unexecutedAliasVariable[name])) {
-                    unexecutedAliasVariable[name][mode]?.()
+            aliasVariableModeResolvers.forEach((aliasVariableModeResolver) => {
+                for (const mode of Object.keys(aliasVariableModeResolver)) {
+                    aliasVariableModeResolver[mode]?.()
                 }
-            }
+            })
         }
 
         if (at) {
-            Object.assign(this.at, flattenObject(at))
+            const resolvedAt = flattenObject(at)
+            for (const eachAt in resolvedAt) {
+                this.at.set(eachAt, resolvedAt[eachAt])
+            }
         }
 
         if (animations) {
             for (const animationName in animations) {
-                const eachAnimation: any = this.animations[animationName] = {}
+                const eachAnimation: AnimationDefinitions = {}
+                this.animations.set(animationName, eachAnimation)
                 const eachKeyframes = animations[animationName]
                 for (const eachKeyframeValue in eachKeyframes) {
                     const newValueByPropertyName: any = eachAnimation[eachKeyframeValue] = {}
@@ -281,15 +290,11 @@ export default class MasterCSS {
         const flattedStyles: Record<string, string> = components ? flattenObject(components) : {}
         const utilityNames = Object.keys(flattedStyles)
         const handleUtilityName = (utilityName: string) => {
-            if (Object.prototype.hasOwnProperty.call(this.components, utilityName))
-                return
-
-            const currentClass: string[] = this.components[utilityName] = []
-
+            if (this.components.has(utilityName)) return
+            const currentClass: string[] = []
+            this.components.set(utilityName, currentClass)
             const className = flattedStyles[utilityName]
-            if (!className)
-                return
-
+            if (!className) return
             const classNames: string[] = className
                 .replace(/(?:\n(?:\s*))+/g, ' ')
                 .trim()
@@ -300,13 +305,10 @@ export default class MasterCSS {
                         currentClass.push(className)
                     }
                 }
-
                 if (utilityNames.includes(eachClassName)) {
                     handleUtilityName(eachClassName)
-
-                    for (const parentClassName of this.components[eachClassName]) {
-                        handle(parentClassName)
-                    }
+                    const componentClasses = this.components.get(eachClassName)
+                    componentClasses?.forEach(handle)
                 } else {
                     handle(eachClassName)
                 }
@@ -360,12 +362,11 @@ export default class MasterCSS {
 
                     // todo: 不可使用 startsWith 判斷，應改為更精準的從 config.variables 取得目標變數群組，但 config.variables 中的值還沒被 resolve 像是 Array
                     const addResolvedVariables = (groupName: string) => {
-                        for (const eachVariableName in this.variables) {
-                            const eachVariable = this.variables[eachVariableName]
+                        this.variables.forEach((eachVariable) => {
                             if (eachVariable.group === groupName) {
                                 syntax.variables[eachVariable.key] = eachVariable
                             }
-                        }
+                        })
                     }
 
                     // 1. custom `config.rules[id].variables`
@@ -423,9 +424,8 @@ export default class MasterCSS {
                     }
                 })
         }
-
-        for (const utilityName in this.components) {
-            const syntaxRulesByStateToken = this.components[utilityName]
+        this.components.forEach((componentClasses, componentClass) => {
+            const syntaxRulesByStateToken = componentClasses
                 .map((eachSyntax) => this.create(eachSyntax))
                 .filter(eachSyntax => eachSyntax?.text)
                 .reduce((obj, eachSyntaxRule) => {
@@ -436,7 +436,7 @@ export default class MasterCSS {
                     }
                     return obj
                 }, {} as Record<string, SyntaxRule[]>)
-            this.components[utilityName] = Object
+            this.components.set(componentClass, Object
                 .keys(syntaxRulesByStateToken)
                 .map(stateToken => {
                     const syntaxRules = syntaxRulesByStateToken[stateToken]
@@ -448,8 +448,8 @@ export default class MasterCSS {
                             + '}'
                             + stateToken
                         )
-                })
-        }
+                }))
+        })
     }
 
     /**
@@ -465,6 +465,7 @@ export default class MasterCSS {
         for (const eachSyntax of this.definedRules) {
             if (eachSyntax.matchers.variable?.test(className)) return eachSyntax
         }
+
         /**
          * 2. value (ambiguous.key * ambiguous.values)
          * @example bg:current box:content font:12
@@ -494,25 +495,36 @@ export default class MasterCSS {
      * @returns SyntaxRule[]
      */
     generate(className: string, mode?: string): SyntaxRule[] {
-        const comp = this.components[className]
-        if (comp) {
-            return comp
-                .map((eachSyntax) => this.create(eachSyntax, className, mode))
-                .filter((rule) => rule?.text) as SyntaxRule[]
-        }
-        const atIndex = className.indexOf('@')
-        if (atIndex !== -1) {
-            const name = className.slice(0, atIndex)
-            const compForName = this.components[name]
-            if (compForName) {
-                const atToken = className.slice(atIndex)
-                return compForName
-                    .map((eachSyntax) => this.create(eachSyntax + atToken, className, mode))
-                    .filter((rule) => rule?.text) as SyntaxRule[]
+        let syntaxRules: SyntaxRule[] = []
+        const componentClasses = this.components.get(className)
+        if (componentClasses) {
+            componentClasses.forEach((eachSyntax) => {
+                const syntaxRule = this.create(eachSyntax, className, mode)
+                if (syntaxRule?.text) syntaxRules.push(syntaxRule)
+                if (process.env.NODE_ENV === 'development') {
+                    console.error(`Syntax rule not created for ${eachSyntax} (component: ${className}) (mode: ${mode})`)
+                }
+            })
+        } else {
+            const atIndex = className.indexOf('@')
+            if (atIndex !== -1) {
+                const name = className.slice(0, atIndex)
+                const componentClasses = this.components.get(name)
+                if (componentClasses) {
+                    const atToken = className.slice(atIndex)
+                    componentClasses.forEach((eachSyntax) => {
+                        const syntaxRule = this.create(eachSyntax + atToken, className, mode)
+                        if (syntaxRule?.text) syntaxRules.push(syntaxRule)
+                        if (process.env.NODE_ENV === 'development') {
+                            console.error(`Syntax rule not created for ${eachSyntax} (component: ${className}) (mode: ${mode})`)
+                        }
+                    })
+                }
             }
+            const syntaxRule = this.create(className, undefined, mode)
+            if (syntaxRule?.text) syntaxRules.push(syntaxRule)
         }
-        const fallback = this.create(className, undefined, mode)
-        return fallback && fallback.text ? [fallback] : []
+        return syntaxRules
     }
 
     generateVendorSelectors(selectorText: string) {
@@ -568,15 +580,16 @@ export default class MasterCSS {
             return selectors
         }
         const transformedSelectors: string[] = []
-        if ('' in this.selectors) {
-            transformSelector(selectorText, this.selectors[''], transformedSelectors, true)
+        const selectorValues = this.selectors.get('')
+        if (selectorValues) {
+            transformSelector(selectorText, selectorValues, transformedSelectors, true)
         } else {
             transformedSelectors.push(selectorText)
         }
 
         const unspacedVendorSelectors: Record<string, string[]> = {}
-        for (const [vendor, selectorValues] of Object.entries(this.selectors)) {
-            if (!vendor) continue
+        this.selectors.forEach((selectorValues, vendor) => {
+            if (!vendor) return
             const newUnspacedVendorSelectors: string | any[] = []
             for (const eachTransformedSelector of transformedSelectors) {
                 transformSelector(eachTransformedSelector, selectorValues, newUnspacedVendorSelectors, false)
@@ -584,8 +597,7 @@ export default class MasterCSS {
             if (newUnspacedVendorSelectors.length) {
                 unspacedVendorSelectors[vendor] = newUnspacedVendorSelectors
             }
-        }
-
+        })
         const insertVendorSelectors = (vendor: string, selectorTexts: string[]) => {
             const groupedSelectorTexts = selectorTexts.reduce((arr: string[], eachSuffixSelector) => {
                 arr.push(...spacedSelectorToken(eachSuffixSelector))
@@ -702,19 +714,21 @@ export default class MasterCSS {
          * 匹配並刪除對應的 rule
          */
         for (const className of classNames) {
-            if (Object.prototype.hasOwnProperty.call(this.components, className)) {
-                for (const eachSyntax of this.components[className]) {
-                    this.componentsLayer.delete(className + ' ' + eachSyntax)
-                }
+            const componentClasses = this.components.get(className)
+            if (componentClasses) {
+                componentClasses.forEach((componentClass) => {
+                    this.componentsLayer.delete(className + ' ' + componentClass)
+                })
             } else {
                 const atIndex = className.indexOf('@')
                 if (atIndex !== -1) {
                     const name = className.slice(0, atIndex)
-                    if (Object.prototype.hasOwnProperty.call(this.components, name)) {
+                    const componentClasses = this.components.get(name)
+                    if (componentClasses) {
                         const atToken = className.slice(atIndex)
-                        for (const eachSyntax of this.components[name]) {
-                            this.componentsLayer.delete(eachSyntax + atToken + ' ' + className)
-                        }
+                        componentClasses.forEach((componentClass) => {
+                            this.componentsLayer.delete(componentClass + atToken + ' ' + className)
+                        })
                     } else {
                         this.generalLayer.delete(className)
                     }
@@ -741,11 +755,6 @@ export default class MasterCSS {
 export default interface MasterCSS {
     supportVendors: Set<Vendors>
     style: HTMLStyleElement | null
-    components: Record<string, string[]>
-    selectors: Record<string, [RegExp, string[]][]>
-    variables: Record<string, Variable>
-    at: Record<string, string | number>
-    animations: Record<string, AnimationDefinitions>
 }
 
 (function (MasterCSS) {

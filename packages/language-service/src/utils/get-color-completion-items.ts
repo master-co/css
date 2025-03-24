@@ -4,8 +4,7 @@ import sortCompletionItems from './sort-completion-items'
 
 export default function getColorCompletionItems(css: MasterCSS = new MasterCSS()): CompletionItem[] {
     const completionItems: CompletionItem[] = []
-    for (const eachVariableName in css.variables) {
-        const eachVariable = css.variables[eachVariableName]
+    css.variables.forEach((eachVariable, eachVariableName) => {
         if (eachVariable.type === 'color') {
             // todo: packages/core should support getTextByVariable(variable)
             const valueToken = (eachVariable.space && eachVariable.value)
@@ -27,6 +26,6 @@ export default function getColorCompletionItems(css: MasterCSS = new MasterCSS()
                     prefix + '-' + ('00000' + num).slice(-5)),
             })
         }
-    }
+    })
     return sortCompletionItems(completionItems)
 }

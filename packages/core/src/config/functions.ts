@@ -158,7 +158,7 @@ const functions: FunctionDefinitions = {
                             isVarFunction
                         ) || functionName === 'var'
                         if (!childHasUnit && functionName === '$') {
-                            const variableType = this.css.variables[(newValueComponent.children[0] as StringValueComponent).value]?.type
+                            const variableType = this.css.variables.get((newValueComponent.children[0] as StringValueComponent).value)?.type
                             childHasUnit = !variableType || variableType === 'string'
                         }
                         if (childHasUnit) {

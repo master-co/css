@@ -96,7 +96,7 @@ export default function getValueCompletionItems(css: MasterCSS = new MasterCSS()
          * @example animation:fade
          */
         if (eachDefinedRule.keys.includes(ruleKey) && eachDefinedRule.definition.includeAnimations) {
-            for (const animationName in css.animations) {
+            css.animations.forEach((animation, animationName) => {
                 const isNative = eachDefinedRule.definition.type && [SyntaxRuleType.Native, SyntaxRuleType.NativeShorthand].includes(eachDefinedRule.definition.type)
                 completionItems.push({
                     label: animationName,
@@ -107,7 +107,7 @@ export default function getValueCompletionItems(css: MasterCSS = new MasterCSS()
                     }),
                     detail: isNative ? eachDefinedRule.id + ': ' + animationName : animationName
                 })
-            }
+            })
         }
 
         /**
@@ -171,15 +171,14 @@ export default function getValueCompletionItems(css: MasterCSS = new MasterCSS()
     }
 
     // global variables
-    for (const variableName in css.variables) {
-        const variable = css.variables[variableName]
+    css.variables.forEach((variable) => {
         const completionItem = generateVariableCompletionItem(variable)
         if (completionItem) {
             completionItem.sortText = GLOBAL_VARIABLE_PRIORITY + (completionItem.sortText || completionItem.label)
             completionItem.detail = '(global) ' + completionItem.detail
             completionItems.push(completionItem)
         }
-    }
+    })
 
     return sortCompletionItems(completionItems)
 }

@@ -297,7 +297,7 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
         insertVariables(syntaxRule: SyntaxRule) {
             if (syntaxRule.variableNames) {
                 for (const eachVariableName of syntaxRule.variableNames) {
-                    const variable = this.css.variables[eachVariableName]
+                    const variable = this.css.variables.get(eachVariableName)
                     if (this.css.themeLayer.rules.find(({ name }) => name === eachVariableName)) {
                         const count = this.css.themeLayer.tokenCounts.get(eachVariableName) || 0
                         this.css.themeLayer.tokenCounts.set(eachVariableName, count + 1)
@@ -317,14 +317,14 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                                         break
                                     case 'host':
                                         preifxCssRuleText = selectorText = `:host(.${mode})`
-                                        if (!variable.value && this.css.config.defaultMode === mode) {
+                                        if (!variable?.value && this.css.config.defaultMode === mode) {
                                             preifxCssRuleText += ',:host'
                                             isDefaultMode = true
                                         }
                                         break
                                     case 'class':
                                         preifxCssRuleText = selectorText = `.${mode}`
-                                        if (!variable.value && this.css.config.defaultMode === mode) {
+                                        if (!variable?.value && this.css.config.defaultMode === mode) {
                                             preifxCssRuleText += ',:root'
                                             isDefaultMode = true
                                         }
@@ -348,10 +348,10 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                                 })
                             }
                         }
-                        if (variable.value) {
+                        if (variable?.value !== undefined) {
                             addNative('', variable as any)
                         }
-                        if (variable.modes) {
+                        if (variable?.modes) {
                             for (const mode in variable.modes) {
                                 addNative(mode, variable.modes[mode])
                             }
@@ -370,15 +370,20 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                         const count = this.css.animationsNonLayer.tokenCounts.get(eachAnimationName) || 0
                         this.css.animationsNonLayer.tokenCounts.set(eachAnimationName, count + 1)
                     } else {
+                        const keyframes = this.css.animations.get(eachAnimationName)
+                        if (!keyframes) continue
+                        const keyframeText = Object
+                            .entries(keyframes)
+                            .reduce((acc, [key, variables]) => {
+                                const variableText = Object.entries(variables)
+                                    .map(([name, value]) => `${name}:${value}`)
+                                    .join(';')
+                                return acc + `${key}{${variableText}}`
+                            }, '')
                         this.css.animationsNonLayer.insert(
                             new Rule(eachAnimationName, [
                                 {
-                                    text: `@keyframes ${eachAnimationName}{`
-                                        + Object
-                                            .entries(this.css.animations[eachAnimationName])
-                                            .map(([key, variables]) => `${key}{${Object.entries(variables).map(([name, value]) => name + ':' + value).join(';')}}`)
-                                            .join('')
-                                        + '}'
+                                    text: `@keyframes ${eachAnimationName}{${keyframeText}}`
                                 }
                             ])
                         )

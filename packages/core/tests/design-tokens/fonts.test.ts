@@ -12,9 +12,9 @@ it.concurrent('customizes fonts', () => {
         }
     })
     expect({
-        sans: css.variables['font-family-sans'],
-        mono: css.variables['font-family-mono'],
-        serif: css.variables['font-family-serif']
+        sans: css.variables.get('font-family-sans'),
+        mono: css.variables.get('font-family-mono'),
+        serif: css.variables.get('font-family-serif')
     }).toEqual({
         sans: { group: 'font-family', key: 'sans', name: 'font-family-sans', type: 'string', value: 'Inter,' + variables['font-family'].sans.join(',') },
         mono: { group: 'font-family', key: 'mono', name: 'font-family-mono', type: 'string', value: 'Fira Code,' + variables['font-family'].mono.join(',') },
