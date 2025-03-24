@@ -5,6 +5,9 @@ const metadata = define({
     description: 'A guide to creating abstract component styles for your design system.',
     category: 'Customization',
     order: 5,
+    other: {
+        subject: 'Components',
+    },
     fileURL: import.meta.url
 })
 
