@@ -723,12 +723,9 @@ export default function Play(props: any) {
                         overlay={false}
                         originX={'center'}
                         showHandler={responsive ? [false, true, true] : false}
-                        className={clsx(
-                            'full',
-                            {
-                                'max-w:100% max-h:100% outline:1|lightest': responsive
-                            }
-                        )}
+                        className={clsx('full outline:1|frame-light.resizing', {
+                            'max-w:100% max-h:100% outline:1|frame-lighter': responsive
+                        })}
                         showHeight={true}
                     >
                         <iframe
