@@ -391,7 +391,7 @@ export class SyntaxRule extends Rule {
                     if (this.containerAtComponents) cssText = '@container' + resolveAtComponents(this.containerAtComponents, ' ')
                     if (this.mediaAtComponents) cssText = '@media' + resolveAtComponents(this.mediaAtComponents, ' ')
                     if (this.supportsAtComponents) cssText = '@supports' + resolveAtComponents(this.supportsAtComponents, ' ')
-                    if (this.layerAtComponents) cssText = '@layer ' + resolveAtComponents(this.layerAtComponents, '.')
+                    if (this.layerAtComponents) cssText = '@layer' + resolveAtComponents(this.layerAtComponents, '.')
                     const node: RuleNode = {
                         text: cssText,
                         selectorText
