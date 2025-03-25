@@ -39,7 +39,7 @@ test('selectors', async ({ page, browserName }) => {
             ]
         })
         expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[0]?.native?.cssText))
-            .toBeUndefined()
+            .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }')
         expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[1]?.native?.cssText))
             .toBe('.hidden\\:\\:slider-thumb::-moz-range-thumb { display: none; }')
     } else {
@@ -55,5 +55,7 @@ test('selectors', async ({ page, browserName }) => {
         })
         expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[0]?.native?.cssText))
             .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }')
+        expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[1]?.native?.cssText))
+            .not.toBe('.hidden\\:\\:slider-thumb::-moz-range-thumb { display: none; }')
     }
 })

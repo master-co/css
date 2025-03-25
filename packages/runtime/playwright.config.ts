@@ -29,7 +29,7 @@ export default defineConfig({
     },
 
     /* Configure projects for major browsers */
-    projects: process.env.CI
+    projects: true
         ? [
             {
                 name: 'chromium',
