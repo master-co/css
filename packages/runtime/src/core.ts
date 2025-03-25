@@ -1,9 +1,10 @@
-import { MasterCSS, config as defaultConfig, Rule } from '@master/css'
+import { MasterCSS, config as defaultConfig, Rule, SyntaxRule } from '@master/css'
 import { type Config } from '@master/css'
 import registerGlobal from './register-global'
 import { HydrateResult } from './types'
 import RuntimeLayer from './layer'
 import RuntimeSyntaxLayer, { RuntimeSyntaxLayerInstance } from './syntax-layer'
+import RuntimeSyntaxRule from './syntax-rule'
 
 export default class CSSRuntime extends MasterCSS {
     static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
@@ -17,7 +18,9 @@ export default class CSSRuntime extends MasterCSS {
     readonly presetLayer = new RuntimeSyntaxLayer('preset', this)
     readonly componentsLayer = new RuntimeSyntaxLayer('components', this)
     readonly generalLayer = new RuntimeSyntaxLayer('general', this)
+    readonly SyntaxRule = RuntimeSyntaxRule
     readonly classCounts = new Map<string, number>()
+    readonly Native = CSS
 
     constructor(
         public root: Document | ShadowRoot = document,
@@ -33,12 +36,6 @@ export default class CSSRuntime extends MasterCSS {
             this.container = this.root as CSSRuntime['container']
             this.host = (this.root as ShadowRoot).host
         }
-        this.supportVendors = new Set()
-        const styleDeclaration = document.documentElement.style
-        if ('webkitTransform' in styleDeclaration) this.supportVendors.add('webkit')
-        if ('MozTransform' in styleDeclaration) this.supportVendors.add('moz')
-        if ('msTransform' in styleDeclaration) this.supportVendors.add('ms')
-        if ('OTransform' in styleDeclaration) this.supportVendors.add('o')
         globalThis.CSSRuntime.instances.set(this.root, this)
         __MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:created', { cssRuntime: this })
     }
@@ -294,7 +291,8 @@ export default class CSSRuntime extends MasterCSS {
             layer.native = eachCSSLayerRule
             const unresolvedCSSRules = new Map<string, CSSRule>()
             for (const rule of eachCSSLayerRule.cssRules) {
-                unresolvedCSSRules.set(rule.cssText, rule)
+                // trim() for fix the firefox bug that the cssText ends with \n\n
+                unresolvedCSSRules.set(rule.cssText.trim(), rule)
             }
 
             for (const eachNativeLayerRule of eachCSSLayerRule.cssRules) {
@@ -312,16 +310,21 @@ export default class CSSRuntime extends MasterCSS {
                         layer.insertAnimations(createdRule)
                         result.allSyntaxRules.push(createdRule)
                         createdRule.nodes.forEach((node) => {
-                            const createdNodeNativeRule = checkSheet.cssRules.item(checkSheet.insertRule(node.text))
-                            if (createdNodeNativeRule) {
-                                const match = unresolvedCSSRules.get(createdNodeNativeRule.cssText)
-                                if (match) {
-                                    node.native = match
-                                    unresolvedCSSRules.delete(createdNodeNativeRule.cssText)
-                                    return
+                            if (node.unsupported) return
+                            try {
+                                const checkRuleIndex = checkSheet.insertRule(node.text)
+                                const checkNodeNativeRule = checkSheet.cssRules.item(checkRuleIndex)
+                                if (checkNodeNativeRule) {
+                                    const checkNodeNativeRuleText = checkNodeNativeRule.cssText.trim()
+                                    const match = unresolvedCSSRules.get(checkNodeNativeRuleText)
+                                    if (match) {
+                                        node.native = match
+                                        unresolvedCSSRules.delete(checkNodeNativeRuleText)
+                                        return
+                                    }
                                 }
-                            }
-                            console.error(`Cannot retrieve CSS rule for \`${node.selectorText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                            } catch (error) { }
+                            console.error(`Cannot retrieve CSS rule for \`${node.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
                         })
                     }
                 } else {
