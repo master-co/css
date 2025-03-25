@@ -1,4 +1,4 @@
-import { MasterCSS, config as defaultConfig, Rule, SyntaxRule } from '@master/css'
+import { MasterCSS, config as defaultConfig, Rule } from '@master/css'
 import { type Config } from '@master/css'
 import registerGlobal from './register-global'
 import { HydrateResult } from './types'
