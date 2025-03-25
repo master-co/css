@@ -1,22 +1,18 @@
 import type { SyntaxRule } from '../syntax-rule'
+import { AtComponent } from '../types/syntax'
 
-export default function areRuleAtEqual(aSyntaxRule: SyntaxRule, bSyntaxRule: SyntaxRule) {
-    const aQueryTypes = Object.keys(aSyntaxRule.at)
-    const bQueryTypes = Object.keys(bSyntaxRule.at)
-
-    if (aQueryTypes.length !== bQueryTypes.length) {
-        return false
+export default function areRuleAtEqual(a: SyntaxRule, b: SyntaxRule) {
+    const compare = (aList?: AtComponent[], bList?: AtComponent[]) => {
+        const aResolved = (aList ?? []).map(a.resolveAtComponent)
+        const bResolved = (bList ?? []).map(b.resolveAtComponent)
+        return aResolved.length === bResolved.length &&
+            aResolved.every(val => bResolved.includes(val)) &&
+            bResolved.every(val => aResolved.includes(val))
     }
-
-    for (const aQueryType of aQueryTypes) {
-        const aAtComponents = aSyntaxRule.at[aQueryType]
-        const bAtComponents = bSyntaxRule.at[aQueryType]
-        for (const aAtComponent of aAtComponents) {
-            const aAtComponentToken = aSyntaxRule.resolveAtComponent(aAtComponent)
-            if (!bAtComponents.find(bAtComponent => bSyntaxRule.resolveAtComponent(bAtComponent) === aAtComponentToken)) {
-                return false
-            }
-        }
-    }
-    return true
+    return (
+        compare(a.mediaAtComponents, b.mediaAtComponents) &&
+        compare(a.supportsAtComponents, b.supportsAtComponents) &&
+        compare(a.containerAtComponents, b.containerAtComponents) &&
+        compare(a.layerAtComponents, b.layerAtComponents)
+    )
 }

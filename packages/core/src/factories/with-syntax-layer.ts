@@ -26,7 +26,7 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
              * @description
              */
             const endIndex = this.rules.length - 1
-            const { at, atToken, order, priority } = syntaxRule
+            const { mediaAtComponents, atToken, order, priority } = syntaxRule
             const findIndex = (startIndex: number, stopCheck?: (syntaxRule: SyntaxRule) => any, matchCheck?: (syntaxRule: SyntaxRule) => any) => {
                 let i = startIndex
                 for (; i <= endIndex; i++) {
@@ -46,14 +46,14 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
             let matchStartIndex: number | undefined
             let matchEndIndex: number | undefined
             if (atToken) {
-                const mediaStartIndex = this.rules.findIndex(eachSyntaxRule => eachSyntaxRule.at?.media)
+                const mediaStartIndex = this.rules.findIndex(eachSyntaxRule => eachSyntaxRule.mediaAtComponents)
                 if (mediaStartIndex === -1) {
                     index = endIndex + 1
                 } else {
-                    const maxWidthFeature = at.media?.find(({ name }: any) => name === 'max-width') as AtFeatureComponent
-                    const minWidthFeature = at.media?.find(({ name }: any) => name === 'min-width') as AtFeatureComponent
+                    const maxWidthFeature = mediaAtComponents?.find(({ name }: any) => name === 'max-width') as AtFeatureComponent
+                    const minWidthFeature = mediaAtComponents?.find(({ name }: any) => name === 'min-width') as AtFeatureComponent
                     if (maxWidthFeature || minWidthFeature) {
-                        const mediaWidthStartIndex = this.rules.findIndex(eachSyntaxRule => eachSyntaxRule.at?.media?.find(({ name }: any) => name === 'max-width' || name === 'min-width'))
+                        const mediaWidthStartIndex = this.rules.findIndex(eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width' || name === 'min-width'))
                         if (mediaWidthStartIndex === -1) {
                             index = endIndex + 1
                         } else {
@@ -68,7 +68,7 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                                     matchStartIndex = findIndex(
                                         mediaWidthStartIndex,
                                         eachSyntaxRule => eachSyntaxRule.priority !== -1,
-                                        eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.at.media?.find(({ name }: any) => name === 'min-width')
+                                        eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'min-width')
                                     )
                                     matchEndIndex = findIndex(
                                         mediaWidthStartIndex,
@@ -78,7 +78,7 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                                     matchStartIndex = findIndex(
                                         mediaWidthStartIndex,
                                         undefined,
-                                        eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.at.media?.find(({ name }: any) => name === 'min-width') && eachSyntaxRule.priority !== -1
+                                        eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'min-width') && eachSyntaxRule.priority !== -1
                                     )
                                     matchEndIndex = endIndex
                                 }
@@ -91,8 +91,8 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                                     matchStartIndex = matchEndIndex + 1
                                     for (; i >= endI; i--) {
                                         const eachSyntaxRule = this.rules[i]
-                                        const eachMaxWidthFeature = eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width') as AtFeatureComponent
-                                        const eachMinWidthFeature = eachSyntaxRule.at.media?.find(({ name }: any) => name === 'min-width') as AtFeatureComponent
+                                        const eachMaxWidthFeature = eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width') as AtFeatureComponent
+                                        const eachMinWidthFeature = eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'min-width') as AtFeatureComponent
                                         if (!eachMaxWidthFeature || !eachMinWidthFeature) {
                                             break
                                         } else {
@@ -115,28 +115,28 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                                 if (priority === -1) {
                                     matchStartIndex = findIndex(
                                         mediaWidthStartIndex,
-                                        eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.at.media?.find(({ name }: any) => name === 'min-width') || eachSyntaxRule.priority !== -1,
-                                        eachSyntaxRule => !eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.at.media?.find(({ name }: any) => name === 'min-width')
+                                        eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'min-width') || eachSyntaxRule.priority !== -1,
+                                        eachSyntaxRule => !eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'min-width')
                                     )
                                     matchEndIndex = findIndex(
                                         mediaWidthStartIndex,
-                                        eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.at.media?.find(({ name }: any) => name === 'min-width') || eachSyntaxRule.priority !== -1
+                                        eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'min-width') || eachSyntaxRule.priority !== -1
                                     )
                                 } else {
                                     matchStartIndex = findIndex(
                                         mediaWidthStartIndex,
-                                        eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.at.media?.find(({ name }: any) => name === 'min-width') && eachSyntaxRule.priority !== -1,
-                                        eachSyntaxRule => !eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.at.media?.find(({ name }: any) => name === 'min-width') && eachSyntaxRule.priority !== -1
+                                        eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'min-width') && eachSyntaxRule.priority !== -1,
+                                        eachSyntaxRule => !eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'min-width') && eachSyntaxRule.priority !== -1
                                     )
                                     matchEndIndex = findIndex(
                                         mediaWidthStartIndex,
-                                        eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.at.media?.find(({ name }: any) => name === 'min-width') && eachSyntaxRule.priority !== -1
+                                        eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'min-width') && eachSyntaxRule.priority !== -1
                                     )
                                 }
 
                                 if (matchStartIndex !== -1) {
                                     for (let i = matchEndIndex; i >= matchStartIndex; i--) {
-                                        const feature = (this.rules[i].at.media?.find(({ name }: any) => name === 'min-width') as AtFeatureComponent)
+                                        const feature = (this.rules[i].mediaAtComponents?.find(({ name }: any) => name === 'min-width') as AtFeatureComponent)
                                         if (!feature) continue
                                         if (feature.value > minWidthFeature.value) {
                                             matchEndIndex = i - 1
@@ -154,28 +154,28 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                                 if (priority === -1) {
                                     matchStartIndex = findIndex(
                                         mediaWidthStartIndex,
-                                        eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'min-width') || eachSyntaxRule.priority !== -1,
-                                        eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width')
+                                        eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'min-width') || eachSyntaxRule.priority !== -1,
+                                        eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width')
                                     )
                                     matchEndIndex = findIndex(
                                         mediaWidthStartIndex,
-                                        eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'min-width') || eachSyntaxRule.priority !== -1
+                                        eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'min-width') || eachSyntaxRule.priority !== -1
                                     )
                                 } else {
                                     matchStartIndex = findIndex(
                                         mediaWidthStartIndex,
-                                        eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'min-width') && eachSyntaxRule.priority !== -1,
-                                        eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.priority !== -1
+                                        eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'min-width') && eachSyntaxRule.priority !== -1,
+                                        eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width') && eachSyntaxRule.priority !== -1
                                     )
                                     matchEndIndex = findIndex(
                                         mediaWidthStartIndex,
-                                        eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'min-width') && eachSyntaxRule.priority !== -1
+                                        eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'min-width') && eachSyntaxRule.priority !== -1
                                     )
                                 }
 
                                 if (matchStartIndex !== -1) {
                                     for (let i = matchEndIndex; i >= matchStartIndex; i--) {
-                                        const feature = (this.rules[i].at.media?.find(({ name }: any) => name === 'max-width') as AtFeatureComponent)
+                                        const feature = (this.rules[i].mediaAtComponents?.find(({ name }: any) => name === 'max-width') as AtFeatureComponent)
                                         if (!feature) continue
                                         if (feature.value < maxWidthFeature.value) {
                                             matchEndIndex = i - 1
@@ -192,17 +192,17 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                             matchStartIndex = mediaStartIndex
                             matchEndIndex = findIndex(
                                 mediaStartIndex,
-                                eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width' || name === 'min-width') || eachSyntaxRule.priority !== -1
+                                eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width' || name === 'min-width') || eachSyntaxRule.priority !== -1
                             )
                         } else {
                             matchStartIndex = findIndex(
                                 mediaStartIndex,
-                                eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width' || name === 'min-width'),
+                                eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width' || name === 'min-width'),
                                 eachSyntaxRule => eachSyntaxRule.priority !== -1
                             )
                             matchEndIndex = findIndex(
                                 mediaStartIndex,
-                                eachSyntaxRule => eachSyntaxRule.at.media?.find(({ name }: any) => name === 'max-width' || name === 'min-width')
+                                eachSyntaxRule => eachSyntaxRule.mediaAtComponents?.find(({ name }: any) => name === 'max-width' || name === 'min-width')
                             )
                         }
                     }

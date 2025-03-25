@@ -11,7 +11,7 @@ test.concurrent('selectors', () => {
 })
 
 test.concurrent('viewports', () => {
-    expect(new MasterCSS().create('hidden@xs')?.text).toBe('@media (min-width:768px){.hidden\\@xs{display:none}}')
+    expect(new MasterCSS().create('hidden@xs')?.text).toBe('@media(min-width:768px){.hidden\\@xs{display:none}}')
 })
 
 test.concurrent('shorthands', () => {

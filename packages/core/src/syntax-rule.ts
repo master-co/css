@@ -3,20 +3,22 @@ import MasterCSS from './core'
 import cssEscape from 'shared/utils/css-escape'
 import SyntaxRuleType from './syntax-rule-type'
 import { type PropertiesHyphen } from 'csstype'
-import { VALUE_DELIMITERS, BASE_UNIT_REGEX, UNIT_REGEX } from './common'
+import { VALUE_DELIMITERS, BASE_UNIT_REGEX, UNIT_REGEX, VENDOR_PREFIX_REGEX } from './common'
 import { Rule, RuleNode } from './rule'
 import Layer from './layer'
-import type { AtComponent, ColorVariable, NumericValueComponent, DefinedRule, ValueComponent, VariableValueComponent, Variable } from './types/syntax'
-import { Vendors } from './types/common'
+import type { AtComponent, ColorVariable, NumericValueComponent, DefinedRule, ValueComponent, VariableValueComponent, Variable, AtArbitraryComponent, AtFeatureComponent } from './types/syntax'
 
 export class SyntaxRule extends Rule {
-
-    readonly at: Record<string, AtComponent[]> = {}
+    readonly layerAtComponents?: AtComponent[]
+    readonly supportsAtComponents?: AtComponent[]
+    readonly mediaAtComponents?: AtComponent[]
+    readonly containerAtComponents?: AtComponent[]
     readonly priority: number = -1
     readonly order: number = 0
     readonly type: SyntaxRuleType = 0
     readonly declarations?: PropertiesHyphen
     readonly layer: Layer
+    readonly supportUnknown?: boolean
 
     animationNames?: string[]
     variableNames?: string[]
@@ -128,11 +130,16 @@ export class SyntaxRule extends Rule {
             const atToken = stateTokens[i]
             this.atToken = (this.atToken || '') + '@' + atToken
             if (atToken) {
-                if (atToken === 'base' && !this.fixedClass) {
-                    this.layer = css.baseLayer
-                    continue
-                } else if (atToken === 'preset' && !this.fixedClass) {
-                    this.layer = css.presetLayer
+                if (atToken === 'base' || atToken === 'preset') {
+                    const atComponent: AtArbitraryComponent = {
+                        type: 'arbitrary',
+                        value: atToken
+                    }
+                    if (this.layerAtComponents) {
+                        this.layerAtComponents.push(atComponent)
+                    } else {
+                        this.layerAtComponents = [atComponent]
+                    }
                     continue
                 } else if (atToken === 'rtl' || atToken === 'ltr') {
                     this.direction = atToken
@@ -247,13 +254,42 @@ export class SyntaxRule extends Rule {
                     }
 
                     if (queryType) {
-                        const eachAtComponents = this.at[queryType]
-                        if (eachAtComponents) {
-                            eachAtComponents.push(...atComponents)
+                        const targetAtComponents = this[`${queryType}AtComponents` as keyof SyntaxRule] as AtComponent[]
+                        if (targetAtComponents) {
+                            targetAtComponents.push(...atComponents)
                         } else {
-                            this.at[queryType] = atComponents
+                            (this as any)[`${queryType}AtComponents`] = atComponents
                         }
                     }
+                }
+            }
+        }
+
+        if (this.mode && modes?.[this.mode] === 'media') {
+            const atFeatureComponent: AtFeatureComponent = {
+                type: 'feature',
+                name: 'prefers-color-scheme',
+                valueType: 'string',
+                value: this.mode
+            }
+            if (this.mediaAtComponents) {
+                this.mediaAtComponents.push(atFeatureComponent)
+            } else {
+                this.mediaAtComponents = [atFeatureComponent]
+            }
+        }
+
+        if (this.fixedClass) {
+            this.layer = css.componentsLayer
+        } else {
+            const onlyLayerComponent = this.layerAtComponents?.length === 1 && this.layerAtComponents[0]
+            if (onlyLayerComponent) {
+                if (onlyLayerComponent.value === 'base') {
+                    this.layer = css.baseLayer
+                    this.layerAtComponents = undefined
+                } else if (onlyLayerComponent.value === 'preset') {
+                    this.layer = css.presetLayer
+                    this.layerAtComponents = undefined
                 }
             }
         }
@@ -279,39 +315,31 @@ export class SyntaxRule extends Rule {
 
         const propertiesText: string[] = []
         for (const propertyName in this.declarations) {
-            const push = (propertyText: string) => {
-                // animations
-                if (
-                    animations
-                    && (propertyText.startsWith('animation') || propertyText.startsWith('animation-name'))
-                ) {
-                    const animationNames = propertyText
-                        .split(':')[1]
-                        .split('!important')[0]
-                        .split(' ')
-                        .filter(eachValue => this.css.animations.has(eachValue) && (!this.animationNames || !this.animationNames.includes(eachValue)))
-                    if (animationNames.length) {
-                        if (!this.animationNames) {
-                            this.animationNames = []
-                        }
-                        this.animationNames = animationNames
+            const propertyValue = this.declarations[propertyName as keyof PropertiesHyphen] as any
+            // if (this.css.Native && VENDOR_PREFIX_REGEX.test(propertyName) && !this.css.Native.supports(propertyName, propertyValue)) {
+            //     continue
+            // }
+            const propertyText = propertyName + ':' + String(propertyValue)
+            // animations
+            if (
+                animations
+                && (propertyText.startsWith('animation') || propertyText.startsWith('animation-name'))
+            ) {
+                const animationNames = propertyText
+                    .split(':')[1]
+                    .split('!important')[0]
+                    .split(' ')
+                    .filter(eachValue => this.css.animations.has(eachValue) && (!this.animationNames || !this.animationNames.includes(eachValue)))
+                if (animationNames.length) {
+                    if (!this.animationNames) {
+                        this.animationNames = []
                     }
+                    this.animationNames = animationNames
                 }
-
-                propertiesText.push(
-                    propertyText + (((this.important || important) && !propertyText.endsWith('!important')) ? '!important' : '')
-                )
             }
-
-            const keyToken = propertyName + ':'
-            const declarations = this.declarations[propertyName as keyof PropertiesHyphen] as any
-            if (Array.isArray(declarations)) {
-                for (const value of declarations) {
-                    push(keyToken + String(value))
-                }
-            } else {
-                push(keyToken + String(declarations))
-            }
+            propertiesText.push(
+                propertyText + (((this.important || important) && !propertyText.endsWith('!important')) ? '!important' : '')
+            )
         }
 
         // 創建 Natives
@@ -320,13 +348,6 @@ export class SyntaxRule extends Rule {
                 for (const eachSuffixSelectorVendor of suffixSelectorVendorsByPrefixSelectorVendor[prefixSelectorVendor]) {
                     const prefixSelectors = this.vendorPrefixSelectors?.[prefixSelectorVendor]
                     const suffixSelectors = this.vendorSuffixSelectors?.[eachSuffixSelectorVendor]
-                    if (this.css.supportVendors) {
-                        if (prefixSelectorVendor && !this.css.supportVendors?.has(prefixSelectorVendor as Vendors) ||
-                            eachSuffixSelectorVendor && !this.css.supportVendors?.has(eachSuffixSelectorVendor as Vendors)
-                        ) {
-                            continue
-                        }
-                    }
                     let prefixText = ''
                     if (this.direction) {
                         prefixText += '[dir=' + this.direction + '] '
@@ -360,46 +381,41 @@ export class SyntaxRule extends Rule {
                                 return arr
                             }, [])
                             .join(',')
-
                     const selectorText = getCssText(fixedClass ?? name)
-                    let cssText = selectorText
-                        + '{'
-                        + propertiesText.join(';')
-                        + '}'
+                    let cssText = selectorText + '{' + propertiesText.join(';') + '}'
+                    const resolveAtComponents = (atComponents: AtComponent[], separator: string) =>
+                        atComponents
+                            .map((atComponent, i) => {
+                                const value = this.resolveAtComponent(atComponent)
+                                return (i === 0 ? (value.charAt(0) !== '(' ? ' ' : '') : '') + value
+                            })
+                            .join(separator)
+                        + '{' + cssText + '}'
 
-                    for (const key of Object.keys(this.at).sort((_a, b) => b === 'supports' ? -1 : 1)) {
-                        cssText = '@' + key + (key.includes(' ') ? '' : ' ')
-                            + this.at[key]
-                                .map((eachAtComponent) => this.resolveAtComponent(eachAtComponent))
-                                .join(' ')
-                            + '{' + cssText + '}'
+                    if (this.containerAtComponents) cssText = '@container' + resolveAtComponents(this.containerAtComponents, ' ')
+                    if (this.mediaAtComponents) cssText = '@media' + resolveAtComponents(this.mediaAtComponents, ' ')
+                    if (this.supportsAtComponents) cssText = '@supports' + resolveAtComponents(this.supportsAtComponents, ' ')
+                    if (this.layerAtComponents) cssText = '@layer ' + resolveAtComponents(this.layerAtComponents, '.')
+                    const node: RuleNode = {
+                        text: cssText,
+                        selectorText
                     }
-
-                    if (this.mode && modes?.[this.mode] === 'media') {
-                        cssText = `@media(prefers-color-scheme:${this.mode}){` + cssText + '}'
+                    if (this.css.Native && (prefixSelectorVendor || eachSuffixSelectorVendor)) {
+                        node.unsupported = !this.css.Native.supports(`selector(${selectorText})`)
                     }
-
-                    const node: RuleNode = { text: cssText, selectorText }
                     if (prefixSelectors) node.prefixSelectors = prefixSelectors
                     if (suffixSelectors) node.suffixSelectors = suffixSelectors
                     this.nodes.push(node)
-
                 }
             }
-        }
-
-        if (this.fixedClass) {
-            this.layer = css.componentsLayer
         }
     }
 
     resolveAtComponent(atComponent: AtComponent) {
         switch (atComponent.type) {
-            case 'arbitrary':
-                return atComponent.value
             case 'feature':
                 return '(' + atComponent.name + ':' + atComponent.value + (atComponent.unit || '') + ')'
-            case 'operator':
+            default:
                 return atComponent.value
         }
     }

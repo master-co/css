@@ -19,6 +19,7 @@ export const UNIT_REGEX = /^([+-.]?\d+(\.?\d+)?)(%|cm|mm|q|in|pt|pc|px|em|rem|ex
 export const IMAGE_VALUE_REGEX = /(?:url|linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient)\(.*\)/
 export const COLOR_VALUE_REGEX = /(?:#|(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla|light-dark)\(.*\)|(?:\$colors)(?![a-zA-Z0-9-]))/
 export const NUMBER_VALUE_REGEX = /(?:[\d.]|(?:max|min|calc|clamp)\([^|]*\))/
+export const VENDOR_PREFIX_REGEX = /^-(webkit|moz|ms|o)-/
 export const OFFICIAL_URL = new URL('https://rc.css.master.co')
 export const CLASS_ATTRIBUTES = ['class', 'className']
 export const CLASS_DECLARATIONS = ['components']

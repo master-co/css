@@ -12,7 +12,6 @@ import SyntaxLayer from './syntax-layer'
 import NonLayer from './non-layer'
 import { ColorVariable, DefinedRule, Variable } from './types/syntax'
 import { AnimationDefinitions, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
-import { Vendors } from './types/common'
 import registerGlobal from './register-global'
 
 export default class MasterCSS {
@@ -32,6 +31,7 @@ export default class MasterCSS {
     readonly variables = new Map<string, Variable>()
     readonly at = new Map<string, string | number>()
     readonly animations = new Map<string, AnimationDefinitions>()
+    readonly SyntaxRule = SyntaxRule
 
     constructor(
         public customConfig?: Config
@@ -625,7 +625,7 @@ export default class MasterCSS {
         const syntaxRule = this.generalLayer.rules.find(({ key }) => key === ((fixedClass ? fixedClass + ' ' : '') + className))
         if (syntaxRule) return syntaxRule
         const registeredRule = this.match(className)
-        if (registeredRule) return new SyntaxRule(className, this, registeredRule, fixedClass, mode)
+        if (registeredRule) return new this.SyntaxRule(className, this, registeredRule, fixedClass, mode)
     }
 
     /**
@@ -747,8 +747,8 @@ export default class MasterCSS {
 }
 
 export default interface MasterCSS {
-    supportVendors: Set<Vendors>
     style: HTMLStyleElement | null
+    Native: typeof CSS
 }
 
 (function (MasterCSS) {

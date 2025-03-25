@@ -15,44 +15,31 @@ it.concurrent('checks the ordering of state selectors', () => {
 
 it.concurrent('checks the ordering of state selectors, and @media', () => {
     const expected = [
-
-        // normal
-        { name: 'block' },
-
-        // normal selector
-        { name: 'block:hover' },
-        { name: 'block:focus' },
-        { name: 'block:active' },
-        { name: 'block:disabled' },
-
-        // @media
-        { name: 'block@screen' },
-
-        // @media selector
-        { name: 'block:hover@screen' },
-        { name: 'block:focus@print' },
-        { name: 'block:active@screen' },
-        { name: 'block:disabled@print' },
-
-        // @media width
-        { name: 'block@sm' },
-        { name: 'block@md' },
-        { name: 'block@>sm&<md' },
-
-        // @media width selector
-        { name: 'block:hover@sm' },
-        { name: 'block:focus@sm' },
-        { name: 'block:active@sm' },
-        { name: 'block:disabled@sm' },
-
-        { name: 'block:hover@md' },
-        { name: 'block:focus@md' },
-        { name: 'block:active@md' },
-        { name: 'block:disabled@md' }
+        'block',
+        'block:hover',
+        'block:focus',
+        'block:active',
+        'block:disabled',
+        'block@screen',
+        'block:hover@screen',
+        'block:focus@print',
+        'block:active@screen',
+        'block:disabled@print',
+        'block@sm',
+        'block@md',
+        'block@>sm&<md',
+        'block:hover@sm',
+        'block:focus@sm',
+        'block:active@sm',
+        'block:disabled@sm',
+        'block:hover@md',
+        'block:focus@md',
+        'block:active@md',
+        'block:disabled@md'
     ]
 
     for (let i = 0; i < 10; i++) {
-        expect(new MasterCSS().add(...shuffle([...expected.map((({ name }) => name))])).generalLayer.rules)
-            .toMatchObject(expected)
+        expect(new MasterCSS().add(...shuffle([...expected])).generalLayer.rules.map(rule => rule.name))
+            .toEqual(expected)
     }
 })

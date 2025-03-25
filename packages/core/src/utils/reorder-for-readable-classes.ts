@@ -38,8 +38,8 @@ export default function reorderForReadableClasses(classes: string[], css = new M
 
                     // 如果 a 和 b 都有 media.token 且不包含內建已處理過排序的，則按照以下規則排序
                     if (aAtToke && bAtToken
-                        && !a.at.media?.find((({ name }: any) => name === 'min-width' || name === 'max-width'))
-                        && !b.at.media?.find((({ name }: any) => name === 'min-width' || name === 'max-width'))
+                        && a.mediaAtComponents && !a.mediaAtComponents.find((({ name }: any) => name === 'min-width' || name === 'max-width'))
+                        && b.mediaAtComponents && !b.mediaAtComponents.find((({ name }: any) => name === 'min-width' || name === 'max-width'))
                     ) {
                         return aAtToke.localeCompare(bAtToken)
                     }

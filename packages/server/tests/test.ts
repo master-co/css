@@ -13,9 +13,7 @@ fg.sync('../../../site/app/**/tests/**/template.html', { cwd: __dirname })
             const config = (await import(masterCSSFilename)).default
             expect(
                 render(
-                    readFileSync(join(__dirname, templatePath)).toString()
-                        .replace(/\*\*/g, '')
-                        .replace(/^- .*/gm, ''),
+                    readFileSync(join(__dirname, templatePath)).toString(),
                     config
                 ).css?.text
             )

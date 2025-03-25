@@ -645,28 +645,13 @@ const rules = {
         type: SyntaxRuleType.Native
     } as SyntaxRuleDefinition,
     'overflow-x': {
-        type: SyntaxRuleType.Native,
-        declare(value) {
-            return value === 'overlay'
-                ? { 'overflow-x': ['auto', value] }
-                : { 'overflow-x': value }
-        }
+        type: SyntaxRuleType.Native
     } as SyntaxRuleDefinition,
     'overflow-y': {
         type: SyntaxRuleType.Native,
-        declare(value) {
-            return value === 'overlay'
-                ? { 'overflow-y': ['auto', value] }
-                : { 'overflow-y': value }
-        }
     } as SyntaxRuleDefinition,
     overflow: {
         type: SyntaxRuleType.NativeShorthand,
-        declare(value) {
-            return value === 'overlay'
-                ? { overflow: ['auto', value] }
-                : { overflow: value }
-        }
     } as SyntaxRuleDefinition,
     'overscroll-behavior-x': {
         type: SyntaxRuleType.Native

@@ -1,1 +1,1 @@
-@layer base,theme,preset,components,general;@layer general{.font\:24{font-size:1.5rem}@media (min-width:1280px){.font\:48\@desktop{font-size:3rem}}}
+@layer base,theme,preset,components,general;@layer general{.font\:24{font-size:1.5rem}@media(min-width:1280px){.font\:48\@desktop{font-size:3rem}}}
