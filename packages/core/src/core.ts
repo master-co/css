@@ -31,7 +31,6 @@ export default class MasterCSS {
     readonly variables = new Map<string, Variable>()
     readonly at = new Map<string, string | number>()
     readonly animations = new Map<string, AnimationDefinitions>()
-    readonly SyntaxRule = SyntaxRule
 
     constructor(
         public customConfig?: Config
@@ -625,7 +624,7 @@ export default class MasterCSS {
         const syntaxRule = this.generalLayer.rules.find(({ key }) => key === ((fixedClass ? fixedClass + ' ' : '') + className))
         if (syntaxRule) return syntaxRule
         const registeredRule = this.match(className)
-        if (registeredRule) return new this.SyntaxRule(className, this, registeredRule, fixedClass, mode)
+        if (registeredRule) return new SyntaxRule(className, this, registeredRule, fixedClass, mode)
     }
 
     /**

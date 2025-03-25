@@ -19,5 +19,4 @@ export interface RuleNode {
     native?: CSSRule
     suffixSelectors?: string[]
     prefixSelectors?: string[]
-    unsupported?: boolean
 }

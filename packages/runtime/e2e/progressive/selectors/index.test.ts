@@ -31,8 +31,7 @@ test('selectors', async ({ page, browserName }) => {
         expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb'))).toMatchObject({
             nodes: [
                 {
-                    text: '.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}',
-                    unsupported: true
+                    text: '.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}'
                 },
                 {
                     text: '.hidden\\:\\:slider-thumb::-moz-range-thumb{display:none}',

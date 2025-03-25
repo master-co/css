@@ -4,7 +4,6 @@ import registerGlobal from './register-global'
 import { HydrateResult } from './types'
 import RuntimeLayer from './layer'
 import RuntimeSyntaxLayer, { RuntimeSyntaxLayerInstance } from './syntax-layer'
-import RuntimeSyntaxRule from './syntax-rule'
 
 export default class CSSRuntime extends MasterCSS {
     static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
@@ -18,9 +17,7 @@ export default class CSSRuntime extends MasterCSS {
     readonly presetLayer = new RuntimeSyntaxLayer('preset', this)
     readonly componentsLayer = new RuntimeSyntaxLayer('components', this)
     readonly generalLayer = new RuntimeSyntaxLayer('general', this)
-    readonly SyntaxRule = RuntimeSyntaxRule
     readonly classCounts = new Map<string, number>()
-    readonly Native = CSS
 
     constructor(
         public root: Document | ShadowRoot = document,
@@ -310,7 +307,6 @@ export default class CSSRuntime extends MasterCSS {
                         layer.insertAnimations(createdRule)
                         result.allSyntaxRules.push(createdRule)
                         createdRule.nodes.forEach((node) => {
-                            if (node.unsupported) return
                             try {
                                 const checkRuleIndex = checkSheet.insertRule(node.text)
                                 const checkNodeNativeRule = checkSheet.cssRules.item(checkRuleIndex)
@@ -323,8 +319,12 @@ export default class CSSRuntime extends MasterCSS {
                                         return
                                     }
                                 }
-                            } catch (error) { }
-                            console.error(`Cannot retrieve CSS rule for \`${node.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                                console.error(`Cannot retrieve CSS rule for \`${node.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                            } catch (error) {
+                                if (process.env.NODE_ENV === 'development') {
+                                    console.debug(`Cannot insert CSS rule for \`${node.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                                }
+                            }
                         })
                     }
                 } else {

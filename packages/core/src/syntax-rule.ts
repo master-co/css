@@ -316,11 +316,7 @@ export class SyntaxRule extends Rule {
         const propertiesText: string[] = []
         for (const propertyName in this.declarations) {
             const propertyValue = this.declarations[propertyName as keyof PropertiesHyphen] as any
-            // if (this.css.Native && VENDOR_PREFIX_REGEX.test(propertyName) && !this.css.Native.supports(propertyName, propertyValue)) {
-            //     continue
-            // }
             const propertyText = propertyName + ':' + String(propertyValue)
-            // animations
             if (
                 animations
                 && (propertyText.startsWith('animation') || propertyText.startsWith('animation-name'))
@@ -399,9 +395,6 @@ export class SyntaxRule extends Rule {
                     const node: RuleNode = {
                         text: cssText,
                         selectorText
-                    }
-                    if (this.css.Native && (prefixSelectorVendor || eachSuffixSelectorVendor)) {
-                        node.unsupported = !this.css.Native.supports(`selector(${selectorText})`)
                     }
                     if (prefixSelectors) node.prefixSelectors = prefixSelectors
                     if (suffixSelectors) node.suffixSelectors = suffixSelectors

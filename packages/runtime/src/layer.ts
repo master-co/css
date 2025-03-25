@@ -50,18 +50,14 @@ export default class RuntimeLayer extends Layer {
 
             for (let i = 0; i < rule.nodes.length;) {
                 const node = rule.nodes[i]
-                if (node.unsupported) {
+                try {
+                    const insertedIndex = this.native.insertRule(node.text, cssRuleIndex)
+                    node.native = this.native.cssRules.item(insertedIndex) as CSSRule
+                    cssRuleIndex++
                     i++
-                } else {
-                    try {
-                        const insertedIndex = this.native.insertRule(node.text, cssRuleIndex)
-                        node.native = this.native.cssRules.item(insertedIndex) as CSSRule
-                        cssRuleIndex++
-                        i++
-                    } catch (error) {
-                        console.error(error, node)
-                        rule.nodes.splice(i, 1)
-                    }
+                } catch (error) {
+                    console.error(error, node)
+                    rule.nodes.splice(i, 1)
                 }
             }
         }
