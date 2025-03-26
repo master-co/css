@@ -7,6 +7,7 @@ import { VALUE_DELIMITERS, BASE_UNIT_REGEX, UNIT_REGEX } from './common'
 import { Rule, RuleNode } from './rule'
 import Layer from './layer'
 import type { AtComponent, ColorVariable, NumericValueComponent, DefinedRule, ValueComponent, VariableValueComponent, Variable, AtArbitraryComponent, AtFeatureComponent } from './types/syntax'
+import parseValue from './utils/parse-value'
 
 export class SyntaxRule extends Rule {
     readonly layerAtComponents?: AtComponent[]
@@ -125,6 +126,8 @@ export class SyntaxRule extends Rule {
                 : ['']
         }
 
+        const v2AtComponents: AtComponent[] = []
+
         // 5. atTokens
         for (let i = 1; i < stateTokens.length; i++) {
             const atToken = stateTokens[i]
@@ -132,7 +135,6 @@ export class SyntaxRule extends Rule {
             if (atToken) {
                 if (atToken === 'base' || atToken === 'preset') {
                     const atComponent: AtArbitraryComponent = {
-                        type: 'arbitrary',
                         value: atToken
                     }
                     if (this.layerAtComponents) {
@@ -152,7 +154,6 @@ export class SyntaxRule extends Rule {
                     if (atRuleResult) {
                         queryType = atRuleResult[1]
                         atComponents.push({
-                            type: 'arbitrary',
                             token: atToken,
                             value: atToken
                                 .slice(queryType.length)
@@ -164,13 +165,11 @@ export class SyntaxRule extends Rule {
                                 atComponents.push({ type: 'operator', token: atComponentToken, value: 'and' })
                             } else if (atComponentToken.startsWith('')) {
                                 const targetAt = at.get(atComponentToken)
-                                if (typeof targetAt === 'string') {
-                                    const match = targetAt.match(queryTypeRegExp)
-                                    queryType = match ? match[1] : ''
-                                    if (!queryType) throw new Error(`Invalid query '${atComponentToken}': '${targetAt}'`)
+                                const targetAtComponentValue = targetAt?.value
+                                if (typeof targetAtComponentValue === 'string') {
+                                    queryType = targetAt?.type
                                     atComponents.push({
-                                        type: 'arbitrary',
-                                        value: targetAt.slice(match ? match[1].length + 1 : 0)
+                                        value: targetAtComponentValue
                                     })
                                 } else {
                                     // todo: container queries
@@ -189,7 +188,7 @@ export class SyntaxRule extends Rule {
                                         extremumOperator = '<'
                                         featureName = 'max-width'
                                         correction = -.02
-                                    } else if (atComponentToken.startsWith('>=') || targetAt) {
+                                    } else if (atComponentToken.startsWith('>=') || targetAtComponentValue) {
                                         extremumOperator = '>='
                                         featureName = 'min-width'
                                     }
@@ -198,15 +197,16 @@ export class SyntaxRule extends Rule {
                                             ? atComponentToken.replace(extremumOperator, '')
                                             : atComponentToken
                                     const viewport = at.get(token)
+                                    const viewportValue = viewport?.value
                                     switch (featureName) {
                                         case 'max-width':
                                         case 'min-width':
-                                            if (typeof viewport === 'number') {
+                                            if (typeof viewportValue === 'number') {
                                                 atComponents.push({
                                                     type: 'feature',
                                                     name: featureName,
                                                     valueType: 'number',
-                                                    value: viewport + correction,
+                                                    value: viewportValue + correction,
                                                     unit: 'px'
                                                 })
                                             } else {
@@ -233,7 +233,6 @@ export class SyntaxRule extends Rule {
                                 }
                             }
                         }
-
                         const isAmpersandIncluded = atToken.includes('&')
                         if (isAmpersandIncluded) {
                             const typeOrFeatureTokens = atToken.split(/(&|,)/)
@@ -383,7 +382,7 @@ export class SyntaxRule extends Rule {
                         atComponents
                             .map((atComponent, i) => {
                                 const value = this.resolveAtComponent(atComponent)
-                                return (i === 0 ? (value.charAt(0) !== '(' ? ' ' : '') : '') + value
+                                return (i === 0 ? (value?.charAt(0) !== '(' ? ' ' : '') : '') + value
                             })
                             .join(separator)
                         + '{' + cssText + '}'
@@ -678,49 +677,8 @@ export class SyntaxRule extends Rule {
         return i
     }
 
-    parseValue(token: string | number, unit = this.definition.unit): { value: string, type: 'string' } | { value: number, unit: string, type: 'number' } {
-        const defaultUnit = unit ?? this.definition.unit
-        let newUnit = ''
-        let value: any
-        if (typeof token === 'number') {
-            /**
-             * 當無單位值且 defaultUnit === 'rem'，
-             * 將 pxValue / 16 轉為 remValue
-             */
-            if (defaultUnit && !newUnit) {
-                if (defaultUnit === 'rem' || defaultUnit === 'em') {
-                    value = token / (this.css.config.rootSize || 1)
-                }
-                newUnit = defaultUnit || ''
-            } else {
-                value = token
-            }
-            return { value, unit: newUnit, type: 'number' }
-        } else if (defaultUnit) {
-            // w:1/2 -> width: 50%
-            if (/^\d+\/\d+/.test(token)) {
-                const [dividend, divisor] = token.split('/')
-                return { value: (+dividend / +divisor) * 100, unit: '%', type: 'number' }
-            }
-            const matches = token.match(UNIT_REGEX)
-            // ['0.5deg', '0.5', 'deg', index: 0, input: '0.5deg', groups: undefined]
-            if (matches) {
-                value = +matches[1]
-                newUnit = matches[3] || ''
-                /**
-                 * 當無單位值且 defaultUnit === 'rem'，
-                 * 將 pxValue / 16 轉為 remValue
-                 */
-                if (!newUnit) {
-                    if (defaultUnit === 'rem' || defaultUnit === 'em') {
-                        value = value / (this.css.config.rootSize || 1)
-                    }
-                    newUnit = defaultUnit || ''
-                }
-                return { value, unit: newUnit, type: 'number' }
-            }
-        }
-        return { value: token, type: 'string' }
+    parseValue(token: string | number, unit = this.definition.unit) {
+        return parseValue(token, unit, this.css.config.rootSize)
     }
 
     get key(): string {

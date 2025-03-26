@@ -24,3 +24,19 @@ export const CLASS_ATTRIBUTES = ['class', 'className']
 export const CLASS_DECLARATIONS = ['components']
 export const CLASS_FUNCTIONS = ['clsx', 'cva', 'ctl', 'cv', 'class', 'classnames', 'classVariant', 'styled(?:\\s+)?(?:\\.\\w+)?', 'classList(?:\\s+)?\\.(?:add|remove|toggle|replace)']
 export const BORDER_STYLE_VALUES = ['none', 'auto', 'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
+export const AT_OPERATORS = {
+    '&': 'and',
+    '!': 'not',
+    // native
+    'not': 'not',
+    'and': 'and',
+    'or': 'or',
+    'only': 'only',
+    ',': 'or',
+    '>': '>',
+    '<': '<',
+    '=': '=',
+    '>=': '>=',
+    '<=': '<=',
+}
+export const COMPARISION_OPERATORS = ['>=', '<=', '>', '<', '=']

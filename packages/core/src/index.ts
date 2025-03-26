@@ -16,7 +16,7 @@ export * from './types/syntax'
 // factories
 export { default as withSyntaxLayer } from './factories/with-syntax-layer'
 
-// functions
+// utils
 export { default as extendConfig } from './utils/extend-config'
 export { default as reorderForReadableClasses } from './utils/reorder-for-readable-classes'
 export { default as areRuleModesEqual } from './utils/are-rule-modes-equal'
@@ -26,3 +26,7 @@ export { default as areRuleStatesEqual } from './utils/are-rule-states-equal'
 export { default as areRulesDuplicated } from './utils/are-rules-duplicated'
 export { default as generateCSS } from './utils/generate-css'
 export { default as isCoreRule } from './utils/is-core-rule'
+export { default as parsePairs } from './utils/parse-pairs'
+export { default as parseValue } from './utils/parse-value'
+export { default as parseAt } from './utils/parse-at'
+
