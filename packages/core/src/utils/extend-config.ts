@@ -14,7 +14,7 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
                 }
             })
         }
-        ['components', 'at', 'variables'].forEach((key) => {
+        ['components', 'variables'].forEach((key) => {
             if (clonedConfig[key as keyof Config]) {
                 formatDeeply(clonedConfig[key as keyof Config] as Record<string, any>)
             }

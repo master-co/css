@@ -65,7 +65,7 @@ test.concurrent('at', () => {
 test.concurrent('animations', () => {
     expectLayers(
         {
-            general: '.\\@float\\|\\.5s{animation:float .5s}',
+            general: '.\\@float\\|\\.5s{animation:float 0.5s}',
             animations: '@keyframes float{0%{transform:none}50%{transform:translateY(-1.25rem)}to{transform:none}}'
         },
         '@float|.5s',

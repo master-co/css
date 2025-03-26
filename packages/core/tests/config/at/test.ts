@@ -9,9 +9,13 @@ test.concurrent('queries', () => {
         'hidden@watch@support-backdrop',
         {
             at: {
-                watch: 'media (max-device-width:42mm) and (min-device-width:38mm)',
-                support: {
-                    backdrop: 'supports (backdrop-filter:blur(0px))',
+                watch: {
+                    type: 'media',
+                    value: '(max-device-width:42mm) and (min-device-width:38mm)'
+                },
+                'support-backdrop': {
+                    type: 'supports',
+                    value: 'supports (backdrop-filter:blur(0px))'
                 }
             }
         }

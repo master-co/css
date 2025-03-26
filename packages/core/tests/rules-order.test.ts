@@ -78,6 +78,11 @@ it.concurrent('checks media order', () => {
         { name: '{flex:row}@2xs&<xs' }
     ]
     for (let i = 0; i < 10; i++) {
-        expect(new MasterCSS({ at: { tablet: 391, desktop: 1025 } }).add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
+        expect(new MasterCSS({
+            at: {
+                tablet: { type: 'media', value: 391 },
+                desktop: { type: 'media', value: 1025 },
+            }
+        }).add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
     }
 })

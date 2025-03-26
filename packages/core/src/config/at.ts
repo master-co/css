@@ -1,14 +1,14 @@
 const at = {
-    all: 'media all',
-    print: 'media print',
-    screen: 'media screen',
-    speech: 'media speech',
-    landscape: 'media (orientation:landscape)',
-    portrait: 'media (orientation:portrait)',
-    motion: 'media (prefers-reduced-motion:no-preference)',
-    'reduced-motion': 'media (prefers-reduced-motion:reduce)',
-    base: 'layer base',
-    preset: 'layer preset',
+    all: { type: 'media', value: 'all' },
+    print: { type: 'media', value: 'print' },
+    screen: { type: 'media', value: 'screen' },
+    speech: { type: 'media', value: 'speech' },
+    landscape: { type: 'media', name: 'orientation', value: 'landscape' },
+    portrait: { type: 'media', name: 'orientation', value: 'portrait' },
+    motion: { type: 'media', name: 'prefers-reduced-motion', value: 'no-preference' },
+    'motion-reduced': { type: 'media', name: 'prefers-reduced-motion', value: 'reduce' },
+    base: { type: 'layer', value: 'base' },
+    preset: { type: 'layer', value: 'preset' },
 }
 
 export default at

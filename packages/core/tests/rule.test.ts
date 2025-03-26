@@ -125,11 +125,11 @@ describe.concurrent('value components', () => {
                 name: 'rgb',
                 symbol: '(',
                 children: [
-                    { value: '125', type: 'string', token: '125', text: '125' },
+                    { value: 125, type: 'number', token: '125', text: '125', unit: '' },
                     { type: 'separator', value: ',', text: ',', token: ',' },
-                    { value: '125', type: 'string', token: '125', text: '125' },
+                    { value: 125, type: 'number', token: '125', text: '125', unit: '' },
                     { type: 'separator', value: ',', text: ',', token: ',' },
-                    { value: '0', type: 'string', token: '0', text: '0' }
+                    { value: 0, type: 'number', token: '0', text: '0', unit: '' }
                 ],
                 token: 'rgb(125,125,0)',
                 text: 'rgb(125,125,0)'

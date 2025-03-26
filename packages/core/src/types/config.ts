@@ -26,13 +26,18 @@ export interface SyntaxRuleDefinition {
     insert?(this: SyntaxRule): void
 }
 
-
 export type VariableValue = number | string | false | (number | string)[]
 export type VariableDefinition = { [key in '' | `@${string}` | string]?: VariableValue | VariableDefinition } | VariableValue
 export type CSSKeyframes = Record<'from' | 'to' | string, PropertiesHyphen>
 export type AnimationDefinitions = Record<string, CSSKeyframes>;
 export type SelectorDefinitions = Record<string, string | string[]>;
-export interface AtDefinitions { [key: string]: number | string | AtDefinitions }
+export type AtDefinitionType = 'media' | 'layer' | 'supports' | 'container'
+export interface AtDefinition {
+    type?: AtDefinitionType
+    name?: string
+    value: number | string
+}
+export type AtDefinitions = Record<string, AtDefinition>
 export interface StyleDefinitions { [key: string]: string | StyleDefinitions }
 export type SyntaxRuleDefinitions = Partial<Record<keyof typeof rules | string, SyntaxRuleDefinition>>
 export type VariableDefinitions = { [key in keyof typeof rules]?: VariableDefinition } & Record<string, VariableDefinition>

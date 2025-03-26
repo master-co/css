@@ -165,11 +165,16 @@ export class SyntaxRule extends Rule {
                                 atComponents.push({ type: 'operator', token: atComponentToken, value: 'and' })
                             } else if (atComponentToken.startsWith('')) {
                                 const targetAt = at.get(atComponentToken)
+                                const targetAtComponentName = targetAt?.name
                                 const targetAtComponentValue = targetAt?.value
                                 if (typeof targetAtComponentValue === 'string') {
                                     queryType = targetAt?.type
+                                    let value = (targetAtComponentName ? targetAtComponentName + ':' : '') + targetAtComponentValue
+                                    if (targetAtComponentName) {
+                                        value = '(' + value + ')'
+                                    }
                                     atComponents.push({
-                                        value: targetAtComponentValue
+                                        value
                                     })
                                 } else {
                                     // todo: container queries

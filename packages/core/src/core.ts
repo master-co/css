@@ -11,7 +11,7 @@ import Layer from './layer'
 import SyntaxLayer from './syntax-layer'
 import NonLayer from './non-layer'
 import { ColorVariable, DefinedRule, Variable } from './types/syntax'
-import { AnimationDefinitions, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
+import { AnimationDefinitions, AtDefinition, AtDefinitions, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
 import registerGlobal from './register-global'
 
 export default class MasterCSS {
@@ -29,7 +29,7 @@ export default class MasterCSS {
     readonly components = new Map<string, string[]>()
     readonly selectors = new Map<string, [RegExp, string[]][]>()
     readonly variables = new Map<string, Variable>()
-    readonly at = new Map<string, string | number>()
+    readonly at = new Map<string, AtDefinition>()
     readonly animations = new Map<string, AnimationDefinitions>()
 
     constructor(
@@ -128,7 +128,9 @@ export default class MasterCSS {
                      * resolve `variables.screen-*` to `at.*`
                      */
                     if (variable.name.startsWith('screen-') && variable.type === 'number') {
-                        this.at.set(variable.name.slice(7), variable.value)
+                        this.at.set(variable.name.slice(7), {
+                            value: variable.value
+                        })
                     }
                     const currentMode = replacedMode ?? mode
                     if (currentMode !== undefined) {
@@ -265,9 +267,8 @@ export default class MasterCSS {
         }
 
         if (at) {
-            const resolvedAt = flattenObject(at)
-            for (const eachAt in resolvedAt) {
-                this.at.set(eachAt, resolvedAt[eachAt])
+            for (const token in at) {
+                this.at.set(token, at[token])
             }
         }
 
