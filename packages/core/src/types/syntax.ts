@@ -1,10 +1,9 @@
 import { SyntaxRuleDefinition } from './config'
 
-export interface AtArbitraryComponent { type?: '', token?: string, value: any }
-export interface AtFeatureComponent { type: 'feature', token?: string, name: string, valueType: 'number' | 'string', value: string | number, unit?: string }
+export interface AtDescriptorComponent { type?: undefined, token?: string, name: string, value: string | number, unit?: string, operator?: string }
 export interface AtOperatorComponent { type: 'operator', token: string, value: string }
 export interface AtGroupComponent { type: 'group', token?: string, children: AtComponent[], value?: string }
-export type AtComponent = AtArbitraryComponent | AtFeatureComponent | AtOperatorComponent | AtGroupComponent
+export type AtComponent = AtDescriptorComponent | AtOperatorComponent | AtGroupComponent
 
 export type ValueComponent = StringValueComponent | NumericValueComponent | FunctionValueComponent | VariableValueComponent | SeparatorValueComponent
 export interface StringValueComponent { text?: string, token: string, type: 'string', value: string }
