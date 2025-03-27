@@ -29,7 +29,7 @@ describe.concurrent('sorting', () => {
         '@portrait',
         '@preset',
         '@print',
-        '@reduced-motion',
+        '@reduce-motion',
         '@screen',
         '@speech',
         '@supports()',

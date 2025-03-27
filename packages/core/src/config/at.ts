@@ -8,7 +8,7 @@ const at = {
     landscape: { type: 'media', name: 'orientation', value: 'landscape' },
     portrait: { type: 'media', name: 'orientation', value: 'portrait' },
     motion: { type: 'media', name: 'prefers-reduced-motion', value: 'no-preference' },
-    'motion-reduced': { type: 'media', name: 'prefers-reduced-motion', value: 'reduce' },
+    'reduce-motion': { type: 'media', name: 'prefers-reduced-motion', value: 'reduce' },
     base: { type: 'layer', value: 'base' },
     preset: { type: 'layer', value: 'preset' },
 } satisfies AtDefinitions

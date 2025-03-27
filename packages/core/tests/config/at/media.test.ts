@@ -32,9 +32,9 @@ test.concurrent('prefers-reduced-motion', () => {
 
     expectLayers(
         {
-            general: '@media (prefers-reduced-motion:reduce){.hidden\\@motion-reduced{display:none}}'
+            general: '@media (prefers-reduced-motion:reduce){.hidden\\@reduce-motion{display:none}}'
         },
-        'hidden@motion-reduced',
+        'hidden@reduce-motion',
         config
     )
 })
