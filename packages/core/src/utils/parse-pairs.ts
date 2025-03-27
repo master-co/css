@@ -13,18 +13,36 @@ export default function parsePairs(
 ): Pair | null {
     const stack: { start: number }[] = []
     let result: Pair | null = null
+    let inString: '"' | '\'' | null = null
+
     for (let i = 0; i < str.length; i++) {
-        // 如果是被 escape 的括號就跳過
-        if (str[i] === '\\') {
-            i++
+        const char = str[i]
+        const prevChar = str[i - 1]
+
+        // 處理 escape 字元，例如 \"
+        if (char === '\\') {
+            i++ // skip next character
             continue
         }
-        // 遇到開始符號
+
+        // 處理字串區段進入與離開
+        if ((char === '"' || char === '\'') && prevChar !== '\\') {
+            if (inString === char) {
+                inString = null // 離開字串
+            } else if (!inString) {
+                inString = char // 進入字串
+            }
+            continue
+        }
+
+        if (inString) continue // 若在字串中就忽略括號處理
+
+        // 開始符號
         if (str.startsWith(a, i)) {
             stack.push({ start: i })
             i += a.length - 1
         }
-        // 遇到結束符號
+        // 結束符號
         else if (str.startsWith(b, i)) {
             const last = stack.pop()
             if (last) {
