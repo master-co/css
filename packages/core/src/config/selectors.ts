@@ -1,3 +1,5 @@
+import { SelectorDefinitions } from '../types/config'
+
 const selectors = {
     '::scrollbar': '::-webkit-scrollbar',
     '::scrollbar-button': '::-webkit-scrollbar-button',
@@ -15,6 +17,6 @@ const selectors = {
     ':odd': ':nth-child(odd)',
     ':nth(': ':nth-child(',
     ':only': ':only-child'
-}
+} satisfies SelectorDefinitions
 
 export default selectors
