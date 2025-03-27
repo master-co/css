@@ -1,10 +1,10 @@
-import { test, expect } from 'vitest'
+import { test } from 'vitest'
 import { expectLayers } from '../../test'
 
 test.concurrent('queries', () => {
     expectLayers(
         {
-            general: '@supports(backdrop-filter:blur(0px)){@media(max-device-width:42mm) and (min-device-width:38mm){.hidden\\@watch\\@support-backdrop{display:none}}}'
+            general: '@media (max-device-width:42mm) and (min-device-width:38mm){@supports (backdrop-filter:blur(0px)){.hidden\\@watch\\@support-backdrop{display:none}}}'
         },
         'hidden@watch@support-backdrop',
         {
@@ -15,7 +15,7 @@ test.concurrent('queries', () => {
                 },
                 'support-backdrop': {
                     type: 'supports',
-                    value: 'supports (backdrop-filter:blur(0px))'
+                    value: '(backdrop-filter:blur(0px))'
                 }
             }
         }

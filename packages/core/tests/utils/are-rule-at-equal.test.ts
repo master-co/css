@@ -23,6 +23,13 @@ test.concurrent('no at-token', () => {
     ).toBeFalsy()
 })
 
+test.concurrent('nest group', () => {
+    expect(areRuleAtEqual(
+        new MasterCSS().generate('font:16@sm&!(print,screen)')[0],
+        new MasterCSS().generate('font:16@!(print,screen)&sm')[0])
+    ).toBeTruthy()
+})
+
 test.concurrent('supports and media', () => {
     expect(areRuleAtEqual(
         new MasterCSS().generate('font:16@sm')[0],

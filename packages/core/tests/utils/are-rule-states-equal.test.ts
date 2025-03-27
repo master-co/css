@@ -2,14 +2,16 @@ import { it, test, expect } from 'vitest'
 import { MasterCSS } from '../../src'
 import areRuleStatesEqual from '../../src/utils/are-rule-states-equal'
 
-test.concurrent('states', () => {
+test.concurrent('at same', () => {
     expect(areRuleStatesEqual(
-        new MasterCSS().generate('font:16:hover@sm')[0],
-        new MasterCSS().generate('font:32:hover@sm')[0])
+        new MasterCSS().generate('block:hover@sm')[0],
+        new MasterCSS().generate('block:hover@sm')[0])
     ).toBeTruthy()
+})
 
+test.concurrent('at diff', () => {
     expect(areRuleStatesEqual(
-        new MasterCSS().generate('font:16:hover@sm')[0],
-        new MasterCSS().generate('font:32:focus@sm')[0])
+        new MasterCSS().generate('block:hover@sm')[0],
+        new MasterCSS().generate('block:hover@md')[0])
     ).toBeFalsy()
 })

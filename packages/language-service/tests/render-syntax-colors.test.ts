@@ -199,7 +199,7 @@ describe.concurrent('color space', () => {
     })
 
     test.concurrent('hsla', async () => {
-        const target = 'hsla(150deg,30%,60%,.1)'
+        const target = 'hsla(150deg,30%,60%,0.1)'
         const content = `export default () => <div className='fg:${target}'></div>`
         const doc = createDoc('tsx', content)
         const languageService = new CSSLanguageService()

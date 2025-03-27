@@ -31,9 +31,9 @@ export type VariableDefinition = { [key in '' | `@${string}` | string]?: Variabl
 export type CSSKeyframes = Record<'from' | 'to' | string, PropertiesHyphen>
 export type AnimationDefinitions = Record<string, CSSKeyframes>;
 export type SelectorDefinitions = Record<string, string | string[]>;
-export type AtDefinitionType = 'media' | 'layer' | 'supports' | 'container'
+export type AtType = 'media' | 'layer' | 'supports' | 'container'
 export interface AtDefinition {
-    type?: AtDefinitionType
+    type?: AtType
     name?: string
     value: number | string
 }

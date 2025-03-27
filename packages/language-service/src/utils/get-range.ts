@@ -1,20 +1,24 @@
 import { TextDocument, Range } from 'vscode-languageserver-textdocument'
-import settings from '../settings'
 
-// todo: unstable range calculation
 export default function getRange(searchString: string, doc: TextDocument): Range {
     const text = doc.getText()
-    const regex = new RegExp(`(\\b(?:className|class)\\s?=\\s?(['"\`]))(.*?)\\2`, 'g')
-    const classAttMatch = regex.exec(text)
-    if (classAttMatch) {
-        const attrIndex = classAttMatch.index + classAttMatch[1].length
-        const className = classAttMatch[3]
-        const index = className.indexOf(searchString)
-        return {
-            start: doc.positionAt(attrIndex + index),
-            end: doc.positionAt(attrIndex + index + searchString.length)
+    const regex = new RegExp(`(\\b(?:className|class)\\s*=\\s*(['"\`]))(.*?)\\2`, 'gs')
+
+    let match: RegExpExecArray | null
+    while ((match = regex.exec(text)) !== null) {
+        const fullMatch = match[0]
+        const attrStartIndex = match.index + match[1].length
+        const className = match[3]
+
+        const relativeIndex = className.indexOf(searchString)
+        if (relativeIndex !== -1) {
+            const absoluteIndex = attrStartIndex + relativeIndex
+            return {
+                start: doc.positionAt(absoluteIndex),
+                end: doc.positionAt(absoluteIndex + searchString.length)
+            }
         }
-    } else {
-        throw new Error(`Cannot find ${searchString} in ${text}`)
     }
+
+    throw new Error(`Cannot find "${searchString}" in any class attribute.`)
 }

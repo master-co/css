@@ -1,57 +1,90 @@
 import { AT_OPERATORS, COMPARISION_OPERATORS } from '../common'
 import MasterCSS from '../core'
-import { AtDefinitionType } from '../types/config'
-import { AtComponent, AtFeatureComponent, AtGroupComponent } from '../types/syntax'
+import { AtDefinition, AtType } from '../types/config'
+import { AtComponent, AtDescriptorComponent, AtGroupComponent } from '../types/syntax'
 import parsePairs from './parse-pairs'
+import parseValue from './parse-value'
+import replaceCharOutsideQuotes from './replace-char-outside-quotes'
+import splitCharOutsideQuotes from './split-char-outside-quotes'
 
 export default function parseAt(token: string, css = new MasterCSS()) {
     const matches = /^(media|supports|container|layer)/.exec(token)
-    let type: AtDefinitionType | undefined = matches?.[0] as AtDefinitionType
+    let type: AtType | undefined = matches?.[0] as AtType
     token = type ? token.slice(type.length) : token
+    let firstToken: string
     const resolve = (eachToken: string) => {
-        const regex = /([a-zA-Z0-9-:]+|[&|!|,|>|<|=][=]?)/g
+        const regex = /([a-zA-Z0-9-:%|]+|[&|!|,|>|<|=][=]?)/g
         const eachTokens = [...eachToken.matchAll(regex)].map(match => match[0])
         const eachAtComponents: AtComponent[] = []
         eachTokens.forEach((eachToken, i) => {
-            const value = AT_OPERATORS[eachToken as keyof typeof AT_OPERATORS]
+            let operatorValue = AT_OPERATORS[eachToken as keyof typeof AT_OPERATORS]
             let atComponent: AtComponent
-            if (value) {
-                atComponent = { type: 'operator', token: eachToken, value }
+            /**
+             * If the type is not defined, try to get it from the first token
+             */
+            if (!type && !firstToken) {
+                firstToken = eachToken
+                const firstDefintion = css.at.get(firstToken)
+                type = firstDefintion?.type || 'media'
+            }
+            if (operatorValue) {
+                atComponent = { type: 'operator', token: eachToken, value: operatorValue }
             } else {
-                const defintion = css.at.get(eachToken || '')
-                atComponent = defintion
-                    ? { token: eachToken, value: defintion.value }
-                    : { token: eachToken, value: eachToken }
-                const atFeatureComponent = atComponent as unknown as AtFeatureComponent
-                // resolve screen sizes
-                if (!atFeatureComponent.type && typeof atFeatureComponent.value === 'number') {
-                    const prevAtComponent = eachAtComponents[eachAtComponents.length - 1] as AtComponent | undefined
-                    let operator = '>='
-                    if (prevAtComponent?.type === 'operator') {
-                        if (COMPARISION_OPERATORS.includes(prevAtComponent.value)) {
-                            operator = prevAtComponent.value
-                            eachAtComponents.splice(i - 1, 1)
+                atComponent = { token: eachToken } as AtDescriptorComponent
+                let defintion: AtDefinition | undefined
+                let name: string | undefined
+                let value: string | number
+                let operator: string | undefined
+                defintion = css.at.get(eachToken)
+                if (defintion) {
+                    name = defintion.name
+                    value = defintion.value
+                } else {
+                    const [splitedNameOrValue, splitedValue] = splitCharOutsideQuotes(eachToken, ':')
+                    if (splitedValue) {
+                        name = splitedNameOrValue
+                        value = splitedValue
+                    } else {
+                        value = splitedNameOrValue
+                    }
+                    value = replaceCharOutsideQuotes(value, '|', ' ')
+                }
+                if (type === 'media' || type === 'container') {
+                    const parsed = parseValue(value, 'rem', css.config.rootSize)
+                    if (parsed.type === 'number') {
+                        const prevAtComponent = eachAtComponents[eachAtComponents.length - 1] as AtComponent | undefined
+                        operator = '>='
+                        if (prevAtComponent?.type === 'operator') {
+                            if (COMPARISION_OPERATORS.includes(prevAtComponent.value)) {
+                                operator = prevAtComponent.value
+                                eachAtComponents.splice(i - 1, 1)
+                            }
                         }
+                        switch (operator) {
+                            case '>=':
+                                name = 'min-width'
+                                break
+                            case '<=':
+                                name = 'max-width'
+                                break
+                            case '>':
+                                name = 'min-width'
+                                break
+                            case '<':
+                                name = 'max-width'
+                                break
+                            case '=':
+                                name = 'width'
+                                break
+                        }
+                        atComponent.unit = parsed.unit
                     }
-                    switch (operator) {
-                        case '>=':
-                            atFeatureComponent.name = 'min-width'
-                            break
-                        case '<=':
-                            atFeatureComponent.name = 'max-width'
-                            break
-                        case '>':
-                            atFeatureComponent.name = 'min-width'
-                            atFeatureComponent.value += .02
-                            break
-                        case '<':
-                            atFeatureComponent.name = 'max-width'
-                            atFeatureComponent.value -= .02
-                            break
-                        case '=':
-                            atFeatureComponent.name = 'width'
-                            break
-                    }
+                    atComponent.value = parsed.value
+                    if (name) atComponent.name = name
+                    if (operator) atComponent.operator = operator
+                } else {
+                    atComponent.value = value
+                    if (name) atComponent.name = name
                 }
             }
             eachAtComponents.push(atComponent)
@@ -60,35 +93,32 @@ export default function parseAt(token: string, css = new MasterCSS()) {
     }
     const pair = (eachToken: string) => {
         const pairedAtComponents: AtComponent[] = []
-        const pairs = parsePairs(eachToken)
-        if (pairs) {
-            if (pairs.pre) pairedAtComponents.push(...resolve(pairs.pre))
-            if (pairs.body) {
-                pairedAtComponents.push({
-                    type: 'group', children: pair(pairs.body)
-                } as unknown as AtGroupComponent)
+        const paired = parsePairs(eachToken)
+        if (paired) {
+            if (paired.pre) {
+                pairedAtComponents.push(...pair(paired.pre))
             }
-            if (pairs.post) pairedAtComponents.push(...resolve(pairs.post))
+            if (paired.body) {
+                const children = pair(paired.body)
+                if (children.length > 1) {
+                    pairedAtComponents.push({
+                        type: 'group', children: pair(paired.body)
+                    } as unknown as AtGroupComponent)
+                } else {
+                    pairedAtComponents.push(...children)
+                }
+            }
+            if (paired.post) {
+                pairedAtComponents.push(...pair(paired.post))
+            }
         } else {
             pairedAtComponents.push(...resolve(eachToken))
         }
         return pairedAtComponents
     }
     const atComponents = pair(token)
-    /**
-     * If the type is not defined, try to get it from the first token
-     */
-    if (!type) {
-        const firstAtComponent = atComponents[0]
-        if (firstAtComponent.token) {
-            const atDefinition = css.at.get(firstAtComponent.token)
-            if (atDefinition) {
-                type = atDefinition.type
-            }
-        }
-    }
     return {
-        type: type || 'media',
+        type,
         atComponents
     }
 }

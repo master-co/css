@@ -3,27 +3,25 @@ import MasterCSS from './core'
 import cssEscape from 'shared/utils/css-escape'
 import SyntaxRuleType from './syntax-rule-type'
 import { type PropertiesHyphen } from 'csstype'
-import { VALUE_DELIMITERS, BASE_UNIT_REGEX, UNIT_REGEX } from './common'
+import { VALUE_DELIMITERS, BASE_UNIT_REGEX } from './common'
 import { Rule, RuleNode } from './rule'
 import Layer from './layer'
-import type { AtComponent, ColorVariable, NumericValueComponent, DefinedRule, ValueComponent, VariableValueComponent, Variable, AtArbitraryComponent, AtFeatureComponent } from './types/syntax'
+import type { AtComponent, ColorVariable, NumericValueComponent, DefinedRule, ValueComponent, VariableValueComponent, Variable, StringValueComponent, AtDescriptorComponent } from './types/syntax'
 import parseValue from './utils/parse-value'
+import parseAt from './utils/parse-at'
+import { AtType } from './types/config'
+import generateAt from './utils/generate-at'
 
 export class SyntaxRule extends Rule {
-    readonly layerAtComponents?: AtComponent[]
-    readonly supportsAtComponents?: AtComponent[]
-    readonly mediaAtComponents?: AtComponent[]
-    readonly containerAtComponents?: AtComponent[]
+    readonly atComponents?: Partial<Record<AtType, AtComponent[]>>
     readonly priority: number = -1
     readonly order: number = 0
     readonly type: SyntaxRuleType = 0
     readonly declarations?: PropertiesHyphen
     readonly layer: Layer
     readonly supportUnknown?: boolean
-
     animationNames?: string[]
     variableNames?: string[]
-
     constructor(
         public readonly name: string,
         public css: MasterCSS,
@@ -126,174 +124,52 @@ export class SyntaxRule extends Rule {
                 : ['']
         }
 
-        const v2AtComponents: AtComponent[] = []
 
         // 5. atTokens
         for (let i = 1; i < stateTokens.length; i++) {
             const atToken = stateTokens[i]
+            if (modes?.[atToken]) {
+                this.mode = atToken
+                continue
+            }
             this.atToken = (this.atToken || '') + '@' + atToken
-            if (atToken) {
-                if (atToken === 'base' || atToken === 'preset') {
-                    const atComponent: AtArbitraryComponent = {
-                        value: atToken
-                    }
-                    if (this.layerAtComponents) {
-                        this.layerAtComponents.push(atComponent)
-                    } else {
-                        this.layerAtComponents = [atComponent]
-                    }
-                    continue
-                } else if (atToken === 'rtl' || atToken === 'ltr') {
-                    this.direction = atToken
-                } else {
-                    let queryType: string | undefined
-                    const atComponents: AtComponent[] = []
-                    // x font-face, counter-style, keyframes, font-feature-values, property, layer
-                    const queryTypeRegExp = /^(media|supports|container|layer)/
-                    const atRuleResult = queryTypeRegExp.exec(atToken)
-                    if (atRuleResult) {
-                        queryType = atRuleResult[1]
-                        atComponents.push({
-                            token: atToken,
-                            value: atToken
-                                .slice(queryType.length)
-                                .replace(/\|/g, ' ')
-                        })
-                    } else {
-                        const analyzeToken = (atComponentToken: string) => {
-                            if (atComponentToken === '&') {
-                                atComponents.push({ type: 'operator', token: atComponentToken, value: 'and' })
-                            } else if (atComponentToken.startsWith('')) {
-                                const targetAt = at.get(atComponentToken)
-                                const targetAtComponentName = targetAt?.name
-                                const targetAtComponentValue = targetAt?.value
-                                if (typeof targetAtComponentValue === 'string') {
-                                    queryType = targetAt?.type
-                                    let value = (targetAtComponentName ? targetAtComponentName + ':' : '') + targetAtComponentValue
-                                    if (targetAtComponentName) {
-                                        value = '(' + value + ')'
-                                    }
-                                    atComponents.push({
-                                        value
-                                    })
-                                } else {
-                                    // todo: container queries
-                                    queryType = 'media'
-                                    let featureName = ''
-                                    let extremumOperator = ''
-                                    let correction = 0
-                                    if (atComponentToken.startsWith('<=')) {
-                                        extremumOperator = '<='
-                                        featureName = 'max-width'
-                                    } else if (atComponentToken.startsWith('>') && !atComponentToken.startsWith('>=')) {
-                                        extremumOperator = '>'
-                                        featureName = 'min-width'
-                                        correction = .02
-                                    } else if (atComponentToken.startsWith('<')) {
-                                        extremumOperator = '<'
-                                        featureName = 'max-width'
-                                        correction = -.02
-                                    } else if (atComponentToken.startsWith('>=') || targetAtComponentValue) {
-                                        extremumOperator = '>='
-                                        featureName = 'min-width'
-                                    }
-                                    const token
-                                        = extremumOperator
-                                            ? atComponentToken.replace(extremumOperator, '')
-                                            : atComponentToken
-                                    const viewport = at.get(token)
-                                    const viewportValue = viewport?.value
-                                    switch (featureName) {
-                                        case 'max-width':
-                                        case 'min-width':
-                                            if (typeof viewportValue === 'number') {
-                                                atComponents.push({
-                                                    type: 'feature',
-                                                    name: featureName,
-                                                    valueType: 'number',
-                                                    value: viewportValue + correction,
-                                                    unit: 'px'
-                                                })
-                                            } else {
-                                                const valueComponent = this.parseValue(token, 'px')
-                                                if (valueComponent.type === 'number') {
-                                                    atComponents.push({
-                                                        type: 'feature',
-                                                        name: featureName,
-                                                        valueType: 'number',
-                                                        value: valueComponent.value + correction,
-                                                        unit: valueComponent.unit
-                                                    })
-                                                } else {
-                                                    atComponents.push({
-                                                        type: 'feature',
-                                                        name: featureName,
-                                                        valueType: 'string',
-                                                        value: token
-                                                    })
-                                                }
-                                            }
-                                            break
-                                    }
-                                }
-                            }
-                        }
-                        const isAmpersandIncluded = atToken.includes('&')
-                        if (isAmpersandIncluded) {
-                            const typeOrFeatureTokens = atToken.split(/(&|,)/)
-                            for (const atComponentToken of typeOrFeatureTokens) {
-                                analyzeToken(atComponentToken)
-                            }
-                        } else {
-                            analyzeToken(atToken)
-                        }
-                        if (!atComponents.length) {
-                            if (!isAmpersandIncluded && modes?.[atToken]) {
-                                this.mode = atToken
-                                continue
-                            } else {
-                                // container queries
-                            }
-                        }
-                    }
-
-                    if (queryType) {
-                        const targetAtComponents = this[`${queryType}AtComponents` as keyof SyntaxRule] as AtComponent[]
-                        if (targetAtComponents) {
-                            targetAtComponents.push(...atComponents)
-                        } else {
-                            (this as any)[`${queryType}AtComponents`] = atComponents
-                        }
-                    }
+            const { type, atComponents } = parseAt(atToken, css)
+            const typeAtComponents = this.atComponents?.[type]
+            if (typeAtComponents) {
+                typeAtComponents.push(...atComponents)
+            } else {
+                this.atComponents = {
+                    ...this.atComponents,
+                    [type]: atComponents
                 }
             }
         }
 
         if (this.mode && modes?.[this.mode] === 'media') {
-            const atFeatureComponent: AtFeatureComponent = {
-                type: 'feature',
+            const AtDescriptorComponent: AtDescriptorComponent = {
                 name: 'prefers-color-scheme',
-                valueType: 'string',
                 value: this.mode
             }
-            if (this.mediaAtComponents) {
-                this.mediaAtComponents.push(atFeatureComponent)
+            if (this.atComponents?.media) {
+                this.atComponents.media.push(AtDescriptorComponent)
             } else {
-                this.mediaAtComponents = [atFeatureComponent]
+                this.atComponents = {
+                    media: [AtDescriptorComponent]
+                }
             }
         }
 
         if (this.fixedClass) {
             this.layer = css.componentsLayer
         } else {
-            const onlyLayerComponent = this.layerAtComponents?.length === 1 && this.layerAtComponents[0]
+            const onlyLayerComponent = this.atComponents?.layer?.length === 1 && this.atComponents.layer[0]
             if (onlyLayerComponent) {
                 if (onlyLayerComponent.value === 'base') {
                     this.layer = css.baseLayer
-                    this.layerAtComponents = undefined
+                    this.atComponents.layer = undefined
                 } else if (onlyLayerComponent.value === 'preset') {
                     this.layer = css.presetLayer
-                    this.layerAtComponents = undefined
+                    this.atComponents.layer = undefined
                 }
             }
         }
@@ -383,37 +259,16 @@ export class SyntaxRule extends Rule {
                             .join(',')
                     const selectorText = getCssText(fixedClass ?? name)
                     let cssText = selectorText + '{' + propertiesText.join(';') + '}'
-                    const resolveAtComponents = (atComponents: AtComponent[], separator: string) =>
-                        atComponents
-                            .map((atComponent, i) => {
-                                const value = this.resolveAtComponent(atComponent)
-                                return (i === 0 ? (value?.charAt(0) !== '(' ? ' ' : '') : '') + value
-                            })
-                            .join(separator)
-                        + '{' + cssText + '}'
-
-                    if (this.containerAtComponents) cssText = '@container' + resolveAtComponents(this.containerAtComponents, ' ')
-                    if (this.mediaAtComponents) cssText = '@media' + resolveAtComponents(this.mediaAtComponents, ' ')
-                    if (this.supportsAtComponents) cssText = '@supports' + resolveAtComponents(this.supportsAtComponents, ' ')
-                    if (this.layerAtComponents) cssText = '@layer' + resolveAtComponents(this.layerAtComponents, '.')
-                    const node: RuleNode = {
-                        text: cssText,
-                        selectorText
-                    }
+                    if (this.atComponents?.container) cssText = '@container ' + generateAt(this.atComponents.container) + '{' + cssText + '}'
+                    if (this.atComponents?.supports) cssText = '@supports ' + generateAt(this.atComponents.supports) + '{' + cssText + '}'
+                    if (this.atComponents?.media) cssText = '@media ' + generateAt(this.atComponents.media) + '{' + cssText + '}'
+                    if (this.atComponents?.layer) cssText = '@layer ' + generateAt(this.atComponents.layer, '.') + '{' + cssText + '}'
+                    const node: RuleNode = { text: cssText, selectorText }
                     if (prefixSelectors) node.prefixSelectors = prefixSelectors
                     if (suffixSelectors) node.suffixSelectors = suffixSelectors
                     this.nodes.push(node)
                 }
             }
-        }
-    }
-
-    resolveAtComponent(atComponent: AtComponent) {
-        switch (atComponent.type) {
-            case 'feature':
-                return '(' + atComponent.name + ':' + atComponent.value + (atComponent.unit || '') + ')'
-            default:
-                return atComponent.value
         }
     }
 
@@ -599,7 +454,8 @@ export class SyntaxRule extends Rule {
                     if (bypassParsing) {
                         currentValueComponents.push({ type: 'string', value: currentValue, token: currentValue })
                     } else {
-                        currentValueComponents.push({ ...this.parseValue(currentValue, unit), token: currentValue })
+                        const parsedValue = this.parseValue(currentValue, unit)
+                        currentValueComponents.push({ ...parsedValue, token: currentValue })
                     }
                 }
 
@@ -683,7 +539,21 @@ export class SyntaxRule extends Rule {
     }
 
     parseValue(token: string | number, unit = this.definition.unit) {
-        return parseValue(token, unit, this.css.config.rootSize)
+        const parsed = parseValue(token, unit, this.css.config.rootSize)
+        // exclude like `aspect:1/2` from being parsed as 50%
+        if (this.definition.unit && parsed.type === 'string') {
+            // 1/2 → 50%
+            if (/^\d+\/\d+$/.test(parsed.value)) {
+                const [numerator, denominator] = parsed.value.split('/').map(Number)
+                return {
+                    token,
+                    value: (numerator / denominator) * 100,
+                    unit: '%',
+                    type: 'number',
+                } as NumericValueComponent
+            }
+        }
+        return parsed
     }
 
     get key(): string {

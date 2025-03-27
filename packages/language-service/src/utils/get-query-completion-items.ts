@@ -1,5 +1,5 @@
-import { AT_SIGN, MasterCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, generateCSS } from '@master/css'
-import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver-protocol'
+import { AT_SIGN, AtDescriptorComponent, MasterCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, generateCSS, parseAt } from '@master/css'
+import { CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 import cssDataProvider from './css-data-provider'
@@ -31,58 +31,60 @@ export default function getQueryCompletionItems(css: MasterCSS = new MasterCSS()
             }
         )
     }
-    css.at.forEach((value, name) => {
+    css.at.forEach((atDefinition, token) => {
         const completionItem: Omit<CompletionItem, 'label'> = {
-            filterText: name,
-            insertText: name,
+            filterText: token,
+            insertText: token,
             documentation: getCSSDataDocumentation(undefined, {
-                generatedCSS: generateCSS([syntax + name], css),
+                generatedCSS: generateCSS([syntax + token], css),
                 docs: '/guide/syntax#at-rules'
             })
         }
         if ([AT_SIGN, ...QUERY_LOGICAL_OPERATORS].includes(triggerCharacter)) {
-            if (typeof value === 'number') {
+            const atComponent = parseAt(token, css).atComponents[0] as AtDescriptorComponent
+            if (typeof atDefinition.value === 'number') {
                 completionItems.push({
                     ...completionItem,
-                    label: triggerCharacter + name,
-                    sortText: String(value).padStart(8, '0'),
-                    filterText: name,
-                    insertText: name,
+                    label: triggerCharacter + token,
+                    sortText: String(atDefinition.value).padStart(8, '0'),
+                    filterText: token,
+                    insertText: token,
                     documentation: getCSSDataDocumentation(undefined, {
-                        generatedCSS: generateCSS([syntax + name], css),
+                        generatedCSS: generateCSS([syntax + token], css),
                         docs: '/guide/syntax#at-rules'
                     }),
-                    detail: `screen width ${'>='} ${value}px`,
+                    detail: `${atComponent.operator} ${atComponent.value}${atComponent.unit}`,
                     kind: CompletionItemKind.Keyword
                 })
             } else {
                 completionItems.push(
                     {
                         ...completionItem,
-                        label: triggerCharacter + name,
-                        detail: value,
-                        sortText: name,
+                        label: triggerCharacter + token,
+                        detail: (atDefinition.name ? atDefinition.name + ':' : atDefinition.name) + atDefinition.value,
+                        sortText: token,
                         kind: CompletionItemKind.Keyword,
                     }
                 )
             }
         } else if (QUERY_COMPARISON_OPERATORS.includes(triggerCharacter)) {
-            if (typeof value === 'number') {
+            const atComponent = parseAt(token, css).atComponents[0] as AtDescriptorComponent
+            if (typeof atDefinition.value === 'number') {
                 const prevComparisonCharacter = syntax.charAt(syntax.length - 2)
                 const comparisonCharacter = prevComparisonCharacter === '>' || prevComparisonCharacter === '<'
                     ? prevComparisonCharacter + triggerCharacter
                     : triggerCharacter
                 completionItems.push({
                     ...completionItem,
-                    label: comparisonCharacter + name,
-                    sortText: comparisonCharacter + String(value).padStart(8, '0'),
-                    filterText: name,
-                    insertText: name,
+                    label: comparisonCharacter + token,
+                    sortText: comparisonCharacter + String(atDefinition.value).padStart(8, '0'),
+                    filterText: token,
+                    insertText: token,
                     documentation: getCSSDataDocumentation(undefined, {
-                        generatedCSS: generateCSS([syntax + name], css),
+                        generatedCSS: generateCSS([syntax + token], css),
                         docs: '/guide/syntax#at-rules'
                     }),
-                    detail: `screen width ${comparisonCharacter} ${value}px`,
+                    detail: `${atComponent.operator} ${atComponent.value}${atComponent.unit}`,
                     kind: CompletionItemKind.Keyword
                 })
             }

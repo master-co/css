@@ -24,8 +24,8 @@ test.concurrent('modes', () => {
 
 test.concurrent('media modes', () => {
     const config = { modes: { dark: 'media', light: 'media' } } as Config
-    expect(new MasterCSS(config).add('bg:invert').text).toContain('@media(prefers-color-scheme:light){:root{--invert:0 0 0}}')
-    expect(new MasterCSS(config).add('bg:invert').text).toContain('@media(prefers-color-scheme:dark){:root{--invert:255 255 255}}')
+    expect(new MasterCSS(config).add('bg:invert').text).toContain('@media (prefers-color-scheme:light){:root{--invert:0 0 0}}')
+    expect(new MasterCSS(config).add('bg:invert').text).toContain('@media (prefers-color-scheme:dark){:root{--invert:255 255 255}}')
 })
 
 test('components', () => {

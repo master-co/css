@@ -1,18 +1,34 @@
 import type { SyntaxRule } from '../syntax-rule'
 import { AtComponent } from '../types/syntax'
 
-export default function areRuleAtEqual(a: SyntaxRule, b: SyntaxRule) {
-    const compare = (aList?: AtComponent[], bList?: AtComponent[]) => {
-        const aResolved = (aList ?? []).map(a.resolveAtComponent)
-        const bResolved = (bList ?? []).map(b.resolveAtComponent)
-        return aResolved.length === bResolved.length &&
-            aResolved.every(val => bResolved.includes(val)) &&
-            bResolved.every(val => aResolved.includes(val))
-    }
+function areComponentsEqual(a: any, b: any): boolean {
     return (
-        compare(a.mediaAtComponents, b.mediaAtComponents) &&
-        compare(a.supportsAtComponents, b.supportsAtComponents) &&
-        compare(a.containerAtComponents, b.containerAtComponents) &&
-        compare(a.layerAtComponents, b.layerAtComponents)
+        a.type === b.type &&
+        a.value === b.value &&
+        a.unit === b.unit &&
+        a.name === b.name &&
+        a.operator === b.operator &&
+        areComponentArraysEqual(a.children ?? [], b.children ?? [])
+    )
+}
+
+function areComponentArraysEqual(aComps: AtComponent[], bComps: AtComponent[]): boolean {
+    if (aComps.length !== bComps.length) return false
+
+    const matched = new Array(bComps.length).fill(false)
+
+    for (const aComp of aComps) {
+        const index = bComps.findIndex((bComp, i) => !matched[i] && areComponentsEqual(aComp, bComp))
+        if (index === -1) return false
+        matched[index] = true
+    }
+
+    return true
+}
+
+export default function areRuleAtEqual(a: SyntaxRule, b: SyntaxRule) {
+    const keys: (keyof NonNullable<SyntaxRule['atComponents']>)[] = ['media', 'supports', 'container', 'layer']
+    return keys.every(key =>
+        areComponentArraysEqual(a.atComponents?.[key] ?? [], b.atComponents?.[key] ?? [])
     )
 }
