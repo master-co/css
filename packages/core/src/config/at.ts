@@ -1,3 +1,5 @@
+import type { AtDefinitions } from '../types/config'
+
 const at = {
     all: { type: 'media', value: 'all' },
     print: { type: 'media', value: 'print' },
@@ -9,6 +11,6 @@ const at = {
     'motion-reduced': { type: 'media', name: 'prefers-reduced-motion', value: 'reduce' },
     base: { type: 'layer', value: 'base' },
     preset: { type: 'layer', value: 'preset' },
-}
+} satisfies AtDefinitions
 
 export default at
