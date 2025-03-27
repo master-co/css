@@ -3,6 +3,6 @@ import { ModeDefinitions } from '../types/config'
 const modes = {
     dark: 'class',
     light: 'class'
-} as ModeDefinitions
+} satisfies ModeDefinitions
 
 export default modes
