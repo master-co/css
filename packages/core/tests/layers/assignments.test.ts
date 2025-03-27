@@ -7,8 +7,8 @@ test.concurrent('base and preset', async () => {
 })
 
 test.concurrent('with breakpoint ', async () => {
-    expectLayers({ base: '@media(min-width:834px){.block\\@base\\@sm{display:block}}' }, 'block@base@sm')
-    expectLayers({ preset: '@media(min-width:834px){.block\\@preset\\@sm{display:block}}' }, 'block@preset@sm')
+    expectLayers({ base: '@media (width>=52.125rem){.block\\@base\\@sm{display:block}}' }, 'block@base@sm')
+    expectLayers({ preset: '@media (width>=52.125rem){.block\\@preset\\@sm{display:block}}' }, 'block@preset@sm')
 })
 
 test.concurrent('with selectors', () => {

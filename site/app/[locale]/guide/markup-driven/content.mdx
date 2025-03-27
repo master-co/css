@@ -97,19 +97,19 @@ How is CSS rule order and priority handled?
 
 (x) Incorrect responsive media rules.
 ```css
-@media (min-width:1280px) {
+@media (width>=80rem) {
     h1 {
         text-align: center;
     }
 }
 
-@media (min-width:1024px) {
+@media (width>=64rem) {
     h1 {
         text-align: right;
     }
 }
 ```
-Since the order in which CSS rules are placed affects priority, when the screen width is `>=1024px` or `>=1280px`, `css @media (min-width:1024px) {}` will be applied, but `css @media (min-width:1280px) {}` will never be applied.
+Since the order in which CSS rules are placed affects priority, when the screen width is `>=1024/16rem` or `>=1280/16rem`, `css @media (width>=64rem) {}` will be applied, but `css @media (width>=80rem) {}` will never be applied.
 
 You always keep your mind alert to prevent making mistakes, as the more similar rules you have, the harder it becomes to debug.
 
@@ -120,13 +120,13 @@ You always keep your mind alert to prevent making mistakes, as the more similar 
 ```
 No matter how you write the Master CSS syntax, the correct CSS rules will be generated:
 ```css
-@media (min-width:1024px) {
+@media (width>=64rem) {
     .text\:right\@md {
         text-align: right
     }
 }
 
-@media (min-width:1280px) {
+@media (width>=80rem) {
     .text\:center\@lg {
         text-align: center
     }

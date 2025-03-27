@@ -18,12 +18,12 @@ test.concurrent('components', () => {
 test.concurrent('viewports', () => {
     expectLayers(
         {
-            general: '@media(min-width:500px){.hidden\\@xss{display:none}}'
+            general: '@media (width>=31.25rem){.hidden\\@xss{display:none}}'
         },
         'hidden@xss',
         {
             at: {
-                'xss': 500
+                'xss': { value: 500 }
             }
         }
     )
@@ -51,12 +51,15 @@ test.concurrent('colors', () => {
 test.concurrent('at', () => {
     expectLayers(
         {
-            general: '@media(min-width: 600px){.f\\:12\\@min-600{font-size:0.75rem}}'
+            general: '@media (width>=37.5rem){.f\\:12\\@min-600{font-size:0.75rem}}'
         },
         'f:12@min-600',
         {
             at: {
-                'min-600': 'media (min-width: 600px)'
+                'min-600': {
+                    name: 'min-width',
+                    value: 600
+                }
             }
         }
     )

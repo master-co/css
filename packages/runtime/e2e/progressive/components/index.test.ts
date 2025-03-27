@@ -40,7 +40,7 @@ test('components', async ({ page }) => {
     expect(await page.evaluate(() => cssRuntime.componentsLayer.rules.find((rule) => rule.name === 'bg:black@sm'))).toMatchObject({
         nodes: [
             {
-                text: '@media(min-width:834px){.btn\\@sm{background-color:rgb(0 0 0)}}',
+                text: '@media (width>=52.125rem){.btn\\@sm{background-color:rgb(0 0 0)}}',
                 selectorText: '.btn\\@sm',
                 native: {} // ignore
             }
@@ -51,7 +51,7 @@ test('components', async ({ page }) => {
     expect(await page.evaluate(() => cssRuntime.componentsLayer.rules.find((rule) => rule.name === 'block::both@sm'))).toMatchObject({
         nodes: [
             {
-                text: '@media(min-width:834px){.btn\\@sm::before,.btn\\@sm::after{display:block}}',
+                text: '@media(width>=52.125rem){.btn\\@sm::before,.btn\\@sm::after{display:block}}',
                 selectorText: '.btn\\@sm::before,.btn\\@sm::after',
                 native: {} // ignore
             }
