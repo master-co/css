@@ -1,5 +1,9 @@
 export default {
     at: {
-        landscape: 'media (orientation:landscape)' /* @landscape */ /* [!code highlight] */
+        landscape: { /* @landscape */ /* [!code highlight] */
+            type: 'media', /* [!code highlight] */
+            name: 'orientation', /* [!code highlight] */
+            value: 'landscape' /* [!code highlight] */
+        } /* [!code highlight] */
     }
 }

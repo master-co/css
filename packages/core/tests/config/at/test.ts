@@ -4,18 +4,19 @@ import { expectLayers } from '../../test'
 test.concurrent('queries', () => {
     expectLayers(
         {
-            general: '@media (max-device-width:42mm) and (min-device-width:38mm){@supports (backdrop-filter:blur(0px)){.hidden\\@watch\\@support-backdrop{display:none}}}'
+            general: '@media (max-device-width:42mm) and (min-device-width:38mm){@supports (backdrop-filter:blur(0px)){.hidden\\@watch\\@supports-backdrop{display:none}}}'
         },
-        'hidden@watch@support-backdrop',
+        'hidden@watch@supports-backdrop',
         {
             at: {
                 watch: {
                     type: 'media',
                     value: '(max-device-width:42mm) and (min-device-width:38mm)'
                 },
-                'support-backdrop': {
+                'supports-backdrop': {
                     type: 'supports',
-                    value: '(backdrop-filter:blur(0px))'
+                    name: 'backdrop-filter',
+                    value: 'blur(0px)'
                 }
             }
         }

@@ -8,9 +8,7 @@ import replaceCharOutsideQuotes from './replace-char-outside-quotes'
 import splitCharOutsideQuotes from './split-char-outside-quotes'
 
 export default function parseAt(token: string, css = new MasterCSS()) {
-    const matches = /^(media|supports|container|layer)/.exec(token)
-    let type: AtType | undefined = matches?.[0] as AtType
-    token = type ? token.slice(type.length) : token
+    let type: AtType | undefined
     let firstToken: string
     const resolve = (eachToken: string) => {
         const regex = /([a-zA-Z0-9-:%|]+|[&|!|,|>|<|=][=]?)/g
@@ -25,7 +23,20 @@ export default function parseAt(token: string, css = new MasterCSS()) {
             if (!type && !firstToken) {
                 firstToken = eachToken
                 const firstDefintion = css.at.get(firstToken)
-                type = firstDefintion?.type || 'media'
+                if (firstDefintion) {
+                    type = firstDefintion.type || 'media'
+                } else {
+                    switch (firstToken) {
+                        case 'supports':
+                        case 'container':
+                        case 'layer':
+                        case 'media':
+                            type = firstToken
+                            return
+                        default:
+                            type = 'media'
+                    }
+                }
             }
             if (operatorValue) {
                 atComponent = { type: 'operator', token: eachToken, value: operatorValue }
@@ -49,7 +60,7 @@ export default function parseAt(token: string, css = new MasterCSS()) {
                     }
                     value = replaceCharOutsideQuotes(value, '|', ' ')
                 }
-                if (type === 'media' || type === 'container') {
+                if (type === 'media' || type === 'container' || type === 'supports') {
                     const parsed = parseValue(value, 'rem', css.config.rootSize)
                     if (parsed.type === 'number') {
                         const prevAtComponent = eachAtComponents[eachAtComponents.length - 1] as AtComponent | undefined

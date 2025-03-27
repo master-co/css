@@ -1,7 +1,9 @@
 export default {
     at: {
-        support: { /* [!code highlight] */
-            backdrop: 'supports (backdrop-filter:blur(0px))' /* @support-backdrop */ /* [!code highlight] */
+        'supports-backdrop': { /* @supports-backdrop */ /* [!code highlight] */
+            type: 'supports', /* [!code highlight] */
+            name: 'backdrop-filter', /* [!code highlight] */
+            value: 'blur(0px)' /* [!code highlight] */
         } /* [!code highlight] */
     }
 }

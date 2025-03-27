@@ -32,6 +32,10 @@ test.concurrent('container', () => {
     expect(generateAt(parseAt('container(sm)').atComponents)).toBe('(width>=52.125rem)')
 })
 
+test.concurrent('supports', () => {
+    expect(generateAt(parseAt('supports(transform-origin:5%|5%)').atComponents)).toBe('(transform-origin:5% 5%)')
+})
+
 test.concurrent('>= <= > <', () => {
     expect(generateAt(parseAt('sm').atComponents)).toBe('(width>=52.125rem)')
     expect(generateAt(parseAt('<=sm').atComponents)).toBe('(width<=52.125rem)')

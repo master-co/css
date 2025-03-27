@@ -1,1 +1,1 @@
-@layer base,theme,preset,components,general;@layer general{@media(orientation:landscape){.aspect\:2\/1\@landscape{aspect-ratio:2/1}}}
+@layer base,theme,preset,components,general;@layer general{@media (orientation:landscape){.aspect\:2\/1\@landscape{aspect-ratio:2/1}}}

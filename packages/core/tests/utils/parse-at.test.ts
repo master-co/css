@@ -64,6 +64,21 @@ test.concurrent('supports', () => {
             value: '5% 5%'
         }
     ])
+    expect(parseAt('supports-backdrop', new MasterCSS({
+        at: {
+            'supports-backdrop': {
+                type: 'supports',
+                name: 'backdrop-filter',
+                value: 'blur(0px)'
+            }
+        }
+    })).atComponents).toEqual([
+        {
+            token: 'supports-backdrop',
+            name: 'backdrop-filter',
+            value: 'blur(0px)'
+        }
+    ])
 })
 
 test.concurrent('group', () => {
