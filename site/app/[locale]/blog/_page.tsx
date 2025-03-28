@@ -1,4 +1,3 @@
-import Article from 'internal/components/Article'
 import DocHeader from 'internal/components/DocHeader'
 import DocFooter from 'internal/components/DocFooter'
 // @ts-expect-error
@@ -22,7 +21,7 @@ export default async function Page(props: any) {
     return <>
         <DocHeader />
         <main className='app-doc-main max-w:screen-xl'>
-            <Article className="mb:80" $type='prose'>
+            <div className="prose mb:80">
                 <div className='gap:12x|25 grid-cols:4'>
                     {allBlogMetadata.concat(allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata, allBlogMetadata)
                         .map((eachBlogMetadata: any, index: number) => {
@@ -41,7 +40,7 @@ export default async function Page(props: any) {
                             )
                         })}
                 </div>
-            </Article>
+            </div>
             <DocFooter locale={locale} />
         </main>
     </>

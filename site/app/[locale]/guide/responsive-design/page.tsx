@@ -18,7 +18,7 @@ import pageCategories from '~/site/.categories/guide.json'
 export default async function Page(props: any) {
     const { locale } = await props.params
     return (
-        <Layout {...props} $type="prose" pageCategories={pageCategories} pageDirname={__dirname} metadata={metadata} toc={toc}>
+        <Layout {...props} pageCategories={pageCategories} pageDirname={__dirname} metadata={metadata} toc={toc}>
             <link rel="preload" href={'/' + locale + '/examples/responsive-gallery'} as="document" />
             <Content />
         </Layout >
