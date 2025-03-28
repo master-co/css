@@ -1,40 +1,11 @@
 import brands from 'internal/data/brands'
 
-Installation guides for popular frameworks and build tools integrated with [rendering modes](/guide/rendering-modes) of Master CSS.
+Installation guides for popular frameworks and build tools integrated with Master CSS.
 
-## Web frameworks
 <IconButtons url="/guide/installation">
-    {brands.filter(({ name }) => ['Next.js', 'Svelte', 'Nuxt.js', 'Laravel', 'Astro', 'Remix', 'Blazor', 'React', 'Vue.js', 'Angular'].includes(name))}
+    {brands.filter(({ name }) => ['Next.js', 'Svelte', 'Nuxt.js', 'Laravel', 'Astro', 'Remix', 'Blazor', 'React', 'Vue.js', 'Angular', 'Vite', 'Webpack', 'esm.sh'].includes(name))}
 </IconButtons>
 
-## Build tools
-<IconButtons url="/guide/installation">
-    {brands.filter(({ name }) => ['Vite', 'Webpack'].includes(name))}
-</IconButtons>
-
-## CDN providers
-<IconButtons url="/guide/installation">
-    {brands.filter(({ name }) => ['esm.sh'].includes(name))}
-</IconButtons>
-
----
-
-<StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Start in one step
-            Quickly create a blank Master CSS project locally with hot updates using the official CLI.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm create @master/css@rc <project>
-            cd <project>
-            npm run dev --open
-            ```
-        </StepR>
-        <StepEnd/>
-    </Step>
-</StepSection>
 
 ---
 

@@ -6,7 +6,6 @@ const metadata = define({
     },
     description: 'Enhance the developer experience in code editors or IDEs with syntax highlighting, code completion, and more.',
     category: 'Getting Started',
-    unfinished: true,
     other: {
         subject: 'Language Service'
     },

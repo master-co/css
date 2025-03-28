@@ -6,7 +6,7 @@ import brands from 'internal/data/brands'
 export const metadata = {
     title: 'Set up Master CSS in Svelte',
     description: 'Guide to setting up Master CSS in your Svelte project.',
-    category: 'Installation'
+    category: 'Integrations'
 }
 
 export default async function Layout(props: any) {
@@ -15,7 +15,7 @@ export default async function Layout(props: any) {
     return (
         <DocLayout {...props}
             metadata={metadata}
-            backOnClickCategory='/guide/installation'
+            backOnClickCategory='/guide/installation/integrations'
             brand={brands.find(({ name }) => name === 'Svelte')}
 
         >

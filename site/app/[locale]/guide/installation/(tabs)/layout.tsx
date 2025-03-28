@@ -2,6 +2,7 @@ import Tabs, { Tab } from 'internal/components/Tabs'
 import { createTranslation } from 'internal/utils/i18n'
 import DocLayout from 'internal/layouts/doc'
 import metadata from './metadata'
+import Footer from './footer.mdx'
 
 import pageCategories from '~/site/.categories/guide.json'
 
@@ -17,6 +18,7 @@ export default async function Layout(props: any) {
                 <Tab href='/guide/installation/download' disabled>{$('Download')}</Tab>
             </Tabs>
             {props.children}
+            <Footer />
         </DocLayout >
     )
 }

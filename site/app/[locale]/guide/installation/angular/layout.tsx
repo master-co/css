@@ -11,9 +11,9 @@ export default async function Layout(props: any) {
             metadata={{
                 title: 'Set up Master CSS in Angular',
                 description: 'Guide to setting up Master CSS in your Angular project.',
-                category: 'Installation'
+                category: 'Integrations'
             }}
-            backOnClickCategory='/guide/installation'
+            backOnClickCategory='/guide/installation/integrations'
             brand={brands.find(({ name }) => name === 'Angular')}
 
         >

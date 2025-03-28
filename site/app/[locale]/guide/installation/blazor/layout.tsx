@@ -11,9 +11,9 @@ export default async function Layout(props: any) {
             metadata={{
                 title: 'Set up Master CSS in Blazor',
                 description: 'Guide to setting up Master CSS in your Blazor project.',
-                category: 'Installation'
+                category: 'Integrations'
             }}
-            backOnClickCategory='/guide/installation'
+            backOnClickCategory='/guide/installation/integrations'
             brand={brands.find(({ name }) => name === 'Blazor')}
 
         >

@@ -8,28 +8,28 @@ export default () => (
         <Feature>
             <IconEyeHeart className="app-icon-primary" />
             <div>
-                <p className='text:18!'><Link href="#consistent-class-order">Syntax highlighting</Link></p>
+                <p className='text:18!'><span className="font:semibold">Syntax highlighting</span></p>
                 <p>Improve the readability and recognition of classes</p>
             </div>
         </Feature>
         <Feature>
             <IconZoomCode className="app-icon-primary" />
             <div>
-                <p className='text:18!'><Link href="#consistent-class-order">Syntax inspection</Link></p>
+                <p className='text:18!'><span className="font:semibold">Syntax inspection</span></p>
                 <p>Preview generated CSS and references on hover or list</p>
             </div>
         </Feature>
         <Feature>
             <IconFocusAuto className="app-icon-primary" />
             <div>
-                <p className='text:18!'><Link href="#consistent-class-order">Code completion</Link></p>
+                <p className='text:18!'><span className="font:semibold">Code completion</span></p>
                 <p>Hints and auto-completion of available syntax</p>
             </div>
         </Feature>
         <Feature>
             <IconWand className="app-icon-primary" />
             <div>
-                <p className='text:18!'><Link href="#consistent-class-order">Color preview</Link></p>
+                <p className='text:18!'><span className="font:semibold">Color preview</span></p>
                 <p>Calculate and render syntax colors within a document</p>
             </div>
         </Feature>

@@ -1,7 +1,6 @@
 The easiest way to use Master CSS from scratch is to initialize the [runtime engine](/guide/rendering-modes/runtime-rendering) directly in the application's entry file.
 
 ## Installation [sr-only]
-
 <StepSection>
     <Step $row>
         <StepL>
@@ -32,10 +31,10 @@ The easiest way to use Master CSS from scratch is to initialize the [runtime eng
         </StepL>
         <StepR>
             ```js name=main.js
-            import { initCSSRuntime } from '@master/css-runtime' /* [!code ++] */
-            import config from './master.css' /* [!code ++] */
+            import { initCSSRuntime } from '@master/css-runtime'
+            import config from './master.css'
 
-            initCSSRuntime(config) /* [!code ++] */
+            initCSSRuntime(config)
             ```
         </StepR>
     </Step>
@@ -61,7 +60,3 @@ The easiest way to use Master CSS from scratch is to initialize the [runtime eng
         <HelloWorld />
     </Step>
 </StepSection>
-
----
-
-Get stuck? Check out our [web framework](/guide/installation/integrations#web-frameworks) or [build tool](/guide/installation/integrations#build-tools) guides for better starting points and recommendations.
