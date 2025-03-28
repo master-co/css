@@ -1,4 +1,7 @@
 const utilities = {
+    container: {
+        'container-type': 'inline-size'
+    },
     square: {
         'aspect-ratio': '1/1'
     },
