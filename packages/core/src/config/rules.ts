@@ -469,6 +469,17 @@ const rules = {
             }
         }
     } as SyntaxRuleDefinition,
+    container: {
+        type: SyntaxRuleType.NativeShorthand
+    } as SyntaxRuleDefinition,
+    'container-name': {
+        type: SyntaxRuleType.Native
+    } as SyntaxRuleDefinition,
+    'container-type': {
+        type: SyntaxRuleType.Native,
+        ambiguousKeys: ['container'],
+        ambiguousValues: ['size', 'inline-size', 'scroll-state'],
+    } as SyntaxRuleDefinition,
     contain: {
         type: SyntaxRuleType.Native
     } as SyntaxRuleDefinition,
