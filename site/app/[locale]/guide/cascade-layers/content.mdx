@@ -5,8 +5,10 @@ Master CSS analyzes the syntax and inserts it into the appropriate layer, allowi
 Here is an example that covers all layers:
 <Code lang="js" name="master.css.js">{require('./tests/overview/master.css.js?raw').default}</Code>
 <Code lang="html" name="hero.html">{require('./tests/overview/template.html?raw').default}</Code>
-Generated CSS:
-<Code lang="css" beautify>{require('./tests/overview/generated.css?raw').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <Code lang="css" beautify>{require('./tests/overview/generated.css?raw').default}</Code>
+</details>
 
 - The first line defines the cascade order. Layers declared later will override earlier ones in case of conflicts.
 - **Base** — rules from `@base` (e.g., `mcss list-style:none_ul@base`).
@@ -31,8 +33,10 @@ To normalize browser and preset global styles for more concise-style programming
 ```
 Or you can add base styles with `@base` in the HTML:
 <Code lang="html">{require('./tests/adding-base-styles/template.html?raw').default}</Code>
-Generated CSS:
-<Code lang="css" beautify>{require('./tests/adding-base-styles/generated.css?raw').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <Code lang="css" beautify>{require('./tests/adding-base-styles/generated.css?raw').default}</Code>
+</details>
 
 In most cases, the official package, [`@master/normal.css`](/reference/normal-css), can help you normalize browser styles.
 
@@ -43,8 +47,10 @@ To preset fonts, foreground colors, etc. based on your brand, use `@preset` to d
 
 (i) Use selectors and `@preset` to preset styles for elements and states.
 <Code lang="html">{require('./tests/adding-preset-styles/template.html?raw').default}</Code>
-Generated CSS:
-<Code lang="css" beautify>{require('./tests/adding-preset-styles/generated.css?raw').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <Code lang="css" beautify>{require('./tests/adding-preset-styles/generated.css?raw').default}</Code>
+</details>
 
 Without `@preset`, you would have to always add `css !important` whenever you customize the same CSS property for the selected element.
 
@@ -65,23 +71,26 @@ For example, add `flex` to override the display declaration `inline-flex` of the
 <!-- @MARK btn flex -->
 <button class="btn flex">Submit</button>
 ```
-Generated CSS:
-```css
-@layer base, theme, preset, components, general;
+<details>
+    <summary>Generated CSS</summary>
+    ```css
+    @layer base, theme, preset, components, general;
 
-@layer components {
-    .btn {
-        display: inline-flex;
-        …
+    @layer components {
+        .btn {
+            display: inline-flex;
+            …
+        }
     }
-}
 
-@layer general {
-    .flex {
-        display: flex;
+    @layer general {
+        .flex {
+            display: flex;
+        }
     }
-}
-```
+    ```
+</details>
+
 
 ---
 
@@ -90,8 +99,10 @@ You can select descendants with `@preset` to preset styles, preventing component
 
 For example, set the default paragraph text size to `16` and change the text size of a specific paragraph to `24`.
 <Code lang="html">{require('./tests/overriding-preset-styles/template.html?raw').default}</Code>
-Generated CSS:
-<Code lang="css" beautify>{require('./tests/overriding-preset-styles/generated.css?raw').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <Code lang="css" beautify>{require('./tests/overriding-preset-styles/generated.css?raw').default}</Code>
+</details>
 
 This way, you can set preset styles for multiple targets at once while still being able to modify specific elements' styles as needed.
 
