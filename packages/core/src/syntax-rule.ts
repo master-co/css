@@ -3,17 +3,17 @@ import MasterCSS from './core'
 import cssEscape from 'shared/utils/css-escape'
 import SyntaxRuleType from './syntax-rule-type'
 import { type PropertiesHyphen } from 'csstype'
-import { VALUE_DELIMITERS, BASE_UNIT_REGEX } from './common'
+import { VALUE_DELIMITERS, BASE_UNIT_REGEX, AT_IDENTIFIERS } from './common'
 import { Rule, RuleNode } from './rule'
 import Layer from './layer'
-import type { AtComponent, ColorVariable, NumericValueComponent, DefinedRule, ValueComponent, VariableValueComponent, Variable, StringValueComponent, AtDescriptorComponent } from './types/syntax'
+import type { AtComponent, ColorVariable, NumberValueComponent, DefinedRule, ValueComponent, VariableValueComponent, Variable, AtStringComponent } from './types/syntax'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
-import { AtType } from './types/config'
+import { AtIdentifier } from './types/config'
 import generateAt from './utils/generate-at'
 
 export class SyntaxRule extends Rule {
-    readonly atComponents?: Partial<Record<AtType, AtComponent[]>>
+    readonly atComponents?: Partial<Record<AtIdentifier, AtComponent[]>>
     readonly priority: number = -1
     readonly order: number = 0
     readonly type: SyntaxRuleType = 0
@@ -133,28 +133,28 @@ export class SyntaxRule extends Rule {
                 continue
             }
             this.atToken = (this.atToken || '') + '@' + atToken
-            const { type, atComponents } = parseAt(atToken, css)
-            const typeAtComponents = this.atComponents?.[type]
+            const atRule = parseAt(atToken, css)
+            const typeAtComponents = this.atComponents?.[atRule.id]
             if (typeAtComponents) {
-                typeAtComponents.push(...atComponents)
+                typeAtComponents.push(...atRule.components)
             } else {
                 this.atComponents = {
                     ...this.atComponents,
-                    [type]: atComponents
+                    [atRule.id]: atRule.components
                 }
             }
         }
 
         if (this.mode && modes?.[this.mode] === 'media') {
-            const AtDescriptorComponent: AtDescriptorComponent = {
+            const atComp = {
                 name: 'prefers-color-scheme',
                 value: this.mode
-            }
+            } as AtStringComponent
             if (this.atComponents?.media) {
-                this.atComponents.media.push(AtDescriptorComponent)
+                this.atComponents.media.push(atComp)
             } else {
                 this.atComponents = {
-                    media: [AtDescriptorComponent]
+                    media: [atComp]
                 }
             }
         }
@@ -259,10 +259,12 @@ export class SyntaxRule extends Rule {
                             .join(',')
                     const selectorText = getCssText(fixedClass ?? name)
                     let cssText = selectorText + '{' + propertiesText.join(';') + '}'
-                    if (this.atComponents?.container) cssText = '@container ' + generateAt(this.atComponents.container) + '{' + cssText + '}'
-                    if (this.atComponents?.supports) cssText = '@supports ' + generateAt(this.atComponents.supports) + '{' + cssText + '}'
-                    if (this.atComponents?.media) cssText = '@media ' + generateAt(this.atComponents.media) + '{' + cssText + '}'
-                    if (this.atComponents?.layer) cssText = '@layer ' + generateAt(this.atComponents.layer, '.') + '{' + cssText + '}'
+                    if (this.atComponents !== undefined)
+                        AT_IDENTIFIERS.forEach(id => {
+                            const atComponents = this.atComponents?.[id]
+                            if (!atComponents) return
+                            cssText = generateAt({ id, components: atComponents }) + '{' + cssText + '}'
+                        })
                     const node: RuleNode = { text: cssText, selectorText }
                     if (prefixSelectors) node.prefixSelectors = prefixSelectors
                     if (suffixSelectors) node.suffixSelectors = suffixSelectors
@@ -352,7 +354,7 @@ export class SyntaxRule extends Rule {
                                         if (bypassParsing) {
                                             currentValue += eachValueComponent.text = String(variable.value)
                                         } else {
-                                            const valueComponent = this.parseValue(variable.value, unit) as NumericValueComponent
+                                            const valueComponent = this.parseValue(variable.value, unit) as NumberValueComponent
                                             currentValue += eachValueComponent.text = valueComponent.value + (valueComponent.unit ?? '')
                                         }
                                     },
@@ -550,7 +552,7 @@ export class SyntaxRule extends Rule {
                     value: (numerator / denominator) * 100,
                     unit: '%',
                     type: 'number',
-                } as NumericValueComponent
+                } as NumberValueComponent
             }
         }
         return parsed

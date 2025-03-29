@@ -15,7 +15,7 @@ export const DELIMITER_SIGN = '|'
 export const SEPARATOR_SIGN = ','
 export const AT_SIGN = '@'
 export const VALUE_UNITS = ['%', 'cm', 'mm', 'q', 'in', 'pt', 'pc', 'px', 'em', 'rem', 'ex', 'rex', 'cap', 'rcap', 'ch', 'rch', 'ic', 'ric', 'lh', 'rlh', 'vw', 'svw', 'lvw', 'dvw', 'vh', 'svh', 'lvh', 'dvh', 'vi', 'svi', 'lvi', 'dvi', 'vb', 'svb', 'lvb', 'dvb', 'vmin', 'svmin', 'lvmin', 'dvmin', 'vmax', 'svmax', 'lvmax', 'dvmax', 'cqw', 'cqh', 'cqi', 'cqb', 'cqmin', 'cqmax', 'deg', 'grad', 'rad', 'turn', 's', 'ms', 'hz', 'khz', 'dpi', 'dpcm', 'dppx', 'x', 'fr', 'db', 'st']
-export const UNIT_REGEX =  /^([+-.]?\d+(?:\.?\d+)?)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x|fr|db|st)?$/
+export const UNIT_REGEX = /^([+-.]?\d+(?:\.?\d+)?)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x|fr|db|st)?$/
 export const IMAGE_VALUE_REGEX = /(?:url|linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient)\(.*\)/
 export const COLOR_VALUE_REGEX = /(?:#|(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla|light-dark)\(.*\)|(?:\$colors)(?![a-zA-Z0-9-]))/
 export const NUMBER_VALUE_REGEX = /(?:[\d.]|(?:max|min|calc|clamp)\([^|]*\))/
@@ -24,7 +24,8 @@ export const CLASS_ATTRIBUTES = ['class', 'className']
 export const CLASS_DECLARATIONS = ['components']
 export const CLASS_FUNCTIONS = ['clsx', 'cva', 'ctl', 'cv', 'class', 'classnames', 'classVariant', 'styled(?:\\s+)?(?:\\.\\w+)?', 'classList(?:\\s+)?\\.(?:add|remove|toggle|replace)']
 export const BORDER_STYLE_VALUES = ['none', 'auto', 'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
-export const AT_OPERATORS = {
+export const AT_COMPARISON_OPERATORS = ['>=', '<=', '>', '<']
+export const AT_LOGICAL_OPERATORS = {
     '&': 'and',
     '!': 'not',
     // native
@@ -33,10 +34,9 @@ export const AT_OPERATORS = {
     'or': 'or',
     'only': 'only',
     ',': 'or',
-    '>': '>',
-    '<': '<',
-    '=': '=',
-    '>=': '>=',
-    '<=': '<=',
+
 }
+// the order is intentional and should not be changed
+export const AT_IDENTIFIERS = ['container', 'starting-style', 'supports', 'media', 'layer']
 export const COMPARISION_OPERATORS = ['>=', '<=', '>', '<', '=']
+export const AT_COMPARABLE_FEATURES = ['width', 'height']

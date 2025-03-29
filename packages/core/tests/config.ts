@@ -89,12 +89,12 @@ export default {
         }
     },
     at: {
-        tablet: { value: 768 },
-        laptop: { value: 1024 },
-        desktop: { value: 1280 },
-        'custom-1': { value: 2500 },
-        watch: { type: 'media', value: '(max-device-width:42mm) and (min-device-width:38mm)' },
-        'device-watch': { type: 'media', value: '(max-device-width:42mm) and (min-device-width:38mm)' },
+        tablet: 768,
+        laptop: 1024,
+        desktop: 1280,
+        'custom-1': 2500,
+        watch: 'media(width<=42mm)and(width>=38mm)',
+        'device-watch': 'media(width<=42mm)and(width>=38mm)',
     },
     rootSize: 16,
 } as any

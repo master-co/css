@@ -1,48 +1,33 @@
-import { AtComponent } from '../types/syntax'
+import { AtComponent, AtRule } from '../types/syntax'
 
-export default function generateAt(atComponents: AtComponent[], separator = ' '): string {
+export default function generateAt(atRule: AtRule): string {
     const generate = (components: AtComponent[]): string => {
-        let text = components.map((component) => {
+        let text = components.map((comp) => {
             let current = ''
-            if (component.type === 'operator') {
-                current = component.value
-            } else if (component.type === 'group') {
-                current = '(' + generate(component.children) + ')'
+            if (comp.type === 'comparison') {
+                current = comp.value
+            } else if (comp.type === 'group') {
+                current = '(' + generate(comp.children) + ')'
             } else {
-                const valueUnit = String(component.value) + (component.unit || '')
-                if (component.name) {
-                    if (component.operator) {
-                        switch (component.name) {
-                            case 'min-width':
-                            case 'max-width':
-                            case 'width':
-                                current = `(width${component.operator}${valueUnit})`
-                                break
-                            case 'min-height':
-                            case 'max-height':
-                            case 'height':
-                                current = `(height${component.operator}${valueUnit})`
-                                break
-                            case 'device-width':
-                                current = `(device-width${component.operator}${valueUnit})`
-                                break
-                            case 'device-height':
-                                current = `(device-height${component.operator}${valueUnit})`
-                                break
-                            default:
-                                current = '(' + `${component.name}:${valueUnit}` + ')'
-                        }
+                const valueUnit = comp.type === 'number'
+                    ? String(comp.value) + (comp.unit || '')
+                    : comp.value
+                if ('name' in comp) {
+                    if ('operator' in comp) {
+                        current = `(${comp.name}${comp.operator}${valueUnit})`
                     } else {
-                        current = '(' + `${component.name}:${valueUnit}` + ')'
+                        current = '(' + `${comp.name}:${valueUnit}` + ')'
                     }
                 } else {
                     current = valueUnit
                 }
             }
             return current
-        }).join(separator)
+        }).join(atRule.id === 'layer' ? '.' : ' ')
         return text
     }
-    const result = generate(atComponents)
-    return result
+    const result = generate(atRule.components)
+    return '@' + atRule.id + (result
+        ? ' ' + result
+        : '')
 }

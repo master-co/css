@@ -1,3 +1,4 @@
+import { AT_IDENTIFIERS } from '../common'
 import type { SyntaxRule } from '../syntax-rule'
 import { AtComponent } from '../types/syntax'
 
@@ -27,8 +28,7 @@ function areComponentArraysEqual(aComps: AtComponent[], bComps: AtComponent[]): 
 }
 
 export default function areRuleAtEqual(a: SyntaxRule, b: SyntaxRule) {
-    const keys: (keyof NonNullable<SyntaxRule['atComponents']>)[] = ['media', 'supports', 'container', 'layer']
-    return keys.every(key =>
+    return AT_IDENTIFIERS.every(key =>
         areComponentArraysEqual(a.atComponents?.[key] ?? [], b.atComponents?.[key] ?? [])
     )
 }

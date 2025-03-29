@@ -3,6 +3,7 @@ import type SyntaxRuleType from '../syntax-rule-type'
 import type { SyntaxRule } from '../syntax-rule'
 import type { ValueComponent } from './syntax'
 import type { rules, utilities } from '../config'
+import { AT_IDENTIFIERS } from '../common'
 
 export interface SyntaxRuleDefinition {
     type?: SyntaxRuleType
@@ -31,13 +32,11 @@ export type VariableDefinition = { [key in '' | `@${string}` | string]?: Variabl
 export type CSSKeyframes = Record<'from' | 'to' | string, PropertiesHyphen>
 export type AnimationDefinitions = Record<string, CSSKeyframes>;
 export type SelectorDefinitions = Record<string, string | string[]>;
-export type AtType = 'media' | 'layer' | 'supports' | 'container'
-export interface AtDefinition {
-    type?: AtType
-    name?: string
-    value: number | string
+export type AtIdentifier = typeof AT_IDENTIFIERS[number]
+export type AtDefinition = number | string
+export interface AtDefinitions {
+    [key: string]: AtDefinition | AtDefinitions;
 }
-export type AtDefinitions = Record<string, AtDefinition>
 export interface StyleDefinitions { [key: string]: string | StyleDefinitions }
 export type SyntaxRuleDefinitions = Partial<Record<keyof typeof rules | string, SyntaxRuleDefinition>>
 export type VariableDefinitions = { [key in keyof typeof rules]?: VariableDefinition } & Record<string, VariableDefinition>

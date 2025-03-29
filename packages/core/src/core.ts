@@ -10,9 +10,11 @@ import SyntaxRuleType from './syntax-rule-type'
 import Layer from './layer'
 import SyntaxLayer from './syntax-layer'
 import NonLayer from './non-layer'
-import { ColorVariable, DefinedRule, Variable } from './types/syntax'
-import { AnimationDefinitions, AtDefinition, AtDefinitions, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
+import { AtRule, AtValueComponent, ColorVariable, DefinedRule, Variable } from './types/syntax'
+import { AnimationDefinitions, AtIdentifier, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
 import registerGlobal from './register-global'
+import parseAt from './utils/parse-at'
+import parseValue from './utils/parse-value'
 
 export default class MasterCSS {
     static config: Config = defaultConfig
@@ -29,7 +31,7 @@ export default class MasterCSS {
     readonly components = new Map<string, string[]>()
     readonly selectors = new Map<string, [RegExp, string[]][]>()
     readonly variables = new Map<string, Variable>()
-    readonly at = new Map<string, AtDefinition>()
+    readonly at = new Map<string, AtRule>()
     readonly animations = new Map<string, AnimationDefinitions>()
 
     constructor(
@@ -124,12 +126,12 @@ export default class MasterCSS {
                         }
                         colorVariableNames[flatName] = undefined
                     }
-                    /**
-                     * resolve `variables.screen-*` to `at.*`
-                     */
+                    // resolve `variables.screen-*` to `at.*`
                     if (variable.name.startsWith('screen-') && variable.type === 'number') {
+                        const comp = this.parseValue(variable.value)
                         this.at.set(variable.name.slice(7), {
-                            value: variable.value
+                            id: 'media',
+                            components: [comp as AtValueComponent]
                         })
                     }
                     const currentMode = replacedMode ?? mode
@@ -267,8 +269,19 @@ export default class MasterCSS {
         }
 
         if (at) {
-            for (const token in at) {
-                this.at.set(token, at[token])
+            const flatAt = flattenObject(at)
+            for (const token in flatAt) {
+                const value = flatAt[token]
+                if (typeof value === 'number') {
+                    const comp = this.parseValue(value)
+                    this.at.set(token, {
+                        id: 'media',
+                        components: [comp as AtValueComponent]
+                    })
+                } else {
+                    const atRule = parseAt(value, this)
+                    this.at.set(token, atRule)
+                }
             }
         }
 
@@ -450,6 +463,10 @@ export default class MasterCSS {
                         )
                 }))
         })
+    }
+
+    parseValue(token: string | number, unit = 'rem') {
+        return parseValue(token, unit, this.config.rootSize)
     }
 
     /**

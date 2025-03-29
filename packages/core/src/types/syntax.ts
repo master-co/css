@@ -1,13 +1,18 @@
-import { SyntaxRuleDefinition } from './config'
+import { AtIdentifier, SyntaxRuleDefinition } from './config'
+import { AT_COMPARISON_OPERATORS } from '../common'
 
-export interface AtDescriptorComponent { type?: undefined, token?: string, name: string, value: string | number, unit?: string, operator?: string }
-export interface AtOperatorComponent { type: 'operator', token: string, value: string }
+export declare type AtNumberComponent = { name: string, operator?: (typeof AT_COMPARISON_OPERATORS)[number] } & NumberValueComponent
+export declare type AtStringComponent = { name: string } & StringValueComponent
+export declare type AtValueComponent = AtNumberComponent | AtStringComponent
+export interface AtComparisonOperatorComponent { type: 'comparison', token: string, value: string }
+export interface AtLogicalOperatorComponent { type: 'logical', token: string, value: string }
+export type AtOperatorComponent = AtComparisonOperatorComponent | AtLogicalOperatorComponent
 export interface AtGroupComponent { type: 'group', token?: string, children: AtComponent[], value?: string }
-export type AtComponent = AtDescriptorComponent | AtOperatorComponent | AtGroupComponent
+export type AtComponent = AtValueComponent | AtComparisonOperatorComponent | AtLogicalOperatorComponent | AtGroupComponent
 
-export type ValueComponent = StringValueComponent | NumericValueComponent | FunctionValueComponent | VariableValueComponent | SeparatorValueComponent
+export type ValueComponent = StringValueComponent | NumberValueComponent | FunctionValueComponent | VariableValueComponent | SeparatorValueComponent
 export interface StringValueComponent { text?: string, token: string, type: 'string', value: string }
-export interface NumericValueComponent { text?: string, token: string, type: 'number', value: number, unit?: string }
+export interface NumberValueComponent { text?: string, token: string, type: 'number', value: number, unit?: string }
 export interface FunctionValueComponent { text?: string, token: string, type: 'function', name: string, symbol: string, children: ValueComponent[], bypassTransform?: boolean }
 export interface VariableValueComponent { text?: string, token: string, type: 'variable', name: string, alpha?: string, fallback?: string, variable?: Variable }
 export interface SeparatorValueComponent { text?: string, token: string, type: 'separator', value: string }
@@ -51,3 +56,7 @@ export interface NumberVariable { type: 'number', value: number }
 export interface ColorVariable { type: 'color', value: string, space: 'rgb' | 'hsl' }
 export type TypeVariable = StringVariable | NumberVariable | ColorVariable
 export type Variable = TypeVariable & VariableCommon
+export type AtRule = {
+    id: AtIdentifier
+    components: AtComponent[]
+}

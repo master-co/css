@@ -1,5 +1,5 @@
 import { UNIT_REGEX } from '../common'
-import { NumericValueComponent, StringValueComponent } from '../types/syntax'
+import { NumberValueComponent, StringValueComponent } from '../types/syntax'
 
 export default function parseValue(
     token: string | number,
@@ -17,7 +17,7 @@ export default function parseValue(
             value: defaultUnit === 'rem' || defaultUnit === 'em'
                 ? token / rootSize
                 : token
-        } as NumericValueComponent
+        } as NumberValueComponent
     }
 
     const matches = token.match(UNIT_REGEX)
@@ -35,7 +35,7 @@ export default function parseValue(
             value,
             unit: parsedUnit || defaultUnit,
             type: 'number',
-        } as NumericValueComponent
+        } as NumberValueComponent
     }
 
     // 無法解析則當作純字串

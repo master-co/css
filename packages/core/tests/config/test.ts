@@ -23,7 +23,7 @@ test.concurrent('viewports', () => {
         'hidden@xss',
         {
             at: {
-                'xss': { value: 500 }
+                'xss': 500
             }
         }
     )
@@ -56,10 +56,7 @@ test.concurrent('at', () => {
         'f:12@min-600',
         {
             at: {
-                'min-600': {
-                    name: 'min-width',
-                    value: 600
-                }
+                'min-600': '@media (width>=600)'
             }
         }
     )
