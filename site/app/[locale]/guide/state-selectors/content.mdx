@@ -1,35 +1,28 @@
 import furnitures from 'internal/data/furnitures'
 import animals from 'internal/data/animals'
 
-## Features [sr-only]
 ```html
-<!-- Set foreground to blue on hover -->
 <!-- @MARK :hover -->
-<div class="fg:blue:hover">
-
-<!-- Set border to red on input invalid -->
+<div class="fg:blue:hover"></div>
 <!-- @MARK :invalid -->
 <input class="border:red:invalid" />
-
-<!-- Set background to white on expanded -->
 <!-- @MARK [open] -->
-<details class="bg:white[open]" open>
-…
+<details class="bg:white[open]" open></details>
 ```
-Master CSS allows you to suffix, such as [pseudo-classes](#pseudo-classes), [pseudo-elements](#pseudo-elements), [compound states](#compound-states), etc., to apply styles on different conditions.
+Master CSS allows you to suffix, such as [pseudo-classes](#pseudo-classes), [pseudo-elements](#pseudo-elements), etc., to apply styles on different conditions.
 
 ### Multiple states
 Master CSS allows the same property to have different states on the same element.
 ```html
-<!-- @MARK font:18 --><!-- @MARK font:24@sm --><!-- @MARK font:32@md -->
-<h2 class="font:18 font:24@sm font:32@md …">
+<!-- @MARK :hover --><!-- @MARK :active -->
+<h2 class="font:18 font:24:hover font:32:active …">
 ```
 
 ### Stackable states
 Master CSS allows the same style declaration with multiple state conditions.
 ```html
-<!-- @MARK bg:blue-20:hover@md@dark -->
-<div class="bg:blue-20:hover@md@dark …">
+<!-- @MARK :hover:not(.active) -->
+<div class="bg:blue-20:hover:not(.active) …">
 ```
 
 ---

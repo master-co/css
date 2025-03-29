@@ -6,9 +6,7 @@
 <!-- @MARK @xs @sm @md -->
 <div class="grid-cols:2 grid-cols:3@xs grid-cols:4@sm grid-cols:5@md …">…</div>
 ```
-The syntax in Master CSS allows for the conditional application of styles at different viewports, with up to [11 predefined screen sizes](/reference/screens) available, from `4xs` ~ `4xl`. This comprehensive coverage caters to the modern web layout scenario.
-
-To customize responsive breakpoints, see the [variables](/guide/variables#screens-and-breakpoints) documentation.
+Master CSS allows for the conditional application of styles at different viewport and container sizes, with up to [11 predefined screen sizes](/reference/screens) available, from `4xs` ~ `4xl`. This comprehensive coverage caters to the modern web layout scenario.
 
 ---
 
@@ -28,20 +26,21 @@ For example, your company is launching a game primarily targeting mobile users w
 ```
 Gradually adjust the UI for larger viewports.
 
-(wand) Increase the font size to `32/16rem` when the viewport width is larger than `1024px`.
+(wand) Increase the font size to `32/16rem` when the viewport width is larger than `1024/16rem`.
 ```html
 <!-- @MARK font:32@md -->
-<p class="font:24 font:32@md …">
-<!-- equals to -->
- <!-- @MARK font:32@>=md -->
+<p class="font:24 font:32@md …"> <!-- [!code focus] -->
+<!-- @MARK font:32@>=md -->
 <p class="font:24 font:32@>=md …">
 ```
-Generated CSS:
-<Class2CSS>
-    {['font:24', 'font:32@md']}
-</Class2CSS>
-- Paragraph font size is `24/16rem` in viewport `<1024px`
-- Paragraph font size is `32/16rem` in viewport `>=1024px`
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['font:24', 'font:32@md']}
+    </Class2CSS>
+</details>
+- Paragraph font size is `24/16rem` in viewport `<1024/16rem`
+- Paragraph font size is `32/16rem` in viewport `>=1024/16rem`
 
 This relies on CSS precedence behavior to override mobile styles with new styles on larger viewports.
 
@@ -56,17 +55,19 @@ For example, your company is launching a web drawing software primarily targetin
 ```
 Gradually adjust the UI for smaller viewports.
 
-(wand) Decrease the font size to `24/16rem` when the viewport width is less than `1024px`.
+(wand) Decrease the font size to `24/16rem` when the viewport width is less than `1024/16rem`.
 ```html
 <!-- @MARK font:24@<md -->
 <p class="font:32 font:24@<md …">
 ```
-Generated CSS:
-<Class2CSS>
-    {['font:32', 'font:24@<md']}
-</Class2CSS>
-- Paragraph font size is `24/16rem` in viewport `<1024px`
-- Paragraph font size is `32/16rem` in viewport `>=1024px`
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['font:32', 'font:24@<md']}
+    </Class2CSS>
+</details>
+- Paragraph font size is `24/16rem` in viewport `<1024/16rem`
+- Paragraph font size is `32/16rem` in viewport `>=1024/16rem`
 
 This relies on CSS precedence behavior to override mobile styles with new styles on larger viewports.
 
@@ -99,73 +100,11 @@ You don't need to waste energy sticking to a specific development strategy; use 
 
 ---
 
-## Using operators
-Master CSS provides a variety of operators to help you apply styles at different viewports. The following examples demonstrate how to use these operators.
+## Media Queries
 
-### Viewport width is at least N
-To apply styles above a certain viewport width, you can either use the `@N` or `@>=N` operators.
-```html
-<!-- @MARK @>=sm -->
-<div class="hidden@>=sm">
-```
-Generated CSS:
-<Class2CSS>
-    {['hidden@>=sm']}
-</Class2CSS>
-(o) Alternative and recommended:
-```html
-<!-- @MARK @sm -->
-<div class="hidden@sm">
-```
-Generated CSS:
-<Class2CSS>
-    {['hidden@sm']}
-</Class2CSS>
+---
 
-### Viewport width exceeds N
-To apply styles when a certain viewport width is exceeded, you can use the `>` operator.
-```html
-<!-- @MARK @>sm -->
-<div class="hidden@>sm">
-```
-Generated CSS:
-<Class2CSS>
-    {['hidden@>sm']}
-</Class2CSS>
-
-### Viewport width is at most N
-To apply styles when less than or equal to a certain viewport width, use the `<=` operator.
-```html
-<!-- @MARK @<=sm -->
-<div class="hidden@<=sm">
-```
-Generated CSS:
-<Class2CSS>
-    {['hidden@<=sm']}
-</Class2CSS>
-
-### Viewport width is less than N
-To apply styles when less than a certain viewport width, use the `<` operator.
-```html
-<!-- @MARK @<sm -->
-<div class="hidden@<sm">
-```
-Generated CSS:
-<Class2CSS>
-    {['hidden@<sm']}
-</Class2CSS>
-
-### Within the viewport width range
-To apply styles more flexibly, you can use the `&` logical operator along with the comparison operators `>`, `<`, `=`, `>=`, `<=`>.
-```html
-<!-- @MARK @sm&<md -->
-<div class="hidden@sm&<md">
-```
-Generated CSS:
-<Class2CSS>
-    {['hidden@sm&<md']}
-</Class2CSS>
-Occasionally, addressing glitches or layouts within a certain range of viewports can be helpful.
+## Container Queries
 
 ---
 

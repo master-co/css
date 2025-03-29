@@ -1,2 +1,390 @@
+import AnimationDirectionBasicDemo from '../../reference/animation-direction/components/BasicDemo';
+
 ## Overview [sr-only]
-🚧
+CSS at-rules like `@media`, `@supports`, `@container`, `@layer`, and etc., give you powerful abilities to apply styles based on various conditions. Master CSS extends this capability with a set of intuitive tokens and operators, allowing you to write complex conditional logic directly in your class names.
+```mcss name=master css
+hidden@md
+hidden@print
+hidden@preset
+hidden@container(xs)
+hidden@sidebar(xs)
+hidden@md,<lg
+hidden@!screen
+opacity:0@starting-style
+bd:blur(5)@supports(backdrop-filter(0px))
+```
+<details>
+    <summary>Your old way of doing this.</summary>
+    ```css name=traditional.css
+    @media (min-width: 1024px) {
+        .target {
+            display: none;
+        }
+    }
+
+    @container (min-width: 1024px) and (max-width: 1289.98px) {
+        .target {
+            display: none;
+        }
+    }
+
+    @media print {
+        .target {
+            display: none;
+        }
+    }
+
+    @container (min-width: 768px) {
+        .target {
+            display: none;
+        }
+    }
+
+    @media not screen {
+        .target {
+            display: none;
+        }
+    }
+    ```
+</details>
+From [comparison operators](#comparison-operators) and [logical operators](#logical-operators) to advanced [condition grouping](#grouping-conditions), you’ll learn how to harness the full potential of CSS at-rules—without the boilerplate.
+
+---
+
+## At-rules
+These shorthands provide a simplified syntax for commonly used CSS at-rules. They allow you to apply styles based on media types, feature support, container queries, and layer management in a more concise and readable way.
+
+| Shorthand                     | CSS                                                       |
+|-------------------------------|-----------------------------------------------------------|
+| `@base`                       | `css @layer base`                                         |
+| `@preset`                     | `css @layer preset`                                       |
+| `@print`                      | `css @media print`                                        |
+| `@screen`                     | `css @media screen`                                       |
+| `@all`                        | `css @media all`                                          |
+| `@speech`                     | `css @media speech`                                       |
+| `@motion`                     | `css @media (prefers-reduced-motion: no-preference)`      |
+| `@reduce-motion`              | `css @media (prefers-reduced-motion)`                     |
+| `@landscape`                  | `css @media (orientation: landscape)`                     |
+| `@portrait`                   | `css @media (orientation: portrait)`                      |
+| `@container`                  | `css @container`                                          |
+| `@starting-style`             | `css @starting-style`                                     |
+| `@media(<feature>)`           | `css @media (<feature>)`                                  |
+| `@supports(<feature>)`        | `css @supports (<feature>)`                               |
+| `@layer(<name>)`              | `css @layer <name>`                                       |
+| `@container(<size>)`          | `css @container (<size>)`                                 |
+| `@<name>(<size>)`             | `css @container <name> (<size>)`                          |
+
+### `base`, `preset`
+Use `@base` and `@preset` to apply styles based on the layer context.
+
+By default, there are two shorthands: `@base` and `@preset`.
+```html
+<!-- @MARK @base -->
+<div class="hidden@base">
+<!-- @MARK @preset -->
+<div class="hidden@preset">
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@base', 'hidden@preset']}
+    </Class2CSS>
+</details>
+You can [create a token](/guide/syntax#at-rules) to simpify the class name.
+
+To learn more about the [cascade layers](/guide/responsive-design#cascade-layers).
+
+### `print`, `screen`, `all`, `speech`
+Use `@print`, `@screen`, `@all`, or `@speech` to apply styles based on the media type. For example, to hide an element when printing:
+```html
+<!-- @MARK @print -->
+<div class="hidden@print">
+```
+
+### `prefers-motion-reduced`
+Use `@motion` or `@reduce-motion` to style an element based on user-specific motion preferences.
+<AnimationDirectionBasicDemo className="@direction:normal" />
+```html
+<!-- @MARK @motion -->
+<svg class="@rotate|1s|linear|infinite@motion">...</svg>
+```
+
+{/* ### `prefers-color-scheme` 🚧 */}
+{/* ### `prefers-contrast` 🚧 */}
+### `orientation`
+Use `@lanscape` or `@portrait` to apply styles based on the device orientation.
+```html
+<!-- @MARK @landscape -->
+<div class="hidden@landscape">
+```
+
+### `@starting-style`
+The `@starting-style` defines the starting values for properties to enable smooth transitions when an element first appears.
+
+(click) Try opening the popover target to see the zoom in effect.
+<StartingStyleExample />
+```html
+<!-- @MARK scale(0)@starting-style -->
+<div id="target" popover="auto" class="~transform|.3s scale(0)@starting-style">
+    ...
+    <button popovertarget="target" popovertargetaction="hide">Close</button>
+</div>
+<button popovertarget="target">Open Popover</button>
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['~transform|.3s', 'scale(0)@starting-style']}
+    </Class2CSS>
+</details>
+
+### `@media(<feature>)`
+Use `@media()` to apply styles based on arbitrary [CSS media queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries).
+```html
+<!-- @MARK @media(pointer:coarse) -->
+<div class="hidden@media(pointer:coarse)">
+```
+You can [create a token](/guide/syntax#at-rules) to simpify the class name.
+
+### `@supports(<feature>)`
+Use `@supports()` to apply styles based on browser support for specific CSS features.
+```html
+<!-- @MARK @supports(backdrop-filter(0px)) -->
+<div class="hidden@supports(backdrop-filter(0px))">
+```
+You can [create a token](/guide/syntax#at-rules) to simpify the class name.
+
+### `@layer(<name>)`
+Use `@layer()` to apply styles based on the layer context.
+```html
+<!-- @MARK @layer(modifiers) -->
+<div class="hidden@layer(modifiers)">
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@layer(modifiers)']}
+    </Class2CSS>
+</details>
+For any custom layer, it is wrapped in a general layer.
+
+### `@container(<size>)`
+Use `@container` to apply styles based on the container size.
+```html
+<div class="container">
+    <!-- @MARK @container(sm) -->
+    <div class="hidden@container(sm)">...</div>
+</div>
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['container', 'hidden@container(sm)']}
+    </Class2CSS>
+</details>
+You can [create a token](/guide/syntax#at-rules) to simpify the class name.
+
+To learn more about the [container queries](/guide/responsive-design#container-queries).
+
+### `@<container>(<size>)`
+Use `@<container>(<size>)` to apply styles based on the specific target container size.
+```html
+<aside class="container:sidebar">
+    ...
+        <!-- @MARK @container(sidebar)sm -->
+        <div class="hidden@sidebar(sm)">...</div>
+</aside>
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['container:sidebar', 'hidden@container(sidebar)sm']}
+    </Class2CSS>
+</details>
+Any shorthand not listed in `config.at` will be implicitly treated as a `@container`, falling back to the default behavior of being eligible for container queries.
+
+---
+
+## Comparison Operators
+These comparison operators allow you to apply styles based on relative values:
+
+| Operator           | Meaning                       | Description                                                                |
+|--------------------|-------------------------------|----------------------------------------------------------------------------|
+| `@N`               | At or above N                 | Applies when the target is **≥ N**                                         |
+| `@>=N`             | At or above N                 | Applies when the target is **≥ N**                                         |
+| `@<=N`             | At or below N                 | Applies when the target is **≤ N**                                         |
+| `@>N`              | Greater than N                | Applies when the target is **> N**                                         |
+| `@<N`              | Less than N                   | Applies when the target is **< N**                                         |
+| `@A&<B`            | Within range                  | Applies when **A ≤ target < B**                                            |
+
+These operators unlock **complex conditional logic** in your class names, replacing verbose media query chains with intuitive, composable syntax.
+
+### `@>=N` — At or above
+To apply styles when the target width is greater than or equal to a specific breakpoint N, you can use either `@N` or `@>=N`. These are interchangeable.
+```html
+<!-- @MARK @>=sm -->
+<div class="hidden@>=sm">
+<div class="hidden@sm">
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@>=sm', 'hidden@sm']}
+    </Class2CSS>
+</details>
+
+### `@>N` — Greater than
+Use the `>` operator when you want to apply styles only after the specified breakpoint is exceeded.
+```html
+<!-- @MARK @>sm -->
+<div class="hidden@>sm">
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@>sm']}
+    </Class2CSS>
+</details>
+
+### `@<=N` — At or below
+Use the `<=` operator to apply styles when the target width is less than or equal to a specific breakpoint.
+```html
+<!-- @MARK @<=sm -->
+<div class="hidden@<=sm">
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@<=sm']}
+    </Class2CSS>
+</details>
+
+### `@<N` — Less than
+To target targets smaller than a given breakpoint, use the `@<N` operator. The alternative `@!N` behaves the same.
+```html
+<!-- @MARK @<sm -->
+<div class="hidden@<sm">
+<div class="hidden@!sm">
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@<sm', 'hidden@!sm']}
+    </Class2CSS>
+</details>
+
+### `@A&<B` — Within a range
+For more precise control, you can combine comparison operators using logical operators like `&`.
+
+For example, to apply styles between `sm` (inclusive) and `md` (exclusive), use:
+```html
+<!-- @MARK @sm&<md -->
+<div class="hidden@sm&<md">
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@sm&<md']}
+    </Class2CSS>
+</details>
+This is particularly useful when addressing layout issues or visual glitches that appear within a specific range of target widths.
+
+---
+
+## Logical Operators
+These logical operators let you build conditional logic using AND, OR, and NOT semantics:
+
+| Operator           | Meaning / Alias               | Description                                                                |
+|--------------------|-------------------------------|----------------------------------------------------------------------------|
+| `!`                | Not                           | Negates a condition                                                        |
+| `,`                | Or                            | Applies if **any** of the conditions match                                 |
+| `&`                | And                           | Applies if **all** conditions match                                        |
+| `only`             | Only                          | Restricts styles to **exact match only**, with no fallback or extensions   |
+
+
+### `!` — Not
+Negates the condition immediately following it.
+```html
+<!-- @MARK ! -->
+<div class="hidden@!md">
+```
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['hidden@!md']}
+  </Class2CSS>
+</details>
+This applies when the target is **not exactly at** the `md` breakpoint.
+
+### `,` — Or
+Applies when **any** of the listed conditions match. Useful when multiple breakpoints or feature states should share the same style.
+```html
+<!-- @MARK , -->
+<div class="block@<sm,>=lg">
+```
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['block@<sm,>=lg']}
+  </Class2CSS>
+</details>
+This means: show the element either on small screens **or** large screens and up.
+
+### `&` — And
+Combines multiple conditions. All conditions must match for the style to apply.
+```html
+<!-- @MARK & -->
+<div class="hidden@sm&<lg">
+```
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['hidden@sm&<lg']}
+  </Class2CSS>
+</details>
+This applies only when the target is between `sm` (inclusive) and `lg` (exclusive).
+
+### `only` — Exact match
+Restricts the style to **only** apply at the specified condition, without fallback or extension.
+```html
+<!-- @MARK only -->
+<div class="hidden@only(print)">
+```
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['hidden@only(print)']}
+  </Class2CSS>
+</details>
+This is equivalent to saying: *“Apply this style only when the screen matches the `print` mode, and nowhere else.”*
+
+---
+
+## Grouping Conditions
+You can group conditions using parentheses to create more complex expressions.
+```html
+<!-- @MARK !(screen&(any-hover:hover)) -->
+<div class="hidden@!(screen&(any-hover:hover))">
+```
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['hidden@!(screen&(any-hover:hover))']}
+  </Class2CSS>
+</details>
+This applies when the target is **not** a screen with any hover capability.
+
+### Replace whitespace with parentheses
+To represent spaces within a class name, use parentheses. This is because, in the class attribute, spaces are used to separate class names.
+
+For example, `@layer(modifiers)` transforms to `@layer modifiers`.
+```html
+<!-- @MARK (modifiers) -->
+<div class="hidden@layer(modifiers)">
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@layer(modifiers)']}
+    </Class2CSS>
+</details>
