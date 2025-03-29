@@ -10,7 +10,7 @@ hidden@container(xs)
 hidden@sidebar(xs)
 hidden@md,<lg
 hidden@!screen
-opacity:0@starting-style
+opacity:0@start
 bd:blur(5)@supports(backdrop-filter(0px))
 ```
 <details>
@@ -62,12 +62,13 @@ These shorthands provide a simplified syntax for commonly used CSS at-rules. The
 | `@screen`                     | `css @media screen`                                       |
 | `@all`                        | `css @media all`                                          |
 | `@speech`                     | `css @media speech`                                       |
+| `@container`                  | `css @container`                                          |
+| `@start`                      | `css @starting-style`                                     |
+| `@starting-style`             | `css @starting-style`                                     |
 | `@motion`                     | `css @media (prefers-reduced-motion: no-preference)`      |
 | `@reduce-motion`              | `css @media (prefers-reduced-motion)`                     |
 | `@landscape`                  | `css @media (orientation: landscape)`                     |
 | `@portrait`                   | `css @media (orientation: portrait)`                      |
-| `@container`                  | `css @container`                                          |
-| `@starting-style`             | `css @starting-style`                                     |
 | `@media(<feature>)`           | `css @media (<feature>)`                                  |
 | `@supports(<feature>)`        | `css @supports (<feature>)`                               |
 | `@layer(<name>)`              | `css @layer <name>`                                       |
@@ -119,13 +120,13 @@ Use `@lanscape` or `@portrait` to apply styles based on the device orientation.
 ```
 
 ### `@starting-style`
-The `@starting-style` defines the starting values for properties to enable smooth transitions when an element first appears.
+The `@starting-style` (alias `@start`) defines the starting values for properties to enable smooth transitions when an element first appears.
 
 (click) Try opening the popover target to see the zoom in effect.
 <StartingStyleExample />
 ```html
-<!-- @MARK scale(0)@starting-style -->
-<div id="target" popover="auto" class="~transform|.3s scale(0)@starting-style">
+<!-- @MARK scale(0)@start -->
+<div id="target" popover="auto" class="~transform|.3s scale(0)@start">
     ...
     <button popovertarget="target" popovertargetaction="hide">Close</button>
 </div>

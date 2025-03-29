@@ -19,6 +19,9 @@ describe('id', () => {
             ]
         })
     })
+    test.concurrent('start', ({ task }) => {
+        expect(parseAt(task.name)).toEqual({ id: 'starting-style', components: [] })
+    })
 })
 
 describe('logical', () => {

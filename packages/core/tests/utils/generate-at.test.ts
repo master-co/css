@@ -6,6 +6,7 @@ describe('id', () => {
     test.concurrent('print', ({ task }) => expect(generateAt(parseAt(task.name))).toBe('@media print'))
     test.concurrent('base', ({ task }) => expect(generateAt(parseAt(task.name))).toBe('@layer base'))
     test.concurrent('preset', ({ task }) => expect(generateAt(parseAt(task.name))).toBe('@layer preset'))
+    test.concurrent('start', ({ task }) => expect(generateAt(parseAt(task.name))).toBe('@starting-style'))
     test.concurrent('!print', ({ task }) => expect(generateAt(parseAt(task.name))).toBe('@media not print'))
 })
 
