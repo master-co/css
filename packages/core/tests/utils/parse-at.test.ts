@@ -2,47 +2,25 @@ import { test, expect, describe } from 'vitest'
 import { parseAt } from '../../src'
 
 describe('id', () => {
-    test.concurrent('print', ({ task }) => {
-        expect(parseAt(task.name)).toEqual({ id: 'media', components: [{ token: 'print', value: 'print', type: 'string' }] })
-    })
-    test.concurrent('base', ({ task }) => {
-        expect(parseAt(task.name)).toEqual({ id: 'layer', components: [{ token: 'base', value: 'base', type: 'string' }] })
-    })
-    test.concurrent('preset', ({ task }) => {
-        expect(parseAt(task.name)).toEqual({ id: 'layer', components: [{ token: 'preset', value: 'preset', type: 'string' }] })
-    })
-    test.concurrent('!print', ({ task }) => {
-        expect(parseAt(task.name)).toEqual({
-            id: 'media', components: [
-                { token: '!', value: 'not', type: 'logical' },
-                { token: 'print', value: 'print', type: 'string' }
-            ]
-        })
-    })
-    test.concurrent('start', ({ task }) => {
-        expect(parseAt(task.name)).toEqual({ id: 'starting-style', components: [] })
-    })
+    test.concurrent('print', ({ task }) => expect(parseAt(task.name)).toEqual({ id: 'media', components: [{ token: 'print', value: 'print', type: 'string' }] }))
+    test.concurrent('base', ({ task }) => expect(parseAt(task.name)).toEqual({ id: 'layer', components: [{ token: 'base', value: 'base', type: 'string' }] }))
+    test.concurrent('preset', ({ task }) => expect(parseAt(task.name)).toEqual({ id: 'layer', components: [{ token: 'preset', value: 'preset', type: 'string' }] }))
+    test.concurrent('!print', ({ task }) => expect(parseAt(task.name)).toEqual({
+        id: 'media', components: [
+            { token: '!', value: 'not', type: 'logical' },
+            { token: 'print', value: 'print', type: 'string' }
+        ]
+    }))
+    test.concurrent('start', ({ task }) => expect(parseAt(task.name)).toEqual({ id: 'starting-style', components: [] }))
 })
 
 describe('logical', () => {
-    test.concurrent('and', ({ task }) => {
-        expect(parseAt(task.name).components).toEqual([{ token: 'and', type: 'logical', value: 'and' }])
-    })
-    test.concurrent('or', ({ task }) => {
-        expect(parseAt(task.name).components).toEqual([{ token: 'or', type: 'logical', value: 'or' }])
-    })
-    test.concurrent('not', ({ task }) => {
-        expect(parseAt(task.name).components).toEqual([{ token: 'not', type: 'logical', value: 'not' }])
-    })
-    test.concurrent(',', ({ task }) => {
-        expect(parseAt(task.name).components).toEqual([{ token: ',', type: 'logical', value: 'or' }])
-    })
-    test.concurrent('!', ({ task }) => {
-        expect(parseAt(task.name).components).toEqual([{ token: '!', type: 'logical', value: 'not' }])
-    })
-    test.concurrent('&', ({ task }) => {
-        expect(parseAt(task.name).components).toEqual([{ token: '&', type: 'logical', value: 'and' }])
-    })
+    test.concurrent('and', ({ task }) => expect(parseAt(task.name).components).toEqual([{ token: 'and', type: 'logical', value: 'and' }]))
+    test.concurrent('or', ({ task }) => expect(parseAt(task.name).components).toEqual([{ token: 'or', type: 'logical', value: 'or' }]))
+    test.concurrent('not', ({ task }) => expect(parseAt(task.name).components).toEqual([{ token: 'not', type: 'logical', value: 'not' }]))
+    test.concurrent(',', ({ task }) => expect(parseAt(task.name).components).toEqual([{ token: ',', type: 'logical', value: 'or' }]))
+    test.concurrent('!', ({ task }) => expect(parseAt(task.name).components).toEqual([{ token: '!', type: 'logical', value: 'not' }]))
+    test.concurrent('&', ({ task }) => expect(parseAt(task.name).components).toEqual([{ token: '&', type: 'logical', value: 'and' }]))
 })
 
 test.concurrent('screen&print', ({ task }) => {
@@ -69,21 +47,11 @@ test.concurrent('!screen', ({ task }) => {
 })
 
 describe('>= <= > <', () => {
-    test.concurrent('>=sm', ({ task }) => {
-        expect(parseAt(task.name).components).toEqual([{ token: '>=sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' }])
-    })
-    test.concurrent('<=sm', ({ task }) => {
-        expect(parseAt(task.name).components).toEqual([{ token: '<=sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '<=' }])
-    })
-    test.concurrent('>sm', ({ task }) => {
-        expect(parseAt(task.name).components).toEqual([{ token: '>sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>' }])
-    })
-    test.concurrent('<sm', ({ task }) => {
-        expect(parseAt(task.name).components).toEqual([{ token: '<sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '<' }])
-    })
-    test.concurrent('sm', ({ task }) => {
-        expect(parseAt(task.name).components).toEqual([{ token: 'sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' }])
-    })
+    test.concurrent('>=sm', ({ task }) => expect(parseAt(task.name).components).toEqual([{ token: '>=sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' }]))
+    test.concurrent('<=sm', ({ task }) => expect(parseAt(task.name).components).toEqual([{ token: '<=sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '<=' }]))
+    test.concurrent('>sm', ({ task }) => expect(parseAt(task.name).components).toEqual([{ token: '>sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>' }]))
+    test.concurrent('<sm', ({ task }) => expect(parseAt(task.name).components).toEqual([{ token: '<sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '<' }]))
+    test.concurrent('sm', ({ task }) => expect(parseAt(task.name).components).toEqual([{ token: 'sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' }]))
 })
 
 test.concurrent('sm&<=lg', ({ task }) => {
@@ -149,6 +117,7 @@ test.concurrent('supports(transform-origin:5%|5%)', ({ task }) => {
         }
     ])
 })
+
 test.concurrent('supports(selector(:has(*)))', ({ task }) => {
     expect(parseAt(task.name).components).toEqual([
         {
@@ -162,6 +131,7 @@ test.concurrent('supports(selector(:has(*)))', ({ task }) => {
         }
     ])
 })
+
 test.concurrent('supports-backdrop', ({ task }) => {
     expect(parseAt(task.name, new MasterCSS({
         at: {
