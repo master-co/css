@@ -6,7 +6,108 @@
 <!-- @MARK @xs @sm @md -->
 <div class="grid-cols:2 grid-cols:3@xs grid-cols:4@sm grid-cols:5@md …">…</div>
 ```
-Master CSS allows for the conditional application of styles at different viewport and container sizes, with up to [11 predefined screen sizes](/reference/screens) available, from `4xs` ~ `4xl`. This comprehensive coverage caters to the modern web layout scenario.
+Master CSS allows for the conditional application of styles at different viewport and container sizes, with up to [11 predefined screen sizes](/guide/screens) available, from `4xs` ~ `4xl`.
+<ScreensDefault />
+This comprehensive coverage caters to the modern web layout scenario.
+
+---
+
+## Based on viewport breakpoints
+CSS Media Queries allow styles to be applied based on the *size of the viewport* rather than individual *elements*. This makes it possible to create responsive layouts that adapt to different screen sizes—such as mobile phones, tablets, and desktops—by defining breakpoints at specific widths.
+
+These breakpoints enable developers to change layouts, typography, spacing, and more to ensure an optimal user experience across devices.
+
+### Using responsive breakpoints
+The syntax is `@<breakpoint>`, where `<breakpoint>` can be any of the predefined [screen sizes](/guide/screens), such as `xs`, `sm`, `md`, `lg`, etc.
+```html
+<!-- @MARK @xs @sm @md -->
+<div class="grid-cols:2 grid-cols:3@xs grid-cols:4@sm grid-cols:5@md …">…</div>
+```
+
+### Querying viewport ranges
+Use [comparison](/guide/conditional-queries#comparison-operators) and [logical](/guide/conditional-queries#logical-operators) operators to create more complex viewport range queries.
+```html
+<!-- @MARK @sm&<=md -->
+<div class="hidden@sm&<=md">…</div>
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@sm&<=md']}
+    </Class2CSS>
+</details>
+
+### Creating responsive wrappers
+Fixed element width to a screen size as a responsive wrapper.
+```html
+<!-- @MARK max-w:screen-sm@sm max-w:screen-md@md max-w:screen-lg@lg -->
+<div class="max-w:screen-sm@sm max-w:screen-md@md max-w:screen-lg@lg …">…</div>
+```
+
+---
+
+## Based on container sizes
+CSS [Container Queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) allow styles to be applied based on the *size of a container*, rather than the size of the *viewport*. This makes it easier to build responsive components that adapt to their parent containers.
+
+### Using container queries
+The `container` class is a utility class that applies the `container-type: inline-size;` to the element, making it a `@container(<size>)` for container queries.
+
+(resize) Try making the container smaller.
+<ResizeZone width="100%" originX="center" showRuler>
+    <Demo>
+        <div className="container w:full bg:surface b:1|frame-lightest r:2x overflow:hidden">
+            <div className="flex flex:col@container(<=2xs)">
+                <Image src="/images/blur.png" className="object:cover aspect:3/2 w:250 {w:full;aspect:16/9}@container(<=2xs)" width={300} height={200} alt="container left" />
+                <div className='p:6x|8x'>
+                    <div className='text:16 fg:strong font:semibold'>Lorem ipsum</div>
+                    <div className='text:14 mt:1x'>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</div>
+                </div>
+            </div>
+        </div>
+    </Demo>
+</ResizeZone>
+```html
+<div class="container …">
+    <!-- @MARK @container(<=2xs) -->
+    <div class="flex flex:col@container(<=2xs)">…</div>
+</div>
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['container', 'flex:col@container(<=2xs)']}
+    </Class2CSS>
+</details>
+Container queries and media queries share the same [screen sizes](/guide/screens).
+
+### Querying container ranges
+Use [comparison](/guide/conditional-queries#comparison-operators) and [logical](/guide/conditional-queries#logical-operators) operators to create more complex container range queries.
+```html
+<!-- @MARK @sm&<=md -->
+<div class="hidden@container(sm&<=md)">…</div>
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@container(sm&<=md)']}
+    </Class2CSS>
+</details>
+
+### Creating named containers
+Use the `container:<name>/<type>` to create a named container with a specific type, and then use the `@container(<name>)` query to apply styles based on the size of a named container.
+```html
+<!-- @MARK container:card/inline-size -->
+<div class="container:card/inline-size">
+    <!-- @MARK @container(card) -->
+    <div class="hidden@card(3xs)"></div>
+</div>
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['container:card/inline-size', 'hidden@card(3xs)']}
+    </Class2CSS>
+</details>
 
 ---
 
@@ -97,20 +198,3 @@ For example, set the background to white only on the desktop.
 ```
 
 You don't need to waste energy sticking to a specific development strategy; use the most direct way to solve the current responsive layout.
-
----
-
-## Media Queries
-
----
-
-## Container Queries
-
----
-
-## Create a responsive container
-Fixed element width to a screen size as a responsive container.
-```html
-<!-- @MARK max-w:screen-sm@sm max-w:screen-md@md max-w:screen-lg@lg -->
-<div class="max-w:screen-sm@sm max-w:screen-md@md max-w:screen-lg@lg …">…</div>
-```

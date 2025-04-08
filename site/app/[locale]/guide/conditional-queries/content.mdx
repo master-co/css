@@ -49,12 +49,23 @@ bd:blur(5)@supports(backdrop-filter(0px))
 </details>
 From [comparison operators](#comparison-operators) and [logical operators](#logical-operators) to advanced [condition grouping](#grouping-conditions), you’ll learn how to harness the full potential of CSS at-rules—without the boilerplate.
 
+You can have the same property have different conditions on the same element.
+```html
+<!-- @MARK @sm @md -->
+<h2 class="font:18 font:24@sm font:32@md …">
+```
+Or stack conditions in a single class.
+```html
+<!-- @MARK @sm@dark -->
+<div class="fg:white@sm@dark …">
+```
+
 ---
 
-## At-rules
+## Common at-rule tokens
 These shorthands provide a simplified syntax for commonly used CSS at-rules. They allow you to apply styles based on media types, feature support, container queries, and layer management in a more concise and readable way.
 
-| Shorthand                     | CSS                                                       |
+| Token                         | CSS                                                       |
 |-------------------------------|-----------------------------------------------------------|
 | `@base`                       | `css @layer base`                                         |
 | `@preset`                     | `css @layer preset`                                       |
@@ -69,11 +80,20 @@ These shorthands provide a simplified syntax for commonly used CSS at-rules. The
 | `@reduce-motion`              | `css @media (prefers-reduced-motion)`                     |
 | `@landscape`                  | `css @media (orientation: landscape)`                     |
 | `@portrait`                   | `css @media (orientation: portrait)`                      |
-| `@media(<feature>)`           | `css @media (<feature>)`                                  |
-| `@supports(<feature>)`        | `css @supports (<feature>)`                               |
-| `@layer(<name>)`              | `css @layer <name>`                                       |
-| `@container(<size>)`          | `css @container (<size>)`                                 |
-| `@<name>(<size>)`             | `css @container <name> (<size>)`                          |
+
+### `sm`, `md`, `lg`, and more
+Use `@sm`, `@md`, `@lg`, and other screen size tokens to apply styles based on the viewport width. For example, to hide an element at `>=sm`:
+```html
+<!-- @MARK @sm -->
+<div class="hidden@sm">
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@sm']}
+    </Class2CSS>
+</details>
+To learn more about the [responsive design](/guide/responsive-design).
 
 ### `base`, `preset`
 Use `@base` and `@preset` to apply styles based on the layer context.
@@ -91,7 +111,7 @@ By default, there are two shorthands: `@base` and `@preset`.
         {['hidden@base', 'hidden@preset']}
     </Class2CSS>
 </details>
-You can [create a token](/guide/syntax#at-rules) to simpify the class name.
+You can [create a token](/guide/at) to simpify the class name.
 
 To learn more about the [cascade layers](/guide/responsive-design#cascade-layers).
 
@@ -139,13 +159,27 @@ The `@starting-style` (alias `@start`) defines the starting values for propertie
     </Class2CSS>
 </details>
 
+---
+
+## Arbitrary conditions and queries
+Master CSS allows you to write at-rule condition queries directly within class names, closely resembling native syntax when needed.
+
+| Syntax                        | CSS                                                       |
+|-------------------------------|-----------------------------------------------------------|
+| `@media(<feature>)`           | `css @media (<feature>)`                                  |
+| `@supports(<feature>)`        | `css @supports (<feature>)`                               |
+| `@layer(<name>)`              | `css @layer <name>`                                       |
+| `@container(<size>)`          | `css @container (<size>)`                                 |
+| `@<name>(<size>)`             | `css @container <name> (<size>)`                          |
+
+
 ### `@media(<feature>)`
 Use `@media()` to apply styles based on arbitrary [CSS media queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries).
 ```html
 <!-- @MARK @media(pointer:coarse) -->
 <div class="hidden@media(pointer:coarse)">
 ```
-You can [create a token](/guide/syntax#at-rules) to simpify the class name.
+You can [create a token](/guide/at) to simpify the class name.
 
 ### `@supports(<feature>)`
 Use `@supports()` to apply styles based on browser support for specific CSS features.
@@ -153,7 +187,7 @@ Use `@supports()` to apply styles based on browser support for specific CSS feat
 <!-- @MARK @supports(backdrop-filter(0px)) -->
 <div class="hidden@supports(backdrop-filter(0px))">
 ```
-You can [create a token](/guide/syntax#at-rules) to simpify the class name.
+You can [create a token](/guide/at) to simpify the class name.
 
 ### `@layer(<name>)`
 Use `@layer()` to apply styles based on the layer context.
@@ -183,9 +217,9 @@ Use `@container` to apply styles based on the container size.
         {['container', 'hidden@container(sm)']}
     </Class2CSS>
 </details>
-You can [create a token](/guide/syntax#at-rules) to simpify the class name.
+You can [create a token](/guide/at) to simpify the class name.
 
-To learn more about the [container queries](/guide/responsive-design#container-queries).
+To learn more about the [container queries](/guide/responsive-design#based-on-container-sizes).
 
 ### `@<container>(<size>)`
 Use `@<container>(<size>)` to apply styles based on the specific target container size.
@@ -220,12 +254,38 @@ These comparison operators allow you to apply styles based on relative values:
 
 These operators unlock **complex conditional logic** in your class names, replacing verbose media query chains with intuitive, composable syntax.
 
+### `width`, `height`
+You can specify feature names `w` (`width`) and `h` (`height`). If no feature is specified, `width` is used as the default.
+
+(i) Use `@<name?><operator><number>` to specify the feature query.
+```html
+<!-- @MARK @sm -->
+<div class="hidden@sm">
+<!-- @MARK @h<sm -->
+<div class="hidden@h<sm">
+<!-- @MARK @h>=sm&h<=sm -->
+<div class="hidden@h>=sm&h<=sm">
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@sm','hidden@h<sm', 'hidden@h>=sm&h<=sm']}
+    </Class2CSS>
+</details>
+
+(x) Feature names after or between operators are not supported yet.
+```html
+<div class="hidden@sm<=h">
+<div class="hidden@sm<=h<=lg">
+```
+
+
 ### `@>=N` — At or above
 To apply styles when the target width is greater than or equal to a specific breakpoint N, you can use either `@N` or `@>=N`. These are interchangeable.
 ```html
-<!-- @MARK @>=sm -->
-<div class="hidden@>=sm">
-<div class="hidden@sm">
+<div class="hidden@sm"> <!-- [!code focus] -->
+<div class="hidden@>=sm"> <!-- [!code focus] -->
+<div class="hidden@h>=sm"> <!-- [!code focus] -->
 ```
 <details>
     <summary>Generated CSS</summary>
@@ -301,7 +361,6 @@ These logical operators let you build conditional logic using AND, OR, and NOT s
 | `,`                | Or                            | Applies if **any** of the conditions match                                 |
 | `&`                | And                           | Applies if **all** conditions match                                        |
 | `only`             | Only                          | Restricts styles to **exact match only**, with no fallback or extensions   |
-
 
 ### `!` — Not
 Negates the condition immediately following it.

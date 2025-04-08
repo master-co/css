@@ -1,0 +1,237 @@
+## Overview [sr-only]
+Master CSS uses [variables](/guide/variables) to define color tokens, allowing you to access a single source of truth for colors directly within your template markup.
+This not only improves the readability of your templates but also [*prevents unused CSS variables*](/guide/minimization#bloated-css-variables) from being included in the final output, leading to cleaner and more efficient CSS.
+
+### Using default colors
+Each color in the default [color palette](/reference/colors) has a hue range from 5 to 95, which you can choose from as your brand's primary color.
+<ColorPalette filterColors={['indigo']} />
+
+For example, inherit from indigo:
+```js name=master.css.js
+import { variables } from '@master/css'
+
+export default {
+    variables: {
+         primary: variables.indigo /* [!code highlight] */
+    }
+}
+```
+Apply them using the color-realted syntax:
+```html
+<!-- @MARK bg:primary-5 --><!-- @MARK fg:primary-60 -->
+<div class="bg:primary-5 fg:primary-60">…</div>
+```
+
+### Using color modes
+You can also use [variable modes to define colors](#add-colors-based-on-modes) for different themes, such as light and dark modes. As your styles grow, arbitrarily applying `@dark` or `@light` in template markup can make it difficult to maintain consistency in your design system's color tokens.
+```html
+<div class="fg:white@dark fg:black@light"><!-- [!code --] -->
+<div class="fg:neutral"><!-- [!code ++] -->
+```
+
+---
+
+## Basic usage
+
+### Add a color
+Add the primary color using `#000`, `rgb(0 0 0)`, or `hsl(0 0% 0%)`.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-color/master.css.js').default}</Code>
+Apply it using color-related syntax and even change the opacity.
+<Code lang="html">{require('!!raw-loader!./tests/add-a-color/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-color/generated.css?raw').default}</Code>
+    </div>
+</details>
+
+(i) If a color is used only once in all markups, you can optionally not abstract it into a token.
+```html
+<button class="bg:#ceb195">Milk Tea</button>
+```
+Variables only support `rgb` and `hsl`, in the future, they will be compatible with all native CSS functions, such as `rgba`, `hsla`, `lab`, and others. [#346](https://github.com/master-co/css/issues/346)
+
+### Add a color with opacity
+Add color variables with opacity using `#00000080`, `rgb(0 0 0/.5)`, or `hsl(0 0% 0%/.5)`.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-color-with-opacity/master.css.js').default}</Code>
+Apply it using color-related syntax like [`fg:`](/reference/color).
+<Code lang="html">{require('!!raw-loader!./tests/add-a-color-with-opacity/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-color-with-opacity/generated.css?raw').default}</Code>
+    </div>
+</details>
+(x) Color variables with opacity cannot use `/alpha` to change the opacity.
+```html
+<!-- @MARK primary/.5 -->
+<div class="fg:primary/.5">…</div>
+```
+
+### Add a color alias
+Create an alias for a color to link its value to an existing color.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-an-alias/master.css.js').default}</Code>
+Apply it using color-related syntax.
+<Code lang="html">{require('!!raw-loader!./tests/add-an-alias/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-an-alias/generated.css?raw').default}</Code>
+    </div>
+</details>
+For example, say you have multiple color variables referencing the same color token. If that color needs updating, you would only need to update the source instead of manually updating every instance of the color.
+
+### Add a color alias with opacity
+Create an alias for a color with opacity to link its value to an existing color.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-an-alias-with-opacity/master.css.js').default}</Code>
+Apply it using color-related syntax like [`fg:`](/reference/color).
+<Code lang="html">{require('!!raw-loader!./tests/add-an-alias-with-opacity/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-an-alias-with-opacity/generated.css?raw').default}</Code>
+    </div>
+</details>
+As shown above, creating an alias `secondary` linked to an existing alias `primary` with opacity `/.5` is possible, and the opacity will be multiplied `0.5 * 0.5 = 0.25`.
+
+### Add color shades
+Sets multiple shades for a single color.
+```js name=master.css.js
+export default {
+    variables: {
+        primary: { /* [!code ++] */
+            '': '#1192e8', /* primary */ /* [!code ++] */
+            10: '#e5f6ff', /* primary-10 */ /* [!code ++] */
+            20: '#bae6ff', /* primary-20 */ /* [!code ++] */
+        } /* [!code ++] */
+    }
+}
+```
+Apply it using color-related syntax like [`fill:`](/reference/fill).
+```html
+<!-- @MARK fill:primary-20 -->
+<svg class="fill:primary-20 …">20</svg>
+```
+
+### Add colors based on modes
+Add color variables in different theme modes.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-colors-by-theme/master.css.js').default}</Code>
+Using modes for variables, you can access a single source of truth and simplify the markup.
+<Code lang="html">{require('!!raw-loader!./tests/add-colors-by-theme/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-colors-by-theme/generated.css?raw').default}</Code>
+    </div>
+</details>
+By default, theme variables [drive](/guide/configuration#default-mode) inheritance by adding `.light` or `.dark` to the parent element.
+
+### Override default colors
+(!) Access the same key as the preset to override default colors, like `blue-5` ~ `blue-95`.
+```js name=master.css.js
+export default {
+    variables: {
+        blue: '#4589ff' /* [!code ++] */
+    }
+}
+```
+
+(o) Use `app-*` to avoid conflicts with defaults and keep `blue-*` colors consistent.
+
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/override-default-colors/master.css.js').default}</Code>
+Apply custom colors for the current application.
+<Code lang="html">{require('!!raw-loader!./tests/override-default-colors/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/override-default-colors/generated.css?raw').default}</Code>
+    </div>
+</details>
+
+---
+
+## Customizing primitive colors
+Add a [primitive color](/reference/primitive-colors) to the base variables group.
+```js name=master.css.js
+export default {
+    variables: {
+        primary: '#000' /* [!code ++] */
+    }
+}
+```
+Apply the custom color:
+```html
+<!-- @MARK primary -->
+<p class="bg:primary"></p>
+```
+
+---
+
+## Customizing text colors
+Add a color to the text variables group.
+```js name=master.css.js
+export default {
+    variables: {
+        text: {
+            primary: '#000' /* [!code ++] */
+        }
+    }
+}
+```
+Apply the custom color:
+```html
+<!-- @MARK primary -->
+<p class="fg:primary"></p>
+```
+
+### Apply a text color
+Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
+```html
+<!-- @MARK light -->
+<html class="light">
+    <body class="fg:neutral"></body> <!-- [!code highlight] -->
+    <body class="fg:text-neutral">equals</body>
+    <body class="fg:$(text-neutral)">equals</body>
+</html>
+```
+(x) We set the [foreground color](/reference/color) of elements using `fg:color` rather than the [text-specific](/reference/text-fill-color) `text:color`.
+```html
+<p class="text:pink">text-fill-color properity</p>
+```
+
+### Apply text color to any syntax
+Besides inheriting the above rules, you can use `text-*` to access global text color variables in other syntax.
+```html
+<!-- @MARK text-light -->
+<svg class="stroke:text-light"></svg>
+```
+
+### Escape inherited text colors
+Use `$(blue)` to apply `variables.blue` instead of `variables.text.blue`.
+```html
+<!-- @MARK $(blue) -->
+<p class="fg:$(blue)">…</p>
+```
+
+---
+
+## Customizing frame colors
+Add a color to the frame variables group.
+```js name=master.css.js
+export default {
+    variables: {
+        light: { /* [!code ++] */
+            '@light': '$(slate-60)/.2', /* [!code ++] */
+            '@dark': '$(gray-30)/.2' /* [!code ++] */
+        } /* [!code ++] */
+    }
+}
+```
+
+### Apply a frame color
+Apply the defined `frame-*` variables using the inherited rules <FrameHeirs />.
+```html
+<div class="outline:neutral"></div> <!-- [!code highlight] -->
+<div class="outline:frame-neutral">equals</div>
+<div class="outline:$(frame-neutral)">equals</div>
+```

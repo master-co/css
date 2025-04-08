@@ -1,0 +1,90 @@
+import { variables } from '@master/css'
+
+## Default [sr-only]
+<Demo $py={0}>
+    <DemoPanel className="flex flex:col gap:8x">
+        <div className="w:full">
+            <DemoLabel>sans</DemoLabel>
+            <DemoP className="font:sans">Heavy boxes perform quick waltzes and jigs.</DemoP>
+        </div>
+        <div className="w:full">
+            <DemoLabel>serif</DemoLabel>
+            <DemoP className="font:serif">Heavy boxes perform quick waltzes and jigs.</DemoP>
+        </div>
+        <div className="w:full">
+            <DemoLabel>mono</DemoLabel>
+            <DemoP className="font:mono">Heavy boxes perform quick waltzes and jigs.</DemoP>
+        </div>
+    </DemoPanel>
+</Demo>
+By default, Master CSS provides three [font family](/reference/font-family) variables, `sans`, `serif`, and `mono`, to facilitate your use as fallbacks when adding custom fonts.
+
+| Token   | Value                                                                                                 |
+|---------|-------------------------------------------------------------------------------------------------------|
+| `sans`  | <InlineCode lang="ts">{JSON.stringify(variables['font-family'].sans, null, 4)}</InlineCode>           |
+| `serif` | <InlineCode lang="ts">{JSON.stringify(variables['font-family'].serif, null, 4)}</InlineCode>          |
+| `mono`  | <InlineCode lang="ts">{JSON.stringify(variables['font-family'].mono, null, 4)}</InlineCode>           |
+
+---
+
+## Basic usage
+### Add fonts
+Customize your font tokens by defining [variables](/guide/variables). For example, add `Inter` as the general font and `Fira Code` as the code font.
+```js name=master.css.js
+import { variables } from '@master/css'
+
+export default {
+    variables: {
+        'font-family': {
+            sans: ['Inter', ...variables['font-family'].sans], /* [!code ++] */
+            mono: ['Fira Code', ...variables['font-family'].mono] /* [!code ++] */
+        }
+    }
+}
+```
+Apply the defined `font-family` variables. For example, presetting the global fonts in `html <body>`:
+```html
+<!-- @MARK font:sans --><!-- @MARK font:mono_:where(code,pre) -->
+<body class="font:sans font:mono_:where(code,pre) font-feature:'salt'">…</body>
+```
+Don't forget to add the [font faces](/guide/fonts#font-faces).
+
+
+---
+
+## Use cases
+### Apply a font
+Apply the defined `font-family` variables using the inherited rules <Heirs />.
+```html
+<body class="font:$(font-family-sans)">…</body> <!-- [!code --] -->
+<body class="font:font-family-sans">…</body> <!-- [!code --] -->
+<body class="font:sans">…</body> <!-- [!code ++] -->
+```
+
+---
+
+## Font faces
+### Google Fonts
+The fastest way to declare custom font faces is through [Google Fonts](https://fonts.google.com/).
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> <!-- [!code ++] -->
+</head>
+</html>
+```
+
+### Self-hosted fonts
+You can also self-host the fonts via native CSS, as usual.
+```css name=styles/fonts.css
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/Inter-Regular.woff2") format("woff2");
+}
+```

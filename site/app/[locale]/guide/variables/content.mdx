@@ -1,213 +1,68 @@
 ## Overview [sr-only]
-In Master CSS, variables are used to manage tokens in the design system, such as colors, font families, breakpoints, etc., even based on different theme modes.
+<Default />
+In Master CSS, variables are used to manage tokens in the design system, such as colors, font families, etc., even based on different theme modes.
 <Overview />
 Design tokens are a fundamental part of design systems and are crucial for maintaining design consistency and efficiency in projects, especially in larger organizations or projects with complex design requirements. They help bridge the gap between design and development, promoting collaboration and ensuring a cohesive user experience.
 
 ---
 
-## Fonts
-By default, Master provides three [font family](/reference/font-family) variables, `sans`, `serif`, and `mono`, to facilitate your use as fallbacks when adding custom fonts.
-
-### Add fonts
-Customize your font tokens by defining [variables](/guide/variables). For example, add `Inter` as the general font and `Fira Code` as the code font.
+## Basic usage
+### Add a string variable
+Create a string variable to reuse it in your markup.
 ```js name=master.css.js
-import { variables } from '@master/css'
-
 export default {
     variables: {
-        'font-family': {
-            sans: ['Inter', ...variables['font-family'].sans], /* [!code ++] */
-            mono: ['Fira Code', ...variables['font-family'].mono] /* [!code ++] */
+        content: { /* [!code highlight] */
+            hash: '" #"', /* [!code highlight] */
+            external: '" ↗"' /* [!code highlight] */
+        }, /* [!code highlight] */
+    }
+}
+```
+Use the variable in your markup:
+```html
+<!-- @MARK hash --><!-- @MARK external -->
+<div class="content:hash content:external">…</div>
+```
+
+### Add a spacing variable
+Add a spacing variable to reuse it in your markup.
+```js name=master.css.js
+export default {
+    variables: {
+        spacing: {
+            md: 20 /* [!code ++] */
         }
     }
 }
 ```
-Apply the defined `font-family` variables. For example, presetting the global fonts in `html <body>`:
+Apply the defined `spacing` variables using the inherited rules <SpacingAndSizingHeirs />.
 ```html
-<!-- @MARK font:sans --><!-- @MARK font:mono_:where(code,pre) -->
-<body class="font:sans font:mono_:where(code,pre) font-feature:'salt'">…</body>
+<!-- @MARK mt:md --><!-- @MARK p:md -->
+<div class="mt:md p:md">…</div>
 ```
-Don't forget to add the [font faces](/reference/fonts#font-faces).
 
----
-
-## Colors
-Each color in the default [color palette](/reference/colors) has a hue range from 5 to 95, which you can choose from as your brand's primary color.
-<ColorPalette filterColors={['indigo']} />
-
-For example, inherit from indigo:
-```js name=master.css.js
-import { variables } from '@master/css'
-
-/** @type {import('@master/css').Config} */
+(x) Do not use numerical values as tokens.
+```js
 export default {
     variables: {
-         primary: variables.indigo
+        spacing: {
+            1: 4,
+            2: 8
+        }
     }
 }
 ```
-Apply them using the relevant syntax:
-```html
-<!-- @MARK bg:primary-5 --><!-- @MARK fg:primary-60 -->
-<div class="bg:primary-5 fg:primary-60">…</div>
-```
+It can be confused with the [unitless values](/guide/style-declarations#unit-sensing).
 
-### Add a color
-Add the primary color using `#000`, `rgb(0 0 0)`, or `hsl(0 0% 0%)`.
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-color/master.css.js').default}</Code>
-Apply it using color-related syntax and even change the opacity.
-<Code lang="html">{require('!!raw-loader!./tests/add-a-color/template.html').default}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-color/generated.css?raw').default}</Code>
-    </div>
-</details>
-
-(i) If a color is used only once in all markups, you can optionally not abstract it into a token.
-```html
-<button class="bg:#ceb195">Milk Tea</button>
-```
-Variables only support `rgb` and `hsl`, in the future, they will be compatible with all native CSS functions, such as `rgba`, `hsla`, `lab`, and others. [#346](https://github.com/master-co/css/issues/346)
-
-### Add a color with opacity
-Add color variables with opacity using `#00000080`, `rgb(0 0 0/.5)`, or `hsl(0 0% 0%/.5)`.
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-color-with-opacity/master.css.js').default}</Code>
-Apply it using color-related syntax like [`fg:`](/reference/color).
-<Code lang="html">{require('!!raw-loader!./tests/add-a-color-with-opacity/template.html').default}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-color-with-opacity/generated.css?raw').default}</Code>
-    </div>
-</details>
-(x) Color variables with opacity cannot use `/alpha` to change the opacity.
-```html
-<!-- @MARK primary/.5 -->
-<div class="fg:primary/.5">…</div>
-```
-
-### Add a color alias
-Create an alias for a color to link its value to an existing color.
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-an-alias/master.css.js').default}</Code>
-Apply it using color-related syntax.
-<Code lang="html">{require('!!raw-loader!./tests/add-an-alias/template.html').default}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-an-alias/generated.css?raw').default}</Code>
-    </div>
-</details>
-For example, say you have multiple color variables referencing the same color token. If that color needs updating, you would only need to update the source instead of manually updating every instance of the color.
-
-### Add a color alias with opacity
-Create an alias for a color with opacity to link its value to an existing color.
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-an-alias-with-opacity/master.css.js').default}</Code>
-Apply it using color-related syntax like [`fg:`](/reference/color).
-<Code lang="html">{require('!!raw-loader!./tests/add-an-alias-with-opacity/template.html').default}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-an-alias-with-opacity/generated.css?raw').default}</Code>
-    </div>
-</details>
-As shown above, creating an alias `secondary` linked to an existing alias `primary` with opacity `/.5` is possible, and the opacity will be multiplied `0.5 * 0.5 = 0.25`.
-
-### Add color shades
-Sets multiple shades for a single color.
-```js name=master.css.js
-export default {
-    variables: {
-        primary: { /* [!code ++] */
-            '': '#1192e8', /* primary */ /* [!code ++] */
-            10: '#e5f6ff', /* primary-10 */ /* [!code ++] */
-            20: '#bae6ff', /* primary-20 */ /* [!code ++] */
-        } /* [!code ++] */
-    }
-}
-```
-Apply it using color-related syntax like [`fill:`](/reference/fill).
-```html
-<!-- @MARK fill:primary-20 -->
-<svg class="fill:primary-20 …">20</svg>
-```
-
-### Add colors based on modes
-Add color variables in different theme modes.
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-colors-by-theme/master.css.js').default}</Code>
-Using modes for variables, you can access a single source of truth and simplify the markup.
-<Code lang="html">{require('!!raw-loader!./tests/add-colors-by-theme/template.html').default}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-colors-by-theme/generated.css?raw').default}</Code>
-    </div>
-</details>
-By default, theme variables [drive](/guide/configuration#default-mode) inheritance by adding `.light` or `.dark` to the parent element.
-
-### Override default colors
-(!) Access the same key as the preset to override default colors, like `blue-5` ~ `blue-95`.
-```js name=master.css.js
-export default {
-    variables: {
-        blue: '#4589ff' /* [!code ++] */
-    }
-}
-```
-
-(o) Use `app-*` to avoid conflicts with defaults and keep `blue-*` colors consistent.
-
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/override-default-colors/master.css.js').default}</Code>
-Apply custom colors for the current application.
-<Code lang="html">{require('!!raw-loader!./tests/override-default-colors/template.html').default}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('!!raw-loader!./tests/override-default-colors/generated.css?raw').default}</Code>
-    </div>
-</details>
-
----
-
-## Screens and Breakpoints
-The [screen](/reference/screens) in the variable is a reserved section. In addition to being used as a property value token `screen-*`, it also serves as a responsive breakpoint `@*`.
-
-Apply default screen variables using any syntax, such as [`width`](/reference/width) and [`max-width`](/reference/max-width).
-```html
-<!-- @MARK w:screen-sm --><!-- @MARK max-w:screen-lg -->
-<div class="w:screen-sm max-w:screen-lg">…</div>
-```
-Conditionally apply styles using default screen variables as responsive breakpoints.
-```html
-<!-- @MARK @sm --><!-- @MARK @md -->
-<div class="font:24 font:32@sm font:48@md">…</div>
-```
-The responsive breakpoints can be flexibly used with operators, see the [responsive design](/guide/responsive-design) documentation.
-
-### Add a screen size
-Add your screen size by defining [variables](/guide/variables).
-<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-screen-size/master.css.js').default}</Code>
-Apply the defined screen variables anywhere:
-<Code lang="html">{require('!!raw-loader!./tests/add-a-screen-size/template.html').default}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-screen-size/generated.css?raw').default}</Code>
-    </div>
-</details>
-And it can be used as a responsive breakpoint:
-<Code lang="html">{require('!!raw-loader!./tests/add-a-responsive-breakpoint/template.html').default}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-responsive-breakpoint/generated.css?raw').default}</Code>
-    </div>
-</details>
+### Add a color variable
+See more about [color variables](/guide/colors).
 
 ---
 
 ## Spacing and Sizing
-The [spacing and sizing](/reference/spacing-and-sizing) system is constructed using a [base unit](/guide/configuration#baseunit) of **4 pixels**. For visual consistency, you can use the multiplier unit `x` to apply spacing with the same scale.
+The spacing and sizing system is constructed using a [base unit](/guide/configuration#baseunit) of **4 pixels**. For visual consistency, you can use the multiplier unit `x` to apply spacing with the same scale.
+<SpacingAndSizing />
 ```html
 <!-- @MARK 1x -->
 <div class="m:1x">4px, margin: 0.25rem</div>
@@ -242,33 +97,3 @@ For other intermediate values, `0`, `1`, `2`, ..., we tend to use unitless token
 <!-- @MARK 2 -->
 <div class="w:2">2px, width: 0.125rem</div>
 ```
-
-### Add a spacing
-Customize your spacing [variables](/guide/variables), in `xs~xl`.
-```js name=master.css.js
-export default {
-    variables: {
-        spacing: {
-            md: 20 /* [!code ++] */
-        }
-    }
-}
-```
-Apply the defined `spacing` variables using the inherited rules like `margin-top` and `padding`.
-```html
-<!-- @MARK mt:md --><!-- @MARK p:md -->
-<div class="mt:md p:md">…</div>
-```
-
-(x) Do not use numerical values as tokens.
-```js
-export default {
-    variables: {
-        spacing: {
-            1: 4, /* [!code ++] */
-            2: 8 /* [!code ++] */
-        }
-    }
-}
-```
-It can be confused with the [unitless values](/guide/style-declarations#unit-sensing).

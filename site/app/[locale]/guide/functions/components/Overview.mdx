@@ -1,0 +1,12 @@
+```js name=master.css.js
+export default {
+    functions: {
+        translate: { unit: 'rem' } // [!code highlight]
+    }
+}
+```
+Apply your custom functions:
+```html
+<div class="translate(32)">…</div><!-- [!code highlight] -->
+<div class="translate(2rem)">…</div>
+```

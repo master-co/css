@@ -7,7 +7,7 @@ export default function BasicDemo({ className }: any) {
     return (
         <Demo $py={0}>
             <DemoPanel>
-                <Image className={clsx(className, 'mb:16 mt:6 object:cover r:8', {
+                <Image className={clsx(className, 'r:8 mb:16 mt:6 object:cover', {
                     'mr:30': className === 'float:left',
                     'ml:30': className === 'float:right'
                 })} src="/images/blur.png" width={160} height={90} alt="Float Image" />

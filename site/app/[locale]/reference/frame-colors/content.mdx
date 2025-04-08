@@ -9,14 +9,3 @@
 By default, theme modes [drive](/guide/configuration#default-mode) frame variables are meticulously adjusted in light and dark modes.
 <Overview />
 [View the default variables on GitHub](https://github.com/master-co/css/blob/rc/packages/core/src/config/variables.ts)
-
----
-
-## Basic usage
-### Apply a frame color
-Apply the defined `frame-*` variables using the inherited rules <Heirs />.
-```html
-<div class="outline:$(frame-neutral)">equals</div> <!-- [!code --] -->
-<div class="outline:frame-neutral">equals</div> <!-- [!code --] -->
-<div class="outline:neutral"></div> <!-- [!code ++] -->
-```

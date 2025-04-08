@@ -83,21 +83,3 @@ By default, theme modes [drive](/guide/configuration#default-mode) base color va
     <div class="bg:yellow"></div>
 </div>
 ```
-
----
-
-## Basic usage
-### Add a primitive color
-Add a color to the base variables group.
-```js name=master.css.js
-export default {
-    variables: {
-        primary: '#000' /* [!code ++] */
-    }
-}
-```
-Apply the custom color:
-```html
-<!-- @MARK primary -->
-<p class="bg:primary"></p>
-```

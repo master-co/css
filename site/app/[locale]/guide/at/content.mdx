@@ -1,0 +1,52 @@
+## Overview [sr-only]
+<Default />
+In native CSS, it's not possible to reuse queries through CSS variables. By tokenizing *media queries*, *feature queries*, *container queries*, and applying them with flexible syntax within the markup.
+<Overview />
+
+---
+
+## Basic usage
+### Add a media query token
+Create a media query token, such as `@landscape`, to represent landscape orientation.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-media-query/master.css.js').default}</Code>
+When displayed in landscape orientation, the image is presented in a 2:1 aspect ratio.
+<Code lang="html">{require('!!raw-loader!./tests/add-a-media-query/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-media-query/generated.css?raw').default}</Code>
+    </div>
+</details>
+
+### Add a feature query token
+Create a feature query token, such as `@supports-backdrop`, to apply styles based on `backdrop-filter` support.
+<Code lang="js" name="master.css.js">{require('!!raw-loader!./tests/add-a-feature-query/master.css.js').default}</Code>
+Applies translucent background only when `backdrop-filter` is supported.
+<Code lang="html">{require('!!raw-loader!./tests/add-a-feature-query/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!./tests/add-a-feature-query/generated.css?raw').default}</Code>
+    </div>
+</details>
+
+### Add a feature name alias
+Create a feature name alias to shorten the syntax of a feature query.
+```js name=master.css.js
+export default {
+    at: {
+        h: 'height' // [!code highlight]
+    }
+}
+```
+Use the name alias `h`:
+```html
+<!-- @MARK h -->
+<div class="hidden@container(h<=200)">…</div>
+```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@container(h<=200)']}
+    </Class2CSS>
+</details>

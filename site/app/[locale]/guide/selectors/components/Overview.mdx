@@ -1,0 +1,15 @@
+```js name=master.css.js
+export default {
+    selectors: {
+        ':headings': ':is(h1,h2,h3,h4,h5,h6)', // [!code highlight]
+        ':first': ':first-child', // [!code highlight]
+    }
+}
+```
+Simplify your markup:
+```html
+<div class="font:bold_:headings">…</div> <!-- [!code highlight] -->
+<div class="font:bold_:is(h1,h2,h3,h4,h5,h6)">…</div>
+<div class="font:bold_:first">…</div> <!-- [!code highlight] -->
+<div class="font:bold_:first-child">…</div>
+```

@@ -1,0 +1,19 @@
+```js name=master.css.js
+import { variables } from '@master/css'
+
+export default {
+    variables: {
+        'font-family': {
+            sans: 'Inter'
+         },
+        screen: { desktop: 1280 },
+        spacing: { sm: 10 },
+        primary: '#000000'
+    }
+}
+```
+Apply custom variables using ambiguous shorthand:
+```html
+<!-- @MARK font:sans --><!-- @MARK max-w:screen-desktop --><!-- @MARK m:sm --><!-- @MARK bg:primary -->
+<div class="font:sans max-w:screen-desktop m:sm bg:primary">…</div>
+```

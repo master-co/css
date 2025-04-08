@@ -1,0 +1,25 @@
+```js name=master.css.js
+export default {
+    rules: {
+        foo: { // [!code highlight]
+            unit: 'rem', // [!code highlight]
+            declare(value, unit) { // [!code highlight]
+                return { // [!code highlight]
+                    width: value + unit // [!code highlight]
+                } // [!code highlight]
+            } // [!code highlight]
+        } // [!code highlight]
+    }
+}
+```
+Use it in your markup:
+```html
+<!-- @MARK foo:32 -->
+<div class="foo:32"></div>
+```
+Generated CSS:
+```css
+.foo\:32 {
+    width: 2rem;
+}
+```

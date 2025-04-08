@@ -1,10 +1,11 @@
-import RulesOverview from '~/site/app/[locale]/guide/syntax/components/RulesOverview.mdx'
+import RulesOverview from '~/site/app/[locale]/guide/syntax-rules/components/Overview.mdx'
 import VariablesOverview from '~/site/app/[locale]/guide/variables/components/Overview.mdx'
-import UtilitiesOverview from '~/site/app/[locale]/guide/syntax/components/UtilitiesOverview.mdx'
-import AtOverview from '~/site/app/[locale]/guide/syntax/components/AtOverview.mdx'
-import SelectorsOverview from '~/site/app/[locale]/guide/syntax/components/SelectorsOverview.mdx'
-import FunctionsOverview from '~/site/app/[locale]/guide/syntax/components/FunctionsOverview.mdx'
+import UtilitiesOverview from '~/site/app/[locale]/guide/utilities/components/Overview.mdx'
+import AtRulesOverview from '~/site/app/[locale]/guide/at/components/Overview.mdx'
+import SelectorsOverview from '~/site/app/[locale]/guide/selectors/components/Overview.mdx'
+import FunctionsOverview from '~/site/app/[locale]/guide/functions/components/Overview.mdx'
 import ComponentsOverview from '~/site/app/[locale]/guide/components/components/Overview.mdx'
+import ScreensOverview from '~/site/app/[locale]/guide/screens/components/Overview.mdx'
 import { config } from '@master/css'
 
 ## Setup [sr-only]
@@ -21,23 +22,23 @@ Customizing animation [animations](/guide/configuration#animations) for your des
 <AnimationsOverview />
 
 ### `.functions`
-Customizing [functions](/guide/syntax#functions) for your design system.
+Customizing [functions](/guide/functions) for your design system.
 <FunctionsOverview />
 
 ### `.at`
-Customizing [at-rules](/guide/syntax#at-rules) for your design system.
-<AtOverview />
+Customizing [at-rules](/guide/at) for your design system.
+<AtRulesOverview />
 
 ### `.rules`
-Customizing [rules](/guide/syntax#rules) for your design system.
+Customizing [rules](/guide/syntax-rules) for your design system.
 <RulesOverview />
 
 ### `.selectors`
-Customizing [selectors](/guide/syntax#selectors) for your design system.
+Customizing [selectors](/guide/selectors) for your design system.
 <SelectorsOverview />
 
 ### `.utilities`
-Customizing [utility](/guide/syntax#utilities) classes for your design system.
+Customizing [utility](/guide/utilities) classes for your design system.
 <UtilitiesOverview />
 
 ### `.components`
@@ -47,6 +48,10 @@ Customizing abstract [components](/guide/components) for your design system.
 ### `.variables`
 Customizing [variables](/guide/variables) for your design tokens.
 <VariablesOverview />
+
+### `.screens`
+Customizing [screen sizes](/guide/screens) for your design tokens.
+<ScreensOverview />
 
 ### `.extends`
 Extend custom or external configuration.

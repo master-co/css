@@ -22,7 +22,7 @@ import { useThemeMode } from '@master/theme-mode.react'
 import Header from 'internal/components/Header'
 import HeaderNav from 'internal/components/HeaderNav'
 import i18n from 'internal/common/i18n.config.mjs'
-import { variables } from '@master/css'
+import { screens, variables } from '@master/css'
 import config from '~/site/master.css'
 import clsx from 'clsx'
 import dynamic from 'next/dynamic'
@@ -148,7 +148,7 @@ export default function Play(props: any) {
      */
     useEffect(() => {
         const onResize = () => {
-            if (window.innerWidth >= variables.screen.md) {
+            if (window.innerWidth >= screens.md) {
                 if (tab === 'Preview' || tab === 'Generated CSS') {
                     pushShallowURL('tab', shareItem.files[0].title)
                 }

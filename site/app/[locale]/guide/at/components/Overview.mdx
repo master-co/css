@@ -1,0 +1,14 @@
+<Code lang="js" name="master.css.js">{require('!!raw-loader!../tests/add-a-media-query/master.css.js').default}</Code>
+Employ concise yet semantically meaningful markup.
+<Code lang="html">{require('!!raw-loader!../tests/add-a-media-query/template.html').default}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('!!raw-loader!../tests/add-a-media-query/generated.css?raw').default}</Code>
+    </div>
+</details>
+(!) You wouldn't want to write full condtions within the markup.
+```html
+<!-- @MARK @media(orientation:landscape) -->
+<div class="aspect:2/1@media(orientation:landscape)">…</div>
+```

@@ -1,4 +1,4 @@
-### Overview [sr-only]
+## Overview [sr-only]
 Traditionally, we define components like `.btn` or `.card` by writing CSS rules. In Master CSS, we use `config.components` to abstract and make them more flexible.
 <Code lang="js" name="master.css.js">{require('./tests/apply-styles/master.css.js?raw').default}</Code>
 An abstract style consists of one or more syntaxes, you can provide a class name for this set of classes and reuse it anywhere.
@@ -16,6 +16,9 @@ You can even conditionally apply abstract styles via at-rules:
     </div>
 </details>
 
+---
+
+## Basic usage
 ### Add a style
 Create an abstract style using Master CSS syntaxes.
 <Overview />
@@ -65,3 +68,97 @@ You can see that `b` inherits the text lime color of `a`:
         <Code lang="css" beautify>{require('!!raw-loader!./tests/extend-an-existing-style/generated.css?raw').default}</Code>
     </div>
 </details>
+
+---
+
+## Managing styles
+As usual, you can split the styles into multiple files for management. When the project is small in scale, you don't necessarily have to insist on splitting style files.
+<ExplorerView>
+{[
+    { name: 'styles', children: [
+        { name: 'button.ts' },
+        { name: 'card.ts' }
+    ]},
+    { name: 'master.css.ts' }
+]}
+</ExplorerView>
+
+### Create button styles
+Let's implement a rich button.
+<Code lang="ts" name="styles/button.ts">
+    {require('!!raw-loader!~/site/styles/btn').default}
+</Code>
+[Extend](/guide/configuration#extends) them uniformly in the __master.css.ts__ entry file.
+```js name=master.css.ts
+import type { Config } from '@master/css'
+import button from './styles/button'
+
+export default {
+    extends: [
+        button
+    ]
+} as Config
+```
+
+To apply the button sizes.
+<Demo className="gap:8x">
+    <button className="btn btn-xs yellow touch-yellow">Submit</button>
+    <button className="btn btn-sm yellow touch-yellow">Submit</button>
+    <button className="btn btn-md yellow touch-yellow">Submit</button>
+    <button className="btn btn-lg yellow touch-yellow">Submit</button>
+    <button className="btn btn-xl yellow touch-yellow">Submit</button>
+</Demo>
+```html
+<!-- @MARK btn-xs -->
+<button class="btn btn-xs …">Submit</button>
+<!-- @MARK btn-sm -->
+<button class="btn btn-sm …">Submit</button>
+<!-- @MARK btn-md -->
+<button class="btn btn-md …">Submit</button>
+<!-- @MARK btn-lg -->
+<button class="btn btn-lg …">Submit</button>
+<!-- @MARK btn-xl -->
+<button class="btn btn-xl …">Submit</button>
+```
+To apply the button sizes that are finely tuned for rounded styles.
+<Demo className="gap:8x">
+    <button className="btn btn-rounded-xs yellow touch-yellow">Submit</button>
+    <button className="btn btn-rounded-sm yellow touch-yellow">Submit</button>
+    <button className="btn btn-rounded-md yellow touch-yellow">Submit</button>
+    <button className="btn btn-rounded-lg yellow touch-yellow">Submit</button>
+    <button className="btn btn-rounded-xl yellow touch-yellow">Submit</button>
+</Demo>
+```html
+<!-- @MARK btn-rounded-xs -->
+<button class="btn btn-rounded-xs …">Submit</button>
+<!-- @MARK btn-rounded-sm -->
+<button class="btn btn-rounded-sm …">Submit</button>
+<!-- @MARK btn-rounded-md -->
+<button class="btn btn-rounded-md …">Submit</button>
+<!-- @MARK btn-rounded-lg -->
+<button class="btn btn-rounded-lg …">Submit</button>
+<!-- @MARK btn-rounded-xl -->
+<button class="btn btn-rounded-xl …">Submit</button>
+```
+To design a scalable style, you should ensure the single responsibility of class composition; otherwise, you may end up using a lot of `!important` to override rules or the `@preset` layer to lower default styles, ultimately leading to chaotic styles.
+
+### Create common variables and styles
+We define [variables and modes](/guide/variables-and-modes) to create tokens supporting light/dark modes in advance. This not only simplifies template markup but also reduces CSS rule output.
+<Code lang="ts" name="master.css.ts">
+    {require('!!raw-loader!~/site/styles/base').default}
+</Code>
+- Variables
+    - `yellow-ring` is an outline color that complements a yellow background.
+    - `touch-yellow` is a background color on hover.
+    - `text-yellow-contrast` is a contrasting color fine-tuned against a yellow background.
+- Components
+    - `.yellow` sets a background, foreground and outline style for a yellow theme.
+    - `.yellow-touch` sets a background, foreground and outline style for a yellow theme interaction.
+
+<Demo className="gap:8x">
+    <button className="btn btn-md yellow touch-yellow">Submit</button>
+</Demo>
+```html
+<!-- @MARK yellow touch-yellow -->
+<button class="btn btn-md yellow touch-yellow">Submit</button>
+```

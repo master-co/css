@@ -1,0 +1,20 @@
+```js name=master.css.js
+export default {
+    utilities: {
+        round: { // [!code highlight]
+            'border-radius': '50%', // [!code highlight]
+            'aspect-ratio': '1/1' // [!code highlight]
+        } // [!code highlight]
+    }
+}
+```
+Apply your custom utility class:
+```html
+<!-- @MARK round -->
+<div class="round">o</div>
+```
+Use with selectors and at-rules:
+```html
+<!-- @MARK :hover@sm -->
+<div class="round:hover@sm">o</div>
+```
