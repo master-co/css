@@ -36,31 +36,26 @@ const rules = {
                         }
                 }
 
-                for (const eachNative of rule.nodes) {
-                    addProps(eachNative.text)
-                }
+                addProps(rule.text)
 
                 // animation
                 if (rule.animationNames) {
                     if (!this.animationNames) {
-                        this.animationNames = []
+                        this.animationNames = new Set()
                     }
                     for (const eachKeyframeName of rule.animationNames) {
-                        if (!this.animationNames.includes(eachKeyframeName)) {
-                            this.animationNames.push(eachKeyframeName)
-                        }
+                        this.animationNames.add(eachKeyframeName)
                     }
                 }
 
                 // variable
                 if (rule.variableNames) {
-                    if (!this.variableNames) {
-                        this.variableNames = []
-                    }
-                    for (const eachVariableName of rule.variableNames) {
-                        if (!this.variableNames.includes(eachVariableName)) {
-                            this.variableNames.push(eachVariableName)
+                    if (this.variableNames) {
+                        for (const eachVariableName of rule.variableNames) {
+                            this.variableNames.add(eachVariableName)
                         }
+                    } else {
+                        this.variableNames = new Set(rule.variableNames)
                     }
                 }
             }

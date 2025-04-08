@@ -1,8 +1,9 @@
 import { Rule } from './rule'
 import MasterCSS from './core'
+import VariableRule from './variable-rule'
 
 export default class Layer {
-    readonly rules: Rule[] = []
+    readonly rules: (Rule | VariableRule)[] = []
     readonly tokenCounts = new Map<string, number>()
 
     constructor(
@@ -18,23 +19,25 @@ export default class Layer {
         this.css.rules.splice(this.css.rules.indexOf(this), 1)
     }
 
-    insert(rule: Rule, index = this.rules.length) {
+    insert(rule: Rule | VariableRule, index = this.rules.length) {
         if (this.rules.find((({ key }) => key === rule.key))) return
+        this.rules.splice(index as number, 0, rule)
+        // should attach after inserting, because this.text is possibly empty
         if (!this.css.rules.includes(this)) {
             this.attach()
         }
-        this.rules.splice(index as number, 0, rule)
         return index
     }
 
     delete(key: string) {
-        const rule = this.rules.find((rule) => (rule as Rule).key === key)
-        if (!rule) return
-        if (this.rules.length === 1) {
+        const index = this.rules.findIndex((rule) => (rule as Rule).key === key)
+        if (index === -1) return
+        const deletedRule = this.rules[index]
+        this.rules.splice(index, 1)
+        if (this.rules.length === 0) {
             this.detach()
         }
-        this.rules.splice(this.rules.indexOf(rule), 1)
-        return rule
+        return deletedRule
     }
 
     reset() {
@@ -47,6 +50,8 @@ export default class Layer {
     }
 
     get text(): string {
-        return '@layer ' + this.name + '{' + this.rules.map(({ text }) => text).join('') + '}'
+        const ruleText = this.rules.map(({ text }) => text).join('')
+        if (!ruleText) return ''
+        return '@layer ' + this.name + '{' + ruleText + '}'
     }
 }

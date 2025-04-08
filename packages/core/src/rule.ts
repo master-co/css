@@ -1,22 +1,12 @@
 export class Rule {
+    native?: CSSRule
+
     constructor(
         public readonly name: string,
-        public nodes: RuleNode[] = []
+        public readonly text: string,
     ) { }
 
-    get key(): string {
+    get key() {
         return this.name
     }
-
-    get text(): string {
-        return this.nodes.map(({ text }) => text).join('')
-    }
-}
-
-export interface RuleNode {
-    text: string
-    selectorText?: string
-    native?: CSSRule
-    suffixSelectors?: string[]
-    prefixSelectors?: string[]
 }

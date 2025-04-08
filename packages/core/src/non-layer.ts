@@ -14,32 +14,25 @@ export default class NonLayer {
         if (this.rules.includes(rule)) return
         const sheet = this.css.style?.sheet
         if (sheet) {
-            for (let i = 0; i < rule.nodes.length;) {
-                try {
-                    const nativeRule = rule.nodes[i]
-                    const insertedIndex = sheet.insertRule(nativeRule.text, sheet.cssRules.length)
-                    nativeRule.native = sheet.cssRules[insertedIndex]
-                    i++
-                } catch (error) {
-                    console.error(error)
-                    rule.nodes.splice(i, 1)
-                }
+            try {
+                const insertedIndex = sheet.insertRule(rule.text, sheet.cssRules.length)
+                rule.native = sheet.cssRules[insertedIndex]
+            } catch (error) {
+                console.error(error)
             }
         }
         this.rules.push(rule)
         this.css.rules.push(rule)
     }
 
-    delete(key: string) {
-        const rule = this.rules.find((rule) => (rule as Rule).key === key)
+    delete(name: string) {
+        const rule = this.rules.find((rule) => (rule as Rule).name === name)
         if (!rule) return
         const sheet = this.css.style?.sheet
         if (sheet) {
-            for (const node of rule.nodes) {
-                const foundIndex = findNativeCSSRuleIndex(sheet.cssRules, node.native!)
-                if (foundIndex !== -1) {
-                    sheet.deleteRule(foundIndex)
-                }
+            const foundIndex = findNativeCSSRuleIndex(sheet.cssRules, rule.native!)
+            if (foundIndex !== -1) {
+                sheet.deleteRule(foundIndex)
             }
         }
         this.rules.splice(this.rules.indexOf(rule), 1)
