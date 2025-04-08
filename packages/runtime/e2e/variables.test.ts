@@ -128,7 +128,7 @@ test('expects the variable output', async ({ page }) => {
         return globalThis.cssRuntime.text
     })
     expect(text).not.toMatch(/:root\{[^}]*--first:17 17 17[^}]*\}/)
-    expect(text).not.toMatch(/\.dark\{[^}]*--first:34 34 34[^}]*\}/)
+    expect(text).not.toMatch(/\.dark\{[^}]*--first:29 28 29[^}]*\}/)
     expect(text).not.toMatch(/\.light, :root\{[^}]*--first:51 51 51[^}]*\}/)
 
     text = await page.evaluate(async () => {

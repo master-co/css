@@ -1,4 +1,4 @@
-import { MasterCSS, config as defaultConfig, Rule } from '@master/css'
+import { MasterCSS, config as defaultConfig, Rule, VariableRule, AnimationRule } from '@master/css'
 import { type Config } from '@master/css'
 import registerGlobal from './register-global'
 import { HydrateResult } from './types'
@@ -88,7 +88,7 @@ export default class CSSRuntime extends MasterCSS {
             this.style.id = 'master'
             this.container.append(this.style)
             this.style.sheet!.insertRule(this.layerStatementRule.text)
-            this.layerStatementRule.nodes[0].native = this.style!.sheet!.cssRules.item(0) as CSSLayerStatementRule
+            this.layerStatementRule.native = this.style!.sheet!.cssRules.item(0) as CSSLayerStatementRule
             for (const eachConnectedName of connectedNames) {
                 this.add(eachConnectedName)
             }
@@ -230,23 +230,35 @@ export default class CSSRuntime extends MasterCSS {
                 const eachCSSLayerRule = eachNativeCSSRule as CSSLayerBlockRule
                 if ((eachNativeCSSRule as CSSLayerBlockRule).name === 'theme') {
                     this.themeLayer.native = eachCSSLayerRule
-                    let variableRule: Rule | undefined
-                    let lastVariableName: string | undefined
-                    for (let j = 0; j < eachCSSLayerRule.cssRules.length; j++) {
-                        const cssRule = eachCSSLayerRule.cssRules[j]
+                    let variableRule: VariableRule | undefined
+                    const unresolvedCSSRules = new Map<string, CSSRule>()
+                    for (const rule of eachCSSLayerRule.cssRules) {
+                        // trim() for fix the firefox bug that the cssText ends with \n\n
+                        unresolvedCSSRules.set(rule.cssText.trim(), rule)
+                    }
+                    for (const cssRule of eachCSSLayerRule.cssRules) {
+                        if (!unresolvedCSSRules.has(cssRule.cssText)) continue
                         const variableCSSRule = (cssRule.constructor.name === 'CSSMediaRule'
                             ? (cssRule as CSSMediaRule).cssRules[0]
                             : cssRule) as CSSStyleRule
                         const variableName = variableCSSRule.style[0].slice(2)
-                        if (variableName !== lastVariableName) {
-                            lastVariableName = variableName
-                            variableRule = new Rule(variableName)
-                            this.themeLayer.rules.push(variableRule)
-                            this.themeLayer.tokenCounts.set(variableRule.name, 0)
-                        }
-                        variableRule?.nodes.push({
-                            native: cssRule,
-                            text: cssRule.cssText
+                        const variable = this.variables.get(variableName)
+                        if (!variable) continue
+                        variableRule = new VariableRule(variableName, variable, this)
+                        this.themeLayer.rules.push(variableRule)
+                        this.themeLayer.tokenCounts.set(variableRule.name, 0)
+                        variableRule.nodes.forEach((node) => {
+                            const checkRuleIndex = checkSheet.insertRule(node.text)
+                            const checkNodeNativeRule = checkSheet.cssRules.item(checkRuleIndex)
+                            if (checkNodeNativeRule) {
+                                const checkNodeNativeRuleText = checkNodeNativeRule.cssText.trim()
+                                const match = unresolvedCSSRules.get(checkNodeNativeRuleText)
+                                if (match) {
+                                    node.native = match
+                                    unresolvedCSSRules.delete(checkNodeNativeRuleText)
+                                    return
+                                }
+                            }
                         })
                     }
                     if (this.themeLayer.rules.length) this.rules.push(this.themeLayer)
@@ -254,13 +266,13 @@ export default class CSSRuntime extends MasterCSS {
                     cssLayerRules.push(eachCSSLayerRule)
                 }
             } else if (eachNativeCSSRule.constructor.name === 'CSSLayerStatementRule') {
-                this.layerStatementRule.nodes[0].native = eachNativeCSSRule as CSSLayerStatementRule
+                this.layerStatementRule.native = eachNativeCSSRule as CSSLayerStatementRule
             } else if (eachNativeCSSRule.constructor.name === 'CSSKeyframesRule') {
-                const keyframsRule = eachNativeCSSRule as CSSKeyframesRule
-                const animationRule = new Rule(keyframsRule.name, [{
-                    native: keyframsRule,
-                    text: keyframsRule.cssText
-                }])
+                const nativeKeyframsRule = eachNativeCSSRule as CSSKeyframesRule
+                const keyframes = this.animations.get(nativeKeyframsRule.name)
+                if (!keyframes) continue
+                const animationRule = new AnimationRule(nativeKeyframsRule.name, keyframes, this)
+                animationRule.native = nativeKeyframsRule as unknown as CSSKeyframeRule
                 this.animationsNonLayer.rules.push(animationRule)
                 this.rules.push(animationRule)
                 this.animationsNonLayer.tokenCounts.set(animationRule.name, 0)
@@ -306,26 +318,24 @@ export default class CSSRuntime extends MasterCSS {
                         layer.insertVariables(createdRule)
                         layer.insertAnimations(createdRule)
                         result.allSyntaxRules.push(createdRule)
-                        createdRule.nodes.forEach((node) => {
-                            try {
-                                const checkRuleIndex = checkSheet.insertRule(node.text)
-                                const checkNodeNativeRule = checkSheet.cssRules.item(checkRuleIndex)
-                                if (checkNodeNativeRule) {
-                                    const checkNodeNativeRuleText = checkNodeNativeRule.cssText.trim()
-                                    const match = unresolvedCSSRules.get(checkNodeNativeRuleText)
-                                    if (match) {
-                                        node.native = match
-                                        unresolvedCSSRules.delete(checkNodeNativeRuleText)
-                                        return
-                                    }
-                                }
-                                console.error(`Cannot retrieve CSS rule for \`${node.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
-                            } catch (error) {
-                                if (process.env.NODE_ENV === 'development') {
-                                    console.debug(`Cannot insert CSS rule for \`${node.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                        try {
+                            const checkRuleIndex = checkSheet.insertRule(createdRule.text)
+                            const checkNodeNativeRule = checkSheet.cssRules.item(checkRuleIndex)
+                            if (checkNodeNativeRule) {
+                                const checkNodeNativeRuleText = checkNodeNativeRule.cssText.trim()
+                                const match = unresolvedCSSRules.get(checkNodeNativeRuleText)
+                                if (match) {
+                                    createdRule.native = match
+                                    unresolvedCSSRules.delete(checkNodeNativeRuleText)
+                                    continue
                                 }
                             }
-                        })
+                            console.error(`Cannot retrieve CSS rule for \`${createdRule.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                        } catch (error) {
+                            if (process.env.NODE_ENV === 'development') {
+                                console.debug(`Cannot insert CSS rule for \`${createdRule.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                            }
+                        }
                     }
                 } else {
                     console.error(`Cannot recognize \`${eachNativeLayerRule.cssText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)

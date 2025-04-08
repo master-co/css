@@ -24,14 +24,14 @@ export default function registerClassCountDebugger() {
             const eachCount = cssRuntime.classCounts.get(className)
             const eachActualCount = actualClassCounts[className]
             if (eachCount !== eachActualCount) {
-                log.error(`Class count mismatch for '${className}' (expected ${eachActualCount}) (received ${eachCount})`)
+                log.error(`Class count mismatch for \`${className}\` (expected ${eachActualCount}) (received ${eachCount})`)
                 errored = true
             }
         }
 
         cssRuntime.classCounts.forEach((eachCount, className) => {
             if (!Object.prototype.hasOwnProperty.call(actualClassCounts, className)) {
-                log.error(`Class count mismatch for '${className}' (expected ${0}) (received ${eachCount})`)
+                log.error(`Class count mismatch for \`${className}\` (expected ${0}) (received ${eachCount})`)
                 errored = true
             }
         })

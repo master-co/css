@@ -1,4 +1,4 @@
-import { Layer, Rule } from '@master/css'
+import { Layer, Rule, VariableRule } from '@master/css'
 import findNativeCSSRuleIndex from 'shared/utils/find-native-css-rule-index'
 import CSSRuntime from './core'
 
@@ -14,7 +14,7 @@ export default class RuntimeLayer extends Layer {
         super(name, cssRuntime)
     }
 
-    override attach() {
+    attach() {
         super.attach()
         const nativeSheet = this.cssRuntime.style?.sheet
         if (nativeSheet && !this.native?.parentStyleSheet) {
@@ -23,48 +23,32 @@ export default class RuntimeLayer extends Layer {
         }
     }
 
-    insert(rule: Rule, index = this.rules.length) {
+    insert(rule: Rule | VariableRule, index = this.rules.length) {
         const insertedIndex = super.insert(rule, index)
-        if (insertedIndex === undefined) return
-        if (this.native) {
-            let cssRuleIndex = 0
-            const lastCssRule = (function getLastCssRule(layer: Layer, index: number) {
-                let lastCssRule: any
-                const previouRule = layer.rules[index]
-                if (previouRule && 'nodes' in previouRule) {
-                    if (!previouRule.nodes.length)
-                        return getLastCssRule(layer, index - 1)
-                    const lastNativeRule = previouRule.nodes[previouRule.nodes.length - 1]
-                    lastCssRule = lastNativeRule.native
-                }
-                return lastCssRule
-            })(this, insertedIndex as number - 1)
-            if (lastCssRule) {
-                for (let i = 0; i < this.native.cssRules.length; i++) {
-                    if (this.native.cssRules[i] === lastCssRule) {
-                        cssRuleIndex = i + 1
-                        break
-                    }
-                }
+        if (insertedIndex === undefined || !this.native) return
+        const insertRuleSafely = (text: string, position: number) => {
+            try {
+                const insertedIndex = this.native!.insertRule(text, position)
+                return this.native!.cssRules.item(insertedIndex) as CSSRule
+            } catch (error) {
+                console.error(error, rule)
+                return
             }
-
-            for (let i = 0; i < rule.nodes.length;) {
-                const node = rule.nodes[i]
-                try {
-                    const insertedIndex = this.native.insertRule(node.text, cssRuleIndex)
-                    node.native = this.native.cssRules.item(insertedIndex) as CSSRule
-                    cssRuleIndex++
-                    i++
-                } catch (error) {
-                    console.error(error, node)
-                    rule.nodes.splice(i, 1)
-                }
-            }
+        }
+        if ('nodes' in rule) {
+            let currentIndex = insertedIndex
+            rule.nodes.forEach((node) => {
+                node.native = insertRuleSafely(node.text, currentIndex)
+                if (node.native) currentIndex++
+            })
+        } else {
+            rule.native = insertRuleSafely(rule.text, index)
         }
         return insertedIndex
     }
 
-    override detach() {
+    detach() {
+        super.detach()
         const nativeSheet = this.cssRuntime.style?.sheet
         if (nativeSheet && this.native?.parentStyleSheet) {
             const foundIndex = findNativeCSSRuleIndex(nativeSheet.cssRules, this.native)
@@ -76,17 +60,22 @@ export default class RuntimeLayer extends Layer {
 
     delete(key: string) {
         const deletedRule = super.delete(key)
-        if (!deletedRule) return
-        if (this.native?.cssRules && 'nodes' in deletedRule) {
-            for (const node of deletedRule.nodes) {
-                if (node.native) {
-                    const foundIndex = findNativeCSSRuleIndex(this.native.cssRules, node.native)
-                    if (foundIndex !== -1) {
-                        // todo: Firefox throw "Uncaught NS_ERROR_FAILURE". Reproduce: Add '@fade|1s @fade|2s' and remove '@fade|1s @fade|2s'
-                        this.native.deleteRule(foundIndex)
-                    }
+        if (!deletedRule || !this.native) return
+        const deleteRuleSafely = (rule?: CSSRule) => {
+            if (!rule) return
+            const foundIndex = findNativeCSSRuleIndex(this.native!.cssRules, rule)
+            if (foundIndex !== -1) {
+                try {
+                    this.native!.deleteRule(foundIndex)
+                } catch (error) {
+                    console.error(error, rule)
                 }
             }
+        }
+        if ('nodes' in deletedRule) {
+            deletedRule.nodes.forEach((node) => deleteRuleSafely(node.native))
+        } else {
+            deleteRuleSafely(deletedRule.native)
         }
         return deletedRule
     }
