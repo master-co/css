@@ -23,8 +23,8 @@ describe.concurrent('sorting', () => {
         '@4xl',
         '@all',
         '@base',
+        '@h',
         '@landscape',
-        '@media()',
         '@motion',
         '@portrait',
         '@preset',
@@ -32,6 +32,10 @@ describe.concurrent('sorting', () => {
         '@reduce-motion',
         '@screen',
         '@speech',
+        '@start',
+        '@w',
+        '@container()',
+        '@media()',
         '@supports()',
     ]))
     test.concurrent('@>', () => expect(hint('hidden@>')?.map(({ label }) => label)).toEqual([
