@@ -6,16 +6,15 @@ import init from '../init'
 test('prerender', async ({ page }) => {
     const text = css_beautify(`
         @layer theme {
-            :root { --base: 0 0 0; }
-            .dark { --base: 34 33 35; }
-            .light, :root { --base: 255 255 255; }
+            .light,
+            :root {
+                --base: 255 255 255
+            }
+            .dark {
+                --base: 29 28 29
+            }
         }
     `)
-    await init(page, text, {
-        modes: {
-            dark: 'host',
-            light: 'host'
-        }
-    })
+    await init(page, text)
     expect(css_beautify(await page.evaluate(() => globalThis.cssRuntime.themeLayer.text))).toEqual(text)
 })

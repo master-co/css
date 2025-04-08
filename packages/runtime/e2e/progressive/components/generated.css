@@ -10,14 +10,14 @@
         background-color: rgb(0 0 0);
     }
 
-    @media (min-width: 834px) {
+    @media (width >= 52.125rem) {
         .btn\@sm::before,
         .btn\@sm::after {
             display: block;
         }
     }
 
-    @media (min-width: 834px) {
+    @media (width >= 52.125rem) {
         .btn\@sm {
             background-color: rgb(0, 0, 0);
         }

@@ -65,115 +65,112 @@ export const textConfig: Config = {
 
 const config = extendConfig(colorConfig, textConfig, buttonConfig)
 
-describe.concurrent('jetsai', () => {
-    test.concurrent('button config', () => {
-        expectLayers(
-            {
-                general: '.bg\\:button-primary{background-color:rgb(34 66 163)}'
-            },
-            'bg:button-primary',
-            config
-        )
+test.concurrent('button config', () => {
+    expectLayers(
+        {
+            general: '.bg\\:button-primary{background-color:rgb(34 66 163)}'
+        },
+        'bg:button-primary',
+        config
+    )
 
-        expectLayers(
-            {
-                general: '.bg\\:button-primary-hover{background-color:rgb(21 37 89)}'
-            },
-            'bg:button-primary-hover',
-            config
-        )
+    expectLayers(
+        {
+            general: '.bg\\:button-primary-hover{background-color:rgb(21 37 89)}'
+        },
+        'bg:button-primary-hover',
+        config
+    )
 
-        expectLayers(
-            {
-                general: '.bg\\:button-primary-disabled{background-color:rgb(205 224 247)}'
-            },
-            'bg:button-primary-disabled',
-            config
-        )
+    expectLayers(
+        {
+            general: '.bg\\:button-primary-disabled{background-color:rgb(205 224 247)}'
+        },
+        'bg:button-primary-disabled',
+        config
+    )
 
-        expectLayers(
-            {
-                general: '.bg\\:button-disabled{background-color:rgb(233 238 248)}'
-            },
-            'bg:button-disabled',
-            config
-        )
+    expectLayers(
+        {
+            general: '.bg\\:button-disabled{background-color:rgb(233 238 248)}'
+        },
+        'bg:button-disabled',
+        config
+    )
 
-        expectLayers(
-            {
-                general: '.bg\\:button-background-hover{background:button-background-hover}'
-            },
-            'bg:button-background-hover',
-            config
-        )
+    expectLayers(
+        {
+            general: '.bg\\:button-background-hover{background:button-background-hover}'
+        },
+        'bg:button-background-hover',
+        config
+    )
 
-        expectLayers(
-            {
-                components: '.btn-primary{-webkit-text-fill-color:rgb(255 255 255);background-color:rgb(34 66 163)}.btn-primary:hover{background-color:rgb(21 37 89)}.btn-primary:disabled{-webkit-text-fill-color:rgb(146 151 161);background-color:rgb(205 224 247)}'
-            },
-            'btn-primary',
-            config
-        )
-    })
+    expectLayers(
+        {
+            components: '.btn-primary{-webkit-text-fill-color:rgb(255 255 255);background-color:rgb(34 66 163)}.btn-primary:hover{background-color:rgb(21 37 89)}.btn-primary:disabled{-webkit-text-fill-color:rgb(146 151 161);background-color:rgb(205 224 247)}'
+        },
+        'btn-primary',
+        config
+    )
+})
 
-    test.concurrent('color config', () => {
-        expectLayers(
-            {
-                general: '.bg\\:blue200{background-color:rgb(205 224 247)}'
-            },
-            'bg:blue200',
-            config
-        )
+test.concurrent('color config', () => {
+    expectLayers(
+        {
+            general: '.bg\\:blue200{background-color:rgb(205 224 247)}'
+        },
+        'bg:blue200',
+        config
+    )
 
-        expectLayers(
-            {
-                general: '.bg\\:blue700{background-color:rgb(34 66 163)}'
-            },
-            'bg:blue700',
-            config
-        )
+    expectLayers(
+        {
+            general: '.bg\\:blue700{background-color:rgb(34 66 163)}'
+        },
+        'bg:blue700',
+        config
+    )
 
-        expectLayers(
-            {
-                general: '.bg\\:blue900{background-color:rgb(21 37 89)}'
-            },
-            'bg:blue900',
-            config
-        )
+    expectLayers(
+        {
+            general: '.bg\\:blue900{background-color:rgb(21 37 89)}'
+        },
+        'bg:blue900',
+        config
+    )
 
-        expectLayers(
-            {
-                general: '.bg\\:gray200{background-color:rgb(233 238 248)}'
-            },
-            'bg:gray200',
-            config
-        )
+    expectLayers(
+        {
+            general: '.bg\\:gray200{background-color:rgb(233 238 248)}'
+        },
+        'bg:gray200',
+        config
+    )
 
-        expectLayers(
-            {
-                general: '.bg\\:gray500{background-color:rgb(146 151 161)}'
-            },
-            'bg:gray500',
-            config
-        )
-    })
+    expectLayers(
+        {
+            general: '.bg\\:gray500{background-color:rgb(146 151 161)}'
+        },
+        'bg:gray500',
+        config
+    )
+})
 
-    test.concurrent('text config', () => {
-        expectLayers(
-            {
-                general: '.bg\\:text-disabled{background-color:rgb(146 151 161)}'
-            },
-            'bg:text-disabled',
-            config
-        )
+test.concurrent('text config', () => {
+    expectLayers(
+        {
+            general: '.bg\\:text-disabled{background-color:rgb(146 151 161)}'
+        },
+        'bg:text-disabled',
+        config
+    )
 
-        expectLayers(
-            {
-                general: '.bg\\:text-on-color{background-color:rgb(255 255 255)}'
-            },
-            'bg:text-on-color',
-            config
-        )
-    })
-
+    expectLayers(
+        {
+            general: '.bg\\:text-on-color{background-color:rgb(255 255 255)}'
+        },
+        'bg:text-on-color',
+        config
+    )
 })

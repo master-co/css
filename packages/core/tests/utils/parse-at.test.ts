@@ -1,170 +1,193 @@
 import { test, expect, describe } from 'vitest'
-import { AtComponent, AtRule, parseAt } from '../../src'
+import { AtRule, Config, parseAt } from '../../src'
 import { MasterCSS } from '@master/css'
 
-export const idCases = [
-    ['print', { id: 'media', components: [{ token: 'print', value: 'print', type: 'string' }] }],
-    ['base', { id: 'layer', components: [{ token: 'base', value: 'base', type: 'string' }] }],
-    ['preset', { id: 'layer', components: [{ token: 'preset', value: 'preset', type: 'string' }] }],
-    ['!print', {
-        id: 'media',
-        components: [
-            { token: '!', value: 'not', type: 'logical' },
-            { token: 'print', value: 'print', type: 'string' }
-        ]
-    }],
-    ['start', { id: 'starting-style', components: [] }]
-] as [string, AtRule][]
-
-export const logicalCases = [
-    ['and', [{ token: 'and', type: 'logical', value: 'and' }]],
-    ['or', [{ token: 'or', type: 'logical', value: 'or' }]],
-    ['not', [{ token: 'not', type: 'logical', value: 'not' }]],
-    [',', [{ token: ',', type: 'logical', value: 'or' }]],
-    ['!', [{ token: '!', type: 'logical', value: 'not' }]],
-    ['&', [{ token: '&', type: 'logical', value: 'and' }]],
-] as [string, AtComponent[]][]
-
-export const rangeCases = [
-    ['>=sm', [{ token: '>=sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' }]],
-    ['<=sm', [{ token: '<=sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '<=' }]],
-    ['>sm', [{ token: '>sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>' }]],
-    ['<sm', [{ token: '<sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '<' }]],
-    ['sm', [{ token: 'sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' }]],
-] as [string, AtComponent[]][]
-
-export const complexCases = [
-    ['screen&print', [
-        { token: 'screen', value: 'screen', type: 'string' },
-        { token: '&', type: 'logical', value: 'and' },
-        { token: 'print', value: 'print', type: 'string' }
-    ]],
-    ['screen,print', [
-        { token: 'screen', value: 'screen', type: 'string' },
-        { token: ',', type: 'logical', value: 'or' },
-        { token: 'print', value: 'print', type: 'string' }
-    ]],
-    ['!screen', [
-        { token: '!', type: 'logical', value: 'not' },
-        { token: 'screen', value: 'screen', type: 'string' }
-    ]],
-    ['sm&<=lg', {
-        id: 'media',
-        components: [
-            { token: 'sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' },
-            { token: '&', type: 'logical', value: 'and' },
-            { token: '<=lg', name: 'width', type: 'number', value: 80, unit: 'rem', operator: '<=' }
-        ]
-    }],
-    ['<sm,>=lg', [
-        { token: '<sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '<' },
-        { token: ',', type: 'logical', value: 'or' },
-        { token: '>=lg', name: 'width', type: 'number', value: 80, unit: 'rem', operator: '>=' }
-    ]],
-    ['landscape', [
-        { token: 'landscape', name: 'orientation', type: 'string', value: 'landscape' }
-    ]],
-    ['starting-style', []],
-    ['container(sidebar)sm', [
-        { token: 'sidebar', value: 'sidebar', type: 'string' },
-        { token: 'sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' }
-    ]],
-    ['sidebar(sm)', {
-        id: 'container',
-        components: [
-            { token: 'sidebar', value: 'sidebar', type: 'string' },
-            { token: 'sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' }
-        ]
-    }],
-    ['layer(modifiers)', [
-        { token: 'modifiers', value: 'modifiers', type: 'string' }
-    ]],
-    ['supports(transform-origin:5%|5%)', [
-        { type: 'group', children: [{ type: 'string', value: 'transform-origin:5% 5%' }] }
-    ]],
-    ['supports(selector(:has(*)))', [
-        { type: 'group', children: [{ type: 'string', value: 'selector(:has(*))' }] }
-    ]],
-    ['(print)and(screen)', [
-        { token: 'print', value: 'print', type: 'string' },
-        { token: 'and', type: 'logical', value: 'and' },
-        { token: 'screen', value: 'screen', type: 'string' }
-    ]],
-    ['and(print&screen)', [
-        { token: 'and', type: 'logical', value: 'and' },
-        {
-            type: 'group', children: [
-                { token: 'print', value: 'print', type: 'string' },
-                { token: '&', type: 'logical', value: 'and' },
-                { token: 'screen', value: 'screen', type: 'string' }
+export const cases = {
+    id: [
+        ['print', '@media print', { id: 'media', nodes: [{ raw: 'print', value: 'print', type: 'string' }] }],
+        ['base', '@layer base', { id: 'layer', nodes: [{ raw: 'base', value: 'base', type: 'string' }] }],
+        ['preset', '@layer preset', { id: 'layer', nodes: [{ raw: 'preset', value: 'preset', type: 'string' }] }],
+        ['!print', '@media not print', {
+            id: 'media',
+            nodes: [
+                { raw: '!', value: 'not', type: 'logical' },
+                { raw: 'print', value: 'print', type: 'string' }
             ]
-        }
-    ]],
-    ['not(screen&(any-hover:hover))', [
-        { token: 'not', type: 'logical', value: 'not' },
-        {
-            type: 'group', children: [
-                { token: 'screen', value: 'screen', type: 'string' },
-                { token: '&', type: 'logical', value: 'and' },
-                { token: 'any-hover:hover', name: 'any-hover', value: 'hover', type: 'string' }
+        }],
+        ['start', '@starting-style', { id: 'starting-style', nodes: [] }],
+    ],
+    logical: [
+        ['and()', '@media and', { id: 'media', nodes: [{ raw: 'and', type: 'logical', value: 'and' }] }],
+        ['or', '@media or', { id: 'media', nodes: [{ raw: 'or', type: 'logical', value: 'or' }] }],
+        ['not', '@media not', { id: 'media', nodes: [{ raw: 'not', type: 'logical', value: 'not' }] }],
+        [',', '@media or', { id: 'media', nodes: [{ raw: ',', type: 'logical', value: 'or' }] }],
+        ['!', '@media not', { id: 'media', nodes: [{ raw: '!', type: 'logical', value: 'not' }] }],
+        ['&', '@media and', { id: 'media', nodes: [{ raw: '&', type: 'logical', value: 'and' }] }],
+    ],
+    comparison: [
+        ['>=sm', '@media (width>=52.125rem)', {
+            id: 'media', nodes: [
+                { raw: '>=sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' }
             ]
-        }
-    ]],
-    ['media(width<=1024)&(width>=1280)', [
-        { token: '<=1024', name: 'width', type: 'number', value: 64, unit: 'rem', operator: '<=' },
-        { token: '&', type: 'logical', value: 'and' },
-        { token: '>=1280', name: 'width', type: 'number', value: 80, unit: 'rem', operator: '>=' }
-    ]],
-    ['media(width<=42mm)and(width>=38mm)', [
-        { token: '<=42mm', name: 'width', type: 'number', value: 42, unit: 'mm', operator: '<=' },
-        { token: 'and', type: 'logical', value: 'and' },
-        { token: '>=38mm', name: 'width', type: 'number', value: 38, unit: 'mm', operator: '>=' }
-    ]]
-] as [string, any[] | ReturnType<typeof parseAt>][]
-
-describe.concurrent.each([
-    ['id', idCases],
-    ['logical', logicalCases],
-    ['range', rangeCases],
-    ['complex', complexCases]
-])('%s', (_, cases) => {
-    test.concurrent.each(cases)('%s', (input, expected) => {
-        const result = parseAt(input)
-        if ('components' in expected) {
-            expect(result).toEqual(expected)
-        } else {
-            expect(result.components).toEqual(expected)
-        }
-    })
-})
-
-test.concurrent('supports-backdrop from config', () => {
-    const css = new MasterCSS({
-        at: {
-            supports: {
-                backdrop: 'supports (backdrop-filter:blur(0px))'
+        }],
+        ['<=sm', '@media (width<=52.125rem)', {
+            id: 'media', nodes: [
+                { raw: '<=sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '<=' }
+            ]
+        }],
+        ['>sm', '@media (width>52.125rem)', {
+            id: 'media', nodes: [
+                { raw: '>sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>' }
+            ]
+        }],
+        ['<sm', '@media (width<52.125rem)', {
+            id: 'media', nodes: [
+                { raw: '<sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '<' }
+            ]
+        }],
+        ['sm', '@media (width>=52.125rem)', {
+            id: 'media', nodes: [
+                { raw: 'sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' }
+            ]
+        }],
+        ['=sm', '@media (width=52.125rem)', {
+            id: 'media', nodes: [
+                { raw: '=sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '=' }
+            ]
+        }],
+    ],
+    height: [
+        ['height>=sm', '@media (height>=52.125rem)', {
+            id: 'media', nodes: [
+                { raw: 'height>=sm', type: 'number', name: 'height', value: 52.125, unit: 'rem', operator: '>=' }
+            ]
+        }],
+    ],
+    alias: [
+        ['w>=sm', '@media (width>=52.125rem)', {
+            id: 'media', nodes: [
+                { raw: 'w>=sm', type: 'number', name: 'width', value: 52.125, unit: 'rem', operator: '>=' }
+            ]
+        }],
+        ['h>=sm', '@media (height>=52.125rem)', {
+            id: 'media', nodes: [
+                { raw: 'h>=sm', type: 'number', name: 'height', value: 52.125, unit: 'rem', operator: '>=' }
+            ]
+        }],
+    ],
+    container: [
+        ['container(h>160)', '@container (height>10rem)', {
+            id: 'container', nodes: [
+                { raw: 'h>160', name: 'height', type: 'number', value: 10, unit: 'rem', operator: '>' },
+            ]
+        }],
+        ['sidebar(sm)', '@container sidebar (width>=52.125rem)', {
+            id: 'container', nodes: [
+                { raw: 'sidebar', value: 'sidebar', type: 'string' },
+                { raw: 'sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' },
+            ]
+        }],
+    ],
+    complex: [
+        ['screen&print', '@media screen and print', {
+            id: 'media', nodes: [
+                { raw: 'screen', value: 'screen', type: 'string' },
+                { raw: '&', type: 'logical', value: 'and' },
+                { raw: 'print', value: 'print', type: 'string' }
+            ]
+        }],
+        ['screen,print', '@media screen or print', {
+            id: 'media', nodes: [
+                { raw: 'screen', value: 'screen', type: 'string' },
+                { raw: ',', type: 'logical', value: 'or' },
+                { raw: 'print', value: 'print', type: 'string' }
+            ]
+        }],
+        ['!screen', '@media not screen', {
+            id: 'media', nodes: [
+                { raw: '!', type: 'logical', value: 'not' },
+                { raw: 'screen', value: 'screen', type: 'string' }
+            ]
+        }],
+        ['sm&<=lg', '@media (width>=52.125rem) and (width<=80rem)', {
+            id: 'media', nodes: [
+                { raw: 'sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' },
+                { raw: '&', type: 'logical', value: 'and' },
+                { raw: '<=lg', name: 'width', type: 'number', value: 80, unit: 'rem', operator: '<=' }
+            ]
+        }],
+    ],
+    'design-token': [
+        ['supports-backdrop', '@supports (backdrop-filter:blur(0px))',
+            {
+                id: 'supports',
+                nodes: [
+                    {
+                        raw: 'supports-backdrop',
+                        type: 'group',
+                        children: [
+                            { type: 'string', value: 'backdrop-filter:blur(0px)' }
+                        ]
+                    }
+                ]
+            },
+            {
+                at: {
+                    supports: {
+                        backdrop: 'supports(backdrop-filter:blur(0px))'
+                    }
+                }
             }
-        }
-    })
-    expect(parseAt('supports-backdrop', css).components).toEqual([{
-        token: 'supports-backdrop',
-        type: 'group',
-        children: [{ type: 'string', value: 'backdrop-filter:blur(0px)' }]
-    }])
-})
+        ],
+        ['custom', '@media (width>=42mm) and (width<=80mm)',
+            {
+                id: 'media',
+                nodes: [
+                    {
+                        raw: 'custom',
+                        children: [
+                            { type: 'number', name: 'width', value: 42, unit: 'mm', operator: '>=' },
+                            { type: 'logical', value: 'and' },
+                            { type: 'number', name: 'width', value: 80, unit: 'mm', operator: '<=' }
+                        ]
+                    }
+                ]
+            },
+            {
+                at: {
+                    custom: '>=42mm&<=80mm'
+                }
+            }],
+        ['custom', '@media (width>=37.5rem)',
+            {
+                id: 'media',
+                nodes: [
+                    {
+                        raw: 'custom',
+                        type: 'number',
+                        name: 'width',
+                        value: 37.5,
+                        unit: 'rem',
+                        operator: '>='
+                    }
+                ]
+            },
+            {
+                at: {
+                    custom: '@media(width>=600)'
+                }
+            }]
+    ],
+    errors: [
+        ['@media', '@media', {
+            id: 'media',
+            nodes: []
+        }]
+    ]
+} as Record<string, [string, string, AtRule, Config?][]>
 
-test.concurrent('config: >=42mm&<=80mm', () => {
-    const css = new MasterCSS({
-        at: {
-            custom: '>=42mm&<=80mm'
-        }
-    })
-    expect(parseAt('custom', css)).toEqual({
-        id: 'media',
-        components: [
-            { token: 'custom', name: 'width', type: 'number', value: 42, unit: 'mm', operator: '>=' },
-            { token: 'custom', type: 'logical', value: 'and' },
-            { token: 'custom', name: 'width', type: 'number', value: 80, unit: 'mm', operator: '<=' }
-        ]
+describe.concurrent.each(Object.entries(cases))('%s', (_, caseGroup) => {
+    test.concurrent.each(caseGroup)('%s', (input, _, atRule, config) => {
+        expect(parseAt(input, new MasterCSS(config))).toEqual(atRule)
     })
 })

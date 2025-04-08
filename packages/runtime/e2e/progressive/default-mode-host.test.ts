@@ -6,9 +6,8 @@ import init from '../init'
 test('prerender', async ({ page }) => {
     const text = css_beautify(`
         @layer theme{
-            :host { --base: 0 0 0; }
-            :host(.dark) { --base: 34 33 35; }
-            :host(.light), :host { --base: 255 255 255; }
+            :host(.light), :host { --base: 255 255 255 }
+            :host(.dark) { --base: 29 28 29 }
         }
     `)
     await init(page, text, {

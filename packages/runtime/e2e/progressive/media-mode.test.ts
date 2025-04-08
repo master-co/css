@@ -6,11 +6,13 @@ import init from '../init'
 test('prerender', async ({ page }) => {
     const text = css_beautify(`
         @layer theme {
-            @media (prefers-color-scheme: light) {
-                :root { --base:34 33 35; }
+            :host(.light),
+            :host {
+                --base: 255 255 255
             }
-            @media (prefers-color-scheme: dark) {
-                :root { --base:255 255 255; }
+
+            :host(.dark) {
+                --base: 29 28 29
             }
         }
     `)

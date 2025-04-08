@@ -1,127 +1,151 @@
 import { AT_COMPARABLE_FEATURES, AT_COMPARISON_OPERATORS, AT_IDENTIFIERS, AT_LOGICAL_OPERATORS } from '../common'
 import MasterCSS from '../core'
 import { AtIdentifier } from '../types/config'
-import { AtComponent, AtGroupComponent, AtRule, AtStringComponent, AtValueComponent } from '../types/syntax'
-import parsePairs from './parse-pairs'
+import parsePair from './parse-pair'
 import parseValue from './parse-value'
 import replaceCharOutsideQuotes from './replace-char-outside-quotes'
 import splitCharOutsideQuotes from './split-char-outside-quotes'
 
-export default function parseAt(token: string, css = new MasterCSS()) {
+export type AtRule = {
+    id: AtIdentifier
+    nodes: AtRuleNode[]
+}
+export declare type AtRuleNumberNode = { raw?: string, name: string, type: 'number', value: number, unit?: string, operator?: string }
+export declare type AtRuleStringNode = { raw?: string, name: string, type: 'string', value: string }
+export declare type AtRuleValueNode = AtRuleNumberNode | AtRuleStringNode
+export interface AtRuleComparisonOperatorNode { type: 'comparison', raw?: string, value: string }
+export interface AtRuleLogicalOperatorNode { type: 'logical', raw?: string, value: string }
+export type AtRuleOperatorNode = AtRuleComparisonOperatorNode | AtRuleLogicalOperatorNode
+export interface AtRuleGroupNode { type?: 'group', raw?: string, children: AtRuleNode[] }
+export type AtRuleNode = AtRuleValueNode | AtRuleComparisonOperatorNode | AtRuleLogicalOperatorNode | AtRuleGroupNode
+
+export default function parseAt(token: string, css = new MasterCSS(), isRaw = true) {
     let id: AtIdentifier | undefined
     let firstToken: string | undefined
-    const resolve = (eachToken: string) => {
+    const resolve = (token: string) => {
         const regex = /([a-zA-Z0-9-:%|]+|[&|!|,|>|<|=][=]?)/g
-        const eachTokens = [...eachToken.matchAll(regex)].map(match => match[0])
-        let comps: AtComponent[] = []
-        const addComp = (comp: AtComponent) => {
-            if (comp.type === 'number') {
-                if (AT_COMPARABLE_FEATURES.includes(comp.name) || !comp.name) {
-                    if (!comp.name) comp.name = 'width'
-                    const prev = comps[comps.length - 1]
-                    if (prev && prev.type === 'comparison') {
-                        comp.operator = prev.value
-                        comp.token = prev.value + comp.token
-                        comps.pop()
-                    } else if (!comp.operator) {
-                        comp.operator = '>='
+        const raws = [...token.matchAll(regex)].map(match => match[0])
+        let nodes: AtRuleNode[] = []
+        const addNode = (node: AtRuleNode, i: number) => {
+            let prev = nodes[nodes.length - 1]
+            if (node.type === 'number' && !node.name) {
+                if (prev?.type === 'comparison') {
+                    node.operator = prev.value
+                    if (node.raw && prev.raw) {
+                        node.raw = prev.raw + node.raw
                     }
+                    nodes.pop()
+                    prev = nodes[nodes.length - 1]
+                    if (prev?.type === 'string') {
+                        node.name = prev.value
+                        if (node.raw && prev.raw) {
+                            node.raw = prev.raw + node.raw
+                        }
+                        nodes.pop()
+                    } else {
+                        node.name = 'width'
+                    }
+                } else {
+                    node.name = 'width'
+                    node.operator = '>='
                 }
             }
-            comps.push(comp)
+            nodes.push(node)
         }
-        eachTokens
-            .forEach((eachToken) => {
-                if (AT_COMPARABLE_FEATURES.includes(eachToken)) {
+        raws
+            .forEach((raw, i) => {
+                if (AT_COMPARISON_OPERATORS.includes(raw)) {
+                    const newNode = { type: 'comparison', value: raw } as AtRuleComparisonOperatorNode
+                    if (isRaw) newNode.raw = raw
+                    nodes.push(newNode)
                     return
-                } else if (AT_COMPARISON_OPERATORS.includes(eachToken)) {
-                    comps.push({ type: 'comparison', token: eachToken, value: eachToken })
-                    // if (!id) id = 'media'
-                    return
-                } else if (eachToken in AT_LOGICAL_OPERATORS) {
-                    comps.push({ type: 'logical', token: eachToken, value: AT_LOGICAL_OPERATORS[eachToken as keyof typeof AT_LOGICAL_OPERATORS] })
+                } else if (raw in AT_LOGICAL_OPERATORS) {
+                    const newNode = { type: 'logical', value: AT_LOGICAL_OPERATORS[raw as keyof typeof AT_LOGICAL_OPERATORS] } as AtRuleLogicalOperatorNode
+                    if (isRaw) newNode.raw = raw
+                    nodes.push(newNode)
                     return
                 }
-                const definedParsedAtRule = css.at.get(eachToken)
+                const definedAtRule = css.atRules.get(raw)
                 if (!id && !firstToken) {
-                    firstToken = eachToken
+                    firstToken = raw
                     if (AT_IDENTIFIERS.includes(firstToken)) {
                         id = firstToken as AtIdentifier
                         return
-                    } else if (definedParsedAtRule) {
-                        id = definedParsedAtRule.id
+                    } else if (definedAtRule) {
+                        id = definedAtRule.id
+                    } else if (AT_COMPARABLE_FEATURES.includes(firstToken)) {
+                        id = 'media'
                     } else if (firstToken.charAt(0).match(/[a-zA-Z-]/)) {
                         id = 'container'
                     } else {
                         id = 'media'
                     }
                 }
-                let atComponent = {
-                    token: eachToken,
-                    type: 'string'
-                } as AtValueComponent
-                if (definedParsedAtRule) {
-                    definedParsedAtRule.components.forEach((eachComp) => {
-                        const comp = { ...eachComp, token: eachToken }
-                        addComp(comp)
-                    })
+                let node = { type: 'string' } as AtRuleValueNode
+                if (isRaw) node.raw = raw
+                if (definedAtRule) {
+                    if (definedAtRule.nodes.length === 1) {
+                        addNode({ ...definedAtRule.nodes[0], raw }, i)
+                    } else if (definedAtRule.nodes.length) {
+                        addNode({ raw, children: definedAtRule.nodes }, i)
+                    }
                     return
                 } else {
-                    const [splitedNameOrValue, splitedValue] = splitCharOutsideQuotes(eachToken, ':')
+                    const [splitedNameOrValue, splitedValue] = splitCharOutsideQuotes(raw, ':')
                     if (splitedValue) {
-                        atComponent.name = splitedNameOrValue
-                        atComponent.value = splitedValue
+                        node.name = splitedNameOrValue
+                        node.value = splitedValue
                     } else {
-                        atComponent.value = splitedNameOrValue
+                        node.value = splitedNameOrValue
                     }
                     if (id === 'container' || id === 'media') {
-                        const { token, ...comp } = parseValue(atComponent.value, 'rem', css.config.rootSize)
-                        Object.assign(atComponent, comp)
+                        const { token, ...newNode } = parseValue(node.value, 'rem', css.config.rootSize)
+                        Object.assign(node, newNode)
                     }
-                    addComp(atComponent)
+                    addNode(node, i)
                 }
             })
 
-        return comps
+        return nodes
     }
 
-    const pair = (eachToken: string) => {
-        const pairedAtComponents: AtComponent[] = []
-        const paired = parsePairs(eachToken)
+    const pair = (token: string) => {
+        const pairedAtNodes: AtRuleNode[] = []
+        const paired = parsePair(token)
         if (paired) {
             if (paired.pre) {
-                pairedAtComponents.push(...pair(paired.pre))
+                pairedAtNodes.push(...pair(paired.pre))
             }
             if (paired.body) {
                 if (id === 'supports') {
-                    pairedAtComponents.push({
+                    pairedAtNodes.push({
                         type: 'group',
                         children: [{
                             type: 'string',
                             value: replaceCharOutsideQuotes(paired.body, '|', ' '),
-                        } as AtStringComponent]
+                        } as AtRuleStringNode]
                     })
                 } else {
                     const children = pair(paired.body)
                     if (children.length > 1) {
-                        pairedAtComponents.push({
+                        pairedAtNodes.push({
                             type: 'group', children: pair(paired.body)
-                        } as unknown as AtGroupComponent)
+                        } as unknown as AtRuleGroupNode)
                     } else {
-                        pairedAtComponents.push(...children)
+                        pairedAtNodes.push(...children)
                     }
                 }
             }
             if (paired.post) {
-                pairedAtComponents.push(...pair(paired.post))
+                pairedAtNodes.push(...pair(paired.post))
             }
         } else {
-            pairedAtComponents.push(...resolve(eachToken))
+            pairedAtNodes.push(...resolve(token))
         }
-        return pairedAtComponents
+        return pairedAtNodes
     }
     return {
-        components: pair(token),
-        id // should be assigned to here
+        nodes: pair(token),
+        id: id || 'media' // should be assigned to here
     } as AtRule
 }

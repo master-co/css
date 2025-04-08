@@ -1,32 +1,36 @@
-import { AtComponent, AtRule } from '../types/syntax'
+import { AtRule, AtRuleNode } from './parse-at'
 
 export default function generateAt(atRule: AtRule): string {
-    const generate = (components: AtComponent[]): string => {
-        let text = components.map((comp) => {
+    const generate = (nodes: AtRuleNode[]): string => {
+        let text = nodes.map((comp) => {
             let current = ''
-            if (comp.type === 'comparison') {
-                current = comp.value
-            } else if (comp.type === 'group') {
-                current = '(' + generate(comp.children) + ')'
+            if ('children' in comp) {
+                const body = generate(comp.children)
+                current = comp.type === 'group'
+                    ? '(' + body + ')'
+                    : body
             } else {
-                const valueUnit = comp.type === 'number'
+                const value = comp.type === 'number'
                     ? String(comp.value) + (comp.unit || '')
                     : comp.value
                 if ('name' in comp) {
                     if ('operator' in comp) {
-                        current = `(${comp.name}${comp.operator}${valueUnit})`
+                        current = '(' + `${comp.name}${comp.operator}${value}` + ')'
+
                     } else {
-                        current = '(' + `${comp.name}:${valueUnit}` + ')'
+                        current = '(' + `${comp.name}:${value}` + ')'
                     }
                 } else {
-                    current = valueUnit
+                    current = value
                 }
             }
             return current
-        }).join(atRule.id === 'layer' ? '.' : ' ')
+        })
+            .filter(Boolean)
+            .join(atRule.id === 'layer' ? '.' : ' ')
         return text
     }
-    const result = generate(atRule.components)
+    const result = generate(atRule.nodes)
     return '@' + atRule.id + (result
         ? ' ' + result
         : '')

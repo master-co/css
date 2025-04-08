@@ -1,4 +1,4 @@
-interface Pair {
+export interface ParsedPair {
     start: number;
     end: number;
     pre: string;
@@ -6,13 +6,13 @@ interface Pair {
     post: string;
 }
 
-export default function parsePairs(
+export default function parsePair(
     str: string,
     a = '(',
     b = ')'
-): Pair | null {
+): ParsedPair | null {
     const stack: { start: number }[] = []
-    let result: Pair | null = null
+    let result: ParsedPair | null = null
     let inString: '"' | '\'' | null = null
 
     for (let i = 0; i < str.length; i++) {

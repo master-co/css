@@ -56,7 +56,7 @@ test.concurrent('at', () => {
         'f:12@min-600',
         {
             at: {
-                'min-600': '@media (width>=600)'
+                'min-600': '@media(width>=600)'
             }
         }
     )
