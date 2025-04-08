@@ -1,6 +1,6 @@
 import { AT_IDENTIFIERS } from '../common'
 import type { SyntaxRule } from '../syntax-rule'
-import { AtComponent } from '../types/syntax'
+import { AtRuleNode } from '../utils/parse-at'
 
 function areComponentsEqual(a: any, b: any): boolean {
     return (
@@ -13,7 +13,7 @@ function areComponentsEqual(a: any, b: any): boolean {
     )
 }
 
-function areComponentArraysEqual(aComps: AtComponent[], bComps: AtComponent[]): boolean {
+function areComponentArraysEqual(aComps: AtRuleNode[], bComps: AtRuleNode[]): boolean {
     if (aComps.length !== bComps.length) return false
 
     const matched = new Array(bComps.length).fill(false)
@@ -29,6 +29,6 @@ function areComponentArraysEqual(aComps: AtComponent[], bComps: AtComponent[]): 
 
 export default function areRuleAtEqual(a: SyntaxRule, b: SyntaxRule) {
     return AT_IDENTIFIERS.every(key =>
-        areComponentArraysEqual(a.atComponents?.[key] ?? [], b.atComponents?.[key] ?? [])
+        areComponentArraysEqual(a.atRules?.[key] ?? [], b.atRules?.[key] ?? [])
     )
 }

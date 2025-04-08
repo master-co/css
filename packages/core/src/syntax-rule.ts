@@ -13,7 +13,7 @@ import { AtIdentifier } from './types/config'
 import generateAt from './utils/generate-at'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 import generateSelector from './utils/generate-selector'
-import { calcRulePriority, RulePriority } from './utils/find-rule-insert-index'
+import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
 
 export class SyntaxRule {
     native?: CSSRule

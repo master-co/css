@@ -35,7 +35,8 @@ export { default as generateAt } from './utils/generate-at'
 export { default as parseSelector } from './utils/parse-selector'
 export type * from './utils/parse-selector'
 export { default as generateSelector } from './utils/generate-selector'
-export { default as getSingleAtNumberRuleNode} from './utils/get-single-at-number-rule-node'
+export { default as getSingleAtNumberRuleNode } from './utils/get-single-at-number-rule-node'
+export { default as compareRulePriority } from './utils/compare-rule-priority'
 
 
 export { default as MasterCSS, default } from './core'
