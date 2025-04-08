@@ -31,13 +31,14 @@ export type VariableValue = number | string | false | (number | string)[]
 export type VariableDefinition = { [key in '' | `@${string}` | string]?: VariableValue | VariableDefinition } | VariableValue
 export type CSSKeyframes = Record<'from' | 'to' | string, PropertiesHyphen>
 export type AnimationDefinitions = Record<string, CSSKeyframes>;
-export type SelectorDefinitions = Record<string, string | string[]>;
+export type SelectorDefinitions = Record<string, string>;
 export type AtIdentifier = typeof AT_IDENTIFIERS[number]
 export type AtDefinition = number | string
 export interface AtDefinitions {
     [key: string]: AtDefinition | AtDefinitions;
 }
-export interface StyleDefinitions { [key: string]: string | StyleDefinitions }
+export interface ComponentDefinitions { [key: string]: string | ComponentDefinitions }
+export type ScreenDefinitions = Record<string, number>
 export type SyntaxRuleDefinitions = Partial<Record<keyof typeof rules | string, SyntaxRuleDefinition>>
 export type VariableDefinitions = { [key in keyof typeof rules]?: VariableDefinition } & Record<string, VariableDefinition>
 export type UtilityDefinitions = { [key in keyof typeof utilities]?: PropertiesHyphen } & Record<string, PropertiesHyphen>
@@ -50,12 +51,13 @@ export type FunctionDefinitions = Record<string, FunctionDefinition>;
 
 export interface Config {
     extends?: (Config | any)[]
-    components?: StyleDefinitions
+    components?: ComponentDefinitions
     at?: AtDefinitions
     selectors?: SelectorDefinitions
     utilities?: UtilityDefinitions
     variables?: VariableDefinitions
     rules?: SyntaxRuleDefinitions
+    screens?: ScreenDefinitions
     rootSize?: number
     baseUnit?: number
     defaultMode?: 'light' | 'dark' | string | false
