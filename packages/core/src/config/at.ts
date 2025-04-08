@@ -11,7 +11,9 @@ const at = {
     'reduce-motion': 'media(prefers-reduced-motion:reduce)',
     base: 'layer(base)',
     preset: 'layer(preset)',
-    start: 'starting-style'
+    start: 'starting-style',
+    w: 'width',
+    h: 'height',
 } satisfies AtDefinitions
 
 export default at
