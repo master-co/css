@@ -14,16 +14,11 @@ test('selectors', async ({ page, browserName }) => {
     await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
     await init(page, generatedCSS, config)
     expect((await page.evaluate(() => cssRuntime.rules)).map(({ name }) => name)).toEqual(['layer-statement', 'general'])
-    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden@light'))).toMatchObject({
-        nodes: [
-            {
-                text: '.light .hidden\\@light{display:none}',
-                selectorText: '.light .hidden\\@light',
-                native: {} // ignore
-            }
-        ]
-    })
-    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden@light')?.nodes[0]?.native?.cssText))
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden@light')?.text))
+        .toBe('.light .hidden\\@light{display:none}')
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden@light')?.selectorText))
+        .toBe('.light .hidden\\@light')
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden@light')?.native?.cssText))
         .toBe('.light .hidden\\@light { display: none; }')
 
 })

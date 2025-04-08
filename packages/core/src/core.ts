@@ -10,17 +10,19 @@ import SyntaxRuleType from './syntax-rule-type'
 import Layer from './layer'
 import SyntaxLayer from './syntax-layer'
 import NonLayer from './non-layer'
-import { AtRule, AtValueComponent, ColorVariable, DefinedRule, Variable } from './types/syntax'
-import { AnimationDefinitions, AtIdentifier, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
+import { ColorVariable, DefinedRule, Variable } from './types/syntax'
+import { AtRule, AtRuleValueNode } from './utils/parse-at'
+import { AnimationDefinitions, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
 import registerGlobal from './register-global'
 import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
+import parseSelector, { SelectorNode } from './utils/parse-selector'
 
 export default class MasterCSS {
     static config: Config = defaultConfig
     readonly definedRules: DefinedRule[] = []
     readonly config: Config
-    readonly layerStatementRule = new Rule('layer-statement', [{ text: '@layer base,theme,preset,components,general;' }])
+    readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,components,general;')
     readonly rules: (Layer | Rule)[] = [this.layerStatementRule]
     readonly animationsNonLayer = new NonLayer(this)
     readonly baseLayer = new SyntaxLayer('base', this)
@@ -29,9 +31,9 @@ export default class MasterCSS {
     readonly componentsLayer = new SyntaxLayer('components', this)
     readonly generalLayer = new SyntaxLayer('general', this)
     readonly components = new Map<string, string[]>()
-    readonly selectors = new Map<string, [RegExp, string[]][]>()
+    readonly selectors = new Map<string, SelectorNode[]>()
     readonly variables = new Map<string, Variable>()
-    readonly at = new Map<string, AtRule>()
+    readonly atRules = new Map<string, AtRule>()
     readonly animations = new Map<string, AnimationDefinitions>()
 
     constructor(
@@ -58,7 +60,7 @@ export default class MasterCSS {
         this.components.clear()
         this.selectors.clear()
         this.variables.clear()
-        this.at.clear()
+        this.atRules.clear()
         this.animations.clear()
         this.definedRules.length = 0
 
@@ -68,195 +70,175 @@ export default class MasterCSS {
             transparent: undefined
         }
 
-        const { components, selectors, variables, utilities, at, rules, animations } = this.config
+        const { components, selectors, variables, utilities, at, rules, animations, screens } = this.config
 
         function escapeString(str: string) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
         }
-
         if (selectors) {
-            const resolvedSelectors = flattenObject(selectors)
-            for (const eachSelectorName in resolvedSelectors) {
-                const eachResolvedSelectorText = resolvedSelectors[eachSelectorName]
-                const regexp = new RegExp(escapeString(eachSelectorName) + '(?![a-z-])')
-                for (const eachNewSelectorText of Array.isArray(eachResolvedSelectorText) ? eachResolvedSelectorText : [eachResolvedSelectorText]) {
-                    const vendor = eachNewSelectorText.match(/^:(?::)?-(webkit|moz|ms|o)-/m)?.[1] ?? ''
-                    let selectorValues = this.selectors.get(vendor)
-                    if (!selectorValues) {
-                        this.selectors.set(vendor, selectorValues = [])
+            const flatSelectors = flattenObject(selectors)
+            for (const token in flatSelectors) {
+                const value = flatSelectors[token]
+                const nodes = parseSelector(value, this, false)
+                this.selectors.set(token, nodes)
+            }
+        }
+
+        const aliasVariableModeResolvers = new Map<string, Record<string, () => void>>()
+        const resolveVariable = (variableDefinition: VariableDefinition, name: string[], mode?: string) => {
+            if (variableDefinition === undefined || variableDefinition === null) return
+            const addVariable = (
+                name: string[],
+                variable: any,
+                replacedMode?: string,
+                alpha?: string
+            ) => {
+                if (variable === undefined)
+                    return
+                const flatName = name.join('-')
+                const groups = name.slice(0, -1).filter(Boolean)
+                const key = (name[0] === '' ? '-' : '') + name[name.length - 1]
+                variable.key = key
+                variable.name = flatName
+                if (groups.length)
+                    variable.group = groups.join('.')
+                if (variable.type === 'color') {
+                    if (alpha) {
+                        const slashIndex = variable.value.indexOf('/')
+                        variable = {
+                            ...variable,
+                            value: slashIndex === -1
+                                ? variable.value + ' / ' + (alpha.startsWith('0.') ? alpha.slice(1) : alpha)
+                                : (variable.value.slice(0, slashIndex + 2) + String(+variable.value.slice(slashIndex + 2) * +alpha).slice(1))
+                        }
                     }
-                    let currentSelectValue = selectorValues.find(([_valueRegexp]) => _valueRegexp === regexp)
-                    if (!currentSelectValue) {
-                        currentSelectValue = [regexp, []]
-                        selectorValues.push(currentSelectValue)
+                    colorVariableNames[flatName] = undefined
+                }
+                const currentMode = replacedMode ?? mode
+                if (currentMode !== undefined) {
+                    const foundVariable = this.variables.get(flatName)
+                    if (foundVariable) {
+                        if (currentMode) {
+                            if (!foundVariable.modes) {
+                                foundVariable.modes = {}
+                            }
+                            foundVariable.modes[currentMode] = variable
+                        } else {
+                            foundVariable.value = variable.value
+                            if (variable.type === 'color') {
+                                (foundVariable as ColorVariable).space = variable.space
+                            }
+                        }
+                    } else {
+                        if (currentMode) {
+                            const newVariable: any = {
+                                key: variable.key,
+                                name: variable.name,
+                                group: variable.group,
+                                type: variable.type,
+                                modes: { [currentMode]: variable }
+                            }
+                            if (variable.type === 'color') {
+                                newVariable.space = variable.space
+                            }
+                            this.variables.set(flatName, newVariable)
+                        } else {
+                            this.variables.set(flatName, variable)
+                        }
                     }
-                    currentSelectValue[1].push(eachNewSelectorText)
+                } else {
+                    this.variables.set(flatName, variable)
+                }
+            }
+            if (typeof variableDefinition === 'object') {
+                if (Array.isArray(variableDefinition)) {
+                    addVariable(name, { type: 'string', value: variableDefinition.join(',') })
+                } else {
+                    const keys = Object.keys(variableDefinition)
+                    for (const eachKey of keys) {
+                        if (eachKey === '' || eachKey.startsWith('@')) {
+                            resolveVariable(variableDefinition[eachKey] as VariableDefinition, name, (eachKey || keys.some(eachKey => eachKey.startsWith('@'))) ? eachKey.slice(1) : undefined)
+                        } else {
+                            resolveVariable(variableDefinition[eachKey] as VariableDefinition, [...name, eachKey])
+                        }
+                    }
+                }
+            } else if (typeof variableDefinition === 'number') {
+                addVariable(name, { type: 'number', value: variableDefinition })
+                addVariable(['', ...name], { type: 'number', value: variableDefinition * -1 })
+            } else if (typeof variableDefinition === 'string') {
+                const aliasResult = /^\$\((.*?)\)(?: ?\/ ?(.+?))?$/.exec(variableDefinition)
+                const flatName = name.join('-')
+                if (aliasResult) {
+                    let aliasVariableModeResolver = aliasVariableModeResolvers.get(flatName)
+                    if (!aliasVariableModeResolver) {
+                        aliasVariableModeResolvers.set(flatName, aliasVariableModeResolver = {})
+                    }
+                    aliasVariableModeResolver[mode as string] = () => {
+                        delete aliasVariableModeResolver[mode as string]
+                        const [alias, aliasMode] = aliasResult[1].split('@')
+                        if (alias) {
+                            const eachAliasModeVariableResolver = aliasVariableModeResolvers.get(alias)
+                            if (eachAliasModeVariableResolver) {
+                                for (const mode of Object.keys(eachAliasModeVariableResolver)) {
+                                    eachAliasModeVariableResolver[mode]?.()
+                                }
+                            }
+                            const aliasVariable = this.variables.get(alias)
+                            if (aliasVariable) {
+                                if (aliasMode === undefined && aliasVariable.modes) {
+                                    addVariable(
+                                        name,
+                                        { type: aliasVariable.type, value: aliasVariable.value, space: (aliasVariable as ColorVariable).space },
+                                        '',
+                                        aliasResult[2]
+                                    )
+                                    for (const mode in aliasVariable.modes) {
+                                        addVariable(
+                                            name,
+                                            aliasVariable.modes[mode],
+                                            mode,
+                                            aliasResult[2]
+                                        )
+                                    }
+                                } else {
+                                    const variable = aliasMode !== undefined
+                                        ? aliasVariable.modes?.[aliasMode]
+                                        : aliasVariable
+                                    if (variable) {
+                                        const newVariable = { type: variable.type, value: variable.value } as Variable
+                                        if (variable.type === 'color') {
+                                            (newVariable as any).space = variable.space
+                                        }
+                                        addVariable(name, newVariable, undefined, aliasResult[2])
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    const hexColorResult = /^#([A-Fa-f0-9]{3,4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.exec(variableDefinition)
+                    if (hexColorResult) {
+                        const [r, g, b, a] = hexToRgb(hexColorResult[1])
+                        addVariable(name, { type: 'color', value: `${r} ${g} ${b}${a === 1 ? '' : ' / ' + a}`, space: 'rgb' })
+                    } else {
+                        const rgbFunctionResult = /^rgb\( *([0-9]{1,3})(?: *, *| +)([0-9]{1,3})(?: *, *| +)([0-9]{1,3}) *(?:(?:,|\/) *(.*?) *)?\)$/.exec(variableDefinition)
+                        if (rgbFunctionResult) {
+                            addVariable(name, { type: 'color', value: rgbFunctionResult[1] + ' ' + rgbFunctionResult[2] + ' ' + rgbFunctionResult[3] + (rgbFunctionResult[4] ? ' / ' + (rgbFunctionResult[4].startsWith('0.') ? rgbFunctionResult[4].slice(1) : rgbFunctionResult[4]) : ''), space: 'rgb' })
+                        } else {
+                            const hslFunctionResult = /^hsl\((.*?)\)$/.exec(variableDefinition)
+                            if (hslFunctionResult) {
+                                addVariable(name, { type: 'color', value: hslFunctionResult[1], space: 'hsl' })
+                            } else {
+                                addVariable(name, { type: 'string', value: variableDefinition })
+                            }
+                        }
+                    }
                 }
             }
         }
 
         if (variables) {
-            const aliasVariableModeResolvers = new Map<string, Record<string, () => void>>
-            const resolveVariable = (variableDefinition: VariableDefinition, name: string[], mode?: string) => {
-                if (variableDefinition === undefined || variableDefinition === null) return
-                const addVariable = (
-                    name: string[],
-                    variable: any,
-                    replacedMode?: string,
-                    alpha?: string
-                ) => {
-                    if (variable === undefined)
-                        return
-                    const flatName = name.join('-')
-                    const groups = name.slice(0, -1).filter(Boolean)
-                    const key = (name[0] === '' ? '-' : '') + name[name.length - 1]
-                    variable.key = key
-                    variable.name = flatName
-                    if (groups.length)
-                        variable.group = groups.join('.')
-                    if (variable.type === 'color') {
-                        if (alpha) {
-                            const slashIndex = variable.value.indexOf('/')
-                            variable = {
-                                ...variable,
-                                value: slashIndex === -1
-                                    ? variable.value + ' / ' + (alpha.startsWith('0.') ? alpha.slice(1) : alpha)
-                                    : (variable.value.slice(0, slashIndex + 2) + String(+variable.value.slice(slashIndex + 2) * +alpha).slice(1))
-                            }
-                        }
-                        colorVariableNames[flatName] = undefined
-                    }
-                    // resolve `variables.screen-*` to `at.*`
-                    if (variable.name.startsWith('screen-') && variable.type === 'number') {
-                        const comp = this.parseValue(variable.value)
-                        this.at.set(variable.name.slice(7), {
-                            id: 'media',
-                            components: [comp as AtValueComponent]
-                        })
-                    }
-                    const currentMode = replacedMode ?? mode
-                    if (currentMode !== undefined) {
-                        const foundVariable = this.variables.get(flatName)
-                        if (foundVariable) {
-                            if (currentMode) {
-                                if (!foundVariable.modes) {
-                                    foundVariable.modes = {}
-                                }
-                                foundVariable.modes[currentMode] = variable
-                            } else {
-                                foundVariable.value = variable.value
-                                if (variable.type === 'color') {
-                                    (foundVariable as ColorVariable).space = variable.space
-                                }
-                            }
-                        } else {
-                            if (currentMode) {
-                                const newVariable: any = {
-                                    key: variable.key,
-                                    name: variable.name,
-                                    group: variable.group,
-                                    type: variable.type,
-                                    modes: { [currentMode]: variable }
-                                }
-                                if (variable.type === 'color') {
-                                    newVariable.space = variable.space
-                                }
-                                this.variables.set(flatName, newVariable)
-                            } else {
-                                this.variables.set(flatName, variable)
-                            }
-                        }
-                    } else {
-                        this.variables.set(flatName, variable)
-                    }
-                }
-                if (typeof variableDefinition === 'object') {
-                    if (Array.isArray(variableDefinition)) {
-                        addVariable(name, { type: 'string', value: variableDefinition.join(',') })
-                    } else {
-                        const keys = Object.keys(variableDefinition)
-                        for (const eachKey of keys) {
-                            if (eachKey === '' || eachKey.startsWith('@')) {
-                                resolveVariable(variableDefinition[eachKey] as VariableDefinition, name, (eachKey || keys.some(eachKey => eachKey.startsWith('@'))) ? eachKey.slice(1) : undefined)
-                            } else {
-                                resolveVariable(variableDefinition[eachKey] as VariableDefinition, [...name, eachKey])
-                            }
-                        }
-                    }
-                } else if (typeof variableDefinition === 'number') {
-                    addVariable(name, { type: 'number', value: variableDefinition })
-                    addVariable(['', ...name], { type: 'number', value: variableDefinition * -1 })
-                } else if (typeof variableDefinition === 'string') {
-                    const aliasResult = /^\$\((.*?)\)(?: ?\/ ?(.+?))?$/.exec(variableDefinition)
-                    const flatName = name.join('-')
-                    if (aliasResult) {
-                        let aliasVariableModeResolver = aliasVariableModeResolvers.get(flatName)
-                        if (!aliasVariableModeResolver) {
-                            aliasVariableModeResolvers.set(flatName, aliasVariableModeResolver = {})
-                        }
-                        aliasVariableModeResolver[mode as string] = () => {
-                            delete aliasVariableModeResolver[mode as string]
-                            const [alias, aliasMode] = aliasResult[1].split('@')
-                            if (alias) {
-                                const eachAliasModeVariableResolver = aliasVariableModeResolvers.get(alias)
-                                if (eachAliasModeVariableResolver) {
-                                    for (const mode of Object.keys(eachAliasModeVariableResolver)) {
-                                        eachAliasModeVariableResolver[mode]?.()
-                                    }
-                                }
-                                const aliasVariable = this.variables.get(alias)
-                                if (aliasVariable) {
-                                    if (aliasMode === undefined && aliasVariable.modes) {
-                                        addVariable(
-                                            name,
-                                            { type: aliasVariable.type, value: aliasVariable.value, space: (aliasVariable as ColorVariable).space },
-                                            '',
-                                            aliasResult[2]
-                                        )
-                                        for (const mode in aliasVariable.modes) {
-                                            addVariable(
-                                                name,
-                                                aliasVariable.modes[mode],
-                                                mode,
-                                                aliasResult[2]
-                                            )
-                                        }
-                                    } else {
-                                        const variable = aliasMode !== undefined
-                                            ? aliasVariable.modes?.[aliasMode]
-                                            : aliasVariable
-                                        if (variable) {
-                                            const newVariable = { type: variable.type, value: variable.value } as Variable
-                                            if (variable.type === 'color') {
-                                                (newVariable as any).space = variable.space
-                                            }
-                                            addVariable(name, newVariable, undefined, aliasResult[2])
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        const hexColorResult = /^#([A-Fa-f0-9]{3,4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.exec(variableDefinition)
-                        if (hexColorResult) {
-                            const [r, g, b, a] = hexToRgb(hexColorResult[1])
-                            addVariable(name, { type: 'color', value: `${r} ${g} ${b}${a === 1 ? '' : ' / ' + a}`, space: 'rgb' })
-                        } else {
-                            const rgbFunctionResult = /^rgb\( *([0-9]{1,3})(?: *, *| +)([0-9]{1,3})(?: *, *| +)([0-9]{1,3}) *(?:(?:,|\/) *(.*?) *)?\)$/.exec(variableDefinition)
-                            if (rgbFunctionResult) {
-                                addVariable(name, { type: 'color', value: rgbFunctionResult[1] + ' ' + rgbFunctionResult[2] + ' ' + rgbFunctionResult[3] + (rgbFunctionResult[4] ? ' / ' + (rgbFunctionResult[4].startsWith('0.') ? rgbFunctionResult[4].slice(1) : rgbFunctionResult[4]) : ''), space: 'rgb' })
-                            } else {
-                                const hslFunctionResult = /^hsl\((.*?)\)$/.exec(variableDefinition)
-                                if (hslFunctionResult) {
-                                    addVariable(name, { type: 'color', value: hslFunctionResult[1], space: 'hsl' })
-                                } else {
-                                    addVariable(name, { type: 'string', value: variableDefinition })
-                                }
-                            }
-                        }
-                    }
-                }
-            }
             for (const parnetKey in variables) {
                 resolveVariable(variables[parnetKey], [parnetKey])
             }
@@ -268,19 +250,31 @@ export default class MasterCSS {
             })
         }
 
+        if (screens) {
+            resolveVariable(screens, ['screen'])
+            for (const key in screens) {
+                const value = screens[key]
+                const node = this.parseValue(value)
+                this.atRules.set(key, {
+                    id: 'media',
+                    nodes: [node as unknown as AtRuleValueNode]
+                })
+            }
+        }
+
         if (at) {
             const flatAt = flattenObject(at)
             for (const token in flatAt) {
                 const value = flatAt[token]
                 if (typeof value === 'number') {
-                    const comp = this.parseValue(value)
-                    this.at.set(token, {
+                    const node = this.parseValue(value)
+                    this.atRules.set(token, {
                         id: 'media',
-                        components: [comp as AtValueComponent]
+                        nodes: [node as unknown as AtRuleValueNode]
                     })
                 } else {
-                    const atRule = parseAt(value, this)
-                    this.at.set(token, atRule)
+                    const atRule = parseAt(value, this, false)
+                    this.atRules.set(token, atRule)
                 }
             }
         }
@@ -517,7 +511,9 @@ export default class MasterCSS {
         if (componentClasses) {
             componentClasses.forEach((eachSyntax) => {
                 const syntaxRule = this.create(eachSyntax, className, mode)
-                if (syntaxRule?.text) syntaxRules.push(syntaxRule)
+                if (syntaxRule && syntaxRule.valid) {
+                    syntaxRules.push(syntaxRule)
+                }
             })
         } else {
             const atIndex = className.indexOf('@')
@@ -528,109 +524,18 @@ export default class MasterCSS {
                     const atToken = className.slice(atIndex)
                     componentClasses.forEach((eachSyntax) => {
                         const syntaxRule = this.create(eachSyntax + atToken, className, mode)
-                        if (syntaxRule?.text) syntaxRules.push(syntaxRule)
+                        if (syntaxRule && syntaxRule.valid) {
+                            syntaxRules.push(syntaxRule)
+                        }
                     })
                 }
             }
             const syntaxRule = this.create(className, undefined, mode)
-            if (syntaxRule?.text) syntaxRules.push(syntaxRule)
+            if (syntaxRule && syntaxRule.valid) {
+                syntaxRules.push(syntaxRule)
+            }
         }
         return syntaxRules
-    }
-
-    generateVendorSelectors(selectorText: string) {
-        const vendorSelectors: Record<string, string[]> = {}
-        const transformSelector = (selectorText: string, selectorValues: [RegExp, string[]][], selectors: string[], matched: boolean) => {
-            for (const [regexp, newSelectorTexts] of selectorValues) {
-                if (regexp.test(selectorText)) {
-                    for (const eachNewSelectorText of newSelectorTexts) {
-                        transformSelector(selectorText.replace(regexp, eachNewSelectorText), selectorValues, selectors, true)
-                    }
-                    return
-                }
-            }
-
-            if (matched) {
-                selectors.push(selectorText)
-            }
-        }
-        const spacedSelectorToken = (selectorText: string) => {
-            // 1. \'123\'
-            // 2. [href='http://localhost']
-            const transformedSelectorText =
-                selectorText.split(/(\\'(?:.*?)[^\\]\\')(?=[*_>~+,)])|(\[[^=]+='(?:.*?)[^\\]'\])/)
-                    .map((eachToken, i) => i % 3 ? eachToken : eachToken.replace(/(^|[^_])_(?!_)/g, '$1 '))
-                    .join('')
-            const selectors: string[] = []
-
-            let currentSelector = ''
-            let symbolCount = 0
-            for (let i = 0; i < transformedSelectorText.length; i++) {
-                const char = transformedSelectorText[i]
-                if (char === '\\') {
-                    currentSelector += char + transformedSelectorText[++i]
-                    continue
-                }
-                if (!symbolCount && char === ',') {
-                    selectors.push(currentSelector)
-                    currentSelector = ''
-                } else {
-                    currentSelector += char
-
-                    if (symbolCount && char === ')') {
-                        symbolCount--
-                    } else if (char === '(') {
-                        symbolCount++
-                    }
-                }
-            }
-            if (currentSelector) {
-                selectors.push(currentSelector)
-            }
-
-            return selectors
-        }
-        const transformedSelectors: string[] = []
-        const selectorValues = this.selectors.get('')
-        if (selectorValues) {
-            transformSelector(selectorText, selectorValues, transformedSelectors, true)
-        } else {
-            transformedSelectors.push(selectorText)
-        }
-
-        const unspacedVendorSelectors: Record<string, string[]> = {}
-        this.selectors.forEach((selectorValues, vendor) => {
-            if (!vendor) return
-            const newUnspacedVendorSelectors: string | any[] = []
-            for (const eachTransformedSelector of transformedSelectors) {
-                transformSelector(eachTransformedSelector, selectorValues, newUnspacedVendorSelectors, false)
-            }
-            if (newUnspacedVendorSelectors.length) {
-                unspacedVendorSelectors[vendor] = newUnspacedVendorSelectors
-            }
-        })
-        const insertVendorSelectors = (vendor: string, selectorTexts: string[]) => {
-            const groupedSelectorTexts = selectorTexts.reduce((arr: string[], eachSuffixSelector) => {
-                arr.push(...spacedSelectorToken(eachSuffixSelector))
-                return arr
-            }, [])
-            if (vendor in vendorSelectors) {
-                vendorSelectors[vendor].push(...groupedSelectorTexts)
-            } else {
-                vendorSelectors[vendor] = groupedSelectorTexts
-            }
-        }
-
-        const vendors = Object.keys(unspacedVendorSelectors)
-        if (vendors.length) {
-            for (const eachVendor of vendors) {
-                insertVendorSelectors(eachVendor, unspacedVendorSelectors[eachVendor])
-            }
-        } else {
-            insertVendorSelectors('', transformedSelectors)
-        }
-
-        return vendorSelectors
     }
 
     /**
@@ -655,7 +560,10 @@ export default class MasterCSS {
         for (let i = 0; i < selectorTextSplits.length; i++) {
             const eachField = selectorTextSplits[i]
             const modeSelector = this.getModeSelector(eachField)
-            if (i === 0 && eachField === modeSelector) continue
+            if (
+                i === 0 && (eachField === modeSelector) ||
+                (i === 0 || i === 1) && (eachField === this.config.scope)
+            ) continue
             if (eachField.startsWith('.')) {
                 const eachFieldName = eachField.slice(1)
                 let className = ''
@@ -741,10 +649,10 @@ export default class MasterCSS {
                             this.componentsLayer.delete(componentClass + atToken + ' ' + className)
                         })
                     } else {
-                        this.generalLayer.delete(className)
+                        this.generalLayer.delete(className) || this.baseLayer.delete(className) || this.presetLayer.delete(className)
                     }
                 } else {
-                    this.generalLayer.delete(className)
+                    this.generalLayer.delete(className) || this.baseLayer.delete(className) || this.presetLayer.delete(className)
                 }
             }
         }

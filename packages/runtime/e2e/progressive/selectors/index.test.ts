@@ -15,47 +15,22 @@ test('selectors', async ({ page, browserName }) => {
     await init(page, generatedCSS, config)
     expect((await page.evaluate(() => cssRuntime.rules)).map(({ name }) => name)).toEqual(['layer-statement', 'general'])
     expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'block::before,::after'))).toMatchObject({
-        nodes: [
-            {
-                text: '.block\\:\\:before\\,\\:\\:after::before,.block\\:\\:before\\,\\:\\:after::after{display:block}',
-                selectorText: '.block\\:\\:before\\,\\:\\:after::before,.block\\:\\:before\\,\\:\\:after::after',
-                suffixSelectors: ['::before', '::after'],
-                native: {} // ignore
-            }
-        ]
+        selectorNodes: [
+            { raw: '::before', type: 'pseudo-element', value: 'before' },
+            { raw: ',', type: 'separator', value: ',' },
+            { raw: '::after', type: 'pseudo-element', value: 'after' },
+        ],
     })
-    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'block::before,::after')?.nodes[0]?.native?.cssText))
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'block::before,::after')?.selectorText))
+        .toBe('.block\\:\\:before\\,\\:\\:after::before,.block\\:\\:before\\,\\:\\:after::after')
+
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'block::before,::after')?.text))
+        .toBe('.block\\:\\:before\\,\\:\\:after::before,.block\\:\\:before\\,\\:\\:after::after{display:block}')
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'block::before,::after')?.native?.cssText))
         .toBe('.block\\:\\:before\\,\\:\\:after::before, .block\\:\\:before\\,\\:\\:after::after { display: block; }')
 
-    if (browserName === 'firefox') {
-        expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb'))).toMatchObject({
-            nodes: [
-                {
-                    text: '.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}'
-                },
-                {
-                    text: '.hidden\\:\\:slider-thumb::-moz-range-thumb{display:none}',
-                }
-            ]
-        })
-        expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[0]?.native?.cssText))
-            .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }')
-        expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[1]?.native?.cssText))
-            .toBe('.hidden\\:\\:slider-thumb::-moz-range-thumb { display: none; }')
-    } else {
-        expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb'))).toMatchObject({
-            nodes: [
-                {
-                    text: '.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}',
-                },
-                {
-                    text: '.hidden\\:\\:slider-thumb::-moz-range-thumb{display:none}',
-                }
-            ]
-        })
-        expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[0]?.native?.cssText))
-            .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }')
-        expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.nodes[1]?.native?.cssText))
-            .not.toBe('.hidden\\:\\:slider-thumb::-moz-range-thumb { display: none; }')
-    }
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.text))
+        .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}')
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.native?.cssText))
+        .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }')
 })
