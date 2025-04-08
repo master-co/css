@@ -6,6 +6,7 @@ import variables from './variables'
 import rules from './rules'
 import modes from './modes'
 import functions from './functions'
+import screens from './screens'
 import { Config } from '../types/config'
 
 const config: Config = {
@@ -17,6 +18,7 @@ const config: Config = {
     animations,
     variables,
     modes,
+    screens,
     scope: '',
     rootSize: 16,
     baseUnit: 4,
@@ -34,5 +36,6 @@ export {
     functions,
     animations,
     variables,
-    modes
+    modes,
+    screens
 }

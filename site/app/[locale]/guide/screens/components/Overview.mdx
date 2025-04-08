@@ -1,0 +1,16 @@
+```js name=master.css.js
+export default {
+    screens: {
+        md: 1024, // [!code highlight]
+        lg: 1280, // [!code highlight]
+    }
+}
+```
+For example, a screen size token can be used in the following ways:
+```html
+<!-- @MARK @md -->
+<div class="font:32@md">…</div>
+<!-- @MARK screen-md -->
+<div class="max-w:screen-md">…</div>
+<!-- @MARK @container(md) -->
+<div class="hidden@container(md)">…</div>

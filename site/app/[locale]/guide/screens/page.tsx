@@ -11,7 +11,7 @@ export async function generateMetadata(props: any, parent: any) {
     return await generate(metadata, props, parent)
 }
 
-import pageCategories from '~/site/.categories/reference.json'
+import pageCategories from '~/site/.categories/guide.json'
 
 export default async function Page(props: any) {
     return (

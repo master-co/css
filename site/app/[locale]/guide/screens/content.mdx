@@ -1,0 +1,32 @@
+## Overview [sr-only]
+<Default />
+In Master CSS, the [screen sizes](/guide/screens) are simultaneously used as *responsive breakpoints*, *screen size variables*, and *container query sizes*.
+<Overview />
+
+---
+
+## Basic usage
+### Add a screen size
+Add a screen size token to `config.screens`.
+```js name=master.css.js
+export default {
+    screens: {
+        md: 1024, // [!code highlight]
+    }
+}
+```
+Apply the screen size `screen-md` as a variable:
+```html
+<!-- @MARK @screen-md -->
+<div class="w:screen-md">…</div>
+```
+Apply the screen size `@md` as a responsive breakpoint:
+```html
+<!-- @MARK @md -->
+<div class="font:32@md">…</div>
+```
+Apply the screen size `(md)` as a container query:
+```html
+<!-- @MARK (md) -->
+<div class="hidden@container(md)">…</div>
+```
