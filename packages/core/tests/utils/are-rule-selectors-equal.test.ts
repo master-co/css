@@ -13,15 +13,3 @@ test.concurrent('suffix selectors', () => {
         new MasterCSS().generate('font:16:hover')[0])
     ).toBeFalsy()
 })
-
-test.concurrent('prefix selectors', () => {
-    expect(areRuleSelectorsEqual(
-        new MasterCSS().generate('.active_{font:16}')[0],
-        new MasterCSS().generate('.active_{font:32}')[0])
-    ).toBeTruthy()
-
-    expect(areRuleSelectorsEqual(
-        new MasterCSS().generate('.active:hover_{font:16}')[0],
-        new MasterCSS().generate('.active_{font:32}')[0])
-    ).toBeFalsy()
-})

@@ -1,4 +1,4 @@
-import { MasterCSS, generateCSS } from '@master/css'
+import { MasterCSS, SelectorDefinitions, generateCSS } from '@master/css'
 import cssDataProvider from './css-data-provider'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
@@ -27,22 +27,22 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = new Maste
                 sortText,
                 documentation: getCSSDataDocumentation(data, {
                     generatedCSS: generateCSS([syntax + name.slice(1)], css),
-                    docs: '/guide/syntax#selectors'
+                    docs: '/guide/selectors'
                 }),
                 kind,
                 data
             } as CompletionItem
         })
 
-    for (const selectorName in css.config.selectors) {
-        if (selectorName.startsWith('::')) continue
-        const selectorValue = css.config.selectors[selectorName]
-        const name = selectorName.endsWith('(') ? selectorName + ')' : selectorName
-        const value = typeof selectorValue === 'string'
-            ? selectorValue.endsWith('(') ? selectorValue + ')' : selectorValue
-            : selectorValue
-        const data: IPseudoClassData | undefined = pseudoClassDataList.find((data) =>
-            typeof value === 'string' ? value.startsWith(data.name) : false)
+    const selectors = {
+        ...css.config.selectors,
+        ':of': ':of',
+    } as SelectorDefinitions
+
+    for (const name in selectors) {
+        if (name.startsWith('::')) continue
+        const value = selectors[name]
+        const data: IPseudoClassData | undefined = pseudoClassDataList.find((data) => value.startsWith(data.name))
         let sortText = name.startsWith(':-')
             ? 'yyyy' + name.slice(2)
             : 'yy' + name.replace(/^:/, '')
@@ -51,7 +51,7 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = new Maste
             label: name,
             documentation: getCSSDataDocumentation(data, {
                 generatedCSS: generateCSS([syntax + name.slice(1)], css),
-                docs: '/guide/syntax#selectors'
+                docs: '/guide/selectors'
             }),
             sortText,
             kind,
