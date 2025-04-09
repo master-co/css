@@ -1,3 +1,4 @@
+import { SELECTOR_COMBINATORS } from '../common'
 import { SelectorNode } from './parse-selector'
 
 const prefixMap: Record<string, string> = {
@@ -41,7 +42,12 @@ export default function generateSelector(nodes: SelectorNode[], body = ''): stri
         })
 
     if (current) groups.push(current)
-    if (pre && !pre.endsWith('>')) pre += ' '
+    if (pre) {
+        const lastChar = pre.charAt(pre.length - 1)
+        if (!SELECTOR_COMBINATORS.includes(lastChar) && lastChar !== ' ') {
+            pre += ' '
+        }
+    }
     const result = groups.length
         ? groups.map(text => pre + body + text).join(',')
         : pre + body
