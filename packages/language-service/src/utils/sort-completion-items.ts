@@ -5,6 +5,6 @@ export default function sortCompletionItems(items: CompletionItem[]) {
     return items.sort((a, b) => {
         const sortTextA = a.sortText || a.label
         const sortTextB = b.sortText || b.label
-        return sortTextA.localeCompare(sortTextB)
+        return sortTextA.localeCompare(sortTextB, undefined, { numeric: true })
     })
 }
