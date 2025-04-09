@@ -28,10 +28,13 @@ export function activate(context: ExtensionContext) {
         }
     }
 
-    const includedLanguages = workspace.getConfiguration('masterCSS').includedLanguages
-    const Languages: { scheme: 'file', language: string }[] = []
-    includedLanguages.forEach((x: any) => {
-        Languages.push({ scheme: 'file', language: x })
+    const includedLanguages = workspace.getConfiguration('masterCSS').includedLanguages as string[]
+    const Languages: { scheme: string, language: string }[] = []
+    includedLanguages.forEach((language) => {
+        Languages.push(
+            { scheme: 'file', language },
+            { scheme: 'untitled', language }
+        )
     })
 
     // Options to control the language client
