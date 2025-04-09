@@ -1,10 +1,10 @@
 import { generateValidRules } from '@master/css-validator'
-import { MasterCSS, Rule, areRuleStatesEqual, areRulesDuplicated } from '@master/css'
+import { MasterCSS, Rule, equalVariants, equalDeclarations } from '@master/css'
 
 export default function filterCollisionClasses(classNames: string[], css: MasterCSS): Record<string, string[]> {
     const validRules = classNames
         .map(eachClassName => generateValidRules(eachClassName, css)[0])
-        .filter(Boolean) as Rule[]
+        .filter(Boolean)
     const collisionClassesRecord: Record<string, string[]> = {}
     for (let i = 0; i < classNames.length; i++) {
         const className = classNames[i]
@@ -15,8 +15,8 @@ export default function filterCollisionClasses(classNames: string[], css: Master
                 const compareClassName = classNames[j]
                 const compareRule = validRules.find((eachValidRule) => eachValidRule.name === compareClassName)
                 if (i !== j && compareRule
-                    && areRulesDuplicated(rule as any, compareRule as any)
-                    && areRuleStatesEqual(rule as any, compareRule as any)
+                    && equalDeclarations(rule.declarations, compareRule.declarations)
+                    && equalVariants(rule, compareRule)
                 ) {
                     collisionClasses.push(compareClassName)
                 }

@@ -1,0 +1,54 @@
+import { RuleContext } from '@typescript-eslint/utils/ts-eslint'
+import resolveClassNode from './resolve-class-node'
+import { TSESTree } from '@typescript-eslint/utils'
+
+export default function withVisitClassNode(visit: (node: TSESTree.Node, resolved: ReturnType<typeof resolveClassNode>) => void, context: RuleContext<any, any[]>) {
+    const visitNode = (node,) => {
+        switch (node.type) {
+            case 'BinaryExpression':
+            case 'Identifier':
+                return
+            case 'TemplateLiteral':
+                if (node.expressions.length) {
+                    node.expressions.forEach((exp) => {
+                        visitNode(exp)
+                    })
+                }
+                node.quasis.forEach((el) => {
+                    visitNode(el)
+                })
+                return
+            case 'JSXExpressionContainer':
+                visitNode(node.expression)
+                return
+            case 'ConditionalExpression':
+                visitNode(node.consequent)
+                visitNode(node.alternate)
+                return
+            case 'ArrayExpression':
+                node.elements.forEach((el) => {
+                    visitNode(el)
+                })
+                return
+            case 'LogicalExpression':
+                visitNode(node.right)
+                return
+            case 'ObjectExpression':
+                node.properties.forEach((prop) => {
+                    visitNode(prop)
+                })
+                return
+            case 'Property':
+                if (node.shorthand) return
+                visitNode(node.key)
+                if (node.key.type !== 'Literal')
+                    visitNode(node.value)
+                return
+            default:
+                let resolved = resolveClassNode(node, context)
+                if (!resolved) return
+                visit(node, resolved)
+        }
+    }
+    return visitNode
+}

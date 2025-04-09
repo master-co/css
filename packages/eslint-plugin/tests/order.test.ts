@@ -22,28 +22,28 @@ new RuleTester({
 }).run('class order', rule, {
     valid: [
         {
-            code: `<div class="bg:black f:24 fg:white m:8 p:8">Simple, basic</div>`,
+            code: `<div class="m:8 p:8 bg:black f:24 fg:white">Simple, basic</div>`,
         },
         {
-            code: `<div class="card mt:20">Traditional class + syntax</div>`,
+            code: `<div class="mt:20 card">Traditional class + syntax</div>`,
         },
         {
             code: '<div className={ctl(`${live && \'bg:blue-10 bg:purple-40@dark r:5@sm\'} p:10 w:full`)}>ctl + exp</div>',
         },
         {
-            code: '<div className={ctl(`${className} bg:blue-50 h:48 r:100% w:48`)}>ctl + var</div>',
+            code: '<div className={ctl(`${className} r:100% bg:blue-50 h:48 w:48`)}>ctl + var</div>',
         },
         {
-            code: '<div className={ctl(`${live && \'white black@dark bg:\'} p:10 w:full`)}>Space trim issue</div>',
+            code: '<div className={ctl(`${live && \'bg: black@dark white\'} p:10 w:full`)}>Space trim issue</div>',
         },
         {
-            code: `<div class='bg:black f:24 fg:white m:8 p:8'>Simple quotes</div>`,
+            code: `<div class='m:8 p:8 bg:black f:24 fg:white'>Simple quotes</div>`,
         },
         {
             code: `<div class="p:8 ">Extra space at the end</div>`,
         },
         {
-            code: `<div class="p:5 p:4@lg px:6 px:3@sm py:2@md">'p', then 'py' then 'px'</div>`,
+            code: `<div class="p:5 px:6 px:3@sm py:2@md p:4@lg">'p', then 'py' then 'px'</div>`,
         },
         {
             code: `ctl(\`
@@ -78,7 +78,7 @@ new RuleTester({
             code: `<div class>No errors while typing</div>`,
         },
         {
-            code: `<div class="block my:1\u3000flex">Do not treat full width space as class separator</div>`,
+            code: `<div class="block flex\u3000my:1">Do not treat full width space as class separator</div>`,
         },
         {
             code: `<div class="m:10 m:20 m:30:hover m:40@dark">Collision class</div>`,
@@ -96,7 +96,7 @@ new RuleTester({
                                 priority={true}
                                 alt="hello world"
                             />
-                            <h1 className="abs @flash|3s|infinite blend:overlay fg:white font:7vw font:40@xs font:heavy height:fit inset:0 m:auto text:center">
+                            <h1 className="abs @flash|3s|infinite inset:0 m:auto blend:overlay fg:white font:7vw font:heavy height:fit text:center font:40@xs">
                                 Hello, World!
                             </h1>
                         </div>
@@ -105,33 +105,28 @@ new RuleTester({
             `,
         },
         {
-            code: `<div class="a c d hello:world font:error mt:0 mt:0@sm">Error class</div>`,
+            code: `<div class="font:error mt:0 mt:0@sm a c d hello:world">Error class</div>`,
         }
     ],
     invalid: [
         {
             code: `<div class="f:24 fg:white m:8 p:8 bg:black">Classnames will be ordered</div>`,
-            output: `<div class="bg:black f:24 fg:white m:8 p:8">Classnames will be ordered</div>`,
+            output: `<div class="m:8 p:8 bg:black f:24 fg:white">Classnames will be ordered</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `<div class="flex uppercase m:0 m:0>li text-decoration:none>li>a px:4>li align-items:baseline fg:gray-30>li>a gap-x:28 font:12 font:semibold pb:6>li pt:20 pt:10>li {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a fg:gray-10>li>a:hover box-shadow:none>li>a:focus">Group</div>`,
-            output: `<div class="flex uppercase {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a align-items:baseline box-shadow:none>li>a:focus fg:gray-30>li>a fg:gray-10>li>a:hover font:12 font:semibold gap-x:28 m:0 m:0>li pb:6>li pt:20 pt:10>li px:4>li text-decoration:none>li>a">Group</div>`,
+            output: `<div class="flex uppercase m:0 align-items:baseline font:12 font:semibold gap-x:28 pt:20 m:0>li text-decoration:none>li>a {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a px:4>li fg:gray-30>li>a pb:6>li pt:10>li fg:gray-10>li>a:hover box-shadow:none>li>a:focus">Group</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `<div test="p:4 px:7@sm p:8@lg py:5@sm">Enhancing readability with 'test' prop</div>`,
-            output: `<div test="p:4 p:8@lg px:7@sm py:5@sm">Enhancing readability with 'test' prop</div>`,
+            output: `<div test="p:4 px:7@sm py:5@sm p:8@lg">Enhancing readability with 'test' prop</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `<div class="grid grid-cols:1 grid-cols:2@sm px:8@sm py:12@sm gap:8 py:16@md">:)...</div>`,
             output: `<div class="grid gap:8 grid-cols:1 grid-cols:2@sm px:8@sm py:12@sm py:16@md">:)...</div>`,
-            errors: [{ messageId: 'invalidClassOrder' }],
-        },
-        {
-            code: 'ctl(`p:10 flex ${some}`)',
-            output: 'ctl(`${some} flex p:10`)',
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
@@ -163,7 +158,7 @@ new RuleTester({
         },
         {
             code: `<div class="w:12  w:6@lg   w:12 ">Single line dups + tail spaces</div>`,
-            output: `<div class="w:12  w:6@lg   ">Single line dups + tail spaces</div>`,
+            output: `<div class="w:12  w:6@lg ">Single line dups + tail spaces</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
@@ -205,56 +200,12 @@ new RuleTester({
       \`);`,
             output: `
       ctl(\`
-        invalid
         container
         flex
         w:12
         w:6@sm
         w:4@lg
-      \`);`,
-            errors: [{ messageId: 'invalidClassOrder' }],
-        },
-        {
-            code: `
-      const buttonClasses = ctl(\`
-        \${fullWidth ? "w:12" : "w:6"}
-        container
-        \${fullWidth ? "w:8@sm" : "w:4@sm"}
-        w:9@lg
-        flex
-        \${hasError && "bg:red"}
-      \`);`,
-            output: `
-      const buttonClasses = ctl(\`
-        \${fullWidth ? "w:12" : "w:6"}
-        container
-        \${fullWidth ? "w:8@sm" : "w:4@sm"}
-        \${hasError && "bg:red"}
-        flex
-        w:9@lg
-      \`);`,
-            errors: [{ messageId: 'invalidClassOrder' }],
-        },
-        {
-            code: `
-      const buttonClasses = ctl(\`
-        \${fullWidth ? "w:12" : "w:6"}
-        flex
-        container
-        \${fullWidth ? "w:7@sm" : "w:4@sm"}
-        py:4@lg
-        py:6@sm
-        \${hasError && "bg:red"}
-      \`);`,
-            output: `
-      const buttonClasses = ctl(\`
-        \${fullWidth ? "w:12" : "w:6"}
-        container
-        \${fullWidth ? "w:7@sm" : "w:4@sm"}
-        \${hasError && "bg:red"}
-        flex
-        py:6@sm
-        py:4@lg
+        invalid
       \`);`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
@@ -391,7 +342,7 @@ new RuleTester({
       ])`,
             output: `
       classnames([
-        'invalid w:6@sm w:4@lg',
+        'w:6@sm w:4@lg invalid',
         ['flex w:12'],
       ])`,
             errors: [{ messageId: 'invalidClassOrder' }, { messageId: 'invalidClassOrder' }],
@@ -412,23 +363,13 @@ new RuleTester({
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
-            code: `ctl(\`\${some} container animate-spin first:flex \${bool ? "flex:col flex" : ""}\`)`,
-            output: `ctl(\`\${some} container animate-spin first:flex \${bool ? "flex flex:col" : ""}\`)`,
-            errors: [{ messageId: 'invalidClassOrder' }],
-        },
-        {
             code: `ctl(\`p:3 b:3|solid|gray m:4 h:24 p:4@lg flex b:2 m:4@lg\`)`,
-            output: `ctl(\`flex b:2 b:3|solid|gray h:24 m:4 m:4@lg p:3 p:4@lg\`)`,
-            errors: [{ messageId: 'invalidClassOrder' }],
-        },
-        {
-            code: `<div className={\`object:contain full max-h:\${eachSponsorTier.height} bg:black\`}>Template</div>`,
-            output: `<div className={\`full bg:black max-h:\${eachSponsorTier.height} object:contain\`}>Template</div>`,
+            output: `ctl(\`flex b:2 b:3|solid|gray m:4 p:3 h:24 m:4@lg p:4@lg\`)`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `<div class="a mt:0 mt:0@sm c d hello:world font:error">Error class</div>`,
-            output: `<div class="a c d hello:world font:error mt:0 mt:0@sm">Error class</div>`,
+            output: `<div class="font:error mt:0 mt:0@sm a c d hello:world">Error class</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         }
     ],

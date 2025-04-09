@@ -27,11 +27,11 @@ new RuleTester({
                     </div>`,
             output: `
                     <div class="
+                        m:8
+                        p:8
                         bg:black
                         f:24
                         fg:white
-                        m:8
-                        p:8
                     ">
                         :)
                     </div>`,

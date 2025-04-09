@@ -1,8 +1,10 @@
 import { TSESTree } from '@typescript-eslint/utils'
 import type { RuleContext, RuleListener } from '@typescript-eslint/utils/ts-eslint'
 import { Settings } from '../settings'
+import withVisitClassNode from './with-visit-class-node'
+import resolveClassNode from './resolve-class-node'
 
-export default function defineVisitors({ context, settings }: { context: RuleContext<any, any[]>, settings: Settings }, visitNode: (node: TSESTree.Node, args?: any) => void): RuleListener {
+export default function defineVisitors({ context, settings }: { context: RuleContext<any, any[]>, settings: Settings }, visitNode: (node: TSESTree.Node, resolved: ReturnType<typeof resolveClassNode>) => void): RuleListener {
     const classAttributeRegex = new RegExp(`^(?:${settings.classAttributes.join('|')})$`)
     const classFunctionsRegex = new RegExp(`^(?:${settings.classFunctions.join('|')})`)
     const classDeclarationsRegex = new RegExp(`^(?:${settings.classDeclarations.join('|')})$`)
@@ -17,70 +19,69 @@ export default function defineVisitors({ context, settings }: { context: RuleCon
         }
         return classFunctionsRegex.test(calleeName)
     }
+    const visitClassNode = withVisitClassNode(visitNode, context)
     const CallExpression = function (node) {
         if (!isFnNode(node)) {
             return
         }
-        node.arguments.forEach((arg) => {
-            visitNode(node, arg)
+        node.arguments.forEach((node) => {
+            visitClassNode(node)
         })
     }
     const scriptVisitor: RuleListener = {
         CallExpression,
         JSXAttribute: function (node: any) {
             if (!node.name || !classAttributeRegex.test(node.name.name)) return
-            if (node.value && node.value.type === 'Literal') {
-                visitNode(node)
-            } else if (node.value && node.value.type === 'JSXExpressionContainer') {
-                visitNode(node, node.value.expression)
+            if (node.value) {
+                visitClassNode(node.value)
             }
         },
         SvelteAttribute: function (node: any) {
             if (!node.key?.name || !classAttributeRegex.test(node.key.name)) return
             for (const eachValue of node.value) {
-                visitNode(node, eachValue)
+                visitClassNode(eachValue)
             }
         },
         TextAttribute: function (node: any) {
             if (!node.name || !classAttributeRegex.test(node.name)) return
-            visitNode(node)
+            visitClassNode(node)
         },
         TaggedTemplateExpression: function (node) {
             if (isFnNode(node)) {
-                visitNode(node, node.quasi)
+                visitClassNode(node.quasi)
                 return
             }
         },
         VariableDeclaration: function (node) {
             node.declarations.forEach((decl) => {
                 if (decl.id.type === 'Identifier' && classDeclarationsRegex.test(decl.id.name)) {
-                    visitNode(node, decl.init)
+                    visitClassNode(decl.init)
                 }
             })
         },
         ObjectExpression: function (node) {
             node.properties.forEach((prop) => {
                 if (prop.type === 'Property' && prop.key.type === 'Identifier' && classDeclarationsRegex.test(prop.key.name)) {
-                    visitNode(node, prop.value)
+                    visitClassNode(prop.value)
                 }
             })
-        },
+        }
     }
     const templateBodyVisitor: RuleListener = {
         CallExpression,
         VAttribute: function (node: any) {
+            const name = node.key.argument?.name || node.key.name
+            if (!name || !classAttributeRegex.test(name)) return
             if (node.value && node.value.type === 'VLiteral') {
-                visitNode(node)
-            } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression?.type === 'ArrayExpression') {
-                node.value.expression.elements.forEach((arg) => {
-                    visitNode(node, arg)
-                })
-            } else if (node.value && node.value.type === 'VExpressionContainer' && node.value.expression?.type === 'ObjectExpression') {
-                node.value.expression.properties.forEach((prop) => {
-                    visitNode(node, prop)
-                })
+                visitClassNode(node.value)
+            } else if (node.value) {
+                if (node.value.type === 'VExpressionContainer') {
+                    if (node.value.expression?.type === 'ArrayExpression' || node.value.expression?.type === 'ObjectExpression') {
+                        visitClassNode(node.value.expression)
+                    }
+                }
             }
-        },
+        }
     }
 
     // @ts-expect-error defineTemplateBodyVisitor
