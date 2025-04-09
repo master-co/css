@@ -18,10 +18,20 @@ import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 
+const configResolvedCaches = new Map<Config | undefined, {
+    config: MasterCSS['config']
+    components: MasterCSS['components']
+    selectors: MasterCSS['selectors']
+    animations: MasterCSS['animations']
+    atRules: MasterCSS['atRules']
+    variables: MasterCSS['variables']
+    definedRules: MasterCSS['definedRules']
+}>()
+
 export default class MasterCSS {
     static config: Config = defaultConfig
     readonly definedRules: DefinedRule[] = []
-    readonly config: Config
+    readonly config!: Config
     readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,components,general;')
     readonly rules: (Layer | Rule)[] = [this.layerStatementRule]
     readonly classRules = new Map<string, SyntaxRule[]>()
@@ -40,10 +50,7 @@ export default class MasterCSS {
     constructor(
         public customConfig?: Config
     ) {
-        this.config = customConfig?.override
-            ? extendConfig(customConfig)
-            : extendConfig(defaultConfig, customConfig)
-        this.resolve()
+        this.resolve(customConfig)
     }
 
     get text() {
@@ -57,25 +64,287 @@ export default class MasterCSS {
             .map(({ text }) => text).join('')
     }
 
-    resolve() {
-        this.components.clear()
-        this.selectors.clear()
-        this.variables.clear()
-        this.atRules.clear()
-        this.animations.clear()
-        this.definedRules.length = 0
+    resolve(customConfig?: Config) {
+        if (customConfig) {
+            this.customConfig = customConfig
+        } else {
+            customConfig = this.customConfig
+        }
+        const cached = configResolvedCaches.get(customConfig)
+        if (cached) {
+            Object.assign(this, cached)
+        } else {
+            // @ts-ignore
+            this.config = customConfig?.override
+                ? extendConfig(customConfig)
+                : extendConfig(defaultConfig, customConfig)
+            this.resolveVariables()
+            this.resolveAnimations()
+            this.resolveSelectors()
+            this.resolveAtRules()
+            this.resolveRules()
+            this.resolveComponents()
+            configResolvedCaches.set(customConfig, {
+                config: this.config,
+                components: this.components,
+                selectors: this.selectors,
+                animations: this.animations,
+                atRules: this.atRules,
+                variables: this.variables,
+                definedRules: this.definedRules,
+            })
+        }
+    }
 
-        const colorVariableNames: Record<string, undefined> = {
-            current: undefined,
-            currentColor: undefined,
-            transparent: undefined
+    resolveAnimations() {
+        const { animations } = this.config
+        if (animations) {
+            for (const animationName in animations) {
+                const eachAnimation: AnimationDefinitions = {}
+                this.animations.set(animationName, eachAnimation)
+                const eachKeyframes = animations[animationName]
+                for (const eachKeyframeValue in eachKeyframes) {
+                    const newValueByPropertyName: any = eachAnimation[eachKeyframeValue] = {}
+                    const eachKeyframeDeclarations = eachKeyframes[eachKeyframeValue as 'from' | 'to' | `$(number)%`]
+                    for (const propertyName in eachKeyframeDeclarations) {
+                        newValueByPropertyName[propertyName] = eachKeyframeDeclarations[propertyName as keyof PropertiesHyphen]
+                    }
+                }
+            }
         }
 
-        const { components, selectors, variables, utilities, at, rules, animations, screens } = this.config
+    }
+
+    resolveRules() {
+        const { rules, utilities } = this.config
 
         function escapeString(str: string) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
         }
+
+        if (!rules && !utilities) return
+
+        const rulesEntries: [string, SyntaxRuleDefinition][] = []
+
+        // Collect utility rules
+        if (utilities) {
+            for (const utilityName in utilities) {
+                const declarations = utilities[utilityName] as any
+                rulesEntries.push([
+                    utilityName,
+                    { declarations, type: SyntaxRuleType.Utility },
+                ])
+            }
+        }
+
+        // Collect normal rules
+        if (rules) {
+            rulesEntries.push(...Object.entries(rules) as [string, SyntaxRuleDefinition][])
+        }
+
+        const rulesEntriesLength = rulesEntries.length
+
+        // Prepare color variables
+        const colorNames = new Set(['current', 'currentColor', 'transparent'])
+        this.variables.forEach(v => {
+            if (v.type === 'color') colorNames.add(v.name)
+        })
+        const colorPattern = [...colorNames].join('|')
+
+        // Main loop
+        rulesEntries
+            .sort((a, b) => {
+                if (a[1].type !== b[1].type) {
+                    return (b[1].type || 0) - (a[1].type || 0)
+                }
+                return b[0].localeCompare(a[0], undefined, { numeric: true })
+            })
+            .forEach(([id, def], index) => {
+                const order = rulesEntriesLength - 1 - index
+
+                const syntax: DefinedRule = {
+                    id,
+                    keys: [],
+                    variables: {},
+                    matchers: {},
+                    order,
+                    definition: def,
+                }
+
+                def.unit ??= ''
+                def.separators ??= [',']
+
+                this.definedRules.push(syntax)
+
+                const {
+                    matcher,
+                    type,
+                    subkey,
+                    ambiguousKeys,
+                    ambiguousValues,
+                    sign,
+                    key: originalKey,
+                    variables: ruleVariableGroups,
+                } = def
+
+                const keys: string[] = []
+                let key = originalKey
+
+                // Helper: resolve variable groups
+                const addResolvedVariables = (groupName: string) => {
+                    this.variables.forEach(v => {
+                        if (v.group === groupName) {
+                            syntax.variables[v.key] = v
+                        }
+                    })
+                };
+
+                // Rule-defined variable groups
+                if (ruleVariableGroups) {
+                    ruleVariableGroups.forEach(addResolvedVariables)
+                }
+
+                // Auto variable binding
+                addResolvedVariables(id)
+
+                // Key derivation logic
+                if (type === SyntaxRuleType.NativeShorthand || type === SyntaxRuleType.Native) {
+                    if (!key) def.key = key = id
+                    keys.push(id)
+                }
+
+                if (sign) {
+                    syntax.matchers.arbitrary = new RegExp(`^${sign}[^!*>+~:[@_]+\\|`)
+                } else if (!matcher) {
+                    if (!key && !subkey) {
+                        keys.push(id)
+                    } else {
+                        if (key && !keys.includes(key)) keys.push(key)
+                        if (subkey) keys.push(subkey)
+                        if (type === SyntaxRuleType.Shorthand) keys.push(id)
+                    }
+
+                    // Ambiguous keys and values
+                    if (ambiguousKeys?.length) {
+                        const keyPattern = ambiguousKeys.length > 1
+                            ? `(?:${ambiguousKeys.join('|')})`
+                            : ambiguousKeys[0]
+
+                        const variableKeys = Object.keys(syntax.variables)
+                        if (ambiguousValues?.length) {
+                            const valuePatterns = ambiguousValues.map(val =>
+                                val instanceof RegExp
+                                    ? val.source.replace('\\$colors', colorPattern)
+                                    : `${val}(?:\\b|_)`
+                            )
+                            syntax.matchers.value = new RegExp(
+                                `^${keyPattern}:(?:${valuePatterns.join('|')})[^|]*?(?:@|$)`
+                            )
+                        }
+
+                        if (variableKeys.length) {
+                            syntax.matchers.variable = new RegExp(
+                                `^${keyPattern}:(?:${variableKeys.join('|')}(?![a-zA-Z0-9-]))[^|]*?(?:@|$)`
+                            )
+                        }
+                    }
+                } else {
+                    syntax.matchers.arbitrary = matcher
+                }
+
+                // Utility rule matcher
+                if (type === SyntaxRuleType.Utility) {
+                    syntax.id = '.' + id
+                    syntax.matchers.arbitrary = new RegExp(
+                        '^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)',
+                        'm'
+                    )
+                }
+
+                // Key matcher
+                if (keys.length) {
+                    syntax.keys = keys
+                    syntax.matchers.key = new RegExp(
+                        `^${keys.length > 1 ? `(${keys.join('|')})` : keys[0]}:.`
+                    )
+                }
+            })
+    }
+
+    resolveComponents() {
+        const { components } = this.config
+        const flatComps = components ? flattenObject(components) : {}
+        const names = Object.keys(flatComps)
+        const nameSet = new Set(names)
+
+        // First pass: expand class names recursively
+        for (const name of names) {
+            if (this.components.has(name)) continue
+
+            const currentClass: string[] = []
+            this.components.set(name, currentClass)
+
+            const className = flatComps[name]
+            if (!className) continue
+
+            const classNames = className.replace(/(?:\n\s*)+/g, ' ').trim().split(' ')
+            const seen = new Set<string>()
+
+            const addClass = (cls: string) => {
+                if (!seen.has(cls)) {
+                    seen.add(cls)
+                    currentClass.push(cls)
+                }
+            }
+
+            for (const eachClassName of classNames) {
+                if (nameSet.has(eachClassName)) {
+                    addClass(eachClassName)
+
+                    // Lazy expand dependencies if not processed
+                    if (!this.components.has(eachClassName)) {
+                        const componentClass = flatComps[eachClassName]
+                        if (componentClass) {
+                            this.components.set(eachClassName, []) // placeholder to prevent infinite loop
+                            // Recursively resolve
+                            const depClassNames = componentClass.replace(/(?:\n\s*)+/g, ' ').trim().split(' ')
+                            depClassNames.forEach(addClass)
+                        }
+                    }
+
+                    const componentClasses = this.components.get(eachClassName)
+                    componentClasses?.forEach(addClass)
+                } else {
+                    addClass(eachClassName)
+                }
+            }
+        }
+
+        // Second pass: convert to grouped syntax rule strings
+        this.components.forEach((componentClasses, componentName) => {
+            const syntaxRulesByStateToken: Record<string, SyntaxRule[]> = {}
+
+            for (const syntax of componentClasses) {
+                const parsed = this.create(syntax)
+                if (parsed?.text) {
+                    const group = syntaxRulesByStateToken[parsed.stateToken] ||= []
+                    group.push(parsed)
+                }
+            }
+
+            const result = Object.entries(syntaxRulesByStateToken).map(([stateToken, syntaxRules]) => {
+                if (syntaxRules.length === 1) return syntaxRules[0].name
+
+                const namesWithoutToken = syntaxRules.map(s => s.name.slice(0, s.name.length - s.stateToken.length))
+                return `{${namesWithoutToken.join(';')}}${stateToken}`
+            })
+
+            this.components.set(componentName, result)
+        })
+    }
+
+    resolveSelectors() {
+        const { selectors } = this.config
         if (selectors) {
             const flatSelectors = flattenObject(selectors)
             for (const token in flatSelectors) {
@@ -84,7 +353,43 @@ export default class MasterCSS {
                 this.selectors.set(token, nodes)
             }
         }
+    }
 
+    resolveAtRules() {
+        const { at, screens } = this.config
+
+        if (screens) {
+            for (const key in screens) {
+                const value = screens[key]
+                const node = this.parseValue(value)
+                this.atRules.set(key, {
+                    id: 'media',
+                    nodes: [node as unknown as AtRuleValueNode]
+                })
+            }
+        }
+
+        if (at) {
+            const flatAt = flattenObject(at)
+            for (const token in flatAt) {
+                const value = flatAt[token]
+                if (typeof value === 'number') {
+                    const node = this.parseValue(value)
+                    this.atRules.set(token, {
+                        id: 'media',
+                        nodes: [node as unknown as AtRuleValueNode]
+                    })
+                } else {
+                    const atRule = parseAt(value, this, false)
+                    this.atRules.set(token, atRule)
+                }
+            }
+        }
+
+    }
+
+    resolveVariables() {
+        const { variables, screens } = this.config
         const aliasVariableModeResolvers = new Map<string, Record<string, () => void>>()
         const resolveVariable = (variableDefinition: VariableDefinition, name: string[], mode?: string) => {
             if (variableDefinition === undefined || variableDefinition === null) return
@@ -113,7 +418,6 @@ export default class MasterCSS {
                                 : (variable.value.slice(0, slashIndex + 2) + String(+variable.value.slice(slashIndex + 2) * +alpha).slice(1))
                         }
                     }
-                    colorVariableNames[flatName] = undefined
                 }
                 const currentMode = replacedMode ?? mode
                 if (currentMode !== undefined) {
@@ -253,211 +557,7 @@ export default class MasterCSS {
 
         if (screens) {
             resolveVariable(screens, ['screen'])
-            for (const key in screens) {
-                const value = screens[key]
-                const node = this.parseValue(value)
-                this.atRules.set(key, {
-                    id: 'media',
-                    nodes: [node as unknown as AtRuleValueNode]
-                })
-            }
         }
-
-        if (at) {
-            const flatAt = flattenObject(at)
-            for (const token in flatAt) {
-                const value = flatAt[token]
-                if (typeof value === 'number') {
-                    const node = this.parseValue(value)
-                    this.atRules.set(token, {
-                        id: 'media',
-                        nodes: [node as unknown as AtRuleValueNode]
-                    })
-                } else {
-                    const atRule = parseAt(value, this, false)
-                    this.atRules.set(token, atRule)
-                }
-            }
-        }
-
-        if (animations) {
-            for (const animationName in animations) {
-                const eachAnimation: AnimationDefinitions = {}
-                this.animations.set(animationName, eachAnimation)
-                const eachKeyframes = animations[animationName]
-                for (const eachKeyframeValue in eachKeyframes) {
-                    const newValueByPropertyName: any = eachAnimation[eachKeyframeValue] = {}
-                    const eachKeyframeDeclarations = eachKeyframes[eachKeyframeValue as 'from' | 'to' | `$(number)%`]
-                    for (const propertyName in eachKeyframeDeclarations) {
-                        newValueByPropertyName[propertyName] = eachKeyframeDeclarations[propertyName as keyof PropertiesHyphen]
-                    }
-                }
-            }
-        }
-
-        const flattedStyles: Record<string, string> = components ? flattenObject(components) : {}
-        const utilityNames = Object.keys(flattedStyles)
-        const handleUtilityName = (utilityName: string) => {
-            if (this.components.has(utilityName)) return
-            const currentClass: string[] = []
-            this.components.set(utilityName, currentClass)
-            const className = flattedStyles[utilityName]
-            if (!className) return
-            const classNames: string[] = className
-                .replace(/(?:\n(?:\s*))+/g, ' ')
-                .trim()
-                .split(' ')
-            for (const eachClassName of classNames) {
-                const handle = (className: string) => {
-                    if (!currentClass.includes(className)) {
-                        currentClass.push(className)
-                    }
-                }
-                if (utilityNames.includes(eachClassName)) {
-                    handleUtilityName(eachClassName)
-                    const componentClasses = this.components.get(eachClassName)
-                    componentClasses?.forEach(handle)
-                } else {
-                    handle(eachClassName)
-                }
-            }
-        }
-        for (const eachUtilityName of utilityNames) {
-            handleUtilityName(eachUtilityName)
-        }
-
-        if (rules || utilities) {
-            const rulesEntries: [string, SyntaxRuleDefinition][] = []
-            if (utilities) {
-                for (const utilityName in utilities) {
-                    const declarations = utilities[utilityName] as any
-                    rulesEntries.push([utilityName, { declarations, type: SyntaxRuleType.Utility }])
-                }
-            }
-            if (rules) {
-                rulesEntries.push(...Object.entries(rules) as [string, SyntaxRuleDefinition][])
-            }
-            const rulesEntriesLength = rulesEntries.length
-            const colorNames = Object.keys(colorVariableNames)
-            rulesEntries
-                .sort((a: any, b: any) => {
-                    if (a[1].type !== b[1].type) {
-                        return (b[1].type || 0) - (a[1].type || 0)
-                    }
-                    return b[0].localeCompare(a[0], undefined, { numeric: true })
-                })
-                .forEach(([id, eachSyntaxRuleDefinition], index: number) => {
-                    const syntax: DefinedRule = {
-                        id,
-                        keys: [],
-                        variables: {},
-                        matchers: {},
-                        order: rulesEntriesLength - 1 - index,
-                        definition: eachSyntaxRuleDefinition
-                    }
-                    if (!eachSyntaxRuleDefinition.unit) {
-                        eachSyntaxRuleDefinition.unit = ''
-                    }
-                    if (!eachSyntaxRuleDefinition.separators) {
-                        eachSyntaxRuleDefinition.separators = [',']
-                    }
-                    this.definedRules.push(syntax)
-                    const { matcher, type, subkey, ambiguousKeys, ambiguousValues, sign } = eachSyntaxRuleDefinition
-                    if (type === SyntaxRuleType.Utility) {
-                        syntax.id = '.' + id
-                        syntax.matchers.arbitrary = new RegExp('^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)', 'm')
-                    }
-
-                    // todo: 不可使用 startsWith 判斷，應改為更精準的從 config.variables 取得目標變數群組，但 config.variables 中的值還沒被 resolve 像是 Array
-                    const addResolvedVariables = (groupName: string) => {
-                        this.variables.forEach((eachVariable) => {
-                            if (eachVariable.group === groupName) {
-                                syntax.variables[eachVariable.key] = eachVariable
-                            }
-                        })
-                    }
-
-                    // 1. custom `config.rules[id].variables`
-                    if (eachSyntaxRuleDefinition.variables) {
-                        for (const eachVariableGroup of eachSyntaxRuleDefinition.variables) {
-                            addResolvedVariables(eachVariableGroup)
-                        }
-                    }
-
-                    // 2. custom `config.variables`
-                    addResolvedVariables(id)
-                    const keys = []
-                    let { key } = eachSyntaxRuleDefinition
-                    if (type === SyntaxRuleType.NativeShorthand || type === SyntaxRuleType.Native) {
-                        if (!key) eachSyntaxRuleDefinition.key = key = id
-                        keys.push(id)
-                    }
-                    if (sign) {
-                        syntax.matchers.arbitrary = new RegExp(`^${sign}[^!*>+~:[@_]+\\|`)
-                    } else if (!matcher) {
-                        const colorsPatten = colorNames.join('|')
-                        if (!key && !subkey) {
-                            keys.push(id)
-                        } else {
-                            if (key && !keys.includes(key)) keys.push(key)
-                            if (subkey) keys.push(subkey)
-                            if (type === SyntaxRuleType.Shorthand) {
-                                keys.push(id)
-                            }
-                        }
-                        if (ambiguousKeys?.length) {
-                            const ambiguousKeyPattern = ambiguousKeys.length > 1 ? `(?:${ambiguousKeys.join('|')})` : ambiguousKeys[0]
-                            const variableKeys = Object.keys(syntax.variables)
-                            if (ambiguousValues?.length) {
-                                const ambiguousValuePatterns = []
-                                for (const eachAmbiguousValue of ambiguousValues) {
-                                    if (eachAmbiguousValue instanceof RegExp) {
-                                        ambiguousValuePatterns.push(eachAmbiguousValue.source.replace('\\$colors', colorsPatten))
-                                    } else {
-                                        ambiguousValuePatterns.unshift(`${eachAmbiguousValue}(?:\\b|_)`)
-                                    }
-                                }
-                                syntax.matchers.value = new RegExp(`^${ambiguousKeyPattern}:(?:${ambiguousValuePatterns.join('|')})[^|]*?(?:@|$)`)
-                            }
-                            if (variableKeys.length) {
-                                syntax.matchers.variable = new RegExp(`^${ambiguousKeyPattern}:(?:${variableKeys.join('|')}(?![a-zA-Z0-9-]))[^|]*?(?:@|$)`)
-                            }
-                        }
-                    } else {
-                        syntax.matchers.arbitrary = matcher as RegExp
-                    }
-                    if (keys.length) {
-                        syntax.keys = keys
-                        syntax.matchers.key = new RegExp(`^${keys.length > 1 ? `(${keys.join('|')})` : keys[0]}:.`)
-                    }
-                })
-        }
-        this.components.forEach((componentClasses, componentClass) => {
-            const syntaxRulesByStateToken = componentClasses
-                .map((eachSyntax) => this.create(eachSyntax))
-                .filter(eachSyntax => eachSyntax?.text)
-                .reduce((obj, eachSyntaxRule) => {
-                    if (eachSyntaxRule!.stateToken in obj) {
-                        obj[eachSyntaxRule!.stateToken].push(eachSyntaxRule!)
-                    } else {
-                        obj[eachSyntaxRule!.stateToken] = [eachSyntaxRule!]
-                    }
-                    return obj
-                }, {} as Record<string, SyntaxRule[]>)
-            this.components.set(componentClass, Object
-                .keys(syntaxRulesByStateToken)
-                .map(stateToken => {
-                    const syntaxRules = syntaxRulesByStateToken[stateToken]
-                    return syntaxRules.length === 1
-                        ? syntaxRules[0].name
-                        : (
-                            '{'
-                            + syntaxRulesByStateToken[stateToken].map(eachSyntaxRule => eachSyntaxRule.name.slice(0, eachSyntaxRule.name.length - eachSyntaxRule.stateToken.length)).join(';')
-                            + '}'
-                            + stateToken
-                        )
-                }))
-        })
     }
 
     parseValue(token: string | number, unit = 'rem') {
@@ -592,20 +692,18 @@ export default class MasterCSS {
      */
     refresh(customConfig?: Config) {
         this.reset()
-        if (customConfig) {
-            this.customConfig = customConfig
-        } else {
-            customConfig = this.customConfig
-        }
-        // @ts-ignore
-        this.config = customConfig?.override
-            ? extendConfig(customConfig)
-            : extendConfig(defaultConfig, customConfig)
-        this.resolve()
+        this.resolve(customConfig)
         return this
     }
 
     reset() {
+        this.animations.clear()
+        this.variables.clear()
+        this.atRules.clear()
+        this.selectors.clear()
+        this.components.clear()
+        this.definedRules.length = 0
+        this.classRules.clear()
         this.baseLayer.reset()
         this.themeLayer.reset()
         this.presetLayer.reset()
@@ -617,6 +715,7 @@ export default class MasterCSS {
 
     destroy() {
         this.reset()
+        configResolvedCaches.delete(this.customConfig)
         return this
     }
 
