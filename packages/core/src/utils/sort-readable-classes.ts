@@ -64,7 +64,9 @@ export default function sortReadableClasses(classes: string[], css = new MasterC
     })
 
     const orderedClasses = sortedRules.map(entry => entry.rule.fixedClass || entry.rule.name)
-
+    const unknownClasses = classes
+        .filter(className => orderedClasses.indexOf(className) === -1)
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
     css.remove(...classes)
-    return orderedClasses
+    return [...orderedClasses, ...unknownClasses]
 }
