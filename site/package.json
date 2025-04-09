@@ -14,26 +14,26 @@
         "type-check": "tsc --noEmit"
     },
     "dependencies": {
-        "@master/colors": "^2.1.0",
+        "@master/colors": "^2.1.1",
         "@master/normal.css": "^3.1.0",
         "@monaco-editor/react": "^4.7.0",
-        "@next/mdx": "^15.2.3",
+        "@next/mdx": "^15.2.5",
         "class-variant": "^2.0.4",
         "monaco-editor": "^0.52.2",
         "monaco-editor-textmate": "^4.0.0",
         "monaco-textmate": "^3.0.1",
-        "next": "^15.2.3",
-        "react": "^19.0.0",
-        "react-dom": "^19.0.0",
+        "next": "^15.2.5",
+        "react": "^19.1.0",
+        "react-dom": "^19.1.0",
         "theme-mode": "^1.1.1",
         "use-debounce": "^10.0.4",
         "uvcanvas": "^0.2.2"
     },
     "devDependencies": {
         "@shikijs/monaco": "^3.2.1",
-        "eslint": "^9.23.0",
+        "eslint": "^9.24.0",
         "internal": "workspace:^",
         "tsx": "^4.19.3",
-        "typescript": "^5.8.2"
+        "typescript": "^5.8.3"
     }
 }
