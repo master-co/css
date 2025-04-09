@@ -41,6 +41,7 @@ export default createRule({
                     orderedRaw = '`' + orderedRaw + '`'
                 }
                 context.report({
+                    node,
                     loc: {
                         start: sourceCode.getLocFromIndex(start),
                         end: sourceCode.getLocFromIndex(end),

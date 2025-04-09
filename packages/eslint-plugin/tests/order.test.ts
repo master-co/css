@@ -371,6 +371,16 @@ new RuleTester({
             code: `<div class="a mt:0 mt:0@sm c d hello:world font:error">Error class</div>`,
             output: `<div class="font:error mt:0 mt:0@sm a c d hello:world">Error class</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
-        }
+        },
+        {
+            code: `<div className="gap:15 grid-cols:2 grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md p:40">order</div>`,
+            output: `<div className="gap:15 p:40 grid-cols:2 grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md">order</div>`,
+            errors: [{
+                messageId: 'invalidClassOrder',
+                column: 17,
+                endColumn: 86,
+                line: 1
+            }],
+        },
     ],
 })
