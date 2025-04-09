@@ -176,6 +176,26 @@ export const cases = {
                 at: {
                     custom: '@media(width>=600)'
                 }
+            }],
+
+        ['desktop', '@media (width>=40rem)',
+            {
+                id: 'media',
+                nodes: [
+                    {
+                        raw: 'desktop',
+                        type: 'number',
+                        name: 'width',
+                        value: 40,
+                        unit: 'rem',
+                        operator: '>='
+                    }
+                ]
+            },
+            {
+                screens: {
+                    desktop: 640
+                }
             }]
     ],
     errors: [

@@ -15,7 +15,7 @@ const Default = () => <table>
             Object.keys(rules)
                 .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
                 .map((eachSyntaxName) => {
-                    const rule = (rules as any)[eachSyntaxName]
+                    const rule = rules[eachSyntaxName as keyof typeof rules] as unknown as any
                     return (
                         <tr key={eachSyntaxName}>
                             <th><InlineCode className='white-space:nowrap'>{eachSyntaxName}</InlineCode></th>

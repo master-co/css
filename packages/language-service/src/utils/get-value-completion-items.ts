@@ -1,6 +1,6 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import cssDataProvider from './css-data-provider'
-import { Layer, MasterCSS, SyntaxRuleType, Variable, generateCSS, isCoreRule } from '@master/css'
+import { MasterCSS, SyntaxRuleType, SyntaxRuleTypeValue, Variable, generateCSS, isCoreRule } from '@master/css'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 import sortCompletionItems from './sort-completion-items'
 import type { IValueData } from 'vscode-css-languageservice'
@@ -97,7 +97,7 @@ export default function getValueCompletionItems(css: MasterCSS = new MasterCSS()
          */
         if (eachDefinedRule.keys.includes(ruleKey) && eachDefinedRule.definition.includeAnimations) {
             css.animations.forEach((animation, animationName) => {
-                const isNative = eachDefinedRule.definition.type && [SyntaxRuleType.Native, SyntaxRuleType.NativeShorthand].includes(eachDefinedRule.definition.type)
+                const isNative = eachDefinedRule.definition.type && ([SyntaxRuleType.Native, SyntaxRuleType.NativeShorthand] as SyntaxRuleTypeValue[]).includes(eachDefinedRule.definition.type)
                 completionItems.push({
                     label: animationName,
                     kind: CompletionItemKind.Value,
@@ -120,7 +120,7 @@ export default function getValueCompletionItems(css: MasterCSS = new MasterCSS()
             for (const ambiguousValue of eachDefinedRule.definition.ambiguousValues) {
                 if (typeof ambiguousValue !== 'string') continue
                 const nativeValueData = nativePropertyData?.values?.find((x: { name: string }) => x.name === ambiguousValue)
-                const isNative = eachDefinedRule.definition.type && [SyntaxRuleType.Native, SyntaxRuleType.NativeShorthand].includes(eachDefinedRule.definition.type)
+                const isNative = eachDefinedRule.definition.type && ([SyntaxRuleType.Native, SyntaxRuleType.NativeShorthand] as SyntaxRuleTypeValue[]).includes(eachDefinedRule.definition.type)
                 completionItems.push({
                     label: ambiguousValue,
                     kind: CompletionItemKind.Value,

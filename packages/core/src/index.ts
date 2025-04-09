@@ -13,6 +13,7 @@ export { default as AnimationRule } from './animation-rule'
 // types
 export * from './types/config'
 export * from './types/syntax'
+export * from './types/common'
 
 // factories
 export { default as withSyntaxLayer } from './factories/with-syntax-layer'

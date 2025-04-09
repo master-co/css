@@ -1,12 +1,12 @@
 import type { PropertiesHyphen } from 'csstype'
-import type SyntaxRuleType from '../syntax-rule-type'
 import type { SyntaxRule } from '../syntax-rule'
 import type { ValueComponent } from './syntax'
 import type { rules, utilities } from '../config'
 import { AT_IDENTIFIERS } from '../common'
+import { SyntaxRuleTypeValue } from './common'
 
 export interface SyntaxRuleDefinition {
-    type?: SyntaxRuleType
+    type?: SyntaxRuleTypeValue
     matcher?: RegExp
     sign?: string
     key?: string
