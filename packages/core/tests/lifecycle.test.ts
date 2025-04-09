@@ -1,30 +1,35 @@
-import { describe, it, expect, test } from 'vitest'
+import { expect, test } from 'vitest'
+import css from './css'
 import { MasterCSS } from '../src'
 
-describe('add and remove', () => {
-    const css = new MasterCSS()
-    test('add mb:48', async () => {
-        css.add('mb:48')
-        expect(css.generalLayer.rules.length).toBe(1)
-        expect(css.generalLayer.text).toBe('@layer general{.mb\\:48{margin-bottom:3rem}}')
-    })
-    test('remove mb:48', async () => {
-        css.remove('mb:48')
-        expect(css.generalLayer.rules.length).toBe(0)
-        expect(css.generalLayer.text).toBe('')
-    })
+test.concurrent('mb:48', ({ task }) => {
+    css.add(task.name)
+    expect(css.generalLayer.rules.length).toBe(1)
+    expect(css.generalLayer.text).toBe('@layer general{.mb\\:48{margin-bottom:3rem}}')
+    css.remove(task.name)
+    expect(css.generalLayer.rules.length).toBe(0)
+    expect(css.generalLayer.text).toBe('')
 })
 
-describe('add and remove preset/base', () => {
-    const css = new MasterCSS()
-    test('add mb:48@preset', async () => {
-        css.add('mb:48@preset')
-        expect(css.presetLayer.rules.length).toBe(1)
-        expect(css.presetLayer.text).toBe('@layer preset{.mb\\:48\\@preset{margin-bottom:3rem}}')
+test.concurrent('mb:48@preset', ({ task }) => {
+    css.add(task.name)
+    expect(css.presetLayer.rules.length).toBe(1)
+    expect(css.presetLayer.text).toBe('@layer preset{.mb\\:48\\@preset{margin-bottom:3rem}}')
+    css.remove(task.name)
+    expect(css.presetLayer.rules.length).toBe(0)
+    expect(css.presetLayer.text).toBe('')
+})
+
+test.concurrent('btn@sm', ({ task }) => {
+    const css = new MasterCSS({
+        components: {
+            btn: 'block font:32'
+        }
     })
-    test('remove mb:48@preset', async () => {
-        css.remove('mb:48@preset')
-        expect(css.presetLayer.rules.length).toBe(0)
-        expect(css.presetLayer.text).toBe('')
-    })
+    css.add(task.name)
+    expect(css.componentsLayer.rules.length).toBe(1)
+    expect(css.componentsLayer.text).toBe('@layer components{@media (width>=52.125rem){.btn\\@sm{display:block;font-size:2rem}}}')
+    css.remove(task.name)
+    expect(css.componentsLayer.rules.length).toBe(0)
+    expect(css.componentsLayer.text).toBe('')
 })

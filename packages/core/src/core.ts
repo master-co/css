@@ -24,6 +24,7 @@ export default class MasterCSS {
     readonly config: Config
     readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,components,general;')
     readonly rules: (Layer | Rule)[] = [this.layerStatementRule]
+    readonly classRules = new Map<string, SyntaxRule[]>()
     readonly animationsNonLayer = new NonLayer(this)
     readonly baseLayer = new SyntaxLayer('base', this)
     readonly themeLayer = new Layer('theme', this)
@@ -621,8 +622,9 @@ export default class MasterCSS {
 
     add(...classNames: string[]) {
         for (const className of classNames) {
-            this.generate(className)
-                .forEach((eachSyntaxRule) => eachSyntaxRule.layer.insert(eachSyntaxRule))
+            const rules = this.generate(className)
+            rules.forEach((eachSyntaxRule) => eachSyntaxRule.layer.insert(eachSyntaxRule))
+            this.classRules.set(className, rules)
         }
         return this
     }
@@ -633,27 +635,10 @@ export default class MasterCSS {
          * 匹配並刪除對應的 rule
          */
         for (const className of classNames) {
-            const componentClasses = this.components.get(className)
-            if (componentClasses) {
-                componentClasses.forEach((componentClass) => {
-                    this.componentsLayer.delete(className + ' ' + componentClass)
-                })
-            } else {
-                const atIndex = className.indexOf('@')
-                if (atIndex !== -1) {
-                    const name = className.slice(0, atIndex)
-                    const componentClasses = this.components.get(name)
-                    if (componentClasses) {
-                        const atToken = className.slice(atIndex)
-                        componentClasses.forEach((componentClass) => {
-                            this.componentsLayer.delete(componentClass + atToken + ' ' + className)
-                        })
-                    } else {
-                        this.generalLayer.delete(className) || this.baseLayer.delete(className) || this.presetLayer.delete(className)
-                    }
-                } else {
-                    this.generalLayer.delete(className) || this.baseLayer.delete(className) || this.presetLayer.delete(className)
-                }
+            const rules = this.classRules.get(className)
+            if (rules) {
+                rules.forEach((rule) => rule.layer.delete(rule.key))
+                this.classRules.delete(className)
             }
         }
     }
