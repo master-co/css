@@ -343,7 +343,7 @@ export default class MasterCSS {
                     if (a[1].type !== b[1].type) {
                         return (b[1].type || 0) - (a[1].type || 0)
                     }
-                    return b[0].localeCompare(a[0])
+                    return b[0].localeCompare(a[0], undefined, { numeric: true })
                 })
                 .forEach(([id, eachSyntaxRuleDefinition], index: number) => {
                     const syntax: DefinedRule = {
