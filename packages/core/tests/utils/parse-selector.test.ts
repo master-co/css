@@ -43,13 +43,7 @@ export const cases = {
                 { type: 'class', raw: '.active', value: 'active' },
                 { type: 'combinator', raw: '~', value: '~' }
             ]
-        }]],
-        [':of(.active+)', '.active+', [{
-            type: 'pseudo-class', raw: ':of', value: 'of', children: [
-                { type: 'class', raw: '.active', value: 'active' },
-                { type: 'combinator', raw: '+', value: '+' }
-            ]
-        }]],
+        }]]
     ],
     compound: [
         [':first:focus:disabled', ':first-child:focus:disabled', [

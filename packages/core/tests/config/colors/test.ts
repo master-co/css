@@ -1,5 +1,4 @@
-import { it, test, expect } from 'vitest'
-import { MasterCSS } from '../../../src'
+import { it, test } from 'vitest'
 import config from '../../config'
 import { expectLayers } from '../../test'
 
