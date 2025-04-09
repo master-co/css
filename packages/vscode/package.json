@@ -4,7 +4,7 @@
     "scripts": {
         "build": "techor build && pnpm generate",
         "generate": "tsx generate",
-        "dev": "pnpm build --watch",
+        "dev": "techor build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
         "vscode:package": "vsce package --no-dependencies --follow-symlinks",

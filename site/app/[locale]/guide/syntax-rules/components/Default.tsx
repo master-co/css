@@ -13,7 +13,7 @@ const Default = () => <table>
     <tbody>
         {
             Object.keys(rules)
-                .sort((a, b) => a.localeCompare(b))
+                .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
                 .map((eachSyntaxName) => {
                     const rule = (rules as any)[eachSyntaxName]
                     return (
@@ -21,7 +21,7 @@ const Default = () => <table>
                             <th><InlineCode className='white-space:nowrap'>{eachSyntaxName}</InlineCode></th>
                             <td>
                                 {rule.type
-                                    ? <code>{SyntaxRuleType[rule.type]}</code>
+                                    ? <code>{SyntaxRuleType[rule.type as keyof typeof SyntaxRuleType]}</code>
                                     : <span className='fg:lightest'>-</span>}
                             </td>
                             <td>

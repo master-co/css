@@ -11,7 +11,7 @@ export default () => <table>
     <tbody>
         {
             Object.keys(utilities)
-                .sort((a, b) => a.localeCompare(b))
+                .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
                 .map((eachUtilityName) => {
                     // @ts-ignore
                     const eachUtility = utilities[eachUtilityName]
