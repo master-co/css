@@ -197,7 +197,7 @@ export default class MasterCSS {
                             syntax.variables[v.key] = v
                         }
                     })
-                };
+                }
 
                 // Rule-defined variable groups
                 if (ruleVariableGroups) {
