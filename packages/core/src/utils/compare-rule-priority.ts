@@ -149,5 +149,5 @@ export default function compareRulePriority(a: SyntaxRule, b: SyntaxRule): numbe
     if (typeCmp !== 0) return typeCmp
 
     // 4. fallback: name
-    return a.name.localeCompare(b.name, undefined, { numeric: true })
+    return a.key.localeCompare(b.key, undefined, { numeric: true })
 }

@@ -13,11 +13,12 @@ Testing.readableClasses({
     10: ['block', 'round', 'm:32', 'my:16', 'px:16', 'bg:red', 'font:12', 'mb:48', 'bg:blue:hover', 'bg:purple:focus', 'font:32@sm', 'my:32@lg', 'font:48@lg'],
     11: ['flex', 'flex:col'],
     12: ['gap:15', 'p:40', 'grid-cols:2', 'grid-cols:3@2xs', 'grid-cols:4@sm', 'grid-cols:5@md'],
-    13: ['btn', 'btn-md', 'touch-yellow', 'yellow', 'mt:6x', 'w:full']
+    13: ['btn', 'btn-md', 'yellow', 'mt:6x', 'w:full', 'touch-yellow', 'btn-sm@sm']
 }, {
     components: {
         btn: {
             '': 'block fg:blue',
+            sm: 'font:12',
             md: 'font:14'
         },
         card: 'text:center p:5x p:10x@md',

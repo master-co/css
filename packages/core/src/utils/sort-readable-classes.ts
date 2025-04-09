@@ -21,12 +21,6 @@ export default function sortReadableClasses(classes: string[], css = new MasterC
             seenFixed.add(rule.fixedClass)
             return true
         })
-        .sort((a, b) => {
-            if (a.fixedClass && b.fixedClass) {
-                return a.fixedClass.localeCompare(b.fixedClass, undefined, { numeric: true })
-            }
-            return 0
-        })
     const allRules = [
         ...dedupedComponentRules,
         ...css.generalLayer.rules,
@@ -65,6 +59,11 @@ export default function sortReadableClasses(classes: string[], css = new MasterC
                 return a.sortKey[i] - b.sortKey[i]
             }
         }
+
+        if (a.rule.fixedClass && b.rule.fixedClass) {
+            return a.rule.fixedClass.localeCompare(b.rule.fixedClass, undefined, { numeric: true })
+        }
+
         return compareRulePriority(a.rule, b.rule)
     })
 
