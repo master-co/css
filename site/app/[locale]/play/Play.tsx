@@ -525,10 +525,10 @@ export default function Play(props: any) {
                     <Link href={'/'}>
                         {<app.Logotype height="19" />}
                     </Link>
-                    <label className='app-header-nav rel font:medium gap:5 ml:auto ml:30@md'>
+                    <label className='app-header-nav rel gap:5 font:medium ml:auto ml:30@md'>
                         v{version}
                         <select ref={versionSelectRef} name="version" defaultValue={version}
-                            className="abs full cursor:pointer inset:0 opacity:0"
+                            className="abs full inset:0 cursor:pointer opacity:0"
                             onChange={onVersionSelectChange}>
                             {templates.map(({ version: eachVersion }) => (
                                 <option value={eachVersion} key={eachVersion} disabled={props.shareItem && version !== eachVersion}>
@@ -542,7 +542,7 @@ export default function Play(props: any) {
                             </option>
                         } */}
                         </select>
-                        <IconChevronDown className="mr:-3 size:1em stroke:1.5" />
+                        <IconChevronDown className="size:1em mr:-3 stroke:1.5" />
                     </label>
                     {app.navs?.map(({ fullName, Icon, ...eachLink }: any, index) =>
                         <HeaderNav className={clsx('hidden@<md', index === app.navs.length - 1 && 'mr:auto')} key={eachLink.name} {...eachLink} onClick={(event: any) => {
@@ -557,7 +557,7 @@ export default function Play(props: any) {
                         </HeaderNav>
                     )}
                     {(shareId && !shareable) &&
-                        <button className="app-header-icon hidden@<md mx:12" onClick={() => copyShareLink()}>
+                        <button className="app-header-icon mx:12 hidden@<md" onClick={() => copyShareLink()}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                 <path d="M9 15l6 -6"></path>
@@ -572,7 +572,7 @@ export default function Play(props: any) {
                     {shareable && <ShareButton className={clsx('hidden@<md', sharing ? 'app-header-nav' : 'app-header-icon')} disabled={sharing} onClick={share}>
                         {sharing && <span className="ml:10">{$('Sharing ...')}</span>}
                     </ShareButton>}
-                    {(shareId || shareable) && <div className='hidden@<md bg:frame-light h:1em mx:4x w:1'></div>}
+                    {(shareId || shareable) && <div className='mx:4x bg:frame-light h:1em w:1 hidden@<md'></div>}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout ? '' : '2')}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
@@ -606,7 +606,7 @@ export default function Play(props: any) {
                         </svg>
                     </button>
                     <span className='hidden'>{layout}</span>
-                    <div className='hidden@<md bg:frame-light h:1em mx:4x w:1'></div>
+                    <div className='mx:4x bg:frame-light h:1em w:1 hidden@<md'></div>
                     {/* preview: desktop */}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', '')}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
@@ -629,21 +629,21 @@ export default function Play(props: any) {
                         )} />
                     </button>
                     <span className='hidden'>{preview}</span>
-                    <div className='hidden@<md bg:frame-light h:1em mx:4x w:1'></div>
+                    <div className='mx:4x bg:frame-light h:1em w:1 hidden@<md'></div>
                     <LanguageButton className="app-header-icon hidden@<md" />
-                    <ThemeButton className="app-header-icon hidden@<md mr:-12"
+                    <ThemeButton className="app-header-icon mr:-12 hidden@<md"
                         onChange={(theme: string) => {
                             previewIframeRef?.current?.contentWindow?.postMessage({
                                 theme
                             }, window.location.origin)
                         }}
                     />
-                    <DocMenuButton className="app-header-icon hidden@md mr:-12" />
+                    <DocMenuButton className="app-header-icon mr:-12 hidden@md" />
                 </HeaderContent>
             </Header >
             <div
                 className={clsx(
-                    'flex full bg:transparent_:is(.monaco-editor,.monaco-editor-background,.monaco-editor_.margin) flex:1 flex:col!@<sm overflow:hidden',
+                    'flex full flex:1 overflow:hidden bg:transparent_:is(.monaco-editor,.monaco-editor-background,.monaco-editor_.margin) flex:col!@<sm',
                     {
                         'flex:row': !layout,
                         'flex:row-reverse': layout === '2',
@@ -708,8 +708,8 @@ export default function Play(props: any) {
                         />
                     </div>
                 </Resizable>
-                <div className={clsx('rel bg:canvas flex:1|1|auto overflow:hidden', {
-                    'flex jc:center p:32': responsive,
+                <div className={clsx('rel flex:1|1|auto overflow:hidden bg:canvas', {
+                    'flex p:32 jc:center': responsive,
                     'pt:64': responsive && layout !== '3',
                     'pb:64': responsive && layout === '3',
                     'hidden@<md': tab !== 'Preview'
@@ -724,7 +724,7 @@ export default function Play(props: any) {
                         originX={'center'}
                         showHandler={responsive ? [false, true, true] : false}
                         className={clsx('full outline:1|frame-light.resizing', {
-                            'max-w:100% max-h:100% outline:1|frame-lighter': responsive
+                            'outline:1|frame-lighter max-h:100% max-w:100%': responsive
                         })}
                         showHeight={true}
                     >
@@ -737,7 +737,7 @@ export default function Play(props: any) {
                             srcDoc={previewHTML}
                         />
                         <div className={clsx('flex flex:col h:full', { 'hidden!': preview !== 'css' })}>
-                            <div className='flex align-items:center bb:1|lightest flex:0|0|auto font:12 h:48 justify-content:space-between px:30'>
+                            <div className='flex bb:1|lightest flex:0|0|auto px:30 align-items:center font:12 h:48 justify-content:space-between'>
                                 <div>Generated CSS</div>
                                 <div className="fg:light">{generatedCSSSize}</div>
                             </div>
@@ -756,9 +756,9 @@ export default function Play(props: any) {
                             />
                         </div>
                         {previewErrorEvent &&
-                            <div className="abs full bg:red-95@dark bg:red-5@light fg:red inset:0 p:12x">
+                            <div className="abs full inset:0 p:12x fg:red bg:red-5@light bg:red-95@dark">
                                 <h2 className="font:20">Error at line {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
-                                <div className="bg:black/.2@dark bg:red-90@light font:14 font:medium my:20 p:15|20 r:5">
+                                <div className="p:15|20 r:5 my:20 font:14 font:medium bg:black/.2@dark bg:red-90@light">
                                     {previewErrorEvent.message}
                                 </div>
                                 <div className="font:12">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>

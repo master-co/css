@@ -4,7 +4,7 @@ import { IconEyeHeart, IconFocusAuto, IconWand, IconZoomCode } from '@tabler/ico
 import Link from 'internal/components/Link'
 
 export default () => (
-    <Features className="grid-cols:3@sm my:14x">
+    <Features className="my:14x grid-cols:3@sm">
         <Feature>
             <IconEyeHeart className="app-icon-primary" />
             <div>

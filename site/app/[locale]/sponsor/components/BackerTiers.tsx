@@ -48,14 +48,14 @@ export default function BackerTiers() {
 
     return <div className="gap:15 grid-cols:2 grid-cols:4@sm">
         {backerTiers.map((eachBackerTier) => (
-            <button key={eachBackerTier.name} className="app-object app-object-interactive flex:col@<lg gap:20 p:25|30 r:5" onClick={() => setSelectedTier(eachBackerTier)}>
+            <button key={eachBackerTier.name} className="app-object app-object-interactive gap:20 p:25|30 r:5 flex:col@<lg" onClick={() => setSelectedTier(eachBackerTier)}>
                 <div className="font:48">{eachBackerTier.icon}</div>
                 <div className='flex:1 text:left'>
-                    <div className="uppercase::first-letter fg:strong font:semibold text:16">{eachBackerTier.name}</div>
+                    <div className="text:16 fg:strong font:semibold uppercase::first-letter">{eachBackerTier.name}</div>
                     {eachBackerTier.amount && (
-                        <div className="font:bold text:14">
+                        <div className="text:14 font:bold">
                             {eachBackerTier.amount}
-                            <span className="fg:neutral font:regular ml:5 text:12">
+                            <span className="text:12 fg:neutral font:regular ml:5">
                                 / {eachBackerTier.one ? 'one-time' : 'month'}
                             </span>
                         </div>

@@ -22,7 +22,7 @@ export default {
         }
     },
     components: {
-        yellow: 'bg:yellow fg:yellow-contrast outline:1|yellow-ring',
+        yellow: 'outline:1|yellow-ring bg:yellow fg:yellow-contrast',
         touch: {
             yellow: 'bg:touch-yellow:hover'
         }

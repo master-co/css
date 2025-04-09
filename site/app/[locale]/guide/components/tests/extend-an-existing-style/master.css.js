@@ -1,6 +1,6 @@
 export default {
     components: {
         a: 'fg:lime',
-        b: 'a text:underline' /* [!code highlight] */
+        b: 'text:underline a' /* [!code highlight] */
     }
 }
