@@ -86,7 +86,7 @@ export function calcRulePriority(rule: SyntaxRule): RulePriority {
     }
     if (rule.atRules?.media) extractFeatures(rule.atRules.media)
     if (rule.atRules?.container) extractFeatures(rule.atRules.container)
-    features.sort(([a], [b]) => a.localeCompare(b))
+    features.sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
     const selector = extractSelectorPriority(rule.selectorNodes ?? [])
     return {
         features,
@@ -106,7 +106,7 @@ function compareFeatureTuples(
         if (!bb) return 1
         const [nameA, minA, maxA] = aa
         const [nameB, minB, maxB] = bb
-        const nameCmp = nameA.localeCompare(nameB)
+        const nameCmp = nameA.localeCompare(nameB, undefined, { numeric: true })
         if (nameCmp !== 0) return nameCmp
         const rangeA = maxA - minA
         const rangeB = maxB - minB
@@ -149,5 +149,5 @@ export default function compareRulePriority(a: SyntaxRule, b: SyntaxRule): numbe
     if (typeCmp !== 0) return typeCmp
 
     // 4. fallback: name
-    return a.name.localeCompare(b.name)
+    return a.name.localeCompare(b.name, undefined, { numeric: true })
 }
