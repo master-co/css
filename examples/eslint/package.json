@@ -5,13 +5,13 @@
         "lint": "eslint"
     },
     "devDependencies": {
-        "@angular-eslint/template-parser": "^18.4.2",
+        "@angular-eslint/template-parser": "^19.3.0",
         "@master/eslint-config-css": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
-        "@master/styled.react": "^2.0.2",
-        "@typescript-eslint/parser": "^8.16.0",
-        "clsx": "^2.1.0",
-        "eslint": "^9.0.0",
-        "eslint-plugin-mdx": "^3.1.5"
+        "@master/styled.react": "^2.0.4",
+        "@typescript-eslint/parser": "^8.29.1",
+        "clsx": "^2.1.1",
+        "eslint": "^9.24.0",
+        "eslint-plugin-mdx": "^3.4.0"
     }
 }

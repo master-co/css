@@ -1,7 +1,7 @@
 import css from '@master/eslint-config-css'
 import htmlParser from "@angular-eslint/template-parser"
 import tsParser from '@typescript-eslint/parser'
-import mdx from 'eslint-plugin-mdx'
+import { flat } from 'eslint-plugin-mdx'
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -17,7 +17,7 @@ export default [
             parser: tsParser
         }
     },
-    mdx.flat,
+    flat,
     css,
     {
         rules: {
