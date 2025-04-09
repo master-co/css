@@ -1,4 +1,4 @@
-import { AtIdentifier, SyntaxRuleDefinition } from './config'
+import { SyntaxRuleDefinition } from './config'
 
 export type ValueComponent = StringValueComponent | NumberValueComponent | FunctionValueComponent | VariableValueComponent | SeparatorValueComponent
 export interface StringValueComponent { text?: string, token: string, type: 'string', value: string }

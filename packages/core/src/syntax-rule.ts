@@ -45,7 +45,6 @@ export class SyntaxRule {
         // 1. value / selectorToken
         this.declarations = definition.declarations
         let stateToken: string
-        let prefixToken: string | undefined
 
         if (this.type === SyntaxRuleType.Utility) {
             // TODO: id 使用其他方式傳遞
@@ -53,7 +52,7 @@ export class SyntaxRule {
         } else {
             let valueToken: string
             if (analyze) {
-                [valueToken, prefixToken] = analyze.call(this, name)
+                [valueToken] = analyze.call(this, name)
             } else {
                 const indexOfColon = name.indexOf(':')
                 this.keyToken = name.slice(0, indexOfColon + 1)

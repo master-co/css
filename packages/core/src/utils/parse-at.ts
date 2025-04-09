@@ -26,7 +26,7 @@ export default function parseAt(token: string, css = new MasterCSS(), isRaw = tr
         const regex = /([a-zA-Z0-9-:%|]+|[&|!|,|>|<|=][=]?)/g
         const raws = [...token.matchAll(regex)].map(match => match[0])
         let nodes: AtRuleNode[] = []
-        const addNode = (node: AtRuleNode, i: number) => {
+        const addNode = (node: AtRuleNode) => {
             let prev = nodes[nodes.length - 1]
             if (node.type === 'number' && !node.name) {
                 if (prev?.type === 'comparison') {
@@ -53,7 +53,7 @@ export default function parseAt(token: string, css = new MasterCSS(), isRaw = tr
             nodes.push(node)
         }
         raws
-            .forEach((raw, i) => {
+            .forEach((raw) => {
                 if (AT_COMPARISON_OPERATORS.includes(raw)) {
                     const newNode = { type: 'comparison', value: raw } as AtRuleComparisonOperatorNode
                     if (isRaw) newNode.raw = raw
@@ -85,9 +85,9 @@ export default function parseAt(token: string, css = new MasterCSS(), isRaw = tr
                 if (isRaw) node.raw = raw
                 if (definedAtRule) {
                     if (definedAtRule.nodes.length === 1) {
-                        addNode({ ...definedAtRule.nodes[0], raw }, i)
+                        addNode({ ...definedAtRule.nodes[0], raw })
                     } else if (definedAtRule.nodes.length) {
-                        addNode({ raw, children: definedAtRule.nodes }, i)
+                        addNode({ raw, children: definedAtRule.nodes })
                     }
                     return
                 } else {
@@ -102,7 +102,7 @@ export default function parseAt(token: string, css = new MasterCSS(), isRaw = tr
                         const { token, ...newNode } = parseValue(node.value, 'rem', css.config.rootSize)
                         Object.assign(node, newNode)
                     }
-                    addNode(node, i)
+                    addNode(node)
                 }
             })
 
