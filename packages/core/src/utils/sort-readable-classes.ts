@@ -14,13 +14,19 @@ export default function sortReadableClasses(classes: string[], css = new MasterC
 
     // 先去重 fixedClass for componentsLayer
     const seenFixed = new Set<string>()
-    const dedupedComponentRules = css.componentsLayer.rules.filter(rule => {
-        if (!rule.fixedClass) return true
-        if (seenFixed.has(rule.fixedClass)) return false
-        seenFixed.add(rule.fixedClass)
-        return true
-    })
-
+    const dedupedComponentRules = css.componentsLayer.rules
+        .filter(rule => {
+            if (!rule.fixedClass) return true
+            if (seenFixed.has(rule.fixedClass)) return false
+            seenFixed.add(rule.fixedClass)
+            return true
+        })
+        .sort((a, b) => {
+            if (a.fixedClass && b.fixedClass) {
+                return a.fixedClass.localeCompare(b.fixedClass, undefined, { numeric: true })
+            }
+            return 0
+        })
     const allRules = [
         ...dedupedComponentRules,
         ...css.generalLayer.rules,
@@ -45,7 +51,6 @@ export default function sortReadableClasses(classes: string[], css = new MasterC
         if (rule.type === SyntaxRuleType.Utility) return 1
         return 2
     }
-
     const rulesWithSortKey = allRules.map(rule => ({
         rule,
         sortKey: [
@@ -63,7 +68,8 @@ export default function sortReadableClasses(classes: string[], css = new MasterC
         return compareRulePriority(a.rule, b.rule)
     })
 
-    const orderedClasses = sortedRules.map(entry => entry.rule.fixedClass || entry.rule.name)
+    const orderedClasses = sortedRules
+        .map(entry => entry.rule.fixedClass || entry.rule.name)
     const unknownClasses = classes
         .filter(className => orderedClasses.indexOf(className) === -1)
         .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
