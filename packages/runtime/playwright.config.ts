@@ -29,20 +29,20 @@ export default defineConfig({
     },
 
     /* Configure projects for major browsers */
-    projects: process.env.CI
+    projects: true
         ? [
-            {
-                name: 'chromium',
-                use: { ...devices['Desktop Chrome'] },
-            },
+            // {
+            //     name: 'chromium',
+            //     use: { ...devices['Desktop Chrome'] },
+            // },
             {
                 name: 'firefox',
                 use: { ...devices['Desktop Firefox'] },
             },
-            {
-                name: 'webkit',
-                use: { ...devices['Desktop Safari'] },
-            },
+            // {
+            //     name: 'webkit',
+            //     use: { ...devices['Desktop Safari'] },
+            // },
         ]
         : [
             {
