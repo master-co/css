@@ -1219,10 +1219,10 @@ importers:
         specifier: ^22.14.0
         version: 22.14.0
       '@types/react':
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.0
       '@types/react-dom':
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.2(@types/react@19.1.0)
       '@types/react-portal':
         specifier: ^4.0.7
@@ -1366,13 +1366,13 @@ importers:
         specifier: ^4.0.2
         version: 4.0.2(webpack@5.98.0(@swc/core@1.11.16(@swc/helpers@0.5.15)))
       react:
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.0
       react-countup:
         specifier: ^6.5.3
         version: 6.5.3(react@19.1.0)
       react-dom:
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
       react-intersection-observer:
         specifier: ^9.16.0
