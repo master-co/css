@@ -18,16 +18,6 @@ import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 
-const configResolvedCaches = new Map<Config | undefined, {
-    config: MasterCSS['config']
-    components: MasterCSS['components']
-    selectors: MasterCSS['selectors']
-    animations: MasterCSS['animations']
-    atRules: MasterCSS['atRules']
-    variables: MasterCSS['variables']
-    definedRules: MasterCSS['definedRules']
-}>()
-
 export default class MasterCSS {
     static config: Config = defaultConfig
     readonly definedRules: DefinedRule[] = []
@@ -70,30 +60,16 @@ export default class MasterCSS {
         } else {
             customConfig = this.customConfig
         }
-        const cached = configResolvedCaches.get(customConfig)
-        if (cached) {
-            Object.assign(this, cached)
-        } else {
-            // @ts-ignore
-            this.config = customConfig?.override
-                ? extendConfig(customConfig)
-                : extendConfig(defaultConfig, customConfig)
-            this.resolveVariables()
-            this.resolveAnimations()
-            this.resolveSelectors()
-            this.resolveAtRules()
-            this.resolveRules()
-            this.resolveComponents()
-            configResolvedCaches.set(customConfig, {
-                config: this.config,
-                components: this.components,
-                selectors: this.selectors,
-                animations: this.animations,
-                atRules: this.atRules,
-                variables: this.variables,
-                definedRules: this.definedRules,
-            })
-        }
+        // @ts-expect-error read-only
+        this.config = customConfig?.override
+            ? extendConfig(customConfig)
+            : extendConfig(defaultConfig, customConfig)
+        this.resolveVariables()
+        this.resolveAnimations()
+        this.resolveSelectors()
+        this.resolveAtRules()
+        this.resolveRules()
+        this.resolveComponents()
     }
 
     resolveAnimations() {
@@ -697,13 +673,19 @@ export default class MasterCSS {
     }
 
     reset() {
-        this.animations.clear()
-        this.variables.clear()
-        this.atRules.clear()
-        this.selectors.clear()
-        this.components.clear()
+        // @ts-ignore
+        this.animations = new Map()
+        // @ts-ignore
+        this.variables = new Map()
+        // @ts-ignore
+        this.atRules = new Map()
+        // @ts-ignore
+        this.selectors = new Map()
+        // @ts-ignore
+        this.components = new Map()
+        // @ts-ignore
+        this.classRules = new Map()
         this.definedRules.length = 0
-        this.classRules.clear()
         this.baseLayer.reset()
         this.themeLayer.reset()
         this.presetLayer.reset()
@@ -715,7 +697,6 @@ export default class MasterCSS {
 
     destroy() {
         this.reset()
-        configResolvedCaches.delete(this.customConfig)
         return this
     }
 
