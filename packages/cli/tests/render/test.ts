@@ -24,7 +24,7 @@ it('render css text into <head>', async () => {
             <head>
                 <link rel="styleSheet">
                 <style></style>
-            <style id="master">@layer base,theme,preset,components,general;@layer general{.font\\:32{font-size:2rem}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0rem}.text\\:center{text-align:center}}</style></head>
+            <style id="master">@layer base,theme,preset,components,general;@layer general{.font\\:32{font-size:2rem}.text\\:center{text-align:center}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0rem}}</style></head>
             <body>
                 <h1 class="text:center ml:0>:is(a,button):first font:32">Hello World</h1>
             </body>

@@ -1550,6 +1550,12 @@ importers:
         specifier: workspace:^
         version: link:../../shared
 
+  packages/create/tests/with-no-deps/dist:
+    dependencies:
+      '@master/css':
+        specifier: 2.0.0-rc.61
+        version: 2.0.0-rc.61
+
   packages/devtools-hook:
     devDependencies:
       '@master/css':
