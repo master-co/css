@@ -23,9 +23,13 @@ const Testing = {
             }
         })
     },
-    readableClasses(cases: Record<string, string[]>, config?: Config) {
-        test.concurrent.each(Object.entries(cases))('%s', (_, classes) => {
-            expect(sortReadableClasses(shuffleArray([...classes]), new MasterCSS(config))).toEqual(classes)
+    readableClasses(cases: Record<string, string>, config?: Config) {
+        test.concurrent.each(Object.entries(cases))('%s', (_, cls) => {
+            const classes = cls.split(' ')
+                .flat()
+                .map((cls) => cls.trim())
+                .filter((Boolean))
+            expect(sortReadableClasses(shuffleArray([...classes]), new MasterCSS(config)).join(' ')).toBe(classes.join(' '))
         })
     },
     layers(cases: Record<string, {
