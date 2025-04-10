@@ -62,6 +62,15 @@ export const cases = {
             { raw: 'span', value: 'span' }
         ]],
     ],
+    universal: [
+        ['*', '*', [{ type: 'universal', raw: '*', value: '*' }]],
+        ['_hr+*', ' hr+*', [
+            { type: 'combinator', raw: '_', value: ' ' },
+            { raw: 'hr', value: 'hr' },
+            { type: 'combinator', raw: '+', value: '+' },
+            { type: 'universal', raw: '*', value: '*' }
+        ]],
+    ],
     complex: [
         [':hover+div:has(:active)', ':hover+div:has(:active)', [
             { type: 'pseudo-class', raw: ':hover', value: 'hover' },
