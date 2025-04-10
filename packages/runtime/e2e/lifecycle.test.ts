@@ -14,6 +14,7 @@ test('destroy on progressive', async ({ page }) => {
     expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(2)
     await page.evaluate(() => {
         globalThis.cssRuntime.destroy()
+        globalThis.cssRuntime.resolve()
     })
     expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer.rules.length)).toBe(0)
     expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(1)
