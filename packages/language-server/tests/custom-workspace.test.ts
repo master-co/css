@@ -12,8 +12,8 @@ const settings: Settings = {
 
 withFixture('monorepo', async (context) => {
     test('workspaces', async ({ expect }) => {
-        expect(context.server.workspaces.length).toBe(2)
-        expect(context.server.workspaces.map((x) => x.uri)).toEqual(
+        expect(context.server.workspaces.size).toBe(2)
+        expect(Array.from(context.server.workspaces).map(([_, x]) => x.uri)).toEqual(
             expect.arrayContaining([
                 URI.file(resolve('tests/fixtures/monorepo')).toString(),
                 URI.file(resolve('tests/fixtures/monorepo/c')).toString(),

@@ -21,7 +21,11 @@ export declare interface Workspace {
 export default class CSSLanguageServer {
     workspaceFolders: WorkspaceFolder[] = []
     workspaces = new Map<string, Workspace>()
-    globalWorkspace: Workspace | undefined
+    globalWorkspace: Workspace = {
+        uri: '',
+        openedTextDocuments: [],
+        languageServiceSettings: this.settings as CSSLanguageServiceSettings
+    }
     documents: TextDocuments<TextDocument>
     initializing?: Promise<void>
     clientCapabilities: ClientCapabilities = {}
@@ -74,16 +78,6 @@ export default class CSSLanguageServer {
         this.clientCapabilities = params.capabilities
         if (params.workspaceFolders?.length) {
             this.workspaceFolders = params.workspaceFolders
-        } else {
-            /**
-             * @deprecated — in favour of workspaceFolders
-             */
-            // fallback global workspace
-            this.globalWorkspace = {
-                uri: '',
-                openedTextDocuments: [],
-                languageServiceSettings: this.settings as CSSLanguageServiceSettings
-            }
         }
         return {
             capabilities: SERVER_CAPABILITIES
@@ -127,7 +121,6 @@ export default class CSSLanguageServer {
     }
 
     async onDidOpen(params: TextDocumentChangeEvent<TextDocument>) {
-        this.console.log(`Opened document ${params.document.uri}`)
         await this.init()
         const workspace = this.findClosestWorkspace(params.document.uri)
         if (!workspace || workspace.openedTextDocuments.includes(params.document)) return

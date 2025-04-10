@@ -96,7 +96,7 @@ export function withFixture(fixture: string, cb: (context: FixtureContext) => vo
                 rootUri,
                 workspaceFolders,
                 clientConnection,
-                rootWorkspace: server.workspaces.get(rootUri),
+                rootWorkspace: server.workspaces.get(rootUri) || server.globalWorkspace,
                 createDocument: (text = '', options?: { lang?: string, dir?: string }) => {
                     return createDocument(text, { lang: options?.lang, dir: options?.dir || fixtureDir })
                 }
