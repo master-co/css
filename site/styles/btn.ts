@@ -4,17 +4,17 @@ export default {
     components: {
         btn: {
             '': 'center-content inline-flex font:semibold outline-offset:-1',
-            'xs': 'font:12 h:6x px:2x r:4',
-            'sm': 'font:12 h:8x px:3x r:6',
-            'md': 'font:14 h:10x px:4x r:6',
-            'lg': 'font:16 h:12x px:5x r:8',
-            'xl': 'font:16 h:14x px:6x r:10',
+            'xs': 'r:4 px:2x font:12 h:6x',
+            'sm': 'r:6 px:3x font:12 h:8x',
+            'md': 'r:6 px:4x font:14 h:10x',
+            'lg': 'r:8 px:5x font:16 h:12x',
+            'xl': 'r:10 px:6x font:16 h:14x',
             'rounded': {
-                'xs': 'rounded font:12 h:6x px:3x',
-                'sm': 'rounded font:12 h:8x px:4x',
-                'md': 'rounded font:14 h:10x px:5x',
-                'lg': 'rounded font:16 h:12x px:6x',
-                'xl': 'rounded font:16 h:14x px:7x',
+                'xs': 'rounded px:3x font:12 h:6x',
+                'sm': 'rounded px:4x font:12 h:8x',
+                'md': 'rounded px:5x font:14 h:10x',
+                'lg': 'rounded px:6x font:16 h:12x',
+                'xl': 'rounded px:7x font:16 h:14x',
             }
         }
     }

@@ -2,8 +2,11 @@ import { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import resolveClassNode from './resolve-class-node'
 import { TSESTree } from '@typescript-eslint/utils'
 
-export default function withVisitClassNode(visit: (node: TSESTree.Node, resolved: ReturnType<typeof resolveClassNode>) => void, context: RuleContext<any, any[]>) {
-    const visitNode = (node,) => {
+export default function withVisitClassNode(
+    visit: (node: TSESTree.Node, resolved: ReturnType<typeof resolveClassNode>) => void,
+    context: RuleContext<any, any[]>
+) {
+    const visitNode = (node) => {
         switch (node.type) {
             case 'BinaryExpression':
             case 'Identifier':
@@ -40,9 +43,11 @@ export default function withVisitClassNode(visit: (node: TSESTree.Node, resolved
                 return
             case 'Property':
                 if (node.shorthand) return
-                visitNode(node.key)
-                if (node.key.type !== 'Literal')
+                if (node.value && ['Literal', 'ArrayExpression', 'ObjectExpression'].includes(node.value.type) && typeof node.value?.value !== 'boolean') {
                     visitNode(node.value)
+                } else if (node.key.type === 'Literal') {
+                    visitNode(node.key)
+                }
                 return
             default:
                 let resolved = resolveClassNode(node, context)

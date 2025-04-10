@@ -8,7 +8,7 @@ export default function defineVisitors({ context, settings }: { context: RuleCon
     const classAttributeRegex = new RegExp(`^(?:${settings.classAttributes.join('|')})$`)
     const classFunctionsRegex = new RegExp(`^(?:${settings.classFunctions.join('|')})`)
     const classDeclarationsRegex = new RegExp(`^(?:${settings.classDeclarations.join('|')})$`)
-    const isFnNode = (node) => {
+    const allowCalleeNode = (node) => {
         let calleeName = ''
         const calleeNode = node.callee || node.tag
         if (calleeNode.type === 'Identifier') {
@@ -21,9 +21,7 @@ export default function defineVisitors({ context, settings }: { context: RuleCon
     }
     const visitClassNode = withVisitClassNode(visitNode, context)
     const CallExpression = function (node) {
-        if (!isFnNode(node)) {
-            return
-        }
+        if (!allowCalleeNode(node)) return
         node.arguments.forEach((node) => {
             visitClassNode(node)
         })
@@ -47,7 +45,7 @@ export default function defineVisitors({ context, settings }: { context: RuleCon
             visitClassNode(node)
         },
         TaggedTemplateExpression: function (node) {
-            if (isFnNode(node)) {
+            if (allowCalleeNode(node)) {
                 visitClassNode(node.quasi)
                 return
             }
