@@ -105,7 +105,7 @@ Apply the style:
 To learn more, check out the [Components](/guide/components) documentation.
 
 ### Merging media queries
-Deprecate extended `breakpoints` and `queries` ​​in favor of `config.at`.
+Deprecate extended `breakpoints` and `queries` ​​in favor of `config.screens` and `config.at`.
 ```js name=master.css.js
 import { Style } from '@master/css' /* [!code --] */
 
@@ -114,13 +114,15 @@ Style.extend('breakpoints', { /* [!code --] */
 }) /* [!code --] */
 
 Style.extend('queries', { /* [!code --] */
-   watch: '(max-width:42mm) and (min-width:38mm)' /* [!code --] */
+   watch: '(min-width:38mm) and (max-width:42mm)' /* [!code --] */
 }) /* [!code --] */
 
 export default { /* [!code ++] */
-    at: { /* [!code ++] */
+    screens: { /* [!code ++] */
         laptop: 1024, /* [!code ++] */
-        watch: '(max-width:42mm) and (min-width:38mm)' /* [!code ++] */
+    }, /* [!code ++] */
+    at: { /* [!code ++] */
+        watch: '>=38mm&<=42mm' /* [!code ++] */
     } /* [!code ++] */
 } /* [!code ++] */
 ```
@@ -142,12 +144,27 @@ Apply a custom `ocean` theme:
 ---
 
 ## Syntax changes
-### Renamed `font:color` to `fg:color`
+### Using foreground colors
 The color property in CSS generally refers to the foreground color of elements such as text and borders. It is more appropriate to use `color:` or the acronym `fg:` for this purpose.
 ```html
 <p class="font:blue-60"></p> <!-- [!code --] -->
 <p class="fg:blue-60"></p> <!-- [!code ++] -->
 ```
+
+### Using `:of()` pseudo-class
+In v1, we used `<selector><combinator>{}` to style elements based on their ancestor. In v2, we introduced the `:of()` pseudo-class to achieve the same effect.
+```html
+<!-- @MARK active -->
+<div class=".active_{hidden}">hidden</div><!-- [!code --] -->
+<div class=".active>{hidden}">hidden</div><!-- [!code --] -->
+<div class=".active+{hidden}">hidden</div><!-- [!code --] -->
+<div class=".active~{hidden}">hidden</div><!-- [!code --] -->
+<div class="hidden:of(.active)">hidden</div><!-- [!code ++] -->
+<div class="hidden:of(.active>)">hidden</div><!-- [!code ++] -->
+<div class="hidden:of(.active+)">hidden</div><!-- [!code ++] -->
+<div class="hidden:of(.active~)">hidden</div><!-- [!code ++] -->
+```
+This is a selector unique to Master CSS. For more information, see [`:of()`](/guide/state-selectors#of).
 
 ### Default colors are based on themes
 In v1, the default value for `color` was linked to `color-50`. In v2, the default colors have been updated to align with the Master Design System theme colors, which are determined by variable themes like `light` or `dark`.
