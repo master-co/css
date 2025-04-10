@@ -59,8 +59,7 @@
         "react": ">=16"
     },
     "dependencies": {
-        "@master/css-runtime": "workspace:^",
-        "react-use": "^17.6.0"
+        "@master/css-runtime": "workspace:^"
     },
     "devDependencies": {
         "@playwright/experimental-ct-react": "^1.49.1",

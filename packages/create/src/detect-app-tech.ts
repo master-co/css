@@ -1,7 +1,7 @@
 import { readJSONFileSync } from '@techor/fs'
 import { existsSync } from 'fs'
 
-export default (): 'nextjs' | 'nuxtjs' | 'remix' | 'svelte' | 'laravel' | 'astro' | 'angular' | 'react' | 'vuejs' | 'vite' | 'webpack' | undefined => {
+export default (): 'nextjs' | 'nuxtjs' | 'svelte' | 'laravel' | 'astro' | 'angular' | 'react' | 'vuejs' | 'vite' | 'webpack' | undefined => {
     if (
         existsSync('next.config.js') ||
         existsSync('next.config.cjs') ||
@@ -18,15 +18,6 @@ export default (): 'nextjs' | 'nuxtjs' | 'remix' | 'svelte' | 'laravel' | 'astro
         existsSync('nuxt.config.ts')
     ) {
         return 'nuxtjs'
-    }
-
-    if (
-        existsSync('remix.config.js') ||
-        existsSync('remix.config.cjs') ||
-        existsSync('remix.config.mjs') ||
-        existsSync('remix.config.ts')
-    ) {
-        return 'remix'
     }
 
     if (
@@ -60,10 +51,6 @@ export default (): 'nextjs' | 'nuxtjs' | 'remix' | 'svelte' | 'laravel' | 'astro
     }
 
     const pkg = readJSONFileSync('package.json')
-
-    if (pkg?.dependencies?.['@remix-run/react'] || pkg?.devDependencies?.['@remix-run/react']) {
-        return 'remix'
-    }
 
     if (pkg?.dependencies?.['@sveltejs/kit'] || pkg?.devDependencies?.['@sveltejs/kit']) {
         return 'svelte'

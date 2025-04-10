@@ -2,10 +2,11 @@
 
 import { CSSRuntime } from '@master/css-runtime'
 import { createContext, useContext, useRef, useCallback, ReactNode } from 'react'
-import { useUpdateEffect, useIsomorphicLayoutEffect } from 'react-use'
 import type CSSRuntimeProviderProps from './types/provider-props'
 // fix: ReferenceError: React is not defined
 import React from 'react'
+import useIsomorphicLayoutEffect from './uses/useIsomorphicLayoutEffect'
+import { useUpdateEffect } from './uses/useUpdateEffect'
 
 export const CSSRuntimeContext = createContext<CSSRuntime | undefined>(undefined)
 export const useCSSRuntime = () => useContext(CSSRuntimeContext)

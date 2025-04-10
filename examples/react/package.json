@@ -12,8 +12,8 @@
     "dependencies": {
         "@master/css-runtime": "workspace:^",
         "@master/css.react": "workspace:^",
-        "react": "^19.0.0",
-        "react-dom": "^19.0.0"
+        "react": "^19",
+        "react-dom": "^19"
     },
     "devDependencies": {
         "@eslint/compat": "^1.2.3",
