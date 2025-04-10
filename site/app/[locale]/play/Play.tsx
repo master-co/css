@@ -610,22 +610,22 @@ export default function Play(props: any) {
                     {/* preview: desktop */}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', '')}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
-                            'stroke:1.3 stroke:current',
-                            !preview ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
+                            'stroke:1.3',
+                            !preview ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2 stroke:current'
                         )} />
                     </button>
                     {/* preview: responsive */}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', 'responsive')}>
                         <IconDeviceMobile width="22" height="22" className={clsx(
-                            'stroke:1.3 stroke:current',
-                            responsive ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
+                            'stroke:1.3',
+                            responsive ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2 stroke:current'
                         )} />
                     </button>
                     {/* preview: css */}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', 'css')}>
                         <IconBrandCss3 width="22" height="22" className={clsx(
-                            'stroke:1.3 stroke:current',
-                            preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2'
+                            'stroke:1.3',
+                            preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2 stroke:current'
                         )} />
                     </button>
                     <span className='hidden'>{preview}</span>
