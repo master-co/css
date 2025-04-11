@@ -35,7 +35,7 @@ export default () => {
                             <tr key={index}>
                                 <th className="white-space:nowrap"><InlineCode>{`@${name}`}</InlineCode></th>
                                 <th className="white-space:nowrap"><InlineCode>{`screen-${name}`}</InlineCode></th>
-                                <td><InlineCode>{`${value}`}</InlineCode></td>
+                                <td><InlineCode lang="ts">{`${value}`}</InlineCode></td>
                                 <td><InlineCode>{`(${value / 16}rem)`}</InlineCode></td>
                                 <td>{descriptions[name as keyof typeof descriptions]}</td>
                             </tr>

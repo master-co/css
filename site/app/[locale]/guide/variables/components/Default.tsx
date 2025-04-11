@@ -1,4 +1,5 @@
 import { MasterCSS } from '@master/css'
+import InlineCode from '~/internal/components/InlineCode'
 
 const css = new MasterCSS()
 
@@ -21,7 +22,7 @@ export default () => <table>
                             <th><code className='white-space:nowrap'>{variable?.name}</code></th>
                             <td><code>{variable?.type}</code></td>
                             <td><code>{variable?.group}</code></td>
-                            <td><code className='word-break:break-all'>{variable?.value}</code></td>
+                            <td><InlineCode lang="ts" className='word-break:break-all'>{JSON.stringify(variable?.value, null, 2)}</InlineCode></td>
                         </tr>
                     )
                 })
