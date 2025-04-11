@@ -2,6 +2,7 @@ import SyntaxRuleType from '../syntax-rule-type'
 import MasterCSS from '../core'
 import compareRulePriority from './compare-rule-priority'
 import { SyntaxRule } from '../syntax-rule'
+import { __UNSORTED__ } from '../common'
 
 /**
  * Sorts classes in a consistent order
@@ -10,7 +11,17 @@ import { SyntaxRule } from '../syntax-rule'
  * @returns consistent classes
  */
 export default function sortReadableClasses(classes: string[], css = new MasterCSS()) {
-    css.add(...classes)
+    const shouldSortClasses = []
+    const unsortedClasses = []
+    for (const className of classes) {
+        if (className.includes(__UNSORTED__)) {
+            unsortedClasses.push(className)
+        } else {
+            shouldSortClasses.push(className)
+        }
+    }
+
+    css.add(...shouldSortClasses)
 
     // 先去重 fixedClass for componentsLayer
     const seenFixed = new Set<string>()
@@ -67,11 +78,16 @@ export default function sortReadableClasses(classes: string[], css = new MasterC
         return compareRulePriority(a.rule, b.rule)
     })
 
-    const orderedClasses = sortedRules
-        .map(entry => entry.rule.fixedClass || entry.rule.name)
-    const unknownClasses = classes
-        .filter(className => orderedClasses.indexOf(className) === -1)
-        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
-    css.remove(...classes)
-    return [...orderedClasses, ...unknownClasses]
+    const orderedClasses = sortedRules.map(entry => entry.rule.fixedClass || entry.rule.name)
+    css.remove(...shouldSortClasses)
+
+    return [
+        ...orderedClasses,
+        ...[
+            ...shouldSortClasses
+                .filter(className => orderedClasses.indexOf(className) === -1),
+            ...unsortedClasses
+        ]
+            .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+    ]
 }
