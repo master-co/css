@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "jsx": "react",
         "paths": {
             "@master/css-cli": [ "./node_modules/@master/css-cli/src" ],
             "@master/create-css": [ "./node_modules/@master/create-css/src" ],

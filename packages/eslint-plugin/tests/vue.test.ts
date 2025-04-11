@@ -1,19 +1,7 @@
-import rule from '../../src/rules/class-order'
-import { RuleTester } from '@typescript-eslint/rule-tester'
+import rule from '../src/rules/class-order'
+import { jsxTester } from './testers'
 
-const ruleTester = new RuleTester({
-    languageOptions: {
-        parserOptions: {
-            ecmaVersion: 2022,
-            sourceType: 'module',
-            ecmaFeatures: {
-                jsx: true,
-            }
-        }
-    }
-})
-
-ruleTester.run('vue class order', rule, {
+jsxTester.run('vue class order', rule, {
     valid: [
         { code: `<div class="m:8 p:8 bg:black f:24 fg:white">Simple, basic</div>` }
     ],

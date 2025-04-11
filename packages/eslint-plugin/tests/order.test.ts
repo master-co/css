@@ -1,32 +1,19 @@
 import rule from '../src/rules/class-order'
-import { RuleTester } from '@typescript-eslint/rule-tester'
+import { createTester } from './testers'
 
-new RuleTester({
-    languageOptions: {
-        parserOptions: {
-            ecmaVersion: 2022,
-            sourceType: 'module',
-            ecmaFeatures: {
-                jsx: true,
-            }
-        },
-    },
+createTester({
     settings: {
         '@master/css': {
             classAttributes: ['test', 'className', 'class'],
             config: {
-                components: { zDialog: 'z:10000' }
-            }
-        }
-    }
+                components: { zDialog: 'z:10000' },
+            },
+        },
+    },
 }).run('class order', rule, {
     valid: [
-        {
-            code: `<div class="m:8 p:8 bg:black f:24 fg:white">Simple, basic</div>`,
-        },
-        {
-            code: `<div class="mt:20 card">Traditional class + syntax</div>`,
-        },
+        { code: `<div class="m:8 p:8 bg:black f:24 fg:white">Simple, basic</div>` },
+        { code: `<div class="mt:20 card">Traditional class + syntax</div>` },
         {
             code: '<div className={ctl(`${live && \'bg:blue-10 bg:purple-40@dark r:5@sm\'} p:10 w:full`)}>ctl + exp</div>',
         },
@@ -36,53 +23,33 @@ new RuleTester({
         {
             code: '<div className={ctl(`${live && \'bg: black@dark white\'} p:10 w:full`)}>Space trim issue</div>',
         },
-        {
-            code: `<div class='m:8 p:8 bg:black f:24 fg:white'>Simple quotes</div>`,
-        },
-        {
-            code: `<div class="p:8 ">Extra space at the end</div>`,
-        },
-        {
-            code: `<div class="p:5 px:6 px:3@sm py:2@md p:4@lg">'p', then 'py' then 'px'</div>`,
-        },
+        { code: `<div class='m:8 p:8 bg:black f:24 fg:white'>Simple quotes</div>` },
+        { code: `<div class="p:8 ">Extra space at the end</div>` },
+        { code: `<div class="p:5 px:6 px:3@sm py:2@md p:4@lg">'p', then 'py' then 'px'</div>` },
         {
             code: `ctl(\`
-                        container
-                        flex
-                        w:12
-                        w:6@sm
-                        w:4@lg
-                    \`)`,
+                container
+                flex
+                w:12
+                w:6@sm
+                w:4@lg
+            \`)`,
         },
-        {
-            code: `<div class="w:12 w:500px@lg">Allowed arbitrary value</div>`,
-        },
+        { code: `<div class="w:12 w:500px@lg">Allowed arbitrary value</div>` },
         {
             code: `<div class="bg:black:focus:hover@dark bg:gray-40:disabled:focus:hover@md@dark">Stackable variants</div>`,
         },
-        {
-            code: `<div className={clsx(\`abs flex bottom:0 flex:col h:270px w:full\`)}>clsx</div>`
-        },
-        {
-            code: `<div class="zDialog flex w:12">Number values</div>`,
-        },
-        {
-            code: `<div class="   flex  m:10   ">Extra spaces</div>`,
-        },
+        { code: `<div className={clsx(\`abs flex bottom:0 flex:col h:270px w:full\`)}>clsx</div>` },
+        { code: `<div class="zDialog flex w:12">Number values</div>` },
+        { code: `<div class="   flex  m:10   ">Extra spaces</div>` },
         {
             code: `
-      <div className={\`\${yolo ? 'flex flex:col' : 'block'} rel overflow:hidden w:full\`}>Issue #131</div>
-      `,
+                <div className={\`\${yolo ? 'flex flex:col' : 'block'} rel overflow:hidden w:full\`}>Issue #131</div>
+            `,
         },
-        {
-            code: `<div class>No errors while typing</div>`,
-        },
-        {
-            code: `<div class="block flex\u3000my:1">Do not treat full width space as class separator</div>`,
-        },
-        {
-            code: `<div class="m:10 m:20 m:30:hover m:40@dark">Collision class</div>`,
-        },
+        { code: `<div class>No errors while typing</div>` },
+        { code: `<div class="block flex\u3000my:1">Do not treat full width space as class separator</div>` },
+        { code: `<div class="m:10 m:20 m:30:hover m:40@dark">Collision class</div>` },
         {
             code: `
                 export default () => (
@@ -104,9 +71,7 @@ new RuleTester({
                 )
             `,
         },
-        {
-            code: `<div class="font:error mt:0 mt:0@sm a c d hello:world">Error class</div>`,
-        }
+        { code: `<div class="font:error mt:0 mt:0@sm a c d hello:world">Error class</div>` },
     ],
     invalid: [
         {
@@ -132,9 +97,7 @@ new RuleTester({
         {
             code: '<div className={ctl(`${live && \'bg:black@dark bg:white\'} flex p:10`)}>Space trim issue with fix</div>',
             output: '<div className={ctl(`${live && \'bg:white bg:black@dark\'} flex p:10`)}>Space trim issue with fix</div>',
-            errors: [
-                { messageId: 'invalidClassOrder' }
-            ],
+            errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `<div class='bg:black@dark bg:white'>Simple quotes</div>`,
@@ -162,51 +125,54 @@ new RuleTester({
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
-            // Multiline + both head/tail spaces
             code: `
-      ctl(\`
-        hidden
-        w:6@sm
-        block
-        hidden
-        flex
-        block
-        w:12
-        flex
-        block
-        w:4@lg
-        w:4@lg
-      \`);`,
+                ctl(\`
+                    hidden
+                    w:6@sm
+                    block
+                    hidden
+                    flex
+                    block
+                    w:12
+                    flex
+                    block
+                    w:4@lg
+                    w:4@lg
+                \`);
+            `,
             output: `
-      ctl(\`
-        block
-        flex
-        hidden
-        w:12
-        w:6@sm
-        w:4@lg
-      \`);`,
+                ctl(\`
+                    block
+                    flex
+                    hidden
+                    w:12
+                    w:6@sm
+                    w:4@lg
+                \`);
+            `,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `
-      ctl(\`
-        invalid
-        w:6@sm
-        container
-        w:12
-        flex
-        w:4@lg
-      \`);`,
+                ctl(\`
+                    invalid
+                    w:6@sm
+                    container
+                    w:12
+                    flex
+                    w:4@lg
+                \`);
+            `,
             output: `
-      ctl(\`
-        container
-        flex
-        w:12
-        w:6@sm
-        w:4@lg
-        invalid
-      \`);`,
+                ctl(\`
+                    container
+                    flex
+                    w:12
+                    w:6@sm
+                    w:4@lg
+                    invalid
+                \`);
+            `,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
@@ -221,11 +187,11 @@ new RuleTester({
         },
         {
             code: `cva({
-          primary: ["abs bottom:0 w:full h:70px flex flex:col"],
-        })`,
+                primary: ["abs bottom:0 w:full h:70px flex flex:col"],
+            })`,
             output: `cva({
-          primary: ["abs flex bottom:0 flex:col h:70px w:full"],
-        })`,
+                primary: ["abs flex bottom:0 flex:col h:70px w:full"],
+            })`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
@@ -235,50 +201,50 @@ new RuleTester({
         },
         {
             code: `
-      ctl(\`
-        \${
-            !isDisabled &&
-            \`
-            top:0
-            flex
-            b:0
-            \`
-        }
-        \${
-            isDisabled &&
-            \`
-            mx:0
-            b:0
-            \`
-        }
-        flex
-        px:2
-      \`)
-      `,
+                ctl(\`
+                    \${
+                            !isDisabled &&
+                            \`
+                            top:0
+                            flex
+                            b:0
+                            \`
+                    }
+                    \${
+                            isDisabled &&
+                            \`
+                            mx:0
+                            b:0
+                            \`
+                    }
+                    flex
+                    px:2
+                \`)
+            `,
             output: `
-      ctl(\`
-        \${
-            !isDisabled &&
-            \`
-            flex
-            b:0
-            top:0
-            \`
-        }
-        \${
-            isDisabled &&
-            \`
-            b:0
-            mx:0
-            \`
-        }
-        flex
-        px:2
-      \`)
-      `,
+                ctl(\`
+                    \${
+                            !isDisabled &&
+                            \`
+                            flex
+                            b:0
+                            top:0
+                            \`
+                    }
+                    \${
+                            isDisabled &&
+                            \`
+                            b:0
+                            mx:0
+                            \`
+                    }
+                    flex
+                    px:2
+                \`)
+            `,
             errors: [
                 { messageId: 'invalidClassOrder' },
-                { messageId: 'invalidClassOrder' }
+                { messageId: 'invalidClassOrder' },
             ],
         },
         {
@@ -298,68 +264,74 @@ new RuleTester({
         },
         {
             code: `
-      ctl(\`
-        px:2
-        flex
-      \`)
-      `,
+                ctl(\`
+                    px:2
+                    flex
+                \`)
+            `,
             output: `
-      ctl(\`
-        flex
-        px:2
-      \`)
-      `,
+                ctl(\`
+                    flex
+                    px:2
+                \`)
+            `,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `
-      <div
-        className={clsx(
-          "w:full h:10 rounded",
-          name === "white"
-            ? "m:10 flex"
-            : undefined
-        )}
-      />
-      `,
+                <div
+                    className={clsx(
+                        "w:full h:10 rounded",
+                        name === "white"
+                            ? "m:10 flex"
+                            : undefined
+                    )}
+                />
+            `,
             output: `
-      <div
-        className={clsx(
-          "rounded h:10 w:full",
-          name === "white"
-            ? "flex m:10"
-            : undefined
-        )}
-      />
-      `,
-            errors: [{ messageId: 'invalidClassOrder' }, { messageId: 'invalidClassOrder' }],
+                <div
+                    className={clsx(
+                        "rounded h:10 w:full",
+                        name === "white"
+                            ? "flex m:10"
+                            : undefined
+                    )}
+                />
+            `,
+            errors: [
+                { messageId: 'invalidClassOrder' },
+                { messageId: 'invalidClassOrder' },
+            ],
         },
         {
             code: `
-      classnames([
-        'invalid w:4@lg w:6@sm',
-        ['w:12 flex'],
-      ])`,
+                classnames([
+                    'invalid w:4@lg w:6@sm',
+                    ['w:12 flex'],
+                ])`,
             output: `
-      classnames([
-        'w:6@sm w:4@lg invalid',
-        ['flex w:12'],
-      ])`,
-            errors: [{ messageId: 'invalidClassOrder' }, { messageId: 'invalidClassOrder' }],
+                classnames([
+                    'w:6@sm w:4@lg invalid',
+                    ['flex w:12'],
+                ])`,
+            errors: [
+                { messageId: 'invalidClassOrder' },
+                { messageId: 'invalidClassOrder' },
+            ],
         },
         {
             code: `
-      classnames({
-        invalid,
-        flex: myFlag,
-        'w:4@lg w:6@sm': resize
-      })`,
+                classnames({
+                    invalid,
+                    flex: myFlag,
+                    'w:4@lg w:6@sm': resize
+                })`,
             output: `
-      classnames({
-        invalid,
-        flex: myFlag,
-        'w:6@sm w:4@lg': resize
-      })`,
+                classnames({
+                    invalid,
+                    flex: myFlag,
+                    'w:6@sm w:4@lg': resize
+                })`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
@@ -375,12 +347,14 @@ new RuleTester({
         {
             code: `<div className="gap:15 grid-cols:2 grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md p:40">order</div>`,
             output: `<div className="gap:15 p:40 grid-cols:2 grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md">order</div>`,
-            errors: [{
-                messageId: 'invalidClassOrder',
-                column: 17,
-                endColumn: 86,
-                line: 1
-            }],
+            errors: [
+                {
+                    messageId: 'invalidClassOrder',
+                    column: 17,
+                    endColumn: 86,
+                    line: 1,
+                },
+            ],
         },
     ],
 })

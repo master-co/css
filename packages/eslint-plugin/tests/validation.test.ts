@@ -1,17 +1,8 @@
 import rule from '../src/rules/class-validation'
 import { RuleTester } from '@typescript-eslint/rule-tester'
+import { createTester, jsxTester } from './testers'
 
-new RuleTester({
-    languageOptions: {
-        parserOptions: {
-            ecmaVersion: 2022,
-            sourceType: 'module',
-            ecmaFeatures: {
-                jsx: true,
-            }
-        }
-    }
-}).run('invalid', rule, {
+jsxTester.run('invalid', rule, {
     valid: [
         {
             code: `<div class="bg:black f:24 fg:white m:8 p:8">Simple, basic</div>`,
@@ -63,16 +54,7 @@ new RuleTester({
     ]
 })
 
-new RuleTester({
-    languageOptions: {
-        parserOptions: {
-            ecmaVersion: 2022,
-            sourceType: 'module',
-            ecmaFeatures: {
-                jsx: true,
-            }
-        },
-    },
+createTester({
     settings: {
         '@master/css': {
             config: {

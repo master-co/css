@@ -1,17 +1,7 @@
-import { RuleTester } from '@typescript-eslint/rule-tester'
-import rule from '../../src/rules/class-order'
+import rule from '../src/rules/class-order'
+import { jsxTester } from './testers'
 
-new RuleTester({
-    languageOptions: {
-        parserOptions: {
-            ecmaVersion: 2022,
-            sourceType: 'module',
-            ecmaFeatures: {
-                jsx: true,
-            }
-        }
-    }
-}).run('class order', rule, {
+jsxTester.run('class order', rule, {
     valid: [],
     invalid: [
         {

@@ -1,17 +1,7 @@
-import rule from '../../src/rules/class-validation'
-import { RuleTester } from '@typescript-eslint/rule-tester'
+import rule from '../src/rules/class-validation'
+import { jsxTester } from './testers'
 
-new RuleTester({
-    languageOptions: {
-        parserOptions: {
-            ecmaVersion: 2022,
-            sourceType: 'module',
-            ecmaFeatures: {
-                jsx: true,
-            }
-        }
-    }
-}).run('class matching components', rule, {
+jsxTester.run('class matching components', rule, {
     valid: [
         { code: 'export default { components: { btn: "block" } }' },
         { code: 'export default { components: { btn: { xs: "font: 12 h: 6x px: 2x r: 2x", rounded: { xs: "font: 12 h: 6x px: 2x r: 2x" } } } }' }

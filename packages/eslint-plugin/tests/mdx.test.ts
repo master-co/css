@@ -1,20 +1,8 @@
-import OrderRule from '../../src/rules/class-order'
-import CollisionRule from '../../src/rules/class-collision'
-import { RuleTester } from '@typescript-eslint/rule-tester'
+import OrderRule from '../src/rules/class-order'
+import CollisionRule from '../src/rules/class-collision'
+import { jsxTester } from './testers'
 
-const ruleTester = new RuleTester({
-    languageOptions: {
-        parserOptions: {
-            ecmaVersion: 2022,
-            sourceType: 'module',
-            ecmaFeatures: {
-                jsx: true,
-            }
-        }
-    }
-})
-
-ruleTester.run('mdx class order', OrderRule, {
+jsxTester.run('mdx class order', OrderRule, {
     valid: [{ code: `<div class="m:8 p:8 bg:black f:24 fg:white">Simple, basic</div>` }],
     invalid: [
         {
@@ -33,7 +21,7 @@ ruleTester.run('mdx class order', OrderRule, {
     ],
 })
 
-ruleTester.run('mdx class collision', CollisionRule, {
+jsxTester.run('mdx class collision', CollisionRule, {
     valid: [],
     invalid: [
         {

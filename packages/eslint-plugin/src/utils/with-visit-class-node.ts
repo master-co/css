@@ -12,14 +12,8 @@ export default function withVisitClassNode(
             case 'Identifier':
                 return
             case 'TemplateLiteral':
-                if (node.expressions.length) {
-                    node.expressions.forEach((exp) => {
-                        visitNode(exp)
-                    })
-                }
-                node.quasis.forEach((el) => {
-                    visitNode(el)
-                })
+                node.expressions?.forEach(visitNode)
+                node.quasis.forEach(visitNode)
                 return
             case 'JSXExpressionContainer':
                 visitNode(node.expression)

@@ -25,20 +25,27 @@ export default createRule({
             if (nodes.length <= 1) return
             let orderedClasses = sortReadableClasses(classValues, css)
             let orderedRaw = nodes
-                .map((node, i) => {
-                    if (node.type === 'class') {
+                .map((eachNode, i) => {
+                    if (eachNode.type === 'class') {
                         const value = orderedClasses.shift()
                         return classValueRawMap.get(value)
                     }
-                    if (node.type === 'space' && (orderedClasses.length !== 0 || i === nodes.length - 1)) {
-                        return node.raw
+                    if (eachNode.type === 'space' && (orderedClasses.length !== 0 || i === nodes.length - 1)) {
+                        return eachNode.raw
                     }
                     return ''
                 })
                 .join('')
             if (raw !== orderedRaw) {
                 if (node.type === 'TemplateElement') {
-                    orderedRaw = '`' + orderedRaw + '`'
+                    const first = node.parent.quasis[0] === node
+                    const last = node.parent.quasis[node.parent.quasis.length - 1] === node
+                    if (first) {
+                        orderedRaw = '`' + orderedRaw
+                    }
+                    if (last) {
+                        orderedRaw = orderedRaw + '`'
+                    }
                 }
                 context.report({
                     node,

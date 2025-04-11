@@ -60,6 +60,7 @@
     },
     "devDependencies": {
         "@angular-eslint/template-parser": "^19.3.0",
+        "@angular/compiler": "^17.2.2",
         "@master/css-explore-config": "workspace:^",
         "@typescript-eslint/rule-tester": "^8.29.1",
         "eslint": "^9.24.0",

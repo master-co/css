@@ -1,17 +1,7 @@
 import rule from '../src/rules/class-collision'
-import { RuleTester } from '@typescript-eslint/rule-tester'
+import { jsxTester } from './testers'
 
-new RuleTester({
-    languageOptions: {
-        parserOptions: {
-            ecmaVersion: 2022,
-            sourceType: 'module',
-            ecmaFeatures: {
-                jsx: true,
-            }
-        }
-    }
-}).run('collision', rule, {
+jsxTester.run('collision', rule, {
     valid: [
         { code: `<div class="m:10 m:30:hover m:40@dark">Simple, basic</div>` },
         { code: `<div class="a c d hello:world font:error mt:0 mt:0@sm">Error class</div>` },
