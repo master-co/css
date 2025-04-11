@@ -30,7 +30,7 @@ test.concurrent('text:center', async () => {
 
             Describes how inline contents of a block are horizontally aligned if the contents do not completely fill the line box\\.
 
-            (Edge 12, Firefox 1, Safari 1, Chrome 1, IE 3, Opera 3)
+            (Edge 12, Firefox 1,  4, Safari 1,  1, Chrome 1,  18, IE 3, Opera 3)
 
             Syntax: start | end | left | right | center | justify | match\\-parent
 

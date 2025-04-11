@@ -32,7 +32,7 @@ describe.concurrent('scope', () => {
 
                     Sets the color of an element's text
 
-                    (Edge 12, Firefox 1, Safari 1, Chrome 1, IE 3, Opera 3)
+                    (Edge 12, Firefox 1,  4, Safari 1,  1, Chrome 1,  18, IE 3, Opera 3)
 
                     Syntax: &lt;color&gt;
 
@@ -58,7 +58,7 @@ describe.concurrent('scope', () => {
 
                     Specifies the behavior of the 'width' and 'height' properties\\.
 
-                    (Edge 12, Firefox 29, Safari 5, Chrome 10, IE 8, Opera 7)
+                    (Edge 12, Firefox 29,  29, Safari 5,  6, Chrome 10,  18, IE 8, Opera 7)
 
                     Syntax: content\\-box | border\\-box
 
@@ -96,7 +96,7 @@ describe.concurrent('scope and global', () => {
 
                     Sets the color of an element's text
 
-                    (Edge 12, Firefox 1, Safari 1, Chrome 1, IE 3, Opera 3)
+                    (Edge 12, Firefox 1,  4, Safari 1,  1, Chrome 1,  18, IE 3, Opera 3)
 
                     Syntax: &lt;color&gt;
 
@@ -130,7 +130,7 @@ describe.concurrent('scope and global', () => {
 
                     Sets the color of an element's text
 
-                    (Edge 12, Firefox 1, Safari 1, Chrome 1, IE 3, Opera 3)
+                    (Edge 12, Firefox 1,  4, Safari 1,  1, Chrome 1,  18, IE 3, Opera 3)
 
                     Syntax: &lt;color&gt;
 

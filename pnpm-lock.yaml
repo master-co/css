@@ -1717,7 +1717,7 @@ importers:
   packages/language-service:
     dependencies:
       '@babel/parser':
-        specifier: ^7.26.3
+        specifier: ^7.27.0
         version: 7.27.0
       '@master/css':
         specifier: workspace:^
@@ -1732,13 +1732,13 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       color-space:
-        specifier: ^2.0.1
+        specifier: ^2.3.1
         version: 2.3.1
       culori:
         specifier: ^4.0.1
         version: 4.0.1
       js-beautify:
-        specifier: ^1.15.1
+        specifier: ^1.15.4
         version: 1.15.4
       lodash.escaperegexp:
         specifier: ^4.1.2
@@ -1750,7 +1750,7 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0
       vscode-css-languageservice:
-        specifier: ^6.3.2
+        specifier: ^6.3.4
         version: 6.3.4
       vscode-languageserver-protocol:
         specifier: ^3.17.5
@@ -1775,7 +1775,7 @@ importers:
         specifier: ^4.1.9
         version: 4.1.9
       '@types/vscode':
-        specifier: ^1.96.0
+        specifier: ^1.99.1
         version: 1.99.1
       shared:
         specifier: workspace:^

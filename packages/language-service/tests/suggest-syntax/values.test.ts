@@ -35,9 +35,9 @@ describe.concurrent('detail and documentation', () => {
 
                     Specifies a prioritized list of font family names or generic family names\\. A user agent iterates through the list of family names until it matches an available font that contains a glyph for the character to be rendered\\.
 
-                    (Edge 12, Firefox 1, Safari 1, Chrome 1, IE 3, Opera 3)
+                    (Edge 12, Firefox 1,  4, Safari 1,  1, Chrome 1,  18, IE 3, Opera 3)
 
-                    Syntax: &lt;family\\-name&gt;
+                    Syntax: &lt;family\\-name&gt;\\#
 
                     [Master CSS](https://rc.css.master.co/reference/font-family) | [MDN Reference](https://developer.mozilla.org/docs/Web/CSS/font-family)
                 `
