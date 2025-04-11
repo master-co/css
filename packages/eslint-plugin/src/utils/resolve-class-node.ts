@@ -41,8 +41,8 @@ export default function resolveClassNode(node: any, context: RuleContext<any, an
             }
             value = node.value.cooked
             raw = node.value.raw
-            start = node.range[0]
-            end = node.range[1]
+            start = node.range[0] + 1
+            end = node.range[1] - 1
             break
         default:
             return
@@ -72,7 +72,6 @@ export default function resolveClassNode(node: any, context: RuleContext<any, an
         const spaceStart = match.index
         const spaceEnd = spaceStart + spaceRaw.length
 
-        // 處理前一段非空白 (class name)
         if (spaceStart > lastIndex) {
             const classRaw = raw.slice(lastIndex, spaceStart)
             const classValue = classRawValueMap.get(classRaw)
@@ -92,7 +91,6 @@ export default function resolveClassNode(node: any, context: RuleContext<any, an
             })
         }
 
-        // 處理空白
         const spaceStartOffset = start + spaceStart
         const spaceEndOffset = start + spaceEnd
 
@@ -109,18 +107,18 @@ export default function resolveClassNode(node: any, context: RuleContext<any, an
         lastIndex = spaceEnd
     }
 
-    // 最後一段 class name（若結尾不是空白）
     if (lastIndex < raw.length) {
         const classRaw = raw.slice(lastIndex)
         const classValue = classRawValueMap.get(classRaw)
         if (!classValue) return
         const startOffset = start + lastIndex
         const endOffset = start + raw.length
+
         nodes.push({
             type: 'class',
             value: classValue,
             raw: classRaw,
-            range: [startOffset, endOffset],
+            range: [start, endOffset],
             loc: {
                 start: sourceCode.getLocFromIndex(startOffset),
                 end: sourceCode.getLocFromIndex(endOffset),

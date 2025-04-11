@@ -3,7 +3,6 @@ import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
 import settingsSchema from '../settings-schema'
 import { validate } from '@master/css-validator'
-import resolveClassNode from '../utils/resolve-class-node'
 
 export default createRule({
     name: 'syntax-error-checks',
@@ -22,14 +21,14 @@ export default createRule({
     defaultOptions: [],
     create: function (context) {
         const { options, settings, css } = resolveContext(context)
-        return defineVisitors({ context, settings }, (node, { classNodes }) => {
+        return defineVisitors({ context, settings }, (_, { classNodes }) => {
             for (const node of classNodes) {
                 const { matched, errors } = validate(node.value, css)
                 if (errors.length > 0) {
                     for (const error of errors) {
                         if (matched) {
                             context.report({
-                                loc: node.loc,
+                                node,
                                 messageId: 'invalidClass',
                                 data: {
                                     message: error.message + '.',
@@ -37,7 +36,7 @@ export default createRule({
                             })
                         } else if (options.disallowUnknownClass) {
                             context.report({
-                                loc: node.loc,
+                                node,
                                 messageId: 'disallowUnknownClass',
                                 data: {
                                     message: `"${node.raw}" is not a valid or known class.`

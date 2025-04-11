@@ -37,12 +37,6 @@ export default createRule({
                 })
                 .join('')
             if (raw !== orderedRaw) {
-                if (node.type === 'TemplateElement') {
-                    const first = node.parent.quasis[0] === node
-                    const last = node.parent.quasis[node.parent.quasis.length - 1] === node
-                    if (first) start++
-                    if (last) end--
-                }
                 context.report({
                     node,
                     loc: {
