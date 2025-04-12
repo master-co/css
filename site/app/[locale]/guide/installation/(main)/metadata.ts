@@ -4,7 +4,7 @@ const metadata = define({
     title: {
         absolute: 'Installing Master CSS'
     },
-    description: 'The easiest way to use Master CSS from scratch is to initialize the runtime engine directly in the entry file.',
+    description: 'Master CSS supports multiple installation strategies, giving you the flexibility to tailor your workflow based on project scale or scenario.',
     category: 'Getting Started',
     order: 2,
     other: {
