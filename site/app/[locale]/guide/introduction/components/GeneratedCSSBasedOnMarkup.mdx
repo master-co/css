@@ -44,29 +44,9 @@ What! Style without writing CSS rules?
 <Code name="home.html" lang="html">
     {code3}
 </Code>
-
-Generated CSS:
-```css
-/* Actual output would be minified. */
-.p\:32 {
-    padding: 2rem
-}
-
-.text\:center {
-    text-align: center
-}
-
-.bg\:blue {
-    background-color: #175fe9
-}
-
-.bg\:red\:hover:hover {
-    background-color: #d11a1e
-}
-
-@media (width>=64rem) {
-    .p\:48\@md {
-        padding: 3rem
-    }
-}
-```
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {'bg:blue bg:red:hover p:32 p:48@md text:center'}
+    </Class2CSS>
+</details>

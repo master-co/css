@@ -1,24 +1,241 @@
-<table className='mt:-2x'>
+import CriticalCSSBenchmark from '../introduction/components/CriticalCSSBenchmark'
+
+## Overview [sr-only]
+<CriticalCSSBenchmark />
+
+---
+
+## Runtime Rendering
+Master CSS Runtime relies on the lifecycle of individual elements. Only the Master CSS class names connected to the DOM tree will generate corresponding CSS rules so *browsers can calculate with minimal and precise CSS rules*.
+<figure>
+    <ModeImg src="/master-css-runtime-rendering.svg" alt='Master CSS Runtime Rendering' />
+    <figcaption>The runtime lifecycle of a Master CSS class</figcaption>
+</figure>
+The runtime engine uses the standard [Web APIs - Mutation Observer](https://developer.mozilla.org/zh-TW/docs/Web/API/MutationObserver) to observe the DOM changes in class names at runtime and generate/remove its corresponding CSS rules on the fly.
+
+It packaged as a JavaScript module [`@master/css-runtime`](/reference/runtime), so you can easily import and activate it in the browser.
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.master.co/css-runtime@rc"></script> <!-- [!code highlight] -->
+    …
+</head>
+<body>
+    <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
+</body>
+</html>
+```
+
+The following continuous DOM manipulation takes you to understand the behavior of the CSS runtime when the browser is running:
+<StepSection>
+    <Step>
+        #### <StepNum />Insert an element with a Master CSS class name into the DOM
+        ```js
+        const h1 = document.createElement('h1')
+        // @MARK text:center
+        h1.className = 'text:center'
+        ```
+        A new node `html <h1>` is inserted into the DOM tree:
+        ```html
+        <h1 class="text:center">Hello World</h1> <!-- [!code ++] -->
+        ```
+        The runtime engine observes a new node with the class `text:center` and generates the corresponding CSS rule:
+        ```css
+        .text\:center { /* [!code ++] */
+            text-align: center /* [!code ++] */
+        } /* [!code ++] */
+        ```
+    </Step>
+    <Step>
+        #### <StepNum />Added Master CSS class names to elements in links
+        ```js
+        // @MARK font:48
+        h1.classList.add('font:48')
+        ```
+        Add class name `font:48` to `html <h1>`
+        ```html
+        <!-- @MARK font:48 -->
+        <h1 class="text:center font:48">Hello World</h1>
+        ```
+        The runtime engine observes that `html <h1>` adds the new class name `font:48` and generates the corresponding CSS rules:
+        ```css
+        .font\:48 { /* [!code ++] */
+            font-size: 3rem /* [!code ++] */
+        } /* [!code ++] */
+
+        .text\:center {
+            text-align: center
+        }
+        ```
+    </Step>
+    <Step>
+        #### <StepNum />Remove the Master CSS class name from the connected element
+        ```js
+        // @MARK text:center
+        h1.classList.remove('text:center')
+        ```
+        Remove class name `text:center` from `html <h1>`
+        ```html
+        <h1 class="text:center font:48">Hello World</h1>
+        ```
+        The runtime engine observes that the class name `text:center` is removed from `html <h1>` and removes the corresponding CSS rule:
+        ```css
+        .font\:48 {
+            font-size: 3rem
+        }
+
+        .text\:center { /* [!code --] */
+            text-align: center /* [!code --] */
+        } /* [!code --] */
+        ```
+    </Step>
+    <Step>
+        #### <StepNum />Removes an element with a Master CSS class from the DOM
+        ```js
+        h1.remove()
+        ```
+        Remove the `html <h1>` with class `font:48`
+        ```html
+        <h1 class="font:48">Hello World</h1> <!-- [!code ++] -->
+        ```
+        The runtime engine observes that the `html <h1>` element with the class name `font:48` is removed and removes the corresponding CSS rule:
+        ```css
+        .font\:48 { /* [!code --] */
+            font-size: 3rem /* [!code --] */
+        } /* [!code --] */
+        ```
+    </Step>
+    <Step>
+        #### <StepNum />All CSS rules related to Master CSS have been removed
+    </Step>
+</StepSection>
+Due to its runtime execution nature, you can modify the class name directly in the browser by inspecting the element and seeing its changes.
+
+### Running style sheet
+Where are the generated CSS rules inserted? The runtime engine appends `html <style id="master">` in `html <head>` during initialization:
+```html
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.master.co/css-runtime@rc"></script>
+    <style id="master"></style> <!-- [!code highlight] -->
+</head>
+```
+
+It uses the `.insertRule()` and `.deleteRule()` of [Web APIs - CSSStyleSheet](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet) to manipulate memory locally CSS rules, so any changes made to the CSS text of `style#master` cannot be observed by it's text content.
+
+Still, you can detect the CSS rules in the current style sheet like this:
+```js
+const sheet = document.querySelector('style[id="master"]').sheet
+console.log(sheet.cssRules)
+```
+
+---
+
+## Progressive Rendering
+Master CSS Progressive Rendering works by pre-rendering critical CSS on the server and injecting them into the page HTML.
+On the client, the [CSS runtime](#runtime-rendering) hydrates these rules into a virtual stylesheet, initializing a lifecycle-aware system that can respond to class name changes in real-time.
+<figure>
+    <ModeImg src="/master-css-progressive-rendering.svg" alt='Master CSS Progressive Rendering' />
+    <figcaption>Server-side pre-rendering and client-side hydration process</figcaption>
+</figure>
+This enables fast page loads, minimal CSS output, and dynamic style injection/removal with full consistency.
+
+For example, the following HTML:
+```html name="index.html"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.master.co/css-runtime@rc"></script>
+</head>
+<body>
+    <h1 class="font:40 font:heavy">Hello World</h1>
+</body>
+```
+Render the HTML:
+```ts name=server.ts
+import { render } from '@master/css-server'
+import config from './master.css'
+
+const indexHTML = readFileSync('./index.html', 'utf-8')
+
+const { html } = render(indexHTML, config)
+```
+The server renderer parses the HTML and generates the internal style sheet:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.master.co/css-runtime@rc"></script>
+    <style id="master"> /* [!code ++] */
+        .font\:40 { /* [!code ++] */
+            font-size: 2.5rem /* [!code ++] */
+        } /* [!code ++] */
+    </style> <!-- [!code ++] -->
+</head>
+<body>
+    <!-- @MARK font:40 -->
+    <h1 class="font:40">Hello World</h1>
+</body>
+```
+What benifits does this bring? The server renderer generates the critical CSS (**5kB**) based on the class names used in the HTML, instead of the entire application source code (**500kB**).
+
+This approach allows for a **minimal, deterministic CSS text** that is injected into the HTML, enabling fast page loads and minimal CSS output.
+
+### CSS Hydration
+<figure>
+    <ModeImg src="/master-css-hydration.svg" alt='Master CSS Hydration' />
+    <figcaption>Master CSS Hydration — Creates virtual rules from DOM style sheet</figcaption>
+</figure>
+We call this groundbreaking process **CSS Hydration** — the runtime engine parses and reconstructs the pre-rendered style sheet into its virtual memory, effectively “hydrating” it.
+Once hydrated, Master CSS can efficiently detect new or removed class names and update styles accordingly, without needing to reparse or regenerate previously defined rules.
+
+---
+
+## Static Extraction
+Static Extraction is a zero-runtime rendering mode in which all CSS rules are precomputed during the build process. This approach statically analyzes your source files — such as .html, .js, .jsx, .ts, .svelte, and more — to collect class names and generate a minimal, deterministic CSS bundle before the application is deployed.
+
+Unlike runtime-based solutions, Static Extraction does not rely on any client-side JavaScript to inject or manage styles. It outputs pure CSS assets that are linked in the final HTML, allowing for maximum performance, minimal JavaScript runtime overhead, and optimal compatibility with static hosting environments.
+
+This rendering strategy is functionally equivalent to how [TailwindCSS](https://tailwindcss.com/) and [UnoCSS](https://unocss.dev/) operate in production: styles are compiled ahead-of-time based on actual class name usage across your project, enabling aggressive tree-shaking and style deduplication.
+
+### Dynamic classes limitations
+Since static extraction scans the source archive as plain text, it is impossible to predict the results of these string concatenation or interpolation.
+
+(x) Don't truncate class names to construct
+```tsx
+const className = 'bg:' + (error ? 'red': 'green')
+```
+(o) Write complete classes
+```tsx
+const className = error ? 'bg:red' : 'bg:green'
+```
+(o) Support dynamic values ​​using CSS variables
+```tsx
+<div className="font-size:$(size)@sm" style={{ '--size': size }}></div>
+```
+In short, you must write out the full class in your source code and ensure it is not truncated, so it can be correctly scanned and detected.
+
+Due to the limitations of static scanning, this is also one of the primary reasons we created the Master CSS [Runtime](#runtime-rendering).
+
+---
+
+## Comparisons
+This section provides a detailed comparison of different rendering modes. Each mode is evaluated based on various criteria such as application scenarios, performance, and generated source.
+
+<table>
     <thead>
         <tr>
-            <th className="sticky z:1 top:48 top:60@sm pt:4x bg:base w:1/3">
-                <DocBadge $color="primary" $size="sm" className="mb:15">Recommended</DocBadge>
-                <div className="font:22@sm font:bold">Progressive Rendering</div>
-                <p className="fg:neutral font:regular text:14! mt:2x hidden@<sm">Render the CSS rules required for the page on the server side or at build time, and lazily load the runtime engine.</p>
-                <LearnMore href="/guide/rendering-modes/progressive-rendering">Learn more</LearnMore>
-            </th>
-            <th className="sticky z:1 top:48 top:60@sm pt:4x bg:base w:1/3">
-                <DocBadge $color="fade" $size="sm" className="mb:15">Easiest</DocBadge>
-                <div className="font:22@sm font:bold">Runtime Rendering</div>
-                <p className="fg:neutral font:regular text:14! mt:2x hidden@<sm">Observe for changes to class names in the DOM tree to manipulate CSS rules and sync to the runtime stylesheet.</p>
-                <LearnMore href="/guide/rendering-modes/runtime-rendering">Learn more</LearnMore>
-            </th>
-            <th className="sticky z:1 top:48 top:60@sm pt:4x bg:base w:1/3">
-                <DocBadge $color="fade" $size="sm" className="mb:15 invisible">Zero Runtime</DocBadge>
-                <div className="font:22@sm font:bold">Static Extraction</div>
-                <p className="fg:neutral font:regular text:14! mt:2x hidden@<sm">Extract class names from various files at build time, generate a virtual CSS module or file, and import it into the entry file.</p>
-                <LearnMore href="/guide/rendering-modes/static-extraction">Learn more</LearnMore>
-            </th>
+            <th className="sticky z:1 top:48 top:60@sm pt:4x bg:base w:1/3">Progressive Rendering</th>
+            <th className="sticky z:1 top:48 top:60@sm pt:4x bg:base w:1/3">Runtime Rendering</th>
+            <th className="sticky z:1 top:48 top:60@sm pt:4x bg:base w:1/3">Static Extraction</th>
         </tr>
     </thead>
     <tbody>
@@ -113,7 +330,7 @@
         <tr>
             <td><InlineGood />Dynamic</td>
             <td><InlineGood />Dynamic</td>
-            <td><InlineWarn />Semi-dynamic</td>
+            <td><InlineWarn />Static</td>
         </tr>
         <tr>
             <td><InlineGood />`class` attributes in markup</td>

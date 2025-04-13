@@ -4,7 +4,7 @@
 ## Preload runtime engine
 (!|) The browser loads the runtime engine only after downloading and parsing the stylesheet.
 <Image src={require('~/site/public/images/no-preload-network.png').default} placeholder="blur" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
-It may experience defers in downloading and initializing until the first contentful paint if the [runtime engine](/guide/rendering-modes/runtime-rendering) hasn't been preloaded.
+It may experience defers in downloading and initializing until the first contentful paint if the [runtime engine](/guide/rendering-modes#runtime-rendering) hasn't been preloaded.
 
 (o) Use `html <link rel="preload">` to preload the critical resources.
 ```html

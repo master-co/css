@@ -9,7 +9,7 @@ Upon accessing the page, the browser starts rendering the document. However, the
 The unstyled state can occur in a flash if the browser doesn't block rendering while a stylesheet is downloaded and processed.
 
 ### Prevent premature rendering
-When you [pre-render](/guide/rendering-modes/progressive-rendering) the page, the required styles will be included during the page load. FOUC occurs when using only [runtime rendering](/guide/rendering-modes/runtime-rendering).
+When you [pre-render](/guide/rendering-modes#progressive-rendering) the page, the required styles will be included during the page load. FOUC occurs when using only [runtime rendering](/guide/rendering-modes#runtime-rendering).
 
 (o) Add `html <html hidden>` to avoid FOUC.
 ```html

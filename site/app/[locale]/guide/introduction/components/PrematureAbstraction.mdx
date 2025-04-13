@@ -60,6 +60,7 @@ export const code3 = `
 
 import mountainImage from '~/site/public/images/mountain.jpg'
 
+You always abstract your style, even when unsure about its reusability.
 <Demo>
     <div className="mx:auto max-w:480">
         <div className="flex translateY(-5):hover ~transform|.2s overflow:hidden bg:surface r:10 s:panel center-content">
@@ -71,13 +72,15 @@ import mountainImage from '~/site/public/images/mountain.jpg'
         </div>
     </div>
 </Demo>
-(!) You always abstract your style, even when unsure about its reusability.
 <Code name="card.html" lang="html">
     {code1}
 </Code>
-<Code name="card.css" lang="css">
-    {code2}
-</Code>
+<details>
+    <summary>View the traditional CSS file</summary>
+    <Code name="card.css" lang="css">
+        {code2}
+    </Code>
+</details>
 (o) Quickly build styles in markup without naming baggage. <Dropped p1={code1 + code2} p2={code3} target="class" />
 <Code name="card.html" lang="html">
     {code3}
