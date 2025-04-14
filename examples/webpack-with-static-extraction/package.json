@@ -12,7 +12,7 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "@master/css-extractor.webpack": "workspace:^",
+        "@master/css.webpack": "workspace:^",
         "css-loader": "^6.10.0",
         "html-webpack-plugin": "^5.6.0",
         "style-loader": "^3.3.4",

@@ -1,0 +1,52 @@
+The pure way to [extract](/guide/rendering-modes#static-extraction) classes from scratch is by using the CLI tool. All you need is an `index.html` file and terminal to get started.
+
+## Installation [sr-only]
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS [CLI](/reference/cli) into your project via package managers.
+        </StepL>
+        <StepR>
+            ```bash action=install
+            @master/css@rc @master/css-cli@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Run the build command
+            Run the command to watch for file changes and build continuously.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            mcss extract -w
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Start using Master CSS
+            Master CSS scans raw sources and generates the `./master.css` file for you.
+
+            Now style your first element using Master CSS syntax!
+        </StepL>
+        <StepR>
+            ```html name=index.html
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <link rel="stylesheet" href="./master.css"> <!-- [!code highlight] -->
+            </head>
+            <body>
+                <!-- @MARK font:40 font:heavy italic m:12x text:center -->
+                <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
+            </body>
+            </html>
+            ```
+        </StepR>
+    </Step>
+    <HelloWorld />
+</StepSection>

@@ -1,0 +1,113 @@
+import options from '~/packages/builder/src/options'
+
+## Installation [sr-only]
+```bash action=install
+@master/css-builder
+```
+
+---
+
+## API Reference
+### CSSBuilder
+
+```js
+import { CSSBuilder } from '@master/css-builder'
+```
+Create an instance of the Master CSS builder:
+```js
+const builder = new CSSBuilder(options, cwd)
+```
+
+`cwd` is used to change the directory where [`.config`](#config), [`.include`](#include), [`.exclude`](#exclude) and [`.sources`](#sources) are currently running.
+
+`CSSBuilder` is the business logic encapsulation of Master CSS Static Extraction, which is usually used by build tools or third-party package authors.
+
+This package is specific to the **Node.js** environment.
+
+To start using Master CSS static extraction, check out the [guide](http://localhost:3000/guide/installation) first.
+
+🚧 Check out the [source code](https://github.com/master-co/css/blob/dev/rc/packages/builder/src/core.ts) temporarily.
+
+### `options`
+<Code lang="ts">{JSON.stringify(options, null, 4)}</Code>
+{/* <OptionsCodes cli vite webpack>
+    {JSON.stringify(options, null, 4)}
+</OptionsCodes> */}
+The above are the default compilation options, you can also introduce these default values to expand your options:
+```js
+import { options } from '@master/css-builder'
+// or in a side-effect-free way
+import options from '@master/css-builder/options'
+```
+
+### `options.module`
+Custom Master CSS virtual module ID, this option does not support Master CSS CLI.
+<DocProp defaultValue={`'${options.module}'`} types={['string']} />
+Then you can import with a custom virtual module ID in the entry file like `main.js`:
+```js name=main.js
+import '.virtual/master.css'
+```
+
+### `options.config`
+Customize your Master CSS [configuration](/guide/configuration) or the path to the configuration file, the default configuration file is read with [.cwd](#cwd) in the root directory of the project.
+<DocProp defaultValue={`'${options.config}'`} types={['string', 'Config']} />
+
+### `options.include`
+Broadly specify source files/directories to be scanned by Master CSS.
+<DocProp defaultValue={options.include} types={['FastGlobPattern[]']} />
+
+### `options.exclude`
+Broadly exclude source files/directories from scanning by Master CSS.
+<DocProp defaultValue={options.exclude} types={['FastGlobPattern[]']} />
+
+### `options.sources`
+Mandatory source files/directories are to be scanned by Master CSS.
+<DocProp defaultValue={options.sources} types={['FastGlobPattern[]']} />
+This option is similar to [`.include`](#include) but not excluded by [`.exclude`](#exclude). Usually, you will use it to specify what is accidentally excluded by [`.exclude`](#exclude) file/directory.
+
+### `options.classes.fixed`
+Generate fixed CSS rules based on the specified class name, regardless of source.
+<DocProp defaultValue={options.fixed} types={['string[]']} />
+Typically you would use it with the following limitations:
+- Class names that do not exist in the source code.
+- Irregular class names.
+- Class names from asynchronous data.
+
+### `options.classes.ignored`
+Exclude class names accidentally extracted by the scanning process.
+<DocProp defaultValue={options.ignored} types={['string[]', 'RegExp[]']} />
+
+### `extractLatentClasses()`
+Extract latent classes from string content.
+<DocFn>
+    {[
+        { name: 'content', type: 'string', defaultValue: 'undefined' },
+        { name: 'return', type: 'string' },
+    ]}
+</DocFn>
+```ts
+import { extractLatentClasses } from '@master/css-builder'
+
+const content: string = `
+    import { setupCounter } from './counter'
+
+    const counterElement = document.querySelector<HTMLButtonElement>('#counter')
+    const syntax = 'block'
+    counterElement?.classList.add('~transform|.3s', 'translateY(-5):hover', syntax)
+
+    setupCounter(counterElement!)
+`
+const result = extractLatentClasses(content)
+```
+Result:
+```js
+[
+    'const',
+    'counterElement',
+    'syntax',
+    'block',
+    '~transform|.3s',
+    'translateY(-5):hover',
+    'setupCounter(counterElement!)'
+]
+```

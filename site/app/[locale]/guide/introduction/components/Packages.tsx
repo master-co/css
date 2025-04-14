@@ -4,7 +4,7 @@ const mainPackages = [
     await import('~/packages/core/package.json'),
     await import('~/packages/runtime/package.json'),
     await import('~/packages/server/package.json'),
-    await import('~/packages/extractor/package.json'),
+    await import('~/packages/builder/package.json'),
     await import('~/packages/validator/package.json'),
     await import('~/packages/cli/package.json'),
     await import('~/packages/create/package.json'),
@@ -16,7 +16,7 @@ const integrationPackages = [
     await import('~/packages/vue/package.json'),
     await import('~/packages/nuxt/package.json'),
     await import('~/packages/vite/package.json'),
-    await import('~/packages/extractor.webpack/package.json')
+    await import('~/packages/webpack/package.json')
 ]
 
 const developerToolPackages = [

@@ -1,16 +1,16 @@
-import { CSSExtractor } from '@master/css-extractor'
+import CSSBuilder from '@master/css-builder'
 import type { Plugin, ViteDevServer } from 'vite'
 import { existsSync, readFileSync } from 'fs'
 
 const HMR_EVENT_UPDATE = 'master-css-hmr:update'
 
 /** HMR when the config and source files changed */
-export default function VirtualCSSHMRPlugin(extractor: CSSExtractor): Plugin {
+export default function VirtualCSSHMRPlugin(builder: CSSBuilder): Plugin {
     let transformedIndexHTMLModule: { id: string, code: string }
     const servers: ViteDevServer[] = []
     const updateVirtualModule = async ({ server, timestamp = Date.now() }: { server: ViteDevServer, timestamp?: number }) => {
         if (!server) return
-        const resolvedVirtualModuleId = extractor.resolvedVirtualModuleId
+        const resolvedVirtualModuleId = builder.resolvedVirtualModuleId
         const virtualCSSModule = server.moduleGraph.getModuleById(resolvedVirtualModuleId)
         if (virtualCSSModule) {
             server.reloadModule(virtualCSSModule)
@@ -28,7 +28,7 @@ export default function VirtualCSSHMRPlugin(extractor: CSSExtractor): Plugin {
                 event: HMR_EVENT_UPDATE,
                 data: {
                     id: resolvedVirtualModuleId,
-                    css: extractor.css.text,
+                    css: builder.css.text,
                     timestamp
                 }
             })
@@ -38,15 +38,15 @@ export default function VirtualCSSHMRPlugin(extractor: CSSExtractor): Plugin {
     const handleReset = async ({ server }: { server: ViteDevServer }) => {
         const tasks: any[] = []
         /* 1. fixed sources */
-        tasks.push(await extractor.prepare())
+        tasks.push(await builder.prepare())
         /* 2. transform index.html */
         if (transformedIndexHTMLModule) {
-            tasks.push(extractor.insert(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
+            tasks.push(builder.insert(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
         }
         /* 3. transformed modules */
         tasks.concat(
             Array.from(server.moduleGraph.idToModuleMap.keys())
-                .filter((eachModuleId) => eachModuleId !== extractor.resolvedVirtualModuleId)
+                .filter((eachModuleId) => eachModuleId !== builder.resolvedVirtualModuleId)
                 .map(async (eachModuleId: string) => {
                     const eachModule = server.moduleGraph.idToModuleMap.get(eachModuleId)
                     if (eachModule) {
@@ -55,14 +55,14 @@ export default function VirtualCSSHMRPlugin(extractor: CSSExtractor): Plugin {
                             eachModuleCode = readFileSync(eachModule.file, 'utf-8')
                         }
                         if (eachModuleCode)
-                            await extractor.insert(eachModuleId, eachModuleCode)
+                            await builder.insert(eachModuleId, eachModuleCode)
                     }
                 })
         )
         await Promise.all(tasks)
         updateVirtualModule({ server })
     }
-    extractor
+    builder
         .on('reset', () => {
             servers.forEach((eachServer) => handleReset({ server: eachServer }))
         })
@@ -70,10 +70,10 @@ export default function VirtualCSSHMRPlugin(extractor: CSSExtractor): Plugin {
             servers.forEach((eachServer) => updateVirtualModule({ server: eachServer }))
         })
     return {
-        name: 'master-css-extractor:virtual-css-module:hmr',
+        name: 'master-css-builder:virtual-css-module:hmr',
         apply(config, env) {
             if (env.command === 'serve') {
-                extractor.startWatch()
+                builder.startWatch()
                 return true
             } else {
                 return false
@@ -81,13 +81,13 @@ export default function VirtualCSSHMRPlugin(extractor: CSSExtractor): Plugin {
         },
         enforce: 'pre',
         async resolveId(id) {
-            if (extractor.options.module && id.includes(extractor.options.module) || id.includes(extractor.resolvedVirtualModuleId)) {
-                return extractor.resolvedVirtualModuleId
+            if (builder.options.module && id.includes(builder.options.module) || id.includes(builder.resolvedVirtualModuleId)) {
+                return builder.resolvedVirtualModuleId
             }
         },
         load(id) {
-            if (id === extractor.resolvedVirtualModuleId) {
-                return extractor.css.text
+            if (id === builder.resolvedVirtualModuleId) {
+                return builder.css.text
             }
         },
         transformIndexHtml: {
@@ -97,7 +97,7 @@ export default function VirtualCSSHMRPlugin(extractor: CSSExtractor): Plugin {
                     id: filename,
                     code: html
                 }
-                await extractor.insert(filename, html)
+                await builder.insert(filename, html)
             }
         },
         configureServer(server) {

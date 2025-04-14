@@ -1,0 +1,10 @@
+{
+    "name": "master-css-static-output",
+    "scripts": {
+        "build": "mcss extract"
+    },
+    "devDependencies": {
+        "@master/css": "workspace:^",
+        "@master/css-cli": "workspace:^"
+    }
+}

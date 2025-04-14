@@ -23,8 +23,8 @@ const originHTMLText = dedent`
     </html>
 `
 
-const optionsFilepath = path.join(__dirname, 'master.css-extractor.ts')
-const originOptionsText = `import type { Options } from '@master/css-extractor'
+const optionsFilepath = path.join(__dirname, 'master.css-builder.ts')
+const originOptionsText = `import type { Options } from '@master/css-builder'
 const options: Options = {
     classes: {
         fixed: [],

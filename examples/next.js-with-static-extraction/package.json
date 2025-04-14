@@ -9,7 +9,7 @@
         "lint": "next lint"
     },
     "dependencies": {
-        "@master/css-extractor.webpack": "workspace:^",
+        "@master/css.webpack": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@types/node": "^22.10.7",
         "@types/react": "^19.0.7",

@@ -1,15 +1,26 @@
-The easiest way to use Master CSS [runtime](/guide/rendering-modes#runtime-rendering) from scratch is to initialize in the application's entry file.
+Start from scratch with the [runtime](/guide/rendering-modes#runtime-rendering) , [static extraction](/guide/rendering-modes#static-extraction) , using the Master CSS Vite plugin to quickly build a project to boot locally.
 
 ## Installation [sr-only]
 <StepSection>
     <Step $row>
         <StepL>
+            ### <StepNum />Create a Vite project
+            If you don't have a Vite project, create one first. It's recommended to refer to [Getting Started - Vite](https://vite.dev/guide/)
+        </StepL>
+        <StepR>
+            ```bash action=create
+            vite@latest my-project
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Install Master CSS
-            Install Master CSS Runtime into your project via package managers.
+            Install Master CSS vite plugin into your project via package managers.
         </StepL>
         <StepR>
             ```bash action=install
-            @master/css-runtime@rc
+            @master/css.vite@rc
             ```
         </StepR>
     </Step>
@@ -26,37 +37,43 @@ The easiest way to use Master CSS [runtime](/guide/rendering-modes#runtime-rende
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Set up CSS runtime engine
-            Import and initialize the runtime engine in the entry file, such as `main.js`:
+            ### <StepNum />Set up Master CSS
+            Import the `masterCSS` and add it to the `plugins` in your Vite config file.
         </StepL>
         <StepR>
-            ```js name=main.js
-            import { initCSSRuntime } from '@master/css-runtime'
-            import config from './master.css'
+            ```js name=vite.config.js
+            import { defineConfig } from 'vite'
+            import masterCSS from '@master/css.vite' // [!code highlight]
 
-            initCSSRuntime(config)
+            export default defineConfig({
+                plugins: [
+                    masterCSS() // [!code highlight]
+                ]
+            })
             ```
         </StepR>
     </Step>
-    <Step>
-        ### <StepNum />Start using Master CSS
-        Now style your first element using Master CSS syntax!
-        ```html name=index.html
-        <!DOCTYPE html>
-        <!-- @MARK hidden -->
-        <html lang="en" hidden>
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <script src="/main.js"></script> <!-- [!code highlight] -->
-        </head>
-        <body>
-            <!-- @MARK font:40 font:heavy italic m:12x text:center -->
-            <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
-        </body>
-        </html>
-        ```
-        Open your browser to watch the changes.
-        <HelloWorld />
+    <Step $row>
+        <StepL>
+            ### <StepNum />Start using Master CSS
+            Now style your first element using Master CSS syntax!
+        </StepL>
+        <StepR>
+            ```html name=index.html
+            <!DOCTYPE html>
+            <!-- @MARK hidden -->
+            <html lang="en" hidden>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+            </head>
+            <body>
+                <!-- @MARK font:40 font:heavy italic m:12x text:center -->
+                <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
+            </body>
+            </html>
+            ```
+        </StepR>
     </Step>
+    <HelloWorld />
 </StepSection>

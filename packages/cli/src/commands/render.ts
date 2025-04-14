@@ -6,7 +6,6 @@ import { explorePathsSync } from '@techor/glob'
 import exploreConfig from '@master/css-explore-config'
 import { readFile, writeFileSync } from 'fs'
 import { brotliCompressSync } from 'zlib'
-// @ts-expect-error
 import bytes from 'bytes'
 
 export default (program: Command) => program
@@ -55,8 +54,8 @@ export default (program: Command) => program
                                 writeFileSync(filename, html)
                             }
                         }
-                        const prettifiedCSSSize = bytes(renderedCSSSize, { space: false })
-                        log.ok`**${filename}**${' '.repeat(col1Width - filename.length - 2)}${prettifiedCSSSize.padStart(col2Width)}`
+                        const prettifiedCSSSize = bytes(renderedCSSSize)
+                        log.ok`**${filename}**${' '.repeat(col1Width - filename.length - 2)}${prettifiedCSSSize?.padStart(col2Width)}`
                         resolve()
                     })
                 })))

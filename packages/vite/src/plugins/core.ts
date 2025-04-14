@@ -1,10 +1,10 @@
-import { Options as ExtractorOptions } from '@master/css-extractor'
+import { Options as ExtractorOptions } from '@master/css-builder'
 import type { Plugin } from 'vite'
 import type { Pattern } from 'fast-glob'
-import CSSExtractorPlugins from './css-extractor'
+import CSSExtractorPlugins from './css-builder'
 
 export interface Options {
-    extractor?: ExtractorOptions | Pattern
+    builder?: ExtractorOptions | Pattern
     mode: 'extract'
 }
 

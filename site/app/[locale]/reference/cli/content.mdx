@@ -7,16 +7,16 @@
 
 ## API Reference
 ### `extract [source paths]`
-Scan source files, extract syntax classes, generate CSS rules, and output as a CSS file. Explicitly specify sources to scan, ignoring [`options.include`](/reference/extractor#include) and [`options.exclude`](/reference/extractor#exclude) restrictions.
+Scan source files, extract syntax classes, generate CSS rules, and output as a CSS file. Explicitly specify sources to scan, ignoring [`options.include`](/reference/builder#include) and [`options.exclude`](/reference/builder#exclude) restrictions.
 <DocProp types={['FastGlobPattern[]']} />
 ```bash name=Terminal
 mcss extract index.html main.js
 ```
-If no sources are specified, by default, all directories of your current project will be scanned according to [`options.include`](/reference/extractor#include) and [`options.exclude`](/reference/extractor#exclude).
+If no sources are specified, by default, all directories of your current project will be scanned according to [`options.include`](/reference/builder#include) and [`options.exclude`](/reference/builder#exclude).
 ```bash name=Terminal
 mcss extract
 ```
-The command runs according to the preset [extractor options](/reference/extractor/#options).
+The command runs according to the preset [builder options](/reference/builder/#options).
 
 ### `extract -o, --output <path>`
 Watch for file changes and build continuously.
@@ -26,10 +26,10 @@ mcss extract --output master.css
 ```
 
 ### `extract --options <path>`
-Specifies the source of the extractor options.
-<DocProp defaultValue="'master.css-extractor.*'" types={['string']} />
+Specifies the source of the builder options.
+<DocProp defaultValue="'master.css-builder.*'" types={['string']} />
 ```bash name=Terminal
-mcss extract --option dir/master.css-extractor.js
+mcss extract --option dir/master.css-builder.js
 ```
 
 ### `extract -v, --verbose`

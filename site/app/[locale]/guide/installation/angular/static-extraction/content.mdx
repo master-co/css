@@ -71,23 +71,23 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         </StepL>
         <StepR>
             ```bash action=install
-            @master/css-extractor.webpack@rc @angular-builders/custom-webpack
+            @master/css.webpack@rc @angular-builders/custom-webpack
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Set up CSS extractor
+            ### <StepNum />Set up CSS builder
             - Create a `webpack.config.js` file
-            - Add a `CSSExtractorPlugin` to the plugins
+            - Add a `MasterCSSPlugin` to the plugins
         </StepL>
         <StepR>
             ```js name=webpack.config.js
-            const CSSExtractorPlugin = require('@master/css-extractor.webpack') // [!code ++]
+            const MasterCSSPlugin = require('@master/css.webpack') // [!code ++]
 
             module.exports = (config) => { // [!code ++]
                 config.plugins.push( // [!code ++]
-                    new CSSExtractorPlugin({ // [!code ++]
+                    new MasterCSSPlugin({ // [!code ++]
                         sources: ['src/index.html'] // [!code ++]
                     }) // [!code ++]
                 ) // [!code ++]

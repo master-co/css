@@ -1,15 +1,15 @@
 import type { Command } from 'commander'
-import { type Options } from '@master/css-extractor'
+import { options, type Options } from '@master/css-builder'
 import log from '@techor/log'
 
 export default (program: Command) => program
     .command('extract')
     .argument('[source paths]', 'The glob pattern path to extract sources')
     .option('-w, --watch', 'Watch file changed and generate CSS rules.')
-    .option('-o, --output <path>', 'Specify your CSS file output path')
+    .option('-o, --output <path>', 'Specify your CSS file output path', options.output)
     .option('-v, --verbose <level>', 'Verbose logging 0~N', '1')
     .option('--no-export', 'Print only CSS results.')
-    .option('--options <path>', 'Specify your extractor options sources', 'master.css-extractor')
+    .option('--options <path>', 'Specify your builder options sources', 'master.css-builder')
     .action(async function (specifiedSourcePaths: any, options?: {
         watch?: boolean,
         output?: string,
@@ -18,10 +18,10 @@ export default (program: Command) => program
         cwd?: string,
         options?: string | Options
     }) {
-        const { CSSExtractor } = await import('@master/css-extractor')
+        const CSSBuilder = (await import('@master/css-builder')).default
         const { watch, output, verbose, cwd, options: customOptions } = options || {}
-        const extractor = new CSSExtractor(customOptions, cwd)
-        extractor.on('init', (options: Options) => {
+        const builder = new CSSBuilder(customOptions, cwd)
+        builder.on('init', (options: Options) => {
             if (specifiedSourcePaths?.length) {
                 options.include = specifiedSourcePaths
                 options.exclude = []
@@ -36,38 +36,37 @@ export default (program: Command) => program
             options.output = output
             options.verbose = verbose ? +verbose : options.verbose
         })
-        extractor.init()
-        console.log(extractor.allowedSourcePaths)
+        builder.init()
         if (watch) {
-            extractor
+            builder
                 .on('watchStart', async () => {
-                    await extractor.prepare()
+                    await builder.prepare()
                     log``
                     log.t`Start watching source changes`
                 })
                 .on('reset', async () => {
-                    await extractor.reset()
+                    await builder.reset()
                     log``
                     log.t`Restart watching source changes`
                 })
                 .on('change', () => {
                     if (options?.export) {
-                        extractor.export()
+                        builder.export()
                     } else {
-                        console.log(extractor.css.text)
+                        console.log(builder.css.text)
                     }
                 })
                 .on('watchClose', () => {
                     log``
                     log.t`Stop watching source changes`
                 })
-            await extractor.startWatch()
+            await builder.startWatch()
         } else {
-            await extractor.prepare()
+            await builder.prepare()
             if (options?.export) {
-                extractor.export()
+                builder.export()
             } else {
-                console.log(extractor.css.text)
+                console.log(builder.css.text)
             }
         }
     })

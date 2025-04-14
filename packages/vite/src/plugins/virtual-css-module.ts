@@ -1,20 +1,20 @@
-import { CSSExtractor } from '@master/css-extractor'
+import CSSBuilder from '@master/css-builder'
 import type { Plugin } from 'vite'
 
-export default function VirtualCSSModulePlugins(extractor: CSSExtractor): Plugin[] {
+export default function VirtualCSSModulePlugins(builder: CSSBuilder): Plugin[] {
     return [
         {
-            name: 'master-css-extractor:virtual-css-module:build',
+            name: 'master-css-builder:virtual-css-module:build',
             apply: 'build',
             enforce: 'pre',
             async resolveId(id) {
-                if (id === extractor.options.module) {
-                    return extractor.resolvedVirtualModuleId
+                if (id === builder.options.module) {
+                    return builder.resolvedVirtualModuleId
                 }
             },
             load(id) {
-                if (id === extractor.resolvedVirtualModuleId) {
-                    return extractor.slotCSSRule
+                if (id === builder.resolvedVirtualModuleId) {
+                    return builder.slotCSSRule
                 }
             },
             generateBundle(options, bundle) {
@@ -23,7 +23,7 @@ export default function VirtualCSSModulePlugins(extractor: CSSExtractor): Plugin
                     const chunk = bundle[eachCssFileName]
                     if (chunk.type === 'asset') {
                         // @ts-expect-error
-                        bundle[eachCssFileName]['source'] = bundle[eachCssFileName]['source'].replace(extractor.slotCSSRule, extractor.css.text)
+                        bundle[eachCssFileName]['source'] = bundle[eachCssFileName]['source'].replace(builder.slotCSSRule, builder.css.text)
                     }
                 }
                 return
