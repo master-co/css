@@ -42,12 +42,6 @@ import options from '@master/css-extractor/options'
 ### `options.module`
 Custom Master CSS virtual module ID, this option does not support Master CSS CLI.
 <DocProp defaultValue={`'${options.module}'`} types={['string']} />
-Set the virtual CSS module of Master CSS to `virtual:master.css`:
-<OptionsCodes vite webpack addLines={[1]} number>
-    {`
-        module: '.virtual/master.css'
-    `}
-</OptionsCodes>
 Then you can import with a custom virtual module ID in the entry file like `main.js`:
 ```js name=main.js
 import '.virtual/master.css'

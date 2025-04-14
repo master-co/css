@@ -7,19 +7,17 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
         <CodeTabs>{[
             cli && {
                 ...othersProps,
-                name: 'master.css-extractor.js', lang: 'js',
+                name: 'master.css-extractor.js', lang: 'js', beautify: true,
                 code: dedent`
                     ${imports ? `import { ${imports} } from '@master/css-extractor'` : ''}
                     /** @type {import('@master/css-extractor').Options} */
-                    export default {
-                        ${dedentCode}
-                    }
+                    export default ${dedentCode}
                 `,
                 addLines: addLines && addLines.map((line: number) => line += 2),
             },
             vite && {
                 ...othersProps,
-                name: 'vite.config.ts', lang: 'ts',
+                name: 'vite.config.ts', lang: 'ts', beautify: true,
                 code: dedent`
                     ${imports ? `import { ${imports} } from '@master/css-extractor'` : ''}
                     import masterCSSExtractor from '@master/css-extractor.vite'
@@ -27,9 +25,7 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
                     /** @type {import('vite').UserConfig} */
                     const config = {
                         plugins: [
-                            masterCSSExtractor({
-                                ${dedentCode}
-                            })
+                            masterCSSExtractor(${dedentCode})
                         ]
                     }
 
@@ -39,16 +35,14 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
             },
             webpack && {
                 ...othersProps,
-                name: 'webpack.config.js', lang: 'js',
+                name: 'webpack.config.js', lang: 'js', beautify: true,
                 code: dedent`
                     ${imports ? `const { ${imports} } = require('@master/css-extractor')` : ''}
                     const CSSExtractorPlugin = require('@master/css-extractor.webpack')
 
                     module.exports = {
                         plugins: [
-                            new CSSExtractorPlugin({
-                                ${dedentCode}
-                            })
+                            new CSSExtractorPlugin()
                         ]
                     }
                 `,
