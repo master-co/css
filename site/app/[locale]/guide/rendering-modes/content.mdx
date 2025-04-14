@@ -190,12 +190,14 @@ What benifits does this bring? The server renderer generates the critical CSS (*
 This approach allows for a **minimal, deterministic CSS text** that is injected into the HTML, enabling fast page loads and minimal CSS output.
 
 ### CSS Hydration
+We call this groundbreaking process **CSS Hydration** — the runtime engine parses and reconstructs the pre-rendered style sheet into its virtual memory, effectively “hydrating” it.
 <figure>
     <ModeImg src="/master-css-hydration.svg" alt='Master CSS Hydration' />
     <figcaption>Master CSS Hydration — Creates virtual rules from DOM style sheet</figcaption>
 </figure>
-We call this groundbreaking process **CSS Hydration** — the runtime engine parses and reconstructs the pre-rendered style sheet into its virtual memory, effectively “hydrating” it.
 Once hydrated, Master CSS can efficiently detect new or removed class names and update styles accordingly, without needing to reparse or regenerate previously defined rules.
+
+The [CSS runtime](#runtime-rendering) then takes over to detect any changes in dynamic class names.
 
 ---
 
@@ -204,7 +206,7 @@ Static Extraction is a zero-runtime rendering mode in which all CSS rules are pr
 
 Unlike runtime-based solutions, Static Extraction does not rely on any client-side JavaScript to inject or manage styles. It outputs pure CSS assets that are linked in the final HTML, allowing for maximum performance, minimal JavaScript runtime overhead, and optimal compatibility with static hosting environments.
 
-This rendering strategy is functionally equivalent to how [TailwindCSS](https://tailwindcss.com/) and [UnoCSS](https://unocss.dev/) operate in production: styles are compiled ahead-of-time based on actual class name usage across your project, enabling aggressive tree-shaking and style deduplication.
+This rendering strategy is functionally equivalent to how [Tailwind CSS](https://tailwindcss.com/) operates in production: styles are compiled ahead-of-time based on actual class name usage across your project, enabling aggressive tree-shaking and style deduplication.
 
 ### Dynamic classes limitations
 Since static extraction scans the source archive as plain text, it is impossible to predict the results of these string concatenation or interpolation.
@@ -229,129 +231,4 @@ Due to the limitations of static scanning, this is also one of the primary reaso
 
 ## Comparisons
 This section provides a detailed comparison of different rendering modes. Each mode is evaluated based on various criteria such as application scenarios, performance, and generated source.
-
-<table>
-    <thead>
-        <tr>
-            <th className="sticky z:1 top:48 top:60@sm pt:4x bg:base w:1/3">Progressive Rendering</th>
-            <th className="sticky z:1 top:48 top:60@sm pt:4x bg:base w:1/3">Runtime Rendering</th>
-            <th className="sticky z:1 top:48 top:60@sm pt:4x bg:base w:1/3">Static Extraction</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Pre-rendering + Runtime</td>
-            <td>Runtime</td>
-            <td>Zero-runtime</td>
-        </tr>
-        <tr>
-            <th colSpan={3}><small>Applicable technologies</small></th>
-        </tr>
-        <tr>
-            <td><InlineGood />SSG, SSR</td>
-            <td><InlineGood />CSR, SPA</td>
-            <td>-</td>
-        </tr>
-        <tr>
-            <th colSpan={3}><small>Generated source</small></th>
-        </tr>
-        <tr>
-            <td><InlineGood />HTML string</td>
-            <td><InlineGood />Runtime DOM Tree</td>
-            <td>`.html`, `.js`, `.jsx`, `.svelte`, ...</td>
-        </tr>
-        <tr>
-            <th colSpan={3}><small>Application scenarios</small></th>
-        </tr>
-        <tr>
-            <td><InlineGood />SaaS Software as a Service</td>
-            <td>SaaS Software as a Service</td>
-            <td>-</td>
-        </tr>
-        <tr>
-            <td><InlineGood />Dynamic applications</td>
-            <td><InlineGood />Dynamic applications</td>
-            <td><InlineWarn />Semi-dynamic applications</td>
-        </tr>
-        <tr>
-            <td><InlineGood />Dashboard</td>
-            <td><InlineGood />Dashboard</td>
-            <td><InlineWarn />Semi-dynamic dashboard</td>
-        </tr>
-        <tr>
-            <td><InlineGood />Static site</td>
-            <td>Static site</td>
-            <td><InlineGood />Static site</td>
-        </tr>
-        <tr>
-            <th colSpan={3}><small>First page load</small></th>
-        </tr>
-        <tr>
-            <td><InlineGood />Defer loading runtime engine</td>
-            <td>~17KB runtime engine</td>
-            <td><InlineGood />No runtime engine</td>
-        </tr>
-        <tr>
-            <td><InlineGood />Page-used CSS</td>
-            <td><InlineGood />Generate CSS at runtime</td>
-            <td><InlineWarn />Load all pages CSS</td>
-        </tr>
-        <tr>
-            <td><InlineGood />Internal CSS</td>
-            <td><InlineWarn />Render-blocking JS resources</td>
-            <td><InlineWarn />Render-blocking CSS resources</td>
-        </tr>
-        <tr>
-            <td><InlineGood />Fastest FCP</td>
-            <td>-</td>
-            <td>-</td>
-        </tr>
-        <tr>
-            <th colSpan={3}><small>Performance in the browser</small></th>
-        </tr>
-        <tr>
-            <td><InlineGood />Minimal, CSS generated on demand</td>
-            <td><InlineGood />Minimal, CSS generated on demand</td>
-            <td><InlineWarn />Including page-unused CSS</td>
-        </tr>
-        <tr>
-            <td>~0.01ms/class generation cycle</td>
-            <td>~0.01ms/class generation cycle</td>
-            <td><InlineGood />None, pre-generated CSS</td>
-        </tr>
-        <tr>
-            <td><InlineGood />Internal CSS in document</td>
-            <td><InlineGood />External JS</td>
-            <td><InlineGood />External CSS</td>
-        </tr>
-        <tr>
-            <th colSpan={3}><small>The source of class names</small></th>
-        </tr>
-        <tr>
-            <td><InlineGood />Dynamic</td>
-            <td><InlineGood />Dynamic</td>
-            <td><InlineWarn />Static</td>
-        </tr>
-        <tr>
-            <td><InlineGood />`class` attributes in markup</td>
-            <td><InlineGood />`class` attributes in markup</td>
-            <td><InlineWarn />Scan all source files</td>
-        </tr>
-        <tr>
-            <td><InlineGood />100% reliability</td>
-            <td><InlineGood />100% reliability</td>
-            <td><InlineWarn />Irregular sources</td>
-        </tr>
-    </tbody>
-</table>
-
-<div className='mt:40 flex flex:wrap gap:10|20 text:12'>
-    <div className='flex:0|0|auto'>SSG Static Site Generation</div>
-    <div className='flex:0|0|auto'>SSR Server-side Rendering</div>
-    <div className='flex:0|0|auto'>CSR Client-side Rendering</div>
-    <div className='flex:0|0|auto'>SPA Single-page Application</div>
-    <div className='flex:0|0|auto'>RR Runtime Rendering</div>
-    <div className='flex:0|0|auto'>SE Static Extraction</div>
-    <div className='flex:0|0|auto'>PR Progressive Rendering</div>
-    <div className='flex:0|0|auto'>SaaS Software as a Service</div>
-</div>
+<Comparisons />

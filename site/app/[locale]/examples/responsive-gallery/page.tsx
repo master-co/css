@@ -26,6 +26,9 @@ const mountains = [
     mountain12,
 ]
 
+export const dynamic = 'force-static'
+export const revalidate = false
+
 export default async function Page(props: any) {
     return (
         <>
