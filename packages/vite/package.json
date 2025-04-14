@@ -1,5 +1,5 @@
 {
-    "name": "@master/css-extractor.vite",
+    "name": "@master/css.vite",
     "type": "module",
     "scripts": {
         "build": "techor build \"src/**/*.ts\"",
@@ -9,7 +9,7 @@
         "test": "vitest"
     },
     "license": "MIT",
-    "description": "Integrate Master CSS Static Extraction in Vite way",
+    "description": "Integrate Master CSS in Vite way",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",
@@ -19,7 +19,7 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/extractor.vite"
+        "directory": "packages/vite"
     },
     "keywords": [
         "plugin",

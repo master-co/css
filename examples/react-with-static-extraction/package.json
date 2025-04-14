@@ -14,7 +14,7 @@
         "react-dom": "^19"
     },
     "devDependencies": {
-        "@master/css-extractor.vite": "workspace:^",
+        "@master/css.vite": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@eslint/compat": "^1.2.3",
         "@types/react": "^19.0.1",

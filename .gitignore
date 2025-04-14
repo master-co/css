@@ -67,8 +67,8 @@ Thumbs.db
 packages/core/tests/**/*master.css.*
 packages/extractor/tests/**/*master.css-extractor.*
 packages/extractor/tests/**/*master.css.*
-packages/extractor.vite/tests/vite/index.html
-packages/extractor.vite/tests/vite/master.css.*
+packages/vite/tests/vite/index.html
+packages/vite/tests/vite/master.css.*
 packages/extractor.webpack/tests/webpack/src/index.html
 packages/extractor.webpack/tests/webpack/src/master.css.*
 packages/nuxt/**/.nuxt

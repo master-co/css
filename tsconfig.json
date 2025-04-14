@@ -8,7 +8,7 @@
             "@master/eslint-config-css": [ "./node_modules/@master/eslint-config-css/src" ],
             "@master/eslint-plugin-css": [ "./node_modules/@master/eslint-plugin-css/src" ],
             "@master/css-extractor": [ "./node_modules/@master/css-extractor/src" ],
-            "@master/css-extractor.vite": [ "./node_modules/@master/css-extractor.vite/src" ],
+            "@master/css.vite": [ "./node_modules/@master/css.vite/src" ],
             "@master/css-extractor.webpack": [ "./node_modules/@master/css-extractor.webpack/src" ],
             "@master/css-language-server": [ "./node_modules/@master/css-language-server/src" ],
             "@master/css-language-service": [ "./node_modules/@master/css-language-service/src" ],

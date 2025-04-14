@@ -13,7 +13,7 @@
     "devDependencies": {
         "@eslint/compat": "^1.2.4",
         "@fontsource/fira-mono": "^5.1.0",
-        "@master/css-extractor.vite": "workspace:^",
+        "@master/css.vite": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@neoconfetti/svelte": "^2.2.1",
         "@sveltejs/adapter-vercel": "^5.5.2",

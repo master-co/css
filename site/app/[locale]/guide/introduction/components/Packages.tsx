@@ -15,7 +15,7 @@ const integrationPackages = [
     await import('~/packages/svelte/package.json'),
     await import('~/packages/vue/package.json'),
     await import('~/packages/nuxt/package.json'),
-    await import('~/packages/extractor.vite/package.json'),
+    await import('~/packages/vite/package.json'),
     await import('~/packages/extractor.webpack/package.json')
 ]
 
@@ -26,6 +26,7 @@ const developerToolPackages = [
     await import('~/packages/language-server/package.json'),
     await import('~/packages/language-service/package.json'),
     await import('~/packages/vscode/package.json'),
+    await import('~/packages/devtools-hook/package.json'),
 ]
 
 const solutionPackages = [

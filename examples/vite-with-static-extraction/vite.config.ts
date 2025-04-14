@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
-import masterCSSExtractor from '@master/css-extractor.vite'
+import masterCSS from '@master/css.vite'
 
 export default defineConfig({
     plugins: [
-        masterCSSExtractor()
+        masterCSS()
     ]
 })

@@ -20,12 +20,12 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
                 name: 'vite.config.ts', lang: 'ts', beautify: true,
                 code: dedent`
                     ${imports ? `import { ${imports} } from '@master/css-extractor'` : ''}
-                    import masterCSSExtractor from '@master/css-extractor.vite'
+                    import masterCSS from '@master/css.vite'
 
                     /** @type {import('vite').UserConfig} */
                     const config = {
                         plugins: [
-                            masterCSSExtractor(${dedentCode})
+                            masterCSS(${dedentCode})
                         ]
                     }
 
@@ -42,7 +42,7 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
 
                     module.exports = {
                         plugins: [
-                            new CSSExtractorPlugin()
+                            new CSSExtractorPlugin(${dedentCode})
                         ]
                     }
                 `,
