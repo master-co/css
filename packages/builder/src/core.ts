@@ -37,7 +37,11 @@ export default class CSSBuilder extends EventEmitter {
         if (this.initialized) return
         if (typeof customOptions === 'string') {
             this.options = extend(defaultOptions, exploreConfig(customOptions, {
-                found: (basename) => log.i`Loaded **${basename}**`,
+                found: (basename) => {
+                    if (this.options.verbose && this.options.verbose > 1) {
+                        log.i`**${basename}** found`
+                    }
+                },
                 cwd: this.cwd
             }), customOptions)
         } else {

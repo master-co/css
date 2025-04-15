@@ -3,17 +3,17 @@ import MagicString from 'magic-string'
 import path from 'path'
 import { PluginContext, PluginOptions } from '../core'
 
-const __MASTER_CSS_RUNTIME_INJECTED__ = '/*__MASTER_CSS_RUNTIME_INJECTED__*/'
+const __MASTER_CSS_RUNTIME_INIT_INJECTED__ = '/*__MASTER_CSS_RUNTIME_INIT_INJECTED__*/'
 
-export default function InjectCSSRuntimePlugin(options: PluginOptions = {}, context: PluginContext): Plugin {
+export default function InjectCSSRuntimeInitPlugin(options: PluginOptions, context: PluginContext): Plugin {
     return {
-        name: 'master-css:inject-runtime',
+        name: 'master-css:inject-runtime-init',
         enforce: 'pre',
         transform(code, id) {
-            if (context.entryId !== id || code.includes(__MASTER_CSS_RUNTIME_INJECTED__)) return
+            if (context.entryId !== id || code.includes(__MASTER_CSS_RUNTIME_INIT_INJECTED__)) return
             const s = new MagicString(code)
             const imports = [
-                __MASTER_CSS_RUNTIME_INJECTED__,
+                __MASTER_CSS_RUNTIME_INIT_INJECTED__,
                 `import { initCSSRuntime } from '@master/css-runtime'`,
             ]
             if (context.configId) {
@@ -23,9 +23,7 @@ export default function InjectCSSRuntimePlugin(options: PluginOptions = {}, cont
             } else {
                 imports.push(`initCSSRuntime()`)
             }
-
             s.prepend(imports.join('\n') + '\n')
-
             return {
                 code: s.toString(),
                 map: s.generateMap({ hires: true }),

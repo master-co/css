@@ -1,7 +1,6 @@
 import brands from 'internal/data/brands'
 
 Installation guides for popular frameworks and build tools integrated with Master CSS.
-
 <IconButtons url="/guide/installation" className="mt:12x">
     {brands.filter(({ name }) => ['Next.js', 'Svelte', 'Nuxt.js', 'Laravel', 'Astro', 'Blazor', 'React', 'Vue.js', 'Angular', 'Vite', 'Webpack'].includes(name))}
 </IconButtons>
@@ -9,5 +8,57 @@ Installation guides for popular frameworks and build tools integrated with Maste
 
 ---
 
-Don't have a preferred framework or tool yet? Try the [online playground](/play) or copy and paste [CDN](/guide/installation/cdn) to quickly start using Master CSS.
+Don't have a preferred framework or tool yet? Try the [online playground](/play) or C&P [CDN](/guide/installation/cdn), or set up the [runtime](/guide/rendering-modes#runtime-rendering) from scratch is by initializing it in your app’s entry point.
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install Master CSS Runtime into your project via package managers.
+        </StepL>
+        <StepR>
+            ```bash action=install
+            @master/css-runtime@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS runtime engine
+            Import and initialize the runtime engine in the entry file, such as `main.js`:
 
+            - To create a [master.css.js](/guide/configuration) file, run `npm create @master/css@rc`
+        </StepL>
+        <StepR>
+            ```js name=main.js
+            import { initCSSRuntime } from '@master/css-runtime'
+            import config from './master.css'
+
+            initCSSRuntime(config)
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Start using Master CSS
+            Now style your first element using Master CSS syntax!
+        </StepL>
+        <StepR>
+            ```html name=index.html
+            <!DOCTYPE html>
+            <!-- @MARK hidden -->
+            <html lang="en" hidden>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <script src="/main.js"></script> <!-- [!code highlight] -->
+            </head>
+            <body>
+                <!-- @MARK font:40 font:heavy italic m:12x text:center -->
+                <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
+            </body>
+            </html>
+            ```
+        </StepR>
+    </Step>
+    <HelloWorld />
+</StepSection>

@@ -16,7 +16,6 @@ export default async function Layout(props: any) {
                 <Tab href='/guide/installation'>{$('Quick Start')}</Tab>
                 <Tab href='/guide/installation/cli'>{$('Standalone CLI')}</Tab>
                 <Tab href='/guide/installation/cdn'>{$('Runtime CDN')}</Tab>
-                <Tab href='/guide/installation/runtime'>{$('Runtime Setup')}</Tab>
                 <Tab href='/guide/installation/integrations'>{$('Integrations')}</Tab>
                 {/* <Tab href='/guide/installation/download' disabled>{$('Download')}</Tab> */}
             </Tabs>

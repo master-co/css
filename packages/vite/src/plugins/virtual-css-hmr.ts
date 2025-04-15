@@ -62,24 +62,19 @@ export default function VirtualCSSHMRPlugin(builder: CSSBuilder): Plugin {
         await Promise.all(tasks)
         updateVirtualModule({ server })
     }
-    builder
-        .on('reset', () => {
-            servers.forEach((eachServer) => handleReset({ server: eachServer }))
-        })
-        .on('change', () => {
-            servers.forEach((eachServer) => updateVirtualModule({ server: eachServer }))
-        })
     return {
         name: 'master-css:static:virtual-css-module:hmr',
-        apply(config, env) {
-            if (env.command === 'serve') {
-                builder.startWatch()
-                return true
-            } else {
-                return false
-            }
-        },
         enforce: 'pre',
+        apply: 'serve',
+        buildStart() {
+            builder
+                .on('reset', () => {
+                    servers.forEach((eachServer) => handleReset({ server: eachServer }))
+                })
+                .on('change', () => {
+                    servers.forEach((eachServer) => updateVirtualModule({ server: eachServer }))
+                })
+        },
         async resolveId(id) {
             if (builder.options.module && id.includes(builder.options.module) || id.includes(builder.resolvedVirtualModuleId)) {
                 return builder.resolvedVirtualModuleId

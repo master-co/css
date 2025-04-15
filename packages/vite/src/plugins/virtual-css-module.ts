@@ -4,8 +4,8 @@ import type { Plugin } from 'vite'
 export default function VirtualCSSModulePlugin(builder: CSSBuilder): Plugin {
     return {
         name: 'master-css:static:virtual-css-module:build',
-        apply: 'build',
         enforce: 'pre',
+        apply: 'build',
         async resolveId(id) {
             if (id === builder.options.module) {
                 return builder.resolvedVirtualModuleId

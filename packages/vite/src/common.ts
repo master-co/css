@@ -4,3 +4,9 @@ export const ENTRY_MODULE_PATTERNS = [
     'src/app.{js,ts,jsx,tsx,mjs,cjs}',
     'index.{js,ts,jsx,tsx,mjs,cjs}',
 ]
+
+export enum Modes {
+    runtime = 'Runtime Rendering',
+    extract = 'Static Extraction',
+    progressive = 'Progressive Hydration'
+}

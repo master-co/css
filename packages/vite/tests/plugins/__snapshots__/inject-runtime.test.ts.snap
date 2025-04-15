@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`InjectCSSRuntimePlugin fixture: alt 1`] = `
+exports[`InjectCSSRuntimeInitPlugin fixture: alt 1`] = `
 "/*__MASTER_CSS_RUNTIME_INJECTED__*/
 import { initCSSRuntime } from '@master/css-runtime'
 import config from './master.css.js'
@@ -8,7 +8,7 @@ initCSSRuntime(config)
 console.log('World')"
 `;
 
-exports[`InjectCSSRuntimePlugin fixture: basic 1`] = `
+exports[`InjectCSSRuntimeInitPlugin fixture: basic 1`] = `
 "/*__MASTER_CSS_RUNTIME_INJECTED__*/
 import { initCSSRuntime } from '@master/css-runtime'
 import config from './master.css.js'
