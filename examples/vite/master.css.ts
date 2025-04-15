@@ -4,11 +4,15 @@ export default {
     components: {},
     rules: {},
     variables: {
-        primary: '#ff0000'
+        primary: '$(yellow)'
     },
     utilities: {},
     at: {},
     animations: {},
     selectors: {},
-    functions: {}
+    functions: {},
+    modes: {
+        light: 'media',
+        dark: 'media',
+    }
 } as Config
