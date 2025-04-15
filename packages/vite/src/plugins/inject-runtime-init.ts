@@ -24,6 +24,9 @@ export default function InjectCSSRuntimeInitPlugin(options: PluginOptions, conte
                 imports.push(`initCSSRuntime()`)
             }
             s.prepend(imports.join('\n') + '\n')
+            if (process.env.DEBUG) {
+                console.log(`[@master/css.vite] runtime init injected into ${id}`)
+            }
             return {
                 code: s.toString(),
                 map: s.generateMap({ hires: true }),

@@ -11,6 +11,9 @@ export default function AvoidFOUCPlugin(options?: PluginOptions, context?: Plugi
                     /<html(\s[^>]*)?>/i,
                     (match, attrs = '') => {
                         if (/hidden/.test(attrs)) return match
+                        if (process.env.DEBUG) {
+                            console.log(`[@master/css.vite] avoiding FOUC by adding hidden attribute to <html> tag`)
+                        }
                         return `<html${attrs} hidden>`
                     },
                 ),

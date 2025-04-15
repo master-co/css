@@ -1,13 +1,13 @@
 import { PluginContext, PluginOptions } from '../core'
 import { type Plugin } from 'vite'
-import CSSBuilder, { Options } from '@master/css-builder'
+import CSSBuilder from '@master/css-builder'
 import VirtualCSSModulePlugin from '../plugins/virtual-css-module'
 import VirtualCSSHMRPlugin from '../plugins/virtual-css-hmr'
 import InjectVirtualCSSImportPlugin from '../plugins/inject-virtual-css-init'
 
 export default function ExtractMode(options: PluginOptions, context: PluginContext): Plugin[] {
     const builder: CSSBuilder = new CSSBuilder(options.builder)
-    return [
+    const plugins: Plugin[] = [
         {
             name: 'master-css:static',
             enforce: 'pre',
@@ -30,8 +30,13 @@ export default function ExtractMode(options: PluginOptions, context: PluginConte
                 await server.waitForRequestsIdle()
             }
         },
-        InjectVirtualCSSImportPlugin(options, context, builder),
         VirtualCSSHMRPlugin(builder),
         VirtualCSSModulePlugin(builder),
     ]
+
+    if (options.inject) {
+        plugins.push(InjectVirtualCSSImportPlugin(options, context, builder))
+    }
+
+    return plugins
 }

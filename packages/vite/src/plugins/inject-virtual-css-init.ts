@@ -17,6 +17,9 @@ export default function InjectVirtualCSSImportPlugin(options: PluginOptions, con
                 `import '${builder.options.module}'`,
             ]
             s.prepend(imports.join('\n') + '\n')
+            if (process.env.DEBUG) {
+                console.log(`[@master/css.vite] ${builder.options.module} injected into ${id}`)
+            }
             return {
                 code: s.toString(),
                 map: s.generateMap({ hires: true }),

@@ -4,8 +4,7 @@ import type { Pattern } from 'fast-glob'
 import fg from 'fast-glob'
 import ExtractMode from './modes/extract'
 import RuntimeMode from './modes/runtime'
-import { ENTRY_MODULE_PATTERNS, Modes } from './common'
-import log from '@techor/log'
+import { ENTRY_MODULE_PATTERNS } from './common'
 import path from 'path'
 import { readFileSync } from 'fs'
 import { fileURLToPath } from 'url'
@@ -19,14 +18,18 @@ const pkg = JSON.parse(
 const version = 'v' + (pkg.version || '0.0.0')
 
 export interface PluginOptions {
-    mode: keyof typeof Modes
+    mode?: 'runtime' | 'extract' | 'progressive'
     builder?: ExtractorOptions | Pattern
     config?: string
+    inject?: boolean
+    avoidFOUC?: boolean
 }
 
 const defaultOptions: PluginOptions = {
     mode: 'runtime',
-    config: 'master.css'
+    config: 'master.css',
+    inject: true,
+    avoidFOUC: true,
 }
 
 export interface PluginContext {
@@ -35,7 +38,8 @@ export interface PluginContext {
     configId?: string
 }
 
-export default function masterCSSPlugin(options = defaultOptions): Plugin[] {
+export default function masterCSSPlugin(options: PluginOptions): Plugin[] {
+    options = { ...defaultOptions, ...options }
     const context = {} as PluginContext
     const configBase = options.config || 'master.css'
     const ResolveContextPlugin = () => {
@@ -53,13 +57,10 @@ export default function masterCSSPlugin(options = defaultOptions): Plugin[] {
                 ])
                 context.configId = configFiles[0]
                 context.entryId = entryFiles[0]
-                const relConfigId = context.configId ? path.relative(config.root, context.configId) : ''
-                const relEntryId = context.entryId ? path.relative(config.root, context.entryId) : ''
-                if (config.env.DEV) {
-                    log`  ${log.chalk.bold.yellow('Master CSS')} ${log.chalk.yellow(version)} ${Modes[options.mode]}`
-                    log``
-                    log`  · Entry:  ${relEntryId ? relEntryId : 'none'}`
-                    log`  · Config: ${relConfigId ? relConfigId : 'none'}`
+                if (process.env.DEBUG) {
+                    console.log(`[@master/css.vite] enabled ${options.mode} mode`)
+                    console.log(`[@master/css.vite] found config ${context.configId || 'none'}`)
+                    console.log(`[@master/css.vite] found entry ${context.entryId || 'none'}`)
                 }
             },
         } as Plugin
