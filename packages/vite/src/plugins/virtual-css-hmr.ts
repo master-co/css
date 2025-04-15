@@ -70,7 +70,7 @@ export default function VirtualCSSHMRPlugin(builder: CSSBuilder): Plugin {
             servers.forEach((eachServer) => updateVirtualModule({ server: eachServer }))
         })
     return {
-        name: 'master-css-builder:virtual-css-module:hmr',
+        name: 'master-css:static:virtual-css-module:hmr',
         apply(config, env) {
             if (env.command === 'serve') {
                 builder.startWatch()

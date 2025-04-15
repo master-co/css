@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AvoidFOUCPlugin fixture: already-hidden 1`] = `"<html lang="en" hidden><head></head><body></body></html>"`;
+
+exports[`AvoidFOUCPlugin fixture: html-inside-comment 1`] = `
+"<!-- <html hidden> pretend tag -->
+<html><head></head><body></body></html>"
+`;
+
+exports[`AvoidFOUCPlugin fixture: html-multiline 1`] = `
+"<html
+  lang="en"
+  data-version="1.0"
+ hidden>
+<head></head><body></body></html>"
+`;
+
+exports[`AvoidFOUCPlugin fixture: html-with-doctype 1`] = `
+"<!DOCTYPE html>
+<html lang="en" hidden><head></head><body></body></html>"
+`;
+
+exports[`AvoidFOUCPlugin fixture: plain 1`] = `"<html hidden><head></head><body></body></html>"`;
+
+exports[`AvoidFOUCPlugin fixture: with-lang 1`] = `"<html lang="en" hidden><head></head><body></body></html>"`;
+
+exports[`AvoidFOUCPlugin fixture: with-other-attrs 1`] = `"<html class="dark" data-theme="light" hidden><head></head><body></body></html>"`;

@@ -28,6 +28,8 @@
         "build tools",
         "static extraction",
         "static",
+        "runtime",
+        "css runtime",
         "css",
         "mastercss",
         "vite-plugin"
@@ -57,10 +59,15 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-builder": "workspace:^"
+        "@master/css-builder": "workspace:^",
+        "@master/css-runtime": "workspace:^",
+        "@master/css-server": "workspace:^",
+        "fast-glob": "^3.3.3",
+        "magic-string": "^0.30.17"
     },
     "devDependencies": {
         "puppeteer-core": "^23.10.3",
-        "shared": "workspace:^"
+        "shared": "workspace:^",
+        "source-map": "^0.7.4"
     }
 }

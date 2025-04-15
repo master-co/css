@@ -1,17 +1,17 @@
-import { Options } from './core'
+import { PluginContext, PluginOptions } from '../core'
 import type { Plugin } from 'vite'
 import CSSBuilder, { Options as ExtractorOptions } from '@master/css-builder'
-import VirtualCSSModulePlugins from './virtual-css-module'
-import VirtualCSSHMRPlugin from './virtual-css-hmr'
+import VirtualCSSModulePlugin from '../plugins/virtual-css-module'
+import VirtualCSSHMRPlugin from '../plugins/virtual-css-hmr'
 
-export default function CSSExtractorPlugins(options: Options, cwd = process.cwd()): Plugin[] {
-    const builder = new CSSBuilder(options.builder, cwd)
+export default function ExtractMode(options: PluginOptions, context: PluginContext): Plugin[] {
+    const builder = new CSSBuilder(options.builder)
     builder.on('init', (opt: ExtractorOptions) => {
         opt.include = []
     })
     return [
         {
-            name: 'master-css-builder',
+            name: 'master-css:static',
             enforce: 'pre',
             apply(_, env) {
                 if (!env.isSsrBuild) {
@@ -32,6 +32,6 @@ export default function CSSExtractorPlugins(options: Options, cwd = process.cwd(
             }
         },
         VirtualCSSHMRPlugin(builder),
-        ...VirtualCSSModulePlugins(builder),
+        VirtualCSSModulePlugin(builder),
     ]
 }

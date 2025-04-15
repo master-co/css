@@ -1,4 +1,4 @@
-Start from scratch with the [runtime](/guide/rendering-modes#runtime-rendering) , [static extraction](/guide/rendering-modes#static-extraction) , using the Master CSS Vite plugin to quickly build a project to boot locally.
+Quickly create a local-launched project by specifying a [rendering mode](/guide/rendering-modes) via the Master CSS Vite plugin.
 
 ## Installation [sr-only]
 <StepSection>
@@ -26,19 +26,11 @@ Start from scratch with the [runtime](/guide/rendering-modes#runtime-rendering) 
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Initialize configuration file
-            Run the command to create a configuration file [master.css.js](/guide/configuration).
-        </StepL>
-        <StepR>
-            ```bash action=create
-            @master/css@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Set up Master CSS
-            Import the `masterCSS` and add it to the `plugins` in your Vite config file.
+            Import the `masterCSS` plugin in the `vite.config.js`.
+
+            - By default, the `options.mode` is set to `runtime`.
+            - To create a [master.css.js](/guide/configuration) file, run `npm create @master/css@rc`
         </StepL>
         <StepR>
             ```js name=vite.config.js
@@ -55,25 +47,25 @@ Start from scratch with the [runtime](/guide/rendering-modes#runtime-rendering) 
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Start dev server
+            Run the command to start the Vite dev server.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal&action=run
+            dev
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Start using Master CSS
             Now style your first element using Master CSS syntax!
         </StepL>
         <StepR>
             ```html name=index.html
-            <!DOCTYPE html>
-            <!-- @MARK hidden -->
-            <html lang="en" hidden>
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-            </head>
-            <body>
-                <!-- @MARK font:40 font:heavy italic m:12x text:center -->
-                <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
-            </body>
-            </html>
+            <h1 class="font:40 font:heavy italic">Hello World</h1>
             ```
         </StepR>
     </Step>
-    <HelloWorld />
+    <HelloWorld url="localhost:5173" />
 </StepSection>

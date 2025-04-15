@@ -17,7 +17,8 @@ const config: ViteUserConfig = {
             '**/*generated.css',
             'package.json',
             '**/*.output.*',
-            '**/*.input.*'
+            '**/*.input.*',
+            '**/fixtures/**/*'
         ]
     },
     plugins: [

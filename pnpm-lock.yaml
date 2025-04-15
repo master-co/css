@@ -768,15 +768,6 @@ importers:
         specifier: workspace:^
         version: link:../../packages/cli
 
-  examples/static-output:
-    devDependencies:
-      '@master/css':
-        specifier: workspace:^
-        version: link:../../packages/core
-      '@master/css-cli':
-        specifier: workspace:^
-        version: link:../../packages/cli
-
   examples/static-render:
     devDependencies:
       '@master/css':
@@ -945,32 +936,16 @@ importers:
         version: 6.2.6(@types/node@22.14.1)(jiti@2.4.2)(less@4.2.0)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.1)
 
   examples/vite:
-    dependencies:
-      '@master/css-runtime':
-        specifier: workspace:^
-        version: link:../../packages/runtime
     devDependencies:
-      typescript:
-        specifier: ^5.3.3
-        version: 5.8.3
-      vite:
-        specifier: ^5.1.4
-        version: 5.4.18(@types/node@22.14.1)(less@4.2.0)(sass@1.86.3)(terser@5.39.0)
-
-  examples/vite-with-static-extraction:
-    devDependencies:
-      '@master/css-runtime':
-        specifier: workspace:^
-        version: link:../../packages/runtime
       '@master/css.vite':
         specifier: workspace:^
         version: link:../../packages/vite
       typescript:
-        specifier: ^4.9.5
-        version: 4.9.5
+        specifier: ^5.8.3
+        version: 5.8.3
       vite:
-        specifier: ^5.1.4
-        version: 5.4.18(@types/node@22.14.1)(less@4.2.0)(sass@1.86.3)(terser@5.39.0)
+        specifier: ^6.2.6
+        version: 6.2.6(@types/node@22.14.1)(jiti@2.4.2)(less@4.2.0)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.1)
 
   examples/vue.js:
     dependencies:
@@ -1964,6 +1939,18 @@ importers:
       '@master/css-builder':
         specifier: workspace:^
         version: link:../builder
+      '@master/css-runtime':
+        specifier: workspace:^
+        version: link:../runtime
+      '@master/css-server':
+        specifier: workspace:^
+        version: link:../server
+      fast-glob:
+        specifier: ^3.3.3
+        version: 3.3.3
+      magic-string:
+        specifier: ^0.30.17
+        version: 0.30.17
       vite:
         specifier: '>=6'
         version: 6.2.6(@types/node@22.14.1)(jiti@2.4.2)(less@4.2.0)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.1)
@@ -1974,6 +1961,9 @@ importers:
       shared:
         specifier: workspace:^
         version: link:../../shared
+      source-map:
+        specifier: ^0.7.4
+        version: 0.7.4
 
   packages/vscode:
     devDependencies:
@@ -15196,11 +15186,6 @@ packages:
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0
       typescript: '>=4.8.4 <5.9.0'
-
-  typescript@4.9.5:
-    resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
-    engines: {node: '>=4.2.0'}
-    hasBin: true
 
   typescript@5.2.2:
     resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
@@ -33703,8 +33688,6 @@ snapshots:
       typescript: 5.8.3
     transitivePeerDependencies:
       - supports-color
-
-  typescript@4.9.5: {}
 
   typescript@5.2.2: {}
 

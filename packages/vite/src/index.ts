@@ -1,1 +1,1 @@
-export { default } from './plugins/core'
+export { default } from './core'
