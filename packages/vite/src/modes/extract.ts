@@ -6,8 +6,17 @@ import VirtualCSSHMRPlugin from '../plugins/virtual-css-hmr'
 import InjectVirtualCSSImportPlugin from '../plugins/inject-virtual-css-init'
 
 export default function ExtractMode(options: PluginOptions, context: PluginContext): Plugin[] {
-    const builder: CSSBuilder = new CSSBuilder(options.builder)
     const plugins: Plugin[] = [
+        {
+            name: 'master-css:builder',
+            enforce: 'pre',
+            configResolved(config) {
+                context.builder = new CSSBuilder(options.builder, config.root)
+                context.builder.init()
+                context.builder.options.verbose = 0
+                context.builder.options.include = []
+            },
+        },
         {
             name: 'master-css:static',
             enforce: 'pre',
@@ -15,27 +24,24 @@ export default function ExtractMode(options: PluginOptions, context: PluginConte
                 return !env.isSsrBuild
             },
             async buildStart() {
-                builder.init()
-                builder.options.verbose = 0
-                builder.options.include = []
-                await builder.prepare()
+                await context.builder.prepare()
             },
             async transform(code, id) {
-                const resolvedVirtualModuleId = builder.resolvedVirtualModuleId
+                const resolvedVirtualModuleId = context.builder.resolvedVirtualModuleId
                 if (id !== resolvedVirtualModuleId && !id.endsWith('.css')) {
-                    await builder.insert(id, code)
+                    await context.builder?.insert(id, code)
                 }
             },
             async configureServer(server) {
                 await server.waitForRequestsIdle()
             }
         },
-        VirtualCSSHMRPlugin(builder),
-        VirtualCSSModulePlugin(builder),
+        VirtualCSSHMRPlugin(options, context),
+        VirtualCSSModulePlugin(options, context),
     ]
 
     if (options.inject) {
-        plugins.push(InjectVirtualCSSImportPlugin(options, context, builder))
+        plugins.push(InjectVirtualCSSImportPlugin(options, context))
     }
 
     return plugins

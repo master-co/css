@@ -1,6 +1,10 @@
+const EXTENSIONS = '{js,ts,jsx,tsx,mjs,cjs,vue}'
+const ENTRY_NAMES = '{app,main,index}'
+
 export const ENTRY_MODULE_PATTERNS = [
-    'src/main.{js,ts,jsx,tsx,mjs,cjs}',
-    'src/index.{js,ts,jsx,tsx,mjs,cjs}',
-    'src/app.{js,ts,jsx,tsx,mjs,cjs}',
-    'index.{js,ts,jsx,tsx,mjs,cjs}',
+    `src/${ENTRY_NAMES}.${EXTENSIONS}`,
+    `${ENTRY_NAMES}.${EXTENSIONS}`,
 ]
+
+export const virtualConfigId = 'virtual:master-css-config'
+export const resolvedVirtualConfigId = `\0${virtualConfigId}`

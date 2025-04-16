@@ -1,19 +1,19 @@
-import CSSBuilder from '@master/css-builder'
 import type { Plugin } from 'vite'
+import { PluginContext, PluginOptions } from '../core'
 
-export default function VirtualCSSModulePlugin(builder: CSSBuilder): Plugin {
+export default function VirtualCSSModulePlugin(options: PluginOptions, context: PluginContext): Plugin {
     return {
         name: 'master-css:static:virtual-css-module:build',
         enforce: 'pre',
         apply: 'build',
-        async resolveId(id) {
-            if (id === builder.options.module) {
-                return builder.resolvedVirtualModuleId
+        resolveId(id) {
+            if (id === context.builder.options.module) {
+                return context.builder.resolvedVirtualModuleId
             }
         },
-        load(id) {
-            if (id === builder.resolvedVirtualModuleId) {
-                return builder.slotCSSRule
+        load(id, opt) {
+            if (id === context.builder.resolvedVirtualModuleId) {
+                return context.builder.slotCSSRule
             }
         },
         generateBundle(options, bundle) {
@@ -22,7 +22,7 @@ export default function VirtualCSSModulePlugin(builder: CSSBuilder): Plugin {
                 const chunk = bundle[eachCssFileName]
                 if (chunk.type === 'asset') {
                     // @ts-expect-error
-                    bundle[eachCssFileName]['source'] = bundle[eachCssFileName]['source'].replace(builder.slotCSSRule, builder.css.text)
+                    bundle[eachCssFileName]['source'] = bundle[eachCssFileName]['source'].replace(context.builder.slotCSSRule, context.builder.css.text)
                 }
             }
             return
