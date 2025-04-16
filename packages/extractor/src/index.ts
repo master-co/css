@@ -3,4 +3,4 @@ export * from './core'
 
 export { default as options } from './options'
 export { default as extractLatentClasses } from './functions/extract-latent-classes'
-export { default } from './core'
+export { default, default as CSSExtractor } from './core'

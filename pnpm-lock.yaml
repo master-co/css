@@ -750,46 +750,27 @@ importers:
         version: 2.2.8(typescript@5.8.3)
 
   examples/webpack:
-    dependencies:
-      '@master/css-runtime':
-        specifier: workspace:^
-        version: link:../../packages/runtime
-    devDependencies:
-      html-webpack-plugin:
-        specifier: ^5.6.0
-        version: 5.6.3(webpack@5.99.5)
-      webpack:
-        specifier: ^5.90.3
-        version: 5.99.5(@swc/core@1.11.21(@swc/helpers@0.5.17))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: ^5.1.4
-        version: 5.1.4(webpack-dev-server@4.15.2)(webpack@5.99.5)
-      webpack-dev-server:
-        specifier: ^4.15.1
-        version: 4.15.2(webpack-cli@5.1.4)(webpack@5.99.5)
-
-  examples/webpack-with-static-extraction:
     devDependencies:
       '@master/css.webpack':
         specifier: workspace:^
         version: link:../../packages/webpack
       css-loader:
-        specifier: ^6.10.0
+        specifier: ^6.11.0
         version: 6.11.0(webpack@5.99.5)
       html-webpack-plugin:
-        specifier: ^5.6.0
+        specifier: ^5.6.3
         version: 5.6.3(webpack@5.99.5)
       style-loader:
         specifier: ^3.3.4
         version: 3.3.4(webpack@5.99.5)
       webpack:
-        specifier: ^5.90.3
+        specifier: ^5.99.5
         version: 5.99.5(@swc/core@1.11.21(@swc/helpers@0.5.17))(webpack-cli@5.1.4)
       webpack-cli:
         specifier: ^5.1.4
         version: 5.1.4(webpack-dev-server@4.15.2)(webpack@5.99.5)
       webpack-dev-server:
-        specifier: ^4.15.1
+        specifier: ^4.15.2
         version: 4.15.2(webpack-cli@5.1.4)(webpack@5.99.5)
 
   internal:
