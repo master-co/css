@@ -38,11 +38,11 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
                 name: 'webpack.config.js', lang: 'js', beautify: true,
                 code: dedent`
                     ${imports ? `const { ${imports} } = require('@master/css-extractor')` : ''}
-                    const MasterCSSPlugin = require('@master/css.webpack')
+                    const { MasterCSSExtractorPlugin } = require('@master/css.webpack')
 
                     module.exports = {
                         plugins: [
-                            new MasterCSSPlugin(${dedentCode})
+                            new MasterCSSExtractorPlugin(${dedentCode})
                         ]
                     }
                 `,

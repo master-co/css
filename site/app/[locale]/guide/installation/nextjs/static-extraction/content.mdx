@@ -86,19 +86,19 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS extractor
-            - Define a `webpackConfig` and add a `MasterCSSPlugin` in `next.config.js`
+            - Define a `webpackConfig` and add a `MasterCSSExtractorPlugin` in `next.config.js`
             - Concat the `webpackConfig.plugins`
 
-            (!) `MasterCSSPlugin` cannot be created directly in `nextConfig`, this will result in multiple instances.
+            (!) `MasterCSSExtractorPlugin` cannot be created directly in `nextConfig`, this will result in multiple instances.
         </StepL>
         <StepR>
             ```js name=next.config.js
-            const MasterCSSPlugin = require('@master/css.webpack') // [!code ++]
+            const { MasterCSSExtractorPlugin } = require('@master/css.webpack') // [!code ++]
 
             /** @type {import('webpack').Configuration} */
             const webpackConfig = { // [!code ++]
                 plugins: [ // [!code ++]
-                    new MasterCSSPlugin() // [!code ++]
+                    new MasterCSSExtractorPlugin() // [!code ++]
                 ] // [!code ++]
             } // [!code ++]
 

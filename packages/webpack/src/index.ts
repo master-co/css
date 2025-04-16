@@ -3,9 +3,9 @@ import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import log from '@techor/log'
 
-const NAME = 'MasterCSSPlugin'
+const NAME = 'MasterCSSExtractorPlugin'
 
-export default class MasterCSSPlugin extends CSSExtractor {
+export class MasterCSSExtractorPlugin extends CSSExtractor {
 
     initialized = false
     moduleContentByPath: any = {}
@@ -61,4 +61,4 @@ export default class MasterCSSPlugin extends CSSExtractor {
     }
 }
 
-exports.__esModule = true
+// exports.__esModule = true

@@ -53,11 +53,11 @@
 </div>
 
 ```js
-const MasterCSSPlugin = require('@master/css.webpack')
+const { MasterCSSExtractorPlugin } = require('@master/css.webpack')
 
 module.exports = {
     plugins: [
-        new MasterCSSPlugin()
+        new MasterCSSExtractorPlugin()
     ]
 }
 ```
