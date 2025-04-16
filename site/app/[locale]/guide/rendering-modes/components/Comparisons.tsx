@@ -9,9 +9,9 @@ export default () => (
             <thead>
                 <tr>
                     <th className="sticky bg:base pt:4x text:center top:48 z:1 top:60@sm"></th>
-                    <th className="sticky bg:base pt:4x text:center top:48 w:1/6 z:1 top:60@sm">Runtime</th>
                     <th className="sticky bg:base pt:4x text:center top:48 w:1/6 z:1 top:60@sm">Progressive</th>
-                    <th className="sticky bg:base pt:4x text:center top:48 w:1/6 z:1 top:60@sm">Extraction</th>
+                    <th className="sticky bg:base pt:4x text:center top:48 w:1/6 z:1 top:60@sm">Runtime</th>
+                    <th className="sticky bg:base pt:4x text:center top:48 w:1/6 z:1 top:60@sm">Extract</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,14 +47,14 @@ export default () => (
                 </tr>
                 <tr>
                     <th>Render-blocking JS</th>
-                    <td><InlineWarn />Yes</td>
                     <td><InlineGood />Defer</td>
+                    <td><InlineWarn />Yes</td>
                     <td><InlineGood />No</td>
                 </tr>
                 <tr>
                     <th>Pre-rendering</th>
-                    <td><InlineBad /></td>
                     <td><InlineGood /></td>
+                    <td><InlineBad /></td>
                     <td><InlineWarn /></td>
                 </tr>
                 <tr>
@@ -62,8 +62,8 @@ export default () => (
                 </tr>
                 <tr>
                     <th>Possible CSS bytes for a page</th>
-                    <td><InlineGood />0kB</td>
                     <td><InlineGood />~5kB</td>
+                    <td><InlineGood />0kB</td>
                     <td><InlineWarn />~400kB</td>
                 </tr>
                 <tr>
@@ -92,14 +92,14 @@ export default () => (
                 </tr>
                 <tr>
                     <th>Largest Contentful Paint (LCP)</th>
-                    <td><InlineWarn /></td>
                     <td><InlineGood />Fastest</td>
+                    <td><InlineWarn /></td>
                     <td><InlineWarn /></td>
                 </tr>
                 <tr>
                     <th>First Contentful Paint (FCP)</th>
-                    <td><InlineWarn /></td>
                     <td><InlineGood />Fastest</td>
+                    <td><InlineWarn /></td>
                     <td><InlineWarn /></td>
                 </tr>
                 <tr>
@@ -110,8 +110,8 @@ export default () => (
                 </tr>
                 <tr>
                     <th>Interaction to Next Paint (INP)</th>
-                    <td><InlineWarn /></td>
                     <td><InlineGood /></td>
+                    <td><InlineWarn /></td>
                     <td><InlineGood /></td>
                 </tr>
                 <tr>
@@ -120,19 +120,19 @@ export default () => (
                 <tr>
                     <th>Master CSS</th>
                     <td><InlineGood /></td>
-                    <td><InlineGood /></td>
+                    <td><InlineGood /> ~27kB</td>
                     <td><InlineGood /></td>
                 </tr>
                 <tr>
                     <th><Link href="https://tailwindcss.com/" indicate>Tailwind CSS</Link></th>
                     <td><InlineBad /></td>
-                    <td><InlineBad /></td>
+                    <td><InlineBad /> ~61.9kB</td>
                     <td><InlineGood /></td>
                 </tr>
                 <tr>
                     <th><Link href="https://unocss.dev/" indicate>UnoCSS</Link></th>
-                    <td><InlineGood /></td>
                     <td><InlineBad /></td>
+                    <td><InlineGood /> ~53kB</td>
                     <td><InlineGood /></td>
                 </tr>
             </tbody>
