@@ -1,6 +1,6 @@
 import { PluginContext, PluginOptions } from '../core'
 import { type Plugin } from 'vite'
-import CSSExtractor from '~/packages/extractor/src'
+import CSSExtractor from '@master/css-extractor'
 import VirtualCSSModulePlugin from '../plugins/virtual-css-module'
 import VirtualCSSHMRPlugin from '../plugins/virtual-css-hmr'
 import InjectVirtualCSSImportPlugin from '../plugins/inject-virtual-css-init'
@@ -40,7 +40,7 @@ export default function ExtractMode(options: PluginOptions, context: PluginConte
         VirtualCSSModulePlugin(options, context),
     ]
 
-    if (options.inject) {
+    if (options.injectInit) {
         plugins.push(InjectVirtualCSSImportPlugin(options, context))
     }
 

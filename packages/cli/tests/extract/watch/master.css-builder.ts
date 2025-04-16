@@ -1,4 +1,4 @@
-import type { Options } from '~/packages/extractor/src'
+import type { Options } from '@master/css-extractor'
 const options: Options = {
     classes: {
         fixed: ['fg:red'],

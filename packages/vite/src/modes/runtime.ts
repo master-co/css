@@ -5,7 +5,7 @@ import { PluginContext, PluginOptions } from '../core'
 
 export default function RuntimeMode(options: PluginOptions, context: PluginContext): Plugin[] {
     const plugins: Plugin[] = []
-    if (options.inject) {
+    if (options.injectInit) {
         plugins.push(InjectCSSRuntimeInitPlugin(options, context))
     }
     if (options.avoidFOUC) {

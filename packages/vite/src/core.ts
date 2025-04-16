@@ -1,4 +1,4 @@
-import CSSExtractor, { Options as ExtractorOptions } from '~/packages/extractor/src'
+import CSSExtractor, { Options as ExtractorOptions } from '@master/css-extractor'
 import type { Plugin, ResolvedConfig } from 'vite'
 import type { Pattern } from 'fast-glob'
 import fg from 'fast-glob'
@@ -24,14 +24,14 @@ export interface PluginOptions {
     mode?: 'runtime' | 'extract' | 'progressive' | 'pre-render' | null
     extractor?: ExtractorOptions | Pattern
     config?: string
-    inject?: boolean
+    injectInit?: boolean
     avoidFOUC?: boolean
 }
 
 export const defaultPluginOptions: PluginOptions = {
     mode: 'runtime',
     config: 'master.css',
-    inject: true,
+    injectInit: true,
     avoidFOUC: true,
 }
 

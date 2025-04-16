@@ -7,7 +7,7 @@ export default function ProgressiveMode(options: PluginOptions, context: PluginC
     const plugins: Plugin[] = [
         PreRenderPlugin(options, context),
     ]
-    if (options.inject) {
+    if (options.injectInit) {
         plugins.push(InjectCSSRuntimeInitPlugin(options, context))
     }
     return plugins

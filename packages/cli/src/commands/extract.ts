@@ -1,5 +1,5 @@
 import type { Command } from 'commander'
-import { options, type Options } from '~/packages/extractor/src'
+import { options, type Options } from '@master/css-extractor'
 import log from '@techor/log'
 
 export default (program: Command) => program
@@ -18,7 +18,7 @@ export default (program: Command) => program
         cwd?: string,
         options?: string | Options
     }) {
-        const CSSExtractor = (await import('~/packages/extractor/src')).default
+        const CSSExtractor = (await import('@master/css-extractor')).default
         const { watch, output, verbose, cwd, options: customOptions } = options || {}
         const extractor = new CSSExtractor(customOptions, cwd)
         extractor.on('init', (options: Options) => {
