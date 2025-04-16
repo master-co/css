@@ -1,5 +1,4 @@
 export * from './options'
-export * from './constants'
 export * from './core'
 
 export { default as options } from './options'

@@ -26,10 +26,8 @@ const originHTMLText = dedent`
 const optionsFilepath = path.join(__dirname, 'master.css-builder.ts')
 const originOptionsText = `import type { Options } from '@master/css-builder'
 const options: Options = {
-    classes: {
-        fixed: [],
-        ignored: []
-    }
+    includeClasses: [],
+    excludeClasses: [],
 }
 
 export default options
@@ -72,10 +70,10 @@ it('start watch process', async () => {
     expect(fileCSSText).toContain(cssEscape('btn'))
 }, 120000)
 
-it('change options file `fixed` and reset process', async () => {
+it('change options file `includeClasses` and reset process', async () => {
     await Promise.all([
         waitForDataMatch(subprocess, (data) => data.includes('watching source changes'), async () => {
-            fs.writeFileSync(optionsFilepath, originOptionsText.replace('fixed: []', 'fixed: [\'fg:red\']'))
+            fs.writeFileSync(optionsFilepath, originOptionsText.replace('includeClasses: []', 'includeClasses: [\'fg:red\']'))
         }),
         waitForDataMatch(subprocess, (data) => data.includes(`inserted 'fg:red'`)),
         waitForDataMatch(subprocess, (data) => data.includes('exported')),

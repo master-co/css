@@ -6,7 +6,6 @@ import { runTransform } from '../plugin-test-helper'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/inject-runtime')
 const ENTRY_ID = '/project/src/main.ts'
-const CONFIG_ID = '/project/src/master.css.js'
 
 // fixture name → isEntry
 const entryCases = {
@@ -18,7 +17,7 @@ const entryCases = {
 
 const plugin = InjectCSSRuntimeInitPlugin({}, {
     entryId: ENTRY_ID,
-    configId: CONFIG_ID,
+    builder: {} as any,
 })
 
 const cases = fs.readdirSync(FIXTURE_DIR)

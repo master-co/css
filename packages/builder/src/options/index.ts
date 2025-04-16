@@ -50,12 +50,8 @@ const options: Options = {
         '**/node_modules/.cache/**',
         '**/node_modules/.vite/**',
     ],
-    classes: {
-        // whitelist of class names for unpredictable dynamics
-        fixed: [],
-        // blacklist of class names to exclude accidentally captured
-        ignored: []  // or RegExp[]
-    }
+    includeClasses: [],
+    excludeClasses: [],
 }
 
 export interface Options {
@@ -67,10 +63,8 @@ export interface Options {
     sources?: FastGlobPattern[]
     include?: FastGlobPattern[]
     exclude?: FastGlobPattern[]
-    classes?: {
-        fixed?: string[]
-        ignored?: string[] | RegExp[]
-    }
+    includeClasses?: string[]
+    excludeClasses?: string[] | RegExp[]
 }
 
 export default options

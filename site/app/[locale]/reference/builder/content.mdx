@@ -65,17 +65,17 @@ Mandatory source files/directories are to be scanned by Master CSS.
 <DocProp defaultValue={options.sources} types={['FastGlobPattern[]']} />
 This option is similar to [`.include`](#include) but not excluded by [`.exclude`](#exclude). Usually, you will use it to specify what is accidentally excluded by [`.exclude`](#exclude) file/directory.
 
-### `options.classes.fixed`
+### `options.includeClasses`
 Generate fixed CSS rules based on the specified class name, regardless of source.
-<DocProp defaultValue={options.fixed} types={['string[]']} />
+<DocProp defaultValue={options.includeClasses} types={['string[]']} />
 Typically you would use it with the following limitations:
 - Class names that do not exist in the source code.
 - Irregular class names.
 - Class names from asynchronous data.
 
-### `options.classes.ignored`
+### `options.excludeClasses`
 Exclude class names accidentally extracted by the scanning process.
-<DocProp defaultValue={options.ignored} types={['string[]', 'RegExp[]']} />
+<DocProp defaultValue={options.excludeClasses} types={['string[]', 'RegExp[]']} />
 
 ### `extractLatentClasses()`
 Extract latent classes from string content.

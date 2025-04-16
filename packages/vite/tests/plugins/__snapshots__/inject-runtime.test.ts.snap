@@ -3,8 +3,8 @@
 exports[`InjectCSSRuntimeInitPlugin fixture: already-injected 1`] = `
 "/*__MASTER_CSS_RUNTIME_INIT_INJECTED__*/
 import { initCSSRuntime } from '@master/css-runtime'
-import config from '#master-css-config'
-initCSSRuntime()
+import config from 'virtual:master-css-config'
+initCSSRuntime(config)
 /*__MASTER_CSS_RUNTIME_INJECTED__*/
 console.log('Skip me')"
 `;
@@ -12,15 +12,15 @@ console.log('Skip me')"
 exports[`InjectCSSRuntimeInitPlugin fixture: alt 1`] = `
 "/*__MASTER_CSS_RUNTIME_INIT_INJECTED__*/
 import { initCSSRuntime } from '@master/css-runtime'
-import config from '#master-css-config'
-initCSSRuntime()
+import config from 'virtual:master-css-config'
+initCSSRuntime(config)
 console.log('World')"
 `;
 
 exports[`InjectCSSRuntimeInitPlugin fixture: basic 1`] = `
 "/*__MASTER_CSS_RUNTIME_INIT_INJECTED__*/
 import { initCSSRuntime } from '@master/css-runtime'
-import config from '#master-css-config'
-initCSSRuntime()
+import config from 'virtual:master-css-config'
+initCSSRuntime(config)
 console.log('Hello')"
 `;

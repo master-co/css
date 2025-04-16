@@ -91,12 +91,12 @@ export default class CSSBuilder extends EventEmitter {
 
     async prepare() {
         /* 插入指定的固定 class */
-        if (this.options.classes?.fixed?.length) {
-            for (const eachFixedClass of this.options.classes.fixed) {
+        if (this.options.includeClasses?.length) {
+            for (const eachFixedClass of this.options.includeClasses) {
                 this.css.add(eachFixedClass)
             }
             if (this.options.verbose) {
-                log.ok`${this.options.classes.fixed.length} fixed classes inserted ${this.options.classes.fixed}`
+                log.ok`${this.options.includeClasses.length} fixed classes inserted ${this.options.includeClasses}`
             }
         }
         await Promise.all([
@@ -157,10 +157,10 @@ export default class CSSBuilder extends EventEmitter {
         }
 
         /* 排除指定的 class */
-        if (this.options.classes?.ignored?.length)
+        if (this.options.excludeClasses?.length)
             latentClasses = latentClasses.filter((eachLatentClass) => {
-                if (this.options.classes?.ignored)
-                    for (const eachIgnoreClass of this.options.classes.ignored) {
+                if (this.options.excludeClasses)
+                    for (const eachIgnoreClass of this.options.excludeClasses) {
                         if (typeof eachIgnoreClass === 'string') {
                             if (eachIgnoreClass === eachLatentClass) return false
                         } else if (eachIgnoreClass.test(eachLatentClass)) {
