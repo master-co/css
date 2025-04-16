@@ -1,0 +1,6 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should contain stylesheet link and CSS with specific class > /Users/aron/master/css/packages/nuxt/test/fixtures/extract/css-snapshot 1`] = `
+"@layer base,theme,preset,components,general;@layer components{.box{display:flex;font-size:1em}}
+"
+`;

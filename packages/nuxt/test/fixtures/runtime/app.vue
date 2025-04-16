@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    Nuxt module playground!
+    basic
   </div>
 </template>
 

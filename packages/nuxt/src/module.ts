@@ -1,42 +1,65 @@
-import { defineNuxtModule, addServerPlugin, createResolver } from '@nuxt/kit'
+import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@nuxt/kit'
 import { name } from '../package.json'
-import log from '@techor/log'
-import { relative } from 'path'
-import { existsSync } from 'fs'
+import masterCSS, { defaultPluginOptions, virtualConfigId, type PluginOptions } from '@master/css.vite'
+import ensureCSSConfigPath from 'shared/utils/ensure-css-config-path'
+
+declare type ModuleOptions = {
+
+} & PluginOptions
+
+const defaultModuleOptions: ModuleOptions = {
+    ...defaultPluginOptions,
+    mode: 'progressive'
+}
 
 export default defineNuxtModule<{ config?: string }>({
     meta: {
         name,
         configKey: 'mastercss'
     },
-    setup(options = {}, nuxt) {
-        if (!options.config) options.config = 'master.css'
+    setup(options: ModuleOptions, nuxt) {
+        options = { ...defaultModuleOptions, ...options }
         if (!nuxt.options.ssr || nuxt.options._prepare) return
         const { resolve } = createResolver(import.meta.url)
-        // try to find the config file with the given name and options.extensions
-        let foundConfigPath: string | undefined
-        for (const eachExtension of ['js', 'mjs', 'ts', 'cjs', 'cts', 'mts']) {
-            const eachBasename = options.config + '.' + eachExtension
-            const eachPath = resolve(nuxt.options.srcDir, eachBasename)
-            if (existsSync(eachPath)) {
-                foundConfigPath = eachPath
-                break
-            }
-        }
+        const configPath = ensureCSSConfigPath(options.config, nuxt.options.rootDir)
         nuxt.hook('nitro:config', (config) => {
-            if (foundConfigPath) {
-                log.ok`**${relative(nuxt.options.srcDir, foundConfigPath)}** config file found`
+            if (configPath) {
                 config.alias ??= {}
-                config.alias['#master-css-config'] = foundConfigPath
+                config.alias[virtualConfigId] = configPath
             } else {
-                log.i`No **${relative(nuxt.options.srcDir, options.config || '')}** config file found`
-                // prevent nuxt from complaining about missing virtual module
                 config.virtual ??= {}
-                config.virtual['#master-css-config'] = `export default {}`
+                config.virtual[virtualConfigId] = `export default {}`
             }
         })
-        // Fix: Package import specifier "#master-css-config" is not defined in package
-        nuxt.options.build.transpile.push(resolve('./runtime/css-server'))
-        addServerPlugin(resolve('./runtime/css-server'))
+        const addCSSVitePlugin = (mode = options.mode) => {
+            nuxt.hook('vite:extendConfig', (viteConfig) => {
+                viteConfig.plugins = viteConfig.plugins || []
+                viteConfig.plugins.push(masterCSS({ ...options, mode }))
+            })
+        }
+        switch (options.mode) {
+            case 'progressive':
+            case 'runtime':
+                addCSSVitePlugin(null)
+                addPlugin({
+                    mode: 'client',
+                    src: resolve('./runtime/css-runtime')
+                })
+                break
+            case 'extract':
+                // Fix: [plugin ssr-styles] Cannot extract styles for .virtual/master.css. Its styles will not be inlined when server-rendering.
+                if (nuxt.options.features?.inlineStyles)
+                    nuxt.options.features.inlineStyles = false
+                addCSSVitePlugin()
+                break
+        }
+
+        switch (options.mode) {
+            case 'progressive':
+                // Fix: Package import specifier "virtual:master-css-config" is not defined in package
+                nuxt.options.build.transpile.push(resolve('./runtime/css-server'))
+                addServerPlugin(resolve('./runtime/css-server'))
+                break
+        }
     }
 })
