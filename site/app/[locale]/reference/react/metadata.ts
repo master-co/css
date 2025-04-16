@@ -1,9 +1,10 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'React',
+    title: '@master/css.react',
     description: 'A React integration for Master CSS',
     category: 'Package',
+    type: 'entity',
     fileURL: import.meta.url,
     package: {
         npm: '@master/css.react',

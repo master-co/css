@@ -1,9 +1,10 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Create App',
+    title: '@master/create-css',
     description: 'Set up or create a modern web app by running one command.',
     category: 'Package',
+    type: 'entity',
     order: 1,
     fileURL: import.meta.url,
     package: {

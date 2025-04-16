@@ -1,9 +1,10 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'DevTools Hook',
+    title: '@master/css-devtools-hook',
     description: 'A global bridge injected into the browser runtime.',
     category: 'Package',
+    type: 'entity',
     fileURL: import.meta.url,
     package: {
         npm: '@master/css-devtools-hook',

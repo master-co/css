@@ -1,9 +1,10 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Language Server',
+    title: '@master/css-language-server',
     description: 'The language server reference for Master CSS.',
     category: 'Package',
+    type: 'entity',
     fileURL: import.meta.url,
     package: {
         npm: '@master/css-language-server',

@@ -1,9 +1,10 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Validator',
+    title: '@master/css-validator',
     description: 'Validator for Master CSS syntactic class.',
     category: 'Package',
+    type: 'entity',
     fileURL: import.meta.url,
     package: {
         npm: '@master/css-validator',
