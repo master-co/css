@@ -5,7 +5,7 @@ const options: Options = {
     // enable verbose Logs
     verbose: 1,
     // specify virtual CSS module id (e.g. .virtual:home.css)
-    module: '.virtual/master.css',
+    module: 'virtual:master.css',
     // specify output file path
     output: 'master.css',
     // specify options file path or set `Options`

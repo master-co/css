@@ -114,12 +114,12 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
     <Step $row>
         <StepL>
             ### <StepNum />Import virtual CSS module
-            Import the virtual CSS module `.virtual/master.css` into the `resources/js/app.js`.
+            Import the virtual CSS module `virtual:master.css` into the `resources/js/app.js`.
         </StepL>
         <StepR>
             ```js name=resources/js/app.js
             import './bootstrap'
-            import '.virtual/master.css' /* [!code ++] */
+            import 'virtual:master.css' /* [!code ++] */
             ```
         </StepR>
     </Step>

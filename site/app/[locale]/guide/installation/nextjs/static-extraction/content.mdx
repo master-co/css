@@ -117,7 +117,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
     <Step $row>
         <StepL>
             ### <StepNum />Import virtual CSS module
-            Import the virtual CSS module `.virtual/master.css` into the `app/globals.css`.
+            Import the virtual CSS module `virtual:master.css` into the `app/globals.css`.
         </StepL>
         <StepR>
             <CodeTabs>
@@ -126,7 +126,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                         name: 'app/globals.css',
                         lang: 'css',
                         code: `
-                            @import '.virtual/master.css'; /* [!code ++] */
+                            @import 'virtual:master.css'; /* [!code ++] */
                             …
                         `
                     },
@@ -134,7 +134,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                         name: 'styles/globals.css',
                         lang: 'css',
                         code: `
-                            @import '.virtual/master.css'; /* [!code ++] */
+                            @import 'virtual:master.css'; /* [!code ++] */
                             …
                         `
                     }

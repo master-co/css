@@ -47,7 +47,7 @@ export default defineNuxtModule<{ config?: string }>({
                 })
                 break
             case 'extract':
-                // Fix: [plugin ssr-styles] Cannot extract styles for .virtual/master.css. Its styles will not be inlined when server-rendering.
+                // Fix: [plugin ssr-styles] Cannot extract styles for virtual:master.css. Its styles will not be inlined when server-rendering.
                 if (nuxt.options.features?.inlineStyles)
                     nuxt.options.features.inlineStyles = false
                 addCSSVitePlugin()

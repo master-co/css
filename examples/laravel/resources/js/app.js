@@ -1,2 +1,2 @@
 import './bootstrap'
-import '.virtual/master.css'
+import 'virtual:master.css'

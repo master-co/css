@@ -3,6 +3,6 @@ import masterCSS from '@master/css.vite'
 
 export default defineConfig({
     plugins: [
-        masterCSS()
+        masterCSS({ mode: 'extract' })
     ]
 })

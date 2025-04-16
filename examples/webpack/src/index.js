@@ -1,1 +1,1 @@
-import '.virtual/master.css'
+import 'master.css'

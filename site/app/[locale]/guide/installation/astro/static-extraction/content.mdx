@@ -88,7 +88,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
     <Step $row>
         <StepL>
             ### <StepNum />Import virtual CSS module
-            Import the virtual CSS module `.virtual/master.css` into the `src/layouts/Layout.astro`.
+            Import the virtual CSS module `virtual:master.css` into the `src/layouts/Layout.astro`.
         </StepL>
         <StepR>
             ```astro name=src/layouts/Layout.astro
@@ -97,7 +97,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                 title: string;
             }
 
-            import ".virtual/master.css"; // [!code ++]
+            import "virtual:master.css"; // [!code ++]
 
             const { title } = Astro.props;
             ---

@@ -37,9 +37,9 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
             this.initialized = true
         }
 
-        const virtualModuleId = 'node_modules/' + this.options.module
+        const virtualModuleId = 'node_modules/' + this.options.module?.replace('virtual:', '')
         const virtualModule = new VirtualModulesPlugin({
-            // can be fixed: `Module not found: Can't resolve '.virtual/master.css'`
+            // can be fixed: `Module not found: Can't resolve 'virtual:master.css'`
             [virtualModuleId]: ''
         })
 
