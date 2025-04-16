@@ -3,7 +3,7 @@ import { type Plugin } from 'vite'
 import CSSExtractor from '@master/css-extractor'
 import VirtualCSSModulePlugin from '../plugins/virtual-css-module'
 import VirtualCSSHMRPlugin from '../plugins/virtual-css-hmr'
-import InjectVirtualCSSImportPlugin from '../plugins/inject-virtual-css-init'
+import InjectVirtualModulePlugin from '../plugins/inject-virtual-module'
 
 export default function ExtractMode(options: PluginOptions, context: PluginContext): Plugin[] {
     const plugins: Plugin[] = [
@@ -40,8 +40,8 @@ export default function ExtractMode(options: PluginOptions, context: PluginConte
         VirtualCSSModulePlugin(options, context),
     ]
 
-    if (options.injectInit) {
-        plugins.push(InjectVirtualCSSImportPlugin(options, context))
+    if (options.injectVirtualModule) {
+        plugins.push(InjectVirtualModulePlugin(options, context))
     }
 
     return plugins

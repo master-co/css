@@ -1,7 +1,7 @@
 import { it, expect } from 'vitest'
 import fs from 'fs'
 import path from 'path'
-import InjectCSSRuntimeInitPlugin from '../../src/plugins/inject-runtime-init'
+import InjectRuntimePlugin from '../../src/plugins/inject-runtime'
 import { runLoad } from '../plugin-test-helper'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/inject-runtime')
@@ -15,7 +15,7 @@ const entryCases = {
     'non-entry': false,
 }
 
-const plugin = InjectCSSRuntimeInitPlugin({}, {
+const plugin = InjectRuntimePlugin({}, {
     entryId: ENTRY_ID,
     extractor: {} as any,
 })
@@ -25,7 +25,7 @@ const cases = fs.readdirSync(FIXTURE_DIR)
     .map(file => [file.replace(/\.ts$/, '') as keyof typeof entryCases, file] as const)
 
 it.each(cases)(
-    'InjectCSSRuntimeInitPlugin fixture: %s',
+    'InjectRuntimePlugin fixture: %s',
     async (name, filename) => {
         const id = path.join(FIXTURE_DIR, filename)
         const result = await runLoad(plugin, id)

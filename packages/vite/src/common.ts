@@ -1,11 +1,11 @@
-const EXTENSIONS = '{js,ts,jsx,tsx,mjs,cjs,vue}'
-const ENTRY_NAMES = '{main,app,index}'
+const ENTRIES = '{main,app,index}.{js,ts,jsx,tsx,mjs,cjs,vue}'
 
 export const ENTRY_MODULE_PATTERNS = [
-    'src/layouts/Layout.astro',
-    'src/routes/+layout.svelte',
-    `src/${ENTRY_NAMES}.${EXTENSIONS}`,
-    `${ENTRY_NAMES}.${EXTENSIONS}`,
+    `resources/js/${ENTRIES}`, // laravel
+    'src/layouts/Layout.astro', // astro
+    'src/routes/+layout.svelte', // svelte
+    `src/${ENTRIES}`,
+    `${ENTRIES}`,
 ]
 
 export const virtualConfigId = 'virtual:master-css-config'

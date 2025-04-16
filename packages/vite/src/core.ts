@@ -11,6 +11,7 @@ import ExtractMode from './modes/extract'
 import RuntimeMode from './modes/runtime'
 import ProgressiveMode from './modes/progressive'
 import PreRenderMode from './modes/pre-render'
+import InjectNormalCSSPlugin from './plugins/inject-normal-css'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -24,14 +25,18 @@ export interface PluginOptions {
     mode?: 'runtime' | 'extract' | 'progressive' | 'pre-render' | null
     extractor?: ExtractorOptions | Pattern
     config?: string
-    injectInit?: boolean
+    injectNormalCSS?: boolean
+    injectRuntime?: boolean
+    injectVirtualModule?: boolean
     avoidFOUC?: boolean
 }
 
 export const defaultPluginOptions: PluginOptions = {
     mode: 'runtime',
     config: 'master.css',
-    injectInit: true,
+    injectNormalCSS: true,
+    injectRuntime: true,
+    injectVirtualModule: true,
     avoidFOUC: true,
 }
 
@@ -77,5 +82,10 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
             plugins.push(...PreRenderMode(options, context))
             break
     }
+
+    if (options.injectNormalCSS) {
+        plugins.push(InjectNormalCSSPlugin(options, context))
+    }
+
     return plugins
 }

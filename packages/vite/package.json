@@ -59,10 +59,11 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-explore-config": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
-        "@master/css-explore-config": "workspace:^",
+        "@master/normal.css": "*",
         "fast-glob": "^3.3.3",
         "magic-string": "^0.30.17"
     },

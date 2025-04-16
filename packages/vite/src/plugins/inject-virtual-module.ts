@@ -2,17 +2,17 @@ import type { Plugin } from 'vite'
 import withInjectionTransform from '../factories/with-injection-transform'
 import type { PluginContext, PluginOptions } from '../core'
 
-const __MASTER_CSS_VIRTUAL_CSS_IMPORT_INJECTED__ = '/*__MASTER_CSS_VIRTUAL_CSS_IMPORT_INJECTED__*/'
+const __MASTER_CSS_VIRTUAL_MODULE_INJECTED__ = '/*__MASTER_CSS_VIRTUAL_MODULE_INJECTED__*/'
 
-export default function InjectVirtualCSSImportPlugin(
+export default function InjectVirtualModulePlugin(
     options: PluginOptions,
     context: PluginContext,
 ): Plugin {
     return {
-        name: 'master-css:inject-virtual-css-import',
+        name: 'master-css:inject-virtual-module',
         enforce: 'pre',
         load(id) {
-            return withInjectionTransform(id, context, __MASTER_CSS_VIRTUAL_CSS_IMPORT_INJECTED__, () => {
+            return withInjectionTransform(id, context, __MASTER_CSS_VIRTUAL_MODULE_INJECTED__, () => {
                 return [
                     `import '${context.extractor?.options.module}'`
                 ]

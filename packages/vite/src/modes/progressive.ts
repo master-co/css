@@ -1,5 +1,5 @@
 import type { Plugin } from 'vite'
-import InjectCSSRuntimeInitPlugin from '../plugins/inject-runtime-init'
+import InjectRuntimePlugin from '../plugins/inject-runtime'
 import { PluginContext, PluginOptions } from '../core'
 import PreRenderPlugin from '../plugins/pre-render'
 
@@ -7,8 +7,8 @@ export default function ProgressiveMode(options: PluginOptions, context: PluginC
     const plugins: Plugin[] = [
         PreRenderPlugin(options, context),
     ]
-    if (options.injectInit) {
-        plugins.push(InjectCSSRuntimeInitPlugin(options, context))
+    if (options.injectRuntime) {
+        plugins.push(InjectRuntimePlugin(options, context))
     }
     return plugins
 }
