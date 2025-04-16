@@ -1,4 +1,4 @@
-import CSSBuilder, { Options as ExtractorOptions } from '@master/css-builder'
+import CSSExtractor, { Options as ExtractorOptions } from '~/packages/extractor/src'
 import type { Plugin, ResolvedConfig } from 'vite'
 import type { Pattern } from 'fast-glob'
 import fg from 'fast-glob'
@@ -22,7 +22,7 @@ const version = 'v' + (pkg.version || '0.0.0')
 
 export interface PluginOptions {
     mode?: 'runtime' | 'extract' | 'progressive' | 'pre-render' | null
-    builder?: ExtractorOptions | Pattern
+    extractor?: ExtractorOptions | Pattern
     config?: string
     inject?: boolean
     avoidFOUC?: boolean
@@ -39,7 +39,7 @@ export interface PluginContext {
     config?: ResolvedConfig
     entryId?: string
     configPath?: string
-    builder: CSSBuilder
+    extractor: CSSExtractor
 }
 
 export default function masterCSS(options?: PluginOptions): Plugin[] {

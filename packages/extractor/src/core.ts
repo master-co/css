@@ -18,7 +18,7 @@ import { Stats } from 'node:fs'
 import bytes from 'bytes'
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export default class CSSBuilder extends EventEmitter {
+export default class CSSExtractor extends EventEmitter {
     latentClasses = new Set<string>()
     validClasses = new Set<string>()
     invalidClasses = new Set<string>()
@@ -27,7 +27,7 @@ export default class CSSBuilder extends EventEmitter {
     initialized = false
 
     constructor(
-        public customOptions: Options | string = 'master.css-builder',
+        public customOptions: Options | string = 'master.css-extractor',
         public cwd = process.cwd()
     ) {
         super()
@@ -417,7 +417,7 @@ export default class CSSBuilder extends EventEmitter {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export default interface CSSBuilder {
+export default interface CSSExtractor {
     css: MasterCSS
     options: Options
 }

@@ -40,7 +40,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-explore-config": "workspace:^",
-        "@master/css-builder": "workspace:^",
+        "@master/css-extractor": "workspace:^",
         "@master/css-server": "workspace:^",
         "@techor/extend": "^3.2.0",
         "@techor/fs": "^3.2.0",

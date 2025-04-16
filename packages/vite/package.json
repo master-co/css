@@ -59,7 +59,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-builder": "workspace:^",
+        "@master/css-extractor": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-explore-config": "workspace:^",

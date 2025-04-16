@@ -65,8 +65,8 @@ testem.log
 Thumbs.db
 
 packages/core/tests/**/*master.css.*
-packages/builder/tests/**/*master.css-builder.*
-packages/builder/tests/**/*master.css.*
+packages/extractor/tests/**/*master.css-extractor.*
+packages/extractor/tests/**/*master.css.*
 packages/vite/tests/vite/index.html
 packages/vite/tests/vite/master.css.*
 packages/webpack/tests/webpack/src/index.html

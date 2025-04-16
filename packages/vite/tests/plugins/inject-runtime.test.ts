@@ -17,7 +17,7 @@ const entryCases = {
 
 const plugin = InjectCSSRuntimeInitPlugin({}, {
     entryId: ENTRY_ID,
-    builder: {} as any,
+    extractor: {} as any,
 })
 
 const cases = fs.readdirSync(FIXTURE_DIR)

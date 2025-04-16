@@ -14,7 +14,7 @@ export default function InjectVirtualCSSImportPlugin(
         load(id) {
             return withInjectionTransform(id, context, __MASTER_CSS_VIRTUAL_CSS_IMPORT_INJECTED__, () => {
                 return [
-                    `import '${context.builder?.options.module}'`
+                    `import '${context.extractor?.options.module}'`
                 ]
             })
         }

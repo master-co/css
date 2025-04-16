@@ -1,11 +1,11 @@
-import CSSBuilder, { Options } from '@master/css-builder'
+import CSSExtractor, { Options } from '~/packages/extractor/src'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import log from '@techor/log'
 
 const NAME = 'MasterCSSPlugin'
 
-export default class MasterCSSPlugin extends CSSBuilder {
+export default class MasterCSSPlugin extends CSSExtractor {
 
     initialized = false
     moduleContentByPath: any = {}

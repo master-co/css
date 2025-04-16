@@ -10,7 +10,7 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
     const servers: ViteDevServer[] = []
     const updateVirtualModule = async ({ server, timestamp = Date.now() }: { server: ViteDevServer, timestamp?: number }) => {
         if (!server) return
-        const resolvedVirtualModuleId = context.builder.resolvedVirtualModuleId
+        const resolvedVirtualModuleId = context.extractor.resolvedVirtualModuleId
         const virtualCSSModule = server.moduleGraph.getModuleById(resolvedVirtualModuleId)
         if (virtualCSSModule) {
             server.reloadModule(virtualCSSModule)
@@ -28,7 +28,7 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
                 event: HMR_EVENT_UPDATE,
                 data: {
                     id: resolvedVirtualModuleId,
-                    css: context.builder.css.text,
+                    css: context.extractor.css.text,
                     timestamp
                 }
             })
@@ -38,15 +38,15 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
     const handleReset = async ({ server }: { server: ViteDevServer }) => {
         const tasks: any[] = []
         /* 1. fixed sources */
-        tasks.push(await context.builder.prepare())
+        tasks.push(await context.extractor.prepare())
         /* 2. transform index.html */
         if (transformedIndexHTMLModule) {
-            tasks.push(context.builder.insert(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
+            tasks.push(context.extractor.insert(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
         }
         /* 3. transformed modules */
         tasks.concat(
             Array.from(server.moduleGraph.idToModuleMap.keys())
-                .filter((eachModuleId) => eachModuleId !== context.builder.resolvedVirtualModuleId)
+                .filter((eachModuleId) => eachModuleId !== context.extractor.resolvedVirtualModuleId)
                 .map(async (eachModuleId: string) => {
                     const eachModule = server.moduleGraph.idToModuleMap.get(eachModuleId)
                     if (eachModule) {
@@ -55,7 +55,7 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
                             eachModuleCode = readFileSync(eachModule.file, 'utf-8')
                         }
                         if (eachModuleCode)
-                            await context.builder.insert(eachModuleId, eachModuleCode)
+                            await context.extractor.insert(eachModuleId, eachModuleCode)
                     }
                 })
         )
@@ -67,7 +67,7 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
         enforce: 'pre',
         apply: 'serve',
         buildStart() {
-            context.builder
+            context.extractor
                 .on('reset', () => {
                     servers.forEach((eachServer) => handleReset({ server: eachServer }))
                 })
@@ -76,13 +76,13 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
                 })
         },
         async resolveId(id) {
-            if (context.builder.options.module && id.includes(context.builder.options.module) || id.includes(context.builder.resolvedVirtualModuleId)) {
-                return context.builder.resolvedVirtualModuleId
+            if (context.extractor.options.module && id.includes(context.extractor.options.module) || id.includes(context.extractor.resolvedVirtualModuleId)) {
+                return context.extractor.resolvedVirtualModuleId
             }
         },
         load(id) {
-            if (id === context.builder.resolvedVirtualModuleId) {
-                return context.builder.css.text
+            if (id === context.extractor.resolvedVirtualModuleId) {
+                return context.extractor.css.text
             }
         },
         transformIndexHtml: {
@@ -92,7 +92,7 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
                     id: filename,
                     code: html
                 }
-                await context.builder.insert(filename, html)
+                await context.extractor.insert(filename, html)
             }
         },
         configureServer(server) {

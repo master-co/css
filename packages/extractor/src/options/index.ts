@@ -22,7 +22,7 @@ const options: Options = {
         '**/*test.{js,cjs,mjs,ts}',
         '**/*.options.*',
         '**/*master.css.*',
-        '**/*master.css-builder.*',
+        '**/*master.css-extractor.*',
         '**/*master.css-renderer.*',
         '**/*README.md',
         '**/dist/**',

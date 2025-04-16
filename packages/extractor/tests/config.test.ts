@@ -1,11 +1,11 @@
-import CSSBuilder from '../src'
+import CSSExtractor from '../src'
 import fs from 'fs'
 import path from 'path'
 import { test, expect } from 'vitest'
 
 test('read master.css.js config in cwd', async () => {
-    const builder = new CSSBuilder({}, __dirname).init()
-    expect(builder?.css.config)
+    const extractor = new CSSExtractor({}, __dirname).init()
+    expect(extractor?.css.config)
         .toBeDefined()
 })
 
@@ -18,9 +18,9 @@ test('master.css.js config custom classname', async () => {
             }
         }
     `, { flag: 'w' })
-    const builder = new CSSBuilder({}, __dirname).init()
+    const extractor = new CSSExtractor({}, __dirname).init()
     expect(
-        builder?.extract('test.tsx',
+        extractor?.extract('test.tsx',
             `
             <h1 className={'rel ' + styles.title}>
             <h1 className="{styles.title + ' ' + 'blue-btn'}">

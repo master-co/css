@@ -1,5 +1,5 @@
 import { test, expect, it } from 'vitest'
-import CSSBuilder from '../../src'
+import CSSExtractor from '../../src'
 import fs from 'fs'
 import path from 'path'
 
@@ -12,13 +12,13 @@ export default {
 `, { flag: 'w' })
 
 it('check the excluded files', async () => {
-    const builder = new CSSBuilder({}, __dirname).init()
-    expect(builder?.fixedSourcePaths).not.toContain('master.css.ts')
+    const extractor = new CSSExtractor({}, __dirname).init()
+    expect(extractor?.fixedSourcePaths).not.toContain('master.css.ts')
 })
 
 it('should contain the specific source', async () => {
-    const builder = new CSSBuilder({
+    const extractor = new CSSExtractor({
         sources: ['master.css.ts'], // master.css.js is excluded by default `options.exclude`
     }, __dirname).init()
-    expect(builder?.fixedSourcePaths).toContain('master.css.ts')
+    expect(extractor?.fixedSourcePaths).toContain('master.css.ts')
 })

@@ -1,17 +1,17 @@
 import { test, expect } from 'vitest'
-import { CSSBuilder, options } from '../../src'
+import { CSSExtractor, options } from '../../src'
 import fs from 'fs'
 import path from 'path'
 import dedent from 'ts-dedent'
 
 test('read custom options', async () => {
-    fs.writeFileSync(path.join(__dirname, 'master.css-builder.js'), dedent`
+    fs.writeFileSync(path.join(__dirname, 'master.css-extractor.js'), dedent`
         export default {
             module: '.virtual:home.css'
         }
     `)
-    const builder = new CSSBuilder('master.css-builder', __dirname).init()
-    expect(builder?.options)
+    const extractor = new CSSExtractor('master.css-extractor', __dirname).init()
+    expect(extractor?.options)
         .toEqual({
             ...options,
             module: '.virtual:home.css'

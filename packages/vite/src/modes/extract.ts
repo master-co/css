@@ -1,6 +1,6 @@
 import { PluginContext, PluginOptions } from '../core'
 import { type Plugin } from 'vite'
-import CSSBuilder from '@master/css-builder'
+import CSSExtractor from '~/packages/extractor/src'
 import VirtualCSSModulePlugin from '../plugins/virtual-css-module'
 import VirtualCSSHMRPlugin from '../plugins/virtual-css-hmr'
 import InjectVirtualCSSImportPlugin from '../plugins/inject-virtual-css-init'
@@ -8,13 +8,13 @@ import InjectVirtualCSSImportPlugin from '../plugins/inject-virtual-css-init'
 export default function ExtractMode(options: PluginOptions, context: PluginContext): Plugin[] {
     const plugins: Plugin[] = [
         {
-            name: 'master-css:builder',
+            name: 'master-css:extractor',
             enforce: 'pre',
             configResolved(config) {
-                context.builder = new CSSBuilder(options.builder, config.root)
-                context.builder.init()
-                context.builder.options.verbose = 0
-                context.builder.options.include = []
+                context.extractor = new CSSExtractor(options.extractor, config.root)
+                context.extractor.init()
+                context.extractor.options.verbose = 0
+                context.extractor.options.include = []
             },
         },
         {
@@ -24,12 +24,12 @@ export default function ExtractMode(options: PluginOptions, context: PluginConte
                 return !env.isSsrBuild
             },
             async buildStart() {
-                await context.builder.prepare()
+                await context.extractor.prepare()
             },
             async transform(code, id) {
-                const resolvedVirtualModuleId = context.builder.resolvedVirtualModuleId
+                const resolvedVirtualModuleId = context.extractor.resolvedVirtualModuleId
                 if (id !== resolvedVirtualModuleId && !id.endsWith('.css')) {
-                    await context.builder?.insert(id, code)
+                    await context.extractor?.insert(id, code)
                 }
             },
             async configureServer(server) {

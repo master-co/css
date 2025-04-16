@@ -1,9 +1,9 @@
 import { test, expect, it } from 'vitest'
-import CSSBuilder from '../../src'
+import CSSExtractor from '../../src'
 
 test('AristideBH', async () => {
-    const builder = new CSSBuilder({ include: ['**/test.svelte'] }, __dirname).init()
-    await builder?.insert('test.svelte',
+    const extractor = new CSSExtractor({ include: ['**/test.svelte'] }, __dirname).init()
+    await extractor?.insert('test.svelte',
         `
 <script lang="ts">
 	import type { PageData } from "./$houdini";
@@ -77,7 +77,7 @@ test('AristideBH', async () => {
 	}
 </style>
         `)
-    expect(builder?.css.generalLayer.rules.map(({ name }) => name)).toEqual([
+    expect(extractor?.css.generalLayer.rules.map(({ name }) => name)).toEqual([
         'flex',
         'sticky',
         'bg:var(--code-background-color)',

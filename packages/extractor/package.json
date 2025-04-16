@@ -1,5 +1,5 @@
 {
-    "name": "@master/css-builder",
+    "name": "@master/css-extractor",
     "type": "module",
     "scripts": {
         "build": "techor build \"src/**/*.ts\"",
@@ -19,12 +19,12 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/builder"
+        "directory": "packages/extractor"
     },
     "keywords": [
         "plugin",
         "integration",
-        "builder",
+        "extractor",
         "static",
         "build tools",
         "css",

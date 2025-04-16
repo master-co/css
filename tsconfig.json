@@ -7,7 +7,7 @@
             "@master/css": [ "./node_modules/@master/css/src" ],
             "@master/eslint-config-css": [ "./node_modules/@master/eslint-config-css/src" ],
             "@master/eslint-plugin-css": [ "./node_modules/@master/eslint-plugin-css/src" ],
-            "@master/css-builder": [ "./node_modules/@master/css-builder/src" ],
+            "@master/css-extractor": [ "./node_modules/@master/css-extractor/src" ],
             "@master/css.vite": [ "./node_modules/@master/css.vite/src" ],
             "@master/css.webpack": [ "./node_modules/@master/css.webpack/src" ],
             "@master/css-language-server": [ "./node_modules/@master/css-language-server/src" ],

@@ -1,32 +1,32 @@
-import options from '~/packages/builder/src/options'
+import options from '~/packages/extractor/src/options'
 
 ## Installation [sr-only]
 ```bash action=install
-@master/css-builder
+@master/css-extractor
 ```
 
 ---
 
 ## API Reference
-### CSSBuilder
+### CSSExtractor
 
 ```js
-import { CSSBuilder } from '@master/css-builder'
+import { CSSExtractor } from '@master/css-extractor'
 ```
-Create an instance of the Master CSS builder:
+Create an instance of the Master CSS extractor:
 ```js
-const builder = new CSSBuilder(options, cwd)
+const extractor = new CSSExtractor(options, cwd)
 ```
 
 `cwd` is used to change the directory where [`.config`](#config), [`.include`](#include), [`.exclude`](#exclude) and [`.sources`](#sources) are currently running.
 
-`CSSBuilder` is the business logic encapsulation of Master CSS Static Extraction, which is usually used by build tools or third-party package authors.
+`CSSExtractor` is the business logic encapsulation of Master CSS Static Extraction, which is usually used by build tools or third-party package authors.
 
 This package is specific to the **Node.js** environment.
 
 To start using Master CSS static extraction, check out the [guide](http://localhost:3000/guide/installation) first.
 
-🚧 Check out the [source code](https://github.com/master-co/css/blob/dev/rc/packages/builder/src/core.ts) temporarily.
+🚧 Check out the [source code](https://github.com/master-co/css/blob/dev/rc/packages/extractor/src/core.ts) temporarily.
 
 ### `options`
 <Code lang="ts">{JSON.stringify(options, null, 4)}</Code>
@@ -35,9 +35,9 @@ To start using Master CSS static extraction, check out the [guide](http://localh
 </OptionsCodes> */}
 The above are the default compilation options, you can also introduce these default values to expand your options:
 ```js
-import { options } from '@master/css-builder'
+import { options } from '@master/css-extractor'
 // or in a side-effect-free way
-import options from '@master/css-builder/options'
+import options from '@master/css-extractor/options'
 ```
 
 ### `options.module`
@@ -86,7 +86,7 @@ Extract latent classes from string content.
     ]}
 </DocFn>
 ```ts
-import { extractLatentClasses } from '@master/css-builder'
+import { extractLatentClasses } from '@master/css-extractor'
 
 const content: string = `
     import { setupCounter } from './counter'

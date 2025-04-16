@@ -7,10 +7,10 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
         <CodeTabs>{[
             cli && {
                 ...othersProps,
-                name: 'master.css-builder.js', lang: 'js', beautify: true,
+                name: 'master.css-extractor.js', lang: 'js', beautify: true,
                 code: dedent`
-                    ${imports ? `import { ${imports} } from '@master/css-builder'` : ''}
-                    /** @type {import('@master/css-builder').Options} */
+                    ${imports ? `import { ${imports} } from '@master/css-extractor'` : ''}
+                    /** @type {import('@master/css-extractor').Options} */
                     export default ${dedentCode}
                 `,
                 addLines: addLines && addLines.map((line: number) => line += 2),
@@ -19,7 +19,7 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
                 ...othersProps,
                 name: 'vite.config.ts', lang: 'ts', beautify: true,
                 code: dedent`
-                    ${imports ? `import { ${imports} } from '@master/css-builder'` : ''}
+                    ${imports ? `import { ${imports} } from '@master/css-extractor'` : ''}
                     import masterCSS from '@master/css.vite'
 
                     /** @type {import('vite').UserConfig} */
@@ -37,7 +37,7 @@ export default function ({ children, cli, webpack, vite, addLines, imports, ...o
                 ...othersProps,
                 name: 'webpack.config.js', lang: 'js', beautify: true,
                 code: dedent`
-                    ${imports ? `const { ${imports} } = require('@master/css-builder')` : ''}
+                    ${imports ? `const { ${imports} } = require('@master/css-extractor')` : ''}
                     const MasterCSSPlugin = require('@master/css.webpack')
 
                     module.exports = {

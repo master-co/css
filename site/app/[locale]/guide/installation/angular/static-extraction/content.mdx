@@ -77,7 +77,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Set up CSS builder
+            ### <StepNum />Set up CSS extractor
             - Create a `webpack.config.js` file
             - Add a `MasterCSSPlugin` to the plugins
         </StepL>
@@ -99,7 +99,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
     <Step $row>
         <StepL>
             ### <StepNum />Configure Angular
-            Use `@angular-builders/custom-webpack` instead of the default builder for custom webpack configuration.
+            Use `@angular-builders/custom-webpack` instead of the default extractor for custom webpack configuration.
         </StepL>
         <StepR>
             <CodeTabs>
@@ -115,8 +115,8 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                                             …,
                                             "architect": {
                                                 "build": {
-                                                     "builder": "@angular-devkit/build-angular:browser", // [!code --]
-                                                     "builder": "@angular-builders/custom-webpack:browser", // [!code ++]
+                                                     "extractor": "@angular-devkit/build-angular:browser", // [!code --]
+                                                     "extractor": "@angular-builders/custom-webpack:browser", // [!code ++]
                                                      "options": {
                                                          "customWebpackConfig": { // [!code ++]
                                                              "path": "./webpack.config.js" // [!code ++]
@@ -126,8 +126,8 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                                                     …
                                                 },
                                                 "serve": {
-                                                     "builder": "@angular-devkit/build-angular:dev-server", // [!code --]
-                                                     "builder": "@angular-builders/custom-webpack:dev-server", // [!code ++]
+                                                     "extractor": "@angular-devkit/build-angular:dev-server", // [!code --]
+                                                     "extractor": "@angular-builders/custom-webpack:dev-server", // [!code ++]
                                                      "options": { // [!code ++]
                                                          "browserTarget": "my-project:build" // [!code ++]
                                                      }, // [!code ++]
