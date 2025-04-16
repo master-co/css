@@ -2,7 +2,7 @@ import { it, expect } from 'vitest'
 import fs from 'fs'
 import path from 'path'
 import InjectCSSRuntimeInitPlugin from '../../src/plugins/inject-runtime-init'
-import { runTransform } from '../plugin-test-helper'
+import { runLoad } from '../plugin-test-helper'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/inject-runtime')
 const ENTRY_ID = '/project/src/main.ts'
@@ -27,9 +27,8 @@ const cases = fs.readdirSync(FIXTURE_DIR)
 it.each(cases)(
     'InjectCSSRuntimeInitPlugin fixture: %s',
     async (name, filename) => {
-        const input = fs.readFileSync(path.join(FIXTURE_DIR, filename), 'utf-8')
-        const id = entryCases[name as keyof typeof entryCases] ? ENTRY_ID : '/project/src/other.ts'
-        const result = await runTransform(plugin, input, id)
+        const id = path.join(FIXTURE_DIR, filename)
+        const result = await runLoad(plugin, id)
         if (result === undefined) {
             expect(result).toBeUndefined()
         } else {

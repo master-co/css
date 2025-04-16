@@ -11,8 +11,8 @@ export default function InjectVirtualCSSImportPlugin(
     return {
         name: 'master-css:inject-virtual-css-import',
         enforce: 'pre',
-        transform(code, id) {
-            return withInjectionTransform(code, id, context, __MASTER_CSS_VIRTUAL_CSS_IMPORT_INJECTED__, () => {
+        load(id) {
+            return withInjectionTransform(id, context, __MASTER_CSS_VIRTUAL_CSS_IMPORT_INJECTED__, () => {
                 return [
                     `import '${context.builder?.options.module}'`
                 ]

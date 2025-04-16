@@ -11,11 +11,10 @@
         "astro": "astro"
     },
     "dependencies": {
-        "@astrojs/sitemap": "^3.1.1",
-        "astro": "^3.6.4"
+        "@astrojs/sitemap": "^3.3.0",
+        "astro": "^5.7.2"
     },
     "devDependencies": {
-        "@master/css.vite": "workspace:^",
-        "@master/css-runtime": "workspace:^"
+        "@master/css.vite": "workspace:^"
     }
 }
