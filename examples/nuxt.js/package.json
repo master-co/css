@@ -1,5 +1,5 @@
 {
-    "name": "nuxt.js-with-progressive-rendering",
+    "name": "master-css-nuxtjs-example",
     "private": true,
     "scripts": {
         "build": "nuxt prepare && nuxt build",
@@ -8,13 +8,11 @@
         "preview": "nuxt preview"
     },
     "dependencies": {
-        "@master/css-server": "workspace:^",
-        "@master/css.nuxt": "workspace:^",
-        "@master/css.vue": "workspace:^"
+        "@master/css.nuxt": "workspace:^"
     },
     "devDependencies": {
-        "@types/node": "^22.10.2",
-        "nuxt": "^3.14.1592",
+        "@types/node": "^22.14.1",
+        "nuxt": "^3.16.2",
         "vue": "^3.5.13",
         "vue-router": "^4.5.0"
     }

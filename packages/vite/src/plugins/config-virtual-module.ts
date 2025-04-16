@@ -7,26 +7,25 @@ export function ConfigVirtualModulePlugin(
     options: PluginOptions,
     context: PluginContext
 ): Plugin {
-    let configPath: string | undefined
     return {
         name: 'master-css:virtual-module:config',
         enforce: 'pre',
         configResolved(config) {
-            configPath = ensureCSSConfigPath(options.config, config.root)
+            context.configPath = ensureCSSConfigPath(options.config, config.root)
             if (process.env.DEBUG) {
-                console.log(`[@master/css.vite] config: ${configPath || 'none'}`)
+                console.log(`[@master/css.vite] config: ${context.configPath || 'none'}`)
             }
         },
         buildStart() {
-            if (configPath) this.addWatchFile(configPath)
+            if (context.configPath) this.addWatchFile(context.configPath)
         },
         resolveId(id) {
             if (id === virtualConfigId) return resolvedVirtualConfigId
         },
         load(id) {
             if (id === resolvedVirtualConfigId) {
-                if (configPath) {
-                    return `import config from ${JSON.stringify(configPath)}; export default config;`
+                if (context.configPath) {
+                    return `import config from ${JSON.stringify(context.configPath)}; export default config;`
                 } else {
                     return `export default {}`
                 }

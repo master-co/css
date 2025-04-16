@@ -4,7 +4,7 @@ const metadata = define({
     title: {
         absolute: 'Installing Master CSS'
     },
-    description: 'Master CSS supports multiple installation strategies, giving you the flexibility to tailor your workflow based on project scale or scenario.',
+    description: 'Master CSS provides three rendering modes, which you can choose according to project scale and scenarios to meet your business requirements.',
     category: 'Getting Started',
     order: 2,
     other: {

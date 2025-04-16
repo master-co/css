@@ -1,7 +1,7 @@
 import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@nuxt/kit'
 import { name } from '../package.json'
 import masterCSS, { defaultPluginOptions, virtualConfigId, type PluginOptions } from '@master/css.vite'
-import ensureCSSConfigPath from 'shared/utils/ensure-css-config-path'
+import ensureCSSConfigPath from '../../../shared/utils/ensure-css-config-path'
 
 declare type ModuleOptions = {
 

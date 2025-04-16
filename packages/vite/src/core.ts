@@ -2,14 +2,15 @@ import CSSBuilder, { Options as ExtractorOptions } from '@master/css-builder'
 import type { Plugin, ResolvedConfig } from 'vite'
 import type { Pattern } from 'fast-glob'
 import fg from 'fast-glob'
-import ExtractMode from './modes/extract'
-import RuntimeMode from './modes/runtime'
 import { ENTRY_MODULE_PATTERNS } from './common'
+import { ConfigVirtualModulePlugin } from './plugins/config-virtual-module'
 import path from 'path'
 import { readFileSync } from 'fs'
 import { fileURLToPath } from 'url'
+import ExtractMode from './modes/extract'
+import RuntimeMode from './modes/runtime'
 import ProgressiveMode from './modes/progressive'
-import { ConfigVirtualModulePlugin } from './plugins/config-virtual-module'
+import PreRenderMode from './modes/pre-render'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -20,7 +21,7 @@ const pkg = JSON.parse(
 const version = 'v' + (pkg.version || '0.0.0')
 
 export interface PluginOptions {
-    mode?: 'runtime' | 'extract' | 'progressive' | null
+    mode?: 'runtime' | 'extract' | 'progressive' | 'pre-render' | null
     builder?: ExtractorOptions | Pattern
     config?: string
     inject?: boolean
@@ -37,6 +38,7 @@ export const defaultPluginOptions: PluginOptions = {
 export interface PluginContext {
     config?: ResolvedConfig
     entryId?: string
+    configPath?: string
     builder: CSSBuilder
 }
 
@@ -49,7 +51,7 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
             enforce: 'pre',
             configResolved(config) {
                 context.config = config
-                context.entryId = fg.sync(ENTRY_MODULE_PATTERNS, { cwd: config.root, absolute: true, onlyFiles: true })[0]
+                context.entryId = fg.sync(ENTRY_MODULE_PATTERNS, { cwd: config.root, absolute: true, onlyFiles: true, caseSensitiveMatch: false })[0]
                 if (process.env.DEBUG) {
                     console.log(`[@master/css.vite] mode: ${options.mode}`)
                     console.log(`[@master/css.vite] entry: ${context.entryId || 'none'}`)
@@ -70,6 +72,9 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
             break
         case 'progressive':
             plugins.push(...ProgressiveMode(options, context))
+            break
+        case 'pre-render':
+            plugins.push(...PreRenderMode(options, context))
             break
     }
     return plugins

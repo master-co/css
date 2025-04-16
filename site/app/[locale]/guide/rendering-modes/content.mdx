@@ -144,6 +144,8 @@ On the client, the [CSS runtime](#runtime-rendering) hydrates these rules into a
 </figure>
 This enables fast page loads, minimal CSS output, and dynamic style injection/removal with full consistency.
 
+### Pre-rendering — SSG, SSR
+
 For example, the following HTML:
 ```html name="index.html"
 <!DOCTYPE html>
@@ -190,7 +192,7 @@ What benifits does this bring? The server renderer generates the critical CSS (*
 This approach allows for a **minimal, deterministic CSS text** that is injected into the HTML, enabling fast page loads and minimal CSS output.
 
 ### CSS Hydration
-We call this groundbreaking process **CSS Hydration** — the runtime engine parses and reconstructs the pre-rendered style sheet into its virtual memory, effectively “hydrating” it.
+Master CSS Hydration is the process that restores the server-side (or build time) rendered CSS on the client. This includes things like reusing the pre-rendered CSS structures, persisting the application CSS state, reconstructing the style sheet into its virtual memory.
 <figure>
     <ModeImg src="/master-css-hydration.svg" alt='Master CSS Hydration' />
     <figcaption>Master CSS Hydration — Creates virtual rules from DOM style sheet</figcaption>

@@ -62,6 +62,7 @@
         "@master/css-builder": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
+        "@master/css-explore-config": "workspace:^",
         "fast-glob": "^3.3.3",
         "magic-string": "^0.30.17"
     },

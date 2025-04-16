@@ -75,6 +75,6 @@ export default () => (
                 }
             ]}
         </Segments>
-        <figcaption>The <Link href="https://github.com/master-co/css/tree/rc/benchmarks/critical-css-for-docs-sites/results.json">results</Link> are the size sum of internal CSS and external CSS, including font CSS</figcaption>
+        <figcaption>The <Link href="https://github.com/master-co/css/tree/rc/benchmarks/critical-css-for-docs-sites/results.json">total size</Link> of internal and external styles on popular websites.</figcaption>
     </figure>
 )

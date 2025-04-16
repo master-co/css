@@ -11,7 +11,7 @@ export default async function Layout(props: any) {
     const $ = createTranslation(locale)
     return (
         <DocLayout {...props} pageCategories={pageCategories} pageDirname={__dirname} metadata={metadata}>
-            <p className='italic'>Use CDNs, framework integrations, or the CLI — it&apos;s your choice.</p>
+            <p className='italic'>Adopt runtime, zero-runtime, or hydration — it’s your call.</p>
             <Tabs className="mb:8x">
                 <Tab href='/guide/installation'>{$('Quick Start')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>
                 <Tab href='/guide/installation/cli'>{$('Standalone CLI')}</Tab>

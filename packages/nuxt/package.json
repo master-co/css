@@ -36,13 +36,12 @@
     "sideEffects": false,
     "exports": {
         ".": {
-            "types": "./dist/module.d.ts",
-            "import": "./dist/module.mjs",
-            "require": "./dist/module.cjs"
+            "types": "./dist/module.d.mts",
+            "default": "./dist/module.mjs"
         }
     },
-    "main": "./dist/module.cjs",
-    "types": "./dist/module.d.ts",
+    "main": "./dist/module.mjs",
+    "module": "./dist/module.mjs",
     "files": [
         "dist"
     ],
@@ -67,7 +66,7 @@
         "eslint": "^9.24.0",
         "nuxt": "^3.16.2",
         "shared": "workspace:^",
-        "vite": "^6.2.6",
+        "vite": "^6",
         "vitest": "^3.1.1",
         "vue": "^3.5.13"
     }

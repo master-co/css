@@ -1,16 +1,15 @@
 {
-    "name": "master-css-vite-example",
+    "name": "laravel-with-static-extraction",
     "private": true,
-    "version": "0.0.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "tsc && vite build",
-        "preview": "vite preview"
+        "build": "vite build"
     },
     "devDependencies": {
         "@master/css.vite": "workspace:^",
-        "typescript": "^5.8.3",
+        "axios": "^1.6.7",
+        "laravel-vite-plugin": "^1.0.1",
         "vite": "^6"
     }
 }

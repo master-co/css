@@ -1,26 +1,21 @@
 <script lang="ts">
     import Header from "./Header.svelte";
     import "./styles.css";
-    import CSSRuntimeProvider from "@master/css.svelte";
-    import config from "../../master.css";
 </script>
 
-<CSSRuntimeProvider {config}>
-    <div class="app">
-        <Header />
+<div class="app">
+    <Header />
 
-        <main>
-            <slot />
-        </main>
+    <main>
+        <slot />
+    </main>
 
-        <footer>
-            <p>
-                visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn
-                SvelteKit
-            </p>
-        </footer>
-    </div>
-</CSSRuntimeProvider>
+    <footer>
+        <p>
+            visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit
+        </p>
+    </footer>
+</div>
 
 <style>
     .app {

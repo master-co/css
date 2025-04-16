@@ -1,5 +1,5 @@
 const EXTENSIONS = '{js,ts,jsx,tsx,mjs,cjs,vue}'
-const ENTRY_NAMES = '{app,main,index}'
+const ENTRY_NAMES = '{main,app,index}'
 
 export const ENTRY_MODULE_PATTERNS = [
     `src/${ENTRY_NAMES}.${EXTENSIONS}`,
