@@ -12,9 +12,7 @@
     },
     "dependencies": {
         "@astrojs/sitemap": "^3.3.0",
-        "astro": "^5.7.2"
-    },
-    "devDependencies": {
-        "@master/css.vite": "workspace:^"
+        "astro": "^5.7.2",
+        "@master/css.astro": "workspace:^"
     }
 }

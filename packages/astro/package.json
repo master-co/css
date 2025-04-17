@@ -1,0 +1,66 @@
+{
+    "name": "@master/css.astro",
+    "type": "module",
+    "scripts": {
+        "build": "techor build \"src/**/*.ts\"",
+        "dev": "pnpm build --watch",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint",
+        "test": "vitest"
+    },
+    "license": "MIT",
+    "description": "Integrate Master CSS in Astro way",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://rc.css.master.co/sponsor",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/astro"
+    },
+    "keywords": [
+        "plugin",
+        "integration",
+        "astro",
+        "build tools",
+        "static extraction",
+        "static",
+        "runtime",
+        "css runtime",
+        "css",
+        "mastercss",
+        "astro-plugin"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    },
+    "peerDependencies": {
+        "astro": ">=5"
+    },
+    "dependencies": {
+        "@master/css.vite": "workspace:^"
+    },
+    "devDependencies": {
+        "shared": "workspace:^"
+    }
+}
