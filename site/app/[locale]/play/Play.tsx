@@ -523,7 +523,7 @@ export default function Play(props: any) {
             <Header fixed={false}>
                 <HeaderContent>
                     <Link href={'/'}>
-                        {<app.Logotype height="19" />}
+                        {<app.Logotype width={168} height={20} />}
                     </Link>
                     <label className='app-header-nav rel gap:5 font:medium ml:auto ml:30@md'>
                         v{version}
