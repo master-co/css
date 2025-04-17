@@ -65,11 +65,10 @@
         "@master/css-server": "workspace:^",
         "@master/normal.css": "*",
         "fast-glob": "^3.3.3",
-        "magic-string": "^0.30.17"
+        "magic-string": "^0.30.17",
+        "source-map": "^0.7.4"
     },
     "devDependencies": {
-        "puppeteer-core": "^23.10.3",
-        "shared": "workspace:^",
-        "source-map": "^0.7.4"
+        "shared": "workspace:^"
     }
 }

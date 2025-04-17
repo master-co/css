@@ -8,5 +8,14 @@ export const ENTRY_MODULE_PATTERNS = [
     `${ENTRIES}`,
 ]
 
-export const virtualConfigId = 'virtual:master-css-config'
-export const resolvedVirtualConfigId = `\0${virtualConfigId}`
+export const INDEX_HTML_ENTRIES = [
+    'src/layouts/Layout.astro', // astro
+]
+
+export const VIRTUAL_CONFIG_ID = 'virtual:master-css-config'
+export const RESOLVED_VIRTUAL_CONFIG_ID = `\0${VIRTUAL_CONFIG_ID}`
+export const CSS_RUNTIME_INJECTIOIN = [
+    `import { initCSSRuntime } from '@master/css-runtime';`,
+    `import config from 'virtual:master-css-config';`,
+    `initCSSRuntime(config);`
+].join('\n')

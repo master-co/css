@@ -7,12 +7,12 @@ export default function withInjectionTransform(
     id: string,
     context: PluginContext,
     mark: string,
-    generate: () => string[]
+    generate: () => string
 ): { code: string; map: any } | null {
     if (context.entryId !== id || code.includes(mark)) return null
     const ext = path.extname(id)
     const s = new MagicString(code)
-    const injectCode = '\n' + mark + '\n' + generate().join('\n') + '\n'
+    const injectCode = '\n' + mark + '\n' + generate() + '\n'
     switch (ext) {
         case '.vue': {
             const hasScriptSetup = /<script\s+setup.*?>/.test(code)
@@ -39,7 +39,7 @@ export default function withInjectionTransform(
             if (hasScriptSetupAstro) {
                 s.replace(/(<script.*?>)/, `$1${injectCode}`)
             } else {
-                s.append(`\n<script>${injectCode}</script>\n`)
+                s.append(injectCode)
             }
             break
         default:

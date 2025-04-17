@@ -1,6 +1,6 @@
 import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@nuxt/kit'
 import { name } from '../package.json'
-import masterCSS, { defaultPluginOptions, virtualConfigId, type PluginOptions } from '@master/css.vite'
+import masterCSS, { defaultPluginOptions, VIRTUAL_CONFIG_ID, type PluginOptions } from '@master/css.vite'
 import ensureCSSConfigPath from '../../../shared/utils/ensure-css-config-path'
 
 declare type ModuleOptions = {
@@ -25,10 +25,10 @@ export default defineNuxtModule<{ config?: string }>({
         nuxt.hook('nitro:config', (config) => {
             if (configPath) {
                 config.alias ??= {}
-                config.alias[virtualConfigId] = configPath
+                config.alias[VIRTUAL_CONFIG_ID] = configPath
             } else {
                 config.virtual ??= {}
-                config.virtual[virtualConfigId] = `export default {}`
+                config.virtual[VIRTUAL_CONFIG_ID] = `export default {}`
             }
         })
         const addCSSVitePlugin = (mode = options.mode) => {

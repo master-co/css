@@ -1,7 +1,7 @@
 import { Plugin } from 'vite'
 import { PluginContext, PluginOptions } from '../core'
 import ensureCSSConfigPath from 'shared/utils/ensure-css-config-path'
-import { resolvedVirtualConfigId, virtualConfigId } from '../common'
+import { RESOLVED_VIRTUAL_CONFIG_ID, VIRTUAL_CONFIG_ID } from '../common'
 
 export function ConfigVirtualModulePlugin(
     options: PluginOptions,
@@ -20,10 +20,10 @@ export function ConfigVirtualModulePlugin(
             if (context.configPath) this.addWatchFile(context.configPath)
         },
         resolveId(id) {
-            if (id === virtualConfigId) return resolvedVirtualConfigId
+            if (id === VIRTUAL_CONFIG_ID) return RESOLVED_VIRTUAL_CONFIG_ID
         },
         load(id) {
-            if (id === resolvedVirtualConfigId) {
+            if (id === RESOLVED_VIRTUAL_CONFIG_ID) {
                 if (context.configPath) {
                     return `import config from ${JSON.stringify(context.configPath)}; export default config;`
                 } else {

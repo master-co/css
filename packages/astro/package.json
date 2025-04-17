@@ -5,8 +5,7 @@
         "build": "techor build \"src/**/*.ts\"",
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
-        "lint": "eslint",
-        "test": "vitest"
+        "lint": "eslint"
     },
     "license": "MIT",
     "description": "Integrate Master CSS in Astro way",

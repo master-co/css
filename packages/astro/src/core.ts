@@ -11,7 +11,7 @@ export default function masterCSS(options?: IntegrationOptions): AstroIntegratio
     return {
         name: '@master/css.astro',
         hooks: {
-            'astro:config:setup': async ({ config, injectScript, updateConfig }) => {
+            'astro:config:setup': async ({ injectScript, updateConfig }) => {
                 switch (options.mode) {
                     case 'progressive':
                     case 'runtime':

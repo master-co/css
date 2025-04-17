@@ -1,5 +1,20 @@
 import type { Plugin } from 'vite'
+import MagicString from 'magic-string'
 import { PluginContext, PluginOptions } from '../core'
+import { INDEX_HTML_ENTRIES } from '../common'
+
+const replace = (html: string) => {
+    return html.replace(
+        /<html(\s[^>]*)?>/i,
+        (match, attrs = '') => {
+            if (/hidden/.test(attrs)) return match
+            if (process.env.DEBUG) {
+                console.log(`[@master/css.vite] Avoid FOUC by adding hidden attribute to <html>`)
+            }
+            return `<html${attrs} hidden>`
+        },
+    )
+}
 
 export default function AvoidFOUCPlugin(options?: PluginOptions, context?: PluginContext): Plugin {
     return {
@@ -7,21 +22,25 @@ export default function AvoidFOUCPlugin(options?: PluginOptions, context?: Plugi
         enforce: 'pre',
         transformIndexHtml(html) {
             return {
-                html: html.replace(
-                    /<html(\s[^>]*)?>/i,
-                    (match, attrs = '') => {
-                        if (/hidden/.test(attrs)) return match
-                        if (process.env.DEBUG) {
-                            console.log(`[@master/css.vite] avoiding FOUC by adding hidden attribute to <html> tag`)
-                        }
-                        return `<html${attrs} hidden>`
-                    },
-                ),
+                html: replace(html),
                 tags: [],
             }
         },
         transform(code, id) {
-            console.log(id)
+            for (const entry of INDEX_HTML_ENTRIES) {
+                if (id.endsWith(entry)) {
+                    const magicString = new MagicString(code)
+                    const replacedCode = replace(code)
+                    if (replacedCode !== code) {
+                        magicString.overwrite(0, code.length, replacedCode)
+                        return {
+                            code: magicString.toString(),
+                            map: magicString.generateMap({ hires: true }),
+                        }
+                    }
+                }
+            }
+            return null
         }
     }
 }

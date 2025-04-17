@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">Integrate Master CSS Static Extraction in Webpack way</p>
+<p align="center">Integrate Master CSS in Webpack way</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">

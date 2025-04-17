@@ -2,6 +2,13 @@
 ```bash action=install
 @master/css-runtime
 ```
+To import and initialize the runtime engine in the entry file, such as `main.js`:
+```js name=main.js
+import { initCSSRuntime } from '@master/css-runtime'
+import config from './master.css'
+
+initCSSRuntime(config)
+```
 
 ---
 
