@@ -1,29 +1,19 @@
-import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRenderingIntro.mdx'
-
-<RuntimeRenderingIntro img={{
-    ...require('~/site/public/images/vite-dev.png').default,
-    dark: require('~/site/public/images/vite-dev@dark.png').default,
-    alt: 'Vite and Master CSS',
-    width: 665, height: 400 }} />
-
----
-
 <StepSection>
     <Step $row>
         <StepL>
-            ### <StepNum />Create a project
-            If you don't have a Vite project, create one first. It's recommended to refer to [Getting Started - Vite](https://vitejs.dev/guide/)
+            ### <StepNum />Create a Vite project
+            If you don't have a Vite project, create one first. It's recommended to refer to [Getting Started - Vite](https://vite.dev/guide/)
         </StepL>
         <StepR>
             ```bash action=create
-            vite@latest my-project
+            vite@latest my-app
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install the Master CSS vite plugin into your project via package managers.
+            Install `@master/css.vite` plugin into your project.
         </StepL>
         <StepR>
             ```bash action=install
@@ -33,8 +23,8 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Initialize configuration file
-            Run the command to create a configuration file [master.css.ts](/guide/configuration).
+            ### <StepNum />Create a configuration file
+            Run the command to create a [master.css.js](/guide/configuration) file.
         </StepL>
         <StepR>
             ```bash action=create
@@ -45,10 +35,9 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
     <Step $row>
         <StepL>
             ### <StepNum />Set up Master CSS
-            Import the `masterCSS` plugin in the `vite.config.js`.
+            Add a `masterCSS` vite plugin in `vite.config.js`.
 
             - By default, the `options.mode` is set to `runtime`.
-            - To create a [master.css.js](/guide/configuration) file, run `npm create @master/css@rc`
         </StepL>
         <StepR>
             ```js name=vite.config.js
@@ -76,19 +65,12 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Hello world!
+            ### <StepNum />Start using Master CSS
             Now style your first element using Master CSS syntax!
         </StepL>
         <StepR>
             ```html name=index.html
-            <!DOCTYPE html>
-            <html lang="en">
-                …
-                <body>
-                    <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
-                    …
-                </body>
-            </html>
+            <h1 class="font:40 font:heavy italic">Hello World</h1>
             ```
         </StepR>
     </Step>

@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Set up or create a modern web app by running one command.',
     category: 'Package',
     type: 'entity',
-    order: 1,
     fileURL: import.meta.url,
     package: {
         npm: '@master/create-css',
