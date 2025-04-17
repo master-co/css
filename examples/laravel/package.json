@@ -1,4 +1,5 @@
 {
+    "name": "master-css-laravel-example",
     "private": true,
     "type": "module",
     "scripts": {

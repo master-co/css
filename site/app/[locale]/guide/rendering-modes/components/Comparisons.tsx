@@ -154,6 +154,20 @@ export default () => (
                     <td><InlineWarn />Initial</td>
                 </tr>
                 <tr>
+                    <th>Classes in .html</th>
+                    <td><InlineGood />Yes</td>
+                    <td><InlineGood />Yes</td>
+                    <td><InlineGood />Yes</td>
+                    <td><InlineGood />Yes</td>
+                </tr>
+                <tr>
+                    <th>Classes in .js, .jsx, .vue, ...</th>
+                    <td><InlineGood />Yes</td>
+                    <td><InlineGood />Yes</td>
+                    <td><InlineWarn />Partial</td>
+                    <td><InlineBad />No</td>
+                </tr>
+                <tr>
                     <td colSpan={4}><small>SEO metrics</small></td>
                 </tr>
                 <tr>
