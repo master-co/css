@@ -38,7 +38,7 @@ export default class CSSExtractor extends EventEmitter {
         if (typeof customOptions === 'string') {
             this.options = extend(defaultOptions, exploreConfig(customOptions, {
                 found: (basename) => {
-                    if (this.options.verbose && this.options.verbose > 1) {
+                    if (process.env.DEBUG) {
                         log.i`**${basename}** found`
                     }
                 },

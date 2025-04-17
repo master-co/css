@@ -66,4 +66,4 @@ export default config
 ```
 
 ## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/vite/static-extraction).
+Check out the official [documentation](https://rc.css.master.co/guide/installation/vite).

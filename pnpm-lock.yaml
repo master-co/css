@@ -1318,6 +1318,12 @@ importers:
         specifier: workspace:^
         version: link:../../shared
 
+  packages/create/tests/with-no-deps/dist:
+    dependencies:
+      '@master/css':
+        specifier: 2.0.0-rc.63
+        version: 2.0.0-rc.63
+
   packages/devtools-hook:
     dependencies:
       '@master/css':

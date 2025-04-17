@@ -53,17 +53,19 @@
 </div>
 
 ```js
+import { defineConfig } from 'astro/config'
 import masterCSS from '@master/css.astro'
+import sitemap from '@astrojs/sitemap'
 
-/** @type {import('astro').UserConfig} */
-const config = {
-    plugins: [
+export default defineConfig({
+    compressHTML: true,
+    trailingSlash: 'never',
+    integrations: [
+        sitemap(),
         masterCSS()
     ]
-}
-
-export default config
+})
 ```
 
 ## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/astro/static-extraction).
+Check out the official [documentation](https://rc.css.master.co/guide/installation/astro).
