@@ -46,8 +46,8 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Initialize configuration file
-            Run the command to create a configuration file [master.css.ts](/guide/configuration).
+            ### <StepNum />Create a configuration file
+            Run the command to create a [master.css.js](/guide/configuration) file.
         </StepL>
         <StepR>
             ```bash action=create
@@ -138,7 +138,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         ### <StepNum />Start using Master CSS
         Now style your first element using Master CSS syntax!
         ```html name=src/app/app.component.html
-        <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
+        <h1 class="italic m:12x fg:strong font:40 font:heavy">Hello World</h1>
         ```
         Open your browser to watch the changes.
         <HelloWorld url="localhost:3000" />

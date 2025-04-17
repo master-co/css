@@ -1,35 +1,3 @@
-import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRenderingIntro.mdx'
-
-<RuntimeRenderingIntro img={{
-    ...require('~/site/public/images/astro-dev.png').default,
-    alt: 'Astro and Master CSS',
-    width: 665, height: 400 }} />
-
----
-
-## Quick start
-<StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Clone the example
-            Copy-paste the commands to quickly start using the https://astro.rr.rc.css.master.co example.
-
-            You can skip all [installation](#installation) steps.
-        </StepL>
-        <StepR>
-            ```bash name=Terminal
-            npm create @master/css@rc my-app --example astro-with-runtime-rendering
-            cd my-app
-            npm run dev
-            ```
-        </StepR>
-        <StepEnd/>
-    </Step>
-</StepSection>
-
----
-
-## Installation
 <StepSection>
     <Step $row>
         <StepL>
@@ -45,8 +13,19 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Initialize configuration file
-            Run the command to create a configuration file [master.css.ts](/guide/configuration).
+            ### <StepNum />Install Master CSS
+            Install `@master/css.astro` plugin into your project.
+        </StepL>
+        <StepR>
+            ```bash action=install
+            @master/css.astro@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a configuration file
+            Run the command to create a [master.css.js](/guide/configuration) file.
         </StepL>
         <StepR>
             ```bash action=create
@@ -56,66 +35,59 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install Master CSS into your project via package managers.
-        </StepL>
-        <StepR>
-            ```bash action=install
-            @master/css-runtime@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up CSS runtime engine
-            Modify `src/layouts/Layout.astro`:
-            - Import your custom configuration `master.css.ts`
-            - Initialize the runtime engine
-            - Add `html <html hidden>` to [avoid FOUC](/guide/flash-of-unstyled-content)
-        </StepL>
-        <StepR>
-            ```astro name=src/layouts/Layout.astro
-            <!-- @MARK hidden -->
-            <html hidden>
-                <head>
-                    …
-                    <script> // [!code ++]
-                        import { initCSSRuntime } from "@master/css"; // [!code ++]
-                        import config from "../../master.css"; // [!code ++]
+            ### <StepNum />Set up Master CSS
+            Add a `masterCSS` astro integration in `astro.config.js`.
 
-                        initCSSRuntime(config); // [!code ++]
-                    </script> <!-- [!code ++] -->
-                </head>
-                …
-            <html>
+            - By default, `options.mode` is set to `runtime`.
+        </StepL>
+        <StepR>
+            ```js name=astro.config.js
+            import { defineConfig } from 'astro/config'
+            import masterCSS from '@master/css.astro' // [!code highlight]
+            import sitemap from '@astrojs/sitemap'
+
+            // https://astro.build/config
+            export default defineConfig({
+                compressHTML: true,
+                trailingSlash: 'never',
+                integrations: [
+                    sitemap(),
+                    masterCSS() // [!code highlight]
+                ]
+            })
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Launch server
-            Run `npm run dev` to start your Astro development server
+            ### <StepNum />Start dev server
+            Run the command to start the Astro dev server.
         </StepL>
         <StepR>
-            ```bash name=Terminal
-            npm run dev
+            ```bash name=Terminal&action=run
+            dev
             ```
         </StepR>
     </Step>
-    <Step>
-        ### <StepNum />Start using Master CSS
-        Now style your first element using Master CSS syntax!
-        ```astro name=src/pages/index.astro
-        ---
-        import Layout from '../layouts/Layout.astro';
-        ---
-        <Layout title="Welcome to Astro.">
-            <main>
-                <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
-            </main>
-        </Layout>
-        ```
-        Open your browser to watch the changes.
-        <HelloWorld url="localhost:3000" />
+    <Step $row>
+        <StepL>
+            ### <StepNum />Start using Master CSS
+            Now style your first element using Master CSS syntax!
+        </StepL>
+        <StepR>
+            ```astro name=src/pages/index.astro
+            ---
+            import Layout from '../layouts/Layout.astro';
+            ---
+            <Layout title="Welcome to Astro.">
+                <main>
+                    <h1 class="italic m:12x fg:strong font:40 font:heavy">
+                        Hello World
+                    </h1>
+                </main>
+            </Layout>
+            ```
+        </StepR>
     </Step>
+    <HelloWorld url="localhost:3000" />
 </StepSection>

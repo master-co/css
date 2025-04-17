@@ -15,6 +15,9 @@ export function ConfigVirtualModulePlugin(
             if (process.env.DEBUG) {
                 console.log(`[@master/css.vite] config: ${context.configPath || 'none'}`)
             }
+            if (context.configPath) {
+                config.server.fs.allow.push(context.configPath)
+            }
         },
         buildStart() {
             if (context.configPath) this.addWatchFile(context.configPath)

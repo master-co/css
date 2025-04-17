@@ -1,13 +1,3 @@
-import ProgressiveRenderingIntro from '../../rendering-modes/components/ProgressiveRenderingIntro.mdx'
-
-<ProgressiveRenderingIntro img={{
-    ...require('~/site/public/images/nuxtjs-dev.png').default,
-    dark: require('~/site/public/images/nuxtjs-dev@dark.png').default,
-    alt: 'Nuxt.js and Master CSS',
-    width: 665, height: 400 }} />
-
----
-
 <StepSection>
     <Step $row>
         <StepL>
@@ -23,19 +13,8 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Initialize configuration file
-            Run the command to create a configuration file [master.css.ts](/guide/configuration).
-        </StepL>
-        <StepR>
-            ```bash action=create
-            @master/css@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Install Master CSS
-            Install Master CSS Nuxt into your project via package managers.
+            Install `@master/css.nuxt` plugin into your project.
         </StepL>
         <StepR>
             ```bash action=install
@@ -45,16 +24,27 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Set up CSS pre-rendering
-            Add a `@master/css.nuxt` to the nuxt modules
-
-            - By default, the `options.mode` is set to `progressive`
+            ### <StepNum />Create a configuration file
+            Run the command to create a [master.css.js](/guide/configuration) file.
         </StepL>
         <StepR>
-            ```ts name=nuxt.config.ts
+            ```bash action=create
+            @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up Master CSS
+            Add a `@master/css.nuxt` module in `nuxt.config.ts`.
+
+            - By default, `options.mode` is set to `progressive`.
+        </StepL>
+        <StepR>
+            ```js name=nuxt.config.ts
             export default defineNuxtConfig({
                 modules: [
-                    '@master/css.nuxt' // [!code ++]
+                    '@master/css.nuxt' // [!code highlight]
                 ]
             })
             ```
@@ -71,15 +61,20 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             ```
         </StepR>
     </Step>
-    <Step>
-        ### <StepNum />Start using Master CSS
-        Now style your first element using Master CSS syntax!
-        ```vue name=app.vue
-        <template>
-            <h1 class="font:40 font:heavy italic m:12x text:center">Hello World</h1>
-        </template>
-        ```
-        Open your browser to watch the changes.
-        <HelloWorld url="localhost:3000" />
+    <Step $row>
+        <StepL>
+            ### <StepNum />Start using Master CSS
+            Now style your first element using Master CSS syntax!
+        </StepL>
+        <StepR>
+            ```vue name=app.vue
+            <template>
+                <h1 class="italic m:12x fg:strong font:40 font:heavy">
+                    Hello World
+                </h1>
+            </template>
+            ```
+        </StepR>
     </Step>
+    <HelloWorld url="localhost:3000" />
 </StepSection>

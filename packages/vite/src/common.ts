@@ -17,5 +17,7 @@ export const RESOLVED_VIRTUAL_CONFIG_ID = `\0${VIRTUAL_CONFIG_ID}`
 export const CSS_RUNTIME_INJECTIOIN = [
     `import { initCSSRuntime } from '@master/css-runtime';`,
     `import config from 'virtual:master-css-config';`,
-    `initCSSRuntime(config);`
+    `if (typeof document !== 'undefined') {`,
+    `initCSSRuntime(config);`,
+    `}`,
 ].join('\n')

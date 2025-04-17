@@ -5,11 +5,6 @@ import masterCSS from '@master/css.vite'
 export default defineConfig({
     plugins: [
         sveltekit(),
-        masterCSS({ mode: 'extract' }),
-    ],
-    server: {
-        fs: {
-            allow: ['./master.css.ts']
-        }
-    }
+        masterCSS({ mode: 'progressive' }),
+    ]
 })

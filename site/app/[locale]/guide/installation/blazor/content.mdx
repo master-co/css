@@ -1,11 +1,3 @@
-import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRenderingIntro.mdx'
-
-<RuntimeRenderingIntro />
-
----
-
-## Installation
-
 <StepSection>
     <Step $row>
         <StepL>
@@ -69,8 +61,8 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Initialize configuration file
-            Run the command to create a configuration file [master.css.ts](/guide/configuration).
+            ### <StepNum />Create a configuration file
+            Run the command to create a [master.css.js](/guide/configuration) file.
         </StepL>
         <StepR>
             ```bash action=create
@@ -97,10 +89,10 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
         <StepR>
             ```js name=npm_packages/src/index.js
             …
-            import { initCSSRuntime } from '@master/css-runtime'; // [!code ++]
-            import config from 'master.css'; // [!code ++]
+            import { initCSSRuntime } from '@master/css-runtime'; // [!code highlight]
+            import config from 'master.css'; // [!code highlight]
 
-            initCSSRuntime(config) // [!code ++]
+            initCSSRuntime(config) // [!code highlight]
             ```
         </StepR>
     </Step>
@@ -120,7 +112,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
                                 ...
                                 scripts: {
                                     ...
-                                    "build": "webpack ./src/index.js --output-path ../wwwroot/js --output-filename index.bundle.js --mode=development" // [!code ++]
+                                    "build": "webpack ./src/index.js --output-path ../wwwroot/js --output-filename index.bundle.js --mode=development" // [!code highlight]
                                 }
                             }
                         `
@@ -143,10 +135,10 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
                         code: `
                             <Project>
                                 ...
-                                <Target Name="PreBuild" BeforeTargets="PreBuildEvent"> <!-- [!code ++] -->
-                                    <Exec Command="npm install" WorkingDirectory="npm_packages" /> <!-- [!code ++] -->
-                                    <Exec Command="npm run build" WorkingDirectory="npm_packages" /> <!-- [!code ++] -->
-                                </Target> <!-- [!code ++] -->
+                                <Target Name="PreBuild" BeforeTargets="PreBuildEvent"> <!-- [!code highlight] -->
+                                    <Exec Command="npm install" WorkingDirectory="npm_packages" /> <!-- [!code highlight] -->
+                                    <Exec Command="npm run build" WorkingDirectory="npm_packages" /> <!-- [!code highlight] -->
+                                </Target> <!-- [!code highlight] -->
                                 ...
                             </Project>
                         `
@@ -172,7 +164,7 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
                                 <body>
                                     ...
                                     <script src="_framework/blazor.server.js"></script>
-                                    <script src="js/index.bundle.js"></script> <!-- [!code ++] -->
+                                    <script src="js/index.bundle.js"></script> <!-- [!code highlight] -->
                                 </body>
                             </html>
                         `
@@ -214,9 +206,9 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
 
                         <PageTitle>Index</PageTitle>
 
-                        <h1 class="font:40 font:heavy italic m:12x text:center"> <!-- [!code ++] -->
-                            Hello World <!-- [!code ++] -->
-                        </h1> <!-- [!code ++] -->
+                        <h1 class="italic m:12x fg:strong font:40 font:heavy"> <!-- [!code highlight] -->
+                            Hello World <!-- [!code highlight] -->
+                        </h1> <!-- [!code highlight] -->
 
                         Welcome to your new app.
 
