@@ -2,7 +2,7 @@ import { it, expect } from 'vitest'
 import fs from 'fs'
 import path from 'path'
 import InjectRuntimePlugin from '../../src/plugins/inject-runtime'
-import { runLoad } from '../plugin-test-helper'
+import { runTransform } from '../plugin-test-helper'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/inject-runtime')
 const ENTRY_ID = '/project/src/main.ts'
@@ -28,9 +28,9 @@ it.each(cases)(
     'InjectRuntimePlugin fixture: %s',
     async (name, filename) => {
         const id = path.join(FIXTURE_DIR, filename)
-        const result = await runLoad(plugin, id)
-        if (result === undefined) {
-            expect(result).toBeUndefined()
+        const result = await runTransform(plugin, id)
+        if (result === null) {
+            expect(result).toBeNull()
         } else {
             expect(result.code).toMatchSnapshot()
         }

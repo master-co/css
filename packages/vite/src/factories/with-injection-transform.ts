@@ -1,17 +1,15 @@
 import MagicString from 'magic-string'
 import path from 'path'
 import type { PluginContext } from '../core'
-import { readFileSync } from 'fs'
 
 export default function withInjectionTransform(
+    code: string,
     id: string,
     context: PluginContext,
     mark: string,
     generate: () => string[]
-): { code: string; map: any } | undefined {
-    if (context.entryId !== id) return
-    const code = readFileSync(id, 'utf-8')
-    if (code.includes(mark)) return
+): { code: string; map: any } | null {
+    if (context.entryId !== id || code.includes(mark)) return null
     const ext = path.extname(id)
     const s = new MagicString(code)
     const injectCode = '\n' + mark + '\n' + generate().join('\n') + '\n'

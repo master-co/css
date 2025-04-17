@@ -11,8 +11,8 @@ export default function InjectNormalCSSPlugin(
     return {
         name: 'master-css:inject-normal-css',
         enforce: 'pre',
-        load(id) {
-            return withInjectionTransform(id, context, __MASTER_CSS_NORMAL_CSS_INJECTED__, () => {
+        transform(code, id) {
+            return withInjectionTransform(code, id, context, __MASTER_CSS_NORMAL_CSS_INJECTED__, () => {
                 return [
                     `import '@master/normal.css'`
                 ]

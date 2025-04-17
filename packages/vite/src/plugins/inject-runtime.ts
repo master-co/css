@@ -11,8 +11,8 @@ export default function InjectRuntimePlugin(
     return {
         name: 'master-css:inject-runtime',
         enforce: 'pre',
-        load(id) {
-            return withInjectionTransform(id, context, __MASTER_CSS_RUNTIME_INJECTED__, () => {
+        transform(code, id) {
+            return withInjectionTransform(code, id, context, __MASTER_CSS_RUNTIME_INJECTED__, () => {
                 const imports = [
                     `import { initCSSRuntime } from '@master/css-runtime'`,
                     `import config from 'virtual:master-css-config'`,

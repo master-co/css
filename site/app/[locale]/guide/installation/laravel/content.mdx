@@ -1,73 +1,30 @@
-import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRenderingIntro.mdx'
-
-<RuntimeRenderingIntro img={{
-    ...require('~/site/public/images/laravel-dev.png').default,
-    dark: require('~/site/public/images/laravel-dev@dark.png').default,
-    alt: 'Laravel and Master CSS',
-    width: 665, height: 400 }} />
-
----
-
-## Quick start
-<StepSection>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Clone the example
-            Copy-paste the following commands to quickly start using the [example](https://github.com/master-co/css/tree/rc/examples/laravel-with-runtime-rendering).
-
-            You can skip all [installation](#installation) steps.
-        </StepL>
-        <StepR>
-            ```bash action=create
-            @master/css@rc my-project --example laravel-with-runtime-rendering
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Launch server
-            Run Laravel and Vite development servers by splitting two terminals.
-        </StepL>
-        <StepR>
-            <CodeTabs>
-                {[
-                    {
-                        name: 'PHP',
-                        lang: 'bash',
-                        code: `php artisan serve`
-                    },
-                    {
-                        name: 'Vite',
-                        lang: 'bash',
-                        code: `npm run dev`
-                    }
-                ]}
-            </CodeTabs>
-        </StepR>
-        <StepEnd/>
-    </Step>
-</StepSection>
-
----
-
-## Installation
-
 <StepSection>
     <Step $row>
         <StepL>
             ### <StepNum />Create a project
-            If you don't have a Laravel project, create one first. It's recommended to refer to [Installation - Laravel](https://laravel.com/docs/10.x)
+            If you don't have a Laravel project, create one first. It's recommended to refer to [Installation - Laravel](https://laravel.com/docs/installation)
         </StepL>
         <StepR>
             ```bash name=Terminal
-            composer create-project laravel/laravel <example-app>
+            laravel new my-app
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Initialize configuration file
-            Run the command to create a configuration file [master.css.js](/guide/configuration).
+            ### <StepNum />Install Master CSS
+            Install `@master/css.vite` plugin into your project.
+        </StepL>
+        <StepR>
+            ```bash action=install
+            @master/css.vite@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a configuration file
+            Run the command to create a [master.css.js](/guide/configuration) file.
         </StepL>
         <StepR>
             ```bash action=create
@@ -77,86 +34,55 @@ import RuntimeRenderingIntro from '../../rendering-modes/components/RuntimeRende
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS
-            Install Master CSS into your project via package managers.
-        </StepL>
-        <StepR>
-            ```bash action=install
-            @master/css-runtime@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up CSS runtime engine
-            Import `master.css.js` config and initialize the runtime engine in your `resources/js/app.js` file.
-        </StepL>
-        <StepR>
-            ```js name=resources/js/app.js
-            import './bootstrap'
-            import { initCSSRuntime } from '@master/css-runtime' // [!code ++]
-            import config from 'master.css' // [!code ++]
+            ### <StepNum />Set up Master CSS
+            Add a `masterCSS` vite plugin in `vite.config.js`.
 
-            initCSSRuntime(config) // [!code ++]
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Set up your view layout
-            Include the following in your `resources/views/layouts/welcome.blade.php`:
-            - Import the entry by adding `@vite('resources/js/app.js')`
-            - Add `html <html hidden>` to [avoid FOUC](/guide/flash-of-unstyled-content)
+            - Set `options.mode` to `extract`
+            - Add php files to `options.sources`
         </StepL>
         <StepR>
-            ```html name=resources/views/layouts/welcome.blade.php
-            <!DOCTYPE html>
-            <!-- @MARK hidden -->
-            <html hidden lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-                <head>
-                    …
-                    @vite('resources/js/app.js') // [!code ++]
-                </head>
-                …
-            </html>
+            ```js name=vite.config.js
+            import { defineConfig } from 'vite'
+            import masterCSS from '@master/css.vite' // [!code highlight]
+
+            export default defineConfig({
+                plugins: [
+                    masterCSS({ // [!code highlight]
+                        mode: 'extract', // [!code highlight]
+                        sources: ['resources/views/**/*.php'] // [!code highlight]
+                    }) // [!code highlight]
+                ]
+            })
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
             ### <StepNum />Launch server
-            Run Laravel and Vite development servers by splitting two terminals.
+            Run Laravel and Vite development servers.
         </StepL>
         <StepR>
-            <CodeTabs>
-                {[
-                    {
-                        name: 'PHP',
-                        lang: 'bash',
-                        code: `php artisan serve`
-                    },
-                    {
-                        name: 'Vite',
-                        lang: 'bash',
-                        code: `npm run dev`
-                    }
-                ]}
-            </CodeTabs>
+            ```bash name=Terminal
+            composer run dev
+            ```
         </StepR>
     </Step>
-    <Step>
-        ### <StepNum />Hello world!
-        Now style your first element using Master CSS syntax!
-        ```html name=resources/views/layouts/welcome.blade.php
-        …
-        <body>
-            <h1 class="font:40 font:heavy italic m:12x text:center">
-                Hello World
-            </h1>
-        </body>
-        …
-        ```
-        Open your browser to watch the changes.
-        <HelloWorld url="127.0.0.1:8000" />
+    <Step $row>
+        <StepL>
+            ### <StepNum />Hello world!
+            Now style your first element using Master CSS syntax!
+        </StepL>
+        <StepR>
+            ```html name=resources/views/app.blade.php
+            …
+            <body>
+                <h1 class="font:40 font:heavy italic m:12x text:center">
+                    Hello World
+                </h1>
+            </body>
+            …
+            ```
+        </StepR>
     </Step>
+    <HelloWorld url="127.0.0.1:8000" />
 </StepSection>

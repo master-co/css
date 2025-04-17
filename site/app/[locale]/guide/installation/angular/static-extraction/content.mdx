@@ -19,8 +19,8 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npm create @master/css@rc my-project --example angular-with-static-extraction
-            cd my-project
+            npm create @master/css@rc my-app --example angular-with-static-extraction
+            cd my-app
             npm run dev
             ```
         </StepR>
@@ -45,8 +45,8 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                         name: 'Terminal',
                         lang: 'bash',
                         code: `
-                            ng new my-project
-                            cd my-project
+                            ng new my-app
+                            cd my-app
                         `
                     }
                 ]}
@@ -111,7 +111,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                                 {
                                     …,
                                     "projects": {
-                                        "my-project": {
+                                        "my-app": {
                                             …,
                                             "architect": {
                                                 "build": {
@@ -129,7 +129,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
                                                      "extractor": "@angular-devkit/build-angular:dev-server", // [!code --]
                                                      "extractor": "@angular-builders/custom-webpack:dev-server", // [!code ++]
                                                      "options": { // [!code ++]
-                                                         "browserTarget": "my-project:build" // [!code ++]
+                                                         "browserTarget": "my-app:build" // [!code ++]
                                                      }, // [!code ++]
                                                     …
                                                 },

@@ -11,8 +11,8 @@ export default function InjectVirtualModulePlugin(
     return {
         name: 'master-css:inject-virtual-module',
         enforce: 'pre',
-        load(id) {
-            return withInjectionTransform(id, context, __MASTER_CSS_VIRTUAL_MODULE_INJECTED__, () => {
+        transform(code, id) {
+            return withInjectionTransform(code, id, context, __MASTER_CSS_VIRTUAL_MODULE_INJECTED__, () => {
                 return [
                     `import '${context.extractor?.options.module}'`
                 ]

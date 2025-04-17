@@ -19,6 +19,9 @@ export default function AvoidFOUCPlugin(options?: PluginOptions, context?: Plugi
                 ),
                 tags: [],
             }
+        },
+        transform(code, id) {
+            console.log(id)
         }
     }
 }
