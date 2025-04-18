@@ -2,6 +2,7 @@ import { Props } from 'internal/types/Props'
 import create from 'internal/utils/og-image'
 import metadata from './metadata'
 import type { AbsoluteTemplateString } from 'next/dist/lib/metadata/types/metadata-types'
+import Icon from 'internal/images/styled-components.svg'
 
 export const alt = (metadata.title as AbsoluteTemplateString)?.absolute || metadata.title as string
 export const contentType = 'image/jpg'
@@ -11,5 +12,5 @@ export default (props: Props) => create({
     props,
     metadata,
     title: 'Styled Components',
-    icon: <img src={require('!!url-loader!internal/images/styled-components.png').default} width={216} height={216} alt="styled components" />
+    icon: <Icon width={216} height={216} alt="styled components" />
 })
