@@ -1,12 +1,4 @@
 ## Installation [sr-only]
-
-We provide a lightweight CSS package, [@master/normal.css](https://github.com/master-co/normal.css), is similar to [modern-normalize](https://github.com/sindresorhus/modern-normalize) and [normalize.css](https://github.com/necolas/normalize.css) you are familiar with but better:
-
-- Keep element styles consistent across browsers.
-- Remove browser default styles for a better start.
-- Support responsive media and better text rendering.
-- [and more...](/reference/normal-css#consistency)
-
 ```bash action=install
 @master/normal.css
 ```
@@ -18,10 +10,14 @@ Or copy-paste the CDN
 ```html
 <link href="https://cdn.master.co/normal.css" rel="stylesheet">
 ```
-On-demand:
-<Code lang="css">
-    {require('@master/normal.css/src/index.css?raw').default?.replace(/(..\/)\b/g, '@master/normal.css/')}
-</Code>
+<details>
+    <summary>Import on demand</summary>
+    <Code lang="css">
+        {require('../../../../node_modules/@master/normal.css/src/index.css?raw')?.replace(/(..\/)\b/g, '@master/normal.css/')}
+    </Code>
+</details>
+
+We provide a lightweight CSS package, [@master/normal.css](https://github.com/master-co/normal.css), is similar to [modern-normalize](https://github.com/sindresorhus/modern-normalize) and [normalize.css](https://github.com/necolas/normalize.css) you are familiar with but better:
 
 ---
 
@@ -29,13 +25,13 @@ On-demand:
 ### Consistent abbreviation styles
 Fixed the inconsistent appearance of `html <abbr>` across browsers.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/consistent-abbreviation-styles.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/consistent-abbreviation-styles.css?raw')}
 </Code>
 
 ### Consistent control styles
 Fixed the inconsistent appearance of controls across browsers.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/consistent-control-styles.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/consistent-control-styles.css?raw')}
 </Code>
 
 ### Consistent horizontal lines
@@ -53,25 +49,25 @@ Fixed the inconsistent appearance of horizontal lines across browsers.
     </DemoPanel>
 </Demo>
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/consistent-horizontal-lines.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/consistent-horizontal-lines.css?raw')}
 </Code>
 
 ### Consistent bold styles
 Fixed the inconsistent font weight of `html <b>` and `html <strong>` across browsers.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/consistent-bold-styles.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/consistent-bold-styles.css?raw')}
 </Code>
 
 ### Consistent code styles
 Fixed the inconsistent font size of code-related elements across browsers.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/consistent-code-styles.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/consistent-code-styles.css?raw')}
 </Code>
 
 ### Consistent small styles
 Fixed the inconsistent font size of `html <small>` across browsers.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/consistent-small-styles.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/consistent-small-styles.css?raw')}
 </Code>
 
 ### Consistent superscript and subscript styles
@@ -82,19 +78,19 @@ Fixed the inconsistent appearance of superscripts and subscripts across browsers
     </DemoPanel>
 </Demo>
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/consistent-superscript-subscript.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/consistent-superscript-subscript.css?raw')}
 </Code>
 
 ### Consistent table styles
 Fixed the inconsistent appearance of tables across browsers.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/consistent-table-styles.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/consistent-table-styles.css?raw')}
 </Code>
 
 ### Intuitive sizing control
 Control the size of elements more intuitively, including content and padding, without worrying about the impact of padding and borders on dimensions.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/intuitive-sizing-control.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/intuitive-sizing-control.css?raw')}
 </Code>
 
 ---
@@ -117,43 +113,43 @@ Removing its default underline and inheriting the parent color allows you to sta
     </DemoPanel>
 </Demo>
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/remove-anchor-styles.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/remove-anchor-styles.css?raw')}
 </Code>
 
 ### Remove control styles
 Inherit the font family, size, and color of control elements from the parent's settings and remove spacing and background as a cleaner starting point.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/remove-control-styles.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/remove-control-styles.css?raw')}
 </Code>
 
 ### Remove default borders and preset to solid style
 Remove borders from all elements to give you the freedom to fully customize the appearance of your elements, preset to the most used solid style.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/remove-default-borders.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/remove-default-borders.css?raw')}
 </Code>
 
 ### Remove default spacing
 Setting margins and padding to zero allows you to customize the appearance and spacing of elements without worrying about the impact of default browser styles.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/remove-default-spacing.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/remove-default-spacing.css?raw')}
 </Code>
 
 ### Remove heading styles
 Remove heading styles as headless semantic tags. Typically you won't rely on the browser's default size and font weight.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/remove-heading-styles.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/remove-heading-styles.css?raw')}
 </Code>
 
 ### Remove list styles
 Remove the `ul` styles while retaining it as a commonly used structural markup for elements like the navbar and menu.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/remove-list-styles.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/remove-list-styles.css?raw')}
 </Code>
 
 ### Remove tap highlight color
 You should customize the tap highlight color based on current UI features rather than relying on the default.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/remove-tap-highlight.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/remove-tap-highlight.css?raw')}
 </Code>
 The `-webkit-tap-highlight-color` CSS property controls the highlight color that appears when an element is tapped on a mobile device, such as Safari and some WebKit-based mobile browsers.
 
@@ -164,7 +160,7 @@ Disable double-click to zoom on links, input fields, and buttons to improve resp
     <figcaption>[300ms tap delay, gone away](https://developer.chrome.com/blog/300ms-tap-delay-gone-away)</figcaption>
 </figure>
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/eliminate-click-delays.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/eliminate-click-delays.css?raw')}
 </Code>
 An instantly responsive UI enables users to confidently press each button without pausing and waiting for a response. To learn more about the influence of human reaction times and web performance, explore the [introduction to RAIL](https://web.dev/articles/rail).
 
@@ -180,13 +176,13 @@ An instantly responsive UI enables users to confidently press each button withou
 ### Better text rendering and appearance
 Ensure consistent, clear, high-quality text and font appearance across various browsers.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/better-text-appearance.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/better-text-appearance.css?raw')}
 </Code>
 
 ### Readable tab size
 Setting the tab size to 4 makes the code more structured and easier to read.
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/readable-tab-size.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/readable-tab-size.css?raw')}
 </Code>
 
 ### Responsive friendly media elements
@@ -208,7 +204,7 @@ Preset the maximum width of media-related elements to the parent container to ma
     </div>
 </Demo>
 <Code lang="css">
-{require('!!raw-loader!@master/normal.css/responsive-media-elements.css?raw').default}
+{require('../../../../node_modules/@master/normal.css/responsive-media-elements.css?raw')}
 </Code>
 Browsers default these elements to `inline` display. `block` can be centered using common tricks like `margin: auto`.
 

@@ -10,7 +10,6 @@ import Tabs, { Tab } from 'internal/components/Tabs'
 import useRewritedPathname from 'internal/uses/rewrited-pathname'
 import { useSearchParams } from 'next/navigation'
 import LanguageButton from 'internal/components/LanguageButton'
-import previewHandlerScriptText from './previewHandler.js?raw'
 import ThemeButton from 'internal/components/ThemeButton'
 import { getScriptHTML } from './getScriptHTML'
 import { getStyleHTML } from './getStyleHTML'
@@ -220,7 +219,7 @@ export default function Play(props: any) {
         return dedent`<html>
             <head>
                 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Inter:wght@100..900&family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet" />
-                <script>${previewHandlerScriptText}</script>
+                <script>${require('./previewHandler.js?raw')}</script>
                 <style>body { font-family: Inter, Noto Sans TC, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" }</style>
                 ${headInnerHTML}
             </head>

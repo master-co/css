@@ -9,14 +9,14 @@ export default {
             name: 'index.html',
             language: 'html',
             id: nanoid(),
-            content: require('./example.html?raw').default
+            content: require('./example.html?raw')
         },
         {
             title: 'Config',
             name: 'master.css.js',
             language: 'javascript',
             id: nanoid(),
-            content: require('./config.js?raw').default,
+            content: require('./config.js?raw'),
             priority: 'low'
         }
     ],

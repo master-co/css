@@ -8,25 +8,25 @@ In native CSS, it's not possible to reuse queries through CSS variables. By toke
 ## Basic usage
 ### Add a media query token
 Create a media query token, such as `@landscape`, to represent landscape orientation.
-<Code lang="js" name="master.css.js">{require('./tests/add-a-media-query/master.css.js?raw').default}</Code>
+<Code lang="js" name="master.css.js">{require('./tests/add-a-media-query/master.css.js?raw')}</Code>
 When displayed in landscape orientation, the image is presented in a 2:1 aspect ratio.
-<Code lang="html">{require('./tests/add-a-media-query/template.html?raw').default}</Code>
+<Code lang="html">{require('./tests/add-a-media-query/template.html?raw')}</Code>
 <details>
     <summary>Generated CSS</summary>
     <div>
-        <Code lang="css" beautify>{require('./tests/add-a-media-query/generated.css?raw').default}</Code>
+        <Code lang="css" beautify>{require('./tests/add-a-media-query/generated.css?raw')}</Code>
     </div>
 </details>
 
 ### Add a feature query token
 Create a feature query token, such as `@supports-backdrop`, to apply styles based on `backdrop-filter` support.
-<Code lang="js" name="master.css.js">{require('./tests/add-a-feature-query/master.css.js?raw').default}</Code>
+<Code lang="js" name="master.css.js">{require('./tests/add-a-feature-query/master.css.js?raw')}</Code>
 Applies translucent background only when `backdrop-filter` is supported.
-<Code lang="html">{require('./tests/add-a-feature-query/template.html?raw').default}</Code>
+<Code lang="html">{require('./tests/add-a-feature-query/template.html?raw')}</Code>
 <details>
     <summary>Generated CSS</summary>
     <div>
-        <Code lang="css" beautify>{require('./tests/add-a-feature-query/generated.css?raw').default}</Code>
+        <Code lang="css" beautify>{require('./tests/add-a-feature-query/generated.css?raw')}</Code>
     </div>
 </details>
 

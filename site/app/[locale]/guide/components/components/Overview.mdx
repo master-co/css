@@ -1,12 +1,12 @@
-<Code lang="js" name="master.css.js">{require('!!raw-loader!../tests/add-a-style/master.css.js').default}</Code>
+<Code lang="js" name="master.css.js">{require('../tests/add-a-style/master.css.js?raw')}</Code>
 Apply the `btn` style to the button element:
 <Demo>
     <button className="center-content inline-flex bg:invert fg:invert font:14 font:medium h:10x px:4x r:2x">Submit</button>
 </Demo>
-<Code lang="html">{require('!!raw-loader!../tests/add-a-style/template.html').default}</Code>
+<Code lang="html">{require('../tests/add-a-style/template.html?raw')}</Code>
 <details open={props.opened}>
     <summary>Generated CSS</summary>
     <div>
-        <Code lang="css" beautify>{require('!!raw-loader!../tests/add-a-style/generated.css?raw').default}</Code>
+        <Code lang="css" beautify>{require('../tests/add-a-style/generated.css?raw')}</Code>
     </div>
 </details>

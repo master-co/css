@@ -33,7 +33,7 @@ export default () => (
                                             width={'60%'}
                                             suffix='kB'
                                             animated
-                                            icon={<Image src={brand?.src} width={24} height={24} alt={brand?.name || ''} className={clsx('mx:0', brand?.className)} />}>
+                                            icon={brand?.src && <brand.src width={24} height={24} className={clsx('mx:0', brand?.className)} />}>
                                             {/* @ts-expect-error masterCSSResult?.totalCSSSize */}
                                             {result.name !== 'Master CSS' && <div className='flex:1 font:10'><span className='hidden@<sm'>{result.name}, </span> {(result?.totalCSSSize / masterCSSResult?.totalCSSSize).toFixed(1)}x larger</div>}
                                             {result.name === 'Master CSS' && (
@@ -61,7 +61,7 @@ export default () => (
                                             width={maxTotalCSSBrotliSize / maxTotalCSSSize * 60 + '%'}
                                             suffix='kB'
                                             animated
-                                            icon={<Image src={brand?.src} width={24} height={24} alt={brand?.name || ''} className={clsx('mx:0', brand?.className)} />}>
+                                            icon={brand?.src && <brand.src width={24} height={24} className={clsx('mx:0', brand?.className)} />}>
                                             {/* @ts-expect-error masterCSSResult?.totalCSSSize */}
                                             {result.name !== 'Master CSS' && <div className='flex:1 font:10'><span className='hidden@<sm'>{result.name}, </span> {(result?.totalCSSBrotliSize / masterCSSResult?.totalCSSBrotliSize).toFixed(1)}x larger</div>}
                                             {result.name === 'Master CSS' && (

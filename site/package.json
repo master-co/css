@@ -5,7 +5,7 @@
     "scripts": {
         "prepare-app": "tsx --env-file=.env ../internal/scripts/prepare-app",
         "dev": "pnpm prepare-app && next dev --turbo",
-        "build": "pnpm prepare-app && pnpm build:repo && pnpm build:next && pnpm build:css",
+        "build": "pnpm prepare-app && pnpm build:repo && pnpm build:next --turbo && pnpm build:css",
         "build:repo": "cd ../ && pnpm build && cd site",
         "build:next": "cross-env NODE_OPTIONS=--max-old-space-size=16384 next build",
         "build:css": "node ../packages/cli/dist/bin/index.mjs render \".next/**/*.html\"",
