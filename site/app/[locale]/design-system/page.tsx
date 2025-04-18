@@ -16,7 +16,7 @@ export default async function Page(props: any) {
     return (
         <Body className="bg:base">
             <DocHeader contained />
-            <Layout {...props} pageDirname={__dirname} metadata={metadata} $hideLeftSide>
+            <Layout {...props} pageFileURL={import.meta.url} metadata={metadata} $hideLeftSide>
                 <Content />
             </Layout >
         </Body>

@@ -19,7 +19,7 @@ export default async function Layout(props: any) {
     const { locale } = await props.params
     const $ = createTranslation(locale)
     return (
-        <DocLayout {...props} pageCategories={pageCategories} pageDirname={__dirname} metadata={metadata}>
+        <DocLayout {...props} pageCategories={pageCategories} pageFileURL={import.meta.url} metadata={metadata}>
             <Content />
         </DocLayout >
     )

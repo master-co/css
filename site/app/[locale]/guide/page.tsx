@@ -14,7 +14,7 @@ import pageCategories from '~/site/.categories/guide.json'
 
 export default async function Page(props: any) {
     return (
-        <Layout {...props} pageCategories={pageCategories} pageDirname={__dirname} metadata={metadata}>
+        <Layout {...props} pageCategories={pageCategories} pageFileURL={import.meta.url} metadata={metadata}>
             <Content pageCategories={pageCategories} />
         </Layout >
     )

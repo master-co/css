@@ -161,7 +161,7 @@ export default async function Page(props: any): Promise<React.ReactNode> {
     )
 
     return <>
-        <Layout {...props} pageDirname={__dirname} metadata={metadata} $hideLeftSide>
+        <Layout {...props} pageFileURL={import.meta.url} metadata={metadata} $hideLeftSide>
             <div className="flex gap:10 align-items:center mb:5x mt:12x">
                 <h2 id="backer" className="m:0!">Backer</h2>
                 <hr className="flex:1|1|auto my:0!" />
