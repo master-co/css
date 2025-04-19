@@ -1,0 +1,22 @@
+## Installation [sr-only]
+```bash action=install
+@master/css.vite@rc
+```
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css.vite' // [!code highlight]
+
+export default defineConfig({
+    plugins: [
+        masterCSS(options) // [!code highlight]
+    ]
+})
+```
+
+---
+
+## API Reference
+### `options`
+The `options` object is passed to the `masterCSS(options)` plugin function. It allows you to configure the behavior of the plugin.
+
+<Code lang="ts" name="options.ts">{require('../../../../../packages/vite/src/options.ts?raw')}</Code>
