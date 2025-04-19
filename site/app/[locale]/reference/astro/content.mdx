@@ -1,0 +1,33 @@
+## Installation [sr-only]
+```bash action=install
+@master/css.astro@rc
+```
+```js name=astro.config.js
+import { defineConfig } from 'astro/config'
+import masterCSS from '@master/css.astro' // [!code highlight]
+
+export default defineConfig({
+    integrations: [
+        masterCSS() // [!code highlight]
+    ]
+})
+```
+
+---
+
+## API Reference
+### `options`
+The `options` object extends the [VitePluginOptions](/reference/vite#options) and is passed to the `@master/css.astro` integration. It allows you to configure the behavior of the integration.
+```js name=astro.config.js
+import { defineConfig } from 'astro/config'
+import masterCSS from '@master/css.astro'
+
+export default defineConfig({
+    integrations: [
+        masterCSS({
+            mode: 'extract' // [!code highlight]
+        })
+    ]
+})
+```
+<Code lang="ts" name="options.ts">{require('../../../../../packages/astro/src/options.ts?raw')}</Code>
