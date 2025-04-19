@@ -1,0 +1,28 @@
+## Installation [sr-only]
+```bash action=install
+@master/css.nuxt@rc
+```
+```js name=nuxt.config.ts
+export default defineNuxtConfig({
+    modules: [
+        '@master/css.nuxt' // [!code highlight]
+    ]
+})
+```
+The default `'progressive'` mode integrates Nuxt’s SSR, SSG, ISR, and Hybrid rendering strategies through Nitro, automatically loading custom configurations — so you can get started with zero setup.
+
+---
+
+## API Reference
+### `options`
+The `options` object extends the [VitePluginOptions](/reference/vite#options) and is passed to the `@master/css.nuxt` module. It allows you to configure the behavior of the module.
+```js name=nuxt.config.ts
+export default defineNuxtConfig({
+    modules: [
+        ['@master/css.nuxt', {
+            mode: 'progressive' // [!code highlight]
+        }]
+    ]
+})
+```
+<Code lang="ts" name="options.ts">{require('../../../../../packages/nuxt/src/options.ts?raw')}</Code>
