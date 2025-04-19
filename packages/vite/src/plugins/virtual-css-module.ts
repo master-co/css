@@ -1,5 +1,6 @@
 import type { Plugin } from 'vite'
-import { PluginContext, PluginOptions } from '../core'
+import { PluginContext } from '../core'
+import { PluginOptions } from '../options'
 
 export default function VirtualCSSModulePlugin(options: PluginOptions, context: PluginContext): Plugin {
     return {

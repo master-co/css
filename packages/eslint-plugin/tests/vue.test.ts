@@ -55,7 +55,7 @@ jsxTester.run('vue class order', rule, {
             code: `
                     <template>
                         <div v-bind="data" :class="[
-                        'transition py:1.5 font:semibold',
+                        'transition py:1.5 font:medium',
                         {
                             'fg:white': variant === 'white',
                             'fg:blue-50 fg:blue-40:hover b:blue-50': variant === 'primary',
@@ -66,7 +66,7 @@ jsxTester.run('vue class order', rule, {
             output: `
                     <template>
                         <div v-bind="data" :class="[
-                        'py:1.5 font:semibold transition',
+                        'py:1.5 font:medium transition',
                         {
                             'fg:white': variant === 'white',
                             'b:blue-50 fg:blue-50 fg:blue-40:hover': variant === 'primary',

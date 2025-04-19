@@ -80,8 +80,8 @@ createTester({
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
-            code: `<div class="flex uppercase m:0 m:0>li text-decoration:none>li>a px:4>li align-items:baseline fg:gray-30>li>a gap-x:28 font:12 font:semibold pb:6>li pt:20 pt:10>li {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a fg:gray-10>li>a:hover box-shadow:none>li>a:focus">Group</div>`,
-            output: `<div class="flex uppercase m:0 align-items:baseline font:12 font:semibold gap-x:28 pt:20 m:0>li text-decoration:none>li>a {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a px:4>li fg:gray-30>li>a pb:6>li pt:10>li fg:gray-10>li>a:hover box-shadow:none>li>a:focus">Group</div>`,
+            code: `<div class="flex uppercase m:0 m:0>li text-decoration:none>li>a px:4>li align-items:baseline fg:gray-30>li>a gap-x:28 font:12 font:medium pb:6>li pt:20 pt:10>li {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a fg:gray-10>li>a:hover box-shadow:none>li>a:focus">Group</div>`,
+            output: `<div class="flex uppercase m:0 align-items:baseline font:12 font:medium gap-x:28 pt:20 m:0>li text-decoration:none>li>a {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a px:4>li fg:gray-30>li>a pb:6>li pt:10>li fg:gray-10>li>a:hover box-shadow:none>li>a:focus">Group</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {

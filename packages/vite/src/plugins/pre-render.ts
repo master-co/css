@@ -1,8 +1,9 @@
 import type { Plugin } from 'vite'
-import { PluginContext, PluginOptions } from '../core'
+import { PluginContext } from '../core'
 import { render } from '@master/css-server'
 import { Config } from '@master/css'
 import exploreConfig from '@master/css-explore-config'
+import { PluginOptions } from '../options'
 
 export default function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin {
     let cssConfig: Config | undefined = undefined
@@ -28,6 +29,17 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
                 html: render(html, cssConfig).html,
                 tags: [],
             }
-        }
+        },
+        transform(code, id) {
+            if (!enabled) return
+            if (id.endsWith('.html')) {
+                const { html } = render(code, cssConfig)
+                return {
+                    code: html,
+                    map: null,
+                }
+            }
+            return null
+        },
     }
 }

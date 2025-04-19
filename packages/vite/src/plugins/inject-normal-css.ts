@@ -1,6 +1,7 @@
 import type { Plugin } from 'vite'
 import withInjectionTransform from '../factories/with-injection-transform'
-import type { PluginContext, PluginOptions } from '../core'
+import type { PluginContext } from '../core'
+import { PluginOptions } from '../options'
 
 const __MASTER_CSS_NORMAL_CSS_INJECTED__ = '/*__MASTER_CSS_NORMAL_CSS_INJECTED__*/'
 

@@ -32,6 +32,11 @@ export default class RuntimeLayer extends Layer {
                 return this.native!.cssRules.item(insertedIndex) as CSSRule
             } catch (error) {
                 console.error(error, rule)
+                /**
+                 * If the rule is invalid, remove it from the rules array.
+                 * It's important to note that the rule may break the entire CSS runtime,
+                 */
+                this.rules.splice(insertedIndex, 1)
                 return
             }
         }

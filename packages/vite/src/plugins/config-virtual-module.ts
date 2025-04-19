@@ -1,7 +1,8 @@
 import { Plugin } from 'vite'
-import { PluginContext, PluginOptions } from '../core'
+import { PluginContext } from '../core'
 import ensureCSSConfigPath from 'shared/utils/ensure-css-config-path'
 import { RESOLVED_VIRTUAL_CONFIG_ID, VIRTUAL_CONFIG_ID } from '../common'
+import { PluginOptions } from '../options'
 
 export function ConfigVirtualModulePlugin(
     options: PluginOptions,

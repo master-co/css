@@ -1,7 +1,8 @@
 import type { Plugin } from 'vite'
 import withInjectionTransform from '../factories/with-injection-transform'
-import { PluginOptions, PluginContext } from '../core'
+import { PluginContext } from '../core'
 import { CSS_RUNTIME_INJECTIOIN } from '../common'
+import { PluginOptions } from '../options'
 
 const __MASTER_CSS_RUNTIME_INJECTED__ = '/*__MASTER_CSS_RUNTIME_INJECTED__*/'
 

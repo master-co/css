@@ -1,9 +1,10 @@
-import { PluginContext, PluginOptions } from '../core'
+import { PluginContext } from '../core'
 import { type Plugin } from 'vite'
 import CSSExtractor from '@master/css-extractor'
 import VirtualCSSModulePlugin from '../plugins/virtual-css-module'
 import VirtualCSSHMRPlugin from '../plugins/virtual-css-hmr'
 import InjectVirtualModulePlugin from '../plugins/inject-virtual-module'
+import { PluginOptions } from '../options'
 
 export default function ExtractMode(options: PluginOptions, context: PluginContext): Plugin[] {
     const plugins: Plugin[] = [

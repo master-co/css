@@ -1,6 +1,7 @@
 import type { Plugin, ViteDevServer } from 'vite'
 import { existsSync, readFileSync } from 'fs'
-import { PluginContext, PluginOptions } from '../core'
+import { PluginContext } from '../core'
+import { PluginOptions } from '../options'
 
 const HMR_EVENT_UPDATE = 'master-css-hmr:update'
 

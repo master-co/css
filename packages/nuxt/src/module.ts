@@ -1,16 +1,8 @@
 import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@nuxt/kit'
 import { name } from '../package.json'
-import masterCSS, { defaultPluginOptions, VIRTUAL_CONFIG_ID, type PluginOptions } from '@master/css.vite'
+import masterCSS, { VIRTUAL_CONFIG_ID } from '@master/css.vite'
 import ensureCSSConfigPath from '../../../shared/utils/ensure-css-config-path'
-
-declare type ModuleOptions = {
-
-} & PluginOptions
-
-const defaultModuleOptions: ModuleOptions = {
-    ...defaultPluginOptions,
-    mode: 'progressive'
-}
+import defaultOptions, { type ModuleOptions } from './options'
 
 export default defineNuxtModule<{ config?: string }>({
     meta: {
@@ -18,7 +10,7 @@ export default defineNuxtModule<{ config?: string }>({
         configKey: 'mastercss'
     },
     setup(options: ModuleOptions, nuxt) {
-        options = { ...defaultModuleOptions, ...options }
+        options = { ...defaultOptions, ...options }
         if (!nuxt.options.ssr || nuxt.options._prepare) return
         const { resolve } = createResolver(import.meta.url)
         const configPath = ensureCSSConfigPath(options.config, nuxt.options.rootDir)

@@ -10,7 +10,7 @@
         "test": "vitest run"
     },
     "license": "MIT",
-    "description": "Integrate Master CSS Progressive Rendering in Nuxt way",
+    "description": "Integrate Master CSS in Nuxt way",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",

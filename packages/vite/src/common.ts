@@ -8,8 +8,12 @@ export const ENTRY_MODULE_PATTERNS = [
     `${ENTRIES}`,
 ]
 
-export const INDEX_HTML_ENTRIES = [
+export const HTML_ENTRIES = [
     'src/layouts/Layout.astro', // astro
+    'src/app.html', // svelte
+    'src/index.html',
+    'app.html',
+    'index.html',
 ]
 
 export const VIRTUAL_CONFIG_ID = 'virtual:master-css-config'

@@ -1,7 +1,8 @@
 import type { Plugin } from 'vite'
 import MagicString from 'magic-string'
-import { PluginContext, PluginOptions } from '../core'
-import { INDEX_HTML_ENTRIES } from '../common'
+import { PluginContext } from '../core'
+import { HTML_ENTRIES } from '../common'
+import { PluginOptions } from '../options'
 
 const replace = (html: string) => {
     return html.replace(
@@ -27,7 +28,7 @@ export default function AvoidFOUCPlugin(options?: PluginOptions, context?: Plugi
             }
         },
         transform(code, id) {
-            for (const entry of INDEX_HTML_ENTRIES) {
+            for (const entry of HTML_ENTRIES) {
                 if (id.endsWith(entry)) {
                     const magicString = new MagicString(code)
                     const replacedCode = replace(code)

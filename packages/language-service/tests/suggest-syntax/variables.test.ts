@@ -3,7 +3,7 @@ import dedent from 'ts-dedent'
 import { hint } from './test'
 
 describe.concurrent('scope', () => {
-    test.concurrent('font:semibold', () => expect(hint('font:')?.map(({ label }) => label)).toContain('semibold'))
+    test.concurrent('font:medium', () => expect(hint('font:')?.map(({ label }) => label)).toContain('semibold'))
     test.concurrent('font:sans', () => expect(hint('font:')?.map(({ label }) => label)).toContain('semibold'))
     test.concurrent('fg:blue', () => expect(hint('fg:')?.find(({ label }) => label === 'blue')).toEqual({
         'detail': '(scope) text-blue',

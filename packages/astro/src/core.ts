@@ -1,13 +1,9 @@
 import { AstroIntegration } from 'astro'
-import { default as vitePlugin, CSS_RUNTIME_INJECTIOIN, defaultPluginOptions, PluginOptions } from '@master/css.vite'
-declare type IntegrationOptions = {
-
-} & PluginOptions
-
-const defaultModuleOptions: IntegrationOptions = defaultPluginOptions
+import { default as vitePlugin, CSS_RUNTIME_INJECTIOIN } from '@master/css.vite'
+import defaultOptions, { type IntegrationOptions } from './options'
 
 export default function masterCSS(options?: IntegrationOptions): AstroIntegration {
-    options = { ...defaultModuleOptions, ...options }
+    options = { ...defaultOptions, ...options }
     return {
         name: '@master/css.astro',
         hooks: {
