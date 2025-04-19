@@ -1,0 +1,53 @@
+As Vite continues to grow rapidly and become the mainstream tool for development, developers are increasingly turning to Vite to build their applications. Initially, we created a Vite plugin solely to integrate the Master CSS static extraction mode, with other modes requiring manual setup. Now, with the `@master/css.vite` plugin, all rendering modes of Master CSS can be integrated with zero configuration.
+
+<ArticleTOC data={toc}/>
+
+---
+
+## All-in-one Vite plugin
+We've simplified the setup process, reducing the number of steps and removing the need for guides on different rendering modes, as the setup has become easier.
+
+If you don't have a project yet, create one using `npm create vite@latest my-app`.
+```bash action=install
+@master/css.vite@rc
+```
+Once installed, simply add the plugin to `vite.config.js` to enable any mode:
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css.vite' // [!code highlight]
+
+export default defineConfig({
+    plugins: [
+        masterCSS() // [!code highlight]
+    ]
+})
+```
+By default, the `options.mode` is set to the classic `runtime` mode, and you can choose other [available modes](/guide/rendering-modes#available-modes) as needed.
+
+Now run your vite development server and start using Master CSS!
+```bash action=run
+run dev
+```
+That’s it. See the [installation guide](/guide/installation) for more details.
+
+---
+
+## Other integrations
+Thanks to Vite's thriving ecosystem, we’ve also established framework integrations for [Nuxt](/guide/installation/nuxtjs)
+```ts name=nuxt.config.ts
+export default defineNuxtConfig({
+    modules: [
+        '@master/css.nuxt' /* [!code highlight] */
+    ]
+})
+```
+and [Astro](/guide/installation/astro).
+```ts name=astro.config.ts
+import masterCSS from '@master/css.astro'
+
+export default defineConfig({
+    integrations: [
+        masterCSS() /* [!code highlight] */
+    ]
+})
+```
