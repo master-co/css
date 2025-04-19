@@ -23,11 +23,17 @@ const units = {
             'Warnings',
         ]
     },
-    blog: {},
+    blog: {
+        categories: [
+            'Major',
+            'New Feature',
+        ]
+    },
     examples: {},
     play: {},
     roadmap: {},
     sponsor: {},
+    brand: {},
     'design-system': {},
 }
 
