@@ -204,7 +204,7 @@ The [CSS runtime](#runtime-rendering) then takes over to detect any changes in d
 ---
 
 ## Static Extraction
-Static Extraction is a zero-runtime rendering mode in which all CSS rules are precomputed during the build process. This approach statically analyzes your source files — such as .html, .js, .jsx, .ts, .svelte, and more — to collect class names and generate a minimal, deterministic CSS bundle before the application is deployed.
+Static Extraction is a zero-runtime rendering mode in which all CSS rules are precomputed during the build process. This approach statically analyzes your source files — such as `.html, .js, .jsx, .ts, .svelte`, and more — to collect class names and generate a minimal, deterministic CSS bundle before the application is deployed.
 
 Unlike runtime-based solutions, Static Extraction does not rely on any client-side JavaScript to inject or manage styles. It outputs pure CSS assets that are linked in the final HTML, allowing for maximum performance, minimal JavaScript runtime overhead, and optimal compatibility with static hosting environments.
 
@@ -228,6 +228,18 @@ const className = error ? 'bg:red' : 'bg:green'
 In short, you must write out the full class in your source code and ensure it is not truncated, so it can be correctly scanned and detected.
 
 Due to the limitations of static scanning, this is also one of the primary reasons we created the Master CSS [Runtime](#runtime-rendering).
+
+---
+
+## Available Modes
+In addition to the three main rendering modes mentioned above, Master CSS also uses integrations like Vite to further break down the rendering modes, allowing you to start the project with zero configuration.
+
+| Mode                      | Description                                                                                                                                           |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `'runtime'`               | Detects the application's entry file, automatically injects the initialization of `CSSRuntime`, and imports the `config` code.                        |
+| `'extract'`               | Detects the application's entry file, automatically imports the `virtual:master.css` module, and triggers the static extraction workflow.             |
+| `'pre-render'`            | Renders all `*.html` dependencies and injects CSS internally. This mode may be integrated with other SSR capabilities.                                |
+| `'progressive'`           | Combines `runtime` and `pre-render` modes.                                                                                                            |
 
 ---
 

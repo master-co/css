@@ -14,7 +14,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install `@master/css.astro` plugin into your project.
+            Install [`@master/css.astro`](/reference/astro) plugin into your project.
         </StepL>
         <StepR>
             ```bash action=install
@@ -44,14 +44,9 @@
             ```js name=astro.config.js
             import { defineConfig } from 'astro/config'
             import masterCSS from '@master/css.astro' // [!code highlight]
-            import sitemap from '@astrojs/sitemap'
 
-            // https://astro.build/config
             export default defineConfig({
-                compressHTML: true,
-                trailingSlash: 'never',
                 integrations: [
-                    sitemap(),
                     masterCSS() // [!code highlight]
                 ]
             })

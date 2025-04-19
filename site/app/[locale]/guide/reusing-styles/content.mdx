@@ -44,7 +44,7 @@ declare type Props = {
     disabled?: boolean
 }
 
-const Button = styled.button<Props>('inline-flex font:semibold', {
+const Button = styled.button<Props>('inline-flex font:medium', {
     $size: sizes,
     disabled: 'opacity:.5'
 })
@@ -61,7 +61,7 @@ To use the button component.
 ```
 Rendered as:
 ```html
-<button class="inline-flex font:semibold font:12 h:8x … opacity:.5">Submit</button>
+<button class="inline-flex font:medium font:12 h:8x … opacity:.5">Submit</button>
 ```
 However, if the component involves richer implementations such as `loading`, you should wrap it with a functional component.
 

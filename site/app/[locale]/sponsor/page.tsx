@@ -1,5 +1,5 @@
 
-import Layout from 'internal/layouts/doc'
+import Layout from 'internal/layouts/article'
 import metadata from './metadata'
 import Content from './content.mdx'
 import { getSponsorTiers } from 'internal/utils/get-sponsor-tiers'
@@ -162,12 +162,8 @@ export default async function Page(props: any): Promise<React.ReactNode> {
 
     return <>
         <Layout {...props} pageFileURL={import.meta.url} metadata={metadata} $hideLeftSide>
-            <div className="flex gap:10 align-items:center mb:5x mt:12x">
-                <h2 id="backer" className="m:0!">Backer</h2>
-                <hr className="flex:1|1|auto my:0!" />
-            </div>
             <Backers backers={backers} />
-            <Donors sponsorTiers={sponsorTiers} sponsorsOfLevel={sponsorsOfLevel} />
+            {/* <Donors sponsorTiers={sponsorTiers} sponsorsOfLevel={sponsorsOfLevel} /> */}
             <DonationModal />
             <Content />
         </Layout >

@@ -10,12 +10,12 @@ export default function SponsorTiers() {
     const [selectedTier, setSelectedTier] = useState<any>()
     const sponsorTiers = getSponsorTiers(pathname || '')
 
-    return <div className="gap:15 grid-cols:2 grid-cols:4@sm">
+    return <div className="gap:15 grid-cols:2 grid-cols:3@sm">
         {sponsorTiers.map((eachSponsorTier) => (
             <button key={eachSponsorTier.name} className="app-object app-object-interactive gap:20 p:25|30 r:5 flex:col@<lg" onClick={() => setSelectedTier(eachSponsorTier)}>
                 <div className="font:48">{eachSponsorTier.icon}</div>
                 <div className='flex:1 text:left'>
-                    <div className="text:16 fg:strong font:semibold uppercase::first-letter">{eachSponsorTier.name}</div>
+                    <div className="text:16 fg:strong font:medium uppercase::first-letter">{eachSponsorTier.name}</div>
                     {eachSponsorTier.amount && (
                         <div className="text:14 font:bold">
                             {eachSponsorTier.amount}

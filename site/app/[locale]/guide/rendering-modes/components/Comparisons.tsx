@@ -200,16 +200,5 @@ export default () => (
                 </tr>
             </tbody>
         </table>
-
-        <div className='flex gap:10|20 text:12 flex:wrap mt:40'>
-            <div className='flex:0|0|auto'>SSG Static Site Generation</div>
-            <div className='flex:0|0|auto'>SSR Server-side Rendering</div>
-            <div className='flex:0|0|auto'>CSR Client-side Rendering</div>
-            <div className='flex:0|0|auto'>SPA Single-page Application</div>
-            <div className='flex:0|0|auto'>RR Runtime Rendering</div>
-            <div className='flex:0|0|auto'>SE Static Extraction</div>
-            <div className='flex:0|0|auto'>PR Progressive Rendering</div>
-            <div className='flex:0|0|auto'>SaaS Software as a Service</div>
-        </div>
     </>
 )

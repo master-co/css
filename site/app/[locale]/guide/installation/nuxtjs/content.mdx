@@ -14,7 +14,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install `@master/css.nuxt` plugin into your project.
+            Install [`@master/css.nuxt`](/reference/nuxt) plugin into your project.
         </StepL>
         <StepR>
             ```bash action=install
@@ -36,12 +36,12 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up Master CSS
-            Add a `@master/css.nuxt` module in `nuxt.config.ts`.
+            Add a [`@master/css.nuxt`](/reference/nuxt) module in `nuxt.config.ts`.
 
             - By default, `options.mode` is set to `progressive`.
         </StepL>
         <StepR>
-            ```js name=nuxt.config.ts
+            ```ts name=nuxt.config.ts
             export default defineNuxtConfig({
                 modules: [
                     '@master/css.nuxt' // [!code highlight]

@@ -4,7 +4,7 @@ import toSlug from 'internal/utils/toSlug'
 import clsx from 'clsx'
 
 export default function Backers({ backers }: any) {
-    return <div className="gap:8 grid-cols:6 grid-cols:8@2xs grid-cols:10@xs grid-cols:14@sm grid-cols:18@md">
+    return <div className="gap:8 grid-cols:6 grid-cols:8@2xs grid-cols:10@xs grid-cols:14@sm">
         {backers.map((eachBacker: any, i: number) => {
             let href = eachBacker.websiteUrl || eachBacker.twitterUrl || eachBacker.githubUrl
             if (href && !href?.startsWith('http://') && !href?.startsWith('https://')) {
