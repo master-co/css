@@ -2,7 +2,9 @@
 import { it, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, $fetch } from '@nuxt/test-utils'
-import { dirname, join, resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
+// @ts-expect-error js-beautify is not typed
+import { css_beautify } from 'js-beautify/js/lib/beautify-css'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -16,8 +18,8 @@ it('should contain stylesheet link and CSS with specific class', async () => {
     expect(match).toBeTruthy()
     const href = match?.[1]
     expect(href).toMatch(/\/_nuxt\/.*\.css/)
-    const css = await $fetch(href!)
+    const css = css_beautify(await $fetch(href!))
     expect(typeof css).toBe('string')
     expect(css).toContain('.box')
-    expect(css).toMatchSnapshot(join(rootDir, 'css-snapshot'))
+    expect(css).toMatchSnapshot(rootDir)
 })

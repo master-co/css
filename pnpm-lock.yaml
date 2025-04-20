@@ -1603,6 +1603,9 @@ importers:
       '@nuxt/test-utils':
         specifier: ^3.17.2
         version: 3.17.2(@jest/globals@29.7.0)(@playwright/test@1.51.1)(@types/node@22.14.1)(@vue/test-utils@2.4.6)(happy-dom@17.4.4)(jiti@2.4.2)(jsdom@26.1.0)(less@4.2.0)(lightningcss@1.29.2)(magicast@0.3.5)(playwright-core@1.52.0)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.3)(vitest@3.1.1(@types/debug@4.1.12)(@types/node@22.14.1)(happy-dom@17.4.4)(jiti@2.4.2)(jsdom@26.1.0)(less@4.2.0)(lightningcss@1.29.2)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.1))(yaml@2.7.1)
+      '@types/js-beautify':
+        specifier: ^1.14.3
+        version: 1.14.3
       '@vue/test-utils':
         specifier: ^2.4.6
         version: 2.4.6
@@ -1615,6 +1618,9 @@ importers:
       happy-dom:
         specifier: ^17.4.4
         version: 17.4.4
+      js-beautify:
+        specifier: ^1.15.4
+        version: 1.15.4
       nuxt:
         specifier: ^3.16.2
         version: 3.16.2(@azure/identity@4.8.0)(@netlify/blobs@8.2.0)(@parcel/watcher@2.5.1)(@types/node@22.14.1)(db0@0.3.2)(encoding@0.1.13)(eslint@9.25.0(jiti@2.4.2))(ioredis@5.6.1)(less@4.2.0)(lightningcss@1.29.2)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.40.0)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.3)(vite@6.3.2(@types/node@22.14.1)(jiti@2.4.2)(less@4.2.0)(lightningcss@1.29.2)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.1))(vue-tsc@2.2.8(typescript@5.8.3))(yaml@2.7.1)
