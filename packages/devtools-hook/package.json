@@ -55,9 +55,5 @@
     "devDependencies": {
         "@playwright/test": "^1.49.1",
         "shared": "workspace:^"
-    },
-    "peerDependencies": {
-        "@master/css-runtime": "workspace:^",
-        "@master/css": "workspace:^"
     }
 }
