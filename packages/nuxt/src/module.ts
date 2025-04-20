@@ -1,6 +1,7 @@
 import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@nuxt/kit'
 import { name } from '../package.json'
 import masterCSS, { VIRTUAL_CONFIG_ID } from '@master/css.vite'
+import type { Plugin } from 'vite'
 import ensureCSSConfigPath from '../../../shared/utils/ensure-css-config-path'
 import defaultOptions, { type ModuleOptions } from './options'
 
@@ -26,7 +27,7 @@ export default defineNuxtModule<{ config?: string }>({
         const addCSSVitePlugin = (mode = options.mode) => {
             nuxt.hook('vite:extendConfig', (viteConfig) => {
                 viteConfig.plugins = viteConfig.plugins || []
-                viteConfig.plugins.push(masterCSS({ ...options, mode }))
+                viteConfig.plugins.push(masterCSS({ ...options, mode }) as unknown as Plugin)
             })
         }
         switch (options.mode) {
@@ -47,6 +48,7 @@ export default defineNuxtModule<{ config?: string }>({
         }
 
         switch (options.mode) {
+            case 'pre-render':
             case 'progressive':
                 // Fix: Package import specifier "virtual:master-css-config" is not defined in package
                 nuxt.options.build.transpile.push(resolve('./runtime/css-server'))

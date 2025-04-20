@@ -2,7 +2,7 @@ export default defineNuxtConfig({
     modules: [
         // '../src/module',
         ['../src/module', {
-            mode: 'extract'
+            mode: 'pre-render'
         }],
     ],
     devtools: { enabled: true },

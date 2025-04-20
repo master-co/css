@@ -12,5 +12,5 @@ await setup({ rootDir })
 it('ensure style#master', async () => {
     const html = await $fetch('/') as string
     const match = html.match(/<style id="master"><\/style>/)
-    expect(match?.[1] ?? '').toMatchSnapshot(rootDir)
+    expect(match?.[1] ?? '').toBe('')
 })

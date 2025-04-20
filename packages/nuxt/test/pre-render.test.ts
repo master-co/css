@@ -9,8 +9,8 @@ const rootDir = resolve(__dirname, './fixtures/pre-render/')
 
 await setup({ rootDir })
 
-it('matches generated CSS snapshot', async () => {
+it('matches generated CSS', async () => {
     const html = await $fetch('/') as string
     const match = html.match(/<style id="master">([\s\S]*?)<\/style>/)
-    expect(match?.[1] ?? '').toMatchSnapshot(rootDir)
+    expect(match?.[1] ?? '').toBe('@layer base,theme,preset,components,general;@layer components{.box{display:flex;font-size:1em}}')
 })
