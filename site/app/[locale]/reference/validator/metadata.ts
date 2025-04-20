@@ -1,14 +1,15 @@
 import define from 'internal/utils/metadata'
+import pkg from '~/packages/validator/package.json'
 
 const metadata = define({
-    title: '@master/css-validator',
-    description: 'Validator for Master CSS syntactic class.',
+    title: pkg.name,
+    description: pkg.description,
     category: 'Package',
     type: 'entity',
     fileURL: import.meta.url,
     package: {
-        npm: '@master/css-validator',
-        source: 'https://github.com/master-co/css/tree/rc/packages/validator'
+        npm: pkg.name,
+        source: 'https://github.com/master-co/css/tree/rc/' + pkg.repository.directory
     }
 })
 

@@ -1,14 +1,15 @@
 import define from 'internal/utils/metadata'
+import pkg from '~/packages/language/package.json'
 
 const metadata = define({
-    title: '@master/css-language',
-    description: 'The language declaration, TextMate grammars provide syntax highlighting and improved editor integration.',
+    title: pkg.name,
+    description: pkg.description,
     category: 'Package',
     type: 'entity',
     fileURL: import.meta.url,
     package: {
-        npm: '@master/css-language',
-        source: 'https://github.com/master-co/css/tree/rc/packages/language'
+        npm: pkg.name,
+        source: 'https://github.com/master-co/css/tree/rc/' + pkg.repository.directory
     }
 })
 

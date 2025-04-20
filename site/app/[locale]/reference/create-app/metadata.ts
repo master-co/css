@@ -1,14 +1,15 @@
 import define from 'internal/utils/metadata'
+import pkg from '~/packages/create/package.json'
 
 const metadata = define({
-    title: '@master/create-css',
-    description: 'Set up or create a modern web app by running one command.',
+    title: pkg.name,
+    description: pkg.description,
     category: 'Package',
     type: 'entity',
     fileURL: import.meta.url,
     package: {
-        npm: '@master/create-css',
-        source: 'https://github.com/master-co/css/tree/rc/packages/create'
+        npm: pkg.name,
+        source: 'https://github.com/master-co/css/tree/rc/' + pkg.repository.directory
     }
 })
 

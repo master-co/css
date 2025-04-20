@@ -8,7 +8,7 @@
         "type-check": "tsc --noEmit"
     },
     "license": "MIT",
-    "description": "Master CSS TextMate Grammars",
+    "description": "The language declaration, TextMate grammars provide syntax highlighting and improved editor integration.",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",

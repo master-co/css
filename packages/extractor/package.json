@@ -9,7 +9,7 @@
         "test": "vitest"
     },
     "license": "MIT",
-    "description": "Master CSS static build for various raw text",
+    "description": "Master CSS static extraction for various raw text",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",

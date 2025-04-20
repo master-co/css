@@ -1,16 +1,16 @@
 import define from 'internal/utils/metadata'
+import pkg from '~/packages/language-service/package.json'
 
 const metadata = define({
-    title: {
-        absolute: 'Language Service for Master CSS'
-    },
-    description: 'Enhance the developer experience in code editors or IDEs with syntax highlighting, code completion, and more.',
-    category: 'Getting Started',
-    other: {
-        subject: 'Language Service'
-    },
-    order: 3,
-    fileURL: import.meta.url
+    title: pkg.name,
+    description: pkg.description,
+    category: 'Package',
+    type: 'entity',
+    fileURL: import.meta.url,
+    package: {
+        npm: pkg.name,
+        source: 'https://github.com/master-co/css/tree/rc/' + pkg.repository.directory
+    }
 })
 
 export default metadata

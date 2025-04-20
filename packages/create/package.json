@@ -9,7 +9,7 @@
         "test": "vitest"
     },
     "license": "MIT",
-    "description": "Initialize a new Master CSS project",
+    "description": "Initialize a project with Master CSS",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",

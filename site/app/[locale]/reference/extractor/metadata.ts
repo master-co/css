@@ -1,14 +1,15 @@
 import define from 'internal/utils/metadata'
+import pkg from '~/packages/extractor/package.json'
 
 const metadata = define({
-    title: '@master/css-extractor',
-    description: 'Master CSS static extractor for various raw text extraction.',
+    title: pkg.name,
+    description: pkg.description,
     category: 'Package',
     type: 'entity',
     fileURL: import.meta.url,
     package: {
-        npm: '@master/css-extractor',
-        source: 'https://github.com/master-co/css/tree/rc/packages/extractor'
+        npm: pkg.name,
+        source: 'https://github.com/master-co/css/tree/rc/' + pkg.repository.directory
     }
 })
 

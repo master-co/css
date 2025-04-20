@@ -1,14 +1,15 @@
 import define from 'internal/utils/metadata'
+import pkg from '~/packages/devtools-hook/package.json'
 
 const metadata = define({
-    title: '@master/css-devtools-hook',
-    description: 'A global bridge injected into the browser runtime.',
+    title: pkg.name,
+    description: pkg.description,
     category: 'Package',
     type: 'entity',
     fileURL: import.meta.url,
     package: {
-        npm: '@master/css-devtools-hook',
-        source: 'https://github.com/master-co/css/tree/rc/packages/devtools-hook'
+        npm: pkg.name,
+        source: 'https://github.com/master-co/css/tree/rc/' + pkg.repository.directory
     }
 })
 
