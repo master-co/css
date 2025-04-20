@@ -47,7 +47,7 @@ const config: Config = {
 export default config
 `
 
-const virtualCSSFilepath = path.join(__dirname, 'virtual:master.css')
+const virtualCSSFilepath = path.join(__dirname, 'master.css')
 
 let subprocess: Subprocess
 

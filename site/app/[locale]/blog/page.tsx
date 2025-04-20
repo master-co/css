@@ -23,7 +23,7 @@ export default async function Page(props: any) {
     return <>
         <main className='px:5x'>
             <HeroHeader metadata={metadata} />
-            <div className="mx:auto max-w:screen-md pt:18x prose pt:30x@sm">
+            <div className="mx:auto my:18x max-w:screen-md prose my:30x@sm">
                 <div className='gap:8x grid-cols:1 grid-cols:2@sm'>
                     {pageCategories
                         .map(({ pages }) => pages)
@@ -38,11 +38,7 @@ export default async function Page(props: any) {
                                     </div>
                                     <div className='text:pretty my:-1x font:24 leading:1.4'>{page.title}</div>
                                     <AuthorList size="sm" className="my:1x">{page.authors}</AuthorList>
-                                    <Image src="/images/gold-pattern.jpg"
-                                        className="r:5 aspect:16/9 h:auto"
-                                        width={480}
-                                        height={270}
-                                        alt={page.title} />
+                                    {/* <Image src="/images/gold-pattern.jpg"  className="r:5 aspect:16/9 h:auto" width={480} height={270} alt={page.title} /> */}
                                     <div className='text:pretty text:14 fg:neutral'>{page.description}</div>
                                 </Link>
                             )

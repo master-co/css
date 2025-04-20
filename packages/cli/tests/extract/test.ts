@@ -4,7 +4,7 @@ import { join } from 'path'
 import { it, expect } from 'vitest'
 
 it('basic extract', async () => {
-    fs.rmSync(join(__dirname, 'virtual:master.css'), { force: true })
+    fs.rmSync(join(__dirname, 'master.css'), { force: true })
     fs.writeFileSync(join(__dirname, 'master.css.ts'), `
         export default {
             variables: {
@@ -13,5 +13,5 @@ it('basic extract', async () => {
         }
     `, { flag: 'w' })
     execSync('tsx ../../src/bin extract', { cwd: __dirname })
-    expect(readFileSync(join(__dirname, 'virtual:master.css')).toString()).toMatch(/(fg\\:primary|m\\:12x|text\\:center|font\\:sans|font\\:heavy|font\\:48)/)
+    expect(readFileSync(join(__dirname, 'master.css')).toString()).toMatch(/(fg\\:primary|m\\:12x|text\\:center|font\\:sans|font\\:heavy|font\\:48)/)
 })
