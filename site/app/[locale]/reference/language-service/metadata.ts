@@ -1,14 +1,15 @@
 import define from 'internal/utils/metadata'
+import pkg from '~/packages/language-service/package.json'
 
 const metadata = define({
-    title: '@master/css-language-service',
-    description: 'The language service reference for Master CSS.',
+    title: pkg.name,
+    description: pkg.description,
     category: 'Package',
     type: 'entity',
     fileURL: import.meta.url,
     package: {
-        npm: '@master/css-language-service',
-        source: 'https://github.com/master-co/css/tree/rc/packages/language-service'
+        npm: pkg.name,
+        source: 'https://github.com/master-co/css/tree/rc/' + pkg.repository.directory
     }
 })
 
