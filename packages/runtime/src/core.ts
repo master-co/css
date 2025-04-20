@@ -24,11 +24,10 @@ export default class CSSRuntime extends MasterCSS {
         public customConfig: Config = defaultConfig
     ) {
         super(customConfig)
-        const rootConstructorName = root?.constructor.name
-        if (rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document') {
-            (this.root as Document).defaultView!.globalThis.cssRuntime = this
-            this.container = (this.root as Document).head
-            this.host = (this.root as Document).documentElement
+        if (this.root instanceof Document || this.root instanceof HTMLDocument) {
+            this.root.defaultView!.globalThis.cssRuntime = this
+            this.container = this.root.head
+            this.host = this.root.documentElement
         } else {
             this.container = this.root as CSSRuntime['container']
             this.host = (this.root as ShadowRoot).host
@@ -66,10 +65,13 @@ export default class CSSRuntime extends MasterCSS {
             }
             this.classCounts.set(className, count + 1)
         }
-        this.host.classList.forEach(increaseClassCount);
-        ((this.root.constructor.name === 'HTMLDocument') ? this.host : this.container)
-            .querySelectorAll('[class]')
-            .forEach((element) => element.classList.forEach(increaseClassCount))
+
+        if (this.root instanceof Document || this.root instanceof HTMLDocument) {
+            this.root.querySelectorAll('[class]').forEach((element) => element.classList.forEach(increaseClassCount))
+        } else {
+            this.container.querySelectorAll('[class]').forEach((element) => element.classList.forEach(increaseClassCount))
+            this.host.classList.forEach(increaseClassCount)
+        }
 
         // 3. Hydrate the existing CSS rules or create a new one.
         if (this.progressive) {
@@ -93,6 +95,7 @@ export default class CSSRuntime extends MasterCSS {
                 this.add(eachConnectedName)
             }
         }
+
         // @ts-expect-error readonly
         this.observer = new MutationObserver((mutationRecords) => {
             const eachClassCounts = new Map()
@@ -204,8 +207,8 @@ export default class CSSRuntime extends MasterCSS {
             attributes: true,
             attributeOldValue: true,
             attributeFilter: ['class'],
+            subtree: true,
             childList: true,
-            subtree: true
         })
 
         if (!this.progressive) {
