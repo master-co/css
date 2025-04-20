@@ -21,7 +21,7 @@ export async function generateMetadata(props: any, parent: any) {
 export default async function Page(props: any) {
     const { locale } = await props.params
     return <>
-        <main>
+        <main className='px:5x'>
             <HeroHeader metadata={metadata} />
             <div className="mx:auto py:30x max-w:screen-md prose">
                 <div className='gap:8x grid-cols:1 grid-cols:2@sm'>
