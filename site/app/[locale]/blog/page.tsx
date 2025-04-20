@@ -23,7 +23,7 @@ export default async function Page(props: any) {
     return <>
         <main className='px:5x'>
             <HeroHeader metadata={metadata} />
-            <div className="mx:auto py:30x max-w:screen-md prose">
+            <div className="mx:auto max-w:screen-md pt:18x prose pt:30x@sm">
                 <div className='gap:8x grid-cols:1 grid-cols:2@sm'>
                     {pageCategories
                         .map(({ pages }) => pages)
