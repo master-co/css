@@ -8,16 +8,16 @@ import RuntimeSyntaxLayer, { RuntimeSyntaxLayerInstance } from './syntax-layer'
 export default class CSSRuntime extends MasterCSS {
     static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
     readonly host: Element
-    readonly observing = false
-    readonly progressive = false
     readonly container: HTMLElement | ShadowRoot
-    readonly observer?: MutationObserver
     readonly baseLayer = new RuntimeSyntaxLayer('base', this)
     readonly themeLayer = new RuntimeLayer('theme', this)
     readonly presetLayer = new RuntimeSyntaxLayer('preset', this)
     readonly componentsLayer = new RuntimeSyntaxLayer('components', this)
     readonly generalLayer = new RuntimeSyntaxLayer('general', this)
     readonly classCounts = new Map<string, number>()
+    observer?: MutationObserver
+    progressive = false
+    observing = false
 
     constructor(
         public root: Document | ShadowRoot = document,
@@ -41,48 +41,56 @@ export default class CSSRuntime extends MasterCSS {
      * @param options mutation observer options
      * @returns this
      */
-    observe() {
+    observe(): this {
         if (this.observing) return this
-        // 1. Check if the stylesheet is progressive.
-        if (this.root.styleSheets)
+
+        // Detect prerendered stylesheet
+        if (this.root.styleSheets) {
             for (const sheet of this.root.styleSheets) {
                 const { ownerNode } = sheet
-                if (ownerNode && (ownerNode as HTMLStyleElement).id === 'master') {
-                    this.style = ownerNode as HTMLStyleElement
+                if (ownerNode instanceof HTMLStyleElement && ownerNode.id === 'master') {
+                    this.style = ownerNode
                     if (this.style.sheet?.cssRules.length) {
-                        // @ts-ignore
                         this.progressive = true
                     }
                     break
                 }
             }
-        // 2. Count the classes in the host and its children.
+        }
+
+        // Prepare snapshot map
+        const elementClasses = new WeakMap<Element, Set<string>>()
+
+        // Initial scan and populate counts + snapshot
         const connectedNames = new Set<string>()
         const increaseClassCount = (className: string) => {
             const count = this.classCounts.get(className) || 0
-            if (!count) {
-                connectedNames.add(className)
-            }
+            if (!count) connectedNames.add(className)
             this.classCounts.set(className, count + 1)
         }
 
-        if (this.root instanceof Document || this.root instanceof HTMLDocument) {
-            this.root.querySelectorAll('[class]').forEach((element) => element.classList.forEach(increaseClassCount))
-        } else {
-            this.container.querySelectorAll('[class]').forEach((element) => element.classList.forEach(increaseClassCount))
-            this.host.classList.forEach(increaseClassCount)
-        }
+        const rootEl = this.root instanceof Document || this.root instanceof HTMLDocument
+            ? this.root
+            : this.container
 
-        // 3. Hydrate the existing CSS rules or create a new one.
+        const elementsWithClass = rootEl.querySelectorAll('[class]')
+        elementsWithClass.forEach(el => {
+            const clsList = el.classList
+            if (clsList) {
+                el.classList.forEach(increaseClassCount)
+            }
+            elementClasses.set(el, new Set(clsList))
+        })
+
+        // Hydration or style creation
         if (this.progressive) {
             const hydrateResult = this.hydrate(this.style!.sheet!.cssRules)
-            // Add the connected class names that are not hydrated yet.
-            for (const eachConnectedName of connectedNames) {
-                if (hydrateResult.allSyntaxRules.find((rule) => (rule.fixedClass || rule.name) === eachConnectedName)) continue
-                this.add(eachConnectedName)
-                if (process.env.NODE_ENV === 'development') {
-                    // Basically, the style#master should have all the prerendered CSS rules that are connected in the DOM.
-                    console.debug(`The class \`${eachConnectedName}\` was added via script before calling hydrate, or the corresponding CSS rule were not properly pre-rendered.`)
+            for (const cls of connectedNames) {
+                if (!hydrateResult.allSyntaxRules.find(r => (r.fixedClass || r.name) === cls)) {
+                    this.add(cls)
+                    if (process.env.NODE_ENV === 'development') {
+                        console.debug(`Missing prerendered rule for class \`${cls}\``)
+                    }
                 }
             }
         } else {
@@ -90,132 +98,98 @@ export default class CSSRuntime extends MasterCSS {
             this.style.id = 'master'
             this.container.append(this.style)
             this.style.sheet!.insertRule(this.layerStatementRule.text)
-            this.layerStatementRule.native = this.style!.sheet!.cssRules.item(0) as CSSLayerStatementRule
-            for (const eachConnectedName of connectedNames) {
-                this.add(eachConnectedName)
-            }
+            this.layerStatementRule.native = this.style.sheet!.cssRules.item(0) as CSSLayerStatementRule
+            connectedNames.forEach(cls => this.add(cls))
         }
 
-        // @ts-expect-error readonly
-        this.observer = new MutationObserver((mutationRecords) => {
-            const eachClassCounts = new Map()
-            const targetFirstAttrMutationRecord = new Map<Element, MutationRecord>()
-            const updateClassCount = (classes: Set<string> | string[] | DOMTokenList, isAdding = false) => {
-                const usage = isAdding ? 1 : -1
-                classes.forEach((className) => {
-                    eachClassCounts.set(className, (eachClassCounts.get(className) || 0) + usage)
-                })
-            }
-            const connectedStatusMap = new Map<Element, { change: number, mutationRecord: MutationRecord }>()
-            const disconnectedStatusMap = new Map<Element, { change: number, mutationRecord: MutationRecord }>()
-            const recordStatus = (target: Element, mutationRecord: MutationRecord, map: Map<Element, { change: number, mutationRecord: MutationRecord }>, adding: boolean) => {
-                const status = map.get(target)
-                if (status) {
-                    status.change += adding ? 1 : -1
-                    status.mutationRecord = mutationRecord
-                } else {
-                    map.set(target, { change: adding ? 1 : -1, mutationRecord })
-                }
-                for (const child of target.children) {
-                    if ('classList' in child) {
-                        recordStatus(child as Element, mutationRecord, map, adding)
-                    }
-                }
-            }
-            mutationRecords.forEach((mutationRecord) => {
-                const target = mutationRecord.target as Element
-                switch (mutationRecord.type) {
-                    case 'attributes':
-                        if (!targetFirstAttrMutationRecord.has(target)) {
-                            targetFirstAttrMutationRecord.set(target, mutationRecord)
-                        }
-                        break
-                    case 'childList':
-                        const targetStatusMap = target.isConnected ? connectedStatusMap : disconnectedStatusMap
-                        mutationRecord.addedNodes.forEach((node) =>
-                            'classList' in node && recordStatus(node as Element, mutationRecord, targetStatusMap, true)
-                        )
-                        mutationRecord.removedNodes.forEach((node) =>
-                            'classList' in node && recordStatus(node as Element, mutationRecord, targetStatusMap, false)
-                        )
-                        break
-                }
-            })
-            const updateTarget = (target: Element, adding: boolean) => {
-                const firstAttrMutationRecord = targetFirstAttrMutationRecord.get(target)
-                if (firstAttrMutationRecord) {
-                    targetFirstAttrMutationRecord.delete(target)
-                }
-                if (adding) {
-                    updateClassCount(target.classList, adding)
-                } else {
-                    if (firstAttrMutationRecord) {
-                        updateClassCount(firstAttrMutationRecord.oldValue ? firstAttrMutationRecord.oldValue.split(/\s+/) : [], adding)
-                    } else {
-                        updateClassCount(target.classList, adding)
-                    }
-                    disconnectedStatusMap.forEach((disconnectedTargetStatus, disconnectedTarget) => {
-                        if (disconnectedTargetStatus.mutationRecord.target === target && disconnectedTargetStatus.change !== 0) {
-                            updateTarget(disconnectedTarget, disconnectedTargetStatus.change > 0)
-                        }
-                    })
-                }
-            }
-            connectedStatusMap.forEach(({ change }, target) => change !== 0 && updateTarget(target, change > 0))
-            targetFirstAttrMutationRecord.forEach((mutation, target) => {
-                if (!target.isConnected) return
-                const oldClassList = mutation.oldValue ? mutation.oldValue.split(/\s+/) : []
-                const newClassList = target.classList
-                const addedClasses: string[] = []
-                newClassList.forEach(c => {
-                    if (!oldClassList.includes(c)) addedClasses.push(c)
-                })
-                const removedClasses = oldClassList.filter(c => !newClassList.contains(c))
-                if (addedClasses.length) {
-                    updateClassCount(addedClasses, true)
-                }
-                if (removedClasses.length) {
-                    updateClassCount(removedClasses, false)
-                }
-            })
+        this.observer = new MutationObserver(records => {
+            const deltaCounts = new Map<string, number>()
+            const nodeMap = new Map<Element, number>()
+            const attrRecords = new Set<Element>()
+            const visited = new WeakSet<Element>()
 
-            /**
-             * Merge the class usage changes into the current class usage map.
-             */
-            eachClassCounts.forEach((countChange, className) => {
-                let currentCount = this.classCounts.get(className) || 0
-                let newCount = currentCount + countChange
-                if (newCount > 0) {
-                    this.classCounts.set(className, newCount)
-                    if (currentCount === 0) {
-                        this.add(className)
+            const updateDelta = (cls: string, delta: number) =>
+                deltaCounts.set(cls, (deltaCounts.get(cls) || 0) + delta)
+
+            const diffAndSnapshot = (el: Element) => {
+                const prev = new Set(elementClasses.get(el) || [])
+                const next = new Set(el.classList)
+                for (const c of next) if (!prev.has(c)) updateDelta(c, 1)
+                for (const c of prev) if (!next.has(c)) updateDelta(c, -1)
+                elementClasses.set(el, next)
+            }
+
+            const removeSnapshot = (el: Element) => {
+                for (const c of elementClasses.get(el) || []) updateDelta(c, -1)
+                elementClasses.delete(el)
+            }
+
+            for (const record of records) {
+                if (record.type === 'childList') {
+                    for (const node of record.addedNodes)
+                        if (node instanceof Element && node.isConnected)
+                            nodeMap.set(node, (nodeMap.get(node) || 0) + 1)
+
+                    for (const node of record.removedNodes)
+                        if (node instanceof Element && !node.isConnected)
+                            nodeMap.set(node, (nodeMap.get(node) || 0) - 1)
+                } else if (record.type === 'attributes' && record.attributeName === 'class') {
+                    attrRecords.add(record.target as Element)
+                }
+            }
+
+            const traverseIncludingSelf = (el: Element, fn: (el: Element) => void, visited: WeakSet<Element>) => {
+                if (!visited.has(el)) {
+                    visited.add(el)
+                    fn(el)
+                    for (const child of el.children) {
+                        traverseIncludingSelf(child, fn, visited)
                     }
                 } else {
-                    this.classCounts.delete(className)
-                    this.remove(className)
+                    nodeMap.delete(el)
                 }
-            })
+            }
+
+            for (const [node, count] of nodeMap) {
+                if (count > 0) {
+                    traverseIncludingSelf(node, diffAndSnapshot, visited)
+                } else if (count < 0 && !node.isConnected) {
+                    traverseIncludingSelf(node, removeSnapshot, visited)
+                }
+            }
+
+            for (const el of attrRecords) {
+                if (!visited.has(el)) diffAndSnapshot(el)
+            }
+
+            for (const [cls, change] of deltaCounts) {
+                const current = this.classCounts.get(cls) || 0
+                const next = current + change
+                if (next > 0) {
+                    this.classCounts.set(cls, next)
+                    if (current === 0) this.add(cls)
+                } else {
+                    this.classCounts.delete(cls)
+                    this.remove(cls)
+                }
+            }
 
             globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:mutated', {
-                records: mutationRecords,
-                classCounts: eachClassCounts,
+                records,
+                classCounts: deltaCounts,
                 cssRuntime: this
             })
         })
 
         this.observer.observe(this.root, {
-            attributes: true,
-            attributeOldValue: true,
-            attributeFilter: ['class'],
-            subtree: true,
             childList: true,
+            attributes: true,
+            attributeFilter: ['class'],
+            attributeOldValue: true,
+            subtree: true,
         })
 
-        if (!this.progressive) {
-            this.host.removeAttribute('hidden')
-        }
-
-        // @ts-ignore
+        if (!this.progressive) this.host.removeAttribute('hidden')
         this.observing = true
         globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:observed', { cssRuntime: this })
         return this
@@ -362,7 +336,6 @@ export default class CSSRuntime extends MasterCSS {
         if (!this.observing) return
         if (this.observer) {
             this.observer.disconnect()
-            // @ts-expect-error readonly
             this.observer = undefined
         }
         // @ts-ignore

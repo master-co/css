@@ -38,7 +38,38 @@ export default function registerClassCountDebugger() {
 
         if (errored) {
             log.debug('Records:', records)
+            log.debug('Serialized Records:', serializeMutations(records))
             log.debug('Counts:', classCounts)
+        }
+    })
+}
+
+function serializeMutations(mutations: MutationRecord[]) {
+    return mutations.map(m => {
+        const target = m.target
+        return {
+            type: m.type,
+            attributeName: m.attributeName,
+            oldValue: m.oldValue,
+            target: {
+                tagName: (target as Element).tagName,
+                id: (target as Element).id,
+                classList: Array.from((target as Element).classList),
+            },
+            added: Array.from(m.addedNodes)
+                .filter(n => n.nodeType === 1)
+                .map(el => ({
+                    tagName: (el as Element).tagName,
+                    id: (el as Element).id,
+                    classList: Array.from((el as Element).classList),
+                })),
+            removed: Array.from(m.removedNodes)
+                .filter(n => n.nodeType === 1)
+                .map(el => ({
+                    tagName: (el as Element).tagName,
+                    id: (el as Element).id,
+                    classList: Array.from((el as Element).classList),
+                })),
         }
     })
 }
