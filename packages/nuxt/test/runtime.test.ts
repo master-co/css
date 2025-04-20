@@ -1,8 +1,11 @@
 import { it, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, $fetch } from '@nuxt/test-utils'
+import { dirname, resolve } from 'node:path'
 
-const rootDir = fileURLToPath(new URL('./fixtures/progressive', import.meta.url))
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+const rootDir = resolve(__dirname, './fixtures/runtime/')
 
 await setup({ rootDir })
 
