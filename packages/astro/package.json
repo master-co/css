@@ -54,7 +54,8 @@
         "provenance": true
     },
     "peerDependencies": {
-        "astro": ">=5"
+        "astro": ">=5",
+        "vite": ">=6"
     },
     "dependencies": {
         "@master/css.vite": "workspace:^"
