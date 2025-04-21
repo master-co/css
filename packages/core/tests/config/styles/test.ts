@@ -6,7 +6,7 @@ import { expectLayers } from '../../test'
 test.concurrent('components', () => {
     expectLayers(
         {
-            components: '.btn{font-size:0.875rem;height:2.5rem;text-align:center}.light .btn{background-color:rgb(0 0 0);color:rgb(255 255 255);font-weight:600}.dark .btn{background-color:rgb(255 255 255);color:rgb(255 255 255);font-weight:500}'
+            components: '.btn{font-size:0.875rem;height:2.5rem;text-align:center}.light .btn{background-color:rgb(0 0 0);color:rgb(255 255 255);font-weight:500}.dark .btn{background-color:rgb(255 255 255);color:rgb(255 255 255);font-weight:500}'
         },
         'btn',
         config
@@ -14,7 +14,7 @@ test.concurrent('components', () => {
 
     expectLayers(
         {
-            components: '.blue-btn{font-size:0.875rem;height:2.5rem;text-align:center}.light .blue-btn{background-color:rgb(0 0 0);color:rgb(255 255 255);font-weight:600;font-size:1.25rem}.dark .blue-btn{background-color:rgb(255 255 255);color:rgb(255 255 255);font-weight:500}'
+            components: '.blue-btn{font-size:0.875rem;height:2.5rem;text-align:center}.light .blue-btn{background-color:rgb(0 0 0);color:rgb(255 255 255);font-weight:500;font-size:1.25rem}.dark .blue-btn{background-color:rgb(255 255 255);color:rgb(255 255 255);font-weight:500}'
         },
         'blue-btn',
         config
@@ -22,7 +22,7 @@ test.concurrent('components', () => {
 
     expectLayers(
         {
-            components: '.blue-btn{font-size:0.875rem!important;height:2.5rem!important;text-align:center!important}.light .blue-btn{background-color:rgb(0 0 0)!important;color:rgb(255 255 255)!important;font-weight:600!important;font-size:1.25rem!important}.dark .blue-btn{background-color:rgb(255 255 255)!important;color:rgb(255 255 255)!important;font-weight:500!important}'
+            components: '.blue-btn{font-size:0.875rem!important;height:2.5rem!important;text-align:center!important}.light .blue-btn{background-color:rgb(0 0 0)!important;color:rgb(255 255 255)!important;font-weight:500!important;font-size:1.25rem!important}.dark .blue-btn{background-color:rgb(255 255 255)!important;color:rgb(255 255 255)!important;font-weight:500!important}'
         },
         'blue-btn',
         extend(config, { important: true })
