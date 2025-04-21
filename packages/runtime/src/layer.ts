@@ -47,7 +47,7 @@ export default class RuntimeLayer extends Layer {
                 if (node.native) currentIndex++
             })
         } else {
-            rule.native = insertRuleSafely(rule.text, index)
+            rule.native = insertRuleSafely(rule.text, insertedIndex)
         }
         return insertedIndex
     }
