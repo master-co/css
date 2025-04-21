@@ -3,6 +3,7 @@ import { SelectorDefinitions } from '../types/config'
 const selectors = {
     ':first': ':first-child',
     ':last': ':last-child',
+    ':nth-last': ':nth-last-child',
     ':even': ':nth-child(2n)',
     ':odd': ':nth-child(odd)',
     ':nth': ':nth-child',

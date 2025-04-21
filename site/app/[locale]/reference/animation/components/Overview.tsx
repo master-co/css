@@ -7,7 +7,7 @@ import SyntaxTr from 'internal/components/SyntaxTr'
 export default () => {
     const previewSyntax = ''
     return (
-        <SyntaxTable scrollY={0}>
+        <SyntaxTable>
             {syntaxes.map((syntax) => {
                 return (
                     <SyntaxTr value={syntax} key={syntax} previewSyntax={previewSyntax}>
