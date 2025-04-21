@@ -21,28 +21,29 @@ export async function generateMetadata(props: any, parent: any) {
 export default async function Page(props: any) {
     const { locale } = await props.params
     return <>
-        <main className='px:5x'>
-            <HeroHeader metadata={metadata} />
+        <main className='px:5x pt:12x pt:15x@sm'>
             <div className="mx:auto my:18x max-w:screen-md prose my:30x@sm">
-                <div className='gap:8x grid-cols:1 grid-cols:2@sm'>
+                <div className='bl:1|dotted|frame-lightest bt:1|dotted|frame-lightest grid-cols:1 grid-cols:2@sm grid-cols:3@md'>
                     {pageCategories
                         .map(({ pages }) => pages)
                         .flat()
                         .map((page: any, index: number) => {
-                            const formattedDate = dayjs(page.date).format('ddd, MMMM D YYYY')
+                            const formattedDate = dayjs(page.date).format('ddd, MMMM D')
                             return (
-                                <Link key={page.pathname} href={page.pathname} className={clsx('gap:4x outline:1|frame-lightest p:6x r:5x grid-cols:1 bg:base shadow:x2')}>
-                                    <div className="flex justify-content:space-between mb:-1x">
-                                        <div className='text:14 fg:accent'>{formattedDate}</div>
-                                        <div className='text:14 fg:light'> <TimeAgo timestamp={page.date} /></div>
-                                    </div>
-                                    <div className='text:pretty my:-1x font:24 leading:1.4'>{page.title}</div>
-                                    <AuthorList size="sm" className="my:1x">{page.authors}</AuthorList>
-                                    {/* <Image src="/images/gold-pattern.jpg"  className="r:5 aspect:16/9 h:auto" width={480} height={270} alt={page.title} /> */}
-                                    <div className='text:pretty text:14 fg:neutral'>{page.description}</div>
-                                </Link>
+                                <div key={page.pathname + index} className={clsx('bb:1|dotted|frame-lightest br:1|dotted|frame-lightest')}>
+                                    <Link href={page.pathname} className={clsx('~background-color|.2s gap:5x p:6x p:12x@sm grid-cols:1 bg:surface:hover')}>
+                                        <div className="flex justify-content:space-between mb:-1x">
+                                            <div className='text:12 fg:accent'>{formattedDate}</div>
+                                            <div className='text:12 fg:light'> <TimeAgo timestamp={page.date} /></div>
+                                        </div>
+                                        <div className='text:pretty my:-1x font:20 leading:1.4'>{page.title}</div>
+                                        {/* <Image src="/images/gold-pattern.jpg"  className="r:5 aspect:16/9 h:auto" width={480} height={270} alt={page.title} /> */}
+                                        <div className='text:pretty text:12 fg:neutral'>{page.description}</div>
+                                        <AuthorList size="xs" className="my:1x">{page.authors}</AuthorList>
+                                    </Link>
+                                </div>
                             )
-                            })
+                        })
                     }
                 </div>
             </div>
