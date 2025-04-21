@@ -10,7 +10,7 @@
         "vscode:package": "vsce package --no-dependencies --follow-symlinks",
         "vscode:publish": "vsce publish --no-dependencies --follow-symlinks --pre-release"
     },
-    "version": "2.0.13",
+    "version": "2.0.14",
     "description": "Master CSS for Visual Studio Code",
     "displayName": "Master CSS",
     "author": "Aoyue Design LLC.",
