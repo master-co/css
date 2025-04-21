@@ -36,7 +36,10 @@ Thanks to Vite's thriving ecosystem, we’ve also established framework integrat
 ```ts name=nuxt.config.ts
 export default defineNuxtConfig({
     modules: [
-        '@master/css.nuxt' /* [!code highlight] */
+        '@master/css.nuxt' // 'progressive' [!code highlight]
+        // ['@master/css.nuxt', { mode: 'extract' }]
+        // ['@master/css.nuxt', { mode: 'runtime' }]
+        // ['@master/css.nuxt', { mode: 'pre-render' }]
     ]
 })
 ```
@@ -46,7 +49,8 @@ import masterCSS from '@master/css.astro'
 
 export default defineConfig({
     integrations: [
-        masterCSS() /* [!code highlight] */
+        masterCSS() // 'runtime' [!code highlight]
+        // masterCSS({ mode: 'extract' })
     ]
 })
 ```
