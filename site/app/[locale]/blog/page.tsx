@@ -48,8 +48,7 @@ export default async function Page(props: any) {
                 </div>
             </div>
         </main>
-        <hr className="hr" />
-        <Footer className="px:5x mb:30x" locale={locale} />
+        <Footer className="app-wrapper" />
     </>
 
 
