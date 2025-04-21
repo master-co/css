@@ -25,3 +25,15 @@ test('destroy on progressive', async ({ page }) => {
     })
     expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(2)
 })
+
+test('prevent attach layer twice', async ({ page }) => {
+    await init(page, '@layer base, theme, preset, components, general;', {
+        components: {
+            'app-wrapper': 'mx:auto px:5x px:10x@sm'
+        }
+    })
+    await page.evaluate(() => {
+        document.body.classList.add('app-wrapper')
+    })
+    expect(await page.evaluate(() => globalThis.cssRuntime.componentsLayer.native?.cssRules?.length)).toBe(2)
+})

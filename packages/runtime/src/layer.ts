@@ -27,17 +27,22 @@ export default class RuntimeLayer extends Layer {
         const insertedIndex = super.insert(rule, index)
         if (insertedIndex === undefined || !this.native) return
         const insertRuleSafely = (text: string, position: number) => {
-            try {
-                const insertedIndex = this.native!.insertRule(text, position)
-                return this.native!.cssRules.item(insertedIndex) as CSSRule
-            } catch (error) {
-                console.error(error, rule)
-                /**
-                 * If the rule is invalid, remove it from the rules array.
-                 * It's important to note that the rule may break the entire CSS runtime,
-                 */
-                this.rules.splice(insertedIndex, 1)
-                return
+            // Checks if the rule is inserted in a native CSS rule with this.attach()
+            if (this.rules.length === 1) {
+                return this.native!.cssRules.item(position) as CSSRule
+            } else {
+                try {
+                    const insertedIndex = this.native!.insertRule(text, position)
+                    return this.native!.cssRules.item(insertedIndex) as CSSRule
+                } catch (error) {
+                    console.error(error, rule)
+                    /**
+                     * If the rule is invalid, remove it from the rules array.
+                     * It's important to note that the rule may break the entire CSS runtime,
+                     */
+                    this.rules.splice(insertedIndex, 1)
+                    return
+                }
             }
         }
         if ('nodes' in rule) {
