@@ -15,6 +15,7 @@ export default async function Layout(props: any) {
             }}
             backOnClickCategory='/guide/installation/integrations'
             brandName='nextjs'
+            dictionaries={dictionaries}
         >
             <Tabs className="mb:8x">
                 <Tab href='/guide/installation/nextjs'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>

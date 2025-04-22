@@ -30,7 +30,7 @@ export async function generateMetadata(props: any, parent: any) {
             description: shareItem?.createdAt ? `${dateTime.format('MMMM D YYYY')}, at ${dateTime.format('hh:mm:ss A')}` : metadata.description
         },
         category: `v${shareItem?.version}`,
-    }, props, parent)
+    }, props, dictionaries, parent)
 }
 
 export default async function Page(props: any) {

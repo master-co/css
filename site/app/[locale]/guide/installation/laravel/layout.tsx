@@ -9,6 +9,7 @@ export default async function Layout(props: any) {
     return (
         <DocLayout {...props}
             metadata={metadata}
+            dictionaries={dictionaries}
             backOnClickCategory='/guide/installation/integrations'
             brandName='laravel'
         >

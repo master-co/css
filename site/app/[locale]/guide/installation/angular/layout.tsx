@@ -15,7 +15,7 @@ export default async function Layout(props: any) {
             }}
             backOnClickCategory='/guide/installation/integrations'
             brandName='angular'
-
+            dictionaries={dictionaries}
         >
             <Tabs className="mb:8x">
                 <Tab href='/guide/installation/angular'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>

@@ -1,5 +1,6 @@
 import { Props } from 'internal/types/Props'
 import create from 'internal/utils/og-image'
+import dictionaries from '~/site/dictionaries'
 import metadata from './metadata'
 import type { AbsoluteTemplateString } from 'next/dist/lib/metadata/types/metadata-types'
 
@@ -10,5 +11,6 @@ export const runtime = 'nodejs'
 export default (props: Props) => create({
     props,
     metadata,
+    dictionaries,
     title: 'v1'
 })
