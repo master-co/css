@@ -119,5 +119,13 @@ Common JavaScript utility names are supported by [default](/reference/eslint#cal
 
 ## Setup Guides
 <IconButtons url="/guide/code-linting">
-    {brands.filter(({ name }) => ['React', 'Vue.js', 'Angular', 'Svelte', 'Laravel', 'HTML', 'Visual Studio Code'].includes(name))}
+    {[
+        brands.get('react'),
+        brands.get('vuejs'),
+        brands.get('angular'),
+        brands.get('svelte'),
+        brands.get('laravel'),
+        brands.get('html'),
+        brands.get('vscode')
+    ]}
 </IconButtons>

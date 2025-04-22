@@ -29,8 +29,8 @@
         "use-debounce": "^10.0.4"
     },
     "devDependencies": {
-        "@shikijs/monaco": "^3.2.2",
-        "eslint": "^9.25.0",
+        "@shikijs/monaco": "^3.3.0",
+        "eslint": "^9.25.1",
         "internal": "workspace:^",
         "tsx": "^4.19.3",
         "typescript": "^5.8.3"

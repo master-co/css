@@ -2,7 +2,19 @@ import brands from 'internal/data/brands'
 
 Installation guides for popular frameworks and build tools integrated with Master CSS.
 <IconButtons url="/guide/installation" className="mt:12x">
-    {brands.filter(({ name }) => ['Next.js', 'Svelte', 'Nuxt.js', 'Laravel', 'Astro', 'Blazor', 'React', 'Vue.js', 'Angular', 'Vite', 'Webpack'].includes(name))}
+    {[
+        brands.get('nextjs'),
+        brands.get('svelte'),
+        brands.get('nuxtjs'),
+        brands.get('laravel'),
+        brands.get('astro'),
+        brands.get('blazor'),
+        brands.get('react'),
+        brands.get('vuejs'),
+        brands.get('angular'),
+        brands.get('vite'),
+        brands.get('webpack'),
+    ]}
 </IconButtons>
 
 ---

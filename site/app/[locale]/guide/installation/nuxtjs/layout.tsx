@@ -1,7 +1,5 @@
-import Tabs, { Tab, TabBadge } from 'internal/components/Tabs'
 import { createTranslation } from 'internal/utils/i18n'
 import DocLayout from 'internal/layouts/doc'
-import brands from 'internal/data/brands'
 import metadata from './metadata'
 
 export default async function Layout(props: any) {
@@ -11,7 +9,7 @@ export default async function Layout(props: any) {
         <DocLayout {...props}
             metadata={metadata}
             backOnClickCategory='/guide/installation/integrations'
-            brand={brands.find(({ name }) => name === 'Nuxt.js')}
+            brandName='nuxtjs'
         >
             {props.children}
         </DocLayout >

@@ -1,8 +1,8 @@
 import brands from 'internal/data/brands'
 
-export const masterCSS = brands.find(({ name }) => name === 'Master CSS')
-export const tailwindCSS = brands.find(({ name }) => name === 'Tailwind CSS')
-export const bootstrap = brands.find(({ name }) => name === 'Bootstrap')
+export const masterCSS = brands.get('mastercss')
+export const tailwindCSS = brands.get('tailwindcss')
+export const bootstrap = brands.get('bootstrap')
 
 <table className="text:center_td:not(:first)">
     <thead>

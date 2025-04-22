@@ -1,7 +1,6 @@
 import Tabs, { Tab, TabBadge } from 'internal/components/Tabs'
 import { createTranslation } from 'internal/utils/i18n'
 import DocLayout from 'internal/layouts/doc'
-import brands from 'internal/data/brands'
 
 export default async function Layout(props: any) {
     const { locale } = await props.params
@@ -14,7 +13,7 @@ export default async function Layout(props: any) {
                 category: 'Integrations'
             }}
             backOnClickCategory='/guide/installation/integrations'
-            brand={brands.find(({ name }) => name === 'Angular')}
+            brandName='angular'
 
         >
             <Tabs className="mb:8x">
