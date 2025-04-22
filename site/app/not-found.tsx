@@ -9,7 +9,7 @@ export default async function NotFound() {
     const translations = await importTranslations('en', dictionaries)
     return (
         <RootClient locale='en' translations={translations} hidden>
-            <NotFoundLayout />
+            <NotFoundLayout dictionaries={dictionaries} />
         </RootClient>
     )
 }

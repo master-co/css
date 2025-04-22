@@ -5,6 +5,7 @@ import { initializeApp } from '@firebase/app'
 import { getFirestore, doc, getDoc } from '@firebase/firestore/lite'
 import metadata from '../metadata'
 import generate from 'internal/utils/generate-metadata'
+import dictionaries from '~/site/dictionaries'
 import dayjs from 'dayjs'
 import AvoidFOUCScript from '~/internal/components/AvoidFOUCScript'
 

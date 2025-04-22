@@ -7,13 +7,14 @@ import Backers from './components/Backers'
 import Donors from './components/Donors'
 import DonationModal from './components/DonationModal'
 import generate from 'internal/utils/generate-metadata'
+import dictionaries from '~/site/dictionaries'
 import { default as openCollectiveToken } from 'internal/tokens/open-collective'
 
 export const dynamic = 'force-static'
 export const revalidate = false
 
 export async function generateMetadata(props: any, parent: any) {
-    return await generate(metadata, props, parent)
+    return await generate(metadata, props, dictionaries, parent)
 }
 
 export default async function Page(props: any): Promise<React.ReactNode> {
@@ -161,7 +162,7 @@ export default async function Page(props: any): Promise<React.ReactNode> {
     )
 
     return <>
-        <Layout {...props} pageFileURL={import.meta.url} metadata={metadata} $hideLeftSide>
+        <Layout {...props} pageFileURL={import.meta.url} dictionaries={dictionaries} metadata={metadata} $hideLeftSide>
             <Backers backers={backers} />
             {/* <Donors sponsorTiers={sponsorTiers} sponsorsOfLevel={sponsorsOfLevel} /> */}
             <DonationModal />

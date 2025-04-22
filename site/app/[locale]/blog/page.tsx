@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import Link from 'internal/components/Link'
 import metadata from './metadata'
 import generate from 'internal/utils/generate-metadata'
+import dictionaries from '~/site/dictionaries'
 import HeroHeader from 'internal/components/HeroHeader'
 import AuthorList from 'internal/components/AuthorList'
 import TimeAgo from 'internal/components/TimeAgo'
@@ -15,7 +16,7 @@ export const dynamic = 'force-static'
 export const revalidate = false
 
 export async function generateMetadata(props: any, parent: any) {
-    return await generate(metadata, props, parent)
+    return await generate(metadata, props, dictionaries, parent)
 }
 
 export default async function Page(props: any) {

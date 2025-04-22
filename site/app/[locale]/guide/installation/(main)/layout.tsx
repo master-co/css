@@ -10,7 +10,7 @@ export default async function Layout(props: any) {
     const { locale } = await props.params
     const $ = await createTranslation(locale, dictionaries)
     return (
-        <DocLayout {...props} pageCategories={pageCategories} pageFileURL={import.meta.url} metadata={metadata}>
+        <DocLayout {...props} pageCategories={pageCategories} pageFileURL={import.meta.url} dictionaries={dictionaries} metadata={metadata}>
             <p className='italic'>Runtime, zero-runtime, or hydration — it’s your call.</p>
             <Tabs className="mb:8x">
                 <Tab href='/guide/installation'>{$('Quick Start')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>
