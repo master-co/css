@@ -96,6 +96,7 @@ export default class CSSRuntime extends MasterCSS {
         } else {
             this.style = document.createElement('style')
             this.style.id = 'master'
+            // @ts-expect-error 'blocking' does not exist on type 'HTMLStyleElement'
             this.style.blocking = 'render'
             this.container.append(this.style)
             this.style.sheet!.insertRule(this.layerStatementRule.text)
