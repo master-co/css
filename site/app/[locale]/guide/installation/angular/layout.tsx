@@ -1,10 +1,11 @@
 import Tabs, { Tab, TabBadge } from 'internal/components/Tabs'
 import { createTranslation } from 'internal/utils/i18n'
+import dictionaries from '~/site/dictionaries'
 import DocLayout from 'internal/layouts/doc'
 
 export default async function Layout(props: any) {
     const { locale } = await props.params
-    const $ = await createTranslation(locale)
+    const $ = await createTranslation(locale, dictionaries)
     return (
         <DocLayout {...props}
             metadata={{
