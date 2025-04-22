@@ -674,7 +674,7 @@ export default function Play(props: any) {
                     height={tab === 'Preview' ? '' : height}
                     showHeight={true}
                 >
-                    <Tabs className="flex:0|0|auto" contentClassName="px:30">
+                    <Tabs className="flex:0|0|auto" contentClassName="px:5x px:10x@sm">
                         {shareItem.files.map((file, index) => (
                             <Tab onClick={() => pushShallowURL('tab', index === 0 ? '' : file.title)} size="sm" key={file.id} active={tab === file.title}>
                                 {file.title || ''}
@@ -739,7 +739,7 @@ export default function Play(props: any) {
                             srcDoc={previewHTML}
                         />
                         <div className={clsx('flex flex:col h:full', { 'hidden!': preview !== 'css' })}>
-                            <div className='flex bb:1|lightest flex:0|0|auto px:30 align-items:center font:12 h:48 justify-content:space-between'>
+                            <div className='flex bb:1|lightest flex:0|0|auto px:5x px:10x@sm align-items:center font:12 h:48 justify-content:space-between'>
                                 <div>Generated CSS</div>
                                 <div className="fg:light">{generatedCSSSize}</div>
                             </div>
