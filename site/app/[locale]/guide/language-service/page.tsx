@@ -15,7 +15,7 @@ import pageCategories from '~/site/.categories/guide.json'
 
 export default async function Layout(props: any) {
     const { locale } = await props.params
-    const $ = createTranslation(locale)
+    const $ = await createTranslation(locale)
     return (
         <DocLayout {...props} pageCategories={pageCategories} pageFileURL={import.meta.url} metadata={metadata}>
             <Content />

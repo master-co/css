@@ -5,7 +5,7 @@ import RootClient from './root'
 import { importTranslations } from '~/internal/utils/i18n'
 
 export default async function NotFound() {
-    const translations = importTranslations('en')
+    const translations = await importTranslations('en')
     return (
         <RootClient locale='en' translations={translations} hidden>
             <NotFoundLayout />

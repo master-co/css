@@ -8,7 +8,7 @@ export default async function Layout({ children, params }: {
     params: Promise<{ locale: typeof i18n.locales[number] }>
 }) {
     const { locale } = await params
-    const translations = importTranslations(locale)
+    const translations = await importTranslations(locale)
     return (
         <RootClient locale={locale} translations={translations}>
             <HTML locale={locale}>

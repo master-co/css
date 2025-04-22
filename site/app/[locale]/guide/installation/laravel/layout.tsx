@@ -4,7 +4,7 @@ import metadata from './metadata'
 
 export default async function Layout(props: any) {
     const { locale } = await props.params
-    const $ = createTranslation(locale)
+    const $ = await createTranslation(locale)
     return (
         <DocLayout {...props}
             metadata={metadata}
