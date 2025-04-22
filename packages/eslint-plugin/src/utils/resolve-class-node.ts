@@ -48,6 +48,10 @@ export default function resolveClassNode(node: any, context: RuleContext<any, an
             return
     }
 
+    if (typeof value !== 'string') {
+        return
+    }
+
     if (/^(['"`])(.*)\1$/.test(raw)) {
         raw = raw.slice(1, -1)
         start = start + 1
