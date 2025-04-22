@@ -36,7 +36,14 @@ import createHighlighter, { themes } from 'internal/utils/create-highlighter'
 import { useApp } from 'internal/contexts/app'
 import { shikiToMonaco } from '@shikijs/monaco'
 import type { ShikiInternal } from 'shiki'
-import { get } from 'http'
+
+if (typeof window !== 'undefined') {
+    loader.config({
+        paths: {
+            vs: window.location.origin + '/monaco-editor/vs',
+        }
+    })
+}
 
 const ShareButton = dynamic(() => import('./components/ShareButton'))
 
@@ -269,11 +276,7 @@ export default function Play(props: any) {
     // dispose monaco providers
     useEffect(() => {
         const providers = monacoProvidersRef.current
-        loader.config({
-            paths: {
-                vs: window.location.origin + '/monaco-editor/vs',
-            }
-        })
+
         return () => {
             providers.forEach((provider: any) => {
                 provider.dispose()

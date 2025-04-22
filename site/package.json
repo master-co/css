@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "prepare-app": "tsx --env-file=.env ../internal/scripts/prepare-app",
+        "prepare-app": "tsx --env-file=.env ./prepare",
         "dev": "pnpm prepare-app && next dev --turbo",
         "build": "pnpm prepare-app && pnpm build:repo && pnpm build:next && pnpm build:css",
         "build:repo": "cd ../ && pnpm build && cd site",
