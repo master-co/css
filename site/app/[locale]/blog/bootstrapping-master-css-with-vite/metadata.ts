@@ -7,6 +7,7 @@ const metadata = define({
     authors: [
         { name: 'Aron' }
     ],
+    vercelOG: true,
     date: '2025-04-22T10:39:14.803Z',
     fileURL: import.meta.url
 })
