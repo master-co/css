@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting what to optimize when rendering text.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=text-rendering',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/text-rendering',
     fileURL: import.meta.url

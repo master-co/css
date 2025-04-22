@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting the size of the grid rows.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=grid-auto-rows',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/grid-auto-rows',
     fileURL: import.meta.url

@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting thickness of the decoration line.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=text-decoration-thickness',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-thickness',
     fileURL: import.meta.url

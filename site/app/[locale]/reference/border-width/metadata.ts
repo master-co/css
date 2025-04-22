@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting the width of an element’s border.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=border-width',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/border-width',
     fileURL: import.meta.url

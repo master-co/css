@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting align-self and justify-self at the same time.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=place-self',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/place-self',
     fileURL: import.meta.url

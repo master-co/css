@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting the minimum height of an element.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=min-height',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/min-height',
     fileURL: import.meta.url

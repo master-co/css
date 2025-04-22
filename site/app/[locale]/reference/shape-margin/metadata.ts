@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting a margin for a CSS shape.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=shape-margin',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/shape-margin',
     fileURL: import.meta.url

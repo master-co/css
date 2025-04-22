@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Defining the layout box to which transform and transform-origin properties relate.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=transform-box',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-box',
     fileURL: import.meta.url

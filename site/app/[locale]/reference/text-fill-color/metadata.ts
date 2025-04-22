@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting the color of text.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=-webkit-text-fill-color',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-text-fill-color',
     fileURL: import.meta.url

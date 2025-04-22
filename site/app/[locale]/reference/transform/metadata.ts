@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Controlling rotate, scale, skew, or translate an element.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=transform',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform',
     fileURL: import.meta.url

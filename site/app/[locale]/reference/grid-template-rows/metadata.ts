@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Creating rows in a grid layout.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=grid-template-rows',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-rows',
     fileURL: import.meta.url

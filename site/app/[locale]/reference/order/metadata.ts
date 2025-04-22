@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Changing the order of item in flex or grid container.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=order',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/order',
     fileURL: import.meta.url

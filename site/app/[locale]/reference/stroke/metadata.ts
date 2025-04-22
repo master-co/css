@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting the outline color of an SVG shape.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=stroke',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke',
     fileURL: import.meta.url

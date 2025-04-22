@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting align-items and justify-items at the same time.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=place-items',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/place-items',
     fileURL: import.meta.url

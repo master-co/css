@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Creating a clipping region.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=clip-path',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path',
     fileURL: import.meta.url

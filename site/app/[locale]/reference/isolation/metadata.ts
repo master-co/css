@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Controlling whether an element should create a new stacking context.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=isolation',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/isolation',
     fileURL: import.meta.url

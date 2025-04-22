@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Style shorthand for setting the width and height of an element.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     fileURL: import.meta.url
 })
 

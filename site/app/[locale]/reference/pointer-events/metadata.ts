@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting whether an element reacts to pointer events.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=pointer-events',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events',
     fileURL: import.meta.url

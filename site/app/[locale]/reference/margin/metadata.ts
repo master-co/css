@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting the margin area on all four sides of an element.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=margin',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/margin',
     fileURL: import.meta.url

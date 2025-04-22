@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Controlling how items are aligned along its inline axis.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=justify-items',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/justify-items',
     fileURL: import.meta.url

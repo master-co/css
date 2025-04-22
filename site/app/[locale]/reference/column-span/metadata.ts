@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting how elements span across multiple columns.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=column-span',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/column-span',
     fileURL: import.meta.url

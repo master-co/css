@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Controlling how whitespace and line breaks within an element are handled.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=white-space',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/white-space',
     fileURL: import.meta.url

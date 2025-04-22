@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting whether an element is resizable.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=resize',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/resize',
     fileURL: import.meta.url

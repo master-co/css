@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting the weight of the font.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=font-weight',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight',
     fileURL: import.meta.url

@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Controlling how clip the background.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=background-clip',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-clip',
     fileURL: import.meta.url

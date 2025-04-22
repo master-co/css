@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting an element is positioned in a document.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=position',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/position',
     fileURL: import.meta.url

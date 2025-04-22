@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting the distance of a text decoration line from its original position.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=text-underline-offset',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/text-underline-offset',
     fileURL: import.meta.url

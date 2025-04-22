@@ -5,7 +5,6 @@ const metadata = define({
     description: 'CSS variables defined specific values to be reused throughout a document.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=custom-properties',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties',
     fileURL: import.meta.url

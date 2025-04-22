@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting a shape around which adjacent inline content should wrap.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=shape-outside',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/shape-outside',
     fileURL: import.meta.url

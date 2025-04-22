@@ -5,7 +5,6 @@ const metadata = define({
     description: 'Setting the minimum width of an element.',
     category: 'Syntax',
     type: 'entity',
-    unfinished: true,
     canIUseLink: 'https://caniuse.com/?search=min-width',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/min-width',
     fileURL: import.meta.url
