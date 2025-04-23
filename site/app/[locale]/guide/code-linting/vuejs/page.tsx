@@ -1,27 +1,18 @@
+import LogoSvg from '~/site/public/images/frameworks/vuejs.svg'
+import createPage from '~/internal/factories/create-page'
 import Layout from 'internal/layouts/doc'
 import metadata from './metadata'
-import Content from './content.mdx'
-import generate from 'internal/utils/generate-metadata'
 import dictionaries from '~/site/dictionaries'
-import LogoSvg from '~/site/public/images/frameworks/vuejs.svg'
+import categories from '~/site/.categories/guide.json'
 
-export const dynamic = 'force-static'
-export const revalidate = false
+export const { Page, dynamic, revalidate, generateMetadata } = createPage({
+    metadata,
+    dictionaries,
+    categories,
+    icon: <LogoSvg width={64} />,
+    categoryLink: '/guide/code-linting',
+    importContent: import('./content.mdx'),
+    Layout,
+})
 
-export async function generateMetadata(props: any, parent: any) {
-    return await generate(metadata, props, dictionaries, parent)
-}
-
-import pageCategories from '~/site/.categories/guide.json'
-
-export default async function Page(props: any) {
-    return (
-        <Layout {...props} pageCategories={pageCategories} pageFileURL={import.meta.url} dictionaries={dictionaries}
-            metadata={metadata}
-            backOnClickCategory='/guide/code-linting'
-            icon={<LogoSvg width={64} />}
-        >
-            <Content />
-        </Layout >
-    )
-}
+export default Page

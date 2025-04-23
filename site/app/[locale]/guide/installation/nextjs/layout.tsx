@@ -13,7 +13,7 @@ export default async function Layout(props: any) {
                 description: 'Guide to setting up Master CSS in your Next.js project.',
                 category: 'Integrations'
             }}
-            backOnClickCategory='/guide/installation/integrations'
+            categoryLink='/guide/installation/integrations'
             brandName='nextjs'
             dictionaries={dictionaries}
         >

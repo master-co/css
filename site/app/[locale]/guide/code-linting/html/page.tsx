@@ -19,7 +19,7 @@ export default async function Page(props: any) {
         <Layout {...props} pageCategories={pageCategories} pageFileURL={import.meta.url} dictionaries={dictionaries}
             metadata={metadata}
 
-            backOnClickCategory='/guide/code-linting'
+            categoryLink='/guide/code-linting'
             icon={<LogoSvg width={100} />}
         >
             <Content />

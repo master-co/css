@@ -10,7 +10,7 @@ export default async function Layout(props: any) {
         <DocLayout {...props}
             metadata={metadata}
             dictionaries={dictionaries}
-            backOnClickCategory='/guide/installation/integrations'
+            categoryLink='/guide/installation/integrations'
             brandName='astro'
         >
             {props.children}
