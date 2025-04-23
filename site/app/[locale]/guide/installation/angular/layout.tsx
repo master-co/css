@@ -14,7 +14,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
     categories,
     noTOC: true,
     categoryLink: '/guide/installation/integrations',
-    brandName: 'angular',
+    icon: 'angular',
     content: ({ $ }) =>
         <Tabs className="mb:8x">
             <Tab href='/guide/installation/angular'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>

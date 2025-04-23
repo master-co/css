@@ -9,7 +9,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createPage({
     dictionaries,
     categories,
     noTOC: true,
-    brandName: 'vuejs',
+    icon: 'vuejs',
     categoryLink: '/guide/installation/integrations',
     content: import('./content.mdx'),
     Layout,

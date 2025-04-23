@@ -24,7 +24,7 @@ export default () => (
                             {results
                                 .sort((a, b) => a.totalCSSSize - b.totalCSSSize)
                                 .map((result) => {
-                                    const brand = brands.values().find((brand) => brand.name === result.name)
+                                    const brand = Object.values(brands).find((brand) => brand.name === result.name)
                                     return (
                                         <Bar key={result.name}
                                             color={brand?.color}
@@ -52,7 +52,7 @@ export default () => (
                             {results
                                 .sort((a, b) => a.totalCSSBrotliSize - b.totalCSSBrotliSize)
                                 .map((result) => {
-                                    const brand = brands.values().find((brand) => brand.name === result.name)
+                                    const brand = Object.values(brands).find((brand) => brand.name === result.name)
                                     return (
                                         <Bar key={result.name}
                                             color={brand?.color}

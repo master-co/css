@@ -14,7 +14,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
     categories,
     noTOC: true,
     categoryLink: '/guide/installation/integrations',
-    brandName: 'nextjs',
+    icon: 'nextjs',
     content: ({ $ }) =>
         <Tabs className="mb:8x">
             <Tab href='/guide/installation/nextjs'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>

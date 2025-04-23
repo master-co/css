@@ -10,7 +10,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createPage({
     categories,
     noTOC: true,
     categoryLink: '/guide/code-linting',
-    brandName: 'svelte',
+    icon: 'svelte',
     content: import('./content.mdx'),
     Layout,
 })
