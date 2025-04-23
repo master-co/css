@@ -54,7 +54,7 @@
     },
     "files": [
         "dist",
-        "grammars"
+        "syntaxes"
     ],
     "publishConfig": {
         "access": "public",
