@@ -9,8 +9,9 @@ export const { Page, dynamic, revalidate, generateMetadata } = createPage({
     metadata,
     dictionaries,
     categories,
+    noTOC: true,
     icon: <ESLintSvg width={90} />,
-    importContent: import('./content.mdx'),
+    content: import('./content.mdx'),
     Layout,
 })
 

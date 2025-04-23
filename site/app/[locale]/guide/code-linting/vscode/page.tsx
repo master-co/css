@@ -1,4 +1,3 @@
-import LogoSvg from '~/site/public/icons/visualstudiocode.svg'
 import createPage from '~/internal/factories/create-page'
 import Layout from 'internal/layouts/doc'
 import metadata from './metadata'
@@ -9,9 +8,10 @@ export const { Page, dynamic, revalidate, generateMetadata } = createPage({
     metadata,
     dictionaries,
     categories,
-    icon: <LogoSvg width={70} />,
+    noTOC: true,
     categoryLink: '/guide/code-linting',
-    importContent: import('./content.mdx'),
+    brandName: 'vscode',
+    content: import('./content.mdx'),
     Layout,
 })
 

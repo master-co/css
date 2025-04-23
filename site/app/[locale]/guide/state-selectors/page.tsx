@@ -1,24 +1,15 @@
-import { dirname } from 'path'
-import { fileURLToPath } from 'node:url'
-import metadata from './metadata'
-/* @ts-expect-error toc */
-import Content, { toc } from './content.mdx'
+import createPage from '~/internal/factories/create-page'
 import Layout from 'internal/layouts/doc'
-import generate from 'internal/utils/generate-metadata'
+import metadata from './metadata'
 import dictionaries from '~/site/dictionaries'
-import pageCategories from '~/site/.categories/guide.json'
+import categories from '~/site/.categories/guide.json'
 
-export const dynamic = 'force-static'
-export const revalidate = false
+export const { Page, dynamic, revalidate, generateMetadata } = createPage({
+    metadata,
+    dictionaries,
+    categories,
+    content: import('./content.mdx'),
+    Layout,
+})
 
-export async function generateMetadata(props: any, parent: any) {
-    return await generate(metadata, props, dictionaries, parent)
-}
-
-export default async function Page(props: any) {
-    return (
-        <Layout {...props} pageCategories={pageCategories} pageFileURL={import.meta.url} dictionaries={dictionaries} metadata={metadata} toc={toc}>
-            <Content />
-        </Layout >
-    )
-}
+export default Page

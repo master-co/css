@@ -9,7 +9,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createPage({
     dictionaries,
     categories,
     categoryLink: '/guide/migration',
-    importContent: import('./content.mdx'),
+    content: import('./content.mdx'),
     Layout,
 })
 

@@ -1,17 +1,18 @@
+import createPage from '~/internal/factories/create-page'
 import Layout from 'internal/layouts/doc'
 import metadata from './metadata'
-/* @ts-expect-error toc */
-import Content, { toc } from './content.mdx'
-import generate from 'internal/utils/generate-metadata'
 import dictionaries from '~/site/dictionaries'
+import categories from '~/site/.categories/guide.json'
 
-export const dynamic = 'force-static'
-export const revalidate = false
+export const { Page, dynamic, revalidate, generateMetadata } = createPage({
+    metadata,
+    dictionaries,
+    categories,
+    noTOC: true,
+    brandName: 'react',
+    categoryLink: '/guide/installation/integrations',
+    content: import('./content.mdx'),
+    Layout,
+})
 
-export async function generateMetadata(props: any, parent: any) {
-    return await generate(metadata, props, dictionaries, parent)
-}
-
-export default async function Page(props: any) {
-    return <Content />
-}
+export default Page

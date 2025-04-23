@@ -1,4 +1,3 @@
-import LogoSvg from '~/site/public/images/frameworks/react.svg'
 import createPage from '~/internal/factories/create-page'
 import Layout from 'internal/layouts/doc'
 import metadata from './metadata'
@@ -9,9 +8,10 @@ export const { Page, dynamic, revalidate, generateMetadata } = createPage({
     metadata,
     dictionaries,
     categories,
-    icon: <LogoSvg width={75} />,
+    noTOC: true,
     categoryLink: '/guide/code-linting',
-    importContent: import('./content.mdx'),
+    brandName: 'react',
+    content: import('./content.mdx'),
     Layout,
 })
 
