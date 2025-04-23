@@ -2,7 +2,6 @@ import { Props } from 'internal/types/Props'
 import create from 'internal/utils/og-image'
 import dictionaries from '~/site/dictionaries'
 import metadata from './metadata'
-import Icon from '~/site/public/images/frameworks/svelte.svg'
 import type { AbsoluteTemplateString } from 'next/dist/lib/metadata/types/metadata-types'
 
 export const alt = (metadata.title as AbsoluteTemplateString)?.absolute || metadata.title as string
@@ -14,5 +13,5 @@ export default (props: Props) => create({
     metadata,
     dictionaries,
     title: 'Progressive Rendering',
-    icon: <Icon width="192" />
+    icon: 'svelte'
 })

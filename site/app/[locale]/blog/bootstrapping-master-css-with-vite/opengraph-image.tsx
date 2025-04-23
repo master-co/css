@@ -13,5 +13,5 @@ export default (props: Props) => create({
     props,
     metadata,
     dictionaries,
-    icon: <Icon width="192" />
+    icon: 'vite'
 })

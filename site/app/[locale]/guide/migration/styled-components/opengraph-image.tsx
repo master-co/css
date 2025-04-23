@@ -14,5 +14,5 @@ export default (props: Props) => create({
     metadata,
     dictionaries,
     title: 'Styled Components',
-    icon: <Icon width={216} height={216} alt="styled components" />
+    icon: 'styled-components'
 })
