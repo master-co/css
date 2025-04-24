@@ -4,10 +4,9 @@ import base from './styles/base'
 import btn from './styles/btn'
 
 export default {
-    ...common,
     extends: [
+        common,
         base,
         btn,
-        ...common.extends
-    ],
+    ]
 } as Config
