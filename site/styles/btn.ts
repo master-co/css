@@ -9,13 +9,6 @@ export default {
             'md': 'r:6 px:4x font:14 h:10x',
             'lg': 'r:8 px:5x font:16 h:12x',
             'xl': 'r:10 px:6x font:16 h:14x',
-            'rounded': {
-                'xs': 'rounded px:3x font:12 h:6x',
-                'sm': 'rounded px:4x font:12 h:8x',
-                'md': 'rounded px:5x font:14 h:10x',
-                'lg': 'rounded px:6x font:16 h:12x',
-                'xl': 'rounded px:7x font:16 h:14x',
-            }
         }
     }
 } as Config

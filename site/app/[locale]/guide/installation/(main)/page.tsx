@@ -1,15 +1,13 @@
+import createPage from '~/internal/factories/create-page'
 import metadata from './metadata'
-import Content from './content.mdx'
-import generate from 'internal/utils/generate-metadata'
 import dictionaries from '~/site/dictionaries'
+import categories from '~/site/.categories/guide.json'
 
-export const dynamic = 'force-static'
-export const revalidate = false
+export const { Page, dynamic, revalidate, generateMetadata } = createPage({
+    metadata,
+    dictionaries,
+    categories,
+    content: import('./content.mdx'),
+})
 
-export async function generateMetadata(props: any, parent: any) {
-    return await generate(metadata, props, dictionaries, parent)
-}
-
-export default async function Page(props: any) {
-    return <Content />
-}
+export default Page
