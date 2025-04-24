@@ -250,61 +250,42 @@ export default class MasterCSS {
     resolveComponents() {
         const { components } = this.config
         const flatComps = components ? flattenObject(components) : {}
-        const names = Object.keys(flatComps)
-        const nameSet = new Set(names)
+        const flatNames = Object.keys(flatComps)
+        const resolve = (name: string, currentClasses: string[] = []) => {
+            const compClasses = this.components.get(name)
+            if (compClasses) {
+                currentClasses.push(...compClasses)
+                return
+            }
+            const className = flatComps[name]
+            if (!className) return
+            const classes = className.replace(/(?:\n\s*)+/g, ' ').trim().split(' ')
+            for (const cls of classes) {
+                if (flatNames.includes(cls)) {
+                    resolve(cls, currentClasses)
+                } else {
+                    currentClasses.push(cls)
+                }
+            }
+            this.components.set(name, [...currentClasses])
+        }
 
         // First pass: expand class names recursively
-        for (const name of names) {
-            if (this.components.has(name)) continue
-
-            const currentClass: string[] = []
-            this.components.set(name, currentClass)
-
-            const className = flatComps[name]
-            if (!className) continue
-
-            const classNames = className.replace(/(?:\n\s*)+/g, ' ').trim().split(' ')
-            const seen = new Set<string>()
-
-            const addClass = (cls: string) => {
-                if (!seen.has(cls)) {
-                    seen.add(cls)
-                    currentClass.push(cls)
-                }
-            }
-
-            for (const eachClassName of classNames) {
-                if (nameSet.has(eachClassName)) {
-                    addClass(eachClassName)
-
-                    // Lazy expand dependencies if not processed
-                    if (!this.components.has(eachClassName)) {
-                        const componentClass = flatComps[eachClassName]
-                        if (componentClass) {
-                            this.components.set(eachClassName, []) // placeholder to prevent infinite loop
-                            // Recursively resolve
-                            const depClassNames = componentClass.replace(/(?:\n\s*)+/g, ' ').trim().split(' ')
-                            depClassNames.forEach(addClass)
-                        }
-                    }
-
-                    const componentClasses = this.components.get(eachClassName)
-                    componentClasses?.forEach(addClass)
-                } else {
-                    addClass(eachClassName)
-                }
-            }
+        for (const name of flatNames) {
+            resolve(name)
         }
 
         // Second pass: convert to grouped syntax rule strings
-        this.components.forEach((componentClasses, componentName) => {
+        this.components.forEach((compClasses, componentName) => {
             const syntaxRulesByStateToken: Record<string, SyntaxRule[]> = {}
 
-            for (const syntax of componentClasses) {
+            for (const syntax of compClasses) {
                 const parsed = this.create(syntax)
-                if (parsed?.text) {
+                if (parsed?.valid) {
                     const group = syntaxRulesByStateToken[parsed.stateToken] ||= []
                     group.push(parsed)
+                } else {
+                    console.error(`Invalid class "${syntax}" found in ${componentName} component.`)
                 }
             }
 
@@ -584,22 +565,24 @@ export default class MasterCSS {
      */
     generate(className: string, mode?: string): SyntaxRule[] {
         let syntaxRules: SyntaxRule[] = []
-        const componentClasses = this.components.get(className)
-        if (componentClasses) {
-            componentClasses.forEach((eachSyntax) => {
-                const syntaxRule = this.create(eachSyntax, className, mode)
+        const compClasses = this.components.get(className)
+        if (compClasses) {
+            compClasses.forEach((cls) => {
+                const syntaxRule = this.create(cls, className, mode)
                 if (syntaxRule && syntaxRule.valid) {
                     syntaxRules.push(syntaxRule)
+                } else {
+                    console.error(`Invalid syntax class "${cls}" is in ${className} component.`)
                 }
             })
         } else {
             const atIndex = className.indexOf('@')
             if (atIndex !== -1) {
                 const name = className.slice(0, atIndex)
-                const componentClasses = this.components.get(name)
-                if (componentClasses) {
+                const compClasses = this.components.get(name)
+                if (compClasses) {
                     const atToken = className.slice(atIndex)
-                    componentClasses.forEach((eachSyntax) => {
+                    compClasses.forEach((eachSyntax) => {
                         const syntaxRule = this.create(eachSyntax + atToken, className, mode)
                         if (syntaxRule && syntaxRule.valid) {
                             syntaxRules.push(syntaxRule)
