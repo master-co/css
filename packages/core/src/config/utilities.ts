@@ -188,9 +188,11 @@ const utilities = {
         'white-space': 'break-spaces'
     },
     'break-word': {
-        'overflow-wrap': 'break-word',
-        overflow: 'hidden'
+        'word-break': 'break-word',
     },
+    'wrap-break-word': { 'overflow-wrap': 'break-word' },
+    'wrap-anywhere': { 'overflow-wrap': 'anywhere' },
+    'wrap-normal': { 'overflow-wrap': 'normal' },
     'gradient-text': {
         '-webkit-text-fill-color': 'transparent',
         '-webkit-background-clip': 'text',
