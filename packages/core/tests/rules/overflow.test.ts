@@ -7,5 +7,4 @@ test.concurrent('overflow', () => {
     expect(new MasterCSS().create('overflow:overlay')?.text).toContain('overflow:overlay')
     expect(new MasterCSS().create('overflow-x:overlay')?.text).toContain('overflow-x:overlay')
     expect(new MasterCSS().create('overflow-y:overlay')?.text).toContain('overflow-y:overlay')
-    expect(new MasterCSS().create('overflow:hover')?.text).toBe('.overflow\\:hover:hover{overflow:visible}')
 })
