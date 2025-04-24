@@ -87,7 +87,7 @@ const utilities = {
     isolate: {
         isolation: 'isolate'
     },
-    overflowed: {
+    overflow: {
         overflow: 'visible'
     },
     untouchable: {

@@ -1,5 +1,5 @@
 const syntaxes = [
-    'overflowed',
+    'overflow',
     'overflow:auto',
     'overflow:hidden',
     'overflow:overlay',
