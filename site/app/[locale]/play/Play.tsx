@@ -63,10 +63,8 @@ const editorOptions: editor.IStandaloneEditorConstructionOptions = {
     wrappingStrategy: 'advanced',
     overviewRulerLanes: 0,
     lineHeight: 22,
-    letterSpacing: -0.1,
-    fontSize: 14,
-    fontFamily: (config.variables as any)['font-family'].mono.join(','),
-    fontLigatures: true
+    fontSize: 13,
+    fontFamily: (variables as any)['font-family'].mono.join(',')
 }
 
 const editorHTMLOptions: any = {
