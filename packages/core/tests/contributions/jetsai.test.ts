@@ -108,7 +108,7 @@ test.concurrent('button config', () => {
 
     expectLayers(
         {
-            components: '.btn-primary{-webkit-text-fill-color:rgb(255 255 255);background-color:rgb(34 66 163)}.btn-primary:hover{background-color:rgb(21 37 89)}.btn-primary:disabled{-webkit-text-fill-color:rgb(146 151 161);background-color:rgb(205 224 247)}'
+            components: '.btn-primary{background-color:rgb(34 66 163)}.btn-primary{-webkit-text-fill-color:rgb(255 255 255)}.btn-primary:hover{background-color:rgb(21 37 89)}.btn-primary:disabled{background-color:rgb(205 224 247)}.btn-primary:disabled{-webkit-text-fill-color:rgb(146 151 161)}'
         },
         'btn-primary',
         config

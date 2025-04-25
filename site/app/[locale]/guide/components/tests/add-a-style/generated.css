@@ -1,1 +1,1 @@
-@layer base,theme,preset,components,general;@layer components{.btn{display:inline-flex;height:2.5rem}}
+@layer base,theme,preset,components,general;@layer components{.btn{display:inline-flex}.btn{height:2.5rem}}

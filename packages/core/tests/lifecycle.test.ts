@@ -27,8 +27,8 @@ test.concurrent('btn@sm', ({ task }) => {
         }
     })
     css.add(task.name)
-    expect(css.componentsLayer.rules.length).toBe(1)
-    expect(css.componentsLayer.text).toBe('@layer components{@media (width>=52.125rem){.btn\\@sm{display:block;font-size:2rem}}}')
+    expect(css.componentsLayer.rules.length).toBe(2)
+    expect(css.componentsLayer.text).toBe('@layer components{@media (width>=52.125rem){.btn\\@sm{display:block}}@media (width>=52.125rem){.btn\\@sm{font-size:2rem}}}')
     css.remove(task.name)
     expect(css.componentsLayer.rules.length).toBe(0)
     expect(css.componentsLayer.text).toBe('')

@@ -274,30 +274,6 @@ export default class MasterCSS {
         for (const name of flatNames) {
             resolve(name)
         }
-
-        // Second pass: convert to grouped syntax rule strings
-        this.components.forEach((compClasses, componentName) => {
-            const syntaxRulesByStateToken: Record<string, SyntaxRule[]> = {}
-
-            for (const syntax of compClasses) {
-                const parsed = this.create(syntax)
-                if (parsed?.valid) {
-                    const group = syntaxRulesByStateToken[parsed.stateToken] ||= []
-                    group.push(parsed)
-                } else {
-                    console.error(`Invalid class "${syntax}" found in ${componentName} component.`)
-                }
-            }
-
-            const result = Object.entries(syntaxRulesByStateToken).map(([stateToken, syntaxRules]) => {
-                if (syntaxRules.length === 1) return syntaxRules[0].name
-
-                const namesWithoutToken = syntaxRules.map(s => s.name.slice(0, s.name.length - s.stateToken.length))
-                return `{${namesWithoutToken.join(';')}}${stateToken}`
-            })
-
-            this.components.set(componentName, result)
-        })
     }
 
     resolveSelectors() {
@@ -433,7 +409,6 @@ export default class MasterCSS {
                 const flatName = name.join('-')
                 if (aliasResult) {
                     const alias = aliasResult[1] ?? aliasResult[3]
-                    const aliasModeSuffix = alias?.split('@')[1]
                     const modeSuffix = aliasResult[2] ?? aliasResult[4]
 
                     let aliasVariableModeResolver = aliasVariableModeResolvers.get(flatName)
@@ -578,7 +553,7 @@ export default class MasterCSS {
                 if (syntaxRule && syntaxRule.valid) {
                     syntaxRules.push(syntaxRule)
                 } else {
-                    console.error(`Invalid syntax class "${cls}" is in ${className} component.`)
+                    console.error(`Invalid class "${cls}" found in ${className} component.`)
                 }
             })
         } else {

@@ -19,5 +19,5 @@ it('should contain stylesheet link and CSS with specific class', async () => {
     const css = await $fetch(href!) as string
     expect(typeof css).toBe('string')
     expect(css).toContain('.box')
-    expect(css).toContain(`@layer base,theme,preset,components,general;@layer components{.box{display:flex;font-size:1em}}`)
+    expect(css).toContain(`@layer base,theme,preset,components,general;@layer components{.box{display:flex}.box{font-size:1em}}`)
 })

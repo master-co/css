@@ -38,7 +38,12 @@ test.concurrent('component conflicts with the mode', () => {
         components: {
             'light': 'block font:bold'
         }
-    }).createFromSelectorText('.light .light\@light')?.[0]).toMatchObject({ name: '{block;font:bold}', fixedClass: 'light' })
+    }).createFromSelectorText('.light .light\@light')?.[0]).toMatchObject({ name: 'block', fixedClass: 'light' })
+    expect(new MasterCSS({
+        components: {
+            'light': 'block font:bold'
+        }
+    }).createFromSelectorText('.light .light\@light')?.[1]).toMatchObject({ name: 'font:bold', fixedClass: 'light' })
 })
 
 test.concurrent('component and mode', () => {
