@@ -6,7 +6,8 @@ const prefixMap: Record<string, string> = {
     'pseudo-class': ':',
     'pseudo-element': '::',
     'attribute': '',
-    'combinator': ''
+    'combinator': '',
+    'id': '#',
 }
 
 export default function generateSelector(nodes: SelectorNode[], body = ''): string {

@@ -20,6 +20,16 @@ export const cases = {
                 { type: 'class', raw: '.active', value: 'active' }
             ]
         }]],
+        [':of(#active)', '#active ', [{
+            type: 'pseudo-class', raw: ':of', value: 'of', children: [
+                { type: 'id', raw: '#active', value: 'active' },
+            ]
+        }]],
+        [':of(active)', 'active ', [{
+            type: 'pseudo-class', raw: ':of', value: 'of', children: [
+                { raw: 'active', value: 'active' },
+            ]
+        }]],
         [':of(.active_)', '.active ', [{
             type: 'pseudo-class', raw: ':of', value: 'of', children: [
                 { type: 'class', raw: '.active', value: 'active' },

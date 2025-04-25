@@ -3,7 +3,7 @@ import MasterCSS from '../core'
 import parsePair from './parse-pair'
 
 export declare type SelectorLiteralNode = {
-    type?: 'attribute' | 'pseudo-class' | 'pseudo-element' | 'class' | 'universal'
+    type?: 'attribute' | 'pseudo-class' | 'pseudo-element' | 'class' | 'universal' | 'id'
     raw?: string
     value?: string
     children?: SelectorNode[]
@@ -23,7 +23,7 @@ export declare type SelectorCombinatorNode = {
 
 export declare type SelectorNode = SelectorLiteralNode | SelectorCombinatorNode | SelectorSeparatorNode
 
-const SELECTOR_REGEX = new RegExp(`(?:[a-zA-Z0-9-]+)|([${SELECTOR_COMBINATORS.join('')}.:,*])|(a-zA-Z0-9-)`, 'g')
+const SELECTOR_REGEX = new RegExp(`(?:[a-zA-Z0-9-]+)|([${SELECTOR_COMBINATORS.join('')}#.:,*])|(a-zA-Z0-9-)`, 'g')
 
 export default function parseSelector(token: string, css = new MasterCSS(), isRaw = true) {
     const resolve = (eachToken: string): SelectorNode[] => {
@@ -35,7 +35,7 @@ export default function parseSelector(token: string, css = new MasterCSS(), isRa
             const raw = match[0]
             tokenIndex += raw.length
 
-            if (raw === ':' || raw === '.') {
+            if (raw === ':' || raw === '.' || raw === '#') {
                 currentPrefix += raw
                 continue
             }
@@ -73,6 +73,8 @@ export default function parseSelector(token: string, css = new MasterCSS(), isRa
                 type = 'pseudo-element'
             } else if (currentPrefix === '.') {
                 type = 'class'
+            } else if (currentPrefix === '#') {
+                type = 'id'
             }
 
             nodes.push({
