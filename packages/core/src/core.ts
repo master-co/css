@@ -429,51 +429,57 @@ export default class MasterCSS {
                 addVariable(name, { type: 'number', value: variableDefinition })
                 addVariable(['', ...name], { type: 'number', value: variableDefinition * -1 })
             } else if (typeof variableDefinition === 'string') {
-                const aliasResult = /^\$\((.*?)\)(?: ?\/ ?(.+?))?$/.exec(variableDefinition)
+                const aliasResult = /^\$\((.*?)\)(?: ?\/ ?(.+?))?$|^\$([a-zA-Z0-9-]+)(?: ?\/ ?(.+?))?$/.exec(variableDefinition)
                 const flatName = name.join('-')
                 if (aliasResult) {
+                    const alias = aliasResult[1] ?? aliasResult[3]
+                    const aliasModeSuffix = alias?.split('@')[1]
+                    const modeSuffix = aliasResult[2] ?? aliasResult[4]
+
                     let aliasVariableModeResolver = aliasVariableModeResolvers.get(flatName)
                     if (!aliasVariableModeResolver) {
                         aliasVariableModeResolvers.set(flatName, aliasVariableModeResolver = {})
                     }
+
                     aliasVariableModeResolver[mode as string] = () => {
                         delete aliasVariableModeResolver[mode as string]
-                        const [alias, aliasMode] = aliasResult[1].split('@')
-                        if (alias) {
-                            const eachAliasModeVariableResolver = aliasVariableModeResolvers.get(alias)
-                            if (eachAliasModeVariableResolver) {
-                                for (const mode of Object.keys(eachAliasModeVariableResolver)) {
-                                    eachAliasModeVariableResolver[mode]?.()
-                                }
+
+                        if (!alias) return
+
+                        const [baseAlias, aliasMode] = alias.split('@')
+
+                        const eachAliasModeVariableResolver = aliasVariableModeResolvers.get(baseAlias)
+                        if (eachAliasModeVariableResolver) {
+                            for (const mode of Object.keys(eachAliasModeVariableResolver)) {
+                                eachAliasModeVariableResolver[mode]?.()
                             }
-                            const aliasVariable = this.variables.get(alias)
-                            if (aliasVariable) {
-                                if (aliasMode === undefined && aliasVariable.modes) {
-                                    addVariable(
-                                        name,
-                                        { type: aliasVariable.type, value: aliasVariable.value, space: (aliasVariable as ColorVariable).space },
-                                        '',
-                                        aliasResult[2]
-                                    )
-                                    for (const mode in aliasVariable.modes) {
-                                        addVariable(
-                                            name,
-                                            aliasVariable.modes[mode],
-                                            mode,
-                                            aliasResult[2]
-                                        )
-                                    }
-                                } else {
-                                    const variable = aliasMode !== undefined
-                                        ? aliasVariable.modes?.[aliasMode]
-                                        : aliasVariable
-                                    if (variable) {
-                                        const newVariable = { type: variable.type, value: variable.value } as Variable
-                                        if (variable.type === 'color') {
-                                            (newVariable as any).space = variable.space
-                                        }
-                                        addVariable(name, newVariable, undefined, aliasResult[2])
-                                    }
+                        }
+
+                        const aliasVariable = this.variables.get(baseAlias)
+                        if (aliasVariable) {
+                            if (aliasMode === undefined && aliasVariable.modes) {
+                                addVariable(name, {
+                                    type: aliasVariable.type,
+                                    value: aliasVariable.value,
+                                    space: (aliasVariable as ColorVariable).space
+                                }, '', modeSuffix)
+
+                                for (const mode in aliasVariable.modes) {
+                                    addVariable(name, aliasVariable.modes[mode], mode, modeSuffix)
+                                }
+                            } else {
+                                const variable = aliasMode !== undefined
+                                    ? aliasVariable.modes?.[aliasMode]
+                                    : aliasVariable
+
+                                if (variable) {
+                                    const newVariable = {
+                                        type: variable.type,
+                                        value: variable.value,
+                                        ...(variable.type === 'color' ? { space: variable.space } : {})
+                                    } as Variable
+
+                                    addVariable(name, newVariable, undefined, modeSuffix)
                                 }
                             }
                         }

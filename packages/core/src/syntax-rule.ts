@@ -360,7 +360,6 @@ export class SyntaxRule {
                 if (!isVarFunction || currentValueComponents.length) {
                     const handleVariable = (variableName: string, alpha?: string) => {
                         const globalVariableValue = this.css.variables.get(variableName)
-
                         const variable = Object.prototype.hasOwnProperty.call(this.variables, variableName)
                             ? this.variables[variableName]
                             : globalVariableValue
@@ -374,10 +373,16 @@ export class SyntaxRule {
                             }
                         }
                     }
-                    handleVariable(currentValue)
-                    if (!handled) {
-                        const [colorName, alpha] = currentValue.split('/')
-                        handleVariable(colorName, alpha)
+
+                    if (/^\$[a-zA-Z0-9-]+(?:\/[^\/]+)?$/.test(currentValue)) {
+                        const [raw, alpha] = currentValue.slice(1).split('/')
+                        handleVariable(raw, alpha)
+                    } else {
+                        handleVariable(currentValue)
+                        if (!handled) {
+                            const [colorName, alpha] = currentValue.split('/')
+                            handleVariable(colorName, alpha)
+                        }
                     }
                 }
 

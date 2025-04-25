@@ -1,4 +1,4 @@
-import { it, test, expect } from 'vitest'
+import { it, test, expect, describe } from 'vitest'
 import { MasterCSS } from '../../../src'
 import config from '../../config'
 import { expectLayers } from '../../test'
@@ -11,6 +11,17 @@ it.concurrent('uses with $ function', () => {
     expect(new MasterCSS().create('background-color:$(my-gray,$(black))')?.text).toContain('background-color:var(--my-gray,rgb(0 0 0))')
     expect(new MasterCSS().create('background-color:$(my-gray,black)')?.text).toContain('background-color:var(--my-gray,rgb(0 0 0))')
     expect(new MasterCSS().create('background-color:$(my-gray,$(my-gray-2,black))')?.text).toContain('background-color:var(--my-gray,var(--my-gray-2,rgb(0 0 0)))')
+})
+
+describe.concurrent('sigil', () => {
+    it.concurrent('sigil in class', () => {
+        expect(new MasterCSS().create('fg:$white')?.text).toContain('rgb(255 255 255)')
+        expect(new MasterCSS().create('fg:$white/.5')?.text).toContain('rgb(255 255 255/.5)')
+    })
+    it.concurrent('sigil in config', () => {
+        expect(new MasterCSS({ variables: { a: '$white' } }).create('fg:a')?.text).toContain('rgb(255 255 255)')
+        expect(new MasterCSS({ variables: { a: '$white/.5' } }).create('fg:a')?.text).toContain('rgb(255 255 255 / .5)')
+    })
 })
 
 it.concurrent('uses with var function', () => {
