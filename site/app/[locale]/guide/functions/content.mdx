@@ -2,7 +2,7 @@
 <Default />
 Master CSS functions allow you to define aliases for native CSS functions while also enabling unit conversion. For example, you can replace `translate(2rem)` with a simplified `translate(32)`, assuming a default unit conversion (e.g., `px`), streamlining your styling logic.
 
-Additionally, the functions simplify your template syntax. Instead of writing verbose CSS variables like `var(--name)`, you can use the shorthand `$(name)`, making your markup cleaner and more expressive.
+Additionally, the functions simplify your template syntax. Instead of writing verbose CSS variables like `var(--name)`, you can use the shorthand `$name`, making your markup cleaner and more expressive.
 
 ---
 
@@ -11,10 +11,11 @@ Additionally, the functions simplify your template syntax. Instead of writing ve
 Add a function to `config.functions` to define a custom function.
 <Overview />
 
-### `$(<name>)`
-Use the `$(<name>)` default function to apply CSS variables (or Master CSS [variables](/guide/variables)).
+### `$<name>`
+Use the `$<name>` default function to apply CSS variables (or Master CSS [variables](/guide/variables)).
 ```html
-<div class="fg:$(foo)"><!-- [!code highlight] -->
+<div class="fg:$foo"><!-- [!code highlight] -->
+<div class="fg:$(foo)">
 <div class="fg:var(--foo)">
 ```
 

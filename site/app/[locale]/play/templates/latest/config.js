@@ -3,8 +3,8 @@ export default {
     variables: {
         text: {
             primary: {
-                '@light': '$(yellow-50)',
-                '@dark': '$(amber-20)'
+                '@light': '$yellow-50',
+                '@dark': '$amber-20'
             }
         }
     }

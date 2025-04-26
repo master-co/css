@@ -184,7 +184,7 @@ In v1, `$(key)` equals `var(--key)`.
 ```html
 <div class="content:$(key)">var(--key)</div>
 ```
-In v2, `$(key)` accesses `config.variables.key` and falls back to `var(--key)` if not found.
+In v2, `$key` accesses `config.variables.key` and falls back to `var(--key)` if not found.
 ```js name=master.css.js
 export default {
     variables: {
@@ -193,8 +193,8 @@ export default {
 }
 ```
 ```html
-<!-- @MARK $(key) -->
-<div class="content:$(key)">"`"</div>
+<!-- @MARK $key -->
+<div class="content:$key">"`"</div>
 ```
 If you want to access native CSS variables, use `var(--key)`.
 ```html

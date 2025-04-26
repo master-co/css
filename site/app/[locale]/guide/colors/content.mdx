@@ -191,7 +191,7 @@ Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
 <html class="light">
     <body class="fg:neutral"></body> <!-- [!code highlight] -->
     <body class="fg:text-neutral">equals</body>
-    <body class="fg:$(text-neutral)">equals</body>
+    <body class="fg:$text-neutral">equals</body>
 </html>
 ```
 (x) We set the [foreground color](/reference/color) of elements using `fg:color` rather than the [text-specific](/reference/text-fill-color) `text:color`.
@@ -207,10 +207,10 @@ Besides inheriting the above rules, you can use `text-*` to access global text c
 ```
 
 ### Escape inherited text colors
-Use `$(blue)` to apply `variables.blue` instead of `variables.text.blue`.
+Use `$blue` to apply `variables.blue` instead of `variables.text.blue`.
 ```html
-<!-- @MARK $(blue) -->
-<p class="fg:$(blue)">…</p>
+<!-- @MARK $blue -->
+<p class="fg:$blue">…</p>
 ```
 
 ---
@@ -221,8 +221,8 @@ Add a color to the frame variables group.
 export default {
     variables: {
         light: { /* [!code ++] */
-            '@light': '$(slate-60)/.2', /* [!code ++] */
-            '@dark': '$(gray-30)/.2' /* [!code ++] */
+            '@light': '$slate-60/.2', /* [!code ++] */
+            '@dark': '$gray-30/.2' /* [!code ++] */
         } /* [!code ++] */
     }
 }
@@ -233,5 +233,5 @@ Apply the defined `frame-*` variables using the inherited rules <FrameHeirs />.
 ```html
 <div class="outline:neutral"></div> <!-- [!code highlight] -->
 <div class="outline:frame-neutral">equals</div>
-<div class="outline:$(frame-neutral)">equals</div>
+<div class="outline:$frame-neutral">equals</div>
 ```
