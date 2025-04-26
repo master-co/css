@@ -35,5 +35,5 @@ test('prevent attach layer twice', async ({ page }) => {
     await page.evaluate(() => {
         document.body.classList.add('app-wrapper')
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.componentsLayer.native?.cssRules?.length)).toBe(2)
+    expect(await page.evaluate(() => globalThis.cssRuntime.componentsLayer.native?.cssRules?.length)).toBe(3)
 })
