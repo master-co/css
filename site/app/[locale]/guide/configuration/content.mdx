@@ -204,9 +204,9 @@ Generated CSS:
 }
 ```
 
-### `.modes`
+### `.modeTrigger`
 Sets how the theme should drive and generate CSS rules.
-<DocProp defaultValue={JSON.stringify(config.modes)} types={["{ [key: string]: 'class' | 'media' | 'host' | false }"]} />
+<DocProp defaultValue={JSON.stringify(config.modeTrigger)} types={["'class' | 'media' | 'host'"]} />
 ```html
 <div class="bg:black@dark">
 ```
@@ -214,38 +214,38 @@ Sets how the theme should drive and generate CSS rules.
 #### Drive theme styles through CSS classes
 ```js name=master.css.js
 export default {
-    modes: {
-        dark: 'class'/* [!code ++] */
-    }
+    modesTrigger: 'class' /* [!code ++] */
 }
 ```
-Generated CSS:
-```css
-.dark .bg\:#000000 { background-color: #000000 }
-```
+<details>
+    <summary>Generated CSS</summary>
+    ```css
+    .dark .bg\:#000000 { background-color: #000000 }
+    ```
+</details>
 
 #### Drive theme styles through media queries
 ```js name=master.css.js
 export default {
-    modes: {
-        dark: 'media'/* [!code ++] */
-    }
+    modesTrigger: 'media' /* [!code ++] */
 }
 ```
-Generated CSS:
-```css
-@media (prefers-color-scheme: dark) { .bg\:#000000 { background-color: #000000 } }
-```
+<details>
+    <summary>Generated CSS</summary>
+    ```css
+    @media (prefers-color-scheme: dark) { .bg\:#000000 { background-color: #000000 } }
+    ```
+</details>
 
 #### Drive theme styles through shadow DOM's host
 ```js name=master.css.js
 export default {
-    modes: {
-        dark: 'host'/* [!code ++] */
-    }
+    modesTrigger: 'host' /* [!code ++] */
 }
 ```
-Generated CSS:
-```css
-:host(.dark) .bg\:#000000 { background-color: #000000 }
-```
+<details>
+    <summary>Generated CSS</summary>
+    ```css
+    :host(.dark) .bg\:#000000 { background-color: #000000 }
+    ```
+</details>

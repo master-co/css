@@ -24,7 +24,8 @@ const config: Config = {
     baseUnit: 4,
     override: false,
     important: false,
-    defaultMode: 'light'
+    defaultMode: 'light',
+    modeTrigger: 'class',
 }
 
 export {

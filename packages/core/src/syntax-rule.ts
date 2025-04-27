@@ -101,7 +101,7 @@ export class SyntaxRule {
             }
         }
 
-        if (this.mode && css.config.modes?.[this.mode] === 'media') {
+        if (this.mode && css.config.modeTrigger === 'media') {
             const atComp = {
                 name: 'prefers-color-scheme',
                 value: this.mode

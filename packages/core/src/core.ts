@@ -692,14 +692,11 @@ export default class MasterCSS {
     }
 
     getModeSelector(modeName: string) {
-        const mode = this.config.modes?.[modeName]
-        if (mode) {
-            switch (mode) {
-                case 'class':
-                    return '.' + modeName
-                case 'host':
-                    return ':host(.' + modeName + ')'
-            }
+        switch (this.config.modeTrigger) {
+            case 'class':
+                return '.' + modeName
+            case 'host':
+                return ':host(.' + modeName + ')'
         }
     }
 }

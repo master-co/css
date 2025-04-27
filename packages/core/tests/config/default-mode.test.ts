@@ -7,7 +7,7 @@ test.concurrent('default mode', () => {
 })
 
 test.concurrent('default mode with host modes', () => {
-    const config = { modes: { dark: 'host', light: 'host' } } as Config
+    const config = { modeTrigger: 'host' } as Config
     expect(new MasterCSS(config).add('bg:invert').text).toContain(':host(.light),:host{--invert:0 0 0}')
     expect(new MasterCSS(config).add('bg:invert').text).toContain(':host(.dark){--invert:255 255 255}')
 })

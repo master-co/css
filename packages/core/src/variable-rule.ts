@@ -17,14 +17,12 @@ export default class VariableRule {
             for (const mode in variable.modes) {
                 const modeVariable = variable.modes[mode]
                 const variableRule = new VariableRuleNode(this.name, modeVariable, css, mode)
-                if (variableRule.modeTrigger) {
-                    const isDefaultMode = hasDefaultValue ? false : this.css.config.defaultMode === mode
-                    variableRule.isDefaultMode = isDefaultMode
-                    if (isDefaultMode) {
-                        this.nodes.unshift(variableRule)
-                    } else {
-                        this.nodes.push(variableRule)
-                    }
+                const isDefaultMode = hasDefaultValue ? false : this.css.config.defaultMode === mode
+                variableRule.isDefaultMode = isDefaultMode
+                if (isDefaultMode) {
+                    this.nodes.unshift(variableRule)
+                } else {
+                    this.nodes.push(variableRule)
                 }
             }
         }
@@ -50,22 +48,17 @@ export class VariableRuleNode {
         public readonly mode?: string,
     ) { }
 
-    get modeTrigger() {
-        return this.mode ? this.css.config.modes?.[this.mode] : undefined
-    }
-
     get selectorText(): string {
         const isDefaultMode = this.isDefaultMode
         if (this.mode) {
-            switch (this.modeTrigger) {
-                case 'media':
-                    return ':root'
+            switch (this.css.config.modeTrigger) {
                 case 'host':
                     return `:host(.${this.mode})` + (isDefaultMode ? ',:host' : '')
                 case 'class':
                     return `.${this.mode}` + (isDefaultMode ? ',:root' : '')
                 default:
-                    return ''
+                    // media
+                    return ':root'
             }
         } else {
             return ':root'
@@ -74,7 +67,7 @@ export class VariableRuleNode {
 
     get text(): string {
         let text = `${this.selectorText}{--${this.name}:${String(this.variable.value)}}`
-        if (this.modeTrigger === 'media') {
+        if (this.css.config.modeTrigger === 'media') {
             text = `@media (prefers-color-scheme:${this.mode}){${text}}`
         }
         return text

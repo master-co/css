@@ -11,8 +11,5 @@ export default {
     animations: {},
     selectors: {},
     functions: {},
-    modes: {
-        light: 'media',
-        dark: 'media',
-    }
+    modeTrigger: 'media'
 } as Config
