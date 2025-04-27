@@ -220,10 +220,12 @@ Add a color to the frame variables group.
 ```js name=master.css.js
 export default {
     variables: {
-        light: { /* [!code ++] */
-            '@light': '$slate-60/.2', /* [!code ++] */
-            '@dark': '$gray-30/.2' /* [!code ++] */
-        } /* [!code ++] */
+        frame: {
+            light: { /* [!code highlight] */
+                '@light': '$slate-60/.2', /* [!code highlight] */
+                '@dark': '$gray-30/.2' /* [!code highlight] */
+            } /* [!code highlight] */
+        }
     }
 }
 ```
