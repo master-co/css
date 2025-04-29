@@ -16,6 +16,7 @@ import generateSelector from './utils/generate-selector'
 import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
 import { SyntaxRuleTypeValue } from './types/common'
 import declarers from './declarers'
+import transformers from './transformers'
 
 export class SyntaxRule {
     native?: CSSRule
@@ -38,7 +39,7 @@ export class SyntaxRule {
         this.layer = css.generalLayer
         Object.assign(this, registeredSyntax)
         const { id, definition } = registeredSyntax
-        const { analyze, declarer, transformValueComponents, type, unit } = definition
+        const { analyze, declarer, transformer, type, unit } = definition
         this.type = type!
 
         // 1. value / selectorToken
@@ -131,8 +132,15 @@ export class SyntaxRule {
         // 7. value
         let newValue: string
         if (this.valueComponents) {
-            if (transformValueComponents) {
-                this.valueComponents = transformValueComponents.call(this, this.valueComponents)
+            if (transformer) {
+                if (typeof transformer === 'string') {
+                    const transform = transformers[transformer]
+                    this.valueComponents = transform.call(this, this.valueComponents)
+                } else {
+                    const [name, data] = transformer
+                    const transform = transformers[name] as any
+                    this.valueComponents = transform.call(this, this.valueComponents, data)
+                }
             }
             newValue = this.resolveValue(this.valueComponents, unit, [], false)
             if (definition.declarations) {
@@ -147,8 +155,14 @@ export class SyntaxRule {
                 }
                 this.declarations = declarations
             } else if (declarer) {
-                const declare = declarers[declarer.name]
-                this.declarations = declare.call(this, newValue, this.valueComponents, declarer.data)
+                if (typeof declarer === 'string') {
+                    const declare = declarers[declarer] as any
+                    this.declarations = declare.call(this, newValue, this.valueComponents)
+                } else {
+                    const [name, data] = declarer
+                    const declare = declarers[name] as any
+                    this.declarations = declare.call(this, newValue, this.valueComponents, data)
+                }
             } else if (id) {
                 this.declarations = {
                     [id]: newValue

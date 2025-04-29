@@ -1,7 +1,7 @@
+import { ValueComponent } from '../types/syntax'
 import { BORDER_STYLE_VALUES } from '../common'
-import { SyntaxRuleDefinition } from '../types/config'
 
-const autofillSolidStyle: SyntaxRuleDefinition['transformValueComponents'] = function (valueComponents) {
+export default function autoFillSolid(valueComponents: ValueComponent[]) {
     if (valueComponents.length < 2) return valueComponents
     let styleIncluded = false
     let varIncluded = false
@@ -24,5 +24,3 @@ const autofillSolidStyle: SyntaxRuleDefinition['transformValueComponents'] = fun
     }
     return valueComponents
 }
-
-export default autofillSolidStyle

@@ -5,6 +5,7 @@ import type { rules, utilities } from '../config'
 import { AT_IDENTIFIERS } from '../common'
 import { SyntaxRuleTypeValue } from './common'
 import { DeclarerNames } from '../declarers'
+import { TransformerNames } from '../transformers'
 
 export interface SyntaxRuleDefinition {
     type?: SyntaxRuleTypeValue
@@ -19,12 +20,9 @@ export interface SyntaxRuleDefinition {
     unit?: any
     declarations?: PropertiesHyphen | Record<string, string | undefined | (string | undefined)[]>
     includeAnimations?: boolean
-    declarer?: {
-        name: DeclarerNames
-        data?: any
-    },
+    declarer?: DeclarerNames | [DeclarerNames, any],
+    transformer?: TransformerNames | [TransformerNames, any],
     analyze?: (this: SyntaxRule, className: string) => [valueToken: string, prefixToken?: string]
-    transformValueComponents?(this: SyntaxRule, valueComponents: ValueComponent[]): ValueComponent[]
 }
 
 export type VariableValue = number | string | false | (number | string)[]

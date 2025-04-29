@@ -1,6 +1,5 @@
 import SyntaxRuleType from '../syntax-rule-type'
 import { BORDER_STYLE_VALUES, COLOR_VALUE_REGEX, IMAGE_VALUE_REGEX, NUMBER_VALUE_REGEX } from '../common'
-import autofillSolidStyle from '../utils/autofill-solid-style'
 import { SyntaxRuleDefinition } from '../types/config'
 
 const rules = {
@@ -16,12 +15,12 @@ const rules = {
             }
             return [className.slice(i), className.slice(0, i)]
         },
-        declarer: { name: 'core.group' }
+        declarer: 'core.group'
     },
     variable: {
         matcher: /^\$[\w-]+:/, // don't use 'rem' as default, because css variable is common API
         type: SyntaxRuleType.Shorthand,
-        declarer: { name: 'core.variable' }
+        declarer: 'core.variable'
     },
     'font-size': {
         aliasGroups: ['font', 'f'],
@@ -272,28 +271,19 @@ const rules = {
     size: {
         type: SyntaxRuleType.Shorthand,
         unit: 'rem',
-        declarer: {
-            name: 'pair',
-            data: ['width', 'height']
-        }
+        declarer: ['pair', ['width', 'height']]
     },
     'min-size': {
         key: 'min',
         type: SyntaxRuleType.Shorthand,
         unit: 'rem',
-        declarer: {
-            name: 'pair',
-            data: ['min-width', 'min-height']
-        }
+        declarer: ['pair', ['min-width', 'min-height']]
     },
     'max-size': {
         key: 'max',
         type: SyntaxRuleType.Shorthand,
         unit: 'rem',
-        declarer: {
-            name: 'pair',
-            data: ['max-width', 'max-height']
-        }
+        declarer: ['pair', ['max-width', 'max-height']]
     },
     'box-sizing': {
         aliasGroups: ['box'],
@@ -981,35 +971,35 @@ const rules = {
         key: 'bt',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
-        transformValueComponents: autofillSolidStyle,
+        transformer: 'auto-fill-solid',
         variables: ['frame'],
     },
     'border-bottom': {
         key: 'bb',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
-        transformValueComponents: autofillSolidStyle,
+        transformer: 'auto-fill-solid',
         variables: ['frame'],
     },
     'border-left': {
         key: 'bl',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
-        transformValueComponents: autofillSolidStyle,
+        transformer: 'auto-fill-solid',
         variables: ['frame'],
     },
     'border-right': {
         key: 'br',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
-        transformValueComponents: autofillSolidStyle,
+        transformer: 'auto-fill-solid',
         variables: ['frame'],
     },
     'border-x': {
         key: 'bx',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        transformValueComponents: autofillSolidStyle,
+        transformer: 'auto-fill-solid',
         variables: ['frame'],
         declarations: {
             'border-left': undefined,
@@ -1020,7 +1010,7 @@ const rules = {
         key: 'by',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        transformValueComponents: autofillSolidStyle,
+        transformer: 'auto-fill-solid',
         variables: ['frame'],
         declarations: {
             'border-top': undefined,
@@ -1031,7 +1021,7 @@ const rules = {
         key: 'b',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
-        transformValueComponents: autofillSolidStyle,
+        transformer: 'auto-fill-solid',
         variables: ['frame'],
     },
     'background-attachment': {
@@ -1352,7 +1342,7 @@ const rules = {
             'outline-color',
             'frame'
         ],
-        transformValueComponents: autofillSolidStyle
+        transformer: 'auto-fill-solid'
     },
     'accent-color': {
         key: 'accent',
