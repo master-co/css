@@ -134,23 +134,23 @@ const rules = {
         }
     },
     'font-size': {
-        ambiguousKeys: ['font', 'f'],
-        ambiguousValues: [NUMBER_VALUE_REGEX],
+        aliasGroups: ['font', 'f'],
+        values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
     'font-weight': {
-        ambiguousKeys: ['font', 'f'],
-        ambiguousValues: ['bolder'],
+        aliasGroups: ['font', 'f'],
+        values: ['bolder'],
         type: SyntaxRuleType.Native
     },
     'font-family': {
-        ambiguousKeys: ['font', 'f'],
+        aliasGroups: ['font', 'f'],
         type: SyntaxRuleType.Native
     },
     'font-smoothing': {
-        ambiguousKeys: ['font', 'f'],
-        ambiguousValues: ['antialiased', 'subpixel-antialiased'],
+        aliasGroups: ['font', 'f'],
+        values: ['antialiased', 'subpixel-antialiased'],
         type: SyntaxRuleType.Native,
         declare(value) {
             switch (value) {
@@ -172,18 +172,18 @@ const rules = {
         }
     },
     'font-style': {
-        ambiguousKeys: ['font', 'f'],
-        ambiguousValues: ['normal', 'italic', 'oblique'],
+        aliasGroups: ['font', 'f'],
+        values: ['normal', 'italic', 'oblique'],
         type: SyntaxRuleType.Native,
         unit: 'deg'
     },
     'font-variant-numeric': {
-        ambiguousKeys: ['font', 'f'],
-        ambiguousValues: ['ordinal', 'slashed-zero', 'lining-nums', 'oldstyle-nums', 'proportional-nums', 'tabular-nums', 'diagonal-fractions', 'stacked-fractions'],
+        aliasGroups: ['font', 'f'],
+        values: ['ordinal', 'slashed-zero', 'lining-nums', 'oldstyle-nums', 'proportional-nums', 'tabular-nums', 'diagonal-fractions', 'stacked-fractions'],
         type: SyntaxRuleType.Native
     },
     'font-variant': {
-        ambiguousKeys: ['font', 'f'],
+        aliasGroups: ['font', 'f'],
         type: SyntaxRuleType.NativeShorthand,
     },
     font: {
@@ -358,26 +358,26 @@ const rules = {
     },
     // flex
     'flex-basis': {
-        ambiguousKeys: ['flex'],
+        aliasGroups: ['flex'],
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
     'flex-wrap': {
-        ambiguousKeys: ['flex'],
-        ambiguousValues: ['wrap', 'nowrap', 'wrap-reverse'],
+        aliasGroups: ['flex'],
+        values: ['wrap', 'nowrap', 'wrap-reverse'],
         type: SyntaxRuleType.Native
     },
     'flex-grow': {
-        ambiguousKeys: ['flex'],
+        aliasGroups: ['flex'],
         type: SyntaxRuleType.Native
     },
     'flex-shrink': {
-        ambiguousKeys: ['flex'],
+        aliasGroups: ['flex'],
         type: SyntaxRuleType.Native
     },
     'flex-direction': {
-        ambiguousKeys: ['flex'],
-        ambiguousValues: ['row', 'row-reverse', 'column', 'column-reverse'],
+        aliasGroups: ['flex'],
+        values: ['row', 'row-reverse', 'column', 'column-reverse'],
         type: SyntaxRuleType.Native
     },
     flex: {
@@ -455,7 +455,7 @@ const rules = {
         }
     },
     'box-sizing': {
-        ambiguousKeys: ['box'],
+        aliasGroups: ['box'],
         type: SyntaxRuleType.Native
     },
     'box-decoration-break': {
@@ -476,8 +476,8 @@ const rules = {
     },
     'container-type': {
         type: SyntaxRuleType.Native,
-        ambiguousKeys: ['container'],
-        ambiguousValues: ['size', 'inline-size', 'scroll-state'],
+        aliasGroups: ['container'],
+        values: ['size', 'inline-size', 'scroll-state'],
     },
     contain: {
         type: SyntaxRuleType.Native
@@ -503,45 +503,45 @@ const rules = {
         type: SyntaxRuleType.Native
     },
     'object-fit': {
-        ambiguousKeys: ['object', 'obj'],
-        ambiguousValues: ['contain', 'cover', 'fill', 'scale-down'],
+        aliasGroups: ['object', 'obj'],
+        values: ['contain', 'cover', 'fill', 'scale-down'],
         type: SyntaxRuleType.Native,
     },
     'object-position': {
-        ambiguousKeys: ['object', 'obj'],
-        ambiguousValues: ['top', 'bottom', 'right', 'left', 'center'],
+        aliasGroups: ['object', 'obj'],
+        values: ['top', 'bottom', 'right', 'left', 'center'],
         type: SyntaxRuleType.Native,
     },
     'text-align': {
-        ambiguousKeys: ['text', 't'],
-        ambiguousValues: ['justify', 'center', 'left', 'right', 'start', 'end'],
+        aliasGroups: ['text', 't'],
+        values: ['justify', 'center', 'left', 'right', 'start', 'end'],
         type: SyntaxRuleType.Native,
     },
     'text-decoration-color': {
-        ambiguousKeys: ['text-decoration'],
-        ambiguousValues: [COLOR_VALUE_REGEX],
+        aliasGroups: ['text-decoration'],
+        values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Native,
         variables: ['text']
     },
     'text-decoration-style': {
-        ambiguousKeys: ['text-decoration'],
-        ambiguousValues: ['solid', 'double', 'dotted', 'dashed', 'wavy'],
+        aliasGroups: ['text-decoration'],
+        values: ['solid', 'double', 'dotted', 'dashed', 'wavy'],
         type: SyntaxRuleType.Native,
     },
     'text-decoration-thickness': {
-        ambiguousKeys: ['text-decoration'],
-        ambiguousValues: ['from-font', NUMBER_VALUE_REGEX],
+        aliasGroups: ['text-decoration'],
+        values: ['from-font', NUMBER_VALUE_REGEX],
         type: SyntaxRuleType.Native,
         unit: 'em'
     },
     'text-decoration-line': {
-        ambiguousKeys: ['text-decoration'],
-        ambiguousValues: ['underline', 'overline', 'line-through'],
+        aliasGroups: ['text-decoration'],
+        values: ['underline', 'overline', 'line-through'],
         type: SyntaxRuleType.Native,
     },
     'text-decoration': {
-        ambiguousKeys: ['text', 't'],
-        ambiguousValues: ['underline', 'overline', 'line-through'],
+        aliasGroups: ['text', 't'],
+        values: ['underline', 'overline', 'line-through'],
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         variables: ['text'],
@@ -553,39 +553,39 @@ const rules = {
         },
     },
     'text-underline-offset': {
-        ambiguousKeys: ['text-underline'],
+        aliasGroups: ['text-underline'],
         unit: 'rem',
         type: SyntaxRuleType.Native,
         variables: ['spacing']
     },
     'text-underline-position': {
-        ambiguousKeys: ['text-underline'],
-        ambiguousValues: ['front-font', 'under', 'left', 'right'],
+        aliasGroups: ['text-underline'],
+        values: ['front-font', 'under', 'left', 'right'],
         type: SyntaxRuleType.Native
     },
     'text-overflow': {
-        ambiguousKeys: ['text', 't'],
-        ambiguousValues: ['ellipsis', 'clip'],
+        aliasGroups: ['text', 't'],
+        values: ['ellipsis', 'clip'],
         type: SyntaxRuleType.Native
     },
     'text-orientation': {
-        ambiguousKeys: ['text', 't'],
-        ambiguousValues: ['mixed', 'upright', 'sideways-right', 'sideways', 'use-glyph-orientation'],
+        aliasGroups: ['text', 't'],
+        values: ['mixed', 'upright', 'sideways-right', 'sideways', 'use-glyph-orientation'],
         type: SyntaxRuleType.Native
     },
     'text-transform': {
-        ambiguousKeys: ['text', 't'],
-        ambiguousValues: ['uppercase', 'lowercase', 'capitalize'],
+        aliasGroups: ['text', 't'],
+        values: ['uppercase', 'lowercase', 'capitalize'],
         type: SyntaxRuleType.Native,
     },
     'text-rendering': {
-        ambiguousKeys: ['text', 't'],
-        ambiguousValues: ['optimizeSpeed', 'optimizeLegibility', 'geometricPrecision'],
+        aliasGroups: ['text', 't'],
+        values: ['optimizeSpeed', 'optimizeLegibility', 'geometricPrecision'],
         type: SyntaxRuleType.Native,
     },
     'text-wrap': {
-        ambiguousKeys: ['text', 't'],
-        ambiguousValues: ['wrap', 'nowrap', 'balance', 'pretty'],
+        aliasGroups: ['text', 't'],
+        values: ['wrap', 'nowrap', 'balance', 'pretty'],
         type: SyntaxRuleType.NativeShorthand,
     },
     'text-indent': {
@@ -727,8 +727,8 @@ const rules = {
         type: SyntaxRuleType.Native,
     },
     'text-size': {
-        ambiguousKeys: ['text', 't'],
-        ambiguousValues: [NUMBER_VALUE_REGEX],
+        aliasGroups: ['text', 't'],
+        values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         declare(value) {
             const diff = .875
@@ -740,8 +740,8 @@ const rules = {
         type: SyntaxRuleType.Shorthand
     },
     'text-fill-color': {
-        ambiguousKeys: ['text', 't'],
-        ambiguousValues: [COLOR_VALUE_REGEX],
+        aliasGroups: ['text', 't'],
+        values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Native,
         variables: ['text'],
         declare(value) {
@@ -751,8 +751,8 @@ const rules = {
         }
     },
     'text-stroke-width': {
-        ambiguousKeys: ['text-stroke'],
-        ambiguousValues: ['thin', 'medium', 'thick', NUMBER_VALUE_REGEX],
+        aliasGroups: ['text-stroke'],
+        values: ['thin', 'medium', 'thick', NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Native,
         declare(value) {
@@ -762,8 +762,8 @@ const rules = {
         },
     },
     'text-stroke-color': {
-        ambiguousKeys: ['text-stroke'],
-        ambiguousValues: [COLOR_VALUE_REGEX],
+        aliasGroups: ['text-stroke'],
+        values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Native,
         declare(value) {
             return {
@@ -804,17 +804,17 @@ const rules = {
         type: SyntaxRuleType.Native
     },
     'transform-box': {
-        ambiguousKeys: ['transform'],
+        aliasGroups: ['transform'],
         type: SyntaxRuleType.Native
     },
     'transform-style': {
-        ambiguousKeys: ['transform'],
-        ambiguousValues: ['flat', 'preserve-3d'],
+        aliasGroups: ['transform'],
+        values: ['flat', 'preserve-3d'],
         type: SyntaxRuleType.Native
     },
     'transform-origin': {
-        ambiguousKeys: ['transform'],
-        ambiguousValues: ['top', 'bottom', 'right', 'left', 'center', NUMBER_VALUE_REGEX],
+        aliasGroups: ['transform'],
+        values: ['top', 'bottom', 'right', 'left', 'center', NUMBER_VALUE_REGEX],
         unit: 'px',
         type: SyntaxRuleType.Native
     },
@@ -908,8 +908,8 @@ const rules = {
         }
     },
     'border-collapse': {
-        ambiguousKeys: ['b', 'border'],
-        ambiguousValues: ['collapse', 'separate'],
+        aliasGroups: ['b', 'border'],
+        values: ['collapse', 'separate'],
         type: SyntaxRuleType.Native
     },
     'border-spacing': {
@@ -919,32 +919,32 @@ const rules = {
     },
     // border color
     'border-top-color': {
-        ambiguousKeys: ['bt', 'border-top'],
-        ambiguousValues: [COLOR_VALUE_REGEX],
+        aliasGroups: ['bt', 'border-top'],
+        values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Native,
         variables: ['frame'],
     },
     'border-bottom-color': {
-        ambiguousKeys: ['bb', 'border-bottom'],
-        ambiguousValues: [COLOR_VALUE_REGEX],
+        aliasGroups: ['bb', 'border-bottom'],
+        values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Native,
         variables: ['frame'],
     },
     'border-left-color': {
-        ambiguousKeys: ['bl', 'border-left'],
-        ambiguousValues: [COLOR_VALUE_REGEX],
+        aliasGroups: ['bl', 'border-left'],
+        values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Native,
         variables: ['frame'],
     },
     'border-right-color': {
-        ambiguousKeys: ['br', 'border-right'],
-        ambiguousValues: [COLOR_VALUE_REGEX],
+        aliasGroups: ['br', 'border-right'],
+        values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Native,
         variables: ['frame'],
     },
     'border-x-color': {
-        ambiguousKeys: ['bx', 'border-x'],
-        ambiguousValues: [COLOR_VALUE_REGEX],
+        aliasGroups: ['bx', 'border-x'],
+        values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Shorthand,
         variables: ['frame'],
         declare(value) {
@@ -955,8 +955,8 @@ const rules = {
         }
     },
     'border-y-color': {
-        ambiguousKeys: ['by', 'border-y'],
-        ambiguousValues: [COLOR_VALUE_REGEX],
+        aliasGroups: ['by', 'border-y'],
+        values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Shorthand,
         variables: ['frame'],
         declare(value) {
@@ -967,8 +967,8 @@ const rules = {
         }
     },
     'border-color': {
-        ambiguousKeys: ['b', 'border'],
-        ambiguousValues: [COLOR_VALUE_REGEX],
+        aliasGroups: ['b', 'border'],
+        values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.NativeShorthand,
         variables: ['frame'],
     },
@@ -1044,28 +1044,28 @@ const rules = {
     },
     // border style
     'border-top-style': {
-        ambiguousKeys: ['bt', 'border-top'],
-        ambiguousValues: BORDER_STYLE_VALUES,
+        aliasGroups: ['bt', 'border-top'],
+        values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Native,
     },
     'border-bottom-style': {
-        ambiguousKeys: ['bb', 'border-bottom'],
-        ambiguousValues: BORDER_STYLE_VALUES,
+        aliasGroups: ['bb', 'border-bottom'],
+        values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Native,
     },
     'border-left-style': {
-        ambiguousKeys: ['bl', 'border-left'],
-        ambiguousValues: BORDER_STYLE_VALUES,
+        aliasGroups: ['bl', 'border-left'],
+        values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Native,
     },
     'border-right-style': {
-        ambiguousKeys: ['br', 'border-right'],
-        ambiguousValues: BORDER_STYLE_VALUES,
+        aliasGroups: ['br', 'border-right'],
+        values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Native,
     },
     'border-x-style': {
-        ambiguousKeys: ['bx', 'border-x'],
-        ambiguousValues: BORDER_STYLE_VALUES,
+        aliasGroups: ['bx', 'border-x'],
+        values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Shorthand,
         declare(value) {
             return {
@@ -1075,8 +1075,8 @@ const rules = {
         }
     },
     'border-y-style': {
-        ambiguousKeys: ['by', 'border-y'],
-        ambiguousValues: BORDER_STYLE_VALUES,
+        aliasGroups: ['by', 'border-y'],
+        values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Shorthand,
         declare(value) {
             return {
@@ -1086,38 +1086,38 @@ const rules = {
         }
     },
     'border-style': {
-        ambiguousKeys: ['b', 'border'],
-        ambiguousValues: BORDER_STYLE_VALUES,
+        aliasGroups: ['b', 'border'],
+        values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.NativeShorthand
     },
     // border width
     'border-top-width': {
-        ambiguousKeys: ['bt', 'border-top'],
-        ambiguousValues: [NUMBER_VALUE_REGEX],
+        aliasGroups: ['bt', 'border-top'],
+        values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
     'border-bottom-width': {
-        ambiguousKeys: ['bb', 'border-bottom'],
-        ambiguousValues: [NUMBER_VALUE_REGEX],
+        aliasGroups: ['bb', 'border-bottom'],
+        values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
     'border-left-width': {
-        ambiguousKeys: ['bl', 'border-left'],
-        ambiguousValues: [NUMBER_VALUE_REGEX],
+        aliasGroups: ['bl', 'border-left'],
+        values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
     'border-right-width': {
-        ambiguousKeys: ['br', 'border-right'],
-        ambiguousValues: [NUMBER_VALUE_REGEX],
+        aliasGroups: ['br', 'border-right'],
+        values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
     'border-x-width': {
-        ambiguousKeys: ['bx', 'border-x'],
-        ambiguousValues: [NUMBER_VALUE_REGEX],
+        aliasGroups: ['bx', 'border-x'],
+        values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declare(value) {
@@ -1128,8 +1128,8 @@ const rules = {
         }
     },
     'border-y-width': {
-        ambiguousKeys: ['by', 'border-y'],
-        ambiguousValues: [NUMBER_VALUE_REGEX],
+        aliasGroups: ['by', 'border-y'],
+        values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declare(value) {
@@ -1140,35 +1140,35 @@ const rules = {
         }
     },
     'border-width': {
-        ambiguousKeys: ['b', 'border'],
-        ambiguousValues: [NUMBER_VALUE_REGEX],
+        aliasGroups: ['b', 'border'],
+        values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand
     },
     // border image
     'border-image-repeat': {
-        ambiguousKeys: ['border-image'],
-        ambiguousValues: ['stretch', 'repeat', 'round', 'space'],
+        aliasGroups: ['border-image'],
+        values: ['stretch', 'repeat', 'round', 'space'],
         type: SyntaxRuleType.Native
     },
     'border-image-slice': {
-        ambiguousKeys: ['border-image'],
+        aliasGroups: ['border-image'],
         type: SyntaxRuleType.Native
     },
     'border-image-source': {
-        ambiguousKeys: ['border-image'],
-        ambiguousValues: [IMAGE_VALUE_REGEX],
+        aliasGroups: ['border-image'],
+        values: [IMAGE_VALUE_REGEX],
         type: SyntaxRuleType.Native
     },
     'border-image-width': {
-        ambiguousKeys: ['border-image'],
-        ambiguousValues: ['auto', NUMBER_VALUE_REGEX],
+        aliasGroups: ['border-image'],
+        values: ['auto', NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
     'border-image-outset': {
-        ambiguousKeys: ['border-image'],
-        ambiguousValues: [NUMBER_VALUE_REGEX],
+        aliasGroups: ['border-image'],
+        values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
@@ -1238,8 +1238,8 @@ const rules = {
         variables: ['frame'],
     },
     'background-attachment': {
-        ambiguousKeys: ['bg'],
-        ambiguousValues: ['fixed', 'local', 'scroll'],
+        aliasGroups: ['bg'],
+        values: ['fixed', 'local', 'scroll'],
         type: SyntaxRuleType.Native
     },
     'background-blend-mode': {
@@ -1247,8 +1247,8 @@ const rules = {
         type: SyntaxRuleType.Native
     },
     'background-color': {
-        ambiguousKeys: ['bg'],
-        ambiguousValues: [COLOR_VALUE_REGEX],
+        aliasGroups: ['bg'],
+        values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Native,
     },
     'background-clip': {
@@ -1266,25 +1266,25 @@ const rules = {
         type: SyntaxRuleType.Native
     },
     'background-position': {
-        ambiguousKeys: ['bg'],
-        ambiguousValues: ['top', 'bottom', 'right', 'left', 'center'],
+        aliasGroups: ['bg'],
+        values: ['top', 'bottom', 'right', 'left', 'center'],
         type: SyntaxRuleType.Native,
         unit: 'px'
     },
     'background-repeat': {
-        ambiguousKeys: ['bg'],
-        ambiguousValues: ['space', 'round', 'repeat', 'no-repeat', 'repeat-x', 'repeat-y'],
+        aliasGroups: ['bg'],
+        values: ['space', 'round', 'repeat', 'no-repeat', 'repeat-x', 'repeat-y'],
         type: SyntaxRuleType.Native
     },
     'background-size': {
-        ambiguousKeys: ['bg'],
-        ambiguousValues: ['auto', 'cover', 'contain', NUMBER_VALUE_REGEX],
+        aliasGroups: ['bg'],
+        values: ['auto', 'cover', 'contain', NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
     'background-image': {
-        ambiguousKeys: ['bg'],
-        ambiguousValues: [IMAGE_VALUE_REGEX],
+        aliasGroups: ['bg'],
+        values: [IMAGE_VALUE_REGEX],
         type: SyntaxRuleType.Native
     },
     background: {
@@ -1329,8 +1329,8 @@ const rules = {
         variables: ['spacing']
     },
     'stroke-width': {
-        ambiguousKeys: ['stroke'],
-        ambiguousValues: [NUMBER_VALUE_REGEX],
+        aliasGroups: ['stroke'],
+        values: [NUMBER_VALUE_REGEX],
         type: SyntaxRuleType.Native
     },
     stroke: {
@@ -1534,26 +1534,26 @@ const rules = {
         type: SyntaxRuleType.NativeShorthand
     },
     'list-style-position': {
-        ambiguousKeys: ['list-style'],
-        ambiguousValues: ['inside', 'outside'],
+        aliasGroups: ['list-style'],
+        values: ['inside', 'outside'],
         type: SyntaxRuleType.Native
     },
     'list-style-type': {
-        ambiguousKeys: ['list-style'],
-        ambiguousValues: ['disc', 'decimal'],
+        aliasGroups: ['list-style'],
+        values: ['disc', 'decimal'],
         type: SyntaxRuleType.Native
     },
     'list-style-image': {
-        ambiguousKeys: ['list-style'],
-        ambiguousValues: [IMAGE_VALUE_REGEX],
+        aliasGroups: ['list-style'],
+        values: [IMAGE_VALUE_REGEX],
         type: SyntaxRuleType.Native
     },
     'list-style': {
         type: SyntaxRuleType.NativeShorthand
     },
     'outline-color': {
-        ambiguousKeys: ['outline'],
-        ambiguousValues: [COLOR_VALUE_REGEX],
+        aliasGroups: ['outline'],
+        values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Native,
         variables: ['frame'],
     },
@@ -1563,13 +1563,13 @@ const rules = {
         variables: ['spacing']
     },
     'outline-style': {
-        ambiguousKeys: ['outline'],
-        ambiguousValues: BORDER_STYLE_VALUES,
+        aliasGroups: ['outline'],
+        values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Native
     },
     'outline-width': {
-        ambiguousKeys: ['outline'],
-        ambiguousValues: ['medium', 'thick', 'thin', NUMBER_VALUE_REGEX],
+        aliasGroups: ['outline'],
+        values: ['medium', 'thick', 'thin', NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
@@ -1712,18 +1712,18 @@ const rules = {
     },
     // scroll snap
     'scroll-snap-align': {
-        ambiguousKeys: ['scroll-snap'],
-        ambiguousValues: ['start', 'end', 'center'],
+        aliasGroups: ['scroll-snap'],
+        values: ['start', 'end', 'center'],
         type: SyntaxRuleType.Native
     },
     'scroll-snap-stop': {
-        ambiguousKeys: ['scroll-snap'],
-        ambiguousValues: ['normal', 'always'],
+        aliasGroups: ['scroll-snap'],
+        values: ['normal', 'always'],
         type: SyntaxRuleType.Native
     },
     'scroll-snap-type': {
-        ambiguousKeys: ['scroll-snap'],
-        ambiguousValues: ['x', 'y', 'block', 'inline', 'both'],
+        aliasGroups: ['scroll-snap'],
+        values: ['x', 'y', 'block', 'inline', 'both'],
         type: SyntaxRuleType.Native
     },
     'will-change': {
@@ -1737,13 +1737,13 @@ const rules = {
         type: SyntaxRuleType.Native
     },
     'shape-outside': {
-        ambiguousKeys: ['shape'],
-        ambiguousValues: [/(?:inset|circle|ellipse|polygon|url|linear-gradient)\(.*\)/],
+        aliasGroups: ['shape'],
+        values: [/(?:inset|circle|ellipse|polygon|url|linear-gradient)\(.*\)/],
         type: SyntaxRuleType.Native
     },
     'shape-margin': {
-        ambiguousKeys: ['shape'],
-        ambiguousValues: [NUMBER_VALUE_REGEX],
+        aliasGroups: ['shape'],
+        values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Native,
         variables: ['spacing']

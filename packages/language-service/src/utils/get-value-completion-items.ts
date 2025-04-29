@@ -78,7 +78,7 @@ export default function getValueCompletionItems(css: MasterCSS = new MasterCSS()
          * Scoped variables
          * @example box: + content -> box-sizing:content
          */
-        if (eachDefinedRule.definition.key === ruleKey || eachDefinedRule.definition.subkey === ruleKey || eachDefinedRule.definition.ambiguousKeys?.includes(ruleKey)) {
+        if (eachDefinedRule.definition.key === ruleKey || eachDefinedRule.definition.subkey === ruleKey || eachDefinedRule.definition.aliasGroups?.includes(ruleKey)) {
             for (const variableName in eachDefinedRule.variables) {
                 if (completionItems.find(({ label }) => label === variableName)) continue
                 const variable = eachDefinedRule.variables[variableName]
@@ -115,25 +115,25 @@ export default function getValueCompletionItems(css: MasterCSS = new MasterCSS()
          * @example text: -> center, left, right, justify
          * @example t: -> center, left, right, justify
          */
-        if (eachDefinedRule.definition.ambiguousKeys?.includes(ruleKey) && eachDefinedRule.definition.ambiguousValues?.length) {
+        if (eachDefinedRule.definition.aliasGroups?.includes(ruleKey) && eachDefinedRule.definition.values?.length) {
             const nativePropertyData = nativeProperties.find((x: { name: string }) => x.name === eachDefinedRule.id)
-            for (const ambiguousValue of eachDefinedRule.definition.ambiguousValues) {
-                if (typeof ambiguousValue !== 'string') continue
-                const nativeValueData = nativePropertyData?.values?.find((x: { name: string }) => x.name === ambiguousValue)
+            for (const value of eachDefinedRule.definition.values) {
+                if (typeof value !== 'string') continue
+                const nativeValueData = nativePropertyData?.values?.find((x: { name: string }) => x.name === value)
                 const isNative = eachDefinedRule.definition.type && ([SyntaxRuleType.Native, SyntaxRuleType.NativeShorthand] as SyntaxRuleTypeValue[]).includes(eachDefinedRule.definition.type)
                 completionItems.push({
-                    label: ambiguousValue,
+                    label: value,
                     kind: CompletionItemKind.Value,
-                    sortText: AMBIGUOUS_PRIORITY + ambiguousValue,
+                    sortText: AMBIGUOUS_PRIORITY + value,
                     documentation: getCSSDataDocumentation({
                         ...(nativeValueData || {} as IValueData),
                         // use nativePropertyData.reference because nativeValueData does not have references
                         references: nativePropertyData?.references
                     }, {
-                        generatedCSS: generateCSS([ruleKey + ':' + ambiguousValue], css),
+                        generatedCSS: generateCSS([ruleKey + ':' + value], css),
                         docs: '/reference/' + isCoreRule(eachDefinedRule.id) && eachDefinedRule.id
                     }),
-                    detail: isNative ? eachDefinedRule.id + ': ' + ambiguousValue : ambiguousValue
+                    detail: isNative ? eachDefinedRule.id + ': ' + value : value
                 })
             }
         }

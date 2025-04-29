@@ -157,8 +157,8 @@ export default class MasterCSS {
                     matcher,
                     type,
                     subkey,
-                    ambiguousKeys,
-                    ambiguousValues,
+                    aliasGroups,
+                    values,
                     sign,
                     key: originalKey,
                     variables: ruleVariableGroups,
@@ -202,14 +202,14 @@ export default class MasterCSS {
                     }
 
                     // Ambiguous keys and values
-                    if (ambiguousKeys?.length) {
-                        const keyPattern = ambiguousKeys.length > 1
-                            ? `(?:${ambiguousKeys.join('|')})`
-                            : ambiguousKeys[0]
+                    if (aliasGroups?.length) {
+                        const keyPattern = aliasGroups.length > 1
+                            ? `(?:${aliasGroups.join('|')})`
+                            : aliasGroups[0]
 
                         const variableKeys = Object.keys(syntax.variables)
-                        if (ambiguousValues?.length) {
-                            const valuePatterns = ambiguousValues.map(val =>
+                        if (values?.length) {
+                            const valuePatterns = values.map(val =>
                                 val instanceof RegExp
                                     ? val.source.replace('\\$colors', colorPattern)
                                     : `${val}(?:\\b|_)`

@@ -11,8 +11,8 @@ export interface SyntaxRuleDefinition {
     sign?: string
     key?: string
     subkey?: string
-    ambiguousKeys?: string[]
-    ambiguousValues?: (RegExp | string)[]
+    aliasGroups?: string[]
+    values?: (RegExp | string)[]
     variables?: string[]
     separators?: string[]
     unit?: any

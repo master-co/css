@@ -9,7 +9,7 @@ const customConfig: Config = {
     rules: {
         'font-size': {
             key: 'custom',
-            ambiguousValues: [NUMBER_VALUE_REGEX],
+            values: [NUMBER_VALUE_REGEX],
             unit: 'rem',
             type: SyntaxRuleType.Normal,
         }

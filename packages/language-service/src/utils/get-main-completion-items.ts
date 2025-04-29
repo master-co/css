@@ -58,18 +58,18 @@ export default function getMainCompletionItems(css: MasterCSS = new MasterCSS())
                 })
             }
 
-            if (eachDefinedRule.definition?.ambiguousKeys?.length) {
-                for (const ambiguousKey of eachDefinedRule.definition.ambiguousKeys) {
-                    if (addedKeys.has(ambiguousKey)) {
+            if (eachDefinedRule.definition?.aliasGroups?.length) {
+                for (const aliasGroup of eachDefinedRule.definition.aliasGroups) {
+                    if (addedKeys.has(aliasGroup)) {
                         continue
                     }
-                    addedKeys.add(ambiguousKey)
+                    addedKeys.add(aliasGroup)
                 }
             }
         }
     }
 
-    addedKeys.forEach(ambiguousKey => {
+    addedKeys.forEach(aliasGroup => {
         /**
          * Ambiguous keys are added to the completion list
          * @example text: t:
@@ -77,8 +77,8 @@ export default function getMainCompletionItems(css: MasterCSS = new MasterCSS())
         completionItems.push({
             kind: CompletionItemKind.Property,
             detail: 'ambiguous key',
-            label: ambiguousKey + ':',
-            sortText: ambiguousKey,
+            label: aliasGroup + ':',
+            sortText: aliasGroup,
             command: {
                 title: 'triggerSuggest',
                 command: 'editor.action.triggerSuggest'
