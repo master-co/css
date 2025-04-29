@@ -38,10 +38,8 @@ export class SyntaxRule {
         this.layer = css.generalLayer
         Object.assign(this, registeredSyntax)
         const { id, definition } = registeredSyntax
-        const { analyze, transformValue, declarer, transformValueComponents, create, type, unit } = definition
+        const { analyze, transformValue, declarer, transformValueComponents, type, unit } = definition
         this.type = type!
-
-        if (create) create.call(this, name)
 
         // 1. value / selectorToken
         let stateToken: string

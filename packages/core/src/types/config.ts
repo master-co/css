@@ -26,9 +26,6 @@ export interface SyntaxRuleDefinition {
     analyze?: (this: SyntaxRule, className: string) => [valueToken: string, prefixToken?: string]
     transformValue?(this: SyntaxRule, value: string): string
     transformValueComponents?(this: SyntaxRule, valueComponents: ValueComponent[]): ValueComponent[]
-    delete?(this: SyntaxRule, className: string): void
-    create?(this: SyntaxRule, className: string): void
-    insert?(this: SyntaxRule): void
 }
 
 export type VariableValue = number | string | false | (number | string)[]
