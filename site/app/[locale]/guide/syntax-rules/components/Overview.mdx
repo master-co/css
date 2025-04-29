@@ -3,10 +3,8 @@ export default {
     rules: {
         foo: { // [!code highlight]
             unit: 'rem', // [!code highlight]
-            declare(value, unit) { // [!code highlight]
-                return { // [!code highlight]
-                    width: value + unit // [!code highlight]
-                } // [!code highlight]
+            declarations: { // [!code highlight]
+                width: undefined // [!code highlight]
             } // [!code highlight]
         } // [!code highlight]
     }

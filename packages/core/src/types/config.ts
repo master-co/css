@@ -4,6 +4,7 @@ import type { ValueComponent } from './syntax'
 import type { rules, utilities } from '../config'
 import { AT_IDENTIFIERS } from '../common'
 import { SyntaxRuleTypeValue } from './common'
+import { DeclarerNames } from '../declarers'
 
 export interface SyntaxRuleDefinition {
     type?: SyntaxRuleTypeValue
@@ -16,12 +17,15 @@ export interface SyntaxRuleDefinition {
     variables?: string[]
     separators?: string[]
     unit?: any
-    declarations?: PropertiesHyphen
+    declarations?: PropertiesHyphen | Record<string, string | undefined | (string | undefined)[]>
     includeAnimations?: boolean
+    declarer?: {
+        name: DeclarerNames
+        data?: any
+    },
     analyze?: (this: SyntaxRule, className: string) => [valueToken: string, prefixToken?: string]
     transformValue?(this: SyntaxRule, value: string): string
     transformValueComponents?(this: SyntaxRule, valueComponents: ValueComponent[]): ValueComponent[]
-    declare?(this: SyntaxRule, value: string, valueComponents: ValueComponent[]): PropertiesHyphen
     delete?(this: SyntaxRule, className: string): void
     create?(this: SyntaxRule, className: string): void
     insert?(this: SyntaxRule): void

@@ -7,10 +7,8 @@ export default {
     rules: {
         foo: {
             match: /^foo:/,
-            declare(value, unit) {
-                return {
-                    width: value + unit
-                }
+            declarations: {
+                width: undefined
             }
         }
     }

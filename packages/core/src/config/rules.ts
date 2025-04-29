@@ -1,7 +1,5 @@
-import cssEscape from 'shared/utils/css-escape'
-import type { SyntaxRule } from '../syntax-rule'
 import SyntaxRuleType from '../syntax-rule-type'
-import { BORDER_STYLE_VALUES, COLOR_VALUE_REGEX, IMAGE_VALUE_REGEX, NUMBER_VALUE_REGEX, VALUE_DELIMITERS } from '../common'
+import { BORDER_STYLE_VALUES, COLOR_VALUE_REGEX, IMAGE_VALUE_REGEX, NUMBER_VALUE_REGEX } from '../common'
 import autofillSolidStyle from '../utils/autofill-solid-style'
 import { SyntaxRuleDefinition } from '../types/config'
 
@@ -18,120 +16,12 @@ const rules = {
             }
             return [className.slice(i), className.slice(0, i)]
         },
-        declare(value) {
-            const declarations: any = {}
-            const addProp = (propertyName: string) => {
-                const indexOfColon = propertyName.indexOf(':')
-                if (indexOfColon !== -1) {
-                    const propName = propertyName.slice(0, indexOfColon)
-                    declarations[propName] = propertyName.slice(indexOfColon + 1)
-                }
-            }
-            const handleRule = (rule: SyntaxRule) => {
-                const addProps = (cssText: string) => {
-                    const cssProperties = cssText.slice(cssEscape(rule.name).length).match(/\{(.*)\}/)?.[1].split(';')
-                    if (cssProperties)
-                        for (const eachCssProperty of cssProperties) {
-                            addProp(eachCssProperty)
-                        }
-                }
-
-                addProps(rule.text)
-
-                // animation
-                if (rule.animationNames) {
-                    if (!this.animationNames) {
-                        this.animationNames = new Set()
-                    }
-                    for (const eachKeyframeName of rule.animationNames) {
-                        this.animationNames.add(eachKeyframeName)
-                    }
-                }
-
-                // variable
-                if (rule.variableNames) {
-                    if (this.variableNames) {
-                        for (const eachVariableName of rule.variableNames) {
-                            this.variableNames.add(eachVariableName)
-                        }
-                    } else {
-                        this.variableNames = new Set(rule.variableNames)
-                    }
-                }
-            }
-
-            const names: string[] = []
-            let currentName = ''
-            const addName = () => {
-                if (currentName) {
-                    names.push(currentName.replace(/ /g, '|'))
-                    currentName = ''
-                }
-            }
-
-            let i = 1;
-            (function analyze(end: string) {
-                for (; i < value.length; i++) {
-                    const char = value[i]
-
-                    if (!end) {
-                        if (char === ';') {
-                            addName()
-                            continue
-                        }
-                        if (char === '}') {
-                            break
-                        }
-                    }
-
-                    currentName += char
-
-                    if (end === char) {
-                        if (end === '\'' || end === '"') {
-                            let count = 0
-                            for (let j = currentName.length - 2; ; j--) {
-                                if (currentName[j] !== '\\') {
-                                    break
-                                }
-                                count++
-                            }
-                            if (count % 2) {
-                                continue
-                            }
-                        }
-
-                        break
-                    } else if (char in VALUE_DELIMITERS && (end !== '\'' && end !== '"')) {
-                        i++
-                        analyze(VALUE_DELIMITERS[char as keyof typeof VALUE_DELIMITERS])
-                    }
-                }
-            })('')
-
-            addName()
-
-            for (const eachName of names) {
-                const rules = this.css.generate(eachName, this.mode)
-                if (rules.length) {
-                    for (const eachRule of rules) {
-                        handleRule(eachRule)
-                    }
-                } else {
-                    addProp(eachName)
-                }
-            }
-
-            return declarations
-        }
+        declarer: { name: 'core.group' }
     },
     variable: {
         matcher: /^\$[\w-]+:/, // don't use 'rem' as default, because css variable is common API
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                ['--' + this.keyToken.slice(1, -1)]: value
-            }
-        }
+        declarer: { name: 'core.variable' }
     },
     'font-size': {
         aliasGroups: ['font', 'f'],
@@ -148,28 +38,8 @@ const rules = {
         aliasGroups: ['font', 'f'],
         type: SyntaxRuleType.Native
     },
-    'font-smoothing': {
-        aliasGroups: ['font', 'f'],
-        values: ['antialiased', 'subpixel-antialiased'],
-        type: SyntaxRuleType.Native,
-        declare(value) {
-            switch (value) {
-                case 'subpixel-antialiased':
-                    return {
-                        '-webkit-font-smoothing': 'auto',
-                        '-moz-osx-font-smoothing': 'auto'
-                    }
-                case 'antialiased':
-                    return {
-                        '-webkit-font-smoothing': 'antialiased',
-                        '-moz-osx-font-smoothing': 'grayscale'
-                    }
-                default:
-                    return {
-                        'font-smooth': value
-                    }
-            }
-        }
+    'font-smooth': {
+        type: SyntaxRuleType.Native
     },
     'font-style': {
         aliasGroups: ['font', 'f'],
@@ -237,11 +107,9 @@ const rules = {
         subkey: 'margin-x',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'margin-left': value,
-                'margin-right': value
-            }
+        declarations: {
+            'margin-left': undefined,
+            'margin-right': undefined
         },
         variables: ['spacing']
     },
@@ -249,11 +117,9 @@ const rules = {
         key: 'my',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'margin-top': value,
-                'margin-bottom': value
-            }
+        declarations: {
+            'margin-top': undefined,
+            'margin-bottom': undefined
         },
         variables: ['spacing']
     },
@@ -311,11 +177,9 @@ const rules = {
         key: 'px',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'padding-left': value,
-                'padding-right': value
-            }
+        declarations: {
+            'padding-left': undefined,
+            'padding-right': undefined
         },
         variables: ['spacing']
     },
@@ -323,11 +187,9 @@ const rules = {
         key: 'py',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'padding-top': value,
-                'padding-bottom': value
-            }
+        declarations: {
+            'padding-top': undefined,
+            'padding-bottom': undefined
         },
         variables: ['spacing']
     },
@@ -410,48 +272,27 @@ const rules = {
     size: {
         type: SyntaxRuleType.Shorthand,
         unit: 'rem',
-        declare(_value, valueComponents) {
-            const length = valueComponents.length
-            return {
-                width: length === 1
-                    ? valueComponents[0].text
-                    : valueComponents[0].text,
-                height: length === 1
-                    ? valueComponents[0].text
-                    : valueComponents[2].text
-            }
+        declarer: {
+            name: 'pair',
+            data: ['width', 'height']
         }
     },
     'min-size': {
         key: 'min',
         type: SyntaxRuleType.Shorthand,
         unit: 'rem',
-        declare(_value, valueComponents) {
-            const length = valueComponents.length
-            return {
-                'min-width': length === 1
-                    ? valueComponents[0].text
-                    : valueComponents[0].text,
-                'min-height': length === 1
-                    ? valueComponents[0].text
-                    : valueComponents[2].text
-            }
+        declarer: {
+            name: 'pair',
+            data: ['min-width', 'min-height']
         }
     },
     'max-size': {
         key: 'max',
         type: SyntaxRuleType.Shorthand,
         unit: 'rem',
-        declare(_value, valueComponents) {
-            const length = valueComponents.length
-            return {
-                'max-width': length === 1
-                    ? valueComponents[0].text
-                    : valueComponents[0].text,
-                'max-height': length === 1
-                    ? valueComponents[0].text
-                    : valueComponents[2].text
-            }
+        declarer: {
+            name: 'pair',
+            data: ['max-width', 'max-height']
         }
     },
     'box-sizing': {
@@ -461,11 +302,9 @@ const rules = {
     'box-decoration-break': {
         key: 'box-decoration',
         type: SyntaxRuleType.Native,
-        declare(value) {
-            return {
-                '-webkit-box-decoration-break': value,
-                'box-decoration-break': value,
-            } as any
+        declarations: {
+            '-webkit-box-decoration-break': undefined,
+            'box-decoration-break': undefined
         }
     },
     container: {
@@ -545,12 +384,10 @@ const rules = {
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         variables: ['text'],
-        declare(value) {
-            return {
-                '-webkit-text-decoration': value,
-                'text-decoration': value,
-            }
-        },
+        declarations: {
+            '-webkit-text-decoration': undefined,
+            'text-decoration': undefined
+        }
     },
     'text-underline-offset': {
         aliasGroups: ['text-underline'],
@@ -706,20 +543,16 @@ const rules = {
     },
     'user-drag': {
         type: SyntaxRuleType.Native,
-        declare(value) {
-            return {
-                '-webkit-user-drag': value,
-                'user-drag': value,
-            } as any
+        declarations: {
+            '-webkit-user-drag': undefined,
+            'user-drag': undefined
         }
     },
     'user-select': {
         type: SyntaxRuleType.Native,
-        declare(value) {
-            return {
-                '-webkit-user-select': value,
-                'user-select': value,
-            } as any
+        declarations: {
+            '-webkit-user-select': undefined,
+            'user-select': undefined
         }
     },
     'text-shadow': {
@@ -730,12 +563,9 @@ const rules = {
         aliasGroups: ['text', 't'],
         values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
-        declare(value) {
-            const diff = .875
-            return {
-                'font-size': value,
-                'line-height': `calc(${value} + ${diff}em)`
-            }
+        declarations: {
+            'font-size': undefined,
+            'line-height': ['calc(', undefined, ' + 0.875em)']
         },
         type: SyntaxRuleType.Shorthand
     },
@@ -744,10 +574,8 @@ const rules = {
         values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Native,
         variables: ['text'],
-        declare(value) {
-            return {
-                '-webkit-text-fill-color': value
-            }
+        declarations: {
+            '-webkit-text-fill-color': undefined
         }
     },
     'text-stroke-width': {
@@ -755,42 +583,34 @@ const rules = {
         values: ['thin', 'medium', 'thick', NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Native,
-        declare(value) {
-            return {
-                '-webkit-text-stroke-width': value
-            }
-        },
+        declarations: {
+            '-webkit-text-stroke-width': undefined
+        }
     },
     'text-stroke-color': {
         aliasGroups: ['text-stroke'],
         values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Native,
-        declare(value) {
-            return {
-                '-webkit-text-stroke-color': value
-            }
+        declarations: {
+            '-webkit-text-stroke-color': undefined
         }
     },
     'text-stroke': {
         unit: 'rem',
         type: SyntaxRuleType.Native,
-        declare(value) {
-            return {
-                '-webkit-text-stroke': value
-            }
+        declarations: {
+            '-webkit-text-stroke': undefined
         }
     },
     'text-truncate': {
         subkey: 'lines',
-        declare(value) {
-            return {
-                display: '-webkit-box',
-                '-webkit-box-orient': 'vertical',
-                '-webkit-line-clamp': value,
-                overflow: 'hidden',
-                'overflow-wrap': 'break-word',
-                'text-overflow': 'ellipsis',
-            }
+        declarations: {
+            display: '-webkit-box',
+            '-webkit-box-orient': 'vertical',
+            '-webkit-line-clamp': undefined,
+            overflow: 'hidden',
+            'overflow-wrap': 'break-word',
+            'text-overflow': 'ellipsis',
         },
         type: SyntaxRuleType.Shorthand,
     },
@@ -947,11 +767,9 @@ const rules = {
         values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Shorthand,
         variables: ['frame'],
-        declare(value) {
-            return {
-                'border-left-color': value,
-                'border-right-color': value
-            }
+        declarations: {
+            'border-left-color': undefined,
+            'border-right-color': undefined
         }
     },
     'border-y-color': {
@@ -959,11 +777,9 @@ const rules = {
         values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Shorthand,
         variables: ['frame'],
-        declare(value) {
-            return {
-                'border-top-color': value,
-                'border-bottom-color': value
-            }
+        declarations: {
+            'border-top-color': undefined,
+            'border-bottom-color': undefined
         }
     },
     'border-color': {
@@ -997,44 +813,37 @@ const rules = {
         key: 'rt',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'border-top-left-radius': value,
-                'border-top-right-radius': value
-            }
+        declarations: {
+            'border-top-left-radius': undefined,
+            'border-top-right-radius': undefined
         }
     },
     'border-bottom-radius': {
         key: 'rb',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'border-bottom-left-radius': value,
-                'border-bottom-right-radius': value
-            }
+        declarations: {
+            'border-bottom-left-radius': undefined,
+            'border-bottom-right-radius': undefined
         }
     },
     'border-left-radius': {
         key: 'rl',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'border-top-left-radius': value,
-                'border-bottom-left-radius': value
-            }
+        declarations: {
+            'border-top-left-radius': undefined,
+            'border-bottom-left-radius': undefined
         }
+
     },
     'border-right-radius': {
         key: 'rr',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'border-top-right-radius': value,
-                'border-bottom-right-radius': value
-            }
+        declarations: {
+            'border-top-right-radius': undefined,
+            'border-bottom-right-radius': undefined
         }
     },
     'border-radius': {
@@ -1067,22 +876,18 @@ const rules = {
         aliasGroups: ['bx', 'border-x'],
         values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'border-left-style': value,
-                'border-right-style': value
-            } as any
+        declarations: {
+            'border-left-style': undefined,
+            'border-right-style': undefined
         }
     },
     'border-y-style': {
         aliasGroups: ['by', 'border-y'],
         values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'border-top-style': value,
-                'border-bottom-style': value
-            } as any
+        declarations: {
+            'border-top-style': undefined,
+            'border-bottom-style': undefined
         }
     },
     'border-style': {
@@ -1120,11 +925,9 @@ const rules = {
         values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'border-left-width': value,
-                'border-right-width': value
-            }
+        declarations: {
+            'border-left-width': undefined,
+            'border-right-width': undefined
         }
     },
     'border-y-width': {
@@ -1132,11 +935,9 @@ const rules = {
         values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'border-top-width': value,
-                'border-bottom-width': value
-            }
+        declarations: {
+            'border-top-width': undefined,
+            'border-bottom-width': undefined
         }
     },
     'border-width': {
@@ -1210,11 +1011,9 @@ const rules = {
         type: SyntaxRuleType.Shorthand,
         transformValueComponents: autofillSolidStyle,
         variables: ['frame'],
-        declare(value) {
-            return {
-                'border-left': value,
-                'border-right': value
-            }
+        declarations: {
+            'border-left': undefined,
+            'border-right': undefined
         }
     },
     'border-y': {
@@ -1223,11 +1022,9 @@ const rules = {
         type: SyntaxRuleType.Shorthand,
         transformValueComponents: autofillSolidStyle,
         variables: ['frame'],
-        declare(value) {
-            return {
-                'border-top': value,
-                'border-bottom': value
-            }
+        declarations: {
+            'border-top': undefined,
+            'border-bottom': undefined
         }
     },
     border: {
@@ -1254,11 +1051,9 @@ const rules = {
     'background-clip': {
         key: 'bg-clip',
         type: SyntaxRuleType.Native,
-        declare(value) {
-            return {
-                '-webkit-background-clip': value,
-                'background-clip': value
-            }
+        declarations: {
+            '-webkit-background-clip': undefined,
+            'background-clip': undefined
         }
     },
     'background-origin': {
@@ -1294,10 +1089,8 @@ const rules = {
     gradient: {
         matcher: /^gradient\(/,
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'background-image': 'linear-' + value
-            }
+        declarations: {
+            'background-image': ['linear-', undefined]
         }
     },
     'mix-blend-mode': {
@@ -1307,11 +1100,9 @@ const rules = {
     'backdrop-filter': {
         key: 'bd',
         type: SyntaxRuleType.Native,
-        declare(value) {
-            return {
-                '-webkit-backdrop-filter': value,
-                'backdrop-filter': value,
-            }
+        declarations: {
+            '-webkit-backdrop-filter': undefined,
+            'backdrop-filter': undefined
         }
     },
     filter: {
@@ -1372,11 +1163,9 @@ const rules = {
         transformValue(value) {
             return 'span' + ' ' + value + '/' + 'span' + ' ' + value
         },
-        declare(value) {
-            return {
-                'grid-column': value
-            }
-        },
+        declarations: {
+            'grid-column': undefined
+        }
     },
     'grid-column': {
         key: 'grid-col',
@@ -1384,15 +1173,9 @@ const rules = {
     },
     'grid-columns': {
         key: 'grid-cols',
-        declare(value) {
-            return {
-                display: 'grid',
-                'grid-template-columns': 'repeat'
-                    + '(' + value
-                    + ','
-                    + 'minmax'
-                    + '(' + 0 + ',' + 1 + 'fr' + '))',
-            }
+        declarations: {
+            display: 'grid',
+            'grid-template-columns': ['repeat(', undefined, ',minmax(0,1fr))'],
         },
         type: SyntaxRuleType.Shorthand
     },
@@ -1407,26 +1190,18 @@ const rules = {
         transformValue(value) {
             return 'span' + ' ' + value + '/' + 'span' + ' ' + value
         },
-        declare(value) {
-            return {
-                'grid-row': value
-            }
+        declarations: {
+            'grid-row': undefined
         }
     },
     'grid-row': {
         type: SyntaxRuleType.NativeShorthand
     },
     'grid-rows': {
-        declare(value) {
-            return {
-                display: 'grid',
-                'grid-auto-flow': 'column',
-                'grid-template-rows': 'repeat'
-                    + '(' + value
-                    + ','
-                    + 'minmax'
-                    + '(' + 0 + ',' + 1 + 'fr' + '))',
-            }
+        declarations: {
+            display: 'grid',
+            'grid-auto-flow': 'column',
+            'grid-template-rows': ['repeat(', undefined, ',minmax(0,1fr))'],
         },
         type: SyntaxRuleType.Shorthand
     },
@@ -1629,11 +1404,9 @@ const rules = {
         key: 'scroll-mx',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'scroll-margin-left': value,
-                'scroll-margin-right': value
-            }
+        declarations: {
+            'scroll-margin-left': undefined,
+            'scroll-margin-right': undefined
         },
         variables: ['spacing']
     },
@@ -1641,11 +1414,9 @@ const rules = {
         key: 'scroll-my',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'scroll-margin-top': value,
-                'scroll-margin-bottom': value
-            }
+        declarations: {
+            'scroll-margin-top': undefined,
+            'scroll-margin-bottom': undefined
         },
         variables: ['spacing']
     },
@@ -1684,11 +1455,9 @@ const rules = {
         key: 'scroll-px',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'scroll-padding-left': value,
-                'scroll-padding-right': value
-            }
+        declarations: {
+            'scroll-padding-left': undefined,
+            'scroll-padding-right': undefined
         },
         variables: ['spacing']
     },
@@ -1696,11 +1465,9 @@ const rules = {
         key: 'scroll-py',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declare(value) {
-            return {
-                'scroll-padding-top': value,
-                'scroll-padding-bottom': value
-            }
+        declarations: {
+            'scroll-padding-top': undefined,
+            'scroll-padding-bottom': undefined
         },
         variables: ['spacing']
     },
@@ -1760,11 +1527,9 @@ const rules = {
     },
     'mask-image': {
         type: SyntaxRuleType.Native,
-        declare(value) {
-            return {
-                '-webkit-mask-image': value,
-                'mask-image': value,
-            }
+        declarations: {
+            '-webkit-mask-image': undefined,
+            'mask-image': undefined
         }
     }
 } satisfies Record<string, SyntaxRuleDefinition>

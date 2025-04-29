@@ -15,6 +15,7 @@ import parseSelector, { SelectorNode } from './utils/parse-selector'
 import generateSelector from './utils/generate-selector'
 import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
 import { SyntaxRuleTypeValue } from './types/common'
+import declarers from './declarers'
 
 export class SyntaxRule {
     native?: CSSRule
@@ -37,13 +38,12 @@ export class SyntaxRule {
         this.layer = css.generalLayer
         Object.assign(this, registeredSyntax)
         const { id, definition } = registeredSyntax
-        const { analyze, transformValue, declare, transformValueComponents, create, type, unit } = definition
+        const { analyze, transformValue, declarer, transformValueComponents, create, type, unit } = definition
         this.type = type!
 
         if (create) create.call(this, name)
 
         // 1. value / selectorToken
-        this.declarations = definition.declarations
         let stateToken: string
 
         if (this.type === SyntaxRuleType.Utility) {
@@ -140,13 +140,27 @@ export class SyntaxRule {
             if (transformValue) {
                 newValue = transformValue.call(this, newValue)
             }
-            if (declare) {
-                this.declarations = declare.call(this, newValue, this.valueComponents)
+            if (definition.declarations) {
+                const declarations: any = {}
+                for (const propertyName in definition.declarations) {
+                    const propertyValue = definition.declarations[propertyName as keyof PropertiesHyphen]
+                    declarations[propertyName] = propertyValue === undefined
+                        ? newValue
+                        : Array.isArray(propertyValue)
+                            ? propertyValue.map((v) => v === undefined ? newValue : v).join('')
+                            : propertyValue
+                }
+                this.declarations = declarations
+            } else if (declarer) {
+                const declare = declarers[declarer.name]
+                this.declarations = declare.call(this, newValue, this.valueComponents, declarer.data)
             } else if (id) {
                 this.declarations = {
                     [id]: newValue
                 }
             }
+        } else {
+            this.declarations = definition.declarations
         }
 
         if (!Object.entries(this.declarations ?? {}).length) {
