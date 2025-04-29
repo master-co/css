@@ -24,7 +24,6 @@ export interface SyntaxRuleDefinition {
         data?: any
     },
     analyze?: (this: SyntaxRule, className: string) => [valueToken: string, prefixToken?: string]
-    transformValue?(this: SyntaxRule, value: string): string
     transformValueComponents?(this: SyntaxRule, valueComponents: ValueComponent[]): ValueComponent[]
 }
 

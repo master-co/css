@@ -38,7 +38,7 @@ export class SyntaxRule {
         this.layer = css.generalLayer
         Object.assign(this, registeredSyntax)
         const { id, definition } = registeredSyntax
-        const { analyze, transformValue, declarer, transformValueComponents, type, unit } = definition
+        const { analyze, declarer, transformValueComponents, type, unit } = definition
         this.type = type!
 
         // 1. value / selectorToken
@@ -135,9 +135,6 @@ export class SyntaxRule {
                 this.valueComponents = transformValueComponents.call(this, this.valueComponents)
             }
             newValue = this.resolveValue(this.valueComponents, unit, [], false)
-            if (transformValue) {
-                newValue = transformValue.call(this, newValue)
-            }
             if (definition.declarations) {
                 const declarations: any = {}
                 for (const propertyName in definition.declarations) {

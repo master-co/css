@@ -1160,11 +1160,8 @@ const rules = {
     'grid-column-span': {
         key: 'grid-col-span',
         type: SyntaxRuleType.Shorthand,
-        transformValue(value) {
-            return 'span' + ' ' + value + '/' + 'span' + ' ' + value
-        },
         declarations: {
-            'grid-column': undefined
+            'grid-column': ['span ', undefined, '/span ', undefined]
         }
     },
     'grid-column': {
@@ -1187,11 +1184,8 @@ const rules = {
     },
     'grid-row-span': {
         type: SyntaxRuleType.Shorthand,
-        transformValue(value) {
-            return 'span' + ' ' + value + '/' + 'span' + ' ' + value
-        },
         declarations: {
-            'grid-row': undefined
+            'grid-row': ['span ', undefined, '/span ', undefined]
         }
     },
     'grid-row': {
