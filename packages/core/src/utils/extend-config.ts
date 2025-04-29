@@ -33,7 +33,7 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
         return result
     }
     const formattedConfigs = configs.reduce<Config[]>((acc, config) => collectConfigs(config, acc), [])
-    return formattedConfigs.reduce<Config>(
+    const result = formattedConfigs.reduce<Config>(
         (extendedConfig, currentConfig) => {
             Object.entries(currentConfig).forEach(([key, value]) => {
                 if (key === 'animations' && value) {
@@ -46,4 +46,13 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
         },
         { animations: {}, components: {}, at: {}, variables: {} }
     )
+
+    for (const key in result) {
+        const typedKey = key as keyof Config
+        if (typeof result[typedKey] === 'object' && Object.keys(result[typedKey] as object).length === 0) {
+            delete result[typedKey]
+        }
+    }
+
+    return result
 }

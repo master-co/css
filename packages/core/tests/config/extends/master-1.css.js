@@ -7,21 +7,19 @@ const config = {
         config2,
     ],
     variables: {
-        fourth: '$(first)',
-        first: {
-            '': '#111111',
-            '@dark': '#222222',
-            '@light': 'rgb(0, 0, 0)'
+        fourth: '$first',
+        first: '#111111'
+    },
+    modes: {
+        light: {
+            first: 'rgb(0, 0, 0)',
+            second: 'rgb(0 0 0 / .5)',
         },
-        second: {
-            '@dark': '#999999',
-            '@light': 'rgb(0 0 0 / .5)'
-        },
-        third: {
-            '@dark': '$(blue-50)',
-            '2': {
-                '@dark': '$(blue-60)'
-            }
+        dark: {
+            first: '#222222',
+            second: '#999999',
+            third: '$blue-50',
+            'third-2': '$blue-60'
         }
     },
     components: {

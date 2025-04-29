@@ -1,23 +1,19 @@
 import type { Config } from '@master/css'
 
 export default {
-    variables: {
-        yellow: {
-            ring: {
-                '@light': '$black/.1',
-                '@dark': '$white/.3'
+    modes: {
+        light: {
+            'yellow-ring': '$black/.1',
+            'touch-yellow': '$yellow-30',
+            text: {
+                'yellow-contrast': '$yellow-90'
             }
         },
-        touch: {
-            yellow: {
-                '@light': '$yellow-30',
-                '@dark': '$yellow-40'
-            }
-        },
-        text: {
-            'yellow-contrast': {
-                '@light': '$yellow-90',
-                '@dark': '$yellow-95'
+        dark: {
+            'yellow-ring': '$white/.3',
+            'touch-yellow': '$yellow-40',
+            text: {
+                'yellow-contrast': '$yellow-95'
             }
         }
     },

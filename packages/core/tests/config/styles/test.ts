@@ -35,10 +35,12 @@ test.concurrent('components', () => {
         },
         'highlight-numbers',
         {
-            variables: {
-                custom: {
-                    '@light': '$(black)',
-                    '@dark': '$(white)'
+            modes: {
+                light: {
+                    custom: '$(black)'
+                },
+                dark: {
+                    custom: '$(white)'
                 }
             },
             components: {

@@ -1,8 +1,10 @@
 export default {
-    variables: {
-        primary: {
-            '@light': '#000000',
-            '@dark': '#ffffff'
+    modes: {
+        light: {
+            primary: '#000000',
+        },
+        dark: {
+            primary: '#ffffff',
         }
     },
     components: {

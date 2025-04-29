@@ -7,6 +7,30 @@ export default {
             }
         }
     },
+    modes: {
+        light: {
+            primary: '$(black)',
+            'primary-text': '$(white)',
+            'primary-active': '$(gray)',
+            'primary-stage-1': '$(black)',
+            accent: '$(black)',
+            major: '$(black)',
+            content: '$(black)',
+            fade: '$(black)',
+            'fade-light': '$fade',
+        },
+        dark: {
+            primary: '$(white)',
+            'primary-text': '$(black)',
+            'primary-active': '$(white)',
+            'primary-code': '$(white)',
+            'primary-stage-1': '$(white)',
+            accent: '$(white)',
+            major: '$(white)',
+            content: '$(white)',
+            fade: '$(white)',
+        },
+    },
     variables: {
         'font-size': {
             sm: 16,
@@ -27,18 +51,9 @@ export default {
         },
         primary: {
             '': '$(black)',
-            '@light': '$(black)',
-            '@dark': '$(white)',
-            code: {
-                '': '$(black)',
-                '@dark': '$(white)'
-            },
+            code: '$(black)',
             stage: {
-                '1': {
-                    '': '$(white)',
-                    '@light': '$(black)',
-                    '@dark': '$(white)'
-                }
+                1: '$(white)'
             },
             alpha: '$(white)/.1',
             rgb1: 'rgb(0, 0, 0)',
@@ -48,26 +63,7 @@ export default {
             '2': '$(primary-rgb4)/.7'
         },
         input: '#123456',
-        accent: {
-            '@light': '$(black)',
-            '@dark': '$(white)'
-        },
-        major: {
-            '@light': '$(black)',
-            '@dark': '$(white)'
-        },
-        content: {
-            '@light': '$(black)',
-            '@dark': '$(white)'
-        },
-        fade: {
-            '@light': '$(black)',
-            '@dark': '$(white)'
-        },
         code: '$(accent)',
-        'fade-light': {
-            '@light': '$(fade@light)'
-        }
     },
     utilities: {
         show: {

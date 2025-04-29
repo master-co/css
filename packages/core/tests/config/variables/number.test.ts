@@ -20,16 +20,24 @@ test.concurrent('number with themes', () => {
     expectLayers(
         {
             general: '.m\\:x1{margin:calc(var(--spacing-x1) / 16 * 1rem)}',
-            theme: ':root{--spacing-x1:16}.dark{--spacing-x1:32}.light{--spacing-x1:48}'
+            theme: ':root{--spacing-x1:16}.light{--spacing-x1:48}.dark{--spacing-x1:32}'
         },
         'm:x1',
         {
             variables: {
                 spacing: {
-                    x1: {
-                        '': 16,
-                        '@dark': 32,
-                        '@light': 48
+                    x1: 16
+                }
+            },
+            modes: {
+                light: {
+                    spacing: {
+                        x1: 48
+                    }
+                },
+                dark: {
+                    spacing: {
+                        x1: 32
                     }
                 }
             }
@@ -40,16 +48,24 @@ test.concurrent('number with themes', () => {
     expectLayers(
         {
             general: '.line-height\\:x1{line-height:var(--line-height-x1)}',
-            theme: ':root{--line-height-x1:16}.dark{--line-height-x1:32}.light{--line-height-x1:48}'
+            theme: ':root{--line-height-x1:16}.light{--line-height-x1:48}.dark{--line-height-x1:32}'
         },
         'line-height:x1',
         {
             variables: {
                 'line-height': {
-                    x1: {
-                        '': 16,
-                        '@dark': 32,
-                        '@light': 48
+                    x1: 16
+                }
+            },
+            modes: {
+                light: {
+                    'line-height': {
+                        x1: 48
+                    }
+                },
+                dark: {
+                    'line-height': {
+                        x1: 32
                     }
                 }
             }
@@ -75,16 +91,24 @@ test.concurrent('number with themes using variable function', () => {
     expectLayers(
         {
             general: '.m\\:\\$\\(spacing-x1\\){margin:calc(var(--spacing-x1) / 16 * 1rem)}',
-            theme: ':root{--spacing-x1:16}.dark{--spacing-x1:32}.light{--spacing-x1:48}'
+            theme: ':root{--spacing-x1:16}.light{--spacing-x1:48}.dark{--spacing-x1:32}'
         },
         'm:$(spacing-x1)',
         {
             variables: {
                 spacing: {
-                    x1: {
-                        '': 16,
-                        '@dark': 32,
-                        '@light': 48
+                    x1: 16
+                }
+            },
+            modes: {
+                light: {
+                    spacing: {
+                        x1: 48
+                    }
+                },
+                dark: {
+                    spacing: {
+                        x1: 32
                     }
                 }
             }
@@ -95,16 +119,24 @@ test.concurrent('number with themes using variable function', () => {
     expectLayers(
         {
             general: '.line-height\\:\\$\\(spacing-x1\\){line-height:var(--spacing-x1)}',
-            theme: ':root{--spacing-x1:16}.dark{--spacing-x1:32}.light{--spacing-x1:48}'
+            theme: ':root{--spacing-x1:16}.light{--spacing-x1:48}.dark{--spacing-x1:32}'
         },
         'line-height:$(spacing-x1)',
         {
             variables: {
                 spacing: {
-                    x1: {
-                        '': 16,
-                        '@dark': 32,
-                        '@light': 48
+                    x1: 16
+                }
+            },
+            modes: {
+                light: {
+                    spacing: {
+                        x1: 48
+                    }
+                },
+                dark: {
+                    spacing: {
+                        x1: 32
                     }
                 }
             }

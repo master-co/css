@@ -1,10 +1,14 @@
 /** @type {import('@master/css').Config} */
 export default {
-    variables: {
-        text: {
-            primary: {
-                '@light': '$yellow-50',
-                '@dark': '$amber-20'
+    modes: {
+        light: {
+            text: {
+                primary: '$yellow-50'
+            }
+        },
+        dark: {
+            text: {
+                primary: '$amber-20'
             }
         }
     }

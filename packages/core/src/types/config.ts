@@ -42,7 +42,7 @@ export type ScreenDefinitions = Record<string, number>
 export type SyntaxRuleDefinitions = Partial<Record<keyof typeof rules | string, SyntaxRuleDefinition>>
 export type VariableDefinitions = { [key in keyof typeof rules]?: VariableDefinition } & Record<string, VariableDefinition>
 export type UtilityDefinitions = { [key in keyof typeof utilities]?: PropertiesHyphen } & Record<string, PropertiesHyphen>
-export type ModeDefinitions = Record<string, VariableDefinition>;
+export type ModeDefinitions = Record<string, VariableDefinitions>;
 export interface FunctionDefinition {
     unit?: string
     transform?(this: SyntaxRule, value: string, bypassVariableNames: string[]): string | ValueComponent[]

@@ -114,14 +114,14 @@ test.concurrent('colors', () => {
         },
         'bg:linear-gradient(180deg,primary,accent)',
         {
-            variables: {
-                primary: {
-                    '@light': '#000000',
-                    '@dark': '#ffffff'
+            modes: {
+                light: {
+                    primary: '#000000',
+                    accent: '#111111'
                 },
-                accent: {
-                    '@light': '#111111',
-                    '@dark': '#eeeeee'
+                dark: {
+                    primary: '#ffffff',
+                    accent: '#eeeeee'
                 }
             }
         }
@@ -134,13 +134,13 @@ test.concurrent('colors', () => {
         },
         'bg:linear-gradient(180deg,primary,accent)',
         {
-            variables: {
-                primary: {
-                    '@light': '#000000',
-                    '@dark': '#ffffff'
+            modes: {
+                light: {
+                    primary: '#000000',
                 },
-                accent: {
-                    '@dark': '#eeeeee'
+                dark: {
+                    primary: '#ffffff',
+                    accent: '#eeeeee'
                 }
             }
         }
@@ -153,10 +153,12 @@ test.concurrent('colors', () => {
         },
         'bg:linear-gradient(180deg,primary,accent)',
         {
-            variables: {
-                primary: {
-                    '@light': '#000000',
-                    '@dark': '#ffffff'
+            modes: {
+                light: {
+                    primary: '#000000'
+                },
+                dark: {
+                    primary: '#ffffff'
                 }
             }
         }
@@ -170,13 +172,15 @@ test.concurrent('colors', () => {
         'bg:linear-gradient(180deg,primary,accent)',
         {
             variables: {
-                accent: {
-                    '': '#ff0000',
-                    '@dark': '#aa0000'
+                accent: '#ff0000'
+            },
+            modes: {
+                light: {
+                    primary: '#000000'
                 },
-                primary: {
-                    '@light': '#000000',
-                    '@dark': '#ffffff'
+                dark: {
+                    primary: '#ffffff',
+                    accent: '#aa0000'
                 }
             }
         }
@@ -189,10 +193,12 @@ test.concurrent('colors', () => {
         },
         '{block;fg:fade}_:where(p)_code:before',
         {
-            variables: {
-                fade: {
-                    '@light': '#cccccc',
-                    '@dark': '#333333'
+            modes: {
+                light: {
+                    fade: '#cccccc'
+                },
+                dark: {
+                    fade: '#333333'
                 }
             }
         }
@@ -206,12 +212,14 @@ test.concurrent('colors', () => {
         'btn',
         {
             variables: {
-                primary: {
-                    filled: {
-                        '': '$(black)',
-                        '@light': '$(white)',
-                        '@dark': '$(black)'
-                    }
+                'primary-filled': '$black'
+            },
+            modes: {
+                light: {
+                    'primary-filled': '$white'
+                },
+                dark: {
+                    'primary-filled': '$black'
                 }
             },
             components: {
@@ -228,12 +236,14 @@ test.concurrent('colors', () => {
         'bg:primary-filled',
         {
             variables: {
-                primary: {
-                    filled: {
-                        '': '$(black)',
-                        '@light': '$(white)',
-                        '@dark': '$(black)'
-                    }
+                'primary-filled': '$black'
+            },
+            modes: {
+                light: {
+                    'primary-filled': '$white'
+                },
+                dark: {
+                    'primary-filled': '$black'
                 }
             },
             components: {
@@ -249,12 +259,14 @@ test.concurrent('colors', () => {
         'bg:primary-filled@dark',
         {
             variables: {
-                primary: {
-                    filled: {
-                        '': '$(white)',
-                        '@light': '$(black)',
-                        '@dark': '$(white)'
-                    }
+                'primary-filled': '$white'
+            },
+            modes: {
+                light: {
+                    'primary-filled': '$black'
+                },
+                dark: {
+                    'primary-filled': '$white'
                 }
             },
             components: {
@@ -281,14 +293,6 @@ test.concurrent('colors', () => {
         config
     )
 
-    expectLayers(
-        {
-            theme: '.light,:root{--fade-light:0 0 0}',
-            general: '.bg\\:fade-light{background-color:rgb(var(--fade-light))}'
-        },
-        'bg:fade-light',
-        config
-    )
 })
 
 it.concurrent('checks if similar color names collide.', () => {

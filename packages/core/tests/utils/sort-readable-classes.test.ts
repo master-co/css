@@ -28,17 +28,21 @@ Testing.readableClasses({
             yellow: 'bg:touch-yellow:hover'
         }
     },
-    variables: {
-        yellow: {
-            ring: {
-                '@light': '$(black)/.1',
-                '@dark': '$(white)/.3'
+    modes: {
+        light: {
+            yellow: {
+                ring: '$(yellow-30)'
+            },
+            touch: {
+                yellow: '$(yellow-30)'
             }
         },
-        touch: {
+        dark: {
             yellow: {
-                '@light': '$(yellow-30)',
-                '@dark': '$(yellow-40)'
+                ring: '$(yellow-40)'
+            },
+            touch: {
+                yellow: '$(yellow-40)'
             }
         }
     }

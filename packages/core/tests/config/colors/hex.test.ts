@@ -23,15 +23,18 @@ test.concurrent('color/opacity to rgb(r g b/opacity)', () => {
 describe.concurrent('with themes', () => {
     const config: Config = {
         variables: {
-            primary: {
-                '': '#000000',
-                '@dark': '#ffffff',
-                '@light': '#969696',
-                '@chrisma': '$(black)/.5'
-            }
+            primary: '#000000'
         },
         modes: {
-            chrisma: 'class'
+            light: {
+                primary: '#969696'
+            },
+            dark: {
+                primary: '#ffffff'
+            },
+            chrisma: {
+                primary: '$black/.5'
+            }
         }
     }
 
@@ -54,7 +57,7 @@ describe.concurrent('with themes', () => {
     it.concurrent('color', () => {
         expectLayers(
             {
-                theme: ':root{--primary:0 0 0}.dark{--primary:255 255 255}.light{--primary:150 150 150}.chrisma{--primary:0 0 0 / .5}',
+                theme: ':root{--primary:0 0 0}.light{--primary:150 150 150}.dark{--primary:255 255 255}.chrisma{--primary:0 0 0 / .5}',
                 general: '.fg\\:primary{color:rgb(var(--primary))}'
             },
             'fg:primary',
@@ -65,7 +68,7 @@ describe.concurrent('with themes', () => {
     it.concurrent('color/.5', () => {
         expectLayers(
             {
-                theme: ':root{--primary:0 0 0}.dark{--primary:255 255 255}.light{--primary:150 150 150}.chrisma{--primary:0 0 0 / .5}',
+                theme: ':root{--primary:0 0 0}.light{--primary:150 150 150}.dark{--primary:255 255 255}.chrisma{--primary:0 0 0 / .5}',
                 general: '.fg\\:primary\\/\\.5{color:rgb(var(--primary)/.5)}'
             },
             'fg:primary/.5',

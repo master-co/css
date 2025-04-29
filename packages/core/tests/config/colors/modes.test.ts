@@ -10,8 +10,14 @@ Testing.layers({
         primary: {
             10: '#eeeeee',
             20: '#dddddd',
-            '@light': '#000000',
-            '@dark': '#136e42'
+        }
+    },
+    modes: {
+        light: {
+            primary: '#000000'
+        },
+        dark: {
+            primary: '#136e42'
         }
     }
 })

@@ -75,8 +75,13 @@ test.concurrent('autofill solid', () => {
         },
         'border:16|line',
         {
-            variables: {
-                line: { '@light': 'solid', '@dark': 'dotted' }
+            modes: {
+                light: {
+                    line: 'solid'
+                },
+                dark: {
+                    line: 'dotted'
+                }
             }
         }
     )
@@ -88,8 +93,13 @@ test.concurrent('autofill solid', () => {
         },
         'border:16|line',
         {
-            variables: {
-                line: { '@light': 'solid', '@dark': 'dotted' }
+            modes: {
+                light: {
+                    line: 'solid'
+                },
+                dark: {
+                    line: 'dotted'
+                }
             }
         }
     )

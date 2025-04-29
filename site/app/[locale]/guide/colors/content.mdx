@@ -219,12 +219,16 @@ Use `$blue` to apply `variables.blue` instead of `variables.text.blue`.
 Add a color to the frame variables group.
 ```js name=master.css.js
 export default {
-    variables: {
-        frame: {
-            light: { /* [!code highlight] */
-                '@light': '$slate-60/.2', /* [!code highlight] */
-                '@dark': '$gray-30/.2' /* [!code highlight] */
-            } /* [!code highlight] */
+    modes: {
+        light: {
+            frame: {
+                light: '$slate-60/.2' /* [!code highlight] */
+            }
+        },
+        dark: {
+            frame: {
+                light: '$gray-30/.2' /* [!code highlight] */
+            }
         }
     }
 }

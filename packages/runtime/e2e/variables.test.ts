@@ -7,40 +7,32 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const variables = {
-    first: {
-        '': '#111111',
-        '@dark': '#222222',
-        '@light': '#333333'
+    first: '#111111',
+    third: '#666666',
+    fourth: '#888888',
+}
+
+const modes = {
+    light: {
+        first: '#333333',
+        second: '#555555',
+        third: '#777777',
+        fourth: '#000000',
+        fifth: '#033333',
+        sixth: '#666666'
     },
-    second: {
-        '@dark': '#444444',
-        '@light': '#555555'
-    },
-    third: {
-        '': '#666666',
-        '@light': '#777777'
-    },
-    fourth: {
-        '': '#888888',
-        '@dark': '#999999',
-        '@light': '#000000'
-    },
-    fifth: {
-        '@dark': '#022222',
-        '@light': '#033333'
-    },
-    sixth: {
-        '@dark': '#666666'
+    dark: {
+        first: '#222222',
+        second: '#444444',
+        third: '#666666',
+        fourth: '#999999',
+        fifth: '#022222'
     }
 }
 
 test.beforeEach(async ({ page }) => {
     await init(page)
-    await page.evaluate((variables) => globalThis.cssRuntime.refresh({ variables }), variables)
-})
-
-test('make sure not to extend variables deeply', async ({ page }) => {
-    expect(await page.evaluate(() => globalThis.cssRuntime.config.variables?.first)).toEqual(variables.first)
+    await page.evaluate(({ variables, modes }) => globalThis.cssRuntime.refresh({ variables, modes }), { variables, modes })
 })
 
 test('expects the variable output', async ({ page }) => {

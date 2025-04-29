@@ -34,6 +34,7 @@ export default class MasterCSS {
     readonly components = new Map<string, string[]>()
     readonly selectors = new Map<string, SelectorNode[]>()
     readonly variables = new Map<string, Variable>()
+    readonly modes: string[] = []
     readonly atRules = new Map<string, AtRule>()
     readonly animations = new Map<string, AnimationDefinitions>()
 
@@ -322,7 +323,7 @@ export default class MasterCSS {
     }
 
     resolveVariables() {
-        const { variables, screens } = this.config
+        const { variables, screens, modes } = this.config
         const aliasVariableModeResolvers = new Map<string, Record<string, () => void>>()
         const resolveVariable = (variableDefinition: VariableDefinition, name: string[], mode?: string) => {
             if (variableDefinition === undefined || variableDefinition === null) return
@@ -332,8 +333,7 @@ export default class MasterCSS {
                 replacedMode?: string,
                 alpha?: string
             ) => {
-                if (variable === undefined)
-                    return
+                if (variable === undefined) return
                 const flatName = name.join('-')
                 const groups = name.slice(0, -1).filter(Boolean)
                 const key = (name[0] === '' ? '-' : '') + name[name.length - 1]
@@ -394,10 +394,10 @@ export default class MasterCSS {
                 } else {
                     const keys = Object.keys(variableDefinition)
                     for (const eachKey of keys) {
-                        if (eachKey === '' || eachKey.startsWith('@')) {
-                            resolveVariable(variableDefinition[eachKey] as VariableDefinition, name, (eachKey || keys.some(eachKey => eachKey.startsWith('@'))) ? eachKey.slice(1) : undefined)
+                        if (eachKey === '') {
+                            resolveVariable(variableDefinition[eachKey] as VariableDefinition, name, mode)
                         } else {
-                            resolveVariable(variableDefinition[eachKey] as VariableDefinition, [...name, eachKey])
+                            resolveVariable(variableDefinition[eachKey] as VariableDefinition, [...name, eachKey], mode)
                         }
                     }
                 }
@@ -485,13 +485,24 @@ export default class MasterCSS {
             for (const parnetKey in variables) {
                 resolveVariable(variables[parnetKey], [parnetKey])
             }
-            // todo: address to the target variable
-            aliasVariableModeResolvers.forEach((aliasVariableModeResolver) => {
-                for (const mode of Object.keys(aliasVariableModeResolver)) {
-                    aliasVariableModeResolver[mode]?.()
-                }
-            })
         }
+
+        if (modes) {
+            for (const mode in modes) {
+                const modeVariables = modes[mode]
+                if (!modeVariables) continue
+                for (const key in modeVariables) {
+                    resolveVariable(modeVariables[key], [key], mode)
+                }
+            }
+        }
+
+        // todo: address to the target variable
+        aliasVariableModeResolvers.forEach((aliasVariableModeResolver) => {
+            for (const mode of Object.keys(aliasVariableModeResolver)) {
+                aliasVariableModeResolver[mode]?.()
+            }
+        })
 
         if (screens) {
             resolveVariable(screens, ['screen'])

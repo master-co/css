@@ -1,0 +1,63 @@
+## Overview [sr-only]
+
+This document explains how to define and use variables and modes in the Master CSS framework. Variables allow for reusable values throughout your styles, while modes enable conditional styling for different contexts like light/dark themes.
+
+---
+
+## Understanding variables
+Variables in Master CSS provide a way to define reusable values that can be referenced throughout your styling. They help maintain consistency and make theme changes simpler.
+
+### Defining variables
+Variables are defined in the [`variables`](/guide/configuration#variables) section of your configuration file. The basic syntax follows a hierarchical structure:
+```ts name=master.css.js
+export default {
+    variables: {
+        primary: '#000',    /* primary */
+        full: '100%',       /* full */
+        md: 20              /* md */
+    }
+}
+```
+- Variable `primary` is parsed as a color-type variable.
+- Variable `full` is parsed as a string-type variable.
+- Variable `md` is parsed as a number-type variable.
+
+### Color-type variable mapping
+To apply the predefined `variables.primary`, use it with color-related syntax, such as [`background-color`](/reference/background-color):
+```html
+<div class="background-color:primary">…</div>
+<div class="bg:primary">…</div><!-- [!code highlight] -->
+```
+Master CSS simplifies markup through purposeful ambiguity, ensuring that color variable `primary` maps to `background-color` rather than other properties.
+
+### Namespace-aware variable mapping
+To apply the predefined `variables['font-family']`
+
+### Contextual alias resolution
+To avoid conflicts with other properties, Master CSS uses a contextual alias resolution mechanism. For example, `variables.primary` is resolved to `background-color:primary` when used in a background context.
+
+---
+
+## Modes for variables
+Modes in Master CSS allow you to define different styles based on the context, such as light or dark themes. This is particularly useful for creating responsive designs that adapt to user preferences.
+
+---
+
+## Variable inlining mechanism
+For non-mode variables, optimization is achieved by directly inlining values `#000` and removing intermediate references `variables.primary`.
+```css
+.bg\:primary {
+    background-color: #000;
+}
+```
+You can also use native CSS variable declarations explicitly, but it will not generate `--primary: #000` rules and you will have to define them manually as usual.
+```html
+<!-- @MARK fg:var(--primary) -->
+<div class="fg:var(--primary)">…</div>
+```
+It will be compiled to:
+```css
+.fg\:var\(--primary\) {
+    color: var(--primary);
+}
+```

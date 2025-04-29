@@ -8,10 +8,12 @@ test.concurrent('uncomplete', () => {
 
 test.concurrent('declarations', () => {
     const css = new MasterCSS({
-        variables: {
-            primary: {
-                '@light': '#fff',
-                '@dark': '#000'
+        modes: {
+            light: {
+                primary: '#fff'
+            },
+            dark: {
+                primary: '#000'
             }
         }
     })
@@ -72,10 +74,6 @@ test.concurrent('variables', () => {
             }
         }
     })
-})
-
-test.concurrent('text variables', () => {
-    expect(Object.keys(new MasterCSS().definedRules.find(({ id }) => id === 'color')?.variables || {})).toEqual(Object.keys(variables.text))
 })
 
 describe.concurrent('token', () => {

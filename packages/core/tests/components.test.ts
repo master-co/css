@@ -11,10 +11,17 @@ describe('comp -> comp -> var', () => {
                 primary: 'bg:primary fg:primary-text outline:1|primary-active'
             }
         },
-        variables: {
-            primary: { '@light': '$(black)', '@dark': '$(white)' },
-            'primary-text': { '@light': '$(white)', '@dark': '$(black)' },
-            'primary-active': { '@light': '$(gray)', '@dark': '$(white)' }
+        modes: {
+            light: {
+                primary: '$black',
+                'primary-text': '$white',
+                'primary-active': '$gray',
+            },
+            dark: {
+                primary: '$white',
+                'primary-text': '$black',
+                'primary-active': '$white',
+            }
         }
     })
     css.add('badge-primary')

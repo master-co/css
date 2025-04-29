@@ -8,17 +8,13 @@ const config = {
         config2
     ],
     variables:  {
-        first: {
-            '@dark': '$(black)'
-        },
-        second: {
-            '@dark': '$(black)'
-        },
-        third: {
-            '': '$(black)'
-        },
-        fourth: {
-            '@dark': '$(black)'
+        third: '$black'
+    },
+    modes: {
+        dark: {
+            first: '$black',
+            second: '$black',
+            fourth: '$black'
         }
     }
 }

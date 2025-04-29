@@ -27,14 +27,19 @@ test.concurrent('color/opacity to hsl(h s l/opacity / opacity) invalid rule', ()
 describe.concurrent('with themes', () => {
     const config: Config = {
         variables: {
-            primary: {
-                '': 'hsl(0deg 0% 0%)',
-                '@dark': 'hsl(0deg 0% 100%)',
-                '@light': 'hsl(0deg 0% 58.82%)',
-                '@chrisma': 'hsl(0deg 0% 0%/.5)'
-            }
+            primary: 'hsl(0deg 0% 0%)'
         },
-        modes: { chrisma: 'class' }
+        modes: {
+            light: {
+                primary: 'hsl(0deg 0% 58.82%)'
+            },
+            dark: {
+                primary: 'hsl(0deg 0% 100%)'
+            },
+            chrisma: {
+                primary: 'hsl(0deg 0% 0%/.5)'
+            }
+        }
     }
 
     it.concurrent('checks resolved colors', () => {
@@ -56,7 +61,7 @@ describe.concurrent('with themes', () => {
     it.concurrent('color', () => {
         expectLayers(
             {
-                theme: ':root{--primary:0deg 0% 0%}.dark{--primary:0deg 0% 100%}.light{--primary:0deg 0% 58.82%}.chrisma{--primary:0deg 0% 0%/.5}',
+                theme: ':root{--primary:0deg 0% 0%}.light{--primary:0deg 0% 58.82%}.dark{--primary:0deg 0% 100%}.chrisma{--primary:0deg 0% 0%/.5}',
                 general: '.fg\\:primary{color:hsl(var(--primary))}'
             },
             'fg:primary',
@@ -67,7 +72,7 @@ describe.concurrent('with themes', () => {
     it.concurrent('color/.5', () => {
         expectLayers(
             {
-                theme: ':root{--primary:0deg 0% 0%}.dark{--primary:0deg 0% 100%}.light{--primary:0deg 0% 58.82%}.chrisma{--primary:0deg 0% 0%/.5}',
+                theme: ':root{--primary:0deg 0% 0%}.light{--primary:0deg 0% 58.82%}.dark{--primary:0deg 0% 100%}.chrisma{--primary:0deg 0% 0%/.5}',
                 general: '.fg\\:primary\\/\\.5{color:hsl(var(--primary)/.5)}'
             },
             'fg:primary/.5',
