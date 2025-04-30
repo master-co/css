@@ -153,7 +153,7 @@ export default class MasterCSS {
 
                 this.definedRules.push(syntax)
 
-                const {
+                let {
                     matcher,
                     type,
                     subkey,
@@ -184,8 +184,11 @@ export default class MasterCSS {
                 // Auto variable binding
                 addResolvedVariables(id)
 
-                // Key derivation logic
-                if (type === SyntaxRuleType.NativeShorthand || type === SyntaxRuleType.Native) {
+                if (id.endsWith('()')) {
+                    if (!key) def.key = key = id
+                    const fnName = id.slice(0, -2)
+                    matcher = new RegExp(`^${fnName}\\(`)
+                } else if (type === SyntaxRuleType.NativeShorthand || type === SyntaxRuleType.Native) {
                     if (!key) def.key = key = id
                     keys.push(id)
                 }
@@ -226,7 +229,7 @@ export default class MasterCSS {
                         }
                     }
                 } else {
-                    syntax.matchers.arbitrary = matcher
+                    syntax.matchers.arbitrary = new RegExp(matcher)
                 }
 
                 // Utility rule matcher

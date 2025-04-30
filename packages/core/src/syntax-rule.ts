@@ -39,19 +39,22 @@ export class SyntaxRule {
         this.layer = css.generalLayer
         Object.assign(this, registeredSyntax)
         const { id, definition } = registeredSyntax
-        const { analyze, declarer, transformer, type, unit } = definition
+        const { declarer, transformer, type, unit, sign } = definition
         this.type = type!
 
         // 1. value / selectorToken
         let stateToken: string
 
         if (this.type === SyntaxRuleType.Utility) {
-            // TODO: id 使用其他方式傳遞
             stateToken = name.slice(id.length - 1)
         } else {
-            let valueToken: string
-            if (analyze) {
-                [valueToken] = analyze.call(this, name)
+            let valueToken: string | undefined
+            if (sign && name.startsWith(sign)) {
+                valueToken = name.slice(1)
+            } else if (id.endsWith('()')) {
+                valueToken = name
+            } else if (id === 'group') {
+                valueToken = name
             } else {
                 const indexOfColon = name.indexOf(':')
                 this.keyToken = name.slice(0, indexOfColon + 1)
@@ -145,13 +148,19 @@ export class SyntaxRule {
             newValue = this.resolveValue(this.valueComponents, unit, [], false)
             if (definition.declarations) {
                 const declarations: any = {}
-                for (const propertyName in definition.declarations) {
-                    const propertyValue = definition.declarations[propertyName as keyof PropertiesHyphen]
-                    declarations[propertyName] = propertyValue === undefined
-                        ? newValue
-                        : Array.isArray(propertyValue)
-                            ? propertyValue.map((v) => v === undefined ? newValue : v).join('')
-                            : propertyValue
+                if (Array.isArray(definition.declarations)) {
+                    for (const property of definition.declarations) {
+                        declarations[property] = newValue
+                    }
+                } else {
+                    for (const propertyName in definition.declarations) {
+                        const propertyValue = definition.declarations[propertyName as keyof PropertiesHyphen]
+                        declarations[propertyName] = propertyValue === undefined
+                            ? newValue
+                            : Array.isArray(propertyValue)
+                                ? propertyValue.map((v) => v === undefined ? newValue : v).join('')
+                                : propertyValue
+                    }
                 }
                 this.declarations = declarations
             } else if (declarer) {
@@ -169,7 +178,7 @@ export class SyntaxRule {
                 }
             }
         } else {
-            this.declarations = definition.declarations
+            this.declarations = definition.declarations as any
         }
 
         if (!Object.entries(this.declarations ?? {}).length) {

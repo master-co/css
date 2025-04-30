@@ -23,5 +23,5 @@ it.concurrent('calc with variables', () => {
     expect(new MasterCSS({
         variables: { '1x': 60 }
     }).create('w:calc(-1*($(1x)*2)*3-2)')?.text).toBe('.w\\:calc\\(-1\\*\\(\\$\\(1x\\)\\*2\\)\\*3-2\\){width:calc(-1 * (60 * 2) * 3 / 16 * 1rem - 0.125rem)}')
-    expect(new MasterCSS().create('translateX(calc(-25%-2x))')?.text).toBe('.translateX\\(calc\\(-25\\%-2x\\)\\){transform:translateX(calc(-25% - 8px))}')
+    expect(new MasterCSS().create('translateX(calc(-25%-2x))')?.text).toBe('.translateX\\(calc\\(-25\\%-2x\\)\\){transform:translateX(calc(-25% - 0.5rem))}')
 })

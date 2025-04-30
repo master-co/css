@@ -9,7 +9,7 @@ import { TransformerNames } from '../transformers'
 
 export interface SyntaxRuleDefinition {
     type?: SyntaxRuleTypeValue
-    matcher?: RegExp
+    matcher?: RegExp | string
     sign?: string
     key?: string
     subkey?: string
@@ -18,11 +18,10 @@ export interface SyntaxRuleDefinition {
     variables?: string[]
     separators?: string[]
     unit?: any
-    declarations?: PropertiesHyphen | Record<string, string | undefined | (string | undefined)[]>
+    declarations?: PropertiesHyphen | Record<string, string | undefined | (string | undefined)[]> | (keyof PropertiesHyphen)[]
     includeAnimations?: boolean
     declarer?: DeclarerNames | [DeclarerNames, any],
     transformer?: TransformerNames | [TransformerNames, any],
-    analyze?: (this: SyntaxRule, className: string) => [valueToken: string, prefixToken?: string]
 }
 
 export type VariableValue = number | string | false | (number | string)[]

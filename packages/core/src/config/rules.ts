@@ -3,25 +3,6 @@ import { BORDER_STYLE_VALUES, COLOR_VALUE_REGEX, IMAGE_VALUE_REGEX, NUMBER_VALUE
 import { SyntaxRuleDefinition } from '../types/config'
 
 const rules = {
-    group: {
-        matcher: /^(?:.+?[*_>~+])?\{.+?\}/,
-        type: SyntaxRuleType.Shorthand,
-        analyze(className: string) {
-            let i = 0
-            for (; i < className.length; i++) {
-                if (className[i] === '{' && className[i - 1] !== '\\') {
-                    break
-                }
-            }
-            return [className.slice(i), className.slice(0, i)]
-        },
-        declarer: 'core.group'
-    },
-    variable: {
-        matcher: /^\$[\w-]+:/, // don't use 'rem' as default, because css variable is common API
-        type: SyntaxRuleType.Shorthand,
-        declarer: 'core.variable'
-    },
     'font-size': {
         aliasGroups: ['font', 'f'],
         values: [NUMBER_VALUE_REGEX],
@@ -106,20 +87,14 @@ const rules = {
         subkey: 'margin-x',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'margin-left': undefined,
-            'margin-right': undefined
-        },
+        declarations: ['margin-left', 'margin-right'],
         variables: ['spacing']
     },
     'margin-y': {
         key: 'my',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'margin-top': undefined,
-            'margin-bottom': undefined
-        },
+        declarations: ['margin-top', 'margin-bottom'],
         variables: ['spacing']
     },
     margin: {
@@ -176,20 +151,14 @@ const rules = {
         key: 'px',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'padding-left': undefined,
-            'padding-right': undefined
-        },
+        declarations: ['padding-left', 'padding-right'],
         variables: ['spacing']
     },
     'padding-y': {
         key: 'py',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'padding-top': undefined,
-            'padding-bottom': undefined
-        },
+        declarations: ['padding-top', 'padding-bottom'],
         variables: ['spacing']
     },
     padding: {
@@ -292,10 +261,7 @@ const rules = {
     'box-decoration-break': {
         key: 'box-decoration',
         type: SyntaxRuleType.Native,
-        declarations: {
-            '-webkit-box-decoration-break': undefined,
-            'box-decoration-break': undefined
-        }
+        declarations: ['-webkit-box-decoration-break', 'box-decoration-break']
     },
     container: {
         type: SyntaxRuleType.NativeShorthand
@@ -374,10 +340,7 @@ const rules = {
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         variables: ['text'],
-        declarations: {
-            '-webkit-text-decoration': undefined,
-            'text-decoration': undefined
-        }
+        declarations: ['-webkit-text-decoration', 'text-decoration']
     },
     'text-underline-offset': {
         aliasGroups: ['text-underline'],
@@ -533,17 +496,11 @@ const rules = {
     },
     'user-drag': {
         type: SyntaxRuleType.Native,
-        declarations: {
-            '-webkit-user-drag': undefined,
-            'user-drag': undefined
-        }
+        declarations: ['-webkit-user-drag', 'user-drag']
     },
     'user-select': {
         type: SyntaxRuleType.Native,
-        declarations: {
-            '-webkit-user-select': undefined,
-            'user-select': undefined
-        }
+        declarations: ['-webkit-user-select', 'user-select']
     },
     'text-shadow': {
         unit: 'rem',
@@ -564,33 +521,25 @@ const rules = {
         values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Native,
         variables: ['text'],
-        declarations: {
-            '-webkit-text-fill-color': undefined
-        }
+        declarations: ['-webkit-text-fill-color']
     },
     'text-stroke-width': {
         aliasGroups: ['text-stroke'],
         values: ['thin', 'medium', 'thick', NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Native,
-        declarations: {
-            '-webkit-text-stroke-width': undefined
-        }
+        declarations: ['-webkit-text-stroke-width']
     },
     'text-stroke-color': {
         aliasGroups: ['text-stroke'],
         values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Native,
-        declarations: {
-            '-webkit-text-stroke-color': undefined
-        }
+        declarations: ['-webkit-text-stroke-color']
     },
     'text-stroke': {
         unit: 'rem',
         type: SyntaxRuleType.Native,
-        declarations: {
-            '-webkit-text-stroke': undefined
-        }
+        declarations: ['-webkit-text-stroke']
     },
     'text-truncate': {
         subkey: 'lines',
@@ -629,13 +578,72 @@ const rules = {
         type: SyntaxRuleType.Native
     },
     transform: {
-        matcher: /^(?:translate|scale|skew|rotate|perspective|matrix)(?:3d|[XYZ])?\(/,
         type: SyntaxRuleType.Native,
-        analyze(className: string) {
-            return [className.startsWith('transform') ? className.slice(10) : className]
-        },
-        unit: 'px',
         variables: ['spacing']
+    },
+    'translate()': {
+        declarations: ['transform'],
+        unit: 'rem',
+        variables: ['spacing'],
+    },
+    'translateX()': {
+        declarations: ['transform'],
+        unit: 'rem',
+        variables: ['spacing'],
+    },
+    'translateY()': {
+        declarations: ['transform'],
+        unit: 'rem',
+        variables: ['spacing'],
+    },
+    'translateZ()': {
+        declarations: ['transform'],
+        unit: 'rem',
+        variables: ['spacing'],
+    },
+    'translate3d()': {
+        declarations: ['transform'],
+        unit: 'rem',
+        variables: ['spacing'],
+    },
+    'scale()': {
+        declarations: ['transform']
+    },
+    'scaleX()': {
+        declarations: ['transform']
+    },
+    'scaleY()': {
+        declarations: ['transform']
+    },
+    'scaleZ()': {
+        declarations: ['transform']
+    },
+    'scale3d()': {
+        declarations: ['transform']
+    },
+    'rotate()': {
+        declarations: ['transform']
+    },
+    'rotateX()': {
+        declarations: ['transform']
+    },
+    'rotateY()': {
+        declarations: ['transform']
+    },
+    'rotateZ()': {
+        declarations: ['transform']
+    },
+    'rotate3d()': {
+        declarations: ['transform']
+    },
+    'perspective()': {
+        declarations: ['transform']
+    },
+    'matrix()': {
+        declarations: ['transform']
+    },
+    'matrix3d()': {
+        declarations: ['transform']
     },
     'transition-property': {
         key: '~property',
@@ -657,15 +665,6 @@ const rules = {
     },
     transition: {
         sign: '~',
-        analyze(className: string) {
-            if (className.startsWith('~')) {
-                return [className.slice(1)]
-            } else {
-                const indexOfColon = className.indexOf(':')
-                this.keyToken = className.slice(0, indexOfColon + 1)
-                return [className.slice(indexOfColon + 1)]
-            }
-        },
         type: SyntaxRuleType.NativeShorthand
     },
     'animation-delay': {
@@ -707,15 +706,6 @@ const rules = {
         sign: '@',
         type: SyntaxRuleType.NativeShorthand,
         includeAnimations: true,
-        analyze(className: string) {
-            if (className.startsWith('@')) {
-                return [className.slice(1)]
-            } else {
-                const indexOfColon = className.indexOf(':')
-                this.keyToken = className.slice(0, indexOfColon + 1)
-                return [className.slice(indexOfColon + 1)]
-            }
-        }
     },
     'border-collapse': {
         aliasGroups: ['b', 'border'],
@@ -757,20 +747,14 @@ const rules = {
         values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Shorthand,
         variables: ['frame'],
-        declarations: {
-            'border-left-color': undefined,
-            'border-right-color': undefined
-        }
+        declarations: ['border-left-color', 'border-right-color']
     },
     'border-y-color': {
         aliasGroups: ['by', 'border-y'],
         values: [COLOR_VALUE_REGEX],
         type: SyntaxRuleType.Shorthand,
         variables: ['frame'],
-        declarations: {
-            'border-top-color': undefined,
-            'border-bottom-color': undefined
-        }
+        declarations: ['border-top-color', 'border-bottom-color']
     },
     'border-color': {
         aliasGroups: ['b', 'border'],
@@ -803,38 +787,25 @@ const rules = {
         key: 'rt',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'border-top-left-radius': undefined,
-            'border-top-right-radius': undefined
-        }
+        declarations: ['border-top-left-radius', 'border-top-right-radius']
     },
     'border-bottom-radius': {
         key: 'rb',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'border-bottom-left-radius': undefined,
-            'border-bottom-right-radius': undefined
-        }
+        declarations: ['border-bottom-left-radius', 'border-bottom-right-radius']
     },
     'border-left-radius': {
         key: 'rl',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'border-top-left-radius': undefined,
-            'border-bottom-left-radius': undefined
-        }
-
+        declarations: ['border-top-left-radius', 'border-bottom-left-radius']
     },
     'border-right-radius': {
         key: 'rr',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'border-top-right-radius': undefined,
-            'border-bottom-right-radius': undefined
-        }
+        declarations: ['border-top-right-radius', 'border-bottom-right-radius']
     },
     'border-radius': {
         key: 'r',
@@ -866,19 +837,13 @@ const rules = {
         aliasGroups: ['bx', 'border-x'],
         values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'border-left-style': undefined,
-            'border-right-style': undefined
-        }
+        declarations: ['border-left-style', 'border-right-style']
     },
     'border-y-style': {
         aliasGroups: ['by', 'border-y'],
         values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'border-top-style': undefined,
-            'border-bottom-style': undefined
-        }
+        declarations: ['border-top-style', 'border-bottom-style']
     },
     'border-style': {
         aliasGroups: ['b', 'border'],
@@ -915,20 +880,14 @@ const rules = {
         values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'border-left-width': undefined,
-            'border-right-width': undefined
-        }
+        declarations: ['border-left-width', 'border-right-width']
     },
     'border-y-width': {
         aliasGroups: ['by', 'border-y'],
         values: [NUMBER_VALUE_REGEX],
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'border-top-width': undefined,
-            'border-bottom-width': undefined
-        }
+        declarations: ['border-top-width', 'border-bottom-width']
     },
     'border-width': {
         aliasGroups: ['b', 'border'],
@@ -1001,10 +960,7 @@ const rules = {
         type: SyntaxRuleType.Shorthand,
         transformer: 'auto-fill-solid',
         variables: ['frame'],
-        declarations: {
-            'border-left': undefined,
-            'border-right': undefined
-        }
+        declarations: ['border-left', 'border-right']
     },
     'border-y': {
         key: 'by',
@@ -1012,10 +968,7 @@ const rules = {
         type: SyntaxRuleType.Shorthand,
         transformer: 'auto-fill-solid',
         variables: ['frame'],
-        declarations: {
-            'border-top': undefined,
-            'border-bottom': undefined
-        }
+        declarations: ['border-top', 'border-bottom']
     },
     border: {
         key: 'b',
@@ -1041,10 +994,7 @@ const rules = {
     'background-clip': {
         key: 'bg-clip',
         type: SyntaxRuleType.Native,
-        declarations: {
-            '-webkit-background-clip': undefined,
-            'background-clip': undefined
-        }
+        declarations: ['-webkit-background-clip', 'background-clip']
     },
     'background-origin': {
         key: 'bg-origin',
@@ -1076,9 +1026,7 @@ const rules = {
         key: 'bg',
         type: SyntaxRuleType.NativeShorthand
     },
-    gradient: {
-        matcher: /^gradient\(/,
-        type: SyntaxRuleType.Shorthand,
+    'gradient()': {
         declarations: {
             'background-image': ['linear-', undefined]
         }
@@ -1090,14 +1038,40 @@ const rules = {
     'backdrop-filter': {
         key: 'bd',
         type: SyntaxRuleType.Native,
-        declarations: {
-            '-webkit-backdrop-filter': undefined,
-            'backdrop-filter': undefined
-        }
+        declarations: ['-webkit-backdrop-filter', 'backdrop-filter']
     },
     filter: {
-        matcher: /^(?:blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)\(/,
         type: SyntaxRuleType.Native,
+    },
+    'blur()': {
+        declarations: ['filter']
+    },
+    'brightness()': {
+        declarations: ['filter']
+    },
+    'contrast()': {
+        declarations: ['filter']
+    },
+    'drop-shadow()': {
+        declarations: ['filter']
+    },
+    'grayscale()': {
+        declarations: ['filter']
+    },
+    'hue-rotate()': {
+        declarations: ['filter']
+    },
+    'invert()': {
+        declarations: ['filter']
+    },
+    'opacity()': {
+        declarations: ['filter']
+    },
+    'saturate()': {
+        declarations: ['filter']
+    },
+    'sepia()': {
+        declarations: ['filter']
     },
     fill: {
         type: SyntaxRuleType.Native,
@@ -1388,20 +1362,14 @@ const rules = {
         key: 'scroll-mx',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'scroll-margin-left': undefined,
-            'scroll-margin-right': undefined
-        },
+        declarations: ['scroll-margin-left', 'scroll-margin-right'],
         variables: ['spacing']
     },
     'scroll-margin-y': {
         key: 'scroll-my',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'scroll-margin-top': undefined,
-            'scroll-margin-bottom': undefined
-        },
+        declarations: ['scroll-margin-top', 'scroll-margin-bottom'],
         variables: ['spacing']
     },
     'scroll-margin': {
@@ -1439,20 +1407,14 @@ const rules = {
         key: 'scroll-px',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'scroll-padding-left': undefined,
-            'scroll-padding-right': undefined
-        },
+        declarations: ['scroll-padding-left', 'scroll-padding-right'],
         variables: ['spacing']
     },
     'scroll-padding-y': {
         key: 'scroll-py',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: {
-            'scroll-padding-top': undefined,
-            'scroll-padding-bottom': undefined
-        },
+        declarations: ['scroll-padding-top', 'scroll-padding-bottom'],
         variables: ['spacing']
     },
     'scroll-padding': {
@@ -1511,11 +1473,18 @@ const rules = {
     },
     'mask-image': {
         type: SyntaxRuleType.Native,
-        declarations: {
-            '-webkit-mask-image': undefined,
-            'mask-image': undefined
-        }
-    }
+        declarations: ['-webkit-mask-image', 'mask-image']
+    },
+    group: {
+        matcher: '^\\{.+?\\}',
+        type: SyntaxRuleType.Shorthand,
+        declarer: 'core.group'
+    },
+    variable: {
+        matcher: '^\\$[\\w-]+:', // don't use 'rem' as default, because css variable is common API
+        type: SyntaxRuleType.Shorthand,
+        declarer: 'core.variable'
+    },
 } satisfies Record<string, SyntaxRuleDefinition>
 
 export default rules

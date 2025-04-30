@@ -225,6 +225,7 @@ const functions: FunctionDefinitions = {
     translateY: { unit: 'rem' },
     translateZ: { unit: 'rem' },
     translate3d: { unit: 'rem' },
+    perspective: { unit: 'rem' },
     skew: { unit: 'deg' },
     skewX: { unit: 'deg' },
     skewY: { unit: 'deg' },
