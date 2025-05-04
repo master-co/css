@@ -1,0 +1,13 @@
+import define from 'internal/utils/metadata'
+
+const metadata = define({
+    title: 'Compatibility with third-party and traditional styles',
+    description: 'Learn how to ensure compatibility with third-party and legacy styles in your projects.',
+    category: 'Fundamentals',
+    other: {
+        subject: 'Works with traditional CSS',
+    },
+    fileURL: import.meta.url
+})
+
+export default metadata

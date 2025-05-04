@@ -10,34 +10,34 @@ export default () => {
                     <tr>
                         <th className='w:0'>Layer</th>
                         <th>Description</th>
-                        <th>Entity</th>
+                        <th>CSS</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <th>Base</th>
                         <td>Where the styles with <code>@base</code> are generated.</td>
-                        <td className="white-space:nowrap"><InlineCode lang="css">{'@layer base { … }'}</InlineCode></td>
+                        <td className="white-space:nowrap"><code>{'@layer base { … }'}</code></td>
                     </tr>
                     <tr>
                         <th>Theme</th>
                         <td>Where the used <Link href="/guide/variables">variables</Link> are generated.</td>
-                        <td className="white-space:nowrap"><InlineCode lang="css">{'@layer theme { … }'}</InlineCode></td>
+                        <td className="white-space:nowrap"><code>{'@layer theme { … }'}</code></td>
                     </tr>
                     <tr>
                         <th>Preset</th>
                         <td>Where the styles with <code>@preset</code> are generated.</td>
-                        <td className="white-space:nowrap"><InlineCode lang="css">{'@layer preset { … }'}</InlineCode></td>
+                        <td className="white-space:nowrap"><code>{'@layer preset { … }'}</code></td>
                     </tr>
                     <tr>
                         <th>Components</th>
                         <td>Where the used <Link href="/guide/components">components</Link> are generated.</td>
-                        <td className="white-space:nowrap"><InlineCode lang="css">{'@layer components { … }'}</InlineCode></td>
+                        <td className="white-space:nowrap"><code>{'@layer components { … }'}</code></td>
                     </tr>
                     <tr>
                         <th>General</th>
                         <td>Where the general styles are generated.</td>
-                        <td className="white-space:nowrap"><InlineCode lang="css">{'@layer general { … }'}</InlineCode></td>
+                        <td className="white-space:nowrap"><code>{'@layer general { … }'}</code></td>
                     </tr>
                 </tbody>
             </DocTable>

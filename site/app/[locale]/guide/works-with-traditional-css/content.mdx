@@ -1,0 +1,75 @@
+## Overview [sr-only]
+Master CSS supports seamless integration with third-party libraries (like [Swiper](https://swiperjs.com/)) and legacy stylesheets. You can safely load external styles into an isolated `@layer` to avoid unintended style overrides and maintain a clean separation between core, utility, and vendor styles.
+
+(!) You might already be using `!important` with third-party libraries in the following way:
+```html
+<!-- @MARK bg:blue! -->
+<div class="swiper-slide bg:blue!">Slide 1</div>
+```
+(o) Use this guide to reduce CSS specificity in advance and manage styles in a more organized way:
+```html
+<!-- @MARK bg:blue -->
+<div class="swiper-slide bg:blue">Slide 1</div>
+```
+
+---
+
+## Reducing traditional style specificity
+The following examples demonstrate how to import Swiper styles and assign them to the [preset layer](/guide/cascade-layers) for scoped, conflict-free styling.
+
+### Using CSS layering
+By importing Swiper styles into the preset layer, you isolate them from your custom styles. This enables safer overrides and preserves predictable cascading behavior across layers.
+```css
+@import 'swiper/css'; /* [!code --] */
+@import 'swiper/css/navigation'; /* [!code --] */
+@import 'swiper/css/pagination'; /* [!code --] */
+
+@import 'swiper/css' layer(preset);
+@import 'swiper/css/navigation' layer(preset);
+@import 'swiper/css/pagination' layer(preset);
+```
+(!) Note that the `layer(preset)` syntax may only be supported by newer build tools such as Turbopack.
+
+### Using Sass with layered imports
+In Sass, `@include meta.load-css()` allows you to import CSS files within a `@layer`, mirroring native CSS layering behavior. This approach is especially useful when integrating external styles into a modular architecture.
+```scss
+@import 'swiper/css'; /* [!code --] */
+@import 'swiper/css/navigation'; /* [!code --] */
+@import 'swiper/css/pagination'; /* [!code --] */
+
+@use 'sass:meta';
+
+@layer preset {
+    @include meta.load-css('node_modules/swiper/css');
+    @include meta.load-css('node_modules/swiper/css/navigation');
+    @include meta.load-css('node_modules/swiper/css/pagination');
+}
+```
+
+---
+
+## Uniformly overrides traditional styles
+Using the preset layer to reduce the specificity of traditional styles allows you to override them directly through custom [components](/guide/components), without the risk of your styles being unintentionally overridden.
+
+For example, create custom components for Swiper.
+```js name=master.css.js
+export default {
+    components: {
+        swiper: {
+            '': 'max-w:screen-sm',  // .swiper
+            wrapper: 'bg:red',      // .swiper-wrapper
+            slide: 'bg:blue'        // .swiper-slide
+        }
+    }
+}
+```
+This way, you can override the default styles without worrying about specificity conflicts.
+
+---
+
+## Summary
+In advance, you can reduce CSS specificity by using the preset layer to reduce style specificity in a more organized way. This allows you to avoid using `!important` and maintain a clean separation between core, utility, and vendor styles.
+
+- **Avoid style collisions:** Vendor styles often come with opinionated defaults. Assigning them to a separate layer keeps your design system in control.
+- **Maintainable overrides:** Targeting a specific layer lets you override styles more deliberately and cleanly.
+- **Improved compatibility:** Layered architecture promotes progressive enhancement and makes integrating with utility-first or component-based CSS frameworks more reliable.
