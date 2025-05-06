@@ -5,5 +5,6 @@ export default {
         content: {
             external: '" ↗"'
         }
-    }
+    },
+    modeTrigger: 'class'
 } satisfies Config

@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 import init from './init'
+import { modeTrigger } from '~/examples/webpack/master.css'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -31,8 +32,8 @@ const modes = {
 }
 
 test.beforeEach(async ({ page }) => {
-    await init(page)
-    await page.evaluate(({ variables, modes }) => globalThis.cssRuntime.refresh({ variables, modes }), { variables, modes })
+    await init(page, '', { modeTrigger: 'class' })
+    await page.evaluate(({ variables, modes }) => globalThis.cssRuntime.refresh({ variables, modes, modeTrigger: 'class' }), { variables, modes })
 })
 
 test('expects the variable output', async ({ page }) => {
@@ -46,7 +47,7 @@ test('expects the variable output', async ({ page }) => {
             return globalThis.cssRuntime.text
         }),
         {
-            theme: ':root{--first:17 17 17}.dark{--first:34 34 34}.light{--first:51 51 51}',
+            theme: ':root{--first:17 17 17}.light{--first:51 51 51}.dark{--first:34 34 34}',
             general: '.bg\\:first{background-color:rgb(var(--first))}'
         }
     )
@@ -77,7 +78,7 @@ test('expects the variable output', async ({ page }) => {
     // todo: insertRule throw error
     // expect(text).toContain('.\\{outline\\:fourth\\;accent\\:fifth\\}{outline-color:rgb(var(--fourth));accent-color:rgb(var(--fifth))}')
     expect(text).toContain('.fg\\:second{color:rgb(var(--second))}')
-    expect(text).toMatch(/\.dark\{[^}]*--sixth:102 102 102[^}]*\}/)
+    expect(text).toMatch(/\.light,:root\{[^}]*--sixth:102 102 102[^}]*\}/)
 
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('bg:second')
