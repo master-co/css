@@ -1,0 +1,1 @@
+@layer base,theme,preset,components,general;@layer theme{@media (prefers-color-scheme:light){:root{--gray:162 161 163}}@media (prefers-color-scheme:dark){:root{--gray:137 136 138}}}@layer components{.card{border-radius:0.5rem}.card-content{padding:1.25rem}.card-footer{border-top:0.0625rem rgb(var(--gray)) solid}.card-header{border-bottom:0.0625rem rgb(var(--gray)) solid}}

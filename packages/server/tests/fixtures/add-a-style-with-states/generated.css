@@ -1,0 +1,1 @@
+@layer base,theme,preset,components,general;@layer theme{@media (prefers-color-scheme:light){:root{--invert:0 0 0}}@media (prefers-color-scheme:dark){:root{--invert:255 255 255}}}@layer components{.btn:focus{outline:0.125rem rgb(var(--invert)) solid}.btn:focus{outline-offset:0.125rem}}
