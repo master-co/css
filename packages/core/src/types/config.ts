@@ -1,11 +1,10 @@
 import type { PropertiesHyphen } from 'csstype'
-import type { SyntaxRule } from '../syntax-rule'
-import type { ValueComponent } from './syntax'
 import type { rules, utilities } from '../config'
 import { AT_IDENTIFIERS } from '../common'
 import { SyntaxRuleTypeValue } from './common'
 import { DeclarerNames } from '../declarers'
 import { TransformerNames } from '../transformers'
+import { FunctionTransformerNames } from '../function-transformers'
 
 export interface SyntaxRuleDefinition {
     type?: SyntaxRuleTypeValue
@@ -43,7 +42,7 @@ export type UtilityDefinitions = { [key in keyof typeof utilities]?: PropertiesH
 export type ModeDefinitions = Record<string, VariableDefinitions>;
 export interface FunctionDefinition {
     unit?: string
-    transform?(this: SyntaxRule, value: string, bypassVariableNames: string[]): string | ValueComponent[]
+    transformer?: FunctionTransformerNames | [FunctionTransformerNames, any]
 }
 export type FunctionDefinitions = Record<string, FunctionDefinition>;
 

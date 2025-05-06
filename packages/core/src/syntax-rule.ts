@@ -17,6 +17,7 @@ import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
 import { SyntaxRuleTypeValue } from './types/common'
 import declarers from './declarers'
 import transformers from './transformers'
+import functionTransformers from './function-transformers'
 
 export class SyntaxRule {
     native?: CSSRule
@@ -250,17 +251,18 @@ export class SyntaxRule {
             switch (eachValueComponent.type) {
                 case 'function':
                     const functionDefinition = functions && functions[eachValueComponent.name]
-                    if (functionDefinition?.transform && !eachValueComponent.bypassTransform) {
-                        const result = functionDefinition.transform.call(
-                            this,
-                            this.resolveValue(
-                                eachValueComponent.children,
-                                functionDefinition.unit ?? unit,
-                                bypassVariableNames,
-                                bypassParsing || eachValueComponent.name === 'calc'
-                            ),
-                            bypassVariableNames
-                        )
+                    const fnTransformer = functionDefinition?.transformer
+                    if (fnTransformer && !eachValueComponent.bypassTransform) {
+                        const resolvedValue = this.resolveValue(eachValueComponent.children, functionDefinition.unit ?? unit, bypassVariableNames, bypassParsing || eachValueComponent.name === 'calc')
+                        let result: any
+                        if (typeof fnTransformer === 'string') {
+                            const fnTransform = functionTransformers[fnTransformer] as any
+                            result = fnTransform.call(this, resolvedValue, bypassVariableNames)
+                        } else {
+                            const [name, data] = fnTransformer
+                            const fnTransform = functionTransformers[name] as any
+                            result = fnTransform.call(this, resolvedValue, bypassVariableNames, data)
+                        }
                         currentValue += eachValueComponent.token = eachValueComponent.text = typeof result === 'string'
                             ? result
                             : this.resolveValue(result, functionDefinition?.unit ?? unit, bypassVariableNames, bypassParsing)
