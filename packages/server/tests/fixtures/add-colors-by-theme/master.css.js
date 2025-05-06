@@ -1,6 +1,6 @@
 export default {
     variables: {
-        primary: '#ff0000' // usually not required
+        primary: '#ff0000'
     },
     modes: {
         light: {

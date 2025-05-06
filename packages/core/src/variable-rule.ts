@@ -67,7 +67,7 @@ export class VariableRuleNode {
 
     get text(): string {
         let text = `${this.selectorText}{--${this.name}:${String(this.variable.value)}}`
-        if (this.css.config.modeTrigger === 'media') {
+        if (this.css.config.modeTrigger === 'media' && this.mode) {
             text = `@media (prefers-color-scheme:${this.mode}){${text}}`
         }
         return text

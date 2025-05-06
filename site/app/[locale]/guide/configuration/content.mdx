@@ -177,35 +177,9 @@ Generated CSS:
 ### `.defaultMode`
 The mode is to be applied by default when no mode is specified.
 <DocProp defaultValue="'light'" types={["'light'", "'dark'", 'string', 'boolean']} />
-
-#### Default light mode
-```js name=master.css.js
-export default {
-    defaultMode: 'light'
-}
-```
-Generated CSS:
-```css
-.light, :root {
-    --primary: 0 0 0;
-}
-```
-
-#### No default mode
-```js name=master.css.js
-export default {
-    defaultMode: false
-}
-```
-Generated CSS:
-```css
-.light {
-    --primary: 0 0 0;
-}
-```
+See [default mode](/guide/variables-and-modes#default-mode) for more information.
 
 ### `.modeTrigger`
 Sets how the theme should drive and generate CSS rules.
 <DocProp defaultValue={JSON.stringify(config.modeTrigger)} types={["'class' | 'media' | 'host'"]} />
-
 See [mode triggers](/guide/variables-and-modes#mode-triggers) for more information.
