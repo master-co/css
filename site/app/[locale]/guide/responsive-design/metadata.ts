@@ -4,7 +4,6 @@ const metadata = define({
     title: 'Responsive Design',
     description: 'Adapt your user interface to different devices with flexible responsive syntax.',
     category: 'Fundamentals',
-    order: 4,
     fileURL: import.meta.url
 })
 

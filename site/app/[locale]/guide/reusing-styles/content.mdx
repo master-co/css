@@ -3,88 +3,159 @@ import ComponentsOverview from '../components/components/Overview.mdx'
 ## Overview [sr-only]
 As the styles grow, the class name combinations and the same design patterns appear over and over again in the code. To improve development efficiency and maintain design consistency, you should reuse or access them in some way.
 
-This guide also provides specialized solutions tailored for frameworks.
+Traditionally, we define components like `.btn` or `.card` by writing CSS rules. In Master CSS, we use `config.components` to abstract and make them more flexible.
+<Code lang="js" name="master.css.js">{require('./tests/apply-styles/master.css.js?raw')}</Code>
+An abstract style consists of one or more syntaxes, you can provide a class name for this set of classes and reuse it anywhere.
+
+(click) Try making the viewport width smaller
+<ResizeZone width="100%" originX="center" showRuler>
+    <IFrame src="/examples/responsive-button" height={138} />
+</ResizeZone>
+You can even conditionally apply abstract styles via at-rules:
+<Code lang="html">{require('./tests/apply-styles/template.html?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('./tests/apply-styles/generated.css?raw')}</Code>
+    </div>
+</details>
 
 ---
 
-## Creating reusing styles
-In Master CSS, you can abstract styles into classes and reuse them in your code.
-<ComponentsOverview />
-To learn more about [creating components](/guide/components).
+## Creating components
+Master CSS introduces a concise syntax system for defining abstract, reusable styles called components. These components encapsulate styling logic that can be applied directly to HTML elements, enabling consistent design patterns, improved maintainability, and scalable UI development across your project.
+
+### Add a style
+Create an abstract style using Master CSS syntaxes.
+<Overview />
+
+### Add a style with states
+Create an abstract style with [state selectors](/guide/state-selectors) and [applying conditionally](/guide/applying-conditionally).
+<Code lang="js" name="master.css.js">{require('./tests/add-a-style-with-states/master.css.js?raw')}</Code>
+(click) Try clicking the button to see the outline effect
+<Demo>
+    <button className="center-content inline-flex bg:invert fg:invert font:14 font:medium h:10x px:4x r:2x outline:2|invert:focus outline-offset:2:focus">Submit</button>
+</Demo>
+<Code lang="html">{require('./tests/add-a-style-with-states/template.html?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('./tests/add-a-style-with-states/generated.css?raw')}</Code>
+    </div>
+</details>
+
+### Add styles in a nested structure
+Create and manage a set of abstract styles in a nested structure. Rather than repeating the same style names over and over again, you can write one style inside another. Master CSS will automatically combine the outer style’s name with the inner style’s.
+<Code lang="js" name="master.css.js">{require('./tests/add-styles-in-a-nested-structure/master.css.js?raw')}</Code>
+Apply the components:
+<Code lang="html">{require('./tests/add-styles-in-a-nested-structure/template.html?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('./tests/add-styles-in-a-nested-structure/generated.css?raw')}</Code>
+    </div>
+</details>
+The empty string `''` represents an outer style, much like Sass's `&`.
+
+### Extend an existing style
+Create a new abstract style by extending an existing style and adding additional syntax.
+<Code lang="js" name="master.css.js">{require('./tests/extend-an-existing-style/master.css.js?raw')}</Code>
+You can see that `b` inherits the text lime color of `a`:
+<Demo $py={0}>
+    <DemoPanel>
+        <span className="font:20 fg:lime">a</span>
+        <span className="font:20 fg:lime text:underline">b</span>
+    </DemoPanel>
+</Demo>
+<Code lang="html">{require('./tests/extend-an-existing-style/template.html?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('./tests/extend-an-existing-style/generated.css?raw')}</Code>
+    </div>
+</details>
 
 ---
 
-## Componentization
-We provide a CSS-in-JS style utility, [Master Styled](https://github.com/master-co/styled), to help you create a component with classes in one line. It supports Vanilla js, React, and Vue.
+## Managing styles
+As usual, you can split the styles into multiple files for management. When the project is small in scale, you don't necessarily have to insist on splitting style files.
 <ExplorerView>
 {[
-    { name: 'components', children: [
-        { name: 'Button.tsx' },
-        { name: 'Card.tsx' }
+    { name: 'styles', children: [
+        { name: 'button.ts' },
+        { name: 'card.ts' }
     ]},
     { name: 'master.css.ts' }
 ]}
 </ExplorerView>
 
-### Create a button component
-You can define type-safe styles and corresponding classes for style properties.
-```tsx name=components/Button.tsx
-import styled from '@master/styled.react'
+### Create button styles
+Let's implement a rich button.
+<Code lang="ts" name="styles/button.ts">
+    {require('../../../../styles/btn.ts?raw')}
+</Code>
+[Extend](/guide/configuration#extends) them uniformly in the __master.css.ts__ entry file.
+```js name=master.css.ts
+import type { Config } from '@master/css'
+import button from './styles/button'
 
-const sizes = {
-    xs: 'font:12 h:6x …',
-    sm: 'font:12 h:8x …',
-    md: 'font:14 h:10x …',
-    lg: 'font:16 h:12x …',
-    xl: 'font:16 h:14x  …'
-}
-
-declare type Props = {
-    $size: keyof typeof sizes
-    disabled?: boolean
-}
-
-const Button = styled.button<Props>('inline-flex font:medium', {
-    $size: sizes,
-    disabled: 'opacity:.5'
-})
-
-Button.default = {
-    $size: 'md'
-}
-
-export default Button
+export default {
+    extends: [
+        button
+    ]
+} as Config
 ```
-To use the button component.
-```tsx
-<Button $size="sm" disabled>Submit</Button>
-```
-Rendered as:
+
+To apply the button sizes.
+<Demo className="gap:8x">
+    <button className="btn btn-xs yellow touch-yellow">Submit</button>
+    <button className="btn btn-sm yellow touch-yellow">Submit</button>
+    <button className="btn btn-md yellow touch-yellow">Submit</button>
+    <button className="btn btn-lg yellow touch-yellow">Submit</button>
+    <button className="btn btn-xl yellow touch-yellow">Submit</button>
+</Demo>
 ```html
-<button class="inline-flex font:medium font:12 h:8x … opacity:.5">Submit</button>
+<!-- @MARK btn-xs -->
+<button class="btn btn-xs">Submit</button>
+<!-- @MARK btn-sm -->
+<button class="btn btn-sm">Submit</button>
+<!-- @MARK btn-md -->
+<button class="btn btn-md">Submit</button>
+<!-- @MARK btn-lg -->
+<button class="btn btn-lg">Submit</button>
+<!-- @MARK btn-xl -->
+<button class="btn btn-xl">Submit</button>
 ```
-However, if the component involves richer implementations such as `loading`, you should wrap it with a functional component.
-
-### Create a block-scoped component
-`styled` operates on an element basis, unlike global [styles](#abstract-styles) mentioned above, and you can declare it within a functional component or at the top level.
-
-(i) Create a reusable section component specific to a marketing page.
-```tsx name=page.tsx
-import styled from '@master/styled.react'
-
-export default function Page() {
-    const Section = styled.section`bg:slate-90 text:white p:15x|20x`
-    return (
-        <>
-            <section className="bg:slate-90 text:white p:15x|20x">...</section> {/* [!code --] */}
-            <section className="bg:slate-90 text:white p:15x|20x">...</section> {/* [!code --] */}
-            <Section>...</Section> {/* [!code ++] */}
-            <Section>...</Section> {/* [!code ++] */}
-        </>
-    )
-}
+To apply with rounded styles.
+<Demo>
+    <button className="btn btn-md rounded yellow touch-yellow">Submit</button>
+</Demo>
+```html
+<!-- @MARK rounded -->
+<button class="btn btn-md rounded">Submit</button>
 ```
-This is useful for block-specific style reuse, rather than creating `components['home-section']` which may pollute global styles or cause name collisions.
+To design a scalable style, you should ensure the single responsibility of class composition; otherwise, you may end up using a lot of `!important` to override rules or the `@preset` layer to lower default styles, ultimately leading to chaotic styles.
+
+### Create common variables and styles
+We define [variables and modes](/guide/variables-and-modes) to create tokens supporting light/dark modes in advance. This not only simplifies template markup but also reduces CSS rule output.
+<Code lang="ts" name="master.css.ts">
+    {require('../../../../styles/base.ts?raw')}
+</Code>
+- Variables
+    - `yellow-ring` is an outline color that complements a yellow background.
+    - `touch-yellow` is a background color on hover.
+    - `text-yellow-contrast` is a contrasting color fine-tuned against a yellow background.
+- Components
+    - `.yellow` sets a background, foreground and outline style for a yellow theme.
+    - `.yellow-touch` sets a background, foreground and outline style for a yellow theme interaction.
+
+<Demo className="gap:8x">
+    <button className="btn btn-md yellow touch-yellow">Submit</button>
+</Demo>
+```html
+<!-- @MARK yellow touch-yellow -->
+<button class="btn btn-md yellow touch-yellow">Submit</button>
+```
 
 ---
 
