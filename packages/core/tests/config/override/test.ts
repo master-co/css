@@ -1,7 +1,6 @@
-import { it, test, expect } from 'vitest'
+import { test, expect } from 'vitest'
 import { MasterCSS } from '../../../src'
 import { Config, SyntaxRuleType } from '../../../src'
-import { NUMBER_VALUE_REGEX } from '../../../src/common'
 
 const customConfig: Config = {
     override: true,
@@ -9,7 +8,7 @@ const customConfig: Config = {
     rules: {
         'font-size': {
             key: 'custom',
-            values: [NUMBER_VALUE_REGEX],
+            kind: 'number',
             unit: 'rem',
             type: SyntaxRuleType.Normal,
         }
