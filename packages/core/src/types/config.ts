@@ -14,7 +14,8 @@ export interface SyntaxRuleDefinition {
     key?: string
     subkey?: string
     aliasGroups?: string[]
-    values?: (RegExp | string)[]
+    values?: string[]
+    kind?: 'number' | 'color' | 'image'
     variables?: string[]
     separators?: string[]
     unit?: any
@@ -65,4 +66,12 @@ export interface Config {
     animations?: AnimationDefinitions
     modes?: ModeDefinitions
     modeTrigger?: 'class' | 'media' | 'host'
+}
+
+declare module 'csstype' {
+    interface PropertiesHyphen {
+        '-webkit-user-drag'?: 'auto' | 'element' | 'none' | 'inherit'
+        'user-drag'?: 'auto' | 'element' | 'none' | 'inherit'
+        '-webkit-text-decoration'?: string
+    }
 }

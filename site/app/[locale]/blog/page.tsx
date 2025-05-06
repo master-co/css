@@ -51,6 +51,4 @@ export default async function Page(props: any) {
         </main>
         <Footer className="app-wrapper" />
     </>
-
-
 }

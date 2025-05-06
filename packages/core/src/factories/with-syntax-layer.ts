@@ -29,7 +29,6 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
             super.insert(syntaxRule, index)
             this.insertVariables(syntaxRule)
             this.insertAnimations(syntaxRule)
-            syntaxRule.definition.insert?.call(syntaxRule)
             return index
         }
 
@@ -51,7 +50,6 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
             syntaxRule.animationNames?.forEach((eachAnimationName) => {
                 deleteLayerToken(eachAnimationName, this.css.animationsNonLayer)
             })
-            syntaxRule.definition.delete?.call(syntaxRule, syntaxRule.name)
             return syntaxRule
         }
 

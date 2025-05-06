@@ -1,11 +1,11 @@
 import SyntaxRuleType from '../syntax-rule-type'
-import { BORDER_STYLE_VALUES, COLOR_VALUE_REGEX, IMAGE_VALUE_REGEX, NUMBER_VALUE_REGEX } from '../common'
+import { BORDER_STYLE_VALUES } from '../common'
 import { SyntaxRuleDefinition } from '../types/config'
 
 const rules = {
     'font-size': {
         aliasGroups: ['font', 'f'],
-        values: [NUMBER_VALUE_REGEX],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
@@ -314,7 +314,7 @@ const rules = {
     },
     'text-decoration-color': {
         aliasGroups: ['text-decoration'],
-        values: [COLOR_VALUE_REGEX],
+        kind: 'color',
         type: SyntaxRuleType.Native,
         variables: ['text']
     },
@@ -325,7 +325,8 @@ const rules = {
     },
     'text-decoration-thickness': {
         aliasGroups: ['text-decoration'],
-        values: ['from-font', NUMBER_VALUE_REGEX],
+        values: ['from-font'],
+        kind: 'number',
         type: SyntaxRuleType.Native,
         unit: 'em'
     },
@@ -508,7 +509,7 @@ const rules = {
     },
     'text-size': {
         aliasGroups: ['text', 't'],
-        values: [NUMBER_VALUE_REGEX],
+        kind: 'number',
         unit: 'rem',
         declarations: {
             'font-size': undefined,
@@ -518,21 +519,22 @@ const rules = {
     },
     'text-fill-color': {
         aliasGroups: ['text', 't'],
-        values: [COLOR_VALUE_REGEX],
+        kind: 'color',
         type: SyntaxRuleType.Native,
         variables: ['text'],
         declarations: ['-webkit-text-fill-color']
     },
     'text-stroke-width': {
         aliasGroups: ['text-stroke'],
-        values: ['thin', 'medium', 'thick', NUMBER_VALUE_REGEX],
+        values: ['thin', 'medium', 'thick'],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         declarations: ['-webkit-text-stroke-width']
     },
     'text-stroke-color': {
         aliasGroups: ['text-stroke'],
-        values: [COLOR_VALUE_REGEX],
+        kind: 'color',
         type: SyntaxRuleType.Native,
         declarations: ['-webkit-text-stroke-color']
     },
@@ -573,7 +575,8 @@ const rules = {
     },
     'transform-origin': {
         aliasGroups: ['transform'],
-        values: ['top', 'bottom', 'right', 'left', 'center', NUMBER_VALUE_REGEX],
+        values: ['top', 'bottom', 'right', 'left', 'center'],
+        kind: 'number',
         unit: 'px',
         type: SyntaxRuleType.Native
     },
@@ -720,45 +723,45 @@ const rules = {
     // border color
     'border-top-color': {
         aliasGroups: ['bt', 'border-top'],
-        values: [COLOR_VALUE_REGEX],
+        kind: 'color',
         type: SyntaxRuleType.Native,
         variables: ['frame'],
     },
     'border-bottom-color': {
         aliasGroups: ['bb', 'border-bottom'],
-        values: [COLOR_VALUE_REGEX],
+        kind: 'color',
         type: SyntaxRuleType.Native,
         variables: ['frame'],
     },
     'border-left-color': {
         aliasGroups: ['bl', 'border-left'],
-        values: [COLOR_VALUE_REGEX],
+        kind: 'color',
         type: SyntaxRuleType.Native,
         variables: ['frame'],
     },
     'border-right-color': {
         aliasGroups: ['br', 'border-right'],
-        values: [COLOR_VALUE_REGEX],
+        kind: 'color',
         type: SyntaxRuleType.Native,
         variables: ['frame'],
     },
     'border-x-color': {
         aliasGroups: ['bx', 'border-x'],
-        values: [COLOR_VALUE_REGEX],
+        kind: 'color',
         type: SyntaxRuleType.Shorthand,
         variables: ['frame'],
         declarations: ['border-left-color', 'border-right-color']
     },
     'border-y-color': {
         aliasGroups: ['by', 'border-y'],
-        values: [COLOR_VALUE_REGEX],
+        kind: 'color',
         type: SyntaxRuleType.Shorthand,
         variables: ['frame'],
         declarations: ['border-top-color', 'border-bottom-color']
     },
     'border-color': {
         aliasGroups: ['b', 'border'],
-        values: [COLOR_VALUE_REGEX],
+        kind: 'color',
         type: SyntaxRuleType.NativeShorthand,
         variables: ['frame'],
     },
@@ -853,45 +856,45 @@ const rules = {
     // border width
     'border-top-width': {
         aliasGroups: ['bt', 'border-top'],
-        values: [NUMBER_VALUE_REGEX],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
     'border-bottom-width': {
         aliasGroups: ['bb', 'border-bottom'],
-        values: [NUMBER_VALUE_REGEX],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
     'border-left-width': {
         aliasGroups: ['bl', 'border-left'],
-        values: [NUMBER_VALUE_REGEX],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
     'border-right-width': {
         aliasGroups: ['br', 'border-right'],
-        values: [NUMBER_VALUE_REGEX],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
     'border-x-width': {
         aliasGroups: ['bx', 'border-x'],
-        values: [NUMBER_VALUE_REGEX],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['border-left-width', 'border-right-width']
     },
     'border-y-width': {
         aliasGroups: ['by', 'border-y'],
-        values: [NUMBER_VALUE_REGEX],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['border-top-width', 'border-bottom-width']
     },
     'border-width': {
         aliasGroups: ['b', 'border'],
-        values: [NUMBER_VALUE_REGEX],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand
     },
@@ -907,18 +910,19 @@ const rules = {
     },
     'border-image-source': {
         aliasGroups: ['border-image'],
-        values: [IMAGE_VALUE_REGEX],
+        kind: 'image',
         type: SyntaxRuleType.Native
     },
     'border-image-width': {
         aliasGroups: ['border-image'],
-        values: ['auto', NUMBER_VALUE_REGEX],
+        values: ['auto'],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
     'border-image-outset': {
         aliasGroups: ['border-image'],
-        values: [NUMBER_VALUE_REGEX],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
@@ -988,7 +992,7 @@ const rules = {
     },
     'background-color': {
         aliasGroups: ['bg'],
-        values: [COLOR_VALUE_REGEX],
+        kind: 'color',
         type: SyntaxRuleType.Native,
     },
     'background-clip': {
@@ -1013,13 +1017,14 @@ const rules = {
     },
     'background-size': {
         aliasGroups: ['bg'],
-        values: ['auto', 'cover', 'contain', NUMBER_VALUE_REGEX],
+        values: ['auto', 'cover', 'contain'],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
     'background-image': {
         aliasGroups: ['bg'],
-        values: [IMAGE_VALUE_REGEX],
+        kind: 'image',
         type: SyntaxRuleType.Native
     },
     background: {
@@ -1085,7 +1090,7 @@ const rules = {
     },
     'stroke-width': {
         aliasGroups: ['stroke'],
-        values: [NUMBER_VALUE_REGEX],
+        kind: 'number',
         type: SyntaxRuleType.Native
     },
     stroke: {
@@ -1278,7 +1283,7 @@ const rules = {
     },
     'list-style-image': {
         aliasGroups: ['list-style'],
-        values: [IMAGE_VALUE_REGEX],
+        kind: 'image',
         type: SyntaxRuleType.Native
     },
     'list-style': {
@@ -1286,7 +1291,7 @@ const rules = {
     },
     'outline-color': {
         aliasGroups: ['outline'],
-        values: [COLOR_VALUE_REGEX],
+        kind: 'color',
         type: SyntaxRuleType.Native,
         variables: ['frame'],
     },
@@ -1302,7 +1307,8 @@ const rules = {
     },
     'outline-width': {
         aliasGroups: ['outline'],
-        values: ['medium', 'thick', 'thin', NUMBER_VALUE_REGEX],
+        values: ['medium', 'thick', 'thin'],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
@@ -1450,13 +1456,11 @@ const rules = {
         type: SyntaxRuleType.Native
     },
     'shape-outside': {
-        aliasGroups: ['shape'],
-        values: [/(?:inset|circle|ellipse|polygon|url|linear-gradient)\(.*\)/],
+        key: 'shape',
         type: SyntaxRuleType.Native
     },
     'shape-margin': {
-        aliasGroups: ['shape'],
-        values: [NUMBER_VALUE_REGEX],
+        kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         variables: ['spacing']

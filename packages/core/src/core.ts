@@ -159,6 +159,7 @@ export default class MasterCSS {
                     subkey,
                     aliasGroups,
                     values,
+                    kind,
                     sign,
                     key: originalKey,
                     variables: ruleVariableGroups,
@@ -211,12 +212,21 @@ export default class MasterCSS {
                             : aliasGroups[0]
 
                         const variableKeys = Object.keys(syntax.variables)
-                        if (values?.length) {
-                            const valuePatterns = values.map(val =>
-                                val instanceof RegExp
-                                    ? val.source.replace('\\$colors', colorPattern)
-                                    : `${val}(?:\\b|_)`
-                            )
+                        const valuePatterns = values
+                            ? values.map((v) => `${v}(?:\\b|_)`)
+                            : []
+                        switch (kind) {
+                            case 'color':
+                                valuePatterns.push(`(?:#|(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla|light-dark)\\(.*\\)|(?:${colorPattern})(?![a-zA-Z0-9-]))`)
+                                break
+                            case 'number':
+                                valuePatterns.push('(?:[\\d.]|(?:max|min|calc|clamp)\\([^|]*\\))')
+                                break
+                            case 'image':
+                                valuePatterns.push('(?:url|linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient)\\(.*\\)')
+                                break
+                        }
+                        if (valuePatterns?.length) {
                             syntax.matchers.value = new RegExp(
                                 `^${keyPattern}:(?:${valuePatterns.join('|')})[^|]*?(?:@|$)`
                             )
