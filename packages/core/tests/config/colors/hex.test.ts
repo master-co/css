@@ -35,7 +35,8 @@ describe.concurrent('with themes', () => {
             chrisma: {
                 primary: '$black/.5'
             }
-        }
+        },
+        modeTrigger: 'class'
     }
 
     it.concurrent('checks resolved colors', () => {

@@ -14,7 +14,7 @@ test.concurrent('utility', () => {
 })
 
 test.concurrent('theme', () => {
-    const css = new MasterCSS()
+    const css = new MasterCSS({ modeTrigger: 'class' })
     css.add('fg:blue')
     expect(css.text).toContain(css.layerStatementRule.text)
     expect(css.text).toContain('@layer general{.fg\\:blue{color:rgb(var(--text-blue))}}')

@@ -7,6 +7,7 @@ export default {
             }
         }
     },
+    modeTrigger: 'class',
     modes: {
         light: {
             primary: '$(black)',

@@ -9,5 +9,5 @@ test.concurrent('media modes', () => {
 })
 
 test('components', () => {
-    expectLayers({ components: '.dark .btn\\@dark{display:block}' }, 'btn@dark', { components: { btn: 'block' } })
+    expectLayers({ components: '.dark .btn\\@dark{display:block}' }, 'btn@dark', { components: { btn: 'block' }, modeTrigger: 'class' })
 })

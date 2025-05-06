@@ -123,7 +123,8 @@ test.concurrent('colors', () => {
                     primary: '#ffffff',
                     accent: '#eeeeee'
                 }
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 
@@ -142,7 +143,8 @@ test.concurrent('colors', () => {
                     primary: '#ffffff',
                     accent: '#eeeeee'
                 }
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 
@@ -160,7 +162,8 @@ test.concurrent('colors', () => {
                 dark: {
                     primary: '#ffffff'
                 }
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 
@@ -182,7 +185,8 @@ test.concurrent('colors', () => {
                     primary: '#ffffff',
                     accent: '#aa0000'
                 }
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 
@@ -200,7 +204,8 @@ test.concurrent('colors', () => {
                 dark: {
                     fade: '#333333'
                 }
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 
@@ -222,6 +227,7 @@ test.concurrent('colors', () => {
                     'primary-filled': '$black'
                 }
             },
+            modeTrigger: 'class',
             components: {
                 btn: 'bg:primary-filled'
             }
@@ -248,7 +254,8 @@ test.concurrent('colors', () => {
             },
             components: {
                 btn: 'bg:primary-filled'
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 
@@ -271,7 +278,8 @@ test.concurrent('colors', () => {
             },
             components: {
                 btn: 'bg:primary-filled'
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 

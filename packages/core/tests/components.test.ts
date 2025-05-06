@@ -9,7 +9,8 @@ describe('comp -> comp -> var', () => {
             },
             strong: {
                 primary: 'bg:primary fg:primary-text outline:1|primary-active'
-            }
+            },
+            modeTrigger: 'class'
         },
         modes: {
             light: {

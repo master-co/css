@@ -12,7 +12,7 @@ import { expectLayers } from '../../test'
  */
 test.concurrent('hsl()', () => {
     expect(new MasterCSS({
-        variables: { primary: 'hsl(0deg 0% 0%/.5)' }
+        variables: { primary: 'hsl(0deg 0% 0%/.5)' }, modeTrigger: 'class'
     }).create('fg:primary')?.text
     ).toBe('.fg\\:primary{color:hsl(0deg 0% 0%/.5)}')
 })
@@ -39,7 +39,8 @@ describe.concurrent('with themes', () => {
             chrisma: {
                 primary: 'hsl(0deg 0% 0%/.5)'
             }
-        }
+        },
+        modeTrigger: 'class'
     }
 
     it.concurrent('checks resolved colors', () => {

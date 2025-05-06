@@ -40,7 +40,8 @@ test.concurrent('number with themes', () => {
                         x1: 32
                     }
                 }
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 
@@ -68,7 +69,8 @@ test.concurrent('number with themes', () => {
                         x1: 32
                     }
                 }
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 })
@@ -111,7 +113,8 @@ test.concurrent('number with themes using variable function', () => {
                         x1: 32
                     }
                 }
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 
@@ -139,7 +142,8 @@ test.concurrent('number with themes using variable function', () => {
                         x1: 32
                     }
                 }
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 })

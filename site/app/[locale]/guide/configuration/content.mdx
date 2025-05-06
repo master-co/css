@@ -207,45 +207,5 @@ Generated CSS:
 ### `.modeTrigger`
 Sets how the theme should drive and generate CSS rules.
 <DocProp defaultValue={JSON.stringify(config.modeTrigger)} types={["'class' | 'media' | 'host'"]} />
-```html
-<div class="bg:black@dark">
-```
 
-#### Drive theme styles through CSS classes
-```js name=master.css.js
-export default {
-    modesTrigger: 'class' /* [!code ++] */
-}
-```
-<details>
-    <summary>Generated CSS</summary>
-    ```css
-    .dark .bg\:#000000 { background-color: #000000 }
-    ```
-</details>
-
-#### Drive theme styles through media queries
-```js name=master.css.js
-export default {
-    modesTrigger: 'media' /* [!code ++] */
-}
-```
-<details>
-    <summary>Generated CSS</summary>
-    ```css
-    @media (prefers-color-scheme: dark) { .bg\:#000000 { background-color: #000000 } }
-    ```
-</details>
-
-#### Drive theme styles through shadow DOM's host
-```js name=master.css.js
-export default {
-    modesTrigger: 'host' /* [!code ++] */
-}
-```
-<details>
-    <summary>Generated CSS</summary>
-    ```css
-    :host(.dark) .bg\:#000000 { background-color: #000000 }
-    ```
-</details>
+See [mode triggers](/guide/variables-and-modes#mode-triggers) for more information.

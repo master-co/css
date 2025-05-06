@@ -19,5 +19,6 @@ Testing.layers({
         dark: {
             primary: '#136e42'
         }
-    }
+    },
+    modeTrigger: 'class'
 })

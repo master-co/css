@@ -43,6 +43,7 @@ test.concurrent('components', () => {
                     custom: '$(white)'
                 }
             },
+            modeTrigger: 'class',
             components: {
                 'highlight-numbers': '{content:counter(lineNumber);inline-block;counter-increment:lineNumber;pr:16;text:right;ml:-5;fg:custom;w:30;font:80%}_.highlight-line:before'
             }

@@ -41,7 +41,8 @@ test.concurrent('autofill solid', () => {
                 dark: {
                     line: 'dotted'
                 }
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 })

@@ -25,7 +25,7 @@ const config: Config = {
     override: false,
     important: false,
     defaultMode: 'light',
-    modeTrigger: 'class',
+    modeTrigger: 'media',
 }
 
 export {

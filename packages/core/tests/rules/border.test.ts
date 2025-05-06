@@ -82,7 +82,8 @@ test.concurrent('autofill solid', () => {
                 dark: {
                     line: 'dotted'
                 }
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 
@@ -100,7 +101,8 @@ test.concurrent('autofill solid', () => {
                 dark: {
                     line: 'dotted'
                 }
-            }
+            },
+            modeTrigger: 'class'
         }
     )
 })
