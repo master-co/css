@@ -84,6 +84,14 @@ It will be compiled to:
 ## Modes for variables
 Modes in Master CSS allow you to define different variable values based on the context, such as light or dark themes. This enables you to create responsive designs that adapt to user preferences or system settings.
 
+Modes can be applied to individual classes using the `@<mode>` syntax:
+<Code lang="html">{require('../../../../../packages/server/tests/fixtures/apply-styles-with-modes-in-classes/template.html?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/apply-styles-with-modes-in-classes/generated.css?raw')}</Code>
+</details>
+However, when attempting to implement a complete design system, marking the mode in the template not only clutters the markup but also makes your design structure harder to standardize and maintain.
+
 ### Defining variables with modes
 Variable modes are defined in the `modes` section of your configuration file. For example, add color variables in different modes.
 <Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-colors-by-theme/master.css.js?raw')}</Code>
@@ -165,11 +173,40 @@ No default mode `false`:
 
 ---
 
-## Applying styles with modes in classes
-Modes can be applied to individual classes using the `@<mode>` syntax:
-<Code lang="html">{require('../../../../../packages/server/tests/fixtures/apply-styles-with-modes-in-classes/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/apply-styles-with-modes-in-classes/generated.css?raw')}</Code>
-</details>
-This allows you to specify different styles for different modes without needing to define variables or components for each mode.
+## Implementing mode switching
+You can use the `prefers-color-scheme` media query to detect the user's system preference. However, *CSS does not allow you to control the user's `prefers-color-scheme`.*
+
+### Using class-driven styles
+To enable manual mode switching, use a class-based approach instead.
+```js name=master.css.js
+export default {
+    modeTrigger: 'class' /* [!code highlight] */
+}
+```
+Then you can control the theme mode by adding the `dark` class to the `<html>`:
+```html
+<!-- @MARK dark -->
+<html class="dark">
+    <body>
+        <div class="bg:primary">…</div>
+    </body>
+</html>
+```
+
+### Detect and store user preferences
+To detect and store user preferences, use JavaScript to check the user's system preference and store it in `localStorage`. This allows you to persist the user's choice across sessions.
+```js
+const key = 'theme-preference';
+const defaultPreference = 'system';
+const preference = localStorage.getItem(key) || defaultPreference;
+const value = preference === 'system'
+    ? matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'
+    : preference;
+
+document.documentElement.classList.add(value);
+
+if (['dark', 'light'].includes(value)) {
+    document.documentElement.style.colorScheme = value;
+}
+```
+This code checks the user's preference and applies the appropriate class to the `<html>` element. It also sets the `color-scheme` property to ensure proper rendering of colors in the selected mode.
