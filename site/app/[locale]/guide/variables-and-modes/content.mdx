@@ -1,6 +1,8 @@
 ## Overview [sr-only]
 This document explains how to define and use variables and modes in the Master CSS framework. Variables allow for reusable values throughout your styles, while modes enable conditional styling for different contexts like light/dark themes.
 
+<ModeImg src="/master-css-variables-and-modes.svg" alt='Master CSS Variables and Modes' />
+
 For a classic example, use the `primary` token in your markup:
 ```html
 <div class="bg:#000000@light">…</div> <!-- [!code --] -->
@@ -15,16 +17,9 @@ Variables in Master CSS provide a way to define reusable values that can be refe
 
 ### Defining variables
 Variables are defined in the [`variables`](/guide/configuration#variables) section of your configuration file. The basic syntax follows a hierarchical structure:
-```ts name=master.css.js
-export default {
-    variables: {
-        primary: '#000', /* [!code highlight] */
-        full: '100%',    /* [!code highlight] */
-        md: 20           /* [!code highlight] */
-    }
-}
-```
-- Variable `primary` is parsed as a color-type variable.
+<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/define-variables/master.css.js?raw')}</Code>
+- Variable `black` is parsed as a color-type variable.
+- Variable `primary` is linked to `$black` and parsed as a color-type variable.
 - Variable `full` is parsed as a string-type variable.
 - Variable `md` is parsed as a number-type variable.
 
@@ -32,11 +27,11 @@ export default {
 
 ### Using variables in classes
 Once defined, you can use these variables in your markup. The syntax for using variables is straightforward:
-```html
-<div class="bg:primary">…</div>
-<div class="w:full">…</div>
-<div class="m:md">…</div>
-```
+<Code lang="html">{require('../../../../../packages/server/tests/fixtures/define-variables/template.html?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/define-variables/generated.css?raw')}</Code>
+</details>
 
 ### Contextual resolution of variables
 Master CSS resolves variable names like `primary` based on their usage context. When used with color-related properties — such as `background-color` or its shorthand `bg` — the system maps `primary` accordingly:
@@ -99,8 +94,10 @@ Variable modes are defined in the `modes` section of your configuration file. Fo
 ### Using mode variables in classes
 You can use mode variables like `primary` in your markup by applying the same variable name in different contexts without confusion.
 <Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-colors-by-theme/template.html?raw')}</Code>
-Generated CSS will look like this:
-<Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-colors-by-theme/generated.css?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-colors-by-theme/generated.css?raw')}</Code>
+</details>
 Since Master CSS recognizes that the `primary` variable is mode-dependent, it compiles it into a standard CSS custom property and accesses it via the `var(--primary)` syntax.
 
 ### Mode triggers
@@ -170,10 +167,9 @@ No default mode `false`:
 
 ## Applying styles with modes in classes
 Modes can be applied to individual classes using the `@<mode>` syntax:
-```html
-<!-- @MARK @dark -->
-<div class="bg:black@dark">…</div>
-<!-- @MARK @light -->
-<div class="bg:white@light">…</div>
-```
+<Code lang="html">{require('../../../../../packages/server/tests/fixtures/apply-styles-with-modes-in-classes/template.html?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/apply-styles-with-modes-in-classes/generated.css?raw')}</Code>
+</details>
 This allows you to specify different styles for different modes without needing to define variables or components for each mode.

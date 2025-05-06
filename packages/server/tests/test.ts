@@ -8,7 +8,10 @@ test.each(fg.sync('./fixtures/**/template.html', { cwd: __dirname }))('%s', asyn
     const templateDirname = dirname(templatePath)
     const generatedCSSFilename = join(__dirname, templateDirname, 'generated.css')
     const masterCSSFilename = join(__dirname, templateDirname, 'master.css.js')
-    const config = (await import(masterCSSFilename)).default
+    let config
+    try {
+        config = (await import(masterCSSFilename)).default
+    } catch (e) { }
     expect(
         render(
             readFileSync(join(__dirname, templatePath)).toString(),
