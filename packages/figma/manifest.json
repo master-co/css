@@ -2,7 +2,7 @@
     "name": "Master CSS",
     "id": "1501844200903453211",
     "api": "1.0.0",
-    "main": "code.js",
+    "main": "./dist/core.js",
     "capabilities": [ ],
     "enableProposedApi": false,
     "documentAccess": "dynamic-page",
@@ -12,7 +12,10 @@
     "ui": "ui.html",
     "networkAccess": {
         "allowedDomains": [
-            "none"
+            "https://master.co",
+            "https://cdn.jsdelivr.net",
+            "https://fonts.googleapis.com",
+            "https://fonts.gstatic.com"
         ]
     }
 }

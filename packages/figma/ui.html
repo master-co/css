@@ -1,17 +1,192 @@
-<h2>Rectangle Creator</h2>
-<p>Count: <input id="count" type="number" value="5"></p>
-<button id="create">Create</button>
-<button id="cancel">Cancel</button>
+<section>
+    <div class="rows">
+        <div class="option-row">
+            <label for="variable-collections">Collection:</label>
+            <select id="variable-collections"></select>
+        </div>
+        <!-- <button id="exoprt-variables">Export variables</button> -->
+        <button id="copy-variables">Copy variables</button>
+    </div>
+    <!-- <input type="text" /> -->
+</section>
+<hr />
+
 <script>
+    let selectedVarCollectionId = null
+    let currentAction = null
 
-    document.getElementById('create').onclick = () => {
-        const textbox = document.getElementById('count')
-        const count = parseInt(textbox.value, 10)
-        parent.postMessage({ pluginMessage: { type: 'create-shapes', count } }, '*')
+    const setSelectOptions = (id, options) => {
+        const select = document.getElementById(id)
+        if (select === null) {
+            throw new Error(`Select with id ${id} not found`)
+        }
+        select.innerHTML = ''
+        options.forEach((option) => {
+            const opt = document.createElement('option')
+            opt.value = option.value
+            opt.innerText = option.name
+            select.appendChild(opt)
+        })
+    }
+    parent.postMessage({ pluginMessage: { type: 'get-variable-collections' } }, '*')
+
+    document.getElementById('copy-variables').onclick = () => {
+        currentAction = 'copy-variables'
+        parent.postMessage({ pluginMessage: { type: 'get-collection-variables', data: { id: selectedVarCollectionId } } }, '*')
     }
 
-    document.getElementById('cancel').onclick = () => {
-        parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
+    document.getElementById('variable-collections').onchange = (e) => {
+        selectedVarCollectionId = e.target.value
+        console.log(selectedVarCollectionId)
     }
 
+    window.onmessage = (event) => {
+        const { type, data } = event.data.pluginMessage
+        console.log(data)
+        switch (type) {
+            case 'get-collection-variables':
+                switch (currentAction) {
+                    case 'copy-variables':
+                        const config = data
+                        if (config === undefined) {
+                            console.error('No variables found for the selected collection')
+                            return
+                        }
+                        copyText(JSON.stringify(config)).then((success) => {
+                            if (success) {
+                                console.log('Variables copied to clipboard')
+                            } else {
+                                console.error('Failed to copy variables to clipboard')
+                            }
+                        })
+                        break
+                    default:
+                        break
+                }
+                break
+            case 'get-variable-collections':
+                setSelectOptions('variable-collections', data.map((collection) => ({ name: collection.name, value: collection.id })))
+                selectedVarCollectionId = data[0].id
+                break
+        }
+    }
+
+    async function copyText(text) {
+        try {
+            // 嘗試使用 Clipboard API（大部分瀏覽器支援，但 Figma sandbox 不支援）
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                await navigator.clipboard.writeText(text)
+                return true
+            }
+        } catch (err) {
+            console.warn('Clipboard API failed:', err)
+        }
+
+        // fallback 傳統方式（Figma plugin 中唯一可靠方式）
+        try {
+            const textarea = document.createElement('textarea')
+            textarea.value = text
+            textarea.style.position = 'fixed' // 避免跳動
+            textarea.style.opacity = '0'
+            document.body.appendChild(textarea)
+            textarea.select()
+
+            const success = document.execCommand('copy')
+            document.body.removeChild(textarea)
+
+            return success
+        } catch (err) {
+            console.error('Fallback copy failed:', err)
+            return false
+        }
+    }
 </script>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+    @import url('https://cdn.jsdelivr.net/npm/@master/normal.css');
+
+    :root {
+        --gap: 0.5rem;
+    }
+
+    body {
+        background-color: var(--figma-color-bg);
+        color: var(--figma-color-text);
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    select,
+    input,
+    button {
+        appearance: none;
+        color: var(--figma-color-text);
+        background-color: var(--figma-color-bg);
+        border: 1px solid var(--figma-color-border);
+        padding: 0px calc(8 / 16 * 1rem);
+        height: 1.5rem;
+        font-size: calc(11 / 16 * 1rem);
+        border-radius: calc(5 / 16 * 1rem);
+        outline: 0;
+    }
+
+    input {
+        border-color: transparent;
+        background-color: var(--figma-color-bg-secondary);
+    }
+
+    input:hover {
+        border: 1px solid var(--figma-color-border);
+    }
+
+    input:focus {
+        border-color: var(--figma-color-border-selected);
+        outline: none;
+    }
+
+    button:active {
+        background-color: var(--figma-color-bg-pressed);
+    }
+
+    select {
+        padding-right: 2em;
+        background-color: transparent;
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAxNiAxNiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBmaWxsPSIjMDAwMDAwIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMC40NzUgNi43NjhhLjUuNSAwIDAgMSAwIC43MDdMOC4zNTQgOS41OTYgOCA5Ljk1bC0uMzU0LS4zNTRsLTIuMTItMi4xMjFhLjUuNSAwIDAgMSAuNzA2LS43MDdMOCA4LjUzNmwxLjc2OC0xLjc2OGEuNS41IDAgMCAxIC43MDcgMCIgY2xpcC1ydWxlPSJldmVub2RkIi8+PC9zdmc+");
+        background-repeat: no-repeat;
+        background-position: right 0.25em center;
+        background-blend-mode: multiply;
+        background-size: 1.5em;
+    }
+
+    .figma-dark {
+        select {
+            background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAxNiAxNiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBmaWxsPSIjZmZmZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMC40NzUgNi43NjhhLjUuNSAwIDAgMSAwIC43MDdMOC4zNTQgOS41OTYgOCA5Ljk1bC0uMzU0LS4zNTRsLTIuMTItMi4xMjFhLjUuNSAwIDAgMSAuNzA2LS43MDdMOCA4LjUzNmwxLjc2OC0xLjc2OGEuNS41IDAgMCAxIC43MDcgMCIgY2xpcC1ydWxlPSJldmVub2RkIi8+PC9zdmc+");
+        }
+    }
+
+    section {
+        padding: 1rem;
+    }
+
+    hr {
+        background-color: var(--figma-color-border);
+        height: calc(1 / 16 * 1rem);
+    }
+
+    .rows {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap);
+    }
+
+    .option-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: center;
+        gap: var(--gap);
+    }
+
+    .option-row label {
+        font-size: calc(11 / 16 * 1rem);
+        color: var(--figma-color-text-secondary);
+    }
+</style>

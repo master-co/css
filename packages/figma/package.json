@@ -2,12 +2,13 @@
     "name": "@master/css.figma",
     "version": "1.0.0",
     "description": "Master CSS Figma Plugin",
-    "main": "code.js",
+    "main": "./dist/core.js",
     "scripts": {
-        "build": "tsc -p tsconfig.json",
-        "lint": "eslint --ext .ts,.tsx --ignore-pattern node_modules .",
-        "lint:fix": "eslint --ext .ts,.tsx --ignore-pattern node_modules --fix .",
-        "watch": "npm run build -- --watch"
+        "build": "techor build",
+        "dev": "pnpm build --watch",
+        "lint": "eslint",
+        "type-check": "tsc --noEmit",
+        "test": "vitest"
     },
     "author": "Aoyue Design LLC.",
     "license": "MIT",

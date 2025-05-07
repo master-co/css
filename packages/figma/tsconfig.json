@@ -1,11 +1,16 @@
 {
-  "compilerOptions": {
-    "target": "es6",
-    "lib": ["es6"],
-    "strict": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules/@figma"
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "dist",
+        "target": "ESNext",
+        "lib": ["ESNext"],
+        "types": [
+            "@figma/plugin-typings"
+        ],
+    },
+    "include": [
+        "src/**/*.ts",
+        "tests/**/*.test.ts",
+        "tests/**/test.ts"
     ]
-  }
 }
