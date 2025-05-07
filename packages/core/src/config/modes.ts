@@ -59,7 +59,7 @@ const modes = {
             pink: '$pink-60',
             crimson: '$crimson-60',
             red: '$red-60'
-        }
+        },
     },
     dark: {
         base: '$gray-95',
@@ -119,7 +119,8 @@ const modes = {
             pink: '$pink-30',
             crimson: '$crimson-30',
             red: '$red-30'
-        }
+        },
+
     }
 } satisfies ModeDefinitions
 

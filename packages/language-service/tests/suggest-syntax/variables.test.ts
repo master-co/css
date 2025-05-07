@@ -15,12 +15,15 @@ describe.concurrent('scope', () => {
             'value': dedent`
                     \`\`\`css
                     @layer theme {
-                      .light,
-                      :root {
-                        --text-blue: 37 99 253
+                      @media (prefers-color-scheme:light) {
+                        :root {
+                          --text-blue: 37 99 253
+                        }
                       }
-                      .dark {
-                        --text-blue: 112 176 255
+                      @media (prefers-color-scheme:dark) {
+                        :root {
+                          --text-blue: 112 176 255
+                        }
                       }
                     }
                     @layer general {
@@ -79,12 +82,15 @@ describe.concurrent('scope and global', () => {
             'value': dedent`
                     \`\`\`css
                     @layer theme {
-                      .light,
-                      :root {
-                        --text-blue: 37 99 253
+                      @media (prefers-color-scheme:light) {
+                        :root {
+                          --text-blue: 37 99 253
+                        }
                       }
-                      .dark {
-                        --text-blue: 112 176 255
+                      @media (prefers-color-scheme:dark) {
+                        :root {
+                          --text-blue: 112 176 255
+                        }
                       }
                     }
                     @layer general {
@@ -113,12 +119,15 @@ describe.concurrent('scope and global', () => {
             'value': dedent`
                     \`\`\`css
                     @layer theme {
-                      .light,
-                      :root {
-                        --blue: 37 99 253
+                      @media (prefers-color-scheme:light) {
+                        :root {
+                          --blue: 37 99 253
+                        }
                       }
-                      .dark {
-                        --blue: 58 124 255
+                      @media (prefers-color-scheme:dark) {
+                        :root {
+                          --blue: 58 124 255
+                        }
                       }
                     }
                     @layer general {
