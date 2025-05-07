@@ -69,6 +69,7 @@
         "@master/css-server": "workspace:^",
         "@master/css-validator": "workspace:^",
         "@master/css.nuxt": "workspace:^",
+        "@master/css.figma": "workspace:^",
         "@master/css.react": "workspace:^",
         "@master/css.svelte": "workspace:^",
         "@master/css.vite": "workspace:^",

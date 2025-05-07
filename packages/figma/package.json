@@ -1,0 +1,24 @@
+{
+    "name": "@master/css.figma",
+    "version": "1.0.0",
+    "description": "Master CSS Figma Plugin",
+    "main": "code.js",
+    "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "lint": "eslint --ext .ts,.tsx --ignore-pattern node_modules .",
+        "lint:fix": "eslint --ext .ts,.tsx --ignore-pattern node_modules --fix .",
+        "watch": "npm run build -- --watch"
+    },
+    "author": "Aoyue Design LLC.",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/figma"
+    },
+    "devDependencies": {
+        "@figma/eslint-plugin-figma-plugins": "^0.16.1",
+        "@figma/plugin-typings": "^1.110.0",
+        "typescript": "^5.8.3"
+    }
+}

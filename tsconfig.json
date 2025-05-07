@@ -23,6 +23,7 @@
             "@master/css-validator": [ "./node_modules/@master/css-validator/src" ],
             "@master/css.vue": [ "./node_modules/@master/css.vue/src" ],
             "@master/css.astro": [ "./node_modules/@master/css.astro/src" ],
+            "@master/css.figma": [ "./node_modules/@master/css.figma/src" ],
             "master-css-vscode": [ "./node_modules/master-css-vscode/src" ],
             "shared/*": [ "./node_modules/shared/*" ],
             "~/*": [ "./*" ],
