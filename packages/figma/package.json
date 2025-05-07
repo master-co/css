@@ -2,10 +2,11 @@
     "name": "@master/css.figma",
     "version": "1.0.0",
     "description": "Master CSS Figma Plugin",
-    "main": "./dist/core.js",
+    "main": "./dist/plugin.js",
     "scripts": {
-        "build": "techor build",
-        "dev": "pnpm build --watch",
+        "build": "techor build && vite build",
+        "dev:plugin": "techor build --watch",
+        "dev:ui": "pnpm build --watch",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
         "test": "vitest"
@@ -20,6 +21,12 @@
     "devDependencies": {
         "@figma/eslint-plugin-figma-plugins": "^0.16.1",
         "@figma/plugin-typings": "^1.110.0",
-        "typescript": "^5.8.3"
+        "@master/normal.css": "^3.2.0",
+        "typescript": "^5.8.3",
+        "vite-plugin-singlefile": "^2.2.0"
+    },
+    "dependencies": {
+        "copy-to-clipboard": "^3.3.3",
+        "petite-vue": "^0.4.1"
     }
 }

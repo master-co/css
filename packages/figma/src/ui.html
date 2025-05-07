@@ -1,0 +1,25 @@
+<div v-cloak>
+    <section>
+        <div class="panel-title">Variables</div>
+        <div class="panel-rows">
+            <div class="panel-prop">
+                <label for="var-collections">Collection:</label>
+                <select id="var-collections" v-model="selectedVarCollection">
+                    <option :value="varCollection" v-for="varCollection in varCollections" :key="varCollection.id">
+                        {{ varCollection.name }}
+                    </option>
+                </select>
+            </div>
+            <div class="panel-prop">
+                <label for="var-output-indent">Indent:</label>
+                <input id="var-output-indent" type="number" min="0" max="8" v-model="varOutputIndent" />
+            </div>
+            <!-- <button id="exoprt-variables">Export variables</button> -->
+            <button @click="copyVariables">Copy {{ selectedVarCollection?.name }}</button>
+        </div>
+        <!-- <input type="text" /> -->
+    </section>
+    <hr />
+</div>
+
+<script src="./ui.ts" type="module"></script>

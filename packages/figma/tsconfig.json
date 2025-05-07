@@ -2,8 +2,6 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "outDir": "dist",
-        "target": "ESNext",
-        "lib": ["ESNext"],
         "types": [
             "@figma/plugin-typings"
         ],

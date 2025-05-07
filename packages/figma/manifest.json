@@ -2,20 +2,21 @@
     "name": "Master CSS",
     "id": "1501844200903453211",
     "api": "1.0.0",
-    "main": "./dist/core.js",
+    "main": "./dist/plugin.js",
     "capabilities": [ ],
     "enableProposedApi": false,
     "documentAccess": "dynamic-page",
     "editorType": [
         "figma"
     ],
-    "ui": "ui.html",
+    "ui": "./out/ui.html",
     "networkAccess": {
         "allowedDomains": [
             "https://master.co",
             "https://cdn.jsdelivr.net",
             "https://fonts.googleapis.com",
-            "https://fonts.gstatic.com"
+            "https://fonts.gstatic.com",
+            "https://unpkg.com"
         ]
     }
 }
