@@ -22,7 +22,6 @@ const config: Config = {
     scope: '',
     rootSize: 16,
     baseUnit: 4,
-    override: false,
     important: false,
     defaultMode: 'light',
     modeTrigger: 'media',

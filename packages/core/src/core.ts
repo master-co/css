@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { SyntaxRule } from './syntax-rule'
-import { config as defaultConfig } from './config'
 import hexToRgb from './utils/hex-to-rgb'
 import { flattenObject } from './utils/flatten-object'
 import extendConfig from './utils/extend-config'
@@ -19,7 +18,6 @@ import parseValue from './utils/parse-value'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 
 export default class MasterCSS {
-    static config: Config = defaultConfig
     readonly definedRules: DefinedRule[] = []
     readonly config!: Config
     readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,components,general;')
@@ -39,7 +37,8 @@ export default class MasterCSS {
     readonly animations = new Map<string, AnimationDefinitions>()
 
     constructor(
-        public customConfig?: Config
+        public customConfig?: Config,
+        public baseConfig?: Config,
     ) {
         this.resolve(customConfig)
     }
@@ -62,9 +61,9 @@ export default class MasterCSS {
             customConfig = this.customConfig
         }
         // @ts-expect-error read-only
-        this.config = customConfig?.override
-            ? extendConfig(customConfig)
-            : extendConfig(defaultConfig, customConfig)
+        this.config = this.baseConfig
+            ? extendConfig(this.baseConfig, customConfig)
+            : extendConfig(customConfig)
         this.resolveVariables()
         this.resolveAnimations()
         this.resolveSelectors()

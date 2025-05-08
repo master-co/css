@@ -60,7 +60,6 @@ export interface Config {
     defaultMode?: 'light' | 'dark' | string | false
     scope?: string
     important?: boolean
-    override?: boolean
     functions?: FunctionDefinitions
     animations?: AnimationDefinitions
     modes?: ModeDefinitions
