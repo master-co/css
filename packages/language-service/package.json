@@ -19,7 +19,7 @@
     "dependencies": {
         "@babel/parser": "^7.27.0",
         "@master/css": "workspace:^",
-        "@techor/extend": "^3.2.0",
+        "@techor/extend": "^3.2.2",
         "color-convert": "^2.0.1",
         "color-rgba": "^3.0.0",
         "color-space": "^2.3.1",

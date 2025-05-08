@@ -2,7 +2,7 @@
     "name": "@master/css.figma",
     "version": "1.0.0",
     "description": "Master CSS Figma Plugin",
-    "main": "./dist/plugin.js",
+    "main": "./dist/plugin.mjs",
     "type": "module",
     "scripts": {
         "build": "techor build && vite build",
@@ -24,7 +24,7 @@
         "@figma/plugin-typings": "^1.110.0",
         "@master/css": "workspace:^",
         "@master/normal.css": "^3.2.0",
-        "@vue/reactivity": "^3.5.13",
+        "colorjs.io": "^0.5.2",
         "dot-prop": "^9.0.0",
         "typescript": "^5.8.3",
         "vite-plugin-singlefile": "^2.2.0"

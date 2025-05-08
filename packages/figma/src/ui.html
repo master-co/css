@@ -20,6 +20,17 @@
                 </select>
             </div>
             <div class="panel-prop">
+                <label for="var-collection-color-space">Color Space:</label>
+                <select id="var-collection-color-space" v-model="selectedVarColorSpace">
+                    <option value="hex">HEX</option>
+                    <option value="rgb">RGB</option>
+                    <option value="hsl">HSL</option>
+                    <option value="lab">LAB</option>
+                    <option value="oklab">OKLAB</option>
+                    <option value="oklch">OKLCH</option>
+                </select>
+            </div>
+            <div class="panel-prop">
                 <label for="var-output-indent">Indent:</label>
                 <input id="var-output-indent" type="number" min="0" max="8" v-model="varOutputIndent" />
             </div>
