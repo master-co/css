@@ -1,53 +1,72 @@
-export default async function getCollectionVariables(id: string) {
+import { getProperty, setProperty, hasProperty, deleteProperty } from 'dot-prop'
+import { Config } from '@master/css'
+
+export default async function getCollectionVariables(id: string, defaultMode?: any) {
     const collection = await figma.variables.getVariableCollectionByIdAsync(id)
     if (!collection) {
         console.error(`Collection with id ${id} not found`)
         return
     }
-
-    const modeNameById = collection.modes.reduce((a: Record<string, string>, b) => {
-        a[b.modeId] = b.name
+    const modeNameById = collection.modes.reduce((a, b) => {
+        a[b.modeId] = b.name.toLocaleLowerCase()
         return a
     }, {} as Record<string, string>)
-    const modeLength = collection.modes.length
-    const config: Record<string, any> = {}
-    for (const eachVariableId of collection.variableIds) {
-        const variable = await figma.variables.getVariableByIdAsync(eachVariableId)
-        if (variable && variable.resolvedType === 'COLOR') {
-            const [colorName, level] = variable.name.split('/')
-            const currentColors = Object.prototype.hasOwnProperty.call(config, colorName)
-                ? config[colorName]
-                : (config[colorName] = {})
-            let eachThemeColors: any = {}
-            for (const eachModeId in variable.valuesByMode) {
-                const modeName = modeNameById[eachModeId].toLowerCase()
-                const suffix = (modeName !== 'default' && modeLength > 1) ? ('@' + modeName) : ''
-                const values = variable.valuesByMode[eachModeId]
-                let resolvedValue
-                if (typeof values === 'object' && 'type' in values && values.type === 'VARIABLE_ALIAS') {
-                    const aliasVariable = await figma.variables.getVariableByIdAsync(values.id)
-                    resolvedValue = aliasVariable ? `$(${aliasVariable.name.replace('/', '-')})` : null
-                } else {
-                    if (typeof values === 'object' && 'r' in values && 'g' in values && 'b' in values && 'a' in values) {
-                        resolvedValue = rgbaToHex(values as RGBA)
+    const modes: Record<string, any> = {}
+    const defaultModeName = defaultMode ? defaultMode.name.toLocaleLowerCase() : null
+    for (const varId of collection.variableIds) {
+        const variable = await figma.variables.getVariableByIdAsync(varId)
+        if (!variable) continue
+        switch (variable.resolvedType) {
+            case 'COLOR':
+                const dotVarName = variable.name.replace('/', '.')
+                for (const varModeId in variable.valuesByMode) {
+                    const modeName = modeNameById[varModeId].toLowerCase()
+                    const dotModeVarName = modeName + '.' + dotVarName
+                    const dotDefaultModeVarName = defaultModeName + '.' + dotVarName
+                    const defaultValue = getProperty(modes, dotDefaultModeVarName)
+                    let current: any = getProperty(modes, dotModeVarName)
+                    const value = variable.valuesByMode[varModeId]
+                    let newValue
+                    if (typeof value === 'object' && 'type' in value && value.type === 'VARIABLE_ALIAS') {
+                        const aliasVariable = await figma.variables.getVariableByIdAsync(value.id)
+                        newValue = aliasVariable ? `$${aliasVariable.name.replace('/', '-')}` : null
                     } else {
-                        resolvedValue = null
+                        if (typeof value === 'object' && 'r' in value && 'g' in value && 'b' in value && 'a' in value) {
+                            newValue = rgbaToHex(value as RGBA)
+                        } else {
+                            newValue = null
+                        }
+                    }
+                    if (newValue === defaultValue) {
+                        continue
+                    }
+                    if (newValue) {
+                        if (current === undefined) {
+                            current = newValue
+                            setProperty(modes, dotModeVarName, current)
+                        } else if (typeof current === 'object') {
+                            current[''] = newValue
+                        }
                     }
                 }
-                modeLength > 1
-                    ? eachThemeColors[suffix] = resolvedValue
-                    : eachThemeColors = resolvedValue !== null ? resolvedValue : {}
-            }
-            const equalValue = await getEqualValue(eachThemeColors)
-            if (equalValue) {
-                eachThemeColors = equalValue
-            }
-            currentColors[level || ''] = eachThemeColors
-            if (!level && Object.keys(currentColors).length === 1) {
-                config[colorName] = eachThemeColors
-            }
+                break
         }
     }
+    let variables: Record<string, any> | undefined
+    for (const modeName in modes) {
+        if (defaultModeName === modeName) {
+            variables = modes[modeName]
+            delete modes[modeName]
+        }
+    }
+    let config: Config = {}
+    if (variables) {
+        config.variables = variables
+    }
+    if (Object.keys(modes).length > 0) {
+        config.modes = modes
+    }
+    console.log(config)
     return config
 }
 

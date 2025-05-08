@@ -1402,9 +1402,18 @@ importers:
       '@figma/plugin-typings':
         specifier: ^1.110.0
         version: 1.110.0
+      '@master/css':
+        specifier: workspace:^
+        version: link:../core
       '@master/normal.css':
         specifier: ^3.2.0
         version: 3.2.0
+      '@vue/reactivity':
+        specifier: ^3.5.13
+        version: 3.5.13
+      dot-prop:
+        specifier: ^9.0.0
+        version: 9.0.0
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -25379,7 +25388,7 @@ snapshots:
       chalk: 5.4.1
       cli-boxes: 3.0.0
       string-width: 7.2.0
-      type-fest: 4.40.0
+      type-fest: 4.41.0
       widest-line: 5.0.0
       wrap-ansi: 9.0.0
 

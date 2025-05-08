@@ -4,9 +4,18 @@
         <div class="panel-rows">
             <div class="panel-prop">
                 <label for="var-collections">Collection:</label>
-                <select id="var-collections" v-model="selectedVarCollection">
+                <select id="var-collections" v-model="selectedVarCollection" @change="varCollectionChange">
                     <option :value="varCollection" v-for="varCollection in varCollections" :key="varCollection.id">
                         {{ varCollection.name }}
+                    </option>
+                </select>
+            </div>
+            <div class="panel-prop">
+                <label for="var-collection-default-mode">Default Mode:</label>
+                <select id="var-collection-default-mode" v-model="selectedVarDefaultMode">
+                    <option :value="null">None</option>
+                    <option :value="mode" v-for="mode in selectedVarCollection?.modes" :key="mode.id">
+                        {{ mode.name }}
                     </option>
                 </select>
             </div>

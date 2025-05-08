@@ -24,6 +24,7 @@ window.onmessage = (event) => {
         case 'get-variable-collections':
             states.varCollections = data
             states.selectedVarCollection = data[0]
+            states.varCollectionChange()
             break
     }
 }
