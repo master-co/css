@@ -1,4 +1,4 @@
-import { MasterCSS, SelectorDefinitions, generateCSS } from '@master/css'
+import { MasterCSS, createCSS, SelectorDefinitions, generateCSS } from '@master/css'
 import cssDataProvider from './css-data-provider'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
@@ -7,7 +7,7 @@ import { getCSSDataDocumentation } from './get-css-data-documentation'
 
 const kind = CompletionItemKind.Function
 
-export default function getPseudoClassCompletionItems(css: MasterCSS = new MasterCSS(), syntax: string): CompletionItem[] {
+export default function getPseudoClassCompletionItems(css: MasterCSS = createCSS(), syntax: string): CompletionItem[] {
     const pseudoClassDataList = cssDataProvider.providePseudoClasses()
         .filter((data) => {
             // exclude @page pseudo-classes

@@ -1,7 +1,7 @@
 import { CompletionItemKind, type CompletionItem } from 'vscode-languageserver-protocol'
 import getPseudoClassCompletionItems from './get-pseudo-class-completion-items'
 import getPseudoElementCompletionItems from './get-pseudo-element-completion-items'
-import { ANIMATION_SIGN, AT_SIGN, MasterCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, TRANSITION_SIGN, generateCSS } from '@master/css'
+import { ANIMATION_SIGN, AT_SIGN, MasterCSS, createCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, TRANSITION_SIGN, generateCSS } from '@master/css'
 import { GROUP_TRIGGER_CHARACTER, SELECTOR_TRIGGER_CHARACTERS } from '../common'
 import getMainCompletionItems from './get-main-completion-items'
 import { SELECTOR_SIGNS } from '@master/css'
@@ -9,7 +9,7 @@ import getValueCompletionItems from './get-value-completion-items'
 import getQueryCompletionItems from './get-query-completion-items'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 
-export default function querySyntaxCompletions(q = '', css: MasterCSS = new MasterCSS()) {
+export default function querySyntaxCompletions(q = '', css: MasterCSS = createCSS()) {
     const fields = q.split(' ')
     let field = fields[fields.length - 1]
     const triggerCharacter = q.charAt(q.length - 1)

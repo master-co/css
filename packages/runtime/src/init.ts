@@ -1,4 +1,5 @@
 import CSSRuntime from './core'
+import { config as defaultConfig } from '@master/css'
 import type { Config } from '@master/css'
 
 /**
@@ -11,7 +12,7 @@ import type { Config } from '@master/css'
 export default function initCSSRuntime(config?: Config, root: Document | ShadowRoot = document, autoObserve = true): CSSRuntime {
     let cssRuntime = globalThis.CSSRuntime.instances.get(root)
     if (cssRuntime) return cssRuntime
-    cssRuntime = new CSSRuntime(root, config)
+    cssRuntime = new CSSRuntime(root, config, defaultConfig)
     if (autoObserve) cssRuntime.observe()
     return cssRuntime
 }

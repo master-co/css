@@ -1,6 +1,6 @@
 'use client'
 
-import { CSSRuntime } from '@master/css-runtime'
+import { CSSRuntime, initCSSRuntime } from '@master/css-runtime'
 import { createContext, useContext, useRef, useCallback, ReactNode } from 'react'
 import type CSSRuntimeProviderProps from './types/provider-props'
 // fix: ReferenceError: React is not defined
@@ -16,7 +16,7 @@ export default function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
 
     /** onMounted */
     useIsomorphicLayoutEffect(() => {
-        cssRuntime.current = new CSSRuntime(props.root ?? document, props.config).observe()
+        cssRuntime.current = initCSSRuntime(props.config, props.root ?? document)
         return () => {
             cssRuntime.current?.destroy()
             cssRuntime.current = undefined
@@ -35,7 +35,7 @@ export default function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
         if (cssRuntime.current) {
             cssRuntime.current.destroy()
             cssRuntime.current = undefined
-            cssRuntime.current = new CSSRuntime(props.root ?? document, props.config).observe()
+            cssRuntime.current = initCSSRuntime(props.config, props.root ?? document)
         }
     }, [props.root])
 

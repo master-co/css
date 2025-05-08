@@ -1,6 +1,6 @@
-import MasterCSS from '../../src'
+import { createCSS } from '../../src'
 
-console.log(new MasterCSS({
+console.log(createCSS({
     components: {
         btn: 'block@preset'
     }

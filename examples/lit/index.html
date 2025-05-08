@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="./src/index.css" />
     <script type="module" src="/src/my-element.ts"></script>
     <script type="module">
-        import MasterCSS from '@master/css'
+        import { createCSS } from '@master/css'
         import config from './master.css'
-        new MasterCSS(config)
+        createCSS(config)
     </script>
 </head>
 

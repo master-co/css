@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { MasterCSS } from '../../../src'
+import { createCSS } from '../../../src'
 
 test('rule', () => {
     const config = {
@@ -7,6 +7,6 @@ test('rule', () => {
             btn: 'inline-flex bg:#000000'
         }
     }
-    const rule = new MasterCSS(config).generate('btn')[0]
+    const rule = createCSS(config).generate('btn')[0]
     expect(rule.fixedClass).toBe('btn')
 })

@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 import css from './css'
-import { MasterCSS } from '../src'
+import { createCSS } from '../src'
 
 test.concurrent('mb:48', ({ task }) => {
     css.add(task.name)
@@ -21,7 +21,7 @@ test.concurrent('mb:48@preset', ({ task }) => {
 })
 
 test.concurrent('btn@sm', ({ task }) => {
-    const css = new MasterCSS({
+    const css = createCSS({
         components: {
             btn: 'block font:32'
         }

@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import css from './css'
 import shuffleArray from 'shuffle-array'
-import { Config, sortReadableClasses } from '../src'
+import { Config, sortReadableClasses, createCSS } from '../src'
 
 const Testing = {
     classText(cases: Record<string, string>) {
@@ -13,11 +13,11 @@ const Testing = {
         test.concurrent.each(Object.entries(cases))('%s', (_, args) => {
             if (Array.isArray(args[1])) {
                 const [cls, expected, config] = args as [string, string[], Config]
-                const css = new MasterCSS(config)
+                const css = createCSS(config)
                 css.add(cls)
                 expect(css.componentsLayer.rules.map(({ name }) => name)).toEqual(expected)
             } else {
-                const css = new MasterCSS()
+                const css = createCSS()
                 css.add(...shuffleArray([...(args as string[])]))
                 expect(css.generalLayer.rules.map(({ name }) => name)).toEqual(args)
             }
@@ -29,7 +29,7 @@ const Testing = {
                 .flat()
                 .map((cls) => cls.trim())
                 .filter((Boolean))
-            expect(sortReadableClasses(shuffleArray([...classes]), new MasterCSS(config)).join(' ')).toBe(classes.join(' '))
+            expect(sortReadableClasses(shuffleArray([...classes]), createCSS(config)).join(' ')).toBe(classes.join(' '))
         })
     },
     layers(cases: Record<string, {
@@ -41,7 +41,7 @@ const Testing = {
         preset?: string
     }>, config?: Config) {
         test.concurrent.each(Object.entries(cases))('%s', (cls: string, expected) => {
-            const css = new MasterCSS(config).add(...cls.split(' '))
+            const css = createCSS(config).add(...cls.split(' '))
             if (expected.theme) expect(css.themeLayer.text).toContain(`@layer theme{${expected.theme ?? ''}}`)
             if (expected.components) expect(css.componentsLayer.text).toContain(`@layer components{${expected.components ?? ''}}`)
             if (expected.preset) expect(css.presetLayer.text).toContain(`@layer preset{${expected.preset ?? ''}}`)

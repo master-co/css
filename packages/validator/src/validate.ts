@@ -1,5 +1,5 @@
 import { type SyntaxError } from './types/syntax-error'
-import { MasterCSS } from '@master/css'
+import { createCSS } from '@master/css'
 import validateCSS from './validate-css'
 
 /**
@@ -9,7 +9,7 @@ import validateCSS from './validate-css'
  */
 export default function validate(
     syntax: string,
-    css = new MasterCSS()
+    css = createCSS()
 ): {
     matched: boolean,
     errors: SyntaxError[]

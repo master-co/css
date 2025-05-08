@@ -1,6 +1,6 @@
 import { it, test, expect } from 'vitest'
-import { MasterCSS } from '../../src'
+import { createCSS } from '../../src'
 
 test.concurrent('writing', () => {
-    expect(new MasterCSS().create('writing:rl')?.text).toContain('writing-mode:rl')
+    expect(createCSS().create('writing:rl')?.text).toContain('writing-mode:rl')
 })

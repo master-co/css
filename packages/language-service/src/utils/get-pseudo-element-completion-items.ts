@@ -1,4 +1,4 @@
-import { MasterCSS, generateCSS } from '@master/css'
+import { MasterCSS, createCSS, generateCSS } from '@master/css'
 import cssDataProvider from './css-data-provider'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
@@ -7,7 +7,7 @@ import { IPseudoElementData } from 'vscode-css-languageservice'
 
 const kind = CompletionItemKind.Function
 
-export default function getPseudoElementCompletionItems(css: MasterCSS = new MasterCSS(), syntax: string): CompletionItem[] {
+export default function getPseudoElementCompletionItems(css: MasterCSS = createCSS(), syntax: string): CompletionItem[] {
     const pseudoElementDataList = cssDataProvider.providePseudoElements()
     const completionItems = pseudoElementDataList
         .map((data) => {

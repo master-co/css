@@ -21,9 +21,10 @@ export default class CSSRuntime extends MasterCSS {
 
     constructor(
         public root: Document | ShadowRoot = document,
-        public customConfig: Config = defaultConfig
+        public customConfig: Config = defaultConfig,
+        public baseConfig?: Config
     ) {
-        super(customConfig)
+        super(customConfig, baseConfig)
         if (this.root instanceof Document || this.root instanceof HTMLDocument) {
             this.root.defaultView!.globalThis.cssRuntime = this
             this.container = this.root.head

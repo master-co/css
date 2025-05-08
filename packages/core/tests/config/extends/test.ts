@@ -1,9 +1,9 @@
 import { it, test, expect } from 'vitest'
-import { MasterCSS } from '../../../src'
+import { createCSS } from '../../../src'
 import config from './master-css'
 
 it.concurrent('config extends', () => {
-    const css = new MasterCSS(config)
+    const css = createCSS(config)
     expect(css.config.components).toMatchObject({
         'blue': {
             'btn': {

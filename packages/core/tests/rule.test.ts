@@ -1,13 +1,13 @@
 import { it, test, expect, describe } from 'vitest'
-import { MasterCSS } from '../src'
+import { createCSS } from '../src'
 import { variables } from '../src'
 
 test.concurrent('uncomplete', () => {
-    expect(new MasterCSS().generate('b:')[0]).toBeUndefined()
+    expect(createCSS().generate('b:')[0]).toBeUndefined()
 })
 
 test.concurrent('declarations', () => {
-    const css = new MasterCSS({
+    const css = createCSS({
         modes: {
             light: {
                 primary: '#fff'
@@ -21,7 +21,7 @@ test.concurrent('declarations', () => {
 })
 
 test.concurrent('registered Rule', () => {
-    expect(new MasterCSS().definedRules.find(({ id }) => id === 'content')).toMatchObject({
+    expect(createCSS().definedRules.find(({ id }) => id === 'content')).toMatchObject({
         definition: {
             key: 'content',
             type: -1
@@ -36,7 +36,7 @@ test.concurrent('registered Rule', () => {
 })
 
 test.concurrent('variables', () => {
-    const css = new MasterCSS({
+    const css = createCSS({
         variables: {
             a: {
                 1: 'test',
@@ -78,23 +78,23 @@ test.concurrent('variables', () => {
 
 describe.concurrent('token', () => {
     test.concurrent('value', () => {
-        expect(new MasterCSS().generate('b:1|solid|blue-60:hover[disabled]@sm')[0].valueToken).toBe('1|solid|blue-60')
+        expect(createCSS().generate('b:1|solid|blue-60:hover[disabled]@sm')[0].valueToken).toBe('1|solid|blue-60')
     })
     test.concurrent('state', () => {
-        expect(new MasterCSS().generate('b:1|solid|blue-60:hover[disabled]@sm')[0].stateToken).toBe(':hover[disabled]@sm')
+        expect(createCSS().generate('b:1|solid|blue-60:hover[disabled]@sm')[0].stateToken).toBe(':hover[disabled]@sm')
     })
     test.concurrent('at', () => {
-        expect(new MasterCSS().generate('b:1|solid|blue-60:hover[disabled]@sm')[0].atToken).toBe('@sm')
+        expect(createCSS().generate('b:1|solid|blue-60:hover[disabled]@sm')[0].atToken).toBe('@sm')
     })
     test.concurrent('empty at', () => {
-        expect(new MasterCSS().generate('text:center@')[0].atToken).toBe('@')
+        expect(createCSS().generate('text:center@')[0].atToken).toBe('@')
     })
 })
 
 describe.concurrent('value components', () => {
     test.concurrent('basic', () => {
         const cls = 'font:32@sm'
-        const rule = new MasterCSS().generate(cls)[0]
+        const rule = createCSS().generate(cls)[0]
         expect(rule.valueComponents).toEqual([{
             text: '2rem',
             token: '32',
@@ -106,7 +106,7 @@ describe.concurrent('value components', () => {
     })
 
     test.concurrent('shorthand', () => {
-        expect(new MasterCSS().generate('b:1|solid|blue-60/.5')[0].valueComponents)
+        expect(createCSS().generate('b:1|solid|blue-60/.5')[0].valueComponents)
             .toStrictEqual([
                 { token: '1', text: '0.0625rem', type: 'number', unit: 'rem', value: 0.0625 },
                 { token: '|', text: ' ', type: 'separator', value: ' ' },
@@ -117,7 +117,7 @@ describe.concurrent('value components', () => {
     })
 
     test.concurrent('function', () => {
-        expect(new MasterCSS().generate('bg:rgb(125,125,0)!')[0].valueComponents).toStrictEqual([
+        expect(createCSS().generate('bg:rgb(125,125,0)!')[0].valueComponents).toStrictEqual([
             {
                 type: 'function',
                 name: 'rgb',
@@ -136,7 +136,7 @@ describe.concurrent('value components', () => {
     })
 
     test.concurrent('gradient', () => {
-        expect(new MasterCSS().generate('gradient(#000,#fff)')[0].valueComponents).toStrictEqual([
+        expect(createCSS().generate('gradient(#000,#fff)')[0].valueComponents).toStrictEqual([
             {
                 text: 'gradient(#000,#fff)',
                 token: 'gradient(#000,#fff)',

@@ -1,5 +1,5 @@
 import { it, test, expect, describe } from 'vitest'
-import { MasterCSS } from '../../../src'
+import { createCSS } from '../../../src'
 import { Config } from '../../../src'
 import { expectLayers } from '../../test'
 
@@ -9,13 +9,13 @@ import { expectLayers } from '../../test'
  * 3. --primary: 0 0 0
  */
 test.concurrent('#hex to rgb()', () => {
-    expect(new MasterCSS({
+    expect(createCSS({
         variables: { primary: '#000000' }
     }).create('fg:primary')?.text).toBe('.fg\\:primary{color:rgb(0 0 0)}')
 })
 
 test.concurrent('color/opacity to rgb(r g b/opacity)', () => {
-    expect(new MasterCSS({
+    expect(createCSS({
         variables: { primary: '#000000' }
     }).create('fg:primary/.5')?.text).toBe('.fg\\:primary\\/\\.5{color:rgb(0 0 0/.5)}')
 })
@@ -40,7 +40,7 @@ describe.concurrent('with themes', () => {
     }
 
     it.concurrent('checks resolved colors', () => {
-        const css = new MasterCSS(config)
+        const css = createCSS(config)
         expect(css.variables.get('primary')).toEqual({
             name: 'primary',
             key: 'primary',

@@ -1,5 +1,5 @@
 import { it, test, expect, describe } from 'vitest'
-import MasterCSS, { Config } from '../../../src'
+import { Config, createCSS } from '../../../src'
 import { expectLayers } from '../../test'
 
 // color functions 使用該格式 "hsl(0deg 0% 0%/.5)".match(/([a-zA-Z]+)\((.*?)\)/) 提取 space 及 value
@@ -11,14 +11,14 @@ import { expectLayers } from '../../test'
  * 3. --primary: 0deg 0% 0%/.5
  */
 test.concurrent('hsl()', () => {
-    expect(new MasterCSS({
+    expect(createCSS({
         variables: { primary: 'hsl(0deg 0% 0%/.5)' }, modeTrigger: 'class'
     }).create('fg:primary')?.text
     ).toBe('.fg\\:primary{color:hsl(0deg 0% 0%/.5)}')
 })
 
 test.concurrent('color/opacity to hsl(h s l/opacity / opacity) invalid rule', () => {
-    expect(new MasterCSS({
+    expect(createCSS({
         variables: { primary: 'hsl(0deg 0% 0%/.5)' }
     }).create('fg:primary/.5')?.text
     ).toBe('.fg\\:primary\\/\\.5{color:hsl(0deg 0% 0%/.5/.5)}')
@@ -44,7 +44,7 @@ describe.concurrent('with themes', () => {
     }
 
     it.concurrent('checks resolved colors', () => {
-        const css = new MasterCSS(config)
+        const css = createCSS(config)
         expect(css.variables.get('primary')).toEqual({
             name: 'primary',
             key: 'primary',

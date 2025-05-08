@@ -1,5 +1,5 @@
 import SyntaxRuleType from '../syntax-rule-type'
-import MasterCSS from '../core'
+import createCSS from '../create'
 import compareRulePriority from './compare-rule-priority'
 import { SyntaxRule } from '../syntax-rule'
 import { __UNSORTED__ } from '../common'
@@ -10,7 +10,7 @@ import { __UNSORTED__ } from '../common'
  * @param options
  * @returns consistent classes
  */
-export default function sortReadableClasses(classes: string[], css = new MasterCSS()) {
+export default function sortReadableClasses(classes: string[], css = createCSS()) {
     const shouldSortClasses = []
     const unsortedClasses = []
     for (const className of classes) {

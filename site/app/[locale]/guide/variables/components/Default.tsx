@@ -1,7 +1,7 @@
-import { MasterCSS } from '@master/css'
+import { createCSS } from '@master/css'
 import InlineCode from '~/internal/components/InlineCode'
 
-const css = new MasterCSS()
+const css = createCSS()
 
 export default () => <table>
     <thead>

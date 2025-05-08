@@ -1,45 +1,45 @@
 import { test, expect, describe } from 'vitest'
-import { MasterCSS } from '../src'
+import { createCSS } from '../src'
 
 test.concurrent('basic', () => {
-    expect(new MasterCSS().createFromSelectorText('.font\\:heavy')?.[0]).toMatchObject({ name: 'font:heavy' })
+    expect(createCSS().createFromSelectorText('.font\\:heavy')?.[0]).toMatchObject({ name: 'font:heavy' })
 })
 
 test.concurrent('descendant selector', () => {
-    expect(new MasterCSS().createFromSelectorText('.hidden\\_button\\[disabled\\] button[disabled]')?.[0]).toMatchObject({ name: 'hidden_button[disabled]' })
+    expect(createCSS().createFromSelectorText('.hidden\\_button\\[disabled\\] button[disabled]')?.[0]).toMatchObject({ name: 'hidden_button[disabled]' })
 })
 
 test.concurrent('where', () => {
-    expect(new MasterCSS().createFromSelectorText('.ml\\:-50\\_\\:where(\\.code\\,\\.codeTabs\\,\\.demo\\)\\@\\<md')?.[0]).toMatchObject({ name: 'ml:-50_:where(.code,.codeTabs,.demo)@<md' })
+    expect(createCSS().createFromSelectorText('.ml\\:-50\\_\\:where(\\.code\\,\\.codeTabs\\,\\.demo\\)\\@\\<md')?.[0]).toMatchObject({ name: 'ml:-50_:where(.code,.codeTabs,.demo)@<md' })
 })
 
 test.concurrent('mode', () => {
-    expect(new MasterCSS().createFromSelectorText('.light .hidden\@light')?.[0]).toMatchObject({ name: 'hidden@light' })
+    expect(createCSS().createFromSelectorText('.light .hidden\@light')?.[0]).toMatchObject({ name: 'hidden@light' })
 })
 
 test.concurrent('mode and scope', () => {
-    expect(new MasterCSS({ scope: '#app' }).createFromSelectorText('.light #app .hidden\@light')?.[0]).toMatchObject({ name: 'hidden@light' })
+    expect(createCSS({ scope: '#app' }).createFromSelectorText('.light #app .hidden\@light')?.[0]).toMatchObject({ name: 'hidden@light' })
 })
 
 test.concurrent(':within', () => {
-    expect(new MasterCSS().createFromSelectorText('.active .hidden\\:within\\(\\.active\\)')?.[0]).toMatchObject({ name: 'hidden:within(.active)' })
+    expect(createCSS().createFromSelectorText('.active .hidden\\:within\\(\\.active\\)')?.[0]).toMatchObject({ name: 'hidden:within(.active)' })
 })
 
 test.concurrent(':within and mode', () => {
-    expect(new MasterCSS().createFromSelectorText('.dark .active .hidden\\:within\\(\\.active\\)\\@dark')?.[0]).toMatchObject({ name: 'hidden:within(.active)@dark' })
+    expect(createCSS().createFromSelectorText('.dark .active .hidden\\:within\\(\\.active\\)\\@dark')?.[0]).toMatchObject({ name: 'hidden:within(.active)@dark' })
 })
 
 test.concurrent(':within and mode and scope', () => {
-    expect(new MasterCSS({ scope: '#app' }).createFromSelectorText('.dark #app .active .hidden\\:within\\(\\.active\\)\\@dark')?.[0]).toMatchObject({ name: 'hidden:within(.active)@dark' })
+    expect(createCSS({ scope: '#app' }).createFromSelectorText('.dark #app .active .hidden\\:within\\(\\.active\\)\\@dark')?.[0]).toMatchObject({ name: 'hidden:within(.active)@dark' })
 })
 
 test.concurrent('component conflicts with the mode', () => {
-    expect(new MasterCSS({
+    expect(createCSS({
         components: {
             'light': 'block font:bold'
         }
     }).createFromSelectorText('.light .light\@light')?.[0]).toMatchObject({ name: 'block', fixedClass: 'light' })
-    expect(new MasterCSS({
+    expect(createCSS({
         components: {
             'light': 'block font:bold'
         }
@@ -47,7 +47,7 @@ test.concurrent('component conflicts with the mode', () => {
 })
 
 test.concurrent('component and mode', () => {
-    expect(new MasterCSS({
+    expect(createCSS({
         components: {
             'btn': 'block'
         }
@@ -64,11 +64,11 @@ describe('group selector', () => {
         }
     }
     test.concurrent('general', () => {
-        expect(new MasterCSS(config).createFromSelectorText('.block\\:\\:both::before, .block\\:\\:both::after')?.[0]).toMatchObject({ name: 'block::both' })
+        expect(createCSS(config).createFromSelectorText('.block\\:\\:both::before, .block\\:\\:both::after')?.[0]).toMatchObject({ name: 'block::both' })
     })
 
     test.concurrent('components', () => {
-        expect(new MasterCSS(config).createFromSelectorText('.btn::before,.btn::after')?.[0]).toMatchObject({
+        expect(createCSS(config).createFromSelectorText('.btn::before,.btn::after')?.[0]).toMatchObject({
             name: 'block::both',
             fixedClass: 'btn',
             selectorText: '.btn::before,.btn::after',

@@ -1,5 +1,5 @@
 import { AT_COMPARABLE_FEATURES, AT_COMPARISON_OPERATORS, AT_IDENTIFIERS, AT_LOGICAL_OPERATORS } from '../common'
-import MasterCSS from '../core'
+import createCSS from '../create'
 import { AtIdentifier } from '../types/config'
 import parsePair from './parse-pair'
 import parseValue from './parse-value'
@@ -19,7 +19,7 @@ export type AtRuleOperatorNode = AtRuleComparisonOperatorNode | AtRuleLogicalOpe
 export interface AtRuleGroupNode { type?: 'group', raw?: string, children: AtRuleNode[] }
 export type AtRuleNode = AtRuleValueNode | AtRuleComparisonOperatorNode | AtRuleLogicalOperatorNode | AtRuleGroupNode
 
-export default function parseAt(token: string, css = new MasterCSS(), isRaw = true) {
+export default function parseAt(token: string, css = createCSS(), isRaw = true) {
     let id: AtIdentifier | undefined
     let firstToken: string | undefined
     const resolve = (token: string) => {

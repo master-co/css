@@ -1,9 +1,9 @@
 import { it, test, expect } from 'vitest'
-import { MasterCSS } from '../../src'
+import { createCSS } from '../../src'
 import { variables } from '../../src'
 
 it.concurrent('customizes fonts', () => {
-    const css = new MasterCSS({
+    const css = createCSS({
         variables: {
             'font-family': {
                 sans: ['Inter', ...variables['font-family'].sans],
@@ -23,7 +23,7 @@ it.concurrent('customizes fonts', () => {
 })
 
 // it.concurrent('customizes fonts using strings', () => {
-//     const css = new MasterCSS({
+//     const css = createCSS({
 //         variables: {
 //             fontFamily: {
 //                 sans: 'Inter,ui-sans-serif'

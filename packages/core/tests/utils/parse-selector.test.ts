@@ -1,5 +1,5 @@
 import { test, expect, describe } from 'vitest'
-import { Config, parseSelector } from '../../src/'
+import { Config, parseSelector, createCSS } from '../../src'
 import { SelectorNode } from '../../src/utils/parse-selector'
 
 export const cases = {
@@ -212,6 +212,6 @@ export const cases = {
 
 describe.concurrent.each(Object.entries(cases))('%s', (_, cases) => {
     test.concurrent.each(cases)('%s', (raw, _, nodes, config) => {
-        expect(parseSelector(raw, new MasterCSS(config))).toEqual(nodes)
+        expect(parseSelector(raw, createCSS(config))).toEqual(nodes)
     })
 })

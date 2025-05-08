@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vitest'
 import { AtRule, Config, parseAt } from '../../src'
-import { MasterCSS } from '@master/css'
+import { createCSS } from '@master/css'
 
 export const cases = {
     id: [
@@ -208,6 +208,6 @@ export const cases = {
 
 describe.concurrent.each(Object.entries(cases))('%s', (_, caseGroup) => {
     test.concurrent.each(caseGroup)('%s', (input, _, atRule, config) => {
-        expect(parseAt(input, new MasterCSS(config))).toEqual(atRule)
+        expect(parseAt(input, createCSS(config))).toEqual(atRule)
     })
 })

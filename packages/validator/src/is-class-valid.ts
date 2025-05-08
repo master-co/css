@@ -1,4 +1,4 @@
-import { MasterCSS } from '@master/css'
+import { createCSS } from '@master/css'
 import validateCSS from './validate-css'
 
 /**
@@ -8,7 +8,7 @@ import validateCSS from './validate-css'
  */
 export default function isClassValid(
     syntax: string,
-    css = new MasterCSS()
+    css = createCSS()
 ): boolean {
     const rules = css.generate(syntax)
     if (rules.length) {

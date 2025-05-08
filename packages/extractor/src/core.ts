@@ -52,7 +52,7 @@ export default class CSSExtractor extends EventEmitter {
             log.tree(this.options)
             log``
         }
-        this.css = new MasterCSS(
+        this.css = createCSS(
             typeof this.options.config === 'object'
                 ? this.options.config
                 : exploreCSSConfig({

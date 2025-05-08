@@ -1,5 +1,5 @@
 import { it, test, expect } from 'vitest'
-import { MasterCSS } from '../../../src'
+import { createCSS } from '../../../src'
 import { expectLayers } from '../../test'
 
 test.concurrent('number', () => {
@@ -149,7 +149,7 @@ test.concurrent('number with themes using variable function', () => {
 })
 
 test.concurrent('variables', () => {
-    expect(new MasterCSS({
+    expect(createCSS({
         variables: {
             spacing: { x1: 16, x2: 32 },
         }
@@ -157,7 +157,7 @@ test.concurrent('variables', () => {
 })
 
 test.concurrent('negative variables', () => {
-    expect(new MasterCSS({
+    expect(createCSS({
         variables: {
             spacing: { x1: 16, x2: 32 }
         }

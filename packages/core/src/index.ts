@@ -10,6 +10,8 @@ export { default as SyntaxRuleType } from './syntax-rule-type'
 export { default as VariableRule } from './variable-rule'
 export { default as AnimationRule } from './animation-rule'
 
+export { default as createCSS } from './create'
+
 // types
 export * from './types/config'
 export * from './types/syntax'
@@ -37,6 +39,5 @@ export type * from './utils/parse-selector'
 export { default as generateSelector } from './utils/generate-selector'
 export { default as getSingleAtNumberRuleNode } from './utils/get-single-at-number-rule-node'
 export { default as compareRulePriority } from './utils/compare-rule-priority'
-
 
 export { default as MasterCSS, default } from './core'

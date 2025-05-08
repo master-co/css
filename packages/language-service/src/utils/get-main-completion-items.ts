@@ -1,11 +1,11 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
-import { SyntaxRuleType, MasterCSS, generateCSS, isCoreRule } from '@master/css'
+import { SyntaxRuleType, MasterCSS, createCSS, generateCSS, isCoreRule } from '@master/css'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 import sortCompletionItems from './sort-completion-items'
 import getUtilityInfo from './get-utility-info'
 import cssDataProvider from './css-data-provider'
 
-export default function getMainCompletionItems(css: MasterCSS = new MasterCSS()): CompletionItem[] {
+export default function getMainCompletionItems(css: MasterCSS = createCSS()): CompletionItem[] {
     const completionItems: CompletionItem[] = []
     const addedKeys = new Set<string>()
     for (const eachDefinedRule of css.definedRules) {

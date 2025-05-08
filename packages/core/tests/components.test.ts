@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest'
-import { MasterCSS, variables } from '../src'
+import { createCSS } from '../src'
 
 describe('comp -> comp -> var', () => {
-    const css = new MasterCSS({
+    const css = createCSS({
         components: {
             badge: {
                 primary: 'strong-primary',
@@ -32,7 +32,7 @@ describe('comp -> comp -> var', () => {
 })
 
 describe('extends', () => {
-    const css = new MasterCSS({
+    const css = createCSS({
         extends: [
             { components: { a: 'order:1' } },
             { components: { b: 'order:2' } },

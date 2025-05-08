@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest'
-import { Config, MasterCSS } from '../src'
+import { Config, createCSS } from '../src'
 
 export const expectLayers = (
     layers: {
@@ -13,7 +13,7 @@ export const expectLayers = (
     className: string | string[],
     customConfig?: Config
 ) => {
-    const css = new MasterCSS(customConfig).add(...(Array.isArray(className) ? className : [className]))
+    const css = createCSS(customConfig).add(...(Array.isArray(className) ? className : [className]))
     if (layers.theme) expect(css.themeLayer.text).toContain(`@layer theme{${layers.theme ?? ''}}`)
     if (layers.components) expect(css.componentsLayer.text).toContain(`@layer components{${layers.components ?? ''}}`)
     if (layers.preset) expect(css.presetLayer.text).toContain(`@layer preset{${layers.preset ?? ''}}`)

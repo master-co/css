@@ -1,4 +1,4 @@
-import { MasterCSS, Config } from '@master/css'
+import { MasterCSS, createCSS, Config } from '@master/css'
 import parseHTML from './parse-html'
 import { Element, Text, ChildNode } from 'domhandler'
 import serialize from 'dom-serializer'
@@ -28,7 +28,7 @@ export default function render(html: string, config?: Config): {
         headElement,
         styleElement
     }
-    const css = new MasterCSS(config)
+    const css = createCSS(config)
     classes.forEach(eachClass => css.add(eachClass))
     if (styleElement) {
         styleElement.childNodes = [new Text(css.text)]

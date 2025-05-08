@@ -1,12 +1,12 @@
 import { it, test, expect } from 'vitest'
-import { MasterCSS } from '../../src'
+import { createCSS } from '../../src'
 
 test.concurrent('content', () => {
-    expect(new MasterCSS().create('content:\'fo\\\'o\'')?.text).toContain('content:\'fo\\\'o\'')
+    expect(createCSS().create('content:\'fo\\\'o\'')?.text).toContain('content:\'fo\\\'o\'')
 })
 
 test.concurrent('variable', () => {
-    expect(new MasterCSS({
+    expect(createCSS({
         variables: {
             content: { external: '" ↗"' }
         }

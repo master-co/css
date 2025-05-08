@@ -1,8 +1,8 @@
 import { it, test, expect } from 'vitest'
-import { MasterCSS } from '../../../src'
+import { createCSS } from '../../../src'
 
 it.concurrent('should be able to access custom spacing variables using inherited rules', () => {
-    const css = new MasterCSS({
+    const css = createCSS({
         variables: {
             spacing: {
                 md: 20

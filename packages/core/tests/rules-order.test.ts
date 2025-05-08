@@ -1,5 +1,5 @@
 import { it, test, expect } from 'vitest'
-import { MasterCSS } from '../src'
+import { createCSS } from '../src'
 import shuffle from 'shuffle-array'
 
 it.concurrent('checks that different input sources should have the same output', () => {
@@ -42,7 +42,7 @@ it.concurrent('checks that different input sources should have the same output',
         { name: 'text:center' },
     ]
     for (let i = 0; i < 10; i++) {
-        expect(new MasterCSS().add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
+        expect(createCSS().add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
     }
 })
 
@@ -62,7 +62,7 @@ it.concurrent('checks style declarations', () => {
         { name: 'font:32@md' }
     ]
     for (let i = 0; i < 10; i++) {
-        expect(new MasterCSS().add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
+        expect(createCSS().add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
     }
 })
 
@@ -77,7 +77,7 @@ it.concurrent('checks media order', () => {
         { name: 'hidden@tablet&<desktop' },
         { name: '{flex:row}@2xs&<xs' }
     ]
-    expect(new MasterCSS({
+    expect(createCSS({
         at: {
             tablet: 391,
             desktop: 1025,

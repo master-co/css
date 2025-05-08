@@ -1,7 +1,7 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import settings, { Settings } from '../settings'
 import exploreConfig from '@master/css-explore-config'
-import { Config, MasterCSS } from '@master/css'
+import { Config, MasterCSS, createCSS } from '@master/css'
 
 declare interface CSSCache {
     cwd: string
@@ -31,7 +31,7 @@ export default function resolveContext(context: RuleContext<any, any[]>) {
                 },
             })
         }
-        css = new MasterCSS(config)
+        css = createCSS(config)
         cssCaches.push({ cwd: context.cwd, settings: resolvedSettings, css })
     }
 

@@ -1,6 +1,6 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import cssDataProvider from './css-data-provider'
-import { MasterCSS, SyntaxRuleType, SyntaxRuleTypeValue, Variable, generateCSS, isCoreRule } from '@master/css'
+import { MasterCSS, createCSS, SyntaxRuleType, SyntaxRuleTypeValue, Variable, generateCSS, isCoreRule } from '@master/css'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 import sortCompletionItems from './sort-completion-items'
 import type { IValueData } from 'vscode-css-languageservice'
@@ -10,7 +10,7 @@ const AMBIGUOUS_PRIORITY = 'bbbb'
 const NATIVE_PRIORITY = 'ccccc'
 const GLOBAL_VARIABLE_PRIORITY = 'zzzz'
 
-export default function getValueCompletionItems(css: MasterCSS = new MasterCSS(), ruleKey: string): CompletionItem[] {
+export default function getValueCompletionItems(css: MasterCSS = createCSS(), ruleKey: string): CompletionItem[] {
     const nativeProperties = cssDataProvider.provideProperties()
     const completionItems: CompletionItem[] = []
     const nativeKey = css.definedRules.find(({ keys }) => keys.includes(ruleKey))?.id

@@ -1,6 +1,6 @@
 import { it, test, expect } from 'vitest'
-import { MasterCSS } from '../../src'
+import { createCSS } from '../../src'
 
 test.concurrent('area', () => {
-    expect(new MasterCSS().create('full')?.text).toContain('width:100%;height:100%')
+    expect(createCSS().create('full')?.text).toContain('width:100%;height:100%')
 })

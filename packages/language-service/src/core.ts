@@ -1,4 +1,4 @@
-import { MasterCSS } from '@master/css'
+import { MasterCSS, createCSS } from '@master/css'
 import extend from '@techor/extend'
 import EventEmitter from 'node:events'
 import type { Position } from 'vscode-languageserver-protocol'
@@ -23,7 +23,7 @@ export default class CSSLanguageService extends EventEmitter {
     ) {
         super()
         this.settings = extend(settings, customSettings)
-        this.css = new MasterCSS(this.settings.config)
+        this.css = createCSS(this.settings.config)
     }
 
     inspectSyntax(...params: Parameters<typeof inspectSyntax>) {
@@ -84,7 +84,7 @@ export default class CSSLanguageService extends EventEmitter {
             handle: (eachAttrStart: number, eachClassPositionEnd: number, eachClassMatcher: [string, string, string?]) => ClassPosition | undefined
         ) => {
             for (const eachClassMatcher of classMatchers) {
-                 
+
                 let [eachPattern, start, end] = eachClassMatcher
                 end = end ?? start
                 for (const eachClassPostioinMatch of text.matchAll(new RegExp(`(?:\\s|\\.)${eachPattern}${(escapeRegexp(start))}`, 'g'))) {

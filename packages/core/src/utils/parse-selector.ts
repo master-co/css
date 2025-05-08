@@ -1,5 +1,5 @@
 import { SELECTOR_COMBINATORS } from '../common'
-import MasterCSS from '../core'
+import createCSS from '../create'
 import parsePair from './parse-pair'
 
 export declare type SelectorLiteralNode = {
@@ -25,7 +25,7 @@ export declare type SelectorNode = SelectorLiteralNode | SelectorCombinatorNode 
 
 const SELECTOR_REGEX = new RegExp(`(?:[a-zA-Z0-9-]+)|([${SELECTOR_COMBINATORS.join('')}#.:,*])|(a-zA-Z0-9-)`, 'g')
 
-export default function parseSelector(token: string, css = new MasterCSS(), isRaw = true) {
+export default function parseSelector(token: string, css = createCSS(), isRaw = true) {
     const resolve = (eachToken: string): SelectorNode[] => {
         const nodes: SelectorNode[] = []
         let currentPrefix = ''
