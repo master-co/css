@@ -4,27 +4,6 @@ export default async function getCollectionVariables(id: string) {
         console.error(`Collection with id ${id} not found`)
         return
     }
-    async function getEqualValue(obj: { [x: string]: any; hasOwnProperty?: any }) {
-        let firstValue = null
-        if (Object.keys(obj).length > 1)
-            for (const key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    if (firstValue === null) {
-                        firstValue = obj[key]
-                    } else if (obj[key] !== firstValue) {
-                        return
-                    }
-                }
-            }
-        return firstValue
-    }
-    function rgbaToHex(rgba: RGBA) {
-        const r = Math.floor(rgba.r * 255).toString(16).padStart(2, '0')
-        const g = Math.floor(rgba.g * 255).toString(16).padStart(2, '0')
-        const b = Math.floor(rgba.b * 255).toString(16).padStart(2, '0')
-        const a = rgba.a === 1 ? '' : Math.round(rgba.a * 255).toString(16).padStart(2, '0')
-        return `#${r}${g}${b}${a}`
-    }
 
     const modeNameById = collection.modes.reduce((a: Record<string, string>, b) => {
         a[b.modeId] = b.name
@@ -70,4 +49,27 @@ export default async function getCollectionVariables(id: string) {
         }
     }
     return config
+}
+
+async function getEqualValue(obj: { [x: string]: any; hasOwnProperty?: any }) {
+    let firstValue = null
+    if (Object.keys(obj).length > 1)
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                if (firstValue === null) {
+                    firstValue = obj[key]
+                } else if (obj[key] !== firstValue) {
+                    return
+                }
+            }
+        }
+    return firstValue
+}
+
+function rgbaToHex(rgba: RGBA) {
+    const r = Math.floor(rgba.r * 255).toString(16).padStart(2, '0')
+    const g = Math.floor(rgba.g * 255).toString(16).padStart(2, '0')
+    const b = Math.floor(rgba.b * 255).toString(16).padStart(2, '0')
+    const a = rgba.a === 1 ? '' : Math.round(rgba.a * 255).toString(16).padStart(2, '0')
+    return `#${r}${g}${b}${a}`
 }

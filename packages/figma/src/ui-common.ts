@@ -10,5 +10,9 @@ export const states = reactive({
     copyVariables: () => {
         states.currentAction = 'copy-variables'
         post('get-collection-variables', { id: states.selectedVarCollection.id })
+    },
+    exportVariables: () => {
+        states.currentAction = 'export-variables'
+        post('get-collection-variables', { id: states.selectedVarCollection.id })
     }
 })

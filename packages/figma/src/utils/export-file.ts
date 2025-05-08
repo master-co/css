@@ -1,5 +1,5 @@
-export default function exportFile(data: any, filename: string, type: string) {
-    const blob = new Blob([JSON.stringify(data, null, 4)], { type: type })
+export default function exportFile(data: any, filename: string, type = 'application/json') {
+    const blob = new Blob([data], { type })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url

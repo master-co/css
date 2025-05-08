@@ -1,21 +1,22 @@
 import copy from 'copy-to-clipboard'
 import { states } from './ui-common'
 import notify from './utils/notify'
+import exportFile from './utils/export-file'
 
 window.onmessage = (event) => {
     const { type, data } = event.data.pluginMessage
     switch (type) {
         case 'get-collection-variables':
+            const config = JSON.stringify(data, null, states.varOutputIndent)
+            const collectionName = states.selectedVarCollection.name
             switch (states.currentAction) {
                 case 'copy-variables':
-                    const config = data
-                    if (config === undefined) {
-                        console.error('No variables found for the selected collection')
-                        return
-                    }
-                    copy(JSON.stringify(config, null, states.varOutputIndent))
-                    notify('Variables copied to clipboard')
+                    copy(config)
+                    notify(`Variable collection ${collectionName} copied to clipboard`)
                     break
+                case 'export-variables':
+                    exportFile(config, `${collectionName}.json`)
+                    notify(`Variable collection ${collectionName} exported`)
                 default:
                     break
             }

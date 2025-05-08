@@ -14,8 +14,8 @@
                 <label for="var-output-indent">Indent:</label>
                 <input id="var-output-indent" type="number" min="0" max="8" v-model="varOutputIndent" />
             </div>
-            <!-- <button id="exoprt-variables">Export variables</button> -->
-            <button @click="copyVariables">Copy {{ selectedVarCollection?.name }}</button>
+            <button @click="copyVariables">Copy as JSON</button>
+            <button @click="exportVariables">Export as JSON</button>
         </div>
         <!-- <input type="text" /> -->
     </section>
