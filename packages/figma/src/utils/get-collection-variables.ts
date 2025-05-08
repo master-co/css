@@ -30,7 +30,7 @@ export default async function getCollectionVariables(id: string, options: { defa
             if (value.type === 'VARIABLE_ALIAS') {
                 const aliasVariable = await figma.variables.getVariableByIdAsync(value.id)
                 newValue = aliasVariable ? `$${aliasVariable.name.replace('/', '-')}` : null
-            } if (variable.resolvedType === 'COLOR') {
+            } else if (variable.resolvedType === 'COLOR') {
                 newValue = toColorValue(value, colorSpace)
             } else if (variable.resolvedType === 'STRING' || variable.resolvedType === 'FLOAT') {
                 newValue = value
@@ -62,6 +62,5 @@ export default async function getCollectionVariables(id: string, options: { defa
     if (Object.keys(modes).length > 0) {
         config.modes = modes
     }
-    console.log(config)
     return config
 }

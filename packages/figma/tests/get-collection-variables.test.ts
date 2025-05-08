@@ -6,13 +6,20 @@ import getCollectionVariables from '../src/utils/get-collection-variables'
 
 describe('getCollectionVariables', () => {
     it('should return parsed color config', async () => {
-        const result = await getCollectionVariables('mock-id')
+        const result = await getCollectionVariables('mock-id', { defaultMode: { name: 'Default' } })
         expect(result).toEqual({
-            gray: {
-                '10': '#ffffff',
-                '20': {
-                    '@dark': '#808080',
-                    '': '$(gray-10)'
+            variables: {
+                gray: {
+                    '10': '#fff',
+                    '20': '$gray-10'
+                }
+            },
+            modes: {
+                dark: {
+                    gray: {
+                        '10': '#000',
+                        '20': '#808080'
+                    }
                 }
             }
         })
