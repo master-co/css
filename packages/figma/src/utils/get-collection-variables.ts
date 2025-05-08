@@ -40,7 +40,7 @@ export default async function getCollectionVariables(id: string, options: { defa
             }
             if (newValue) {
                 if (current === undefined) {
-                    current = newValue
+                    current = { '': newValue }
                     setProperty(modes, dotModeVarName, current)
                 } else if (typeof current === 'object') {
                     current[''] = newValue
@@ -55,6 +55,20 @@ export default async function getCollectionVariables(id: string, options: { defa
             delete modes[modeName]
         }
     }
+    /**
+     * Create a recursive function to determine if the obj in modes has only one property left,
+     * if so, change `primary: { '': '#000 }` to `primary: '#000'`
+     */
+    const removeEmptyProperties = (obj: Record<string, any>) => {
+        for (const key in obj) {
+            if (typeof obj[key] === 'object' && Object.keys(obj[key]).length === 1 && '' in obj[key]) {
+                obj[key] = obj[key]['']
+            } else if (typeof obj[key] === 'object') {
+                removeEmptyProperties(obj[key])
+            }
+        }
+    }
+    removeEmptyProperties(modes)
     let config: Config = {}
     if (variables) {
         config.variables = variables
