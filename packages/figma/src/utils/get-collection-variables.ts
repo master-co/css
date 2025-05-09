@@ -68,12 +68,13 @@ export default async function getCollectionVariables(id: string, options: { defa
             }
         }
     }
-    removeEmptyProperties(modes)
     let config: Config = {}
     if (variables) {
+        removeEmptyProperties(variables)
         config.variables = variables
     }
     if (Object.keys(modes).length > 0) {
+        removeEmptyProperties(modes)
         config.modes = modes
     }
     return config

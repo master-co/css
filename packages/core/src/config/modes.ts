@@ -11,9 +11,9 @@ const modes = {
         'invert': '$black',
         'frame': {
             'neutral': '$slate-60',
-            'light': '#0003',
-            'lighter': '#00000029',
-            'lightest': '#0000001f'
+            'light': '#00000029',
+            'lighter': '#0000001f',
+            'lightest': '#00000014'
         },
         'gray': {
             '': '$gray-30',
@@ -154,9 +154,9 @@ const modes = {
         'invert': '$white',
         'frame': {
             'neutral': '$gray-30',
-            'light': '#fff3',
-            'lighter': '#ffffff29',
-            'lightest': '#ffffff1f'
+            'light': '#ffffff29',
+            'lighter': '#ffffff1f',
+            'lightest': '#ffffff14'
         },
         'gray': {
             '': '$gray-40',
