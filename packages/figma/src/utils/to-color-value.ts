@@ -1,11 +1,5 @@
 import Color from 'colorjs.io'
-
-export interface RGBA {
-    r: number
-    g: number
-    b: number
-    a: number
-}
+import { RGBA } from './parse-color-value'
 
 export default function toColorValue(rgba: RGBA, space = 'hex'): string {
     const color = new Color('srgb', [rgba.r, rgba.g, rgba.b], rgba.a)
@@ -22,7 +16,6 @@ export default function toColorValue(rgba: RGBA, space = 'hex'): string {
             return color.to('oklch').toString({ format: 'css', precision: 4, inGamut: false })
         case 'display-p3':
             return color.to('display-p3').toString({ format: 'css', precision: 4, inGamut: false })
-        case 'hex':
         default:
             return color.to('srgb').toString({ format: 'hex', inGamut: false }) // auto includes alpha if needed
     }

@@ -1,6 +1,5 @@
 import type { IPropertyData, IReference, IValueData, MarkupContent } from 'vscode-css-languageservice'
 import beautifyCSS from './beautify-css'
-import { OFFICIAL_URL } from '@master/css'
 
 export function getCSSDataDocumentation(data?: IPropertyData | IValueData, additional?: {
     generatedCSS?: string,
@@ -35,7 +34,7 @@ export function getCSSDataDocumentation(data?: IPropertyData | IValueData, addit
     if (additional?.docs) {
         references.unshift({
             name: 'Master CSS',
-            url: new URL(additional.docs, OFFICIAL_URL).href
+            url: new URL(additional.docs, 'https://rc.css.master.co').href
         })
     }
     if (references.length) {

@@ -1,6 +1,6 @@
 <div v-cloak>
     <section>
-        <div class="panel-title">Variables</div>
+        <div class="panel-title">Export Variables</div>
         <div class="panel-rows">
             <div class="panel-prop">
                 <label for="var-collections">Collection:</label>
@@ -37,7 +37,28 @@
             <button @click="copyVariables">Copy as JSON</button>
             <button @click="exportVariables">Export as JSON</button>
         </div>
-        <!-- <input type="text" /> -->
+    </section>
+    <hr />
+    <section>
+        <div class="panel-title">Import Variables</div>
+        <div class="panel-rows">
+            <textarea id="var-input-json" v-model="inputedVarJSONStr" :placeholder="DEFAULT_INPUTED_VAR_JSON_STR"
+                rows="7"></textarea>
+            <div class="panel-prop">
+                <label for="input-var-collections">Collection:</label>
+                <select id="input-var-collections" v-model="selectedImportVarCollection">
+                    <option :value="null">New</option>
+                    <option :value="varCollection" v-for="varCollection in varCollections" :key="varCollection.id">
+                        {{ varCollection.name }}
+                    </option>
+                </select>
+            </div>
+            <div class="panel-prop" v-if="!selectedImportVarCollection">
+                <label for="input-var-collection-name">Collection Name:</label>
+                <input id="input-var-collection-name" type="text" v-model="inputedVarCollectionName" :placeholder="DEFAULT_INPUTED_VAR_COLLECTION_NAME" />
+            </div>
+            <button @click="importVarJSON">Import</button>
+        </div>
     </section>
     <hr />
 </div>

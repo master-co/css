@@ -53,6 +53,11 @@
             "types": "./dist/index.d.ts",
             "require": "./dist/index.cjs",
             "import": "./dist/index.mjs"
+        },
+        "./*": {
+            "types": "./dist/*.d.ts",
+            "require": "./dist/*.cjs",
+            "import": "./dist/*.mjs"
         }
     },
     "bin": "./dist/bin/index.mjs",

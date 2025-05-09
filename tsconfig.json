@@ -5,6 +5,7 @@
             "@master/css-cli": [ "./node_modules/@master/css-cli/src" ],
             "@master/create-css": [ "./node_modules/@master/create-css/src" ],
             "@master/css": [ "./node_modules/@master/css/src" ],
+            "@master/css/*": [ "./node_modules/@master/css/src/*" ],
             "@master/eslint-config-css": [ "./node_modules/@master/eslint-config-css/src" ],
             "@master/eslint-plugin-css": [ "./node_modules/@master/eslint-plugin-css/src" ],
             "@master/css-extractor": [ "./node_modules/@master/css-extractor/src" ],

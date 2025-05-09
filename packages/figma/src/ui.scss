@@ -26,19 +26,26 @@ body {
 
 select,
 input,
+textarea,
 button {
     appearance: none;
     color: var(--figma-color-text);
     background-color: var(--figma-color-bg);
     border: 1px solid var(--figma-color-border);
-    padding: 0px calc(8 / 16 * 1rem);
-    height: 1.5rem;
+    padding: 0px var(--gap);
     font-size: calc(11 / 16 * 1rem);
     border-radius: calc(5 / 16 * 1rem);
     outline: 0;
 }
 
-input {
+input,
+button,
+select {
+    height: 1.5rem;
+}
+
+input,
+textarea {
     border-color: transparent;
     background-color: var(--figma-color-bg-secondary);
 }
@@ -48,10 +55,12 @@ input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
 }
 
+textarea:hover,
 input:hover {
     border: 1px solid var(--figma-color-border);
 }
 
+textarea:focus,
 input:focus {
     border-color: var(--figma-color-border-selected);
     outline: none;
@@ -59,6 +68,18 @@ input:focus {
 
 button:active {
     background-color: var(--figma-color-bg-pressed);
+}
+
+button:disabled {
+    background-color: transparent;
+    color: var(--figma-color-text-disabled);
+    cursor: not-allowed;
+}
+
+textarea {
+    padding: var(--gap);
+    max-width: 100%;
+
 }
 
 select {
@@ -97,13 +118,13 @@ hr {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: center;
     gap: var(--gap);
-
-    label {
-        color: var(--figma-color-text-secondary);
-    }
 }
 
 .panel-title {
     margin-bottom: 1rem;
     font-weight: 550;
+}
+
+label {
+    color: var(--figma-color-text-secondary);
 }

@@ -21,7 +21,7 @@
     },
     "devDependencies": {
         "@figma/eslint-plugin-figma-plugins": "^0.16.1",
-        "@figma/plugin-typings": "^1.110.0",
+        "@figma/plugin-typings": "^1.111.0",
         "@master/css": "workspace:^",
         "@master/normal.css": "^3.2.0",
         "colorjs.io": "^0.5.2",
