@@ -5,6 +5,7 @@
         "build": "techor build \"src/**/*.ts\"",
         "dev": "pnpm build --watch",
         "test": "vitest",
+        "bench": "vitest bench",
         "type-check": "tsc --noEmit",
         "lint": "eslint"
     },

@@ -12,7 +12,6 @@ const units = {
     reference: {
         categories: [
             'Overview',
-            'Design Token',
             'Syntax',
             'Package'
         ]
