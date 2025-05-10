@@ -50,7 +50,7 @@ describe.concurrent('with themes', () => {
             modes: {
                 'dark': { name: 'primary', key: 'primary', type: 'color', space: 'rgb', value: '255 255 255' },
                 'light': { name: 'primary', key: 'primary', type: 'color', space: 'rgb', value: '150 150 150' },
-                'chrisma': { name: 'primary', key: 'primary', type: 'color', space: 'rgb', value: '0 0 0 / .5' }
+                'chrisma': { name: 'primary', key: 'primary', type: 'color', space: 'rgb', value: '0 0 0/.5' }
             }
         })
     })
@@ -58,7 +58,7 @@ describe.concurrent('with themes', () => {
     it.concurrent('color', () => {
         expectLayers(
             {
-                theme: ':root{--primary:0 0 0}.light{--primary:150 150 150}.dark{--primary:255 255 255}.chrisma{--primary:0 0 0 / .5}',
+                theme: ':root{--primary:0 0 0}.light{--primary:150 150 150}.dark{--primary:255 255 255}.chrisma{--primary:0 0 0/.5}',
                 general: '.fg\\:primary{color:rgb(var(--primary))}'
             },
             'fg:primary',
@@ -69,7 +69,7 @@ describe.concurrent('with themes', () => {
     it.concurrent('color/.5', () => {
         expectLayers(
             {
-                theme: ':root{--primary:0 0 0}.light{--primary:150 150 150}.dark{--primary:255 255 255}.chrisma{--primary:0 0 0 / .5}',
+                theme: ':root{--primary:0 0 0}.light{--primary:150 150 150}.dark{--primary:255 255 255}.chrisma{--primary:0 0 0/.5}',
                 general: '.fg\\:primary\\/\\.5{color:rgb(var(--primary)/.5)}'
             },
             'fg:primary/.5',

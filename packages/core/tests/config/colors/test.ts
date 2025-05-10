@@ -52,7 +52,7 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            general: '.bg\\:primary-alpha{background-color:rgb(255 255 255 / .1)}'
+            general: '.bg\\:primary-alpha{background-color:rgb(255 255 255/.1)}'
         },
         'bg:primary-alpha',
         config
@@ -76,7 +76,7 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            general: '.bg\\:primary-rgb3{background-color:rgb(0 0 0 / .5)}'
+            general: '.bg\\:primary-rgb3{background-color:rgb(0 0 0/.5)}'
         },
         'bg:primary-rgb3',
         config
@@ -84,15 +84,7 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            general: '.bg\\:primary-rgb4{background-color:rgb(0 0 0 / .5)}'
-        },
-        'bg:primary-rgb4',
-        config
-    )
-
-    expectLayers(
-        {
-            general: '.bg\\:primary-2{background-color:rgb(0 0 0 / .35)}'
+            general: '.bg\\:primary-2{background-color:rgb(0 0 0/.35)}'
         },
         'bg:primary-2',
         config

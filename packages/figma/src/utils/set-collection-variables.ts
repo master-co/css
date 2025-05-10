@@ -56,7 +56,11 @@ export default async function setCollectionVariables(config: Config, collection:
                     // }
                 } else if (valueType === 'COLOR') {
                     const rgba = parseColorValue(value)
-                    variable.setValueForMode(modeId, rgba)
+                    try {
+                        variable.setValueForMode(modeId, rgba)
+                    } catch (e) {
+                        figma.notify(`Failed to set color value for variable "${fullName}": ${e}`, { error: true })
+                    }
                 } else {
                     variable.setValueForMode(modeId, value)
                 }

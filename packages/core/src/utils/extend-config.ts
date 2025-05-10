@@ -9,12 +9,12 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
             Object.entries(obj).forEach(([key, value]) => {
                 if (typeof value === 'object' && !Array.isArray(value)) {
                     formatDeeply(value)
-                } else if (key && !key.startsWith('@')) {
+                } else if (key) {
                     obj[key] = { '': value }
                 }
             })
         }
-        ['components', 'variables'].forEach((key) => {
+        ['components', 'variables', 'modes'].forEach((key) => {
             if (clonedConfig[key as keyof Config]) {
                 formatDeeply(clonedConfig[key as keyof Config] as Record<string, any>)
             }
@@ -44,7 +44,7 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
             })
             return extendedConfig
         },
-        { animations: {}, components: {}, at: {}, variables: {} }
+        { animations: {}, components: {}, at: {}, variables: {}, modes: {} }
     )
 
     for (const key in result) {

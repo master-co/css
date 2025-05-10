@@ -7,7 +7,6 @@ figma.showUI(__html__, { themeColors: true, width: 280, height: 560 })
 figma.ui.onmessage = async ({ type, data }) => {
     if (data.collectionId) {
         const collection = await figma.variables.getLocalVariableCollectionsAsync
-        console.log(collection)
         if (!collection) {
             figma.notify('Variable collection not found')
             figma.ui.postMessage({ type: 'get-variable-collections', data: await getVariableCollections() }, { origin: '*' })
@@ -44,6 +43,6 @@ figma.ui.onmessage = async ({ type, data }) => {
             figma.ui.postMessage({ type, data: await setCollectionVariables(data.inputedVarJSON, collection) }, { origin: '*' })
             return
         case 'notify':
-            figma.notify(data.message, data.options)
+            figma.notify(data.message, { ...data.options, timeout: data?.options?.timeout === undefined ? 5000 : data.options.timeout })
     }
 }

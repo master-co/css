@@ -47,7 +47,6 @@ export const states = reactive({
         let inputedVarJSON
         if (states.inputedVarJSONStr)
             try {
-                console.log(states.inputedVarJSONStr)
                 inputedVarJSON = JSON.parse(states.inputedVarJSONStr)
             } catch (e) {
                 console.error(e)

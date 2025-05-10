@@ -25,7 +25,6 @@ window.onmessage = (event) => {
             states.varCollections = data
             states.selectedVarCollection = data[0]
             states.varCollectionChange()
-            console.log(data)
             break
     }
 }

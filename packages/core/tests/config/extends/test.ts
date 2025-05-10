@@ -55,7 +55,7 @@ it.concurrent('config extends', () => {
             light: {
                 space: 'rgb',
                 type: 'color',
-                value: '0 0 0 / .5'
+                value: '0 0 0/.5'
             }
         }
     })
@@ -67,7 +67,7 @@ it.concurrent('config extends', () => {
             dark: {
                 space: 'rgb',
                 type: 'color',
-                value: '58 124 255'
+                value: '255 255 255'
             }
         }
     })
@@ -78,7 +78,7 @@ it.concurrent('config extends', () => {
             dark: {
                 space: 'rgb',
                 type: 'color',
-                value: '37 99 253'
+                value: '255 255 255'
             }
         }
     })

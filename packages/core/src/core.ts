@@ -353,15 +353,13 @@ export default class MasterCSS {
                 variable.name = flatName
                 if (groups.length)
                     variable.group = groups.join('.')
-                if (variable.type === 'color') {
-                    if (alpha) {
-                        const slashIndex = variable.value.indexOf('/')
-                        variable = {
-                            ...variable,
-                            value: slashIndex === -1
-                                ? variable.value + ' / ' + (alpha.startsWith('0.') ? alpha.slice(1) : alpha)
-                                : (variable.value.slice(0, slashIndex + 2) + String(+variable.value.slice(slashIndex + 2) * +alpha).slice(1))
-                        }
+                if (variable.type === 'color' && variable.value && alpha) {
+                    const slashIndex = variable.value.indexOf('/')
+                    variable = {
+                        ...variable,
+                        value: slashIndex === -1
+                            ? variable.value + '/' + (alpha.startsWith('0.') ? alpha.slice(1) : alpha)
+                            : (variable.value.slice(0, slashIndex + 1) + String(+variable.value.slice(slashIndex + 1) * +alpha).slice(1))
                     }
                 }
                 const currentMode = replacedMode ?? mode
@@ -472,23 +470,54 @@ export default class MasterCSS {
                         }
                     }
                 } else {
-                    const hexColorResult = /^#([A-Fa-f0-9]{3,4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.exec(variableDefinition)
-                    if (hexColorResult) {
-                        const [r, g, b, a] = hexToRgb(hexColorResult[1])
-                        addVariable(name, { type: 'color', value: `${r} ${g} ${b}${a === 1 ? '' : ' / ' + a}`, space: 'rgb' })
-                    } else {
-                        const rgbFunctionResult = /^rgb\( *([0-9]{1,3})(?: *, *| +)([0-9]{1,3})(?: *, *| +)([0-9]{1,3}) *(?:(?:,|\/) *(.*?) *)?\)$/.exec(variableDefinition)
-                        if (rgbFunctionResult) {
-                            addVariable(name, { type: 'color', value: rgbFunctionResult[1] + ' ' + rgbFunctionResult[2] + ' ' + rgbFunctionResult[3] + (rgbFunctionResult[4] ? ' / ' + (rgbFunctionResult[4].startsWith('0.') ? rgbFunctionResult[4].slice(1) : rgbFunctionResult[4]) : ''), space: 'rgb' })
-                        } else {
-                            const hslFunctionResult = /^hsl\((.*?)\)$/.exec(variableDefinition)
-                            if (hslFunctionResult) {
-                                addVariable(name, { type: 'color', value: hslFunctionResult[1], space: 'hsl' })
-                            } else {
-                                addVariable(name, { type: 'string', value: variableDefinition })
+                    // 1. HEX
+                    const hexMatch = /^#([a-f0-9]{3,4}|[a-f0-9]{6}|[a-f0-9]{8})$/i.exec(variableDefinition)
+                    if (hexMatch) {
+                        const [r, g, b, a] = hexToRgb(hexMatch[1])
+                        addVariable(name, {
+                            type: 'color',
+                            value: `${r} ${g} ${b}${a === 1 ? '' : `/${a}`}`,
+                            space: 'rgb',
+                        })
+                        return
+                    }
+
+                    // 2. COLOR FUNCTION
+                    const funcMatch = /^(color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|hsl|light-dark)\((.+)\)$/i.exec(variableDefinition)
+                    if (funcMatch) {
+                        let [, space, rawArgs] = funcMatch
+                        space = space.toLowerCase()
+                        const normalizedArgs = rawArgs
+                            .replace(/\s*\/\s*/g, '/')
+                            .replace(/\s*,\s*/g, ' ')
+                            .replace(/\s+/g, ' ')
+                            .trim()
+
+                        let alpha: string | undefined
+                        const alphaMatch = /^(.+?)\/([^\s]+)$/.exec(normalizedArgs)
+                        const finalArgs = alphaMatch ? alphaMatch[1].trim() : normalizedArgs
+                        alpha = alphaMatch ? alphaMatch[2] : undefined
+                        if (space === 'color') {
+                            const nested = /^([a-z0-9-]+) (.+)$/i.exec(finalArgs)
+                            if (nested) {
+                                const [, nestedSpace, rest] = nested
+                                addVariable(name, {
+                                    type: 'color',
+                                    value: `${nestedSpace} ${rest}`,
+                                    space: 'color',
+                                }, alpha)
+                                return
                             }
                         }
+                        addVariable(name, {
+                            type: 'color',
+                            value: finalArgs,
+                            space,
+                        }, undefined, alpha)
+                        return
                     }
+                    // 3. Fallback
+                    addVariable(name, { type: 'string', value: variableDefinition })
                 }
             }
         }

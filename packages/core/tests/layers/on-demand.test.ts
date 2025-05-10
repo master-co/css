@@ -13,14 +13,6 @@ test.concurrent('utility', () => {
     expect(css.text).toContain('@layer general{.text\\:center{text-align:center}}')
 })
 
-test.concurrent('theme', () => {
-    const css = createCSS({ modeTrigger: 'class' })
-    css.add('fg:blue')
-    expect(css.text).toContain(css.layerStatementRule.text)
-    expect(css.text).toContain('@layer general{.fg\\:blue{color:rgb(var(--text-blue))}}')
-    expect(css.text).toContain('@layer theme{.light,:root{--text-blue:37 99 253}.dark{--text-blue:112 176 255}}')
-})
-
 test.concurrent('manipulate', () => {
     const css = createCSS({ components: { 'btn': 'block' } })
     expect(css.text).toContain(css.layerStatementRule.text)

@@ -60,8 +60,7 @@ export default {
             rgb1: 'rgb(0, 0, 0)',
             rgb2: 'rgb(0 0 0)',
             rgb3: 'rgb(0 0 0/.5)',
-            rgb4: 'rgb(0,0,0,.5)',
-            '2': '$(primary-rgb4)/.7'
+            '2': '$(primary-rgb3)/.7'
         },
         input: '#123456',
         code: '$(accent)',

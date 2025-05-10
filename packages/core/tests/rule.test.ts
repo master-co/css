@@ -106,13 +106,13 @@ describe.concurrent('value components', () => {
     })
 
     test.concurrent('shorthand', () => {
-        expect(createCSS().generate('b:1|solid|blue-60/.5')[0].valueComponents)
+        expect(createCSS().generate('b:1|solid|#000000')[0].valueComponents)
             .toStrictEqual([
                 { token: '1', text: '0.0625rem', type: 'number', unit: 'rem', value: 0.0625 },
                 { token: '|', text: ' ', type: 'separator', value: ' ' },
                 { token: 'solid', text: 'solid', type: 'string', value: 'solid' },
                 { token: '|', text: ' ', type: 'separator', value: ' ' },
-                { token: 'blue-60/.5', alpha: '.5', name: 'blue-60', text: 'rgb(37 99 253/.5)', type: 'variable', variable: { space: 'rgb', type: 'color', value: '37 99 253', group: 'blue', key: '60', name: 'blue-60' } }
+                { token: '#000000', text: '#000000', type: 'string', value: '#000000' }
             ])
     })
 

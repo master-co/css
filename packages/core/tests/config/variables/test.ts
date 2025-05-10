@@ -20,7 +20,7 @@ describe.concurrent('sigil', () => {
     })
     it.concurrent('sigil in config', () => {
         expect(createCSS({ variables: { a: '$white' } }).create('fg:a')?.text).toContain('rgb(255 255 255)')
-        expect(createCSS({ variables: { a: '$white/.5' } }).create('fg:a')?.text).toContain('rgb(255 255 255 / .5)')
+        expect(createCSS({ variables: { a: '$white/.5' } }).create('fg:a')?.text).toContain('rgb(255 255 255/.5)')
     })
 })
 
