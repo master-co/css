@@ -1,11 +1,6 @@
-import Testing from '../../cases-testing'
+import Tester from '../../tester'
 
-Testing.layers({
-    'fg:primary fg:primary-10': {
-        theme: '.light,:root{--primary:0 0 0}.dark{--primary:19 110 66}',
-        general: '.fg\\:primary{color:rgb(var(--primary))}.fg\\:primary-10{color:rgb(238 238 238)}'
-    }
-}, {
+new Tester({
     variables: {
         primary: {
             10: '#eeeeee',
@@ -22,3 +17,9 @@ Testing.layers({
     },
     modeTrigger: 'class'
 })
+    .layers({
+        'fg:primary fg:primary-10': {
+            theme: '.light,:root{--primary:0 0 0}.dark{--primary:19 110 66}',
+            general: '.fg\\:primary{color:rgb(var(--primary))}.fg\\:primary-10{color:rgb(238 238 238)}'
+        }
+    })

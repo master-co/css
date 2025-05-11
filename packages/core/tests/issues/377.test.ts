@@ -1,4 +1,4 @@
-import Testing from '../cases-testing'
+import Testing from '../tester'
 
 Testing.readableClasses({
     1: `

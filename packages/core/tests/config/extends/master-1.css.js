@@ -8,12 +8,12 @@ const config = {
     ],
     variables: {
         fourth: '$first',
-        first: '#111111'
+        first: 'oklch(0.18 0 0)'
     },
     modes: {
         light: {
-            first: 'rgb(0, 0, 0)',
-            second: 'rgb(0 0 0 / .5)',
+            first: 'oklch(0, 0, 0)',
+            second: 'oklch(0 0 0 / .5)',
         },
         dark: {
             first: '#222222',

@@ -24,20 +24,20 @@ it.concurrent('config extends', () => {
         name: 'first',
         key: 'first',
         type: 'color',
-        space: 'rgb',
-        value: '17 17 17',
+        space: 'oklch',
+        value: '0.18 0 0',
         modes: {
             dark: {
                 key: 'fourth',
                 name: 'fourth',
-                space: 'rgb',
+                space: 'oklch',
                 type: 'color',
-                value: '0 0 0'
+                value: '0% 0 none'
             },
             light: {
                 key: 'fourth',
                 name: 'fourth',
-                space: 'rgb',
+                space: 'oklch',
                 type: 'color',
                 value: '0 0 0'
             }
@@ -45,15 +45,15 @@ it.concurrent('config extends', () => {
     })
     expect(css.variables.get('second')).toMatchObject({
         type: 'color',
-        space: 'rgb',
+        space: 'oklch',
         modes: {
             dark: {
-                space: 'rgb',
+                space: 'oklch',
                 type: 'color',
-                value: '0 0 0'
+                value: '0% 0 none'
             },
             light: {
-                space: 'rgb',
+                space: 'oklch',
                 type: 'color',
                 value: '0 0 0/.5'
             }
@@ -61,39 +61,39 @@ it.concurrent('config extends', () => {
     })
     expect(css.variables.get('third')).toMatchObject({
         type: 'color',
-        space: 'rgb',
-        value: '0 0 0',
+        space: 'oklch',
+        value: '0% 0 none',
         modes: {
             dark: {
-                space: 'rgb',
+                space: 'oklch',
                 type: 'color',
-                value: '255 255 255'
+                value: '100% 0 none'
             }
         }
     })
     expect(css.variables.get('third-2')).toMatchObject({
         type: 'color',
-        space: 'rgb',
+        space: 'oklch',
         modes: {
             dark: {
-                space: 'rgb',
+                space: 'oklch',
                 type: 'color',
-                value: '255 255 255'
+                value: '100% 0 none'
             }
         }
     })
     expect(css.variables.get('fourth')).toMatchObject({
         type: 'color',
-        space: 'rgb',
-        value: '17 17 17',
+        space: 'oklch',
+        value: '0.18 0 0',
         modes: {
             dark: {
-                space: 'rgb',
+                space: 'oklch',
                 type: 'color',
-                value: '0 0 0'
+                value: '0% 0 none'
             },
             light: {
-                space: 'rgb',
+                space: 'oklch',
                 type: 'color',
                 value: '0 0 0'
             }

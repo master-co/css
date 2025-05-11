@@ -4,21 +4,31 @@ const modes = {
     'light': {
         'base': '$white',
         'surface': {
-            'lightest': '$slate-5',
+            'lightest': '$grey-0',
             'lighter': '$white',
             'light': '$white'
         },
         'invert': '$black',
+        'stone': {
+            '': '$stone-30',
+            'active': '$stone-40',
+            'text': '$stone-90'
+        },
         'frame': {
-            'neutral': '$slate-60',
-            'light': '#00000029',
-            'lighter': '#0000001f',
-            'lightest': '#00000014'
+            'neutral': '$grey-60',
+            'light': 'oklch(0% 0 none / 0.12)',
+            'lighter': 'oklch(0% 0 none / 0.09)',
+            'lightest': 'oklch(0% 0 none / 0.06)'
         },
         'gray': {
             '': '$gray-30',
             'active': '$gray-40',
             'text': '$gray-90'
+        },
+        'grey': {
+            '': '$grey-30',
+            'active': '$grey-40',
+            'text': '$grey-90'
         },
         'slate': {
             '': '$slate-30',
@@ -117,17 +127,19 @@ const modes = {
         },
         'text': {
             'invert': '$white',
-            'strong': '$slate-95',
-            'neutral': '$slate-70',
-            'lightest': '$slate-30',
-            'lighter': '$slate-40',
-            'light': '$slate-50',
+            'strong': '$grey-100',
+            'neutral': '$grey-70',
+            'lightest': '$grey-30',
+            'lighter': '$grey-40',
+            'light': '$grey-50',
+            'stone': '$stone-60',
             'gray': '$gray-60',
+            'grey': '$grey-60',
             'slate': '$slate-60',
             'brown': '$brown-60',
             'orange': '$orange-60',
             'amber': '$amber-60',
-            'yellow': '$yellow-60',
+            'yellow': '$yellow-70',
             'lime': '$lime-70',
             'green': '$green-70',
             'beryl': '$beryl-70',
@@ -141,7 +153,8 @@ const modes = {
             'fuchsia': '$fuchsia-60',
             'pink': '$pink-60',
             'crimson': '$crimson-60',
-            'red': '$red-60'
+            'red': '$red-60',
+            'gray 2': '$gray-60'
         }
     },
     'dark': {
@@ -152,16 +165,26 @@ const modes = {
             'light': '$gray-70'
         },
         'invert': '$white',
+        'stone': {
+            '': '$stone-40',
+            'active': '$stone-30',
+            'text': '$stone-95'
+        },
         'frame': {
             'neutral': '$gray-30',
-            'light': '#ffffff29',
-            'lighter': '#ffffff1f',
-            'lightest': '#ffffff14'
+            'light': 'oklch(100% 0 none / 0.12)',
+            'lighter': 'oklch(100% 0 none / 0.09)',
+            'lightest': 'oklch(100% 0 none / 0.06)'
         },
         'gray': {
             '': '$gray-40',
             'active': '$gray-30',
             'text': '$gray-95'
+        },
+        'grey': {
+            '': '$grey-40',
+            'active': '$grey-30',
+            'text': '$grey-95'
         },
         'slate': {
             '': '$slate-40',
@@ -260,12 +283,14 @@ const modes = {
         },
         'text': {
             'invert': '$black',
-            'strong': '$gray-10',
+            'strong': '$white',
             'neutral': '$gray-30',
             'lightest': '$gray-60',
             'lighter': '$gray-50',
             'light': '$gray-40',
+            'stone': '$gray-30',
             'gray': '$gray-30',
+            'grey': '$grey-30',
             'slate': '$slate-30',
             'brown': '$brown-30',
             'orange': '$orange-30',
@@ -284,7 +309,8 @@ const modes = {
             'fuchsia': '$fuchsia-30',
             'pink': '$pink-30',
             'crimson': '$crimson-30',
-            'red': '$red-30'
+            'red': '$red-30',
+            'gray 2': '$gray-30'
         }
     }
 } satisfies ModeDefinitions
