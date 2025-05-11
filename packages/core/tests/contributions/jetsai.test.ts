@@ -108,7 +108,7 @@ test.concurrent('button config', () => {
 
     expectLayers(
         {
-            components: '.btn-primary{background-color:rgb(34 66 163)}.btn-primary{-webkit-text-fill-color:rgb(255 255 255)}.btn-primary:hover{background-color:rgb(21 37 89)}.btn-primary:disabled{background-color:rgb(205 224 247)}.btn-primary:disabled{-webkit-text-fill-color:rgb(146 151 161)}'
+            components: '.btn-primary{background-color:rgb(34 66 163)}.btn-primary{-webkit-text-fill-color:oklch(100% 0 none)}.btn-primary:hover{background-color:rgb(21 37 89)}.btn-primary:disabled{background-color:rgb(205 224 247)}.btn-primary:disabled{-webkit-text-fill-color:rgb(146 151 161)}'
         },
         'btn-primary',
         config
@@ -168,7 +168,7 @@ test.concurrent('text config', () => {
 
     expectLayers(
         {
-            general: '.bg\\:text-on-color{background-color:rgb(255 255 255)}'
+            general: '.bg\\:text-on-color{background-color:oklch(100% 0 none)}'
         },
         'bg:text-on-color',
         config

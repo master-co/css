@@ -5,13 +5,13 @@ import { expectLayers } from '../test'
 test.concurrent('border', () => {
     expect(createCSS().create('border:current')?.text).toContain('border-color:currentColor')
     expect(createCSS().create('border:transparent')?.text).toContain('border-color:transparent')
-    expect(createCSS().create('border:black')?.text).toContain('border-color:rgb(0 0 0)')
-    expect(createCSS().create('border:2|black')?.text).toContain('border:0.125rem rgb(0 0 0) solid')
+    expect(createCSS().create('border:black')?.text).toContain('border-color:oklch(0% 0 none)')
+    expect(createCSS().create('border:2|black')?.text).toContain('border:0.125rem oklch(0% 0 none) solid')
     expect(createCSS().create('border:1')?.text).toContain('border-width:0.0625rem')
-    expect(createCSS().create('border:dashed|black')?.text).toContain('border:dashed rgb(0 0 0)')
+    expect(createCSS().create('border:dashed|black')?.text).toContain('border:dashed oklch(0% 0 none)')
     expect(createCSS().create('border:solid')?.text).toContain('border-style:solid')
     expect(createCSS().create('border:1rem|solid')?.text).toContain('border:1rem solid')
-    expect(createCSS().create('border:thick|double|black')?.text).toContain('border:thick double rgb(0 0 0)')
+    expect(createCSS().create('border:thick|double|black')?.text).toContain('border:thick double oklch(0% 0 none)')
     expect(createCSS().create('border:none')?.text).toContain('border-style:none')
     expect(createCSS().create('border:auto')?.text).toContain('border-style:auto')
     expect(createCSS().create('border:unset')?.text).toContain('border:unset')
@@ -48,9 +48,9 @@ it.concurrent('validates border rules', () => {
     expect(createCSS().create('by:16|solid')?.text).toContain('border-top:1rem solid;border-bottom:1rem solid')
     expect(createCSS().create('border-y:16|solid')?.text).toContain('border-top:1rem solid;border-bottom:1rem solid')
 
-    expect(createCSS().create('br:1px|solid|black')?.text).toContain('border-right:1px solid rgb(0 0 0)')
+    expect(createCSS().create('br:1px|solid|black')?.text).toContain('border-right:1px solid oklch(0% 0 none)')
 
-    expect(createCSS().create('br:1px|black')?.text).toContain('border-right:1px rgb(0 0 0) solid')
+    expect(createCSS().create('br:1px|black')?.text).toContain('border-right:1px oklch(0% 0 none) solid')
 })
 
 it.concurrent('checks border order', () => {
@@ -63,10 +63,10 @@ it.concurrent('checks border order', () => {
 })
 
 test.concurrent('autofill solid', () => {
-    expect(createCSS().create('border:16|black')?.text).toContain('border:1rem rgb(0 0 0) solid')
-    expect(createCSS().create('border:16|black|solid')?.text).toContain('border:1rem rgb(0 0 0) solid')
+    expect(createCSS().create('border:16|black')?.text).toContain('border:1rem oklch(0% 0 none) solid')
+    expect(createCSS().create('border:16|black|solid')?.text).toContain('border:1rem oklch(0% 0 none) solid')
     expect(createCSS().create('border:16|var(--style)')?.text).not.toContain('solid')
-    expect(createCSS({ variables: { line: 'solid' } }).create('border:16|black|line')?.text).toContain('border:1rem rgb(0 0 0) solid')
+    expect(createCSS({ variables: { line: 'solid' } }).create('border:16|black|line')?.text).toContain('border:1rem oklch(0% 0 none) solid')
 
     expectLayers(
         {

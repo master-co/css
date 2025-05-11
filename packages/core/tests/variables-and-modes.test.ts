@@ -51,3 +51,55 @@ describe('mix color spaces, modes, and alias', () => {
             }
         })
 })
+
+describe('inline color variable with alpha', () => {
+    new CSSTester({
+        variables: { black: '#000000' },
+        rules,
+        modeTrigger: 'class'
+    }, null)
+        .layers({
+            'bg:black/.5': {
+                general: '.bg\\:black\\/\\.5{background-color:rgb(0 0 0/0.5)}'
+            }
+        })
+})
+
+describe('inline color variable with alias and alpha', () => {
+    new CSSTester({
+        variables: { black: '#000000', primary: '$black/.5' },
+        rules,
+        modeTrigger: 'class'
+    }, null)
+        .layers({
+            'bg:primary': {
+                general: '.bg\\:primary{background-color:rgb(0 0 0/0.5)}'
+            }
+        })
+})
+
+describe('multiply two alpha', () => {
+    new CSSTester({
+        variables: { black: '#000000', primary: '$black/.5' },
+        rules,
+        modeTrigger: 'class'
+    }, null)
+        .layers({
+            'bg:primary/.5': {
+                general: '.bg\\:primary\\/\\.5{background-color:rgb(0 0 0/0.25)}'
+            }
+        })
+})
+
+describe('multiply two alpha', () => {
+    new CSSTester({
+        variables: { a: '#000000', b: '$a/.5', c: '$b/.5' },
+        rules,
+        modeTrigger: 'class'
+    }, null)
+        .layers({
+            'bg:c': {
+                general: '.bg\\:c{background-color:rgb(0 0 0/0.25)}'
+            }
+        })
+})

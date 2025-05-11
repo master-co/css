@@ -7,7 +7,7 @@
     }
 
     .btn {
-        background-color: rgb(0 0 0);
+        background-color: oklch(0% 0 none);
     }
 
     @media (width >= 52.125rem) {

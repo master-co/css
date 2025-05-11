@@ -1,6 +1,6 @@
-import Testing from '../tester'
+import Tester from '../tester'
 
-Testing.readableClasses({
+new Tester().readableClasses({
     1: `
         h:full w:full
         hidden:hover_:where(.hidden-on-hover)@md

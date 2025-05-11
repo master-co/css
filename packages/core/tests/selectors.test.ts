@@ -32,8 +32,8 @@ test.concurrent('shorthands', () => {
 // })
 
 // test.concurrent('multiple', () => {
-//     expect(createCSS().create('bg:black>li:nth(2):not(:nth(4))')?.text).toBe('.bg\\:black\\>li\\:nth\\(2\\)\\:not\\(\\:nth\\(4\\)\\)>li:nth-child(2):not(:nth-child(4)){background-color:rgb(0 0 0)}')
-//     expect(createCSS().create('bg:black::slider-thumb')?.text).toBe('.bg\\:black\\:\\:slider-thumb::-webkit-slider-thumb{background-color:rgb(0 0 0)}.bg\\:black\\:\\:slider-thumb::-moz-range-thumb{background-color:rgb(0 0 0)}')
+//     expect(createCSS().create('bg:black>li:nth(2):not(:nth(4))')?.text).toBe('.bg\\:black\\>li\\:nth\\(2\\)\\:not\\(\\:nth\\(4\\)\\)>li:nth-child(2):not(:nth-child(4)){background-color:oklch(0% 0 none)}')
+//     expect(createCSS().create('bg:black::slider-thumb')?.text).toBe('.bg\\:black\\:\\:slider-thumb::-webkit-slider-thumb{background-color:oklch(0% 0 none)}.bg\\:black\\:\\:slider-thumb::-moz-range-thumb{background-color:oklch(0% 0 none)}')
 //     expect(createCSS().create('content:\'⦿\':after')?.text).toBe('.content\\:\\\'⦿\\\'\\:after:after{content:\'⦿\'}')
 // })
 

@@ -66,7 +66,21 @@ export class VariableRuleNode {
     }
 
     get text(): string {
-        let text = `${this.selectorText}{--${this.name}:${String(this.variable.value)}}`
+        let value = ''
+        switch (this.variable.type) {
+            case 'color':
+                value = (this.variable.alpha || 1) < 1
+                    ? `${this.variable.space}(${this.variable.value}/${this.variable.alpha})`
+                    : `${this.variable.space}(${this.variable.value})`
+                break
+            case 'number':
+                value = String(this.variable.value)
+                break
+            default:
+                value = this.variable.value
+                break
+        }
+        let text = `${this.selectorText}{--${this.name}:${value}}`
         if (this.css.config.modeTrigger === 'media' && this.mode) {
             text = `@media (prefers-color-scheme:${this.mode}){${text}}`
         }

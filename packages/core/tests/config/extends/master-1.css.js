@@ -12,8 +12,8 @@ const config = {
     },
     modes: {
         light: {
-            first: 'oklch(0, 0, 0)',
-            second: 'oklch(0 0 0 / .5)',
+            first: 'oklch(0,0,0)',
+            second: 'oklch(0 0 0/.5)',
         },
         dark: {
             first: '#222222',

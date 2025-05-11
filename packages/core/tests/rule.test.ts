@@ -17,7 +17,7 @@ test.concurrent('declarations', () => {
             }
         }
     })
-    expect(css.generate('fg:primary')[0].declarations).toEqual({ color: 'rgb(var(--primary))' })
+    expect(css.generate('fg:primary')[0].declarations).toEqual({ color: 'var(--primary)' })
 })
 
 test.concurrent('registered Rule', () => {

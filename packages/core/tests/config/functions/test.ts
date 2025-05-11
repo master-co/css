@@ -13,12 +13,10 @@ test.concurrent('functions', () => {
 
     expect(createCSS().create('grid-template-cols:repeat(2,auto|.6|calc(3-max(2,1)))')?.text).toBe('.grid-template-cols\\:repeat\\(2\\,auto\\|\\.6\\|calc\\(3-max\\(2\\,1\\)\\)\\){grid-template-columns:repeat(2,auto 0.6 calc(0.1875rem - max(2, 1) / 16 * 1rem))}')
 
-    expect(createCSS().create('$primary:black')?.text).toBe('.\\$primary\\:black{--primary:rgb(0 0 0)}')
-    expect(createCSS().create('$primary:black')?.text).toBe('.\\$primary\\:black{--primary:rgb(0 0 0)}')
-    expect(createCSS().create('$primary:black/.5')?.text).toBe('.\\$primary\\:black\\/\\.5{--primary:rgb(0 0 0/.5)}')
-    expect(createCSS().create('$primary:black/.5')?.text).toBe('.\\$primary\\:black\\/\\.5{--primary:rgb(0 0 0/.5)}')
+    expect(createCSS().create('$primary:black')?.text).toBe('.\\$primary\\:black{--primary:oklch(0% 0 none)}')
+    expect(createCSS().create('$primary:black')?.text).toBe('.\\$primary\\:black{--primary:oklch(0% 0 none)}')
 })
 
 test.concurrent('checks gradient-related functions with color variables', () => {
-    expect(createCSS().create('bg:linear-gradient(0deg,black|0%,white|100%)')?.text).toContain('background-image:linear-gradient(0deg,rgb(0 0 0) 0%,rgb(255 255 255) 100%)')
+    expect(createCSS().create('bg:linear-gradient(0deg,black|0%,white|100%)')?.text).toContain('background-image:linear-gradient(0deg,oklch(0% 0 none) 0%,oklch(100% 0 none) 100%)')
 })

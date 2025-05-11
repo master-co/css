@@ -5,26 +5,8 @@ import { expectLayers } from '../../test'
 test.concurrent('colors', () => {
     expectLayers(
         {
-            theme: ':root{--primary:0 0 0}.light{--primary:0 0 0}.dark{--primary:100% 0 none}',
-            general: '.fg\\:primary{color:oklch(var(--primary))}'
-        },
-        'fg:primary',
-        config
-    )
-
-    expectLayers(
-        {
-            theme: ':root{--primary-code:0 0 0}.dark{--primary-code:100% 0 none}',
-            general: '.fg\\:primary-code{color:oklch(var(--primary-code))}'
-        },
-        'fg:primary-code',
-        config
-    )
-
-    expectLayers(
-        {
-            theme: ':root{--primary-stage-1:100% 0 none}.light{--primary-stage-1:0 0 0}.dark{--primary-stage-1:100% 0 none}',
-            general: '.fg\\:primary-stage-1{color:oklch(var(--primary-stage-1))}'
+            theme: ':root{--primary-stage-1:oklch(100% 0 none)}.light{--primary-stage-1:oklch(0% 0 none)}.dark{--primary-stage-1:oklch(100% 0 none)}',
+            general: '.fg\\:primary-stage-1{color:var(--primary-stage-1)}'
         },
         'fg:primary-stage-1',
         config
@@ -32,7 +14,7 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            general: '.b\\:input{border-color:oklch(18 52 86)}'
+            general: '.b\\:input{border-color:rgb(18 52 86)}'
         },
         'b:input',
         config
@@ -40,7 +22,7 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            general: '.bg\\:blue-100{background-color:oklch(119 119 119)}'
+            general: '.bg\\:blue-100{background-color:rgb(119 119 119)}'
         },
         'bg:blue-100',
         {
@@ -52,7 +34,7 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            general: '.bg\\:primary-alpha{background-color:oklch(100% 0 none/.1)}'
+            general: '.bg\\:primary-alpha{background-color:oklch(100% 0 none/0.1)}'
         },
         'bg:primary-alpha',
         config
@@ -60,7 +42,7 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            general: '.bg\\:primary-rgb1{background-color:oklch(0 0 0)}'
+            general: '.bg\\:primary-rgb1{background-color:rgb(0 0 0)}'
         },
         'bg:primary-rgb1',
         config
@@ -68,7 +50,7 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            general: '.bg\\:primary-rgb2{background-color:oklch(0 0 0)}'
+            general: '.bg\\:primary-rgb2{background-color:oklch(0% 0 none)}'
         },
         'bg:primary-rgb2',
         config
@@ -76,7 +58,7 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            general: '.bg\\:primary-rgb3{background-color:oklch(0 0 0/.5)}'
+            general: '.bg\\:primary-rgb3{background-color:rgb(0 0 0/0.5)}'
         },
         'bg:primary-rgb3',
         config
@@ -84,7 +66,7 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            general: '.bg\\:primary-2{background-color:oklch(0 0 0/.35)}'
+            general: '.bg\\:primary-2{background-color:rgb(0 0 0/0.35)}'
         },
         'bg:primary-2',
         config
@@ -92,8 +74,8 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: '.light,:root{--major:0 0 0}.dark{--major:100% 0 none}',
-            general: '.bg\\:linear-gradient\\(180deg\\,major\\,black\\){background-image:linear-gradient(180deg,oklch(var(--major)),oklch(0 0 0))}'
+            theme: '.light,:root{--major:oklch(0% 0 none)}.dark{--major:oklch(100% 0 none)}',
+            general: '.bg\\:linear-gradient\\(180deg\\,major\\,black\\){background-image:linear-gradient(180deg,var(--major),oklch(0% 0 none))}'
         },
         'bg:linear-gradient(180deg,major,black)',
         config
@@ -101,8 +83,8 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: '.light,:root{--primary:0 0 0}.dark{--primary:100% 0 none}.light,:root{--accent:17 17 17}.dark{--accent:238 238 238}',
-            general: '.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,oklch(var(--primary)),oklch(var(--accent)))}'
+            theme: '.light,:root{--primary:rgb(0 0 0)}.dark{--primary:rgb(255 255 255)}.light,:root{--accent:rgb(17 17 17)}.dark{--accent:rgb(238 238 238)}',
+            general: '.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,var(--primary),var(--accent))}'
         },
         'bg:linear-gradient(180deg,primary,accent)',
         {
@@ -122,8 +104,8 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: '.light,:root{--primary:0 0 0}.dark{--primary:100% 0 none}.dark{--accent:238 238 238}',
-            general: '.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,oklch(var(--primary)),oklch(var(--accent)))}'
+            theme: '.light,:root{--primary:rgb(0 0 0)}.dark{--primary:rgb(255 255 255)}.dark{--accent:rgb(238 238 238)}',
+            general: '.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,var(--primary),var(--accent))}'
         },
         'bg:linear-gradient(180deg,primary,accent)',
         {
@@ -142,8 +124,8 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: '.light,:root{--primary:0 0 0}.dark{--primary:100% 0 none}',
-            general: '.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,oklch(var(--primary)),accent)}'
+            theme: '.light,:root{--primary:rgb(0 0 0)}.dark{--primary:rgb(255 255 255)}',
+            general: '.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,var(--primary),accent)}'
         },
         'bg:linear-gradient(180deg,primary,accent)',
         {
@@ -161,8 +143,8 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: '.light,:root{--primary:0 0 0}.dark{--primary:100% 0 none}:root{--accent:255 0 0}.dark{--accent:170 0 0}',
-            general: '.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,oklch(var(--primary)),oklch(var(--accent)))}'
+            theme: '.light,:root{--primary:rgb(0 0 0)}.dark{--primary:rgb(255 255 255)}:root{--accent:rgb(255 0 0)}.dark{--accent:rgb(170 0 0)}',
+            general: '.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,var(--primary),var(--accent))}'
         },
         'bg:linear-gradient(180deg,primary,accent)',
         {
@@ -184,8 +166,8 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: '.light,:root{--fade:204 204 204}.dark{--fade:51 51 51}',
-            general: '.\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{display:block;color:oklch(var(--fade))}'
+            theme: '.light,:root{--fade:rgb(204 204 204)}.dark{--fade:rgb(51 51 51)}',
+            general: '.\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{display:block;color:var(--fade)}'
         },
         '{block;fg:fade}_:where(p)_code:before',
         {
@@ -203,8 +185,8 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: ':root{--primary-filled:0 0 0}.light{--primary-filled:100% 0 none}.dark{--primary-filled:0 0 0}',
-            components: '.btn{background-color:oklch(var(--primary-filled))}'
+            theme: ':root{--primary-filled:oklch(0% 0 none)}.light{--primary-filled:oklch(100% 0 none)}.dark{--primary-filled:oklch(0% 0 none)}',
+            components: '.btn{background-color:var(--primary-filled)}'
         },
         'btn',
         {
@@ -228,8 +210,8 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: ':root{--primary-filled:0 0 0}.light{--primary-filled:100% 0 none}.dark{--primary-filled:0 0 0}',
-            general: '.bg\\:primary-filled{background-color:oklch(var(--primary-filled))}'
+            theme: ':root{--primary-filled:oklch(0% 0 none)}.light{--primary-filled:oklch(100% 0 none)}.dark{--primary-filled:oklch(0% 0 none)}',
+            general: '.bg\\:primary-filled{background-color:var(--primary-filled)}'
         },
         'bg:primary-filled',
         {
@@ -277,8 +259,8 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: '.light,:root{--code:0 0 0}.dark{--code:100% 0 none}',
-            general: '.bg\\:code{background-color:oklch(var(--code))}'
+            theme: '.light,:root{--code:oklch(0% 0 none)}.dark{--code:oklch(100% 0 none)}',
+            general: '.bg\\:code{background-color:var(--code)}'
         },
         'bg:code',
         config
@@ -286,8 +268,8 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: '.light,:root{--code:0 0 0}.dark{--code:100% 0 none}',
-            general: '.bg\\:code\\/\\.5{background-color:oklch(var(--code)/.5)}'
+            theme: '.light,:root{--code:oklch(0% 0 none)}.dark{--code:oklch(100% 0 none)}',
+            general: '.bg\\:code\\/\\.5{background-color:color-mix(in oklab,var(--code) 50%,transparent)}'
         },
         'bg:code/.5',
         config

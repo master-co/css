@@ -5,7 +5,7 @@ import SyntaxRuleType from './syntax-rule-type'
 import { type PropertiesHyphen } from 'csstype'
 import { VALUE_DELIMITERS, BASE_UNIT_REGEX, AT_IDENTIFIERS } from './common'
 import Layer from './layer'
-import type { NumberValueComponent, DefinedRule, ValueComponent, VariableValueComponent, Variable } from './types/syntax'
+import type { NumberValueComponent, DefinedRule, ValueComponent, VariableValueComponent, Variable, ColorVariable } from './types/syntax'
 import { AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
@@ -335,17 +335,20 @@ export class SyntaxRule {
                                 )
                                 break
                             case 'color':
-                                const alpha = eachValueComponent.alpha
+                                let alpha = eachValueComponent.alpha
                                 handleVariable(
                                     (variable) => {
-                                        if (alpha) {
-                                            currentValue += eachValueComponent.text = `color-mix(in oklab,${variable.value} ${Number(alpha) * 100}%,transparent)`
+                                        const colorVariable = variable as ColorVariable
+                                        const v = colorVariable.value
+                                        alpha = (alpha || 1) * (colorVariable.alpha || 1)
+                                        if (alpha < 1) {
+                                            currentValue += eachValueComponent.text = `${colorVariable.space}(${colorVariable.value}/${alpha})`
                                         } else {
-                                            currentValue += eachValueComponent.text = String(variable.value)
+                                            currentValue += eachValueComponent.text = `${colorVariable.space}(${colorVariable.value})`
                                         }
                                     },
                                     () => {
-                                        if (alpha) {
+                                        if (alpha !== undefined) {
                                             // use color-mix
                                             currentValue += eachValueComponent.text = `color-mix(in oklab,var(--${eachValueComponent.name}) ${Number(alpha) * 100}%,transparent)`
                                         } else {
@@ -416,7 +419,6 @@ export class SyntaxRule {
                             }
                         }
                     }
-
                     if (/^\$[a-zA-Z0-9-]+(?:\/[^\/]+)?$/.test(currentValue)) {
                         const [raw, alpha] = currentValue.slice(1).split('/')
                         handleVariable(raw, alpha)

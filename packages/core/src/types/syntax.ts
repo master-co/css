@@ -4,7 +4,7 @@ export type ValueComponent = StringValueComponent | NumberValueComponent | Funct
 export interface StringValueComponent { text?: string, token: string, type: 'string', value: string }
 export interface NumberValueComponent { text?: string, token: string, type: 'number', value: number, unit?: string }
 export interface FunctionValueComponent { text?: string, token: string, type: 'function', name: string, symbol: string, children: ValueComponent[], bypassTransform?: boolean }
-export interface VariableValueComponent { text?: string, token: string, type: 'variable', name: string, alpha?: string, fallback?: string, variable?: Variable }
+export interface VariableValueComponent { text?: string, token: string, type: 'variable', name: string, alpha?: number, fallback?: string, variable?: Variable }
 export interface SeparatorValueComponent { text?: string, token: string, type: 'separator', value: string }
 export interface DefinedRule {
     id: string
@@ -43,6 +43,6 @@ type VariableCommon = {
 }
 export interface StringVariable { type: 'string', value: string }
 export interface NumberVariable { type: 'number', value: number }
-export interface ColorVariable { type: 'color', value: string, space: 'rgb' | 'hsl' }
+export interface ColorVariable { type: 'color', value: string, space: 'rgb' | 'hsl', alpha?: number }
 export type LiteralVariable = StringVariable | NumberVariable | ColorVariable
 export type Variable = LiteralVariable & VariableCommon

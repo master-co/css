@@ -342,8 +342,7 @@ export default class MasterCSS {
             const addVariable = (
                 name: string[],
                 variable: any,
-                replacedMode?: string,
-                alpha?: string
+                replacedMode?: string
             ) => {
                 if (variable === undefined) return
                 const flatName = name.join('-')
@@ -351,8 +350,7 @@ export default class MasterCSS {
                 const key = (name[0] === '' ? '-' : '') + name[name.length - 1]
                 variable.key = key
                 variable.name = flatName
-                if (groups.length)
-                    variable.group = groups.join('.')
+                if (groups.length) variable.group = groups.join('.')
                 const currentMode = replacedMode ?? mode
                 if (currentMode !== undefined) {
                     const foundVariable = this.variables.get(flatName)
@@ -377,7 +375,6 @@ export default class MasterCSS {
                                 type: variable.type,
                                 modes: { [currentMode]: variable }
                             }
-
                             if (variable.type === 'color') {
                                 newVariable.space = variable.space
                             }
@@ -411,13 +408,11 @@ export default class MasterCSS {
                 const flatName = name.join('-')
                 if (aliasResult) {
                     const alias = aliasResult[1] ?? aliasResult[3]
-                    const modeSuffix = aliasResult[2] ?? aliasResult[4]
-
+                    const alpha = aliasResult[2] ?? aliasResult[4]
                     let aliasVariableModeResolver = aliasVariableModeResolvers.get(flatName)
                     if (!aliasVariableModeResolver) {
                         aliasVariableModeResolvers.set(flatName, aliasVariableModeResolver = {})
                     }
-
                     aliasVariableModeResolver[mode as string] = () => {
                         delete aliasVariableModeResolver[mode as string]
 
@@ -431,32 +426,42 @@ export default class MasterCSS {
                                 eachAliasModeVariableResolver[mode]?.()
                             }
                         }
-
                         const aliasVariable = this.variables.get(baseAlias)
                         if (aliasVariable) {
+                            let resolvedAlpha: number | undefined
+                            if (alpha) {
+                                const numberAlpha = Number(alpha) * ((aliasVariable as any).alpha || 1)
+                                if (numberAlpha < 1) resolvedAlpha = numberAlpha
+                            }
                             if (aliasMode === undefined && aliasVariable.modes) {
-                                addVariable(name, {
+                                const newVariable = {
                                     type: aliasVariable.type,
                                     value: aliasVariable.value,
-                                    space: (aliasVariable as ColorVariable).space
-                                }, '', modeSuffix)
-
+                                    space: (aliasVariable as ColorVariable).space,
+                                } as any
+                                if (resolvedAlpha !== undefined) {
+                                    newVariable.alpha = resolvedAlpha
+                                }
+                                addVariable(name, newVariable, '')
                                 for (const mode in aliasVariable.modes) {
-                                    addVariable(name, aliasVariable.modes[mode], mode, modeSuffix)
+                                    addVariable(name, aliasVariable.modes[mode], mode)
                                 }
                             } else {
                                 const variable = aliasMode !== undefined
                                     ? aliasVariable.modes?.[aliasMode]
                                     : aliasVariable
-
                                 if (variable) {
                                     const newVariable = {
                                         type: variable.type,
                                         value: variable.value,
-                                        ...(variable.type === 'color' ? { space: variable.space } : {})
                                     } as Variable
-
-                                    addVariable(name, newVariable, undefined, modeSuffix)
+                                    if (variable.type === 'color') {
+                                        (newVariable as any).space = variable.space
+                                        if (resolvedAlpha !== undefined) {
+                                            (newVariable as any).alpha = resolvedAlpha
+                                        }
+                                    }
+                                    addVariable(name, newVariable, undefined)
                                 }
                             }
                         }
@@ -466,11 +471,15 @@ export default class MasterCSS {
                     const hexMatch = /^#([a-f0-9]{3,4}|[a-f0-9]{6}|[a-f0-9]{8})$/i.exec(variableDefinition)
                     if (hexMatch) {
                         const [r, g, b, a] = hexToRgb(hexMatch[1])
-                        addVariable(name, {
+                        const newVariable = {
                             type: 'color',
-                            value: `rgb(${r} ${g} ${b}${a === 1 ? '' : `/${a}`})`,
-                            space: 'rgb',
-                        })
+                            value: `${r} ${g} ${b}`,
+                            space: 'rgb'
+                        } as any
+                        if (a !== undefined && a < 1) {
+                            newVariable.alpha = a
+                        }
+                        addVariable(name, newVariable)
                         return
                     }
 
@@ -485,28 +494,19 @@ export default class MasterCSS {
                             .replace(/\s+/g, ' ')
                             .trim()
 
-                        let alpha: string | undefined
+                        let alpha: number | undefined
                         const alphaMatch = /^(.+?)\/([^\s]+)$/.exec(normalizedArgs)
                         const finalArgs = alphaMatch ? alphaMatch[1].trim() : normalizedArgs
-                        alpha = alphaMatch ? alphaMatch[2] : undefined
-                        const resolvedAlpha = alpha !== undefined ? '/' + alpha : ''
-                        if (space === 'color') {
-                            const nested = /^([a-z0-9-]+) (.+)$/i.exec(finalArgs)
-                            if (nested) {
-                                const [, nestedSpace, rest] = nested
-                                addVariable(name, {
-                                    type: 'color',
-                                    value: `color(${nestedSpace} ${rest}${resolvedAlpha})`,
-                                    space: 'color',
-                                }, alpha)
-                                return
-                            }
-                        }
-                        addVariable(name, {
+                        alpha = alphaMatch ? Number(alphaMatch[2]) : undefined
+                        const newVariable: any = {
                             type: 'color',
-                            value: `${space}(${finalArgs}${resolvedAlpha})`,
-                            space,
-                        }, undefined, alpha)
+                            value: finalArgs,
+                            space
+                        }
+                        if (alpha !== undefined) {
+                            newVariable.alpha = alpha
+                        }
+                        addVariable(name, newVariable, undefined)
                         return
                     }
                     // 3. Fallback

@@ -1,1 +1,1 @@
-@layer base,theme,preset,components,general;@layer general{.m\:md{margin:1.25rem}.bg\:black{background-color:rgb(0 0 0)}.bg\:primary{background-color:rgb(0 0 0)}.w\:full{width:100%}}
+@layer base,theme,preset,components,general;@layer general{.m\:md{margin:1.25rem}.bg\:black{background-color:oklch(0% 0 none)}.bg\:primary{background-color:oklch(0% 0 none)}.w\:full{width:100%}}

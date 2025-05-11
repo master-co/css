@@ -7,5 +7,5 @@ test.concurrent('stroke-width', () => {
 
 test.concurrent('stroke-color', () => {
     expect(createCSS().create('stroke:current')?.text).toContain('stroke:currentColor')
-    expect(createCSS().create('stroke:black')?.text).toContain('stroke:rgb(0 0 0)')
+    expect(createCSS().create('stroke:black')?.text).toContain('stroke:oklch(0% 0 none)')
 })

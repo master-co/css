@@ -55,7 +55,8 @@ it.concurrent('config extends', () => {
             light: {
                 space: 'oklch',
                 type: 'color',
-                value: '0 0 0/.5'
+                value: '0 0 0',
+                alpha: .5
             }
         }
     })

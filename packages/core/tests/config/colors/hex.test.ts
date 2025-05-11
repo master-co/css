@@ -17,7 +17,7 @@ test.concurrent('#hex to rgb()', () => {
 test.concurrent('color/opacity to rgb(r g b/opacity)', () => {
     expect(createCSS({
         variables: { primary: '#000000' }
-    }).create('fg:primary/.5')?.text).toBe('.fg\\:primary\\/\\.5{color:rgb(0 0 0/.5)}')
+    }).create('fg:primary/.5')?.text).toBe('.fg\\:primary\\/\\.5{color:rgb(0 0 0/0.5)}')
 })
 
 describe.concurrent('with themes', () => {
@@ -50,7 +50,7 @@ describe.concurrent('with themes', () => {
             modes: {
                 'dark': { name: 'primary', key: 'primary', type: 'color', space: 'rgb', value: '255 255 255' },
                 'light': { name: 'primary', key: 'primary', type: 'color', space: 'rgb', value: '150 150 150' },
-                'chrisma': { name: 'primary', key: 'primary', type: 'color', space: 'rgb', value: '0 0 0/.5' }
+                'chrisma': { name: 'primary', key: 'primary', type: 'color', space: 'oklch', value: '0% 0 none', alpha: .5 }
             }
         })
     })
@@ -58,8 +58,8 @@ describe.concurrent('with themes', () => {
     it.concurrent('color', () => {
         expectLayers(
             {
-                theme: ':root{--primary:0 0 0}.light{--primary:150 150 150}.dark{--primary:255 255 255}.chrisma{--primary:0 0 0/.5}',
-                general: '.fg\\:primary{color:rgb(var(--primary))}'
+                theme: ':root{--primary:rgb(0 0 0)}.light{--primary:rgb(150 150 150)}.dark{--primary:rgb(255 255 255)}.chrisma{--primary:oklch(0% 0 none/0.5)}',
+                general: '.fg\\:primary{color:var(--primary)}'
             },
             'fg:primary',
             config
@@ -69,8 +69,8 @@ describe.concurrent('with themes', () => {
     it.concurrent('color/.5', () => {
         expectLayers(
             {
-                theme: ':root{--primary:0 0 0}.light{--primary:150 150 150}.dark{--primary:255 255 255}.chrisma{--primary:0 0 0/.5}',
-                general: '.fg\\:primary\\/\\.5{color:rgb(var(--primary)/.5)}'
+                theme: ':root{--primary:rgb(0 0 0)}.light{--primary:rgb(150 150 150)}.dark{--primary:rgb(255 255 255)}.chrisma{--primary:oklch(0% 0 none/0.5)}',
+                general: '.fg\\:primary\\/\\.5{color:color-mix(in oklab,var(--primary) 50%,transparent)}'
             },
             'fg:primary/.5',
             config

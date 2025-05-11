@@ -21,13 +21,13 @@ test.concurrent('nest', () => {
 
 test.concurrent('modes', () => {
     expect(extendConfig(
-        { modes: { light: { primary: '#111' }, dark: { primary: '#222' } } },
-        { modes: { light: { secondary: '#333' }, dark: { secondary: '#444' } } }
+        { modes: { light: { primary: { '': '#111' } }, dark: { primary: { '': '#222' } } } },
+        { modes: { light: { secondary: { '': '#333' } }, dark: { secondary: { '': '#444' } } } }
     )).toEqual(
         {
             modes: {
-                light: { primary: '#111', secondary: '#333' },
-                dark: { primary: '#222', secondary: '#444' }
+                light: { primary: { '': '#111' }, secondary: { '': '#333' } },
+                dark: { primary: { '': '#222' }, secondary: { '': '#444' } }
             }
         })
 })

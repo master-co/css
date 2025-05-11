@@ -12,16 +12,16 @@ import { expectLayers } from '../../test'
  */
 test.concurrent('hsl()', () => {
     expect(createCSS({
-        variables: { primary: 'hsl(0deg 0% 0%/.5)' }, modeTrigger: 'class'
+        variables: { primary: 'hsl(0deg 0% 0%/0.5)' }, modeTrigger: 'class'
     }).create('fg:primary')?.text
-    ).toBe('.fg\\:primary{color:hsl(0deg 0% 0%/.5)}')
+    ).toBe('.fg\\:primary{color:hsl(0deg 0% 0%/0.5)}')
 })
 
 test.concurrent('color/opacity to hsl(h s l/opacity / opacity) invalid rule', () => {
     expect(createCSS({
         variables: { primary: 'hsl(0deg 0% 0%/.5)' }
     }).create('fg:primary/.5')?.text
-    ).toBe('.fg\\:primary\\/\\.5{color:hsl(0deg 0% 0%/.5/.5)}')
+    ).toBe('.fg\\:primary\\/\\.5{color:hsl(0deg 0% 0%/0.25)}')
 })
 
 describe.concurrent('with themes', () => {
@@ -54,27 +54,16 @@ describe.concurrent('with themes', () => {
             modes: {
                 'dark': { name: 'primary', key: 'primary', type: 'color', space: 'hsl', value: '0deg 0% 100%' },
                 'light': { name: 'primary', key: 'primary', type: 'color', space: 'hsl', value: '0deg 0% 58.82%' },
-                'chrisma': { name: 'primary', key: 'primary', type: 'color', space: 'hsl', value: '0deg 0% 0%/.5' }
+                'chrisma': { name: 'primary', key: 'primary', type: 'color', space: 'hsl', value: '0deg 0% 0%', alpha: 0.5 }
             }
         })
-    })
-
-    it.concurrent('color', () => {
-        expectLayers(
-            {
-                theme: ':root{--primary:0deg 0% 0%}.light{--primary:0deg 0% 58.82%}.dark{--primary:0deg 0% 100%}.chrisma{--primary:0deg 0% 0%/.5}',
-                general: '.fg\\:primary{color:hsl(var(--primary))}'
-            },
-            'fg:primary',
-            config
-        )
     })
 
     it.concurrent('color/.5', () => {
         expectLayers(
             {
-                theme: ':root{--primary:0deg 0% 0%}.light{--primary:0deg 0% 58.82%}.dark{--primary:0deg 0% 100%}.chrisma{--primary:0deg 0% 0%/.5}',
-                general: '.fg\\:primary\\/\\.5{color:hsl(var(--primary)/.5)}'
+                theme: ':root{--primary:hsl(0deg 0% 0%)}.light{--primary:hsl(0deg 0% 58.82%)}.dark{--primary:hsl(0deg 0% 100%)}.chrisma{--primary:hsl(0deg 0% 0%/0.5)}',
+                general: '.fg\\:primary\\/\\.5{color:color-mix(in oklab,var(--primary) 50%,transparent)}'
             },
             'fg:primary/.5',
             config
