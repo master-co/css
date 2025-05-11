@@ -106,6 +106,7 @@ describe.concurrent('sorting', () => {
                 ?.map(({ label }) => label)
         ).toEqual([
             'yellow',
+            'yellow-0',
             'yellow-5',
             'yellow-10',
             'yellow-20',
@@ -117,6 +118,7 @@ describe.concurrent('sorting', () => {
             'yellow-80',
             'yellow-90',
             'yellow-95',
+            'yellow-100',
             'yellow-active',
             'yellow-text'
         ])

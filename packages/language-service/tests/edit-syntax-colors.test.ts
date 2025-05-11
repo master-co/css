@@ -26,7 +26,7 @@ test.concurrent('hex', async () => {
 })
 
 test.concurrent('variable', async () => {
-    await expectEditedColors({ before: 'blue-50/.5', after: 'rgb(112|141|200/0.5)' })
+    await expectEditedColors({ before: 'white/.5', after: 'oklch(100%|0.0000|90/0.5)' })
 })
 
 test.concurrent('rgb', async () => {

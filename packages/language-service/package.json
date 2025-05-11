@@ -23,6 +23,7 @@
         "color-convert": "^2.0.1",
         "color-rgba": "^3.0.0",
         "color-space": "^2.3.1",
+        "colorjs.io": "^0.5.2",
         "culori": "^4.0.1",
         "js-beautify": "^1.15.4",
         "lodash.escaperegexp": "^4.1.2",

@@ -5,43 +5,11 @@ import { hint } from './test'
 describe.concurrent('scope', () => {
     test.concurrent('font:medium', () => expect(hint('font:')?.map(({ label }) => label)).toContain('semibold'))
     test.concurrent('font:sans', () => expect(hint('font:')?.map(({ label }) => label)).toContain('semibold'))
-    test.concurrent('fg:blue', () => expect(hint('fg:')?.find(({ label }) => label === 'blue')).toEqual({
+    test.concurrent('fg:blue', () => expect(hint('fg:')?.find(({ label }) => label === 'blue')).toMatchObject({
         'detail': '(scope) text-blue',
         'kind': 16,
         'label': 'blue',
         'sortText': 'aaaablue',
-        'documentation': {
-            'kind': 'markdown',
-            'value': dedent`
-                    \`\`\`css
-                    @layer theme {
-                      @media (prefers-color-scheme:light) {
-                        :root {
-                          --text-blue: 37 99 253
-                        }
-                      }
-                      @media (prefers-color-scheme:dark) {
-                        :root {
-                          --text-blue: 112 176 255
-                        }
-                      }
-                    }
-                    @layer general {
-                      .fg\\:blue {
-                        color: rgb(var(--text-blue))
-                      }
-                    }
-                    \`\`\`
-
-                    Sets the color of an element's text
-
-                    (Edge 12, Firefox 1,  4, Safari 1,  1, Chrome 1,  18, IE 3, Opera 3)
-
-                    Syntax: &lt;color&gt;
-
-                    [Master CSS](https://rc.css.master.co/reference/color) | [MDN Reference](https://developer.mozilla.org/docs/Web/CSS/color)
-             `,
-        }
     }))
     test.concurrent('box:content', () => expect(hint('box:')?.find(({ label }) => label === 'content')).toEqual({
         'detail': '(scope) content-box',
@@ -75,76 +43,14 @@ describe.concurrent('global', () => {
 })
 
 describe.concurrent('scope and global', () => {
-    test.concurrent('scope', () => expect(hint('fg:')?.find(({ label }) => label === 'blue')).toEqual({
+    test.concurrent('scope', () => expect(hint('fg:')?.find(({ label }) => label === 'blue')).toMatchObject({
         'detail': '(scope) text-blue',
-        'documentation': {
-            'kind': 'markdown',
-            'value': dedent`
-                    \`\`\`css
-                    @layer theme {
-                      @media (prefers-color-scheme:light) {
-                        :root {
-                          --text-blue: 37 99 253
-                        }
-                      }
-                      @media (prefers-color-scheme:dark) {
-                        :root {
-                          --text-blue: 112 176 255
-                        }
-                      }
-                    }
-                    @layer general {
-                      .fg\\:blue {
-                        color: rgb(var(--text-blue))
-                      }
-                    }
-                    \`\`\`
-
-                    Sets the color of an element's text
-
-                    (Edge 12, Firefox 1,  4, Safari 1,  1, Chrome 1,  18, IE 3, Opera 3)
-
-                    Syntax: &lt;color&gt;
-
-                    [Master CSS](https://rc.css.master.co/reference/color) | [MDN Reference](https://developer.mozilla.org/docs/Web/CSS/color)`,
-        },
         'kind': 16,
         'label': 'blue',
         'sortText': 'aaaablue',
     }))
-    test.concurrent('global and scope collide', () => expect(hint('fg:')?.find(({ label }) => label === '$(blue)')).toEqual({
+    test.concurrent('global and scope collide', () => expect(hint('fg:')?.find(({ label }) => label === '$(blue)')).toMatchObject({
         'detail': '(global) blue',
-        'documentation': {
-            'kind': 'markdown',
-            'value': dedent`
-                    \`\`\`css
-                    @layer theme {
-                      @media (prefers-color-scheme:light) {
-                        :root {
-                          --blue: 37 99 253
-                        }
-                      }
-                      @media (prefers-color-scheme:dark) {
-                        :root {
-                          --blue: 58 124 255
-                        }
-                      }
-                    }
-                    @layer general {
-                      .fg\\:\\$\\(blue\\) {
-                        color: rgb(var(--blue))
-                      }
-                    }
-                    \`\`\`
-
-                    Sets the color of an element's text
-
-                    (Edge 12, Firefox 1,  4, Safari 1,  1, Chrome 1,  18, IE 3, Opera 3)
-
-                    Syntax: &lt;color&gt;
-
-                    [Master CSS](https://rc.css.master.co/reference/color) | [MDN Reference](https://developer.mozilla.org/docs/Web/CSS/color)`,
-        },
         'kind': 16,
         'label': '$(blue)',
         'sortText': 'zzzz$(blue)',

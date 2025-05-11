@@ -1,1 +1,1 @@
-@layer base,theme,preset,components,general;@layer general{.fg\:secondary{color:rgb(37 99 253)}}
+@layer base,theme,preset,components,general;@layer general{.fg\:secondary{color:oklch(100% 0 none)}}

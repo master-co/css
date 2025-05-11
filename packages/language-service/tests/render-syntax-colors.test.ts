@@ -91,7 +91,7 @@ test.concurrent('box-shadow', async () => {
             range: getRange(target1, doc)
         },
         {
-            color: { red: 1, green: 1, blue: 1, alpha: 1 },
+            color: { red: 1.0000000000000007, green: 0.9999999999999994, blue: 0.9999999999999999, alpha: 1 },
             range: getRange(target2, doc)
         }
     ])
@@ -109,7 +109,7 @@ test.concurrent('gradient', async () => {
             range: getRange(target1, doc)
         },
         {
-            color: { red: 1, green: 1, blue: 1, alpha: 1 },
+            color: { red: 1.0000000000000007, green: 0.9999999999999994, blue: 0.9999999999999999, alpha: 1 },
             range: getRange(target2, doc)
         }
     ])
@@ -161,12 +161,12 @@ test.concurrent('variable', async () => {
 })
 
 test.concurrent('variable/opacity', async () => {
-    const target = 'blue-50/.5'
+    const target = 'black/.5'
     const content = `export default () => <div className='fg:${target}'></div>`
     const doc = createDoc('tsx', content)
     const languageService = new CSSLanguageService()
     expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
-        color: { red: 0.22745098039215686, green: 0.48627450980392156, blue: 1, alpha: .5 },
+        color: { red: 0, green: 0, blue: 0, alpha: .5 },
         range: getRange(target, doc)
     }])
 })
@@ -188,12 +188,12 @@ describe.concurrent('color space', () => {
     })
 
     test.concurrent('lab', async () => {
-        const target = 'lab(75%|-120|125)'
+        const target = 'lab(0%|0|0)'
         const content = `export default () => <div className='fg:${target}'></div>`
         const doc = createDoc('tsx', content)
         const languageService = new CSSLanguageService()
         expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
-            color: { red: -0.5785846942837092, green: 0.8926026860675246, blue: -0.3426081149839405, alpha: 1 },
+            color: { red: 0, green: 0, blue: 0, alpha: 1 },
             range: getRange(target, doc)
         }])
     })

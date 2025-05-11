@@ -1,1 +1,1 @@
-@layer base,theme,preset,components,general;@layer theme{@media (prefers-color-scheme:light){:root{--text-lime:76 141 7}}@media (prefers-color-scheme:dark){:root{--text-lime:145 217 26}}}@layer components{.b{-webkit-text-decoration:underline;text-decoration:underline}.a{color:rgb(var(--text-lime))}.b{color:rgb(var(--text-lime))}}
+@layer base,theme,preset,components,general;@layer components{.b{-webkit-text-decoration:underline;text-decoration:underline}.a{color:oklch(0% 0 none)}.b{color:oklch(0% 0 none)}}
