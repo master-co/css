@@ -22,19 +22,19 @@ const expectEditedColors = async ({ before, after }: { before: string, after: st
 }
 
 test.concurrent('hex', async () => {
-    await expectEditedColors({ before: '#333333', after: '#666666' })
+    await expectEditedColors({ before: '#333333', after: 'rgb(40%|40%|40%)' })
 })
 
 test.concurrent('variable', async () => {
-    await expectEditedColors({ before: 'white/.5', after: 'oklch(100%|0.0000|90/0.5)' })
+    await expectEditedColors({ before: 'white/.5', after: 'oklch(100%|0|none/0.5)' })
 })
 
 test.concurrent('rgb', async () => {
-    await expectEditedColors({ before: 'rgb(0|255|145)', after: 'rgb(180|218|201)' })
+    await expectEditedColors({ before: 'rgb(0|255|145)', after: 'rgb(70.59%|85.49%|78.82%)' })
 })
 
 test.concurrent('rgba', async () => {
-    await expectEditedColors({ before: 'rgba(255|0|0/.5)', after: 'rgb(207|129|129/0.5)' })
+    await expectEditedColors({ before: 'rgba(255|0|0/.5)', after: 'rgb(81.18%|50.59%|50.59%/0.5)' })
 })
 
 test.concurrent('hsl', async () => {
@@ -50,11 +50,11 @@ test.concurrent('hwb', async () => {
 })
 
 test.concurrent('lab', async () => {
-    await expectEditedColors({ before: 'lab(52%|40|60)', after: 'lab(67%|-35|-20)' })
+    await expectEditedColors({ before: 'lab(52%|40|60)', after: 'lab(67|-35|-20)' })
 })
 
 test.concurrent('lch', async () => {
-    await expectEditedColors({ before: 'lch(50%|72|50)', after: 'lch(70%|82|139)' })
+    await expectEditedColors({ before: 'lch(50%|72|50)', after: 'lch(70|82|139)' })
 })
 
 test.concurrent('oklab', async () => {
@@ -66,5 +66,5 @@ test.concurrent('oklch', async () => {
 })
 
 test.concurrent('hex to hex8', async () => {
-    await expectEditedColors({ before: '#333333', after: '#66666600' })
+    await expectEditedColors({ before: '#333333', after: 'rgb(40%|40%|40%/0)' })
 })
