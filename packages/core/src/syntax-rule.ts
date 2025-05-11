@@ -5,7 +5,7 @@ import SyntaxRuleType from './syntax-rule-type'
 import { type PropertiesHyphen } from 'csstype'
 import { VALUE_DELIMITERS, BASE_UNIT_REGEX, AT_IDENTIFIERS } from './common'
 import Layer from './layer'
-import type { ColorVariable, NumberValueComponent, DefinedRule, ValueComponent, VariableValueComponent, Variable } from './types/syntax'
+import type { NumberValueComponent, DefinedRule, ValueComponent, VariableValueComponent, Variable } from './types/syntax'
 import { AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
@@ -335,13 +335,22 @@ export class SyntaxRule {
                                 )
                                 break
                             case 'color':
-                                const alpha = eachValueComponent.alpha ? '/' + eachValueComponent.alpha : ''
+                                const alpha = eachValueComponent.alpha
                                 handleVariable(
                                     (variable) => {
-                                        currentValue += eachValueComponent.text = `${(variable as ColorVariable)['space']}(${variable.value}${alpha})`
+                                        if (alpha) {
+                                            currentValue += eachValueComponent.text = `color-mix(in oklab,${variable.value} ${Number(alpha) * 100}%,transparent)`
+                                        } else {
+                                            currentValue += eachValueComponent.text = String(variable.value)
+                                        }
                                     },
                                     () => {
-                                        currentValue += eachValueComponent.text = `${variable.space}(var(--${eachValueComponent.name})${alpha})`
+                                        if (alpha) {
+                                            // use color-mix
+                                            currentValue += eachValueComponent.text = `color-mix(in oklab,var(--${eachValueComponent.name}) ${Number(alpha) * 100}%,transparent)`
+                                        } else {
+                                            currentValue += eachValueComponent.text = `var(--${eachValueComponent.name})`
+                                        }
                                     }
                                 )
                                 break

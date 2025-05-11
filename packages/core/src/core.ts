@@ -353,15 +353,6 @@ export default class MasterCSS {
                 variable.name = flatName
                 if (groups.length)
                     variable.group = groups.join('.')
-                if (variable.type === 'color' && variable.value && alpha) {
-                    const slashIndex = variable.value.indexOf('/')
-                    variable = {
-                        ...variable,
-                        value: slashIndex === -1
-                            ? variable.value + '/' + (alpha.startsWith('0.') ? alpha.slice(1) : alpha)
-                            : (variable.value.slice(0, slashIndex + 1) + String(+variable.value.slice(slashIndex + 1) * +alpha).slice(1))
-                    }
-                }
                 const currentMode = replacedMode ?? mode
                 if (currentMode !== undefined) {
                     const foundVariable = this.variables.get(flatName)
@@ -386,6 +377,7 @@ export default class MasterCSS {
                                 type: variable.type,
                                 modes: { [currentMode]: variable }
                             }
+
                             if (variable.type === 'color') {
                                 newVariable.space = variable.space
                             }
@@ -476,7 +468,7 @@ export default class MasterCSS {
                         const [r, g, b, a] = hexToRgb(hexMatch[1])
                         addVariable(name, {
                             type: 'color',
-                            value: `${r} ${g} ${b}${a === 1 ? '' : `/${a}`}`,
+                            value: `rgb(${r} ${g} ${b}${a === 1 ? '' : `/${a}`})`,
                             space: 'rgb',
                         })
                         return
@@ -497,13 +489,14 @@ export default class MasterCSS {
                         const alphaMatch = /^(.+?)\/([^\s]+)$/.exec(normalizedArgs)
                         const finalArgs = alphaMatch ? alphaMatch[1].trim() : normalizedArgs
                         alpha = alphaMatch ? alphaMatch[2] : undefined
+                        const resolvedAlpha = alpha !== undefined ? '/' + alpha : ''
                         if (space === 'color') {
                             const nested = /^([a-z0-9-]+) (.+)$/i.exec(finalArgs)
                             if (nested) {
                                 const [, nestedSpace, rest] = nested
                                 addVariable(name, {
                                     type: 'color',
-                                    value: `${nestedSpace} ${rest}`,
+                                    value: `color(${nestedSpace} ${rest}${resolvedAlpha})`,
                                     space: 'color',
                                 }, alpha)
                                 return
@@ -511,7 +504,7 @@ export default class MasterCSS {
                         }
                         addVariable(name, {
                             type: 'color',
-                            value: finalArgs,
+                            value: `${space}(${finalArgs}${resolvedAlpha})`,
                             space,
                         }, undefined, alpha)
                         return

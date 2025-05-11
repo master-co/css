@@ -13,7 +13,7 @@ export default class VariableRule {
         if (hasDefaultValue) {
             this.nodes.push(new VariableRuleNode(this.name, variable, css))
         }
-        if (variable.modes) {
+        if (variable.modes && this.css.config.modeTrigger) {
             for (const mode in variable.modes) {
                 const modeVariable = variable.modes[mode]
                 const variableRule = new VariableRuleNode(this.name, modeVariable, css, mode)

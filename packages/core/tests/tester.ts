@@ -11,7 +11,7 @@ export default class CSSTester {
         if (baseConfig === null) {
             this.css = new MasterCSS(config)
         } else {
-            this.css = new MasterCSS(config, baseConfig)
+            this.css = new MasterCSS(config, baseConfig || defaultConfig)
         }
     }
 
@@ -50,37 +50,29 @@ export default class CSSTester {
     }
 
     layers(cases: Record<string, {
-        theme?: string
-        components?: string
-        general?: string
-        base?: string
-        animations?: string
-        preset?: string
+        theme?: string | string[]
+        components?: string | string[]
+        general?: string | string[]
+        base?: string | string[]
+        animations?: string | string[]
+        preset?: string | string[]
     }>) {
-        test.concurrent.each(Object.entries(cases))('%s', (cls, expected) => {
+        test.concurrent.each(Object.entries(cases))('%s', (cls, { theme, components, preset, base, general, animations }) => {
             const css = this.css.add(...cls.split(' '))
-            if (expected.theme)
-                expect(css.themeLayer.text).toContain(`@layer theme{${expected.theme}}`)
-
-            if (expected.components)
-                expect(css.componentsLayer.text).toContain(`@layer components{${expected.components}}`)
-
-            if (expected.preset)
-                expect(css.presetLayer.text).toContain(`@layer preset{${expected.preset}}`)
-
-            if (expected.base)
-                expect(css.baseLayer.text).toContain(`@layer base{${expected.base}}`)
-
-            if (expected.general)
-                expect(css.generalLayer.text).toContain(`@layer general{${expected.general}}`)
-
-            if (expected.animations)
-                expect(css.animationsNonLayer.text).toContain(`${expected.animations}`)
+            theme = Array.isArray(theme) ? theme.join('') : theme
+            components = Array.isArray(components) ? components.join('') : components
+            preset = Array.isArray(preset) ? preset.join('') : preset
+            base = Array.isArray(base) ? base.join('') : base
+            general = Array.isArray(general) ? general.join('') : general
+            animations = Array.isArray(animations) ? animations.join('') : animations
+            if (theme) expect(css.themeLayer.text).toBe(`@layer theme{${theme}}`)
+            if (components) expect(css.componentsLayer.text).toBe(`@layer components{${components}}`)
+            if (preset) expect(css.presetLayer.text).toBe(`@layer preset{${preset}}`)
+            if (base) expect(css.baseLayer.text).toBe(`@layer base{${base}}`)
+            if (general) expect(css.generalLayer.text).toBe(`@layer general{${general}}`)
+            if (animations) expect(css.animationsNonLayer.text).toBe(`${animations}`)
             css.remove(...cls.split(' '))
         })
         return this
     }
 }
-
-export const tester = new CSSTester()
-export const bareTester = new CSSTester(undefined, null)
