@@ -1,11 +1,9 @@
-import DocTable from 'internal/components/DocTable'
-import InlineCode from 'internal/components/InlineCode'
 import Link from 'internal/components/Link'
 
 export default () => {
     return (
-        <>
-            <DocTable>
+        <div className='doc-table'>
+            <table>
                 <thead>
                     <tr>
                         <th className='w:0'>Layer</th>
@@ -40,7 +38,7 @@ export default () => {
                         <td className="white-space:nowrap"><code>{'@layer general { … }'}</code></td>
                     </tr>
                 </tbody>
-            </DocTable>
-        </>
+            </table>
+        </div>
     )
 }

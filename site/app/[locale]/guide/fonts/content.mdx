@@ -1,6 +1,14 @@
 import { variables } from '@master/css'
 
 ## Default [sr-only]
+Master CSS provides three [font family](/reference/font-family) variables, `sans`, `serif`, and `mono`, to facilitate your use as fallbacks when adding custom fonts.
+
+| Token   | CSS Text                                                                                               |
+|---------|-------------------------------------------------------------------------------------------------------|
+| `sans`  | <InlineCode>{variables['font-family'].sans.join(', ')}</InlineCode>           |
+| `serif` | <InlineCode>{variables['font-family'].serif.join(', ')}</InlineCode>          |
+| `mono`  | <InlineCode>{variables['font-family'].mono.join(', ')}</InlineCode>           |
+
 <Demo $py={0}>
     <DemoPanel className="flex flex:col gap:8x">
         <div className="w:full">
@@ -17,18 +25,17 @@ import { variables } from '@master/css'
         </div>
     </DemoPanel>
 </Demo>
-By default, Master CSS provides three [font family](/reference/font-family) variables, `sans`, `serif`, and `mono`, to facilitate your use as fallbacks when adding custom fonts.
-
-| Variable | Value                                                                                                 |
-|---------|-------------------------------------------------------------------------------------------------------|
-| `sans`  | <InlineCode lang="ts">{JSON.stringify(variables['font-family'].sans, null, 4)}</InlineCode>           |
-| `serif` | <InlineCode lang="ts">{JSON.stringify(variables['font-family'].serif, null, 4)}</InlineCode>          |
-| `mono`  | <InlineCode lang="ts">{JSON.stringify(variables['font-family'].mono, null, 4)}</InlineCode>           |
+Apply the defined `font-family` variables using the inherited rules <Heirs />:
+```html
+<body class="font:sans">…</body> <!-- [!code focus] -->
+<body class="font:font-family-sans">…</body>
+<body class="font:$font-family-sans">…</body>
+```
 
 ---
 
 ## Basic usage
-### Add fonts
+### Add custom fonts
 Customize your font tokens by defining [variables](/guide/variables). For example, add `Inter` as the general font and `Fira Code` as the code font.
 ```js name=master.css.js
 import { variables } from '@master/css'
@@ -48,18 +55,6 @@ Apply the defined `font-family` variables. For example, presetting the global fo
 <body class="font:sans font:mono_:where(code,pre) font-feature:'salt'">…</body>
 ```
 Don't forget to add the [font faces](/guide/fonts#font-faces).
-
-
----
-
-## Use cases
-### Apply a font
-Apply the defined `font-family` variables using the inherited rules <Heirs />.
-```html
-<body class="font:$font-family-sans">…</body> <!-- [!code --] -->
-<body class="font:font-family-sans">…</body> <!-- [!code --] -->
-<body class="font:sans">…</body> <!-- [!code ++] -->
-```
 
 ---
 

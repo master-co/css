@@ -1,9 +1,8 @@
 import { at } from '@master/css'
-import DocTable from 'internal/components/DocTable'
 import InlineCode from 'internal/components/InlineCode'
 
 export default () =>
-    <DocTable>
+    <div className='doc-table'>
         <thead>
             <tr>
                 <th>Token</th>
@@ -29,4 +28,4 @@ export default () =>
                 ]
             }
         </tbody>
-    </DocTable>
+    </div>
