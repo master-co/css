@@ -2,14 +2,14 @@
 import { SyntaxRule } from './syntax-rule'
 import hexToRgb from './utils/hex-to-rgb'
 import { flattenObject } from './utils/flatten-object'
-import extendConfig from './utils/extend-config'
+import extendConfig, { ExtendedConfig } from './utils/extend-config'
 import { type PropertiesHyphen } from 'csstype'
 import { Rule } from './rule'
 import SyntaxRuleType from './syntax-rule-type'
 import Layer from './layer'
 import SyntaxLayer from './syntax-layer'
 import NonLayer from './non-layer'
-import { ColorVariable, DefinedRule, Variable } from './types/syntax'
+import { ColorVariable, DefinedRule, LiteralVariable, NumberVariable, StringVariable, Variable } from './types/syntax'
 import { AtRule, AtRuleValueNode } from './utils/parse-at'
 import { AnimationDefinitions, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
 import registerGlobal from './register-global'
@@ -19,7 +19,7 @@ import parseSelector, { SelectorNode } from './utils/parse-selector'
 
 export default class MasterCSS {
     readonly definedRules: DefinedRule[] = []
-    readonly config!: Config
+    readonly config!: ExtendedConfig
     readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,components,general;')
     readonly rules: (Layer | Rule)[] = [this.layerStatementRule]
     readonly classRules = new Map<string, SyntaxRule[]>()
@@ -141,7 +141,6 @@ export default class MasterCSS {
                 const syntax: DefinedRule = {
                     id,
                     keys: [],
-                    variables: {},
                     matchers: {},
                     order,
                     definition: def,
@@ -168,10 +167,14 @@ export default class MasterCSS {
                 let key = originalKey
 
                 // Helper: resolve variable groups
-                const addResolvedVariables = (groupName: string) => {
+                const addResolvedVariables = (namespace: string) => {
                     this.variables.forEach(v => {
-                        if (v.group === groupName) {
-                            syntax.variables[v.key] = v
+                        if (v.namespace === namespace) {
+                            if (syntax.variables) {
+                                syntax.variables.set(v.key, v)
+                            } else {
+                                syntax.variables = new Map([[v.key, v]])
+                            }
                         }
                     })
                 }
@@ -210,7 +213,7 @@ export default class MasterCSS {
                             ? `(?:${aliasGroups.join('|')})`
                             : aliasGroups[0]
 
-                        const variableKeys = Object.keys(syntax.variables)
+                        const variableKeys = Array.from(syntax.variables?.keys() || [])
                         const valuePatterns = values
                             ? values.map((v) => `${v}(?:\\b|_)`)
                             : []
@@ -331,147 +334,105 @@ export default class MasterCSS {
                 }
             }
         }
-
     }
 
     resolveVariables() {
         const { variables, screens, modes } = this.config
         const aliasVariableModeResolvers = new Map<string, Record<string, () => void>>()
-        const resolveVariable = (variableDefinition: VariableDefinition, name: string[], mode?: string) => {
-            if (variableDefinition === undefined || variableDefinition === null) return
-            const addVariable = (
-                name: string[],
-                variable: any,
-                replacedMode?: string
-            ) => {
-                if (variable === undefined) return
-                const flatName = name.join('-')
-                const groups = name.slice(0, -1).filter(Boolean)
-                const key = (name[0] === '' ? '-' : '') + name[name.length - 1]
-                variable.key = key
-                variable.name = flatName
-                if (groups.length) variable.group = groups.join('.')
-                const currentMode = replacedMode ?? mode
-                if (currentMode !== undefined) {
-                    const foundVariable = this.variables.get(flatName)
+        const resolveVariable = (variable: Variable, mode?: string) => {
+            const addVariable = (name: string, newVariable: Variable, currentMode?: string) => {
+                if (currentMode) {
+                    const foundVariable = this.variables.get(name)
+                    const newModeVariable = {
+                        value: newVariable.value,
+                    } as any
+                    if ('alpha' in newVariable) newModeVariable.alpha = newVariable.alpha
+                    if ('space' in newVariable) newModeVariable.space = newVariable.space
                     if (foundVariable) {
-                        if (currentMode) {
-                            if (!foundVariable.modes) {
-                                foundVariable.modes = {}
+                        if (newVariable.type && newVariable.type !== foundVariable.type) {
+                            if (process.env.NODE_ENV === 'development') {
+                                console.warn(`Cannot set ${foundVariable.type} variable "${foundVariable.name}" with different type "${newVariable.type}"`)
                             }
-                            foundVariable.modes[currentMode] = variable
-                        } else {
-                            foundVariable.value = variable.value
-                            if (variable.type === 'color') {
-                                (foundVariable as ColorVariable).space = variable.space
-                            }
+                            return
                         }
+                        if (!foundVariable.modes) foundVariable.modes = {}
+                        foundVariable.modes[currentMode] = newModeVariable
                     } else {
-                        if (currentMode) {
-                            const newVariable: any = {
-                                key: variable.key,
-                                name: variable.name,
-                                group: variable.group,
-                                type: variable.type,
-                                modes: { [currentMode]: variable }
-                            }
-                            if (variable.type === 'color') {
-                                newVariable.space = variable.space
-                            }
-                            this.variables.set(flatName, newVariable)
-                        } else {
-                            this.variables.set(flatName, variable)
-                        }
+                        const newRootVaraible = {
+                            name: newVariable.name,
+                            key: newVariable.key,
+                            type: newVariable.type,
+                            modes: { [currentMode]: newModeVariable },
+                        } as Variable
+                        if (newVariable.namespace) newRootVaraible.namespace = newVariable.namespace
+                        if (newVariable.group) newRootVaraible.group = newVariable.group
+                        this.variables.set(name, newRootVaraible)
                     }
                 } else {
-                    this.variables.set(flatName, variable)
+                    this.variables.set(name, newVariable)
                 }
             }
-            if (typeof variableDefinition === 'object') {
-                if (Array.isArray(variableDefinition)) {
-                    addVariable(name, { type: 'string', value: variableDefinition.join(',') })
-                } else {
-                    const keys = Object.keys(variableDefinition)
-                    for (const eachKey of keys) {
-                        if (eachKey === '') {
-                            resolveVariable(variableDefinition[eachKey] as VariableDefinition, name, mode)
-                        } else {
-                            resolveVariable(variableDefinition[eachKey] as VariableDefinition, [...name, eachKey], mode)
-                        }
-                    }
-                }
-            } else if (typeof variableDefinition === 'number') {
-                addVariable(name, { type: 'number', value: variableDefinition })
-                addVariable(['', ...name], { type: 'number', value: variableDefinition * -1 })
-            } else if (typeof variableDefinition === 'string') {
-                const aliasResult = /^\$\((.*?)\)(?: ?\/ ?(.+?))?$|^\$([a-zA-Z0-9-]+)(?: ?\/ ?(.+?))?$/.exec(variableDefinition)
-                const flatName = name.join('-')
+            if (typeof variable.value === 'number') {
+                addVariable(variable.name, { ...variable, type: 'number' } as Variable, mode)
+                addVariable('-' + variable.name, { ...variable, type: 'number', name: '-' + variable.name, key: '-' + variable.key, value: variable.value * -1 } as Variable, mode)
+            } else if (typeof variable.value === 'string') {
+                const aliasResult = /^\$\((.*?)\)(?: ?\/ ?(.+?))?$|^\$([a-zA-Z0-9-]+)(?: ?\/ ?(.+?))?$/.exec(variable.value)
                 if (aliasResult) {
                     const alias = aliasResult[1] ?? aliasResult[3]
                     const alpha = aliasResult[2] ?? aliasResult[4]
-                    let aliasVariableModeResolver = aliasVariableModeResolvers.get(flatName)
+                    let aliasVariableModeResolver = aliasVariableModeResolvers.get(variable.name)
                     if (!aliasVariableModeResolver) {
-                        aliasVariableModeResolvers.set(flatName, aliasVariableModeResolver = {})
+                        aliasVariableModeResolvers.set(variable.name, aliasVariableModeResolver = {})
                     }
                     aliasVariableModeResolver[mode as string] = () => {
                         delete aliasVariableModeResolver[mode as string]
-
                         if (!alias) return
-
-                        const [baseAlias, aliasMode] = alias.split('@')
-
-                        const eachAliasModeVariableResolver = aliasVariableModeResolvers.get(baseAlias)
+                        const eachAliasModeVariableResolver = aliasVariableModeResolvers.get(alias)
                         if (eachAliasModeVariableResolver) {
                             for (const mode of Object.keys(eachAliasModeVariableResolver)) {
                                 eachAliasModeVariableResolver[mode]?.()
                             }
                         }
-                        const aliasVariable = this.variables.get(baseAlias)
+                        const aliasVariable = this.variables.get(alias)
                         if (aliasVariable) {
                             let resolvedAlpha: number | undefined
                             if (alpha) {
                                 const numberAlpha = Number(alpha) * ((aliasVariable as any).alpha || 1)
                                 if (numberAlpha < 1) resolvedAlpha = numberAlpha
                             }
-                            if (aliasMode === undefined && aliasVariable.modes) {
-                                const newVariable = {
-                                    type: aliasVariable.type,
-                                    value: aliasVariable.value,
-                                    space: (aliasVariable as ColorVariable).space,
-                                } as any
-                                if (resolvedAlpha !== undefined) {
-                                    newVariable.alpha = resolvedAlpha
+                            const newVariable = {
+                                ...variable,
+                                type: aliasVariable.type,
+                                value: aliasVariable.value,
+                            } as Variable
+                            if (aliasVariable.type === 'color') {
+                                if (resolvedAlpha !== undefined)
+                                    (newVariable as ColorVariable).alpha = resolvedAlpha
+                                if (aliasVariable.space) {
+                                    (newVariable as ColorVariable).space = aliasVariable.space
                                 }
-                                addVariable(name, newVariable, '')
-                                for (const mode in aliasVariable.modes) {
-                                    addVariable(name, aliasVariable.modes[mode], mode)
+                            }
+                            addVariable(newVariable.name, newVariable, mode)
+                            if (aliasVariable.modes) {
+                                for (const eachMode in aliasVariable.modes) {
+                                    const aliasModeVariable = aliasVariable.modes[eachMode]
+                                    addVariable(newVariable.name, aliasModeVariable as Variable, eachMode)
                                 }
-                            } else {
-                                const variable = aliasMode !== undefined
-                                    ? aliasVariable.modes?.[aliasMode]
-                                    : aliasVariable
-                                if (variable) {
-                                    const newVariable = {
-                                        type: variable.type,
-                                        value: variable.value,
-                                    } as Variable
-                                    if (variable.type === 'color') {
-                                        (newVariable as any).space = variable.space
-                                        if (resolvedAlpha !== undefined) {
-                                            (newVariable as any).alpha = resolvedAlpha
-                                        }
-                                    }
-                                    addVariable(name, newVariable, undefined)
-                                }
+                            }
+                        }
+                        if (process.env.NODE_ENV === 'development') {
+                            if (!aliasVariable) {
+                                console.warn(`Variable "${alias}" not found for "${variable.name}"`)
                             }
                         }
                     }
                 } else {
                     // 1. HEX
-                    const hexMatch = /^#([a-f0-9]{3,4}|[a-f0-9]{6}|[a-f0-9]{8})$/i.exec(variableDefinition)
+                    const hexMatch = /^#([a-f0-9]{3,4}|[a-f0-9]{6}|[a-f0-9]{8})$/i.exec(variable.value)
                     if (hexMatch) {
                         const [r, g, b, a] = hexToRgb(hexMatch[1])
                         const newVariable = {
+                            ...variable,
                             type: 'color',
                             value: `${r} ${g} ${b}`,
                             space: 'rgb'
@@ -479,12 +440,12 @@ export default class MasterCSS {
                         if (a !== undefined && a < 1) {
                             newVariable.alpha = a
                         }
-                        addVariable(name, newVariable)
+                        addVariable(newVariable.name, newVariable, mode)
                         return
                     }
 
                     // 2. COLOR FUNCTION
-                    const funcMatch = /^(color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|hsl|light-dark)\((.+)\)$/i.exec(variableDefinition)
+                    const funcMatch = /^(color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|hsl|light-dark)\((.+)\)$/i.exec(variable.value)
                     if (funcMatch) {
                         let [, space, rawArgs] = funcMatch
                         space = space.toLowerCase()
@@ -499,6 +460,7 @@ export default class MasterCSS {
                         const finalArgs = alphaMatch ? alphaMatch[1].trim() : normalizedArgs
                         alpha = alphaMatch ? Number(alphaMatch[2]) : undefined
                         const newVariable: any = {
+                            ...variable,
                             type: 'color',
                             value: finalArgs,
                             space
@@ -506,18 +468,20 @@ export default class MasterCSS {
                         if (alpha !== undefined) {
                             newVariable.alpha = alpha
                         }
-                        addVariable(name, newVariable, undefined)
+                        addVariable(newVariable.name, newVariable, mode)
                         return
                     }
+
                     // 3. Fallback
-                    addVariable(name, { type: 'string', value: variableDefinition })
+                    addVariable(variable.name, { ...variable, type: 'string' } as Variable, mode)
                 }
             }
         }
 
         if (variables) {
             for (const parnetKey in variables) {
-                resolveVariable(variables[parnetKey], [parnetKey])
+                const variable = variables[parnetKey]
+                resolveVariable(variable)
             }
         }
 
@@ -526,7 +490,8 @@ export default class MasterCSS {
                 const modeVariables = modes[mode]
                 if (!modeVariables) continue
                 for (const key in modeVariables) {
-                    resolveVariable(modeVariables[key], [key], mode)
+                    const variable = modeVariables[key]
+                    resolveVariable(variable, mode)
                 }
             }
         }
@@ -539,7 +504,18 @@ export default class MasterCSS {
         })
 
         if (screens) {
-            resolveVariable(screens, ['screen'])
+            for (const key in screens) {
+                const value = screens[key]
+                const name = 'screen-' + key
+                this.variables.set(name, {
+                    name,
+                    key,
+                    namespace: 'screen',
+                    group: 'screen',
+                    type: 'number',
+                    value: value,
+                })
+            }
         }
     }
 

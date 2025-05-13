@@ -1,5 +1,5 @@
 import MasterCSS from './core'
-import { LiteralVariable, Variable } from './types/syntax'
+import { ColorVariable, LiteralVariable, NumberVariable, StringVariable, Variable } from './types/syntax'
 
 export default class VariableRule {
     nodes: VariableRuleNode[] = []
@@ -11,12 +11,12 @@ export default class VariableRule {
     ) {
         const hasDefaultValue = variable.value !== undefined
         if (hasDefaultValue) {
-            this.nodes.push(new VariableRuleNode(this.name, variable, css))
+            this.nodes.push(new VariableRuleNode(this, variable, css))
         }
         if (variable.modes && this.css.config.modeTrigger) {
             for (const mode in variable.modes) {
                 const modeVariable = variable.modes[mode]
-                const variableRule = new VariableRuleNode(this.name, modeVariable, css, mode)
+                const variableRule = new VariableRuleNode(this, modeVariable, css, mode)
                 const isDefaultMode = hasDefaultValue ? false : this.css.config.defaultMode === mode
                 variableRule.isDefaultMode = isDefaultMode
                 if (isDefaultMode) {
@@ -37,13 +37,21 @@ export default class VariableRule {
     }
 }
 
-export class VariableRuleNode {
+type VariableMap = {
+    string: StringVariable
+    number: NumberVariable
+    color: ColorVariable
+}
+
+type VariableType = LiteralVariable['type']
+
+export class VariableRuleNode<T extends VariableType = VariableType> {
     native?: CSSRule
     isDefaultMode = false
 
     constructor(
-        public readonly name: string,
-        public readonly variable: LiteralVariable,
+        public readonly rule: VariableRule & { variable: VariableMap[T] },
+        public readonly variable: VariableMap[T],
         public readonly css: MasterCSS,
         public readonly mode?: string,
     ) { }
@@ -53,11 +61,10 @@ export class VariableRuleNode {
         if (this.mode) {
             switch (this.css.config.modeTrigger) {
                 case 'host':
-                    return `:host(.${this.mode})` + (isDefaultMode ? ',:host' : '')
+                    return `:host(.${this.mode})${isDefaultMode ? ',:host' : ''}`
                 case 'class':
-                    return `.${this.mode}` + (isDefaultMode ? ',:root' : '')
+                    return `.${this.mode}${isDefaultMode ? ',:root' : ''}`
                 default:
-                    // media
                     return ':root'
             }
         } else {
@@ -67,20 +74,23 @@ export class VariableRuleNode {
 
     get text(): string {
         let value = ''
-        switch (this.variable.type) {
-            case 'color':
-                value = (this.variable.alpha || 1) < 1
-                    ? `${this.variable.space}(${this.variable.value}/${this.variable.alpha})`
-                    : `${this.variable.space}(${this.variable.value})`
+        switch (this.rule.variable.type) {
+            case 'color': {
+                const color = this.variable as ColorVariable
+                value = (color.alpha ?? 1) < 1
+                    ? `${color.space}(${color.value}/${color.alpha})`
+                    : `${color.space}(${color.value})`
                 break
+            }
             case 'number':
-                value = String(this.variable.value)
+                value = String((this.variable as NumberVariable).value)
                 break
-            default:
-                value = this.variable.value
+            case 'string':
+                value = (this.variable as StringVariable).value
                 break
         }
-        let text = `${this.selectorText}{--${this.name}:${value}}`
+
+        let text = `${this.selectorText}{--${this.rule.name}:${value}}`
         if (this.css.config.modeTrigger === 'media' && this.mode) {
             text = `@media (prefers-color-scheme:${this.mode}){${text}}`
         }

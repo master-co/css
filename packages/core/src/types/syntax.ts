@@ -16,7 +16,7 @@ export interface DefinedRule {
         value?: RegExp
         arbitrary?: RegExp
     }
-    variables: Record<string, Variable>
+    variables?: Map<string, Variable>
     order: number
     definition: SyntaxRuleDefinition
 }
@@ -36,13 +36,14 @@ export interface MediaQuery {
 }
 
 type VariableCommon = {
+    namespace?: string,
     group?: string,
     name: string,
     key: string,
     modes?: Record<string, LiteralVariable>
 }
-export interface StringVariable { type: 'string', value: string }
-export interface NumberVariable { type: 'number', value: number }
-export interface ColorVariable { type: 'color', value: string, space: 'rgb' | 'hsl', alpha?: number }
+export type StringVariable = { type: 'string', value: string }
+export type NumberVariable = { type: 'number', value: number }
+export type ColorVariable = { type: 'color', value: string, space: 'rgb' | 'hsl', alpha?: number }
 export type LiteralVariable = StringVariable | NumberVariable | ColorVariable
 export type Variable = LiteralVariable & VariableCommon

@@ -48,9 +48,9 @@ describe.concurrent('with themes', () => {
             space: 'rgb',
             value: '0 0 0',
             modes: {
-                'dark': { name: 'primary', key: 'primary', type: 'color', space: 'rgb', value: '255 255 255' },
-                'light': { name: 'primary', key: 'primary', type: 'color', space: 'rgb', value: '150 150 150' },
-                'chrisma': { name: 'primary', key: 'primary', type: 'color', space: 'oklch', value: '0% 0 none', alpha: .5 }
+                'dark': { space: 'rgb', value: '255 255 255' },
+                'light': { space: 'rgb', value: '150 150 150' },
+                'chrisma': { space: 'oklch', value: '0% 0 none', alpha: .5 }
             }
         })
     })

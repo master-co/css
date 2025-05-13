@@ -52,9 +52,9 @@ describe.concurrent('with themes', () => {
             space: 'hsl',
             value: '0deg 0% 0%',
             modes: {
-                'dark': { name: 'primary', key: 'primary', type: 'color', space: 'hsl', value: '0deg 0% 100%' },
-                'light': { name: 'primary', key: 'primary', type: 'color', space: 'hsl', value: '0deg 0% 58.82%' },
-                'chrisma': { name: 'primary', key: 'primary', type: 'color', space: 'hsl', value: '0deg 0% 0%', alpha: 0.5 }
+                'dark': { space: 'hsl', value: '0deg 0% 100%' },
+                'light': { space: 'hsl', value: '0deg 0% 58.82%' },
+                'chrisma': { space: 'hsl', value: '0deg 0% 0%', alpha: 0.5 }
             }
         })
     })

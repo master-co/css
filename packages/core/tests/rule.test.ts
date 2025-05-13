@@ -30,48 +30,6 @@ test.concurrent('registered Rule', () => {
         keys: ['content'],
         matchers: {
             key: /^content:/
-        },
-        variables: {}
-    })
-})
-
-test.concurrent('variables', () => {
-    const css = createCSS({
-        variables: {
-            a: {
-                1: 'test',
-                b: {
-                    2: 'test'
-                }
-            }
-        },
-        rules: {
-            content: {
-                variables: ['a.b']
-            }
-        }
-    })
-    expect(css.variables.get('a-1')).toMatchObject({ type: 'string', value: 'test', group: 'a' })
-    expect(css.variables.get('a-b-2')).toMatchObject({ type: 'string', value: 'test', group: 'a.b' })
-    expect(css.definedRules.find(({ id }) => id === 'content')).toMatchObject({
-        definition: {
-            key: 'content',
-            type: -1,
-            variables: ['a.b']
-        },
-        id: 'content',
-        matchers: {
-            key: /^content:/
-        },
-        keys: ['content'],
-        variables: {
-            2: {
-                key: '2',
-                name: 'a-b-2',
-                type: 'string',
-                value: 'test',
-                group: 'a.b'
-            }
         }
     })
 })

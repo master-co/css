@@ -1,9 +1,30 @@
-import { test, expect } from 'vitest'
-import { Config, createCSS } from '../../src'
+import { rules } from '../../src'
+import CSSTester from '../tester'
 
-test.concurrent('default mode', () => {
-    expect(createCSS({ modeTrigger: 'class' }).add('bg:invert').text).toContain('.light,:root{--invert:oklch(0% 0 none)}')
-    expect(createCSS({ modeTrigger: 'class' }).add('bg:invert').text).toContain('.dark{--invert:oklch(100% 0 none)}')
+new CSSTester({
+    modeTrigger: 'class',
+    defaultMode: 'light',
+    variables: {
+        'white': 'oklch(100% 0 none)',
+        'black': 'oklch(0% 0 none)',
+    },
+    modes: {
+        light: {
+            'invert': '$black',
+        },
+        dark: {
+            'invert': '$white',
+        }
+    },
+    rules
+}, null).layers({
+    'bg:invert': {
+        theme: [
+            '.light,:root{--invert:oklch(0% 0 none)}',
+            '.dark{--invert:oklch(100% 0 none)}'
+        ],
+        general: '.bg\\:invert{background-color:var(--invert)}'
+    }
 })
 
 // test.concurrent('default mode with host modes', () => {

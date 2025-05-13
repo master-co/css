@@ -16,9 +16,9 @@ it.concurrent('customizes fonts', () => {
         mono: css.variables.get('font-family-mono'),
         serif: css.variables.get('font-family-serif')
     }).toEqual({
-        sans: { group: 'font-family', key: 'sans', name: 'font-family-sans', type: 'string', value: 'Inter,' + variables['font-family'].sans.join(',') },
-        mono: { group: 'font-family', key: 'mono', name: 'font-family-mono', type: 'string', value: 'Fira Code,' + variables['font-family'].mono.join(',') },
-        serif: { group: 'font-family', key: 'serif', name: 'font-family-serif', type: 'string', value: variables['font-family'].serif.join(',') }
+        sans: { namespace: 'font-family', group: 'font-family', key: 'sans', name: 'font-family-sans', type: 'string', value: 'Inter,' + variables['font-family'].sans.join(',') },
+        mono: { namespace: 'font-family', group: 'font-family', key: 'mono', name: 'font-family-mono', type: 'string', value: 'Fira Code,' + variables['font-family'].mono.join(',') },
+        serif: { namespace: 'font-family', group: 'font-family', key: 'serif', name: 'font-family-serif', type: 'string', value: variables['font-family'].serif.join(',') }
     })
 })
 

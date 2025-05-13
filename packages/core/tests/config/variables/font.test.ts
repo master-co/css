@@ -2,7 +2,7 @@ import { it, test, expect } from 'vitest'
 import { createCSS } from '../../../src'
 
 it.concurrent('should be able to access related font variables using inherited rules', () => {
-    expect(Object.keys(createCSS().definedRules.find(({ id }) => id === 'font')?.variables || {})).toEqual([
+    expect(Array.from(createCSS().definedRules.find(({ id }) => id === 'font')?.variables?.keys() || [])).toEqual([
         'mono',
         'sans',
         'serif',

@@ -25,7 +25,7 @@ export interface SyntaxRuleDefinition {
 }
 
 export type VariableValue = number | string | false | (number | string)[]
-export type VariableDefinition = { [key in '' | `@${string}` | string]?: VariableValue | VariableDefinition } | VariableValue
+export type VariableDefinition = { [key in '' | string]?: VariableValue | VariableDefinition } | VariableValue
 export type CSSKeyframes = Record<'from' | 'to' | string, PropertiesHyphen>
 export type AnimationDefinitions = Record<string, CSSKeyframes>;
 export type SelectorDefinitions = Record<string, string>;

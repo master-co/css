@@ -406,15 +406,13 @@ export class SyntaxRule {
                 if (!isVarFunction || currentValueComponents.length) {
                     const handleVariable = (variableName: string, alpha?: string) => {
                         const globalVariableValue = this.css.variables.get(variableName)
-                        const variable = Object.prototype.hasOwnProperty.call(this.variables, variableName)
-                            ? this.variables[variableName]
-                            : globalVariableValue
+                        const variable = this.variables?.get(variableName) || globalVariableValue
                         if (variable) {
                             const name = variable.name ?? variableName
                             if (!bypassVariableNames.includes(name)) {
                                 handled = true
                                 const valueComponent: VariableValueComponent = { type: 'variable', name, variable: this.css.variables.get(name), token: currentValue }
-                                if (alpha) valueComponent.alpha = alpha
+                                if (alpha) valueComponent.alpha = Number(alpha)
                                 currentValueComponents.push(valueComponent)
                             }
                         }

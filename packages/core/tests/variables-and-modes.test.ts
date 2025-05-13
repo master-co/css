@@ -11,7 +11,7 @@ describe('mix color spaces and modes', () => {
         },
         rules,
         modeTrigger: 'class'
-    })
+    }, null)
         .layers({
             'bg:primary': {
                 theme: [
@@ -100,6 +100,28 @@ describe('multiply two alpha', () => {
         .layers({
             'bg:c': {
                 general: '.bg\\:c{background-color:rgb(0 0 0/0.25)}'
+            }
+        })
+})
+
+describe('create an alias for a variable with modes', () => {
+    new CSSTester({
+        variables: { primary: '#000000', alias: '$primary' },
+        modes: {
+            light: { primary: 'oklch(0 0 0)' },
+            dark: { primary: 'hsl(0 0% 100%)' }
+        },
+        rules,
+        modeTrigger: 'class'
+    }, null)
+        .layers({
+            'bg:alias': {
+                theme: [
+                    ':root{--alias:rgb(0 0 0)}',
+                    '.light{--alias:oklch(0 0 0)}',
+                    '.dark{--alias:hsl(0 0% 100%)}'
+                ],
+                general: '.bg\\:alias{background-color:var(--alias)}'
             }
         })
 })
