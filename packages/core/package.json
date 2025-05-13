@@ -71,8 +71,8 @@
     "dependencies": {
         "@master/colors": "^2.1.1",
         "@master/normal.css": "^3.2.0",
-        "@techor/extend": "^3.2.2",
-        "csstype": "^3.1.3"
+        "csstype": "^3.1.3",
+        "json-safe-extend": "^3.2.5"
     },
     "devDependencies": {
         "shared": "workspace:^"

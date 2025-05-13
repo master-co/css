@@ -59,7 +59,7 @@
     },
     "dependencies": {
         "@master/css-runtime": "workspace:^",
-        "@techor/extend": "^3.2.2"
+        "@techor/extend": "^3.2.5"
     },
     "devDependencies": {
         "@playwright/experimental-ct-vue": "^1.49.1",

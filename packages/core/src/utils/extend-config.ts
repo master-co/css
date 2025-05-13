@@ -1,5 +1,5 @@
-import extend from '@techor/extend'
-import type { Config, AnimationDefinitions } from '../types/config'
+import extend from 'json-safe-extend'
+import type { Config } from '../types/config'
 import { Variable } from '../types/syntax'
 
 export const EXTENDED = Symbol('extended')
@@ -168,7 +168,7 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
             Object.assign(extendedConfig.functions!, functions)
         }
 
-        extendedConfig = extend({}, extendedConfig, rest) as ExtendedConfig
+        extendedConfig = extend<Config | ExtendedConfig>(extendedConfig, rest) as ExtendedConfig
     }
 
     // Clean up empty objects

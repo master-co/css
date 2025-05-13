@@ -52,7 +52,6 @@
         "shared": "workspace:^"
     },
     "dependencies": {
-        "@techor/log": "^3.2.2",
-        "explore-config": "^3.2.2"
+        "explore-config": "^3.2.5"
     }
 }

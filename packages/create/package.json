@@ -38,8 +38,8 @@
     },
     "dependencies": {
         "@master/css": "2.0.0-rc.38",
-        "@techor/fs": "^3.2.2",
-        "@techor/log": "^3.2.2",
+        "@techor/fs": "^3.2.5",
+        "@techor/log": "^3.2.5",
         "commander": "^12.0.0",
         "detect-package-manager": "^3.0.2",
         "giget": "^1.2.3",
