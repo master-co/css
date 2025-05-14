@@ -15,7 +15,7 @@ export interface SyntaxRuleDefinition {
     aliasGroups?: string[]
     values?: string[]
     kind?: 'number' | 'color' | 'image'
-    variables?: string[]
+    namespaces?: string[]
     separators?: string[]
     unit?: any
     declarations?: PropertiesHyphen | Record<string, string | undefined | (string | undefined)[]> | (keyof PropertiesHyphen)[]

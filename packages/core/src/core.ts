@@ -160,14 +160,14 @@ export default class MasterCSS {
                     kind,
                     sign,
                     key: originalKey,
-                    variables: ruleVariableGroups,
+                    namespaces,
                 } = def
 
                 const keys: string[] = []
                 let key = originalKey
 
                 // Helper: resolve variable groups
-                const addResolvedVariables = (namespace: string) => {
+                const addNamespace = (namespace: string) => {
                     this.variables.forEach(v => {
                         if (v.namespace === namespace) {
                             if (syntax.variables) {
@@ -180,12 +180,12 @@ export default class MasterCSS {
                 }
 
                 // Rule-defined variable groups
-                if (ruleVariableGroups) {
-                    ruleVariableGroups.forEach(addResolvedVariables)
+                if (namespaces) {
+                    namespaces.forEach(addNamespace)
                 }
 
                 // Auto variable binding
-                addResolvedVariables(id)
+                addNamespace(id)
 
                 if (id.endsWith('()')) {
                     if (!key) def.key = key = id

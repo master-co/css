@@ -39,7 +39,7 @@ const rules = {
     font: {
         subkey: 'f',
         type: SyntaxRuleType.NativeShorthand,
-        variables: [
+        namespaces: [
             'font-family',
             'font-variant',
             'font-weight',
@@ -55,32 +55,32 @@ const rules = {
     color: {
         key: 'fg',
         type: SyntaxRuleType.Native,
-        variables: ['text']
+        namespaces: ['text']
     },
     // margin
     'margin-left': {
         key: 'ml',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'margin-right': {
         key: 'mr',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'margin-top': {
         key: 'mt',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'margin-bottom': {
         key: 'mb',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'margin-x': {
         key: 'mx',
@@ -88,103 +88,103 @@ const rules = {
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['margin-left', 'margin-right'],
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'margin-y': {
         key: 'my',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['margin-top', 'margin-bottom'],
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     margin: {
         key: 'm',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     // margin inline
     'margin-inline-start': {
         key: 'mis',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'margin-inline-end': {
         key: 'mie',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'margin-inline': {
         key: 'mi',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     // padding
     'padding-left': {
         key: 'pl',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'padding-right': {
         key: 'pr',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'padding-top': {
         key: 'pt',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'padding-bottom': {
         key: 'pb',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'padding-x': {
         key: 'px',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['padding-left', 'padding-right'],
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'padding-y': {
         key: 'py',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['padding-top', 'padding-bottom'],
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     padding: {
         key: 'p',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     // padding inline
     'padding-inline-start': {
         key: 'pis',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'padding-inline-end': {
         key: 'pie',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'padding-inline': {
         key: 'pi',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     // flex
     'flex-basis': {
@@ -316,7 +316,7 @@ const rules = {
         aliasGroups: ['text-decoration'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        variables: ['text']
+        namespaces: ['text']
     },
     'text-decoration-style': {
         aliasGroups: ['text-decoration'],
@@ -340,14 +340,14 @@ const rules = {
         values: ['underline', 'overline', 'line-through'],
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
-        variables: ['text'],
+        namespaces: ['text'],
         declarations: ['-webkit-text-decoration', 'text-decoration']
     },
     'text-underline-offset': {
         aliasGroups: ['text-underline'],
         unit: 'rem',
         type: SyntaxRuleType.Native,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'text-underline-position': {
         aliasGroups: ['text-underline'],
@@ -401,27 +401,27 @@ const rules = {
     top: {
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     bottom: {
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     left: {
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     right: {
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     inset: {
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'max-height': {
         key: 'max-h',
@@ -521,7 +521,7 @@ const rules = {
         aliasGroups: ['text', 't'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        variables: ['text'],
+        namespaces: ['text'],
         declarations: ['-webkit-text-fill-color']
     },
     'text-stroke-width': {
@@ -582,32 +582,32 @@ const rules = {
     },
     transform: {
         type: SyntaxRuleType.Native,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'translate()': {
         declarations: ['transform'],
         unit: 'rem',
-        variables: ['spacing'],
+        namespaces: ['spacing'],
     },
     'translateX()': {
         declarations: ['transform'],
         unit: 'rem',
-        variables: ['spacing'],
+        namespaces: ['spacing'],
     },
     'translateY()': {
         declarations: ['transform'],
         unit: 'rem',
-        variables: ['spacing'],
+        namespaces: ['spacing'],
     },
     'translateZ()': {
         declarations: ['transform'],
         unit: 'rem',
-        variables: ['spacing'],
+        namespaces: ['spacing'],
     },
     'translate3d()': {
         declarations: ['transform'],
         unit: 'rem',
-        variables: ['spacing'],
+        namespaces: ['spacing'],
     },
     'scale()': {
         declarations: ['transform']
@@ -718,52 +718,52 @@ const rules = {
     'border-spacing': {
         unit: 'rem',
         type: SyntaxRuleType.Native,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     // border color
     'border-top-color': {
         aliasGroups: ['bt', 'border-top'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        variables: ['frame'],
+        namespaces: ['frame'],
     },
     'border-bottom-color': {
         aliasGroups: ['bb', 'border-bottom'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        variables: ['frame'],
+        namespaces: ['frame'],
     },
     'border-left-color': {
         aliasGroups: ['bl', 'border-left'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        variables: ['frame'],
+        namespaces: ['frame'],
     },
     'border-right-color': {
         aliasGroups: ['br', 'border-right'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        variables: ['frame'],
+        namespaces: ['frame'],
     },
     'border-x-color': {
         aliasGroups: ['bx', 'border-x'],
         kind: 'color',
         type: SyntaxRuleType.Shorthand,
-        variables: ['frame'],
+        namespaces: ['frame'],
         declarations: ['border-left-color', 'border-right-color']
     },
     'border-y-color': {
         aliasGroups: ['by', 'border-y'],
         kind: 'color',
         type: SyntaxRuleType.Shorthand,
-        variables: ['frame'],
+        namespaces: ['frame'],
         declarations: ['border-top-color', 'border-bottom-color']
     },
     'border-color': {
         aliasGroups: ['b', 'border'],
         kind: 'color',
         type: SyntaxRuleType.NativeShorthand,
-        variables: ['frame'],
+        namespaces: ['frame'],
     },
     // border radius
     'border-top-left-radius': {
@@ -935,35 +935,35 @@ const rules = {
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        variables: ['frame'],
+        namespaces: ['frame'],
     },
     'border-bottom': {
         key: 'bb',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        variables: ['frame'],
+        namespaces: ['frame'],
     },
     'border-left': {
         key: 'bl',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        variables: ['frame'],
+        namespaces: ['frame'],
     },
     'border-right': {
         key: 'br',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        variables: ['frame'],
+        namespaces: ['frame'],
     },
     'border-x': {
         key: 'bx',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         transformer: 'auto-fill-solid',
-        variables: ['frame'],
+        namespaces: ['frame'],
         declarations: ['border-left', 'border-right']
     },
     'border-y': {
@@ -971,7 +971,7 @@ const rules = {
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         transformer: 'auto-fill-solid',
-        variables: ['frame'],
+        namespaces: ['frame'],
         declarations: ['border-top', 'border-bottom']
     },
     border: {
@@ -979,7 +979,7 @@ const rules = {
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         transformer: 'auto-fill-solid',
-        variables: ['frame'],
+        namespaces: ['frame'],
     },
     'background-attachment': {
         aliasGroups: ['bg'],
@@ -1086,7 +1086,7 @@ const rules = {
     },
     'stroke-dashoffset': {
         type: SyntaxRuleType.Native,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'stroke-width': {
         aliasGroups: ['stroke'],
@@ -1098,19 +1098,19 @@ const rules = {
     },
     x: {
         type: SyntaxRuleType.Native,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     y: {
         type: SyntaxRuleType.Native,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     cx: {
         type: SyntaxRuleType.Native,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     cy: {
         type: SyntaxRuleType.Native,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     rx: {
         type: SyntaxRuleType.Native
@@ -1204,18 +1204,18 @@ const rules = {
         key: 'gap-x',
         unit: 'rem',
         type: SyntaxRuleType.Native,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'row-gap': {
         key: 'gap-y',
         unit: 'rem',
         type: SyntaxRuleType.Native,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     gap: {
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     order: {
         key: 'o',
@@ -1293,12 +1293,12 @@ const rules = {
         aliasGroups: ['outline'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        variables: ['frame'],
+        namespaces: ['frame'],
     },
     'outline-offset': {
         unit: 'rem',
         type: SyntaxRuleType.Native,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'outline-style': {
         aliasGroups: ['outline'],
@@ -1315,7 +1315,7 @@ const rules = {
     outline: {
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
-        variables: [
+        namespaces: [
             'outline-width',
             'outline-style',
             'outline-offset',
@@ -1334,7 +1334,7 @@ const rules = {
     'caret-color': {
         key: 'caret',
         type: SyntaxRuleType.Native,
-        variables: ['text']
+        namespaces: ['text']
     },
     'scroll-behavior': {
         type: SyntaxRuleType.Native
@@ -1344,90 +1344,90 @@ const rules = {
         key: 'scroll-ml',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'scroll-margin-right': {
         key: 'scroll-mr',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'scroll-margin-top': {
         key: 'scroll-mt',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'scroll-margin-bottom': {
         key: 'scroll-mb',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'scroll-margin-x': {
         key: 'scroll-mx',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['scroll-margin-left', 'scroll-margin-right'],
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'scroll-margin-y': {
         key: 'scroll-my',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['scroll-margin-top', 'scroll-margin-bottom'],
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'scroll-margin': {
         key: 'scroll-m',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     // scroll padding
     'scroll-padding-left': {
         key: 'scroll-pl',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'scroll-padding-right': {
         key: 'scroll-pr',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'scroll-padding-top': {
         key: 'scroll-pt',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'scroll-padding-bottom': {
         key: 'scroll-pb',
         type: SyntaxRuleType.Native,
         unit: 'rem',
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'scroll-padding-x': {
         key: 'scroll-px',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['scroll-padding-left', 'scroll-padding-right'],
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'scroll-padding-y': {
         key: 'scroll-py',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['scroll-padding-top', 'scroll-padding-bottom'],
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'scroll-padding': {
         key: 'scroll-p',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     // scroll snap
     'scroll-snap-align': {
@@ -1463,7 +1463,7 @@ const rules = {
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native,
-        variables: ['spacing']
+        namespaces: ['spacing']
     },
     'shape-image-threshold': {
         type: SyntaxRuleType.Native
