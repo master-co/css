@@ -2,84 +2,62 @@ import extend from 'json-safe-extend'
 import type { Config } from '../types/config'
 import { Variable } from '../types/syntax'
 
-export const EXTENDED = Symbol('extended')
-
-// Flatten with conditional metadata for variables/modes
-function flattenVariables(
-    obj: Record<string, any> & { [EXTENDED]?: boolean },
+function flattenObject(
+    obj: Record<string, any>,
     name: string[] = [],
-    result: Record<string, any> & { [EXTENDED]: boolean } = {
-        [EXTENDED]: true
-    }
+    result: Record<string, any> = {},
+    withMeta = false
 ) {
-    if (obj[EXTENDED]) return obj
     for (const [key, value] of Object.entries(obj)) {
         const nextName = [...name, key].filter(Boolean)
-        const isValueArray = Array.isArray(value)
-        if (value && typeof value === 'object' && !isValueArray) {
-            // Handle {'': value} to mean "self"
-            if (Object.keys(value).length === 1 && '' in value) {
-                const flatKey = nextName.join('-')
+        const flatKey = nextName.join('-')
+
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+            if (withMeta && Object.keys(value).length === 1 && '' in value) {
                 result[flatKey] = {
                     key,
                     name: flatKey,
                     value: value['']
                 }
             } else {
-                flattenVariables(value, nextName, result)
+                flattenObject(value, nextName, result, withMeta)
             }
         } else {
-            const flatKey = nextName.join('-')
-            const groups = nextName.slice(0, -1).filter(Boolean)
-            const newValue = isValueArray ? value.join(',') : value
-            result[flatKey] =
-                groups.length === 0
-                    ? {
-                        key,
-                        name: flatKey,
-                        value: newValue
-                    }
-                    : {
-                        group: groups.join('.'),
-                        namespace: nextName[0],
-                        name: flatKey,
-                        value: newValue,
-                        key
-                    }
+            const newValue = Array.isArray(value) ? value.join(',') : value
+            if (withMeta && nextName.length > 1) {
+                result[flatKey] = {
+                    group: nextName.slice(0, -1).filter(Boolean).join('.'),
+                    namespace: nextName[0],
+                    name: flatKey,
+                    value: newValue,
+                    key
+                }
+            } else if (withMeta) {
+                result[flatKey] = {
+                    key,
+                    name: flatKey,
+                    value: newValue
+                }
+            } else {
+                result[flatKey] = newValue
+            }
         }
     }
-    return result
-}
 
-// Flatten plain object to flat key-value pairs (no metadata)
-function flattenPlainValues(
-    obj: Record<string, any> & { [EXTENDED]?: boolean },
-    name: string[] = [],
-    result: Record<string, any> & { [EXTENDED]: boolean } = {
-        [EXTENDED]: true
-    }
-) {
-    if (obj[EXTENDED]) return obj
-    for (const [key, value] of Object.entries(obj)) {
-        const nextName = [...name, key].filter(Boolean)
-        const flatKey = nextName.join('-')
-        if (value && typeof value === 'object' && !Array.isArray(value)) {
-            flattenPlainValues(value, nextName, result)
-        } else {
-            result[flatKey] = value
-        }
-    }
     return result
 }
 
 export declare type ExtendedConfig = {
-    [EXTENDED]: boolean
+    __extended?: boolean
     variables?: Record<string, Variable>
     modes?: Record<string, Record<string, Variable>>
 } & Omit<Config, 'variables' | 'modes'>
 
 export default function extendConfig(...configs: (Config | undefined)[]) {
-    const collectConfigs = (config: Config | ExtendedConfig | undefined, result: (Config | ExtendedConfig)[] = []): (Config | ExtendedConfig)[] => {
+    const collectConfigs = (
+        config: Config | ExtendedConfig | undefined,
+        result: (Config | ExtendedConfig)[] = []
+    ): (Config | ExtendedConfig)[] => {
         if (!config) return result
         if (config.extends?.length) {
             for (const ext of config.extends) {
@@ -92,97 +70,94 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
         return result
     }
 
-    const allConfigs = configs.reduce<(Config | ExtendedConfig)[]>((acc, config) => collectConfigs(config, acc), [])
+    const allConfigs = configs.reduce<(Config | ExtendedConfig)[]>(
+        (acc, config) => collectConfigs(config, acc),
+        []
+    )
 
-    let extendedConfig: ExtendedConfig = {
-        animations: {},
-        components: {},
-        at: {},
-        variables: {},
-        modes: {},
-        rules: {},
-        utilities: {},
-        screens: {},
-        selectors: {},
-        functions: {},
-        [EXTENDED]: false
-    }
+    let extendedConfig: ExtendedConfig = { __extended: true }
 
-    for (const { variables, modes, components, animations, at, rules, utilities, selectors, screens, functions, ...rest } of allConfigs) {
-        // Flatten variables
+    for (const {
+        variables,
+        modes,
+        components,
+        animations,
+        at,
+        rules,
+        utilities,
+        selectors,
+        functions,
+        ...rest
+    } of allConfigs) {
+        const isExtended = '__extended' in rest
+        if (isExtended) delete rest.__extended
+
+        // variables
         if (variables) {
-            const flattened = flattenVariables(variables)
-            Object.assign(extendedConfig.variables!, flattened)
+            extendedConfig.variables ??= {}
+            const flattened = isExtended ? { ...variables } : flattenObject(variables, [], {}, true)
+            Object.assign(extendedConfig.variables, flattened)
         }
 
-        // Flatten modes (from 2nd layer only)
+        // modes
         if (modes) {
+            extendedConfig.modes ??= {}
             for (const [modeName, modeVars] of Object.entries(modes)) {
-                const flattenedMode = flattenVariables(modeVars)
-                if (!extendedConfig.modes![modeName]) {
-                    extendedConfig.modes![modeName] = {}
+                const flattenedMode = isExtended ? { ...modeVars } : flattenObject(modeVars, [], {}, true)
+                extendedConfig.modes[modeName] = {
+                    ...extendedConfig.modes[modeName],
+                    ...flattenedMode
                 }
-                Object.assign(extendedConfig.modes![modeName], flattenedMode)
             }
         }
 
-        // Flatten components (flat key → value only)
+        // components
         if (components) {
-            const flattened = flattenPlainValues(components)
-            Object.assign(extendedConfig.components!, flattened)
+            extendedConfig.components ??= {}
+            const flattened = isExtended ? { ...components } : flattenObject(components)
+            Object.assign(extendedConfig.components, flattened)
         }
 
-        // Flatten at (flat key → value only)
+        // at
         if (at) {
-            const flattened = flattenPlainValues(at)
-            Object.assign(extendedConfig.at!, flattened)
+            extendedConfig.at ??= {}
+            const flattened = isExtended ? { ...at } : flattenObject(at)
+            Object.assign(extendedConfig.at, flattened)
         }
 
-        // Merge animations
+        // animations
         if (animations) {
-            Object.assign(extendedConfig.animations!, animations)
+            extendedConfig.animations ??= {}
+            Object.assign(extendedConfig.animations, animations)
         }
 
-        // Merge rules
+        // rules
         if (rules) {
-            Object.assign(extendedConfig.rules!, rules)
+            extendedConfig.rules ??= {}
+            Object.assign(extendedConfig.rules, rules)
         }
 
-        // Merge utilities
+        // utilities
         if (utilities) {
-            Object.assign(extendedConfig.utilities!, utilities)
+            extendedConfig.utilities ??= {}
+            Object.assign(extendedConfig.utilities, utilities)
         }
 
-        // Merge screens
-        if (screens) {
-            Object.assign(extendedConfig.screens!, screens)
-        }
-
-        // Merge selectors
+        // selectors
         if (selectors) {
-            Object.assign(extendedConfig.selectors!, selectors)
+            extendedConfig.selectors ??= {}
+            Object.assign(extendedConfig.selectors, selectors)
         }
 
-        // Merge functions
+        // functions
         if (functions) {
-            Object.assign(extendedConfig.functions!, functions)
+            extendedConfig.functions ??= {}
+            Object.assign(extendedConfig.functions, functions)
         }
 
-        extendedConfig = extend<Config | ExtendedConfig>(extendedConfig, rest) as ExtendedConfig
+        // merge the rest (non-structured fields)
+        extendedConfig = extend({}, extendedConfig, rest) as ExtendedConfig
     }
-
-    // Clean up empty objects
-    for (const key in extendedConfig) {
-        const typedKey = key as keyof Config
-        if (
-            typeof extendedConfig[typedKey] === 'object' &&
-            Object.keys(extendedConfig[typedKey] as object).length === 0
-        ) {
-            delete extendedConfig[typedKey]
-        }
-    }
-
-    extendedConfig[EXTENDED] = true
 
     return extendedConfig
 }
