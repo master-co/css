@@ -27,6 +27,7 @@ const textTokens = Object.freeze({
 
 export const buttonConfig: Config = {
     variables: {
+        white: 'oklch(100% 0 none)',
         [buttonTokens.primary.slice(2, -1)]: colorTokens.blue700,
         [buttonTokens.primaryHover.slice(2, -1)]: colorTokens.blue900,
         [buttonTokens.primaryDisabled.slice(2, -1)]: colorTokens.blue200,
@@ -62,113 +63,49 @@ export const textConfig: Config = {
     }
 }
 
-const config = extendConfig(colorConfig, textConfig, buttonConfig)
+const extendedConfig = extendConfig(colorConfig, textConfig, buttonConfig)
 
 new CSSTester({
-    ...config,
+    ...extendedConfig,
     rules
 }, null).layers({
     'bg:button-primary': {
         general: '.bg\\:button-primary{background-color:rgb(34 66 163)}'
-    }
+    },
+    'bg:button-primary-hover': {
+        general: '.bg\\:button-primary-hover{background-color:rgb(21 37 89)}'
+    },
+    'bg:button-primary-disabled': {
+        general: '.bg\\:button-primary-disabled{background-color:rgb(205 224 247)}'
+    },
+    'bg:button-disabled': {
+        general: '.bg\\:button-disabled{background-color:rgb(233 238 248)}'
+    },
+    'bg:button-background-hover': {
+        general: '.bg\\:button-background-hover{background:button-background-hover}'
+    },
+    'bg:blue200': {
+        general: '.bg\\:blue200{background-color:rgb(205 224 247)}'
+    },
+    'bg:blue700': {
+        general: '.bg\\:blue700{background-color:rgb(34 66 163)}'
+    },
+    'bg:blue900': {
+        general: '.bg\\:blue900{background-color:rgb(21 37 89)}'
+    },
+    'bg:gray200': {
+        general: '.bg\\:gray200{background-color:rgb(233 238 248)}'
+    },
+    'bg:gray500': {
+        general: '.bg\\:gray500{background-color:rgb(146 151 161)}'
+    },
+    'bg:text-disabled': {
+        general: '.bg\\:text-disabled{background-color:rgb(146 151 161)}'
+    },
+    'bg:text-on-color': {
+        general: '.bg\\:text-on-color{background-color:oklch(100% 0 none)}'
+    },
+    'btn-primary': {
+        components: '.btn-primary{background-color:rgb(34 66 163)}.btn-primary{-webkit-text-fill-color:oklch(100% 0 none)}.btn-primary:hover{background-color:rgb(21 37 89)}.btn-primary:disabled{background-color:rgb(205 224 247)}.btn-primary:disabled{-webkit-text-fill-color:rgb(146 151 161)}'
+    },
 })
-
-//     expectLayers(
-//         {
-//             general: '.bg\\:button-primary-hover{background-color:rgb(21 37 89)}'
-//         },
-//         'bg:button-primary-hover',
-//         config
-//     )
-
-//     expectLayers(
-//         {
-//             general: '.bg\\:button-primary-disabled{background-color:rgb(205 224 247)}'
-//         },
-//         'bg:button-primary-disabled',
-//         config
-//     )
-
-//     expectLayers(
-//         {
-//             general: '.bg\\:button-disabled{background-color:rgb(233 238 248)}'
-//         },
-//         'bg:button-disabled',
-//         config
-//     )
-
-//     expectLayers(
-//         {
-//             general: '.bg\\:button-background-hover{background:button-background-hover}'
-//         },
-//         'bg:button-background-hover',
-//         config
-//     )
-
-//     expectLayers(
-//         {
-//             components: '.btn-primary{background-color:rgb(34 66 163)}.btn-primary{-webkit-text-fill-color:oklch(100% 0 none)}.btn-primary:hover{background-color:rgb(21 37 89)}.btn-primary:disabled{background-color:rgb(205 224 247)}.btn-primary:disabled{-webkit-text-fill-color:rgb(146 151 161)}'
-//         },
-//         'btn-primary',
-//         config
-//     )
-// })
-
-// test.concurrent('color config', () => {
-//     expectLayers(
-//         {
-//             general: '.bg\\:blue200{background-color:rgb(205 224 247)}'
-//         },
-//         'bg:blue200',
-//         config
-//     )
-
-//     expectLayers(
-//         {
-//             general: '.bg\\:blue700{background-color:rgb(34 66 163)}'
-//         },
-//         'bg:blue700',
-//         config
-//     )
-
-//     expectLayers(
-//         {
-//             general: '.bg\\:blue900{background-color:rgb(21 37 89)}'
-//         },
-//         'bg:blue900',
-//         config
-//     )
-
-//     expectLayers(
-//         {
-//             general: '.bg\\:gray200{background-color:rgb(233 238 248)}'
-//         },
-//         'bg:gray200',
-//         config
-//     )
-
-//     expectLayers(
-//         {
-//             general: '.bg\\:gray500{background-color:rgb(146 151 161)}'
-//         },
-//         'bg:gray500',
-//         config
-//     )
-// })
-
-// test.concurrent('text config', () => {
-//     expectLayers(
-//         {
-//             general: '.bg\\:text-disabled{background-color:rgb(146 151 161)}'
-//         },
-//         'bg:text-disabled',
-//         config
-//     )
-
-//     expectLayers(
-//         {
-//             general: '.bg\\:text-on-color{background-color:oklch(100% 0 none)}'
-//         },
-//         'bg:text-on-color',
-//         config
-//     )

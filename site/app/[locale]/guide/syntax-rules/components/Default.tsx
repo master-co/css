@@ -10,7 +10,7 @@ const Default = () =>
                     <th className="sticky-th w:0">Name</th>
                     <th className='sticky-th'>type</th>
                     <th className='sticky-th'>Unit</th>
-                    <th className='sticky-th'>Variables</th>
+                    <th className='sticky-th'>Variable Namespaces</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,8 +33,8 @@ const Default = () =>
                                             : <span className='fg:lightest'>-</span>}
                                     </td>
                                     <td>
-                                        {rule.variables
-                                            ? <InlineCode lang="ts" beautify>{JSON.stringify(rule.variables)}</InlineCode>
+                                        {rule.namespaces
+                                            ? <InlineCode>{rule.namespaces.join(', ')}</InlineCode>
                                             : <span className='fg:lightest'>-</span>}
                                     </td>
                                 </tr>
