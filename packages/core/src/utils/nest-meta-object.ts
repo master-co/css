@@ -1,29 +1,28 @@
 export default function nestMetaObject(
-    obj: Record<
+    flat: Record<
         string,
         { name: string; value: any; key: string; group?: string; namespace?: string }
     >
 ): Record<string, any> {
-    const result: Record<string, any> = {}
+    const nested: Record<string, any> = {}
 
-    for (const { key, value, group } of Object.values(obj)) {
-        const path = [...(group ? group.split('.') : []), key]
-        let current = result
+    for (const entry of Object.values(flat)) {
+        const { group, key, value } = entry
+        const path = group ? group.split('.') : []
+        let current = nested as any
 
-        for (let i = 0; i < path.length; i++) {
-            const part = path[i]
-            const isLast = i === path.length - 1
-
-            if (isLast) {
-                current[part] = value
-            } else {
-                if (!(part in current)) {
-                    current[part] = {}
-                }
-                current = current[part]
+        for (const segment of path) {
+            if (!(segment in current)) {
+                current[segment] = {}
+            } else if (typeof current[segment] !== 'object' || current[segment] === null) {
+                // Wrap primitive into object: { '': value }
+                current[segment] = { '': current[segment] }
             }
+            current = current[segment]
         }
+
+        current[key] = value
     }
 
-    return result
+    return nested
 }

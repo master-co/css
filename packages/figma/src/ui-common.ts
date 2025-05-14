@@ -17,7 +17,7 @@ export const states = reactive({
     // export variables
     selectedVarCollection: null,
     selectedVarDefaultMode: null,
-    selectedVarColorSpace: 'hex',
+    selectedVarColorSpace: 'oklch',
     varOutputIndent: 4,
     // import variables
     DEFAULT_INPUTED_VAR_JSON_STR,

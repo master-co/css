@@ -1,4 +1,5 @@
 import { generateAt, parseAt, screens } from '@master/css'
+import css from '~/internal/common/css'
 import InlineCode from '~/internal/components/InlineCode'
 
 export default () => {
@@ -21,7 +22,7 @@ export default () => {
                                     <td className="white-space:nowrap"><code>@{name}</code></td>
                                     <td><InlineCode>{`${value / 16}rem`}</InlineCode></td>
                                     <td><InlineCode>{`(${value}px)`}</InlineCode></td>
-                                    <td><InlineCode lang="css">{generateAt(parseAt('@' + name))}</InlineCode></td>
+                                    <td><InlineCode lang="css">{generateAt(parseAt('@' + name, css))}</InlineCode></td>
                                 </tr>
                             ))
                     }

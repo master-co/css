@@ -1,4 +1,3 @@
-// @ts-expect-error es
 import { createApp } from 'petite-vue'
 import post from './utils/post'
 import { states } from './ui-common'

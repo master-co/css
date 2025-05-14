@@ -1,6 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import equalSelectors from '../../src/utils/equal-selectors'
 import { parseSelector } from '../../src'
+import css from '../css'
 
 const equivalentCases = {
     ':hover': ':hover',
@@ -16,12 +17,12 @@ const notEquivalentCases = {
 
 describe('equivalent', () => {
     test.concurrent.each(Object.entries(equivalentCases))('%s', (a, b) => {
-        expect(equalSelectors(parseSelector(a), parseSelector(b))).toBeTruthy()
+        expect(equalSelectors(parseSelector(a, css), parseSelector(b, css))).toBeTruthy()
     })
 })
 
 describe('not equivalent', () => {
     test.concurrent.each(Object.entries(notEquivalentCases))('%s', (a, b) => {
-        expect(equalSelectors(parseSelector(a), parseSelector(b))).toBeFalsy()
+        expect(equalSelectors(parseSelector(a, css), parseSelector(b, css))).toBeFalsy()
     })
 })

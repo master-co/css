@@ -7,7 +7,7 @@
     "scripts": {
         "build": "techor build && vite build",
         "dev:plugin": "techor build --watch",
-        "dev:ui": "pnpm build --watch",
+        "dev:ui": "vite build --watch",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
         "test": "vitest"
