@@ -1,5 +1,5 @@
 ## Using colors [sr-only]
-Master CSS uses [variables](/guide/variables) to define color tokens, allowing you to access a single source of truth for colors directly within your template markup.
+Master CSS provides a vibrant and precisely designed P3-compatible color palette that works seamlessly across brands or can be tailored to your unique identity.
 
 ### Default color palette [sr-only]
 <ColorPalette />
@@ -164,70 +164,30 @@ In addition to the [default color palette](#default-color-palette), you can also
 | <Bg className="bg:invert" />`invert`              | inverted color of the background                                          |
 
 ### Primitive colors
-| Token                                             | Descriptions                                                                   |
-|---------------------------------------------------|----------------------------------------------------------------------------|
-| <Bg className="bg:gray" />`gray`                  | neutral, subtle, muted                                                     |
-| <Bg className="bg:slate" />`slate`                | cool, calm, sophisticated                                                  |
-| <Bg className="bg:brown" />`brown`                | earthy, warm, rustic                                                       |
-| <Bg className="bg:orange" />`orange`              | vibrant, energetic, lively                                                 |
-| <Bg className="bg:amber" />`amber`                | warm, glowing, radiant                                                     |
-| <Bg className="bg:yellow" />`yellow`              | cheerful, sunny, bright                                                    |
-| <Bg className="bg:lime" />`lime`                  | fresh, lively, zesty                                                       |
-| <Bg className="bg:green" />`green`                | nature, growth, harmony                                                    |
-| <Bg className="bg:beryl" />`beryl`                | calm, soothing, tranquil                                                   |
-| <Bg className="bg:teal" />`teal`                  | sophisticated, elegant, refined                                            |
-| <Bg className="bg:cyan" />`cyan`                  | modern, futuristic, technological                                          |
-| <Bg className="bg:sky" />`sky`                    | peaceful, serene, tranquil                                                 |
-| <Bg className="bg:blue" />`blue`                  | calm, trustworthy, reliable                                                |
-| <Bg className="bg:indigo" />`indigo`              | mysterious, deep, spiritual                                                |
-| <Bg className="bg:violet" />`violet`              | creative, imaginative, magical                                             |
-| <Bg className="bg:purple" />`purple`              | royal, luxurious, majestic                                                 |
-| <Bg className="bg:fuchsia" />`fuchsia`            | vibrant, bold, playful                                                     |
-| <Bg className="bg:pink" />`pink`                  | romantic, delicate                                                         |
-| <Bg className="bg:crimson" />`crimson`            | passionate, intense, powerful                                              |
-| <Bg className="bg:red" />`red`                    | bold, energetic, attention-grabbing                                        |
-| <small>-> Active</small>                                                                                            |
-| <Bg className="bg:gray-active" />`gray-active`             | pressed, active, outline                                                           |
-| <Bg className="bg:slate-active" />`slate-active`           | pressed, active, outline                                                           |
-| <Bg className="bg:brown-active" />`brown-active`           | pressed, active, outline                                                           |
-| <Bg className="bg:orange-active" />`orange-active`         | pressed, active, outline                                                           |
-| <Bg className="bg:amber-active" />`amber-active`           | pressed, active, outline                                                           |
-| <Bg className="bg:yellow-active" />`yellow-active`         | pressed, active, outline                                                           |
-| <Bg className="bg:lime-active" />`lime-active`             | pressed, active, outline                                                           |
-| <Bg className="bg:green-active" />`green-active`           | pressed, active, outline                                                           |
-| <Bg className="bg:beryl-active" />`beryl-active`           | pressed, active, outline                                                           |
-| <Bg className="bg:teal-active" />`teal-active`             | pressed, active, outline                                                           |
-| <Bg className="bg:cyan-active" />`cyan-active`             | pressed, active, outline                                                           |
-| <Bg className="bg:sky-active" />`sky-active`               | pressed, active, outline                                                           |
-| <Bg className="bg:blue-active" />`blue-active`             | pressed, active, outline                                                           |
-| <Bg className="bg:indigo-active" />`indigo-active`         | pressed, active, outline                                                           |
-| <Bg className="bg:violet-active" />`violet-active`         | pressed, active, outline                                                           |
-| <Bg className="bg:purple-active" />`purple-active`         | pressed, active, outline                                                           |
-| <Bg className="bg:fuchsia-active" />`fuchsia-active`       | pressed, active, outline                                                           |
-| <Bg className="bg:pink-active" />`pink-active`             | pressed, active, outline                                                           |
-| <Bg className="bg:crimson-active" />`crimson-active`       | pressed, active, outline                                                           |
-| <Bg className="bg:red-active" />`red-active`               | pressed, active, outline                                                           |
-| <small>-> Text</small>                                                                                            |
-| <Aa className="fg:gray-text" />`gray-text`             | text on primitive color                                                   |
-| <Aa className="fg:slate-text" />`slate-text`           | text on primitive color                                                   |
-| <Aa className="fg:brown-text" />`brown-text`           | text on primitive color                                                   |
-| <Aa className="fg:orange-text" />`orange-text`         | text on primitive color                                                   |
-| <Aa className="fg:amber-text" />`amber-text`           | text on primitive color                                                   |
-| <Aa className="fg:yellow-text" />`yellow-text`         | text on primitive color                                                   |
-| <Aa className="fg:lime-text" />`lime-text`             | text on primitive color                                                   |
-| <Aa className="fg:green-text" />`green-text`           | text on primitive color                                                   |
-| <Aa className="fg:beryl-text" />`beryl-text`           | text on primitive color                                                   |
-| <Aa className="fg:teal-text" />`teal-text`             | text on primitive color                                                   |
-| <Aa className="fg:cyan-text" />`cyan-text`             | text on primitive color                                                   |
-| <Aa className="fg:sky-text" />`sky-text`               | text on primitive color                                                   |
-| <Aa className="fg:blue-text" />`blue-text`             | text on primitive color                                                   |
-| <Aa className="fg:indigo-text" />`indigo-text`         | text on primitive color                                                   |
-| <Aa className="fg:violet-text" />`violet-text`         | text on primitive color                                                   |
-| <Aa className="fg:purple-text" />`purple-text`         | text on primitive color                                                   |
-| <Aa className="fg:fuchsia-text" />`fuchsia-text`       | text on primitive color                                                   |
-| <Aa className="fg:pink-text" />`pink-text`             | text on primitive color                                                   |
-| <Aa className="fg:crimson-text" />`crimson-text`       | text on primitive color                                                   |
-| <Aa className="fg:red-text" />`red-text`               | text on primitive color                                                   |
+| Normal                                             | Active                                           | Text on Color                                         |
+|----------------------------------------------------|--------------------------------------------------|-------------------------------------------------------|
+| <Bg className="bg:stone" />`stone`                  | <Bg className="bg:stone-active" />`stone-active`    | <Aa className="fg:stone-text" />`stone-text`            |
+| <Bg className="bg:gray" />`gray`                  | <Bg className="bg:gray-active" />`gray-active`    | <Aa className="fg:gray-text" />`gray-text`            |
+| <Bg className="bg:grey" />`grey`                | <Bg className="bg:grey-active" />`grey-active`  | <Aa className="fg:grey-text" />`grey-text`          |
+| <Bg className="bg:slate" />`slate`                | <Bg className="bg:slate-active" />`slate-active`  | <Aa className="fg:slate-text" />`slate-text`          |
+| <Bg className="bg:brown" />`brown`                | <Bg className="bg:brown-active" />`brown-active`  | <Aa className="fg:brown-text" />`brown-text`          |
+| <Bg className="bg:orange" />`orange`              | <Bg className="bg:orange-active" />`orange-active`| <Aa className="fg:orange-text" />`orange-text`        |
+| <Bg className="bg:amber" />`amber`                | <Bg className="bg:amber-active" />`amber-active`  | <Aa className="fg:amber-text" />`amber-text`          |
+| <Bg className="bg:yellow" />`yellow`              | <Bg className="bg:yellow-active" />`yellow-active`| <Aa className="fg:yellow-text" />`yellow-text`        |
+| <Bg className="bg:lime" />`lime`                  | <Bg className="bg:lime-active" />`lime-active`    | <Aa className="fg:lime-text" />`lime-text`            |
+| <Bg className="bg:green" />`green`                | <Bg className="bg:green-active" />`green-active`  | <Aa className="fg:green-text" />`green-text`          |
+| <Bg className="bg:beryl" />`beryl`                | <Bg className="bg:beryl-active" />`beryl-active`  | <Aa className="fg:beryl-text" />`beryl-text`          |
+| <Bg className="bg:teal" />`teal`                  | <Bg className="bg:teal-active" />`teal-active`    | <Aa className="fg:teal-text" />`teal-text`            |
+| <Bg className="bg:cyan" />`cyan`                  | <Bg className="bg:cyan-active" />`cyan-active`    | <Aa className="fg:cyan-text" />`cyan-text`            |
+| <Bg className="bg:sky" />`sky`                    | <Bg className="bg:sky-active" />`sky-active`      | <Aa className="fg:sky-text" />`sky-text`              |
+| <Bg className="bg:blue" />`blue`                  | <Bg className="bg:blue-active" />`blue-active`    | <Aa className="fg:blue-text" />`blue-text`            |
+| <Bg className="bg:indigo" />`indigo`              | <Bg className="bg:indigo-active" />`indigo-active`| <Aa className="fg:indigo-text" />`indigo-text`        |
+| <Bg className="bg:violet" />`violet`              | <Bg className="bg:violet-active" />`violet-active`| <Aa className="fg:violet-text" />`violet-text`        |
+| <Bg className="bg:purple" />`purple`              | <Bg className="bg:purple-active" />`purple-active`| <Aa className="fg:purple-text" />`purple-text`        |
+| <Bg className="bg:fuchsia" />`fuchsia`            | <Bg className="bg:fuchsia-active" />`fuchsia-active`| <Aa className="fg:fuchsia-text" />`fuchsia-text`      |
+| <Bg className="bg:pink" />`pink`                  | <Bg className="bg:pink-active" />`pink-active`    | <Aa className="fg:pink-text" />`pink-text`            |
+| <Bg className="bg:crimson" />`crimson`            | <Bg className="bg:crimson-active" />`crimson-active`| <Aa className="fg:crimson-text" />`crimson-text`      |
+| <Bg className="bg:red" />`red`                    | <Bg className="bg:red-active" />`red-active`      | <Aa className="fg:red-text" />`red-text`              |
 
 By default, theme modes [drive](/guide/configuration#default-mode) base color variables meticulously adjusted in light and dark modes.
 <Demo $py={0} $px={0}>
@@ -271,7 +231,9 @@ Apply the custom color:
 | <Aa className="fg:lighter" />`text-lighter`       | lighter color, icons                                                      |
 | <Aa className="fg:lightest" />`text-lightest`     | dim color, placeholder, disabled text                                     |
 | <Aa className="fg:invert" />`text-invert`         | inverted color of the foreground                                          |
+| <Aa className="fg:stone" />`text-stone`           | earthy, soft contrast, organic tone                                       |
 | <Aa className="fg:gray" />`text-gray`             | neutral, subtle, muted                                                    |
+| <Aa className="fg:grey" />`text-grey`             | neutral, subtle, muted                                                    |
 | <Aa className="fg:slate" />`text-slate`           | cool, calm, sophisticated                                                 |
 | <Aa className="fg:brown" />`text-brown`           | earthy, warm, rustic                                                      |
 | <Aa className="fg:orange" />`text-orange`         | vibrant, energetic, lively                                                |
