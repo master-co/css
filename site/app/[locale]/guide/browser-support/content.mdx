@@ -21,9 +21,12 @@ Take `backdrop-filter` as an example:
 <div class="backdrop-filter:blur(16)">…</div><!-- [!code ++] -->
 ```
 `backdrop-filter` will be automatically prefixed by the vendor and Generated CSS:
-<Class2CSS>
-{['backdrop-filter:blur(16)']}
-</Class2CSS>
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+    {['backdrop-filter:blur(16)']}
+    </Class2CSS>
+</details>
 
 ### Auto-prefixed CSS selectors
 Same goes for some CSS selectors.
@@ -32,9 +35,12 @@ Same goes for some CSS selectors.
 <div class="bg:slate-90::scrollbar">…</div><!-- [!code ++] -->
 ```
 `::scrollbar` will be replaced to `::-webkit-scrollbar`:
-<Class2CSS>
-{['bg:slate-90::scrollbar']}
-</Class2CSS>
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+    {['bg:slate-90::scrollbar']}
+    </Class2CSS>
+</details>
 
 ---
 
@@ -47,23 +53,28 @@ Assuming that a brand new CSS property of `new-property` has just been launched,
 <!-- @MARK {new-property:value} -->
 <div class="{new-property:value}">…</div>
 ```
-Generated CSS:
-```css
-.\{new-property\:value\} {
-    new-property: value
-}
-```
+<details>
+    <summary>Generated CSS</summary>
+    ```css
+    .\{new-property\:value\} {
+        new-property: value
+    }
+    ```
+</details>
+
 Once we support it, you can omit the `{}`:
 ```html
 <!-- @MARK new-property:value -->
 <div class="new-property:value">…</div>
 ```
-Generated CSS:
-```css
-.new-property\:value {
-    new-property: value
-}
-```
+<details>
+    <summary>Generated CSS</summary>
+    ```css
+    .new-property\:value {
+        new-property: value
+    }
+    ```
+</details>
 
 ### Support the new CSS selector
 Master CSS will extract the applied selector string according to the syntax structure and insert it into the corresponding CSS rule, you can enter any string after `:` or `::`.
@@ -73,9 +84,11 @@ This means that the selector can be used with the most standard syntax right awa
 <!-- @MARK :has(:checked) -->
 <form class="outline:2|red:has(:checked)">…</form>
 ```
-Generated CSS:
-<Class2CSS>
-{['outline:2|red:has(:checked)']}
-</Class2CSS>
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+    {['outline:2|red:has(:checked)']}
+    </Class2CSS>
+</details>
 
 {/* ## CSS feature query */}
