@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { SyntaxRule } from './syntax-rule'
 import hexToRgb from './utils/hex-to-rgb'
-import { flattenObject } from './utils/flatten-object'
 import extendConfig, { ExtendedConfig } from './utils/extend-config'
 import { type PropertiesHyphen } from 'csstype'
 import { Rule } from './rule'
@@ -264,16 +263,15 @@ export default class MasterCSS {
     }
 
     resolveComponents() {
-        const { components } = this.config
-        const flatComps = components ? flattenObject(components) : {}
-        const flatNames = Object.keys(flatComps)
+        const { components = {} } = this.config
+        const flatNames = Object.keys(components)
         const resolve = (name: string, currentClasses: string[] = []) => {
             const compClasses = this.components.get(name)
             if (compClasses) {
                 currentClasses.push(...compClasses)
                 return
             }
-            const className = flatComps[name]
+            const className = components[name]
             if (!className) return
             const classes = className.replace(/(?:\n\s*)+/g, ' ').trim().split(' ')
             for (const cls of classes) {
@@ -295,9 +293,8 @@ export default class MasterCSS {
     resolveSelectors() {
         const { selectors } = this.config
         if (selectors) {
-            const flatSelectors = flattenObject(selectors)
-            for (const token in flatSelectors) {
-                const value = flatSelectors[token]
+            for (const token in selectors) {
+                const value = selectors[token]
                 const nodes = parseSelector(value, this, false)
                 this.selectors.set(token, nodes)
             }
@@ -319,9 +316,8 @@ export default class MasterCSS {
         }
 
         if (at) {
-            const flatAt = flattenObject(at)
-            for (const token in flatAt) {
-                const value = flatAt[token]
+            for (const token in at) {
+                const value = at[token]
                 if (typeof value === 'number') {
                     const node = this.parseValue(value)
                     this.atRules.set(token, {

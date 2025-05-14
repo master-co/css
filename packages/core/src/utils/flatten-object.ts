@@ -1,17 +1,16 @@
-export function flattenObject(obj: Map<string, any> | Record<string, any>, parentKey = ''): Record<string, any> {
-    return Object
-        .entries(obj)
-        .reduce((acc: Record<string, any>, [key, value]) => {
-            const currentKey = parentKey
-                ? `${parentKey}${key ? '-' + key : ''}`
-                : key
-
-            if (typeof value === 'object' && !Array.isArray(value)) {
-                Object.assign(acc, flattenObject(value, currentKey))
-            } else {
-                acc[currentKey] = value
-            }
-
-            return acc
-        }, {})
+export default function flattenObject(
+    obj: Record<string, any>,
+    name: string[] = [],
+    result: Record<string, any> = {}
+): Record<string, any> {
+    for (const [key, value] of Object.entries(obj)) {
+        const nextName = [...name, key].filter(Boolean)
+        const flatKey = nextName.join('-')
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+            flattenObject(value, nextName, result)
+        } else {
+            result[flatKey] = Array.isArray(value) ? value.join(',') : value
+        }
+    }
+    return result
 }

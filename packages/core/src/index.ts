@@ -39,5 +39,8 @@ export type * from './utils/parse-selector'
 export { default as generateSelector } from './utils/generate-selector'
 export { default as getSingleAtNumberRuleNode } from './utils/get-single-at-number-rule-node'
 export { default as compareRulePriority } from './utils/compare-rule-priority'
+export { default as flattenObject } from './utils/flatten-object'
+export { default as flattenMetaObject } from './utils/flatten-meta-object'
+export { default as nestMetaObject } from './utils/nest-meta-object'
 
 export { default as MasterCSS, default } from './core'

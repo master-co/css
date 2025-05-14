@@ -1,56 +1,16 @@
 import extend from 'json-safe-extend'
 import type { Config } from '../types/config'
 import { Variable } from '../types/syntax'
-
-function flattenObject(
-    obj: Record<string, any>,
-    name: string[] = [],
-    result: Record<string, any> = {},
-    withMeta = false
-) {
-    for (const [key, value] of Object.entries(obj)) {
-        const nextName = [...name, key].filter(Boolean)
-        const flatKey = nextName.join('-')
-
-        if (value && typeof value === 'object' && !Array.isArray(value)) {
-            if (withMeta && Object.keys(value).length === 1 && '' in value) {
-                result[flatKey] = {
-                    key,
-                    name: flatKey,
-                    value: value['']
-                }
-            } else {
-                flattenObject(value, nextName, result, withMeta)
-            }
-        } else {
-            const newValue = Array.isArray(value) ? value.join(',') : value
-            if (withMeta && nextName.length > 1) {
-                result[flatKey] = {
-                    group: nextName.slice(0, -1).filter(Boolean).join('.'),
-                    namespace: nextName[0],
-                    name: flatKey,
-                    value: newValue,
-                    key
-                }
-            } else if (withMeta) {
-                result[flatKey] = {
-                    key,
-                    name: flatKey,
-                    value: newValue
-                }
-            } else {
-                result[flatKey] = newValue
-            }
-        }
-    }
-
-    return result
-}
+import flattenObject from './flatten-object'
+import flattenMetaObject from './flatten-meta-object'
 
 export declare type ExtendedConfig = {
     __extended?: boolean
     variables?: Record<string, Variable>
     modes?: Record<string, Record<string, Variable>>
+    at?: Record<string, string>
+    selectors?: Record<string, string>
+    components?: Record<string, string>
 } & Omit<Config, 'variables' | 'modes'>
 
 export default function extendConfig(...configs: (Config | undefined)[]) {
@@ -95,7 +55,7 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
         // variables
         if (variables) {
             extendedConfig.variables ??= {}
-            const flattened = isExtended ? { ...variables } : flattenObject(variables, [], {}, true)
+            const flattened = isExtended ? { ...variables } : flattenMetaObject(variables, [], {})
             Object.assign(extendedConfig.variables, flattened)
         }
 
@@ -103,7 +63,7 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
         if (modes) {
             extendedConfig.modes ??= {}
             for (const [modeName, modeVars] of Object.entries(modes)) {
-                const flattenedMode = isExtended ? { ...modeVars } : flattenObject(modeVars, [], {}, true)
+                const flattenedMode = isExtended ? { ...modeVars } : flattenMetaObject(modeVars, [], {})
                 extendedConfig.modes[modeName] = {
                     ...extendedConfig.modes[modeName],
                     ...flattenedMode
