@@ -2,7 +2,6 @@
 <Default />
 In Master CSS, variables are used to manage tokens in the design system, such as colors, font families, etc., even based on different theme modes.
 <Overview />
-Design tokens are a fundamental part of design systems and are crucial for maintaining design consistency and efficiency in projects, especially in larger organizations or projects with complex design requirements. They help bridge the gap between design and development, promoting collaboration and ensuring a cohesive user experience.
 
 ---
 
@@ -26,74 +25,7 @@ Use the variable in your markup:
 ```
 
 ### Add a spacing variable
-Add a spacing variable to reuse it in your markup.
-```js name=master.css.js
-export default {
-    variables: {
-        spacing: {
-            md: 20 /* [!code ++] */
-        }
-    }
-}
-```
-Apply the defined `spacing` variables using the inherited rules <SpacingAndSizingHeirs />.
-```html
-<!-- @MARK mt:md --><!-- @MARK p:md -->
-<div class="mt:md p:md">…</div>
-```
-
-(x) Do not use numerical values as tokens.
-```js
-export default {
-    variables: {
-        spacing: {
-            1: 4,
-            2: 8
-        }
-    }
-}
-```
-It can be confused with the [unitless values](/guide/style-declarations#unit-sensing).
+See more about [spacing and sizing](/guide/spacing-and-sizing).
 
 ### Add a color variable
 See more about [color variables](/guide/colors).
-
----
-
-## Spacing and Sizing
-The spacing and sizing system is constructed using a [base unit](/guide/configuration#baseunit) of **4 pixels**. For visual consistency, you can use the multiplier unit `x` to apply spacing with the same scale.
-<SpacingAndSizing />
-```html
-<!-- @MARK 1x -->
-<div class="m:1x">4px, margin: 0.25rem</div>
-<!-- @MARK 2x -->
-<div class="p:2x">8px, padding: 0.5rem</div>
-<!-- @MARK 8x -->
-<div class="w:8x">32px, width: 2rem</div>
-<!-- @MARK 3x -->
-<div class="gap:3x">12px, gap: 0.75rem</div>
-<!-- @MARK 6x -->
-<div class="size:6x">24px, width: 1.5rem; height: 1.5rem</div>
-```
-(x) It's no longer necessary to define the spacing scale one by one as in the traditional way.
-```js name=master.css.js
-export default {
-    variables: {
-        spacing: {
-            '1x': 4, /* [!code --] */
-            '2x': 8, /* [!code --] */
-            ..., /* [!code --] */
-            '100x': 400 /* [!code --] */
-        }
-    }
-}
-```
-For other intermediate values, `0`, `1`, `2`, ..., we tend to use unitless tokens:
-```html
-<!-- @MARK 0 -->
-<div class="m:0">0px, margin: 0rem</div>
-<!-- @MARK 1 -->
-<div class="p:1">1px, padding: 0.0625rem</div>
-<!-- @MARK 2 -->
-<div class="w:2">2px, width: 0.125rem</div>
-```

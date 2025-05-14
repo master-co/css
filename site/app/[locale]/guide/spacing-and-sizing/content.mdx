@@ -1,0 +1,105 @@
+## Overview [sr-only]
+In Master CSS, the **spacing and sizing system** is grounded on a consistent and scalable design token foundation. It uses a [base unit](/guide/configuration#baseunit) of **4 pixels**, which acts as the smallest scalable measurement across your interface.
+<SpacingAndSizing />
+By applying the multiplier unit `x`, developers can express spacing with semantic, readable values while maintaining visual harmony.
+```html
+<!-- @MARK 1x -->
+<div class="m:1x">4px, margin: 0.25rem</div>
+<!-- @MARK 2x -->
+<div class="p:2x">8px, padding: 0.5rem</div>
+<!-- @MARK 8x -->
+<div class="w:8x">32px, width: 2rem</div>
+<!-- @MARK 3x -->
+<div class="gap:3x">12px, gap: 0.75rem</div>
+<!-- @MARK 6x -->
+<div class="size:6x">24px, width: 1.5rem; height: 1.5rem</div>
+```
+
+The `x` suffix helps differentiate these scale-based tokens from unitless raw values, improving clarity and avoiding conflicts with system-generated class names.
+
+---
+
+## Unitless values
+
+In some cases, pixel-accurate control is necessary. Master CSS allows raw unitless values such as `0`, `1`, `2`, ..., for low-level precision. These bypass the base unit system:
+
+```html
+<!-- @MARK 0 -->
+<div class="m:0">0px, margin: 0rem</div>
+<!-- @MARK 1 -->
+<div class="p:1">1px, padding: 0.0625rem</div>
+<!-- @MARK 2 -->
+<div class="w:2">2px, width: 0.125rem</div>
+```
+
+(!) Avoid mixing `x`-based tokens and unitless values arbitrarily in design systems. Prefer `x` tokens for layout spacing, and unitless values only for micro-adjustments or pixel-grid alignment.
+
+---
+
+## Using custom spacing tokens
+You can extend the spacing system with **named tokens** for semantic usage:
+
+```js name=master.css.js
+export default {
+    variables: {
+        spacing: {
+            md: 20, /* used for component padding or section gaps */ /* [!code highlight] */
+        }
+    }
+}
+```
+
+Then, apply your tokens in markup:
+
+```html
+<!-- @MARK mt:md --><!-- @MARK p:md -->
+<div class="mt:md p:md">…</div>
+```
+
+These named tokens inherit the base logic defined in your config and can be reused across components for consistent spacing.
+
+<SpacingAndSizingHeirs />
+
+### Why use spacing tokens?
+
+Spacing tokens encode **design intent**. Instead of thinking in raw pixel values, developers and designers can collaborate using shared, semantic names. For example:
+
+* `md` might mean "medium gutter"
+* `xl` might mean "section margin"
+* `2x` might represent "double base unit"
+
+This abstraction helps teams maintain consistent spacing without memorizing exact pixel values.
+
+
+---
+
+## Common mistakes
+### Do not use numeric keys as tokens
+(x) Avoid defining spacing tokens with numeric keys.
+```js name=master.css.js
+export default {
+    variables: {
+        spacing: {
+            1: 4,
+            2: 8
+        }
+    }
+}
+```
+
+This approach creates ambiguity. These values can be misinterpreted as unitless pixel values, conflicting with the [unit-sensing system](/guide/style-declarations#unit-sensing), which intelligently detects whether a value should be interpreted as pixels, rems, or a variable reference.
+
+(i) Always use **descriptive keys** for clarity and scalability, such as `sm`, `md`, `lg`, etc.
+
+---
+
+## Summary
+
+Master CSS provides a unified system for defining spacing and sizing:
+
+* Use the `x` multiplier to scale from the base unit.
+* Define semantic variables like `md` for shared meanings across teams.
+* Use raw unitless values sparingly and only when precision is necessary.
+* Avoid numerical keys to prevent conflicts with the system’s value resolution logic.
+
+By adopting this structured spacing approach, your design will be more **consistent**, **maintainable**, and **collaborative**.
