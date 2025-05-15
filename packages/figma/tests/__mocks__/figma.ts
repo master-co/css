@@ -1,3 +1,4 @@
+// @ts-expect-error
 globalThis.figma = {
     variables: {
         getVariableCollectionByIdAsync: async (id: string) => ({

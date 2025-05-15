@@ -3,16 +3,22 @@
     "compilerOptions": {
         "outDir": "dist",
         "target": "es6",
+        "jsx": "react-jsx",
         "lib": [
-            "es6"
+            "ES2020",
+            "DOM",
+            "DOM.Iterable"
         ],
+        "moduleResolution": "bundler",
+        "noEmit": true,
+        "allowImportingTsExtensions": true,
         "types": [
             "@figma/plugin-typings"
         ]
     },
     "include": [
-        "src/**/*.ts",
-        "tests/**/*.test.ts",
-        "tests/**/test.ts"
-    ]
+        "src",
+        "tests"
+    ],
+    "files": [ ]
 }

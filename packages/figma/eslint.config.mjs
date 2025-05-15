@@ -4,4 +4,5 @@ import techor from 'eslint-config-techor'
 export default [
     ...common,
     techor.configs.typescript,
+    techor.configs.react
 ]

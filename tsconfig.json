@@ -38,8 +38,7 @@
             "dom.iterable"
         ],
         "types": [
-            "node",
-            "@types/jest"
+            "node"
         ],
         "esModuleInterop": true,
         "strict": true,

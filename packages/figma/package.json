@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "build": "techor build & pnpm build:ui",
-        "build:ui": "pnpm build:ui:export-variables & pnpm build:ui:import-variables",
+        "build:ui": "concurrently \"pnpm:build:ui:*\"",
         "build:ui:export-variables": "vite build --mode export-variables",
         "build:ui:import-variables": "vite build --mode import-variables",
         "dev:plugin": "techor build --watch",
@@ -27,12 +27,17 @@
         "@figma/plugin-typings": "^1.111.0",
         "@master/css": "workspace:^",
         "@master/normal.css": "^3.2.0",
+        "@types/react": "^19.1.4",
+        "@types/react-dom": "^19.1.5",
+        "@vitejs/plugin-react": "^4.4.1",
         "colorjs.io": "^0.5.2",
         "dot-prop": "^9.0.0",
         "typescript": "^5.8.3",
         "vite-plugin-singlefile": "^2.2.0"
     },
     "dependencies": {
+        "react": "^19.1.0",
+        "react-dom": "^19.1.0",
         "copy-to-clipboard": "^3.3.3",
         "petite-vue": "^0.4.1"
     }
