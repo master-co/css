@@ -1,4 +1,4 @@
-import parseColorValue from './parse-color-value'
+import parseColorValue from '../utils/parse-color-value'
 import { Config } from '@master/css'
 import { COLOR_VALUE_REGEX } from '@master/css/common'
 

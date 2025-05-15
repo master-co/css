@@ -1,6 +1,6 @@
 import { getProperty, setProperty } from 'dot-prop'
 import { Config } from '@master/css'
-import toColorValue from './to-color-value'
+import toColorValue from '../utils/to-color-value'
 import nestMetaObject from '@master/css/utils/nest-meta-object'
 import minifyExtendedConfig from '@master/css/utils/minify-extended-config'
 

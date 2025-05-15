@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import './__mocks__/figma'
 
-import getCollectionVariables from '../src/utils/get-collection-variables'
+import getCollectionVariables from '../src/features/get-collection-variables'
 
 describe('getCollectionVariables', () => {
     it('should return parsed color config', async () => {

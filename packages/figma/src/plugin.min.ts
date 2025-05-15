@@ -1,6 +1,6 @@
-import getCollectionVariables from './utils/get-collection-variables'
+import getCollectionVariables from './features/get-collection-variables'
 import getVariableCollections from './utils/get-variable-collections'
-import setCollectionVariables from './utils/set-collection-variables'
+import setCollectionVariables from './features/set-collection-variables'
 
 const uiOptions: Record<string, ShowUIOptions> = {
     'export-variables': { width: 280, height: 216, title: 'Export Variables - Master CSS' },

@@ -1,8 +1,10 @@
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './main.scss'
-import post from './utils/post'
 import notify from './utils/notify'
+import post from './utils/post'
+import postAndWaitForMessage from './utils/post-and-wait-for-message'
+import usePluginMessage from './hooks/use-plugin-message'
 
 interface VariableCollection {
     id: string
@@ -10,11 +12,11 @@ interface VariableCollection {
 }
 
 const DEFAULT_INPUTED_VAR_JSON_STR = `{
-    "variables": { "primary": "#ff0000" },
-    "modes": {
-        "light": { "primary": "#ffffff" },
-        "dark": { "primary": "#000000" }
-    }
+  "variables": { "primary": "#ff0000" },
+  "modes": {
+    "light": { "primary": "#ffffff" },
+    "dark": { "primary": "#000000" }
+  }
 }`
 
 const DEFAULT_INPUTED_VAR_COLLECTION_NAME = 'My Collection'
@@ -25,42 +27,49 @@ function ImportVariables() {
     const [inputedVarJSONStr, setInputedVarJSONStr] = useState<string | null>(null)
     const [inputedVarCollectionName, setInputedVarCollectionName] = useState('')
 
-    const importVarJSON = () => {
-        let inputedVarJSON: any
+    const [isProcessing, setIsProcessing] = useState(false)
 
-        if (inputedVarJSONStr) {
-            try {
-                inputedVarJSON = JSON.parse(inputedVarJSONStr)
-            } catch (e) {
-                console.error(e)
-                notify('Invalid JSON format', { error: true })
-                return
-            }
-        } else {
-            inputedVarJSON = JSON.parse(DEFAULT_INPUTED_VAR_JSON_STR)
+    usePluginMessage<VariableCollection[]>('get-variable-collections', (data) => {
+        setVarCollections(data)
+        if (data.length > 0) {
+            setSelectedImportVarCollection(data[0])
         }
-
-        post('set-collection-variables', {
-            collectionId: selectedImportVarCollection?.id,
-            inputedVarCollectionName: inputedVarCollectionName || DEFAULT_INPUTED_VAR_COLLECTION_NAME,
-            inputedVarJSON,
-        })
-    }
+    })
 
     useEffect(() => {
-        const handler = (event: MessageEvent<{ pluginMessage: { type: string; data: any } }>) => {
-            const { type, data } = event.data.pluginMessage
-            if (type === 'get-variable-collections') {
-                setVarCollections(data)
-                if (data.length > 0) {
-                    setSelectedImportVarCollection(data[0])
-                }
-            }
-        }
-        window.addEventListener('message', handler)
         post('get-variable-collections')
-        return () => window.removeEventListener('message', handler)
     }, [])
+
+    const importVarJSON = async () => {
+        if (isProcessing) return
+        setIsProcessing(true)
+
+        try {
+            let parsedJSON: any
+            if (inputedVarJSONStr?.trim()) {
+                try {
+                    parsedJSON = JSON.parse(inputedVarJSONStr)
+                } catch (e) {
+                    notify('Invalid JSON format', { error: true })
+                    return
+                }
+            } else {
+                parsedJSON = JSON.parse(DEFAULT_INPUTED_VAR_JSON_STR)
+            }
+
+            await postAndWaitForMessage<'ok'>('set-collection-variables', {
+                collectionId: selectedImportVarCollection?.id,
+                inputedVarCollectionName: inputedVarCollectionName || DEFAULT_INPUTED_VAR_COLLECTION_NAME,
+                inputedVarJSON: parsedJSON,
+            })
+
+            notify('Import succeeded')
+        } catch (err: any) {
+            notify(err.message || 'Import failed', { error: true })
+        } finally {
+            setIsProcessing(false)
+        }
+    }
 
     return (
         <section>
@@ -105,7 +114,9 @@ function ImportVariables() {
                     </div>
                 )}
 
-                <button onClick={importVarJSON}>Import</button>
+                <button onClick={importVarJSON} disabled={isProcessing}>
+                    {isProcessing ? 'Importing...' : 'Import'}
+                </button>
             </div>
         </section>
     )
@@ -115,5 +126,5 @@ function ImportVariables() {
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <ImportVariables />
-    </StrictMode>,
+    </StrictMode>
 )

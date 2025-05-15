@@ -1,10 +1,12 @@
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './main.scss'
-import post from './utils/post'
 import notify from './utils/notify'
 import exportFile from './utils/export-file'
 import copy from 'copy-to-clipboard'
+import post from './utils/post'
+import postAndWaitForMessage from './utils/post-and-wait-for-message'
+import usePluginMessage from './hooks/use-plugin-message'
 
 interface VariableMode {
     id: string
@@ -17,17 +19,13 @@ interface VariableCollection {
     modes: VariableMode[]
 }
 
-type PluginMessage =
-    | { type: 'get-variable-collections'; data: VariableCollection[] }
-    | { type: 'get-collection-variables'; data: any }
-
 function ExportVariables() {
     const [varCollections, setVarCollections] = useState<VariableCollection[]>([])
     const [selectedVarCollection, setSelectedVarCollection] = useState<VariableCollection | null>(null)
     const [selectedVarDefaultMode, setSelectedVarDefaultMode] = useState<VariableMode | null>(null)
     const [selectedVarColorSpace, setSelectedVarColorSpace] = useState('oklch')
     const [varOutputIndent, setVarOutputIndent] = useState(4)
-    const [currentAction, setCurrentAction] = useState<'copy-variables' | 'export-variables' | null>(null)
+    const [isProcessing, setIsProcessing] = useState(false)
 
     const handleVarCollectionChange = (collection: VariableCollection | null) => {
         setSelectedVarCollection(collection)
@@ -47,39 +45,50 @@ function ExportVariables() {
         }
     }
 
-    const requestCollectionVariables = (action: 'copy-variables' | 'export-variables') => {
-        if (!selectedVarCollection) return
-        setCurrentAction(action)
-        post('get-collection-variables', {
-            collectionId: selectedVarCollection.id,
-            selectedVarDefaultMode,
-            selectedVarColorSpace,
-        })
+    const copyVariables = async () => {
+        if (!selectedVarCollection || isProcessing) return
+        setIsProcessing(true)
+        try {
+            const data = await postAndWaitForMessage<any>('get-collection-variables', {
+                collectionId: selectedVarCollection.id,
+                selectedVarDefaultMode,
+                selectedVarColorSpace,
+            })
+
+            const json = JSON.stringify(data, null, varOutputIndent)
+            copy(json)
+            notify(`Variable collection ${selectedVarCollection.name} copied to clipboard`)
+        } catch (err: any) {
+            notify(err.message, 'error')
+        } finally {
+            setIsProcessing(false)
+        }
     }
 
-    useEffect(() => {
-        const handler = (event: MessageEvent<{ pluginMessage: PluginMessage }>) => {
-            const { type, data } = event.data.pluginMessage
-            if (type === 'get-variable-collections') {
-                setVarCollections(data)
-                handleVarCollectionChange(data[0] || null)
-            }
-            if (type === 'get-collection-variables') {
-                const json = JSON.stringify(data, null, varOutputIndent)
-                const collectionName = selectedVarCollection?.name || 'collection'
-                if (currentAction === 'copy-variables') {
-                    copy(json)
-                    notify(`Variable collection ${collectionName} copied to clipboard`)
-                } else if (currentAction === 'export-variables') {
-                    exportFile(json, `${collectionName}.json`)
-                    notify(`Variable collection ${collectionName} exported`)
-                }
-                setCurrentAction(null)
-            }
+    const exportVariables = async () => {
+        if (!selectedVarCollection || isProcessing) return
+        setIsProcessing(true)
+        try {
+            const data = await postAndWaitForMessage<any>('get-collection-variables', {
+                collectionId: selectedVarCollection.id,
+                selectedVarDefaultMode,
+                selectedVarColorSpace,
+            })
+
+            const json = JSON.stringify(data, null, varOutputIndent)
+            exportFile(json, `${selectedVarCollection.name}.json`)
+            notify(`Variable collection ${selectedVarCollection.name} exported`)
+        } catch (err: any) {
+            notify(err.message, 'error')
+        } finally {
+            setIsProcessing(false)
         }
-        window.addEventListener('message', handler)
-        return () => window.removeEventListener('message', handler)
-    }, [selectedVarCollection, varOutputIndent, currentAction])
+    }
+
+    usePluginMessage<VariableCollection[]>('get-variable-collections', (data) => {
+        setVarCollections(data)
+        handleVarCollectionChange(data[0] || null)
+    })
 
     useEffect(() => {
         post('get-variable-collections')
@@ -152,8 +161,12 @@ function ExportVariables() {
                     />
                 </div>
 
-                <button onClick={() => requestCollectionVariables('copy-variables')}>Copy as JSON</button>
-                <button onClick={() => requestCollectionVariables('export-variables')}>Export as JSON</button>
+                <button onClick={copyVariables} disabled={isProcessing}>
+                    {isProcessing ? 'Copying...' : 'Copy as JSON'}
+                </button>
+                <button onClick={exportVariables} disabled={isProcessing}>
+                    {isProcessing ? 'Exporting...' : 'Export as JSON'}
+                </button>
             </div>
         </section>
     )
@@ -163,5 +176,5 @@ function ExportVariables() {
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <ExportVariables />
-    </StrictMode>,
+    </StrictMode>
 )
