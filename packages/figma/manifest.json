@@ -2,14 +2,13 @@
     "name": "Master CSS",
     "id": "1501844200903453211",
     "api": "1.0.0",
-    "main": "./dist/plugin.mjs",
+    "main": "./dist/plugin.min.mjs",
     "enableProposedApi": false,
-    "permissions": ["teamlibrary"],
+    "permissions": [ "teamlibrary" ],
     "documentAccess": "dynamic-page",
     "editorType": [
         "figma"
     ],
-    "ui": "./out/ui.html",
     "networkAccess": {
         "allowedDomains": [
             "https://master.co",
@@ -18,5 +17,19 @@
             "https://fonts.gstatic.com",
             "https://unpkg.com"
         ]
+    },
+    "menu": [
+        {
+            "command": "export-variables",
+            "name": "Export Variables"
+        },
+        {
+            "command": "import-variables",
+            "name": "Import Variables"
+        }
+    ],
+    "ui": {
+        "export-variables": "./out/export-variables.html",
+        "import-variables": "./out/import-variables.html"
     }
 }

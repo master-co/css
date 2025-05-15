@@ -2,12 +2,15 @@
     "name": "@master/css.figma",
     "version": "1.0.0",
     "description": "Master CSS Figma Plugin",
-    "main": "./dist/plugin.mjs",
+    "main": "./dist/plugin.min.mjs",
     "type": "module",
     "scripts": {
-        "build": "techor build && vite build",
+        "build": "techor build & pnpm build:ui",
+        "build:ui": "pnpm build:ui:export-variables & pnpm build:ui:import-variables",
+        "build:ui:export-variables": "vite build --mode export-variables",
+        "build:ui:import-variables": "vite build --mode import-variables",
         "dev:plugin": "techor build --watch",
-        "dev:ui": "vite build --watch",
+        "dev:ui": "pnpm build:ui --watch",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
         "test": "vitest"

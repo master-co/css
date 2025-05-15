@@ -2,7 +2,15 @@ import getCollectionVariables from './utils/get-collection-variables'
 import getVariableCollections from './utils/get-variable-collections'
 import setCollectionVariables from './utils/set-collection-variables'
 
-figma.showUI(__html__, { themeColors: true, width: 280, height: 560 })
+const uiOptions: Record<string, ShowUIOptions> = {
+    'export-variables': { width: 280, height: 245 },
+    'import-variables': { width: 280, height: 266 }
+}
+
+figma.showUI(__uiFiles__[figma.command], {
+    themeColors: true,
+    ...uiOptions[figma.command],
+})
 
 figma.ui.onmessage = async ({ type, data }) => {
     if (data.collectionId) {

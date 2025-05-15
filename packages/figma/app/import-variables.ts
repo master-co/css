@@ -1,5 +1,6 @@
 // @ts-expect-error es
-import { reactive } from 'petite-vue'
+import { createApp, reactive } from 'petite-vue'
+import './main.scss'
 import post from './utils/post'
 import notify from './utils/notify'
 
@@ -13,36 +14,16 @@ const DEFAULT_INPUTED_VAR_JSON_STR = `{
 
 const DEFAULT_INPUTED_VAR_COLLECTION_NAME = 'My Collection'
 
-export const states = reactive({
-    // export variables
-    selectedVarCollection: null,
-    selectedVarDefaultMode: null,
-    selectedVarColorSpace: 'oklch',
-    varOutputIndent: 4,
-    // import variables
+const states = reactive({
     DEFAULT_INPUTED_VAR_JSON_STR,
     DEFAULT_INPUTED_VAR_COLLECTION_NAME,
+    selectedVarCollection: null,
     selectedImportVarCollection: null,
     inputedVarJSONStr: null,
     inputedVarCollectionName: '',
     // other
     currentAction: null,
     varCollections: [],
-    copyVariables: () => {
-        states.currentAction = 'copy-variables'
-        post('get-collection-variables', { collectionId: states.selectedVarCollection.id, selectedVarDefaultMode: states.selectedVarDefaultMode, selectedVarColorSpace: states.selectedVarColorSpace })
-    },
-    exportVariables: () => {
-        states.currentAction = 'export-variables'
-        post('get-collection-variables', { collectionId: states.selectedVarCollection.id, selectedVarDefaultMode: states.selectedVarDefaultMode, selectedVarColorSpace: states.selectedVarColorSpace })
-    },
-    varCollectionChange: () => {
-        if (states.selectedVarCollection?.modes.length === 1) {
-            states.selectedVarDefaultMode = states.selectedVarCollection.modes[0]
-        } else {
-            states.selectedVarDefaultMode = states.selectedVarCollection?.modes.find(({ name }: any) => ['Default', 'default', 'Value', 'value', '預設', '默认'].includes(name)) || null
-        }
-    },
     importVarJSON: () => {
         let inputedVarJSON
         if (states.inputedVarJSONStr)
@@ -62,3 +43,16 @@ export const states = reactive({
     }
 })
 
+window.onmessage = (event) => {
+    const { type, data } = event.data.pluginMessage
+    switch (type) {
+        case 'get-variable-collections':
+            states.varCollections = data
+            states.selectedVarCollection = data[0]
+            break
+    }
+}
+
+createApp(states).mount()
+
+post('get-variable-collections')

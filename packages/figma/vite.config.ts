@@ -1,18 +1,17 @@
 import { defineConfig } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 
-export default defineConfig({
-    root: 'src',
+export default defineConfig(({ mode }) => ({
+    root: 'app',
     plugins: [
         viteSingleFile()
     ],
     build: {
-        emptyOutDir: true,
         rollupOptions: {
             input: {
-                main: 'src/ui.html'
+                main: `app/${mode}.html`
             }
         },
         outDir: '../out'
     },
-})
+}))
