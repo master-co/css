@@ -10,7 +10,7 @@
         "build:ui:export-variables": "vite build --mode export-variables",
         "build:ui:import-variables": "vite build --mode import-variables",
         "dev:plugin": "techor build --watch",
-        "dev:ui": "pnpm build:ui --watch",
+        "dev:ui": "vite build --watch --mode",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
         "test": "vitest"

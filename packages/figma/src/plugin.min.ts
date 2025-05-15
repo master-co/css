@@ -3,8 +3,8 @@ import getVariableCollections from './utils/get-variable-collections'
 import setCollectionVariables from './utils/set-collection-variables'
 
 const uiOptions: Record<string, ShowUIOptions> = {
-    'export-variables': { width: 280, height: 245 },
-    'import-variables': { width: 280, height: 266 }
+    'export-variables': { width: 280, height: 216, title: 'Export Variables - Master CSS' },
+    'import-variables': { width: 280, height: 237, title: 'Import Variables - Master CSS' },
 }
 
 figma.showUI(__uiFiles__[figma.command], {
@@ -14,7 +14,8 @@ figma.showUI(__uiFiles__[figma.command], {
 
 figma.ui.onmessage = async ({ type, data }) => {
     if (data.collectionId) {
-        const collection = await figma.variables.getLocalVariableCollectionsAsync
+        const collections = await figma.variables.getLocalVariableCollectionsAsync()
+        const collection = collections.find(c => c.id === data.collectionId)
         if (!collection) {
             figma.notify('Variable collection not found')
             figma.ui.postMessage({ type: 'get-variable-collections', data: await getVariableCollections() }, { origin: '*' })

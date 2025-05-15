@@ -68,8 +68,8 @@
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "@master/css.nuxt": "workspace:^",
         "@master/css.figma": "workspace:^",
+        "@master/css.nuxt": "workspace:^",
         "@master/css.react": "workspace:^",
         "@master/css.svelte": "workspace:^",
         "@master/css.vite": "workspace:^",
@@ -78,6 +78,7 @@
         "@master/eslint-config-css": "workspace:^",
         "@master/eslint-plugin-css": "workspace:^",
         "@types/edit-json-file": "^1.7.3",
+        "concurrently": "^9.1.2",
         "master-css-vscode": "workspace:^",
         "shared": "workspace:^"
     }
