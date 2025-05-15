@@ -75,7 +75,6 @@ function ExportVariables() {
             })
             const json = JSON.stringify(data, null, varOutputIndent)
             exportFile(json, `${selectedVarCollection.name}.json`)
-            notify(`Variable collection ${selectedVarCollection.name} exported`)
         } catch (err: any) {
             notify(err.message, 'error')
         } finally {
@@ -158,13 +157,8 @@ function ExportVariables() {
                         onChange={(e) => setVarOutputIndent(parseInt(e.target.value, 10))}
                     />
                 </div>
-
-                <button onClick={copyVariables} disabled={isProcessing}>
-                    {isProcessing ? 'Copying...' : 'Copy as JSON'}
-                </button>
-                <button onClick={exportVariables} disabled={isProcessing}>
-                    {isProcessing ? 'Exporting...' : 'Export as JSON'}
-                </button>
+                <button onClick={copyVariables} disabled={isProcessing}>Copy as JSON</button>
+                <button onClick={exportVariables} disabled={isProcessing}>Export as JSON</button>
             </div>
         </section>
     )

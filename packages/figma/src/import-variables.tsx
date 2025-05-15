@@ -110,10 +110,7 @@ function ImportVariables() {
                         />
                     </div>
                 )}
-
-                <button onClick={importVarJSON} disabled={isProcessing}>
-                    {isProcessing ? 'Importing...' : 'Import'}
-                </button>
+                <button onClick={importVarJSON} disabled={isProcessing}>Import</button>
             </div>
         </section>
     )
