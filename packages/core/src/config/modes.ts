@@ -2,12 +2,8 @@ import { ModeDefinitions } from '../types/config'
 
 const modes = {
     'light': {
+        'ground': '$grey-0',
         'base': '$white',
-        'surface': {
-            'lightest': '$grey-0',
-            'lighter': '$white',
-            'light': '$white'
-        },
         'invert': '$black',
         'stone': {
             '': '$stone-30',
@@ -153,17 +149,12 @@ const modes = {
             'fuchsia': '$fuchsia-60',
             'pink': '$pink-60',
             'crimson': '$crimson-60',
-            'red': '$red-60',
-            'gray 2': '$gray-60'
+            'red': '$red-60'
         }
     },
     'dark': {
+        'ground': '$gray-100',
         'base': '$gray-95',
-        'surface': {
-            'lightest': '$gray-90',
-            'lighter': '$gray-80',
-            'light': '$gray-70'
-        },
         'invert': '$white',
         'stone': {
             '': '$stone-40',
@@ -288,7 +279,7 @@ const modes = {
             'lightest': '$gray-60',
             'lighter': '$gray-50',
             'light': '$gray-40',
-            'stone': '$gray-30',
+            'stone': '$stone-30',
             'gray': '$gray-30',
             'grey': '$grey-30',
             'slate': '$slate-30',
@@ -309,8 +300,7 @@ const modes = {
             'fuchsia': '$fuchsia-30',
             'pink': '$pink-30',
             'crimson': '$crimson-30',
-            'red': '$red-30',
-            'gray 2': '$gray-30'
+            'red': '$red-30'
         }
     }
 } satisfies ModeDefinitions

@@ -7,9 +7,9 @@ export default () =>
         <table>
             <thead>
                 <tr>
-                    <th className="w:0">Variable</th>
-                    <th className="w:0">Group</th>
+                    <th className="w:0">Variable Name</th>
                     <th>Value</th>
+                    <th className="w:0">Namespace</th>
                 </tr>
             </thead>
             <tbody>
@@ -20,8 +20,8 @@ export default () =>
                             return (
                                 <tr key={variable?.name}>
                                     <th><code className='white-space:nowrap'>{variable?.name}</code></th>
-                                    <td><code>{variable?.group}</code></td>
                                     <td><InlineCode lang="ts" className='word-break:break-all'>{JSON.stringify(variable?.value, null, 2)}</InlineCode></td>
+                                    <td><code className='white-space:nowrap'>{variable?.namespace || '-'}</code></td>
                                 </tr>
                             )
                         })

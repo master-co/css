@@ -2,7 +2,7 @@ import { getProperty, setProperty } from 'dot-prop'
 import { Config } from '@master/css'
 import toColorValue from '../utils/to-color-value'
 import nestMetaObject from '@master/css/utils/nest-meta-object'
-import minifyExtendedConfig from '@master/css/utils/minify-extended-config'
+// import minifyExtendedConfig from '@master/css/utils/minify-extended-config'
 
 export interface GetCollectionVariablesOptions {
     varCollId: string
@@ -63,16 +63,16 @@ export default async function getCollectionVariables(options: GetCollectionVaria
         delete modes[defaultModeName]
     }
 
-    const minifiedExtendedConfig = minifyExtendedConfig({ variables, modes })
+    // const minifiedExtendedConfig = minifyExtendedConfig({ variables, modes })
 
     let config: Config = {}
-    if (minifiedExtendedConfig.variables) {
-        config.variables = nestMetaObject(minifiedExtendedConfig.variables)
+    if (variables) {
+        config.variables = nestMetaObject(variables)
     }
-    if (Object.keys(minifiedExtendedConfig.modes || []).length > 0) {
+    if (Object.keys(modes || []).length > 0) {
         config.modes = {}
-        for (const modeName in minifiedExtendedConfig.modes) {
-            config.modes[modeName] = nestMetaObject(minifiedExtendedConfig.modes[modeName])
+        for (const modeName in modes) {
+            config.modes[modeName] = nestMetaObject(modes[modeName])
         }
     }
     return config

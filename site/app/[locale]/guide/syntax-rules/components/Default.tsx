@@ -3,7 +3,7 @@ import ExpandContent from '~/internal/components/ExpandContent'
 import InlineCode from '~/internal/components/InlineCode'
 
 const Default = () =>
-    <ExpandContent>
+    <ExpandContent className="doc-table">
         <table>
             <thead>
                 <tr>
