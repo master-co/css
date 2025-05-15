@@ -22,26 +22,26 @@ interface VariableCollection {
 function ExportVariables() {
     const [varCollections, setVarCollections] = useState<VariableCollection[]>([])
     const [selectedVarCollection, setSelectedVarCollection] = useState<VariableCollection | null>(null)
-    const [selectedVarDefaultMode, setSelectedVarDefaultMode] = useState<VariableMode | null>(null)
-    const [selectedVarColorSpace, setSelectedVarColorSpace] = useState('oklch')
+    const [selectedDefaultVarMode, setSelectedDefaultVarMode] = useState<VariableMode | null>(null)
+    const [selectedOutputColorSpace, setSelectedOutputColorSpace] = useState('oklch')
     const [varOutputIndent, setVarOutputIndent] = useState(4)
     const [isProcessing, setIsProcessing] = useState(false)
 
     const handleVarCollectionChange = (collection: VariableCollection | null) => {
         setSelectedVarCollection(collection)
         if (!collection) {
-            setSelectedVarDefaultMode(null)
+            setSelectedDefaultVarMode(null)
             return
         }
 
         if (collection.modes.length === 1) {
-            setSelectedVarDefaultMode(collection.modes[0])
+            setSelectedDefaultVarMode(collection.modes[0])
         } else {
             const defaultMode =
                 collection.modes.find(({ name }) =>
                     ['Default', 'default', 'Value', 'value', '預設', '默认'].includes(name)
                 ) || null
-            setSelectedVarDefaultMode(defaultMode)
+            setSelectedDefaultVarMode(defaultMode)
         }
     }
 
@@ -49,12 +49,11 @@ function ExportVariables() {
         if (!selectedVarCollection || isProcessing) return
         setIsProcessing(true)
         try {
-            const data = await postAndWaitForMessage<any>('get-collection-variables', {
-                collectionId: selectedVarCollection.id,
-                selectedVarDefaultMode,
-                selectedVarColorSpace,
+            const data = await postAndWaitForMessage('getCollectionVariables', {
+                varCollId: selectedVarCollection.id,
+                defaultVarMode: selectedDefaultVarMode,
+                outputColorSpace: selectedOutputColorSpace,
             })
-
             const json = JSON.stringify(data, null, varOutputIndent)
             copy(json)
             notify(`Variable collection ${selectedVarCollection.name} copied to clipboard`)
@@ -69,12 +68,11 @@ function ExportVariables() {
         if (!selectedVarCollection || isProcessing) return
         setIsProcessing(true)
         try {
-            const data = await postAndWaitForMessage<any>('get-collection-variables', {
-                collectionId: selectedVarCollection.id,
-                selectedVarDefaultMode,
-                selectedVarColorSpace,
+            const data = await postAndWaitForMessage('getCollectionVariables', {
+                varCollId: selectedVarCollection.id,
+                defaultVarMode: selectedDefaultVarMode,
+                outputColorSpace: selectedOutputColorSpace,
             })
-
             const json = JSON.stringify(data, null, varOutputIndent)
             exportFile(json, `${selectedVarCollection.name}.json`)
             notify(`Variable collection ${selectedVarCollection.name} exported`)
@@ -85,13 +83,13 @@ function ExportVariables() {
         }
     }
 
-    usePluginMessage<VariableCollection[]>('get-variable-collections', (data) => {
+    usePluginMessage<VariableCollection[]>('getVariableCollections', (data) => {
         setVarCollections(data)
         handleVarCollectionChange(data[0] || null)
     })
 
     useEffect(() => {
-        post('get-variable-collections')
+        post('getVariableCollections')
     }, [])
 
     return (
@@ -119,10 +117,10 @@ function ExportVariables() {
                     <label htmlFor="var-collection-default-mode">Default Mode:</label>
                     <select
                         id="var-collection-default-mode"
-                        value={selectedVarDefaultMode?.id || ''}
+                        value={selectedDefaultVarMode?.id || ''}
                         onChange={(e) => {
                             const mode = selectedVarCollection?.modes.find((m) => m.id === e.target.value) || null
-                            setSelectedVarDefaultMode(mode)
+                            setSelectedDefaultVarMode(mode)
                         }}
                     >
                         <option value="">None</option>
@@ -138,8 +136,8 @@ function ExportVariables() {
                     <label htmlFor="var-collection-color-space">Color Space:</label>
                     <select
                         id="var-collection-color-space"
-                        value={selectedVarColorSpace}
-                        onChange={(e) => setSelectedVarColorSpace(e.target.value)}
+                        value={selectedOutputColorSpace}
+                        onChange={(e) => setSelectedOutputColorSpace(e.target.value)}
                     >
                         {['hex', 'rgb', 'hsl', 'lab', 'oklab', 'oklch'].map((space) => (
                             <option key={space} value={space}>

@@ -4,11 +4,16 @@ import toColorValue from '../utils/to-color-value'
 import nestMetaObject from '@master/css/utils/nest-meta-object'
 import minifyExtendedConfig from '@master/css/utils/minify-extended-config'
 
-export default async function getCollectionVariables(id: string, options: { defaultMode?: any, colorSpace?: string } = {}) {
-    const { defaultMode, colorSpace } = options
-    const collection = await figma.variables.getVariableCollectionByIdAsync(id)
+export interface GetCollectionVariablesOptions {
+    varCollId: string
+    outputColorSpace?: string
+    defaultVarMode?: any
+}
+
+export default async function getCollectionVariables(options: GetCollectionVariablesOptions) {
+    const collection = await figma.variables.getVariableCollectionByIdAsync(options.varCollId)
     if (!collection) {
-        console.error(`Collection with id ${id} not found`)
+        figma.notify(`Variable collection "${options.varCollId}" not found`, { error: true })
         return
     }
     const modeNameById = collection.modes.reduce((a, b) => {
@@ -16,7 +21,7 @@ export default async function getCollectionVariables(id: string, options: { defa
         return a
     }, {} as Record<string, string>)
     const modes: Record<string, any> = {}
-    const defaultModeName = defaultMode ? defaultMode.name.toLocaleLowerCase() : null
+    const defaultModeName = options.defaultVarMode ? options.defaultVarMode.name.toLocaleLowerCase() : null
     for (const varId of collection.variableIds) {
         const variable = await figma.variables.getVariableByIdAsync(varId)
         if (!variable) continue
@@ -35,7 +40,7 @@ export default async function getCollectionVariables(id: string, options: { defa
                 const aliasVariable = await figma.variables.getVariableByIdAsync(value.id)
                 newValue = aliasVariable ? `$${aliasVariable.name.replace('/', '-')}` : undefined
             } else if (variable.resolvedType === 'COLOR') {
-                newValue = toColorValue(value, colorSpace)
+                newValue = toColorValue(value, options.outputColorSpace)
             } else if (variable.resolvedType === 'STRING' || variable.resolvedType === 'FLOAT') {
                 newValue = value
             }

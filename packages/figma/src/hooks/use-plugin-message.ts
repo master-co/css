@@ -1,8 +1,5 @@
 import { useEffect } from 'react'
-
-type PluginMessage =
-    | { type: 'get-variable-collections'; data: any }
-    | { type: 'get-collection-variables'; data: any }
+import { PluginMessage } from '../types/message'
 
 type Handler<T> = (data: T) => void
 

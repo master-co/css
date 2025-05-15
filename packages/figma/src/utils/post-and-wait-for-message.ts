@@ -1,13 +1,13 @@
-import { PluginMessage } from '../types/message'
+import { PluginMessage, PluginMessageMap } from '../types/message'
 import post from './post'
 
 const pendingRequests = new Map<string, AbortController>()
 
-export default function postAndWaitForMessage<T>(
-    type: PluginMessage['type'],
-    payload?: any,
+export default function postAndWaitForMessage<T extends PluginMessage['type']>(
+    type: T,
+    payload: PluginMessageMap[T],
     timeout = 5000
-): Promise<T> {
+): Promise<PluginMessageMap[T]> {
     const controller = new AbortController()
 
     // Cancel any pending request of same type

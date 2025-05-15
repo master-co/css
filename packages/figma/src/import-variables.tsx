@@ -5,6 +5,7 @@ import notify from './utils/notify'
 import post from './utils/post'
 import postAndWaitForMessage from './utils/post-and-wait-for-message'
 import usePluginMessage from './hooks/use-plugin-message'
+import { Config } from '@master/css'
 
 interface VariableCollection {
     id: string
@@ -23,46 +24,42 @@ const DEFAULT_INPUTED_VAR_COLLECTION_NAME = 'My Collection'
 
 function ImportVariables() {
     const [varCollections, setVarCollections] = useState<VariableCollection[]>([])
-    const [selectedImportVarCollection, setSelectedImportVarCollection] = useState<VariableCollection | null>(null)
-    const [inputedVarJSONStr, setInputedVarJSONStr] = useState<string | null>(null)
-    const [inputedVarCollectionName, setInputedVarCollectionName] = useState('')
-
+    const [selectedVarColl, setSelectedVarColl] = useState<VariableCollection | null>(null)
+    const [configJSONStr, setConfigJSONStr] = useState<string | null>(null)
+    const [newVarCollName, setNewCollName] = useState('')
     const [isProcessing, setIsProcessing] = useState(false)
 
-    usePluginMessage<VariableCollection[]>('get-variable-collections', (data) => {
+    usePluginMessage<VariableCollection[]>('getVariableCollections', (data) => {
         setVarCollections(data)
         if (data.length > 0) {
-            setSelectedImportVarCollection(data[0])
+            setSelectedVarColl(data[0])
         }
     })
 
     useEffect(() => {
-        post('get-variable-collections')
+        post('getVariableCollections')
     }, [])
 
     const importVarJSON = async () => {
         if (isProcessing) return
         setIsProcessing(true)
-
         try {
-            let parsedJSON: any
-            if (inputedVarJSONStr?.trim()) {
+            let configJSON: Config
+            if (configJSONStr?.trim()) {
                 try {
-                    parsedJSON = JSON.parse(inputedVarJSONStr)
+                    configJSON = JSON.parse(configJSONStr)
                 } catch (e) {
                     notify('Invalid JSON format', { error: true })
                     return
                 }
             } else {
-                parsedJSON = JSON.parse(DEFAULT_INPUTED_VAR_JSON_STR)
+                configJSON = JSON.parse(DEFAULT_INPUTED_VAR_JSON_STR)
             }
-
-            await postAndWaitForMessage<'ok'>('set-collection-variables', {
-                collectionId: selectedImportVarCollection?.id,
-                inputedVarCollectionName: inputedVarCollectionName || DEFAULT_INPUTED_VAR_COLLECTION_NAME,
-                inputedVarJSON: parsedJSON,
+            await postAndWaitForMessage('setCollectionVariables', {
+                varCollId: selectedVarColl?.id,
+                newVarCollName: newVarCollName || DEFAULT_INPUTED_VAR_COLLECTION_NAME,
+                configJSON,
             })
-
             notify('Import succeeded')
         } catch (err: any) {
             notify(err.message || 'Import failed', { error: true })
@@ -76,8 +73,8 @@ function ImportVariables() {
             <div className="panel-rows">
                 <textarea
                     id="var-input-json"
-                    value={inputedVarJSONStr ?? ''}
-                    onChange={(e) => setInputedVarJSONStr(e.target.value)}
+                    value={configJSONStr ?? ''}
+                    onChange={(e) => setConfigJSONStr(e.target.value)}
                     placeholder={DEFAULT_INPUTED_VAR_JSON_STR}
                     rows={7}
                 ></textarea>
@@ -86,10 +83,10 @@ function ImportVariables() {
                     <label htmlFor="input-var-collections">Collection:</label>
                     <select
                         id="input-var-collections"
-                        value={selectedImportVarCollection?.id ?? ''}
+                        value={selectedVarColl?.id ?? ''}
                         onChange={(e) => {
                             const found = varCollections.find((v) => v.id === e.target.value)
-                            setSelectedImportVarCollection(found ?? null)
+                            setSelectedVarColl(found ?? null)
                         }}
                     >
                         <option value="">New</option>
@@ -101,14 +98,14 @@ function ImportVariables() {
                     </select>
                 </div>
 
-                {!selectedImportVarCollection && (
+                {!selectedVarColl && (
                     <div className="panel-prop">
                         <label htmlFor="input-var-collection-name">Collection Name:</label>
                         <input
                             id="input-var-collection-name"
                             type="text"
-                            value={inputedVarCollectionName}
-                            onChange={(e) => setInputedVarCollectionName(e.target.value)}
+                            value={newVarCollName}
+                            onChange={(e) => setNewCollName(e.target.value)}
                             placeholder={DEFAULT_INPUTED_VAR_COLLECTION_NAME}
                         />
                     </div>

@@ -1,4 +1,11 @@
+import { GetCollectionVariablesOptions } from '../features/getCollectionVariables'
+import { SetCollectionVariablesOptions } from '../features/setCollectionVariables'
+
 export type PluginMessage =
-    | { type: 'get-variable-collections'; data: any }
-    | { type: 'get-collection-variables'; data: any }
-    | { type: 'set-collection-variables'; data: any }
+    | { type: 'getVariableCollections'; data: any }
+    | { type: 'getCollectionVariables'; data: GetCollectionVariablesOptions }
+    | { type: 'setCollectionVariables'; data: SetCollectionVariablesOptions }
+
+export type PluginMessageMap = {
+    [M in PluginMessage as M['type']]: M['data']
+}
