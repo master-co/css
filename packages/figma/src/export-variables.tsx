@@ -60,16 +60,13 @@ function ExportVariables() {
     useEffect(() => {
         const handler = (event: MessageEvent<{ pluginMessage: PluginMessage }>) => {
             const { type, data } = event.data.pluginMessage
-
             if (type === 'get-variable-collections') {
                 setVarCollections(data)
                 handleVarCollectionChange(data[0] || null)
             }
-
             if (type === 'get-collection-variables') {
                 const json = JSON.stringify(data, null, varOutputIndent)
                 const collectionName = selectedVarCollection?.name || 'collection'
-
                 if (currentAction === 'copy-variables') {
                     copy(json)
                     notify(`Variable collection ${collectionName} copied to clipboard`)
@@ -77,16 +74,16 @@ function ExportVariables() {
                     exportFile(json, `${collectionName}.json`)
                     notify(`Variable collection ${collectionName} exported`)
                 }
-
                 setCurrentAction(null)
             }
         }
-
         window.addEventListener('message', handler)
-        post('get-variable-collections')
-
         return () => window.removeEventListener('message', handler)
-    }, [selectedVarCollection, selectedVarDefaultMode, selectedVarColorSpace, varOutputIndent, currentAction])
+    }, [selectedVarCollection, varOutputIndent, currentAction])
+
+    useEffect(() => {
+        post('get-variable-collections')
+    }, [])
 
     return (
         <section>

@@ -50,7 +50,6 @@ function ImportVariables() {
     useEffect(() => {
         const handler = (event: MessageEvent<{ pluginMessage: { type: string; data: any } }>) => {
             const { type, data } = event.data.pluginMessage
-
             if (type === 'get-variable-collections') {
                 setVarCollections(data)
                 if (data.length > 0) {
@@ -58,10 +57,8 @@ function ImportVariables() {
                 }
             }
         }
-
         window.addEventListener('message', handler)
         post('get-variable-collections')
-
         return () => window.removeEventListener('message', handler)
     }, [])
 

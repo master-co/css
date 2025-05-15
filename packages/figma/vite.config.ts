@@ -2,8 +2,6 @@ import { defineConfig } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import react from '@vitejs/plugin-react'
 
-console.log(process.env.NODE_ENV)
-
 export default defineConfig(({ mode }) => ({
     root: 'src',
     plugins: [
@@ -11,7 +9,6 @@ export default defineConfig(({ mode }) => ({
         viteSingleFile()
     ],
     build: {
-        emptyOutDir: true,
         outDir: '../out',
         rollupOptions: {
             input: {
@@ -19,4 +16,12 @@ export default defineConfig(({ mode }) => ({
             }
         },
     },
+    resolve: {
+        alias: {
+            react: 'preact/compat',
+            'react-dom/test-utils': 'preact/test-utils',
+            'react-dom': 'preact/compat',
+            'react/jsx-runtime': 'preact/jsx-runtime'
+        }
+    }
 }))
