@@ -2,8 +2,8 @@ const syntaxes = [
     ['@direction:`value`,`…`'],
     '@direction:normal',
     '@direction:reverse',
-    '@direction:alt',
-    '@direction:alt-reverse',
+    '@direction:alternate',
+    '@direction:alternate-reverse',
 ]
 
 export default syntaxes

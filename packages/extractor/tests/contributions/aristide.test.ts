@@ -17,7 +17,7 @@ test('AristideBH', async () => {
 	$: ({ SiteInfos } = data);
 </script>
 
-<div class="grid-row:1/2 flex flex:col flex gabX:full cards">
+<div class="grid-row:1/2 flex flex-col flex gabX:full cards">
 	{#if !$SiteInfos.isFetching}
 		{#each $SiteInfos?.data?.themeGeneralSettings?.siteOptions?.pinnedProjects as project}
 			<InViewBlock>
@@ -46,7 +46,7 @@ test('AristideBH', async () => {
 			</InViewBlock>
 		{/each}
 		<div
-			class="{'{p:1.5em;flex-basis:full;fg:white;text-decoration:none}>a'} t:center ai:center jc:center f:12 flex flex:row "
+			class="{'{p:1.5em;flex-basis:full;fg:white;text-decoration:none}>a'} t:center ai:center jc:center f:12 flex flex-row "
 		>
 			<a href="/projets" class="fg:white  text-decoration:none:hover">
 				Retrouvez <br />
@@ -88,8 +88,8 @@ test('AristideBH', async () => {
         'aspect:16/9',
         'f:12',
         'fg:white',
-        'flex:col',
-        'flex:row',
+        'flex-col',
+        'flex-row',
         'jc:center',
         'obj:cover',
         't:center',

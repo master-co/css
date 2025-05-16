@@ -39,12 +39,12 @@ createTester({
         {
             code: `<div class="bg:black:focus:hover@dark bg:gray-40:disabled:focus:hover@md@dark">Stackable variants</div>`,
         },
-        { code: `<div className={clsx(\`abs flex bottom:0 flex:col h:270px w:full\`)}>clsx</div>` },
+        { code: `<div className={clsx(\`abs flex bottom:0 flex-col h:270px w:full\`)}>clsx</div>` },
         { code: `<div class="zDialog flex w:12">Number values</div>` },
         { code: `<div class="   flex  m:10   ">Extra spaces</div>` },
         {
             code: `
-                <div className={\`\${yolo ? 'flex flex:col' : 'block'} rel overflow:hidden w:full\`}>Issue #131</div>
+                <div className={\`\${yolo ? 'flex flex-col' : 'block'} rel overflow:hidden w:full\`}>Issue #131</div>
             `,
         },
         { code: `<div class>No errors while typing</div>` },
@@ -181,22 +181,22 @@ createTester({
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
-            code: `clsx(\`abs bottom:0 w:full h:70px flex flex:col\`);`,
-            output: `clsx(\`abs flex bottom:0 flex:col h:70px w:full\`);`,
+            code: `clsx(\`abs bottom:0 w:full h:70px flex flex-col\`);`,
+            output: `clsx(\`abs flex bottom:0 flex-col h:70px w:full\`);`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `cva({
-                primary: ["abs bottom:0 w:full h:70px flex flex:col"],
+                primary: ["abs bottom:0 w:full h:70px flex flex-col"],
             })`,
             output: `cva({
-                primary: ["abs flex bottom:0 flex:col h:70px w:full"],
+                primary: ["abs flex bottom:0 flex-col h:70px w:full"],
             })`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
-            code: `<div className={clsx(\`abs bottom:0 w:full h:270px flex flex:col\`)}>clsx</div>`,
-            output: `<div className={clsx(\`abs flex bottom:0 flex:col h:270px w:full\`)}>clsx</div>`,
+            code: `<div className={clsx(\`abs bottom:0 w:full h:270px flex flex-col\`)}>clsx</div>`,
+            output: `<div className={clsx(\`abs flex bottom:0 flex-col h:270px w:full\`)}>clsx</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {

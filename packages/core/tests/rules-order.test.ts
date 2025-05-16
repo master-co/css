@@ -68,14 +68,14 @@ it.concurrent('checks style declarations', () => {
 
 it.concurrent('checks media order', () => {
     const input = [
-        'min-w:206', '{flex:row}@xs', 'jc:flex-end@xs', 'hidden@tablet&<desktop', '{flex:row}@2xs&<xs'
+        'min-w:206', '{flex-row}@xs', 'jc:flex-end@xs', 'hidden@tablet&<desktop', '{flex-row}@2xs&<xs'
     ]
     const output = [
         { name: 'min-w:206' },
-        { name: '{flex:row}@xs' },
+        { name: '{flex-row}@xs' },
         { name: 'jc:flex-end@xs' },
         { name: 'hidden@tablet&<desktop' },
-        { name: '{flex:row}@2xs&<xs' }
+        { name: '{flex-row}@2xs&<xs' }
     ]
     expect(createCSS({
         at: {

@@ -42,7 +42,7 @@ new Tester({
     8: 'abs @flash|3s|infinit inset:0 m:auto blend:overlay fg:white font:7vw font:heavy height:fit text:center abs@sm font:40@xs',
     9: 'block round m:32 px:16 font:12 mb:48 bg:blue:hover font:24@sm font:32@md',
     10: 'block round m:32 my:16 px:16 bg:red font:12 mb:48 bg:blue:hover bg:purple:focus font:32@sm my:32@lg font:48@lg',
-    11: 'flex flex:col',
+    11: 'flex flex-col',
     12: 'gap:15 p:40 grid-cols:2 grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md',
     13: 'btn btn-md yellow mt:6x w:full touch-yellow btn-sm@sm',
     14: 'block round px:16 font:12 mb:48 m:__UNSORTED__ p:__UNSORTED__',

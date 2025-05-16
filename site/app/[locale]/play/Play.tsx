@@ -519,7 +519,7 @@ export default function Play(props: any) {
     const width = useMemo(() => (!layout || layout === '2') ? '50%' : '100%', [layout])
     const height = useMemo(() => (!layout || layout === '2') ? '100%' : '50%', [layout])
     return (
-        <div className="abs flex full flex:col">
+        <div className="abs flex full flex-col">
             <Header fixed={false}>
                 <HeaderContent>
                     <Link href={'/'}>
@@ -643,12 +643,12 @@ export default function Play(props: any) {
             </Header >
             <div
                 className={clsx(
-                    'flex full flex:1 overflow:hidden bg:transparent_:is(.monaco-editor,.monaco-editor-background,.monaco-editor_.margin) flex:col!@<sm',
+                    'flex full flex:1 overflow:hidden bg:transparent_:is(.monaco-editor,.monaco-editor-background,.monaco-editor_.margin) flex-col!@<sm',
                     {
-                        'flex:row': !layout,
-                        'flex:row-reverse': layout === '2',
-                        'flex:col': layout === '3' || layout === '5',
-                        'flex:col-reverse': layout === '4'
+                        'flex-row': !layout,
+                        'flex-row-reverse': layout === '2',
+                        'flex-col': layout === '3' || layout === '5',
+                        'flex-col-reverse': layout === '4'
                     }
                 )}
             >
@@ -736,7 +736,7 @@ export default function Play(props: any) {
                             sandbox="allow-popups-to-escape-sandbox allow-scripts allow-popups allow-forms allow-same-origin allow-pointer-lock allow-top-navigation allow-modals"
                             srcDoc={previewHTML}
                         />
-                        <div className={clsx('flex flex:col h:full', { 'hidden!': preview !== 'css' })}>
+                        <div className={clsx('flex flex-col h:full', { 'hidden!': preview !== 'css' })}>
                             <div className='flex bb:1|lightest flex:0|0|auto px:5x px:10x@sm align-items:center font:12 h:48 justify-content:space-between'>
                                 <div>Generated CSS</div>
                                 <div className="fg:light">{generatedCSSSize}</div>

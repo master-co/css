@@ -6,7 +6,7 @@ import Link from 'internal/components/Link'
 export default function TierModal({ tierState }: { tierState: [any, Dispatch<any>] }) {
     const [selectedTier, setSelectedTier] = tierState
     return <Modal backdropClick={() => setSelectedTier(null)} contentClass="max-w:320 pb:15">
-        <div className="flex gap:20 p:25 r:5 flex:col@<lg">
+        <div className="flex gap:20 p:25 r:5 flex-col@<lg">
             <div className="font:48">{selectedTier.icon}</div>
             <div className='flex:1'>
                 <div className="text:16 fg:strong font:medium uppercase::first-letter">{selectedTier.name}</div>
