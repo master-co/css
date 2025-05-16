@@ -1,8 +1,8 @@
 const syntaxes = [
     ['background-origin:`origin`'],
-    'bg:border',
-    'bg:content',
-    'bg:padding'
+    'bg-origin-border',
+    'bg-origin-content',
+    'bg-origin-padding'
 ]
 
 export default syntaxes
