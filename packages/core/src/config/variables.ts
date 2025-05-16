@@ -2,29 +2,31 @@ import colors from '@master/colors'
 import type { VariableDefinitions } from '../types/config'
 
 const variables = {
-    full: '100%',
-    fit: 'fit-content',
-    max: 'max-content',
-    min: 'min-content',
+    'full': '100%',
+    'fit': 'fit-content',
+    'max': 'max-content',
+    'min': 'min-content',
+    'current': 'currentColor',
     'font-family': {
-        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
-        sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'],
-        serif: ['ui-serif', 'Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif']
+        'mono': ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
+        'sans': ['ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'],
+        'serif': ['ui-serif', 'Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif']
     },
-    'font-weight': { thin: 100, extralight: 200, light: 300, regular: 400, medium: 500, semibold: 600, bold: 700, extrabold: 800, heavy: 900 },
-    'flex-direction': {
-        col: 'column',
-        'col-reverse': 'column-reverse'
+    'font-weight': {
+        'thin': 100,
+        'extralight': 200,
+        'light': 300,
+        'regular': 400,
+        'medium': 500,
+        'semibold': 600,
+        'bold': 700,
+        'extrabold': 800,
+        'heavy': 900
     },
-    'animation-direction': {
-        alt: 'alternate',
-        'alt-reverse': 'alternate-reverse'
+    'order': {
+        'first': -999999,
+        'last': 999999
     },
-    order: {
-        first: -999999,
-        last: 999999
-    },
-    current: 'currentColor',
     'white': 'oklch(100% 0 none)',
     'black': 'oklch(0% 0 none)',
     'stone': {
