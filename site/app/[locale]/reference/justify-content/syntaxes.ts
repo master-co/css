@@ -1,17 +1,17 @@
 const syntaxes = [
     ['justify-content:`justify`'],
-    'justify-content:normal',
-    'justify-content:left',
-    'justify-content:center',
-    'justify-content:right',
-    'justify-content:stretch',
-    'justify-content:start',
-    'justify-content:end',
-    'justify-content:flex-start',
-    'justify-content:flex-end',
-    'justify-content:space-around',
-    'justify-content:space-between',
-    'justify-content:space-evenly'
+    'justify-normal',
+    'justify-left',
+    'justify-center',
+    'justify-right',
+    'justify-stretch',
+    'justify-start',
+    'justify-end',
+    'justify-flex-start',
+    'justify-flex-end',
+    'justify-around',
+    'justify-between',
+    'justify-evenly'
 ]
 
 export default syntaxes
