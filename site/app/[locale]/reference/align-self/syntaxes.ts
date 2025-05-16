@@ -1,16 +1,17 @@
 const syntaxes = [
     ['align-self:`value`'],
-    'align-self:auto',
-    'align-self:normal',
-    'align-self:baseline',
-    'align-self:center',
-    'align-self:stretch',
-    'align-self:start',
-    'align-self:end',
-    'align-self:flex-start',
-    'align-self:flex-end',
-    'align-self:self-start',
-    'align-self:self-end',
+    'self-auto',
+    'self-normal',
+    'self-baseline',
+    'self-center',
+    'self-stretch',
+    'self-start',
+    'self-end',
+    'self-flex-start',
+    'self-flex-end',
+    'self-self-start',
+    'self-self-end',
+    'self-anchor-center'
 ]
 
 export default syntaxes
