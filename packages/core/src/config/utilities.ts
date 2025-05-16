@@ -87,6 +87,8 @@ const utilities = {
     'self-anchor-center': { 'align-self': 'anchor-center' },
     'vw': { 'width': '100vw' },
     'vh': { 'height': '100vh' },
+    'box-border': { 'box-sizing': 'border-box' },
+    'box-content': { 'box-sizing': 'content-box' },
     'max-vw': { 'max-width': '100vw' },
     'max-vh': { 'max-height': '100vh' },
     'min-vw': { 'min-width': '100vw' },

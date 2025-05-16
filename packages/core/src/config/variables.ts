@@ -16,10 +16,6 @@ const variables = {
         col: 'column',
         'col-reverse': 'column-reverse'
     },
-    'box-sizing': {
-        content: 'content-box',
-        border: 'border-box'
-    },
     position: {
         abs: 'absolute',
         rel: 'relative'
