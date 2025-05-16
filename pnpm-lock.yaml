@@ -1219,8 +1219,8 @@ importers:
   packages/core:
     dependencies:
       '@master/colors':
-        specifier: ^2.1.1
-        version: 2.2.0
+        specifier: ^3.0.0
+        version: 3.0.0
       '@master/normal.css':
         specifier: ^3.2.0
         version: 3.2.0
@@ -4783,6 +4783,9 @@ packages:
 
   '@master/colors@2.2.0':
     resolution: {integrity: sha512-Yt/zX9TFDEKfnK7DYY/uhG9e6k1M2gElKQfElTCp0BVmFMNLrOLTforfSe5dlQLsazC90hir+MfYGvYddY7vcw==}
+
+  '@master/colors@3.0.0':
+    resolution: {integrity: sha512-1fqX0gncBTXtaidwCqJmOXgW6n0Ikh8DAFsW9/FKwiSYxrNdE0LlI4I0ozbdFdFRfheTV9MUbReiqeuDnD75aQ==}
 
   '@master/css-devtools-hook@2.0.0-rc.68':
     resolution: {integrity: sha512-DFXUWqQkKv8kLkkCQLK3tRixxsjS9F1dPqpgRBaVbO4QhpleWvOezK04SWML1JkZGPBLou7j1FAhzK3gMXLBFQ==}
@@ -21057,6 +21060,8 @@ snapshots:
       - supports-color
 
   '@master/colors@2.2.0': {}
+
+  '@master/colors@3.0.0': {}
 
   '@master/css-devtools-hook@2.0.0-rc.68': {}
 

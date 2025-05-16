@@ -41,8 +41,6 @@ Apply the defined `font-family` variables:
 ### Use custom fonts
 Customize your font tokens by defining [variables](/guide/variables). For example, add `Inter` as the general font and `Fira Code` as the code font.
 ```js name=master.css.js
-import { variables } from '@master/css'
-
 export default {
     variables: {
         'font-family': {
@@ -54,8 +52,8 @@ export default {
 ```
 Apply the defined `font-family` variables. For example, presetting the global fonts in `html <body>`:
 ```html
-<!-- @MARK font:sans --><!-- @MARK font:mono_:where(code,pre) -->
-<body class="font:sans font:mono_:where(code,pre) font-feature:'salt'">…</body>
+<!-- @MARK font:sans --><!-- @MARK font:mono_:is(code,pre) -->
+<body class="font:sans font:mono_:is(code,pre) font-feature:'salt'">…</body>
 ```
 Don't forget to add the [font faces](/guide/fonts#font-faces).
 
