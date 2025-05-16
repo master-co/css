@@ -64,7 +64,7 @@ const editorOptions: editor.IStandaloneEditorConstructionOptions = {
     overviewRulerLanes: 0,
     lineHeight: 22,
     fontSize: 13,
-    fontFamily: (variables as any)['font-family'].mono.join(',')
+    fontFamily: variables['font-family']['mono-fallback']
 }
 
 const editorHTMLOptions: any = {
