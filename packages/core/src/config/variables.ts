@@ -20,29 +20,9 @@ const variables = {
         alt: 'alternate',
         'alt-reverse': 'alternate-reverse'
     },
-    'background-origin': {
-        content: 'content-box',
-        border: 'border-box',
-        padding: 'padding-box'
-    },
     order: {
         first: -999999,
         last: 999999
-    },
-    'shape-outside': {
-        content: 'content-box',
-        border: 'border-box',
-        padding: 'padding-box',
-        margin: 'margin-box'
-    },
-    'clip-path': {
-        content: 'content-box',
-        border: 'border-box',
-        padding: 'padding-box',
-        margin: 'margin-box',
-        fill: 'fill-box',
-        stroke: 'stroke-box',
-        view: 'view-box'
     },
     current: 'currentColor',
     'white': 'oklch(100% 0 none)',
