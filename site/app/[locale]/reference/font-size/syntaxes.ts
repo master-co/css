@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['font-size:`size`'],
     'font:3xs',
     'font:2xs',
     'font:xs',
@@ -16,6 +15,7 @@ const syntaxes = [
     'font:8xl',
     'font:9xl',
     'font:10xl',
+    ['font-size:`size`'],
 ]
 
 export default syntaxes

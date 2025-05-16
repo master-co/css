@@ -515,7 +515,8 @@ const rules = {
             'font-size': undefined,
             'line-height': ['calc(', undefined, ' + 0.875em)']
         },
-        type: SyntaxRuleType.Shorthand
+        type: SyntaxRuleType.Shorthand,
+        namespaces: ['font-size']
     },
     'text-fill-color': {
         aliasGroups: ['text', 't'],
