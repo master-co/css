@@ -4,12 +4,10 @@ import SyntaxTr from 'internal/components/SyntaxTr'
 
 export default () => {
     return (
-        <>
-            <SyntaxTable>
-                {syntaxes.map((syntax) =>
-                    <SyntaxTr value={syntax} key={syntax}></SyntaxTr>)
-                }
-            </SyntaxTable>
-        </>
+        <SyntaxTable>
+            {syntaxes.map((syntax) =>
+                <SyntaxTr value={syntax} key={syntax}></SyntaxTr>)
+            }
+        </SyntaxTable>
     )
 }

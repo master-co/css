@@ -27,6 +27,24 @@ const variables = {
         'extrabold': 800,
         'heavy': 900
     },
+    "font-size": {
+        "3xs": 8,
+        "2xs": 10,
+        "xs": 12,
+        "sm": 14,
+        "md": 16,
+        "lg": 18,
+        "xl": 20,
+        "2xl": 24,
+        "3xl": 32,
+        "4xl": 36,
+        "5xl": 40,
+        "6xl": 48,
+        "7xl": 60,
+        "8xl": 72,
+        "9xl": 96,
+        "10xl": 128
+    },
     'order': {
         'first': -999999,
         'last': 999999
