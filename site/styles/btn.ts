@@ -3,7 +3,7 @@ import type { Config } from '@master/css'
 export default {
     components: {
         btn: {
-            '': 'both-center inline-flex font:semibold outline-offset:-1',
+            '': 'justify-center items-center inline-flex font:semibold outline-offset:-1',
             'xs': 'r:4 px:2x font:12 h:6x',
             'sm': 'r:6 px:3x font:12 h:8x',
             'md': 'r:6 px:4x font:14 h:10x',

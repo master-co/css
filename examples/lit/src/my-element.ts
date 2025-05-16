@@ -40,7 +40,7 @@ export class MyElement extends LitElement {
 
     render() {
         return html`
-      <div class="flex both-center">
+      <div class="flex justify-center items-center">
         <a href="https://vitejs.dev" target="_blank">
           <img src=${litLogo} class="logo" alt="Vite logo" />
         </a>
