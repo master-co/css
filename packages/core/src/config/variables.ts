@@ -16,14 +16,6 @@ const variables = {
         col: 'column',
         'col-reverse': 'column-reverse'
     },
-    'transform-box': {
-        content: 'content-box',
-        border: 'border-box',
-        padding: 'padding-box',
-        fill: 'fill-box',
-        stroke: 'stroke-box',
-        view: 'view-box'
-    },
     'animation-direction': {
         alt: 'alternate',
         'alt-reverse': 'alternate-reverse'
