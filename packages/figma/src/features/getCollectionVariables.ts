@@ -25,11 +25,12 @@ export default async function getCollectionVariables(options: GetCollectionVaria
     for (const varId of collection.variableIds) {
         const variable = await figma.variables.getVariableByIdAsync(varId)
         if (!variable) continue
-        const variableNameSplits = variable.name.split('/')
+        const normalizedName = variable.name.toLocaleLowerCase().replace(' ', '-')
+        const variableNameSplits = normalizedName.split('/')
         const key = variableNameSplits[variableNameSplits.length - 1]
         const groups = variableNameSplits.slice(0, variableNameSplits.length - 1)
         const group = groups.join('.') || undefined
-        const name = variable.name.replace('/', '-')
+        const name = normalizedName.replace('/', '-')
         const namespace = groups[0]
         for (const varModeId in variable.valuesByMode) {
             const value = variable.valuesByMode[varModeId] as any
@@ -38,7 +39,7 @@ export default async function getCollectionVariables(options: GetCollectionVaria
             let newValue
             if (value.type === 'VARIABLE_ALIAS') {
                 const aliasVariable = await figma.variables.getVariableByIdAsync(value.id)
-                newValue = aliasVariable ? `$${aliasVariable.name.replace('/', '-')}` : undefined
+                newValue = aliasVariable ? `$${aliasVariable.name.toLocaleLowerCase().replace(' ', '-').replace('/', '-')}` : undefined
             } else if (variable.resolvedType === 'COLOR') {
                 newValue = toColorValue(value, options.outputColorSpace)
             } else if (variable.resolvedType === 'STRING' || variable.resolvedType === 'FLOAT') {

@@ -6,7 +6,7 @@ import getCollectionVariables from '../src/features/getCollectionVariables'
 
 describe('getCollectionVariables', () => {
     it('should return parsed color config', async () => {
-        const result = await getCollectionVariables('mock-id', { defaultMode: { name: 'Default' } })
+        const result = await getCollectionVariables({ varCollId: 'mock-id', defaultVarMode: { name: 'Default' } })
         expect(result).toEqual({
             variables: {
                 gray: {

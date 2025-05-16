@@ -8,5 +8,5 @@ test.concurrent('transform', () => {
 })
 
 test.concurrent('transform-box', ()=> {
-    expect(createCSS().create('transform:padding')?.text).toContain('transform-box:padding-box')
+    expect(createCSS().create('transform-content')?.text).toContain('transform-box:content-box')
 })

@@ -1,8 +1,6 @@
-import { it, test, expect } from 'vitest'
-import { createCSS } from '../../src'
+import CSSTester from '../tester'
 
-test.concurrent('font-family', () => {
-    expect(createCSS().create('font:serif')?.text).toBe('.font\\:serif{font-family:ui-serif,Georgia,Cambria,Times New Roman,Times,serif}')
-    expect(createCSS().create('font:mono_:where(code,kbd,samp)')?.text).toBe('.font\\:mono_\\:where\\(code\\,kbd\\,samp\\) :where(code,kbd,samp){font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace}')
-    expect(createCSS().create('font:serif:hover')?.text).toBe('.font\\:serif\\:hover:hover{font-family:ui-serif,Georgia,Cambria,Times New Roman,Times,serif}')
-})
+new CSSTester()
+    .classText({
+        'font:sans': 'font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
+    })

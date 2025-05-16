@@ -11,7 +11,7 @@ describe.concurrent('scope', () => {
         'label': 'blue',
         'sortText': 'aaaablue',
     }))
-    test.concurrent('box:content', () => expect(hint('box:')?.find(({ label }) => label === 'content')).toEqual({
+    test.concurrent('box-content', () => expect(hint('box:')?.find(({ label }) => label === 'content')).toEqual({
         'detail': '(scope) content-box',
         'kind': 12,
         'label': 'content',

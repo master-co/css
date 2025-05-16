@@ -535,7 +535,7 @@ export default class MasterCSS {
 
         /**
          * 2. value (ambiguous.key * ambiguous.values)
-         * @example bg:current box:content font:12
+         * @example bg:current box-content font:12
          */
         for (const eachSyntax of this.definedRules) {
             if (eachSyntax.matchers.value?.test(className)) return eachSyntax

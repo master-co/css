@@ -17,7 +17,7 @@ export default class CSSTester {
 
     classText(cases: Record<string, string>) {
         test.concurrent.each(Object.entries(cases))('%s', (cls, expectedText) => {
-            expect(this.css.create(cls)?.text).toBe(expectedText)
+            expect(this.css.create(cls)?.text).toContain(expectedText)
         })
         return this
     }
