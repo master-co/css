@@ -1,13 +1,16 @@
 import { variables } from '@master/css'
 
 ## Default [sr-only]
-Master CSS provides three [font family](/reference/font-family) variables, `sans`, `serif`, and `mono`, to facilitate your use as fallbacks when adding custom fonts.
+Master CSS provides three standard font family variables, `font-family-sans`, `font-family-serif` and `font-family-mono`, for you to use as a reference for custom fonts.
 
-| Token   | CSS Text                                                                                               |
-|---------|-------------------------------------------------------------------------------------------------------|
-| `sans`  | <InlineCode>{variables['font-family'].sans.join(', ')}</InlineCode>           |
-| `serif` | <InlineCode>{variables['font-family'].serif.join(', ')}</InlineCode>          |
-| `mono`  | <InlineCode>{variables['font-family'].mono.join(', ')}</InlineCode>           |
+| Class                  | Variable Value                                                                                        |
+|------------------------|-------------------------------------------------------------------------------------------------------|
+| `mcss font:sans`       | <InlineCode lang="ts">{JSON.stringify(variables['font-family'].sans)}</InlineCode>                                              |
+| `mcss font:serif`      | <InlineCode lang="ts">{JSON.stringify(variables['font-family'].serif)}</InlineCode>                                             |
+| `mcss font:mono`       | <InlineCode lang="ts">{JSON.stringify(variables['font-family'].mono)}</InlineCode>                                              |
+| `mcss font:sans-fallback`       | <InlineCode lang="ts">{JSON.stringify(variables['font-family']['sans-fallback'])}</InlineCode>                                              |
+| `mcss font:serif-fallback`      | <InlineCode lang="ts">{JSON.stringify(variables['font-family']['serif-fallback'])}</InlineCode>                                             |
+| `mcss font:mono-fallback`       | <InlineCode lang="ts">{JSON.stringify(variables['font-family']['mono-fallback'])}</InlineCode>                                              |
 
 <Demo $py={0}>
     <DemoPanel className="flex flex-col gap:8x">
@@ -25,17 +28,17 @@ Master CSS provides three [font family](/reference/font-family) variables, `sans
         </div>
     </DemoPanel>
 </Demo>
-Apply the defined `font-family` variables using the inherited rules <Heirs />:
+Apply the defined `font-family` variables:
 ```html
-<body class="font:sans">…</body> <!-- [!code focus] -->
-<body class="font:font-family-sans">…</body>
-<body class="font:$font-family-sans">…</body>
+<div class="font:sans">…</div>
+<div class="font:serif">…</div>
+<div class="font:mono">…</div>
 ```
 
 ---
 
 ## Basic usage
-### Add custom fonts
+### Use custom fonts
 Customize your font tokens by defining [variables](/guide/variables). For example, add `Inter` as the general font and `Fira Code` as the code font.
 ```js name=master.css.js
 import { variables } from '@master/css'
@@ -43,8 +46,8 @@ import { variables } from '@master/css'
 export default {
     variables: {
         'font-family': {
-            sans: ['Inter', ...variables['font-family'].sans], /* [!code ++] */
-            mono: ['Fira Code', ...variables['font-family'].mono] /* [!code ++] */
+            sans: '"Inter", $font-family-sans-fallback', /* [!code ++] */
+            mono: '"Fira Code", $font-family-mono-fallback', /* [!code ++] */
         }
     }
 }

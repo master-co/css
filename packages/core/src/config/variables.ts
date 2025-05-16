@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 import colors from '@master/colors'
 import type { VariableDefinitions } from '../types/config'
 
@@ -8,9 +9,12 @@ const variables = {
     'min': 'min-content',
     'current': 'currentColor',
     'font-family': {
-        'mono': ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
-        'sans': ['ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'],
-        'serif': ['ui-serif', 'Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif']
+        'sans': '$font-family-sans-fallback',
+        'serif': '$font-family-serif-fallback',
+        'mono': '$font-family-mono-fallback',
+        'sans-fallback': "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+        'serif-fallback': "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif",
+        'mono-fallback': "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
     },
     'font-weight': {
         'thin': 100,
