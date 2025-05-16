@@ -16,7 +16,7 @@ it('extract latent classes from html', () => {
         <body>
             <div id="app">
                 <div>
-                    <div class="flex center-content">
+                    <div class="flex">
                         <a href="https://vitejs.dev" target="_blank">
                             <img src="/vite.svg" class="logo" alt="Vite logo" />
                         </a>
@@ -60,7 +60,6 @@ it('extract latent classes from html', () => {
             'in',
             'app',
             'flex',
-            'center-content',
             '_blank',
             'logo',
             'Vite',

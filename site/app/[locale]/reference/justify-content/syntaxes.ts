@@ -11,8 +11,7 @@ const syntaxes = [
     'justify-content:flex-end',
     'justify-content:space-around',
     'justify-content:space-between',
-    'justify-content:space-evenly',
-    'justify-content:center-content',
+    'justify-content:space-evenly'
 ]
 
 export default syntaxes

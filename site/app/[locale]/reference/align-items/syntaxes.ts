@@ -9,8 +9,7 @@ const syntaxes = [
     'align-items:flex-start',
     'align-items:flex-end',
     'align-items:self-start',
-    'align-items:self-end',
-    'align-items:center-content'
+    'align-items:self-end'
 ]
 
 export default syntaxes

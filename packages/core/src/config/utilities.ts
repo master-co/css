@@ -141,7 +141,7 @@ const utilities = {
     'min-vh': {
         'min-height': '100vh'
     },
-    'center-content': {
+    'both-center': {
         'justify-content': 'center',
         'align-items': 'center',
     },
