@@ -1,15 +1,15 @@
 const syntaxes = [
     ['align-items:`align`'],
-    'align-items:normal',
-    'align-items:baseline',
-    'align-items:center',
-    'align-items:stretch',
-    'align-items:start',
-    'align-items:end',
-    'align-items:flex-start',
-    'align-items:flex-end',
-    'align-items:self-start',
-    'align-items:self-end'
+    'items-normal',
+    'items-baseline',
+    'items-center',
+    'items-stretch',
+    'items-start',
+    'items-end',
+    'items-flex-start',
+    'items-flex-end',
+    'items-self-start',
+    'items-self-end'
 ]
 
 export default syntaxes
