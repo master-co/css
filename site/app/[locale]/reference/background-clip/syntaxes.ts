@@ -1,9 +1,9 @@
 const syntaxes = [
     ['background-clip:`origin`'],
-    'bg:text',
-    'background-clip:border',
-    'background-clip:content',
-    'background-clip:padding',
+    'bg-clip-border',
+    'bg-clip-content',
+    'bg-clip-padding',
+    'bg-clip-text',
 ]
 
 export default syntaxes

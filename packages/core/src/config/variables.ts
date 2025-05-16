@@ -20,11 +20,6 @@ const variables = {
         alt: 'alternate',
         'alt-reverse': 'alternate-reverse'
     },
-    'background-clip': {
-        content: 'content-box',
-        border: 'border-box',
-        padding: 'padding-box'
-    },
     'background-origin': {
         content: 'content-box',
         border: 'border-box',
