@@ -2,7 +2,7 @@ import Link from 'internal/components/Link'
 
 export default () => {
     return (
-        <div className='doc-table'>
+        <figure className='doc-table'>
             <table>
                 <thead>
                     <tr>
@@ -39,6 +39,6 @@ export default () => {
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </figure>
     )
 }

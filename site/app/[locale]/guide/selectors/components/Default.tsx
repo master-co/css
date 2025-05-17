@@ -2,7 +2,7 @@ import { selectors } from '@master/css'
 import InlineCode from 'internal/components/InlineCode'
 
 export default () =>
-    <div className='doc-table'>
+    <figure className='doc-table'>
         <table>
             <thead>
                 <tr>
@@ -30,4 +30,4 @@ export default () =>
                 }
             </tbody>
         </table>
-    </div>
+    </figure>

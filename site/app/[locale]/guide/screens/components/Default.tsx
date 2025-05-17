@@ -17,7 +17,7 @@ const descriptions = {
 
 export default () => {
     return (
-        <div className='doc-table'>
+        <figure className='doc-table'>
             <table>
                 <thead>
                     <tr>
@@ -43,6 +43,6 @@ export default () => {
                     }
                 </tbody>
             </table>
-        </div>
+        </figure>
     )
 }

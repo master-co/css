@@ -16,6 +16,13 @@ const variables = {
         'serif-fallback': "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif",
         'mono-fallback': "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
     },
+    'line-height': {
+        'xs': 1.2,
+        'sm': 1.4,
+        'md': 1.6,
+        'lg': 1.8,
+        'xl': 2,
+    },
     'font-weight': {
         'thin': 100,
         'extralight': 200,

@@ -5,6 +5,7 @@ const units = {
             'Getting Started',
             'Syntax Tutorial',
             'Fundamentals',
+            'Fundations',
             'Customization',
             'Production Optimization',
         ]

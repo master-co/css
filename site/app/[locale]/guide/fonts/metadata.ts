@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'Fonts',
     description: 'A guide to customizing fonts for your design system.',
-    category: 'Customization',
+    category: 'Fundations',
     fileURL: import.meta.url
 })
 
