@@ -74,6 +74,52 @@ Apply your custom fonts:
 
 ---
 
+## Use custom fonts
+Customize your font tokens by defining [variables](/guide/variables). For example, add `Inter` as the general font and `Fira Code` as the code font.
+```js name=master.css.js
+export default {
+    variables: {
+        'font-family': {
+            sans: '"Inter", $font-family-sans-fallback', /* [!code ++] */
+            mono: '"Fira Code", $font-family-mono-fallback', /* [!code ++] */
+        }
+    }
+}
+```
+Apply the defined `font-family` variables. For example, presetting the global fonts in `html <body>`:
+```html
+<!-- @MARK font:sans --><!-- @MARK font:mono_:is(code,pre) -->
+<body class="font:sans font:mono_:is(code,pre) font-feature:'salt'">…</body>
+```
+Don't forget to add the [font faces](/guide/fonts#font-faces).
+
+### Google fonts
+The fastest way to declare custom font faces is through [Google Fonts](https://fonts.google.com/).
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> <!-- [!code ++] -->
+</head>
+</html>
+```
+
+### Self-hosted fonts
+You can also self-host the fonts via native CSS, as usual.
+```css name=styles/fonts.css
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/Inter-Regular.woff2") format("woff2");
+}
+```
+
+---
+
 ## Conditionally apply
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
