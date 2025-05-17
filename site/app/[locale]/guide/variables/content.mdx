@@ -5,8 +5,7 @@ In Master CSS, variables are used to manage tokens in the design system, such as
 
 ---
 
-## Basic usage
-### Add a string variable
+## Add a string variable
 Create a string variable to reuse it in your markup.
 ```js name=master.css.js
 export default {
@@ -24,8 +23,124 @@ Use the variable in your markup:
 <div class="content:hash content:external">…</div>
 ```
 
-### Add a spacing variable
+---
+
+## Add a spacing variable
 See more about [spacing and sizing](/guide/spacing-and-sizing).
 
-### Add a color variable
-See more about [color variables](/guide/colors).
+---
+
+## Use custom colors
+### Add a color
+Add the primary color using `#000`, `oklch(0% 0 none)`, or `hsl(0 0% 0%)`.
+<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-a-color/master.css.js?raw')}</Code>
+Apply it using color-related syntax and even change the opacity.
+<Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-a-color/template.html?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-a-color/generated.css?raw')}</Code>
+    </div>
+</details>
+
+(i) If a color is used only once in all markups, you can optionally not abstract it into a token.
+```html
+<button class="bg:#ceb195">Milk Tea</button>
+```
+Variables only support `rgb` and `hsl`, in the future, they will be compatible with all native CSS functions, such as `rgba`, `hsla`, `lab`, and others. [#346](https://github.com/master-co/css/issues/346)
+
+### Add a color with opacity
+Add color variables with opacity using `#00000080`, `rgb(0 0 0/.5)`, or `hsl(0 0% 0%/.5)`.
+<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-a-color-with-opacity/master.css.js?raw')}</Code>
+Apply it using color-related syntax like [`fg:`](/reference/color).
+<Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-a-color-with-opacity/template.html?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-a-color-with-opacity/generated.css?raw')}</Code>
+    </div>
+</details>
+(x) Color variables with opacity cannot use `/alpha` to change the opacity.
+```html
+<!-- @MARK primary/.5 -->
+<div class="fg:primary/.5">…</div>
+```
+
+### Add a color alias
+Create an alias for a color to link its value to an existing color.
+<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-an-alias/master.css.js?raw')}</Code>
+Apply it using color-related syntax.
+<Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-an-alias/template.html?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-an-alias/generated.css?raw')}</Code>
+    </div>
+</details>
+For example, say you have multiple color variables referencing the same color token. If that color needs updating, you would only need to update the source instead of manually updating every instance of the color.
+
+### Add a color alias with opacity
+Create an alias for a color with opacity to link its value to an existing color.
+<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-an-alias-with-opacity/master.css.js?raw')}</Code>
+Apply it using color-related syntax like [`fg:`](/reference/color).
+<Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-an-alias-with-opacity/template.html?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-an-alias-with-opacity/generated.css?raw')}</Code>
+    </div>
+</details>
+As shown above, creating an alias `secondary` linked to an existing alias `primary` with opacity `/.5` is possible, and the opacity will be multiplied `0.5 * 0.5 = 0.25`.
+
+### Add color shades
+Sets multiple shades for a single color.
+```js name=master.css.js
+export default {
+    variables: {
+        primary: { /* [!code ++] */
+            '': '#1192e8', /* primary */ /* [!code ++] */
+            10: '#e5f6ff', /* primary-10 */ /* [!code ++] */
+            20: '#bae6ff', /* primary-20 */ /* [!code ++] */
+        } /* [!code ++] */
+    }
+}
+```
+Apply it using color-related syntax like [`fill:`](/reference/fill).
+```html
+<!-- @MARK fill:primary-20 -->
+<svg class="fill:primary-20 …">20</svg>
+```
+
+### Add colors based on modes
+Add color variables in different theme modes.
+<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-colors-by-theme/master.css.js?raw')}</Code>
+Using modes for variables, you can access a single source of truth and simplify the markup.
+<Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-colors-by-theme/template.html?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-colors-by-theme/generated.css?raw')}</Code>
+    </div>
+</details>
+
+### Override default colors
+(!) Access the same key as the preset to override default colors, like `blue-5` ~ `blue-95`.
+```js name=master.css.js
+export default {
+    variables: {
+        blue: '#4589ff' /* [!code ++] */
+    }
+}
+```
+
+(o) Use `app-*` to avoid conflicts with defaults and keep `blue-*` colors consistent.
+
+<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/override-default-colors/master.css.js?raw')}</Code>
+Apply custom colors for the current application.
+<Code lang="html">{require('../../../../../packages/server/tests/fixtures/override-default-colors/template.html?raw')}</Code>
+<details>
+    <summary>Generated CSS</summary>
+    <div>
+        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/override-default-colors/generated.css?raw')}</Code>
+    </div>
+</details>

@@ -1,0 +1,87 @@
+import { variables } from '@master/css'
+import FontSizeBasicUsage from '../../reference/font-size/components/BasicUsage.mdx'
+import BodyText from '../../reference/text-size/components/BodyText.mdx'
+import Headings from '../../reference/text-size/components/Headings.mdx'
+import PageTitles from '../../reference/text-size/components/PageTitles.mdx'
+import LineHeightBasicUsage from '../../reference/line-height/components/BasicUsage.mdx'
+import FontWeightBasicUsage from '../../reference/font-weight/components/BasicUsage.mdx'
+
+## Overview [sr-only]
+
+---
+
+## Type scale
+The font scale ranges from `font:3xs` to `font:10xl`, with each size intentionally designed to deliver visual harmony and clear hierarchy across a variety of use cases.
+
+* `font:3xs ~ font:xs` Used for fine print, annotations, captions, or table labels
+* `font:sm ~ font:lg` Standard text sizes for body copy, paragraphs, and buttons
+* `font:xl ~ font:3xl` Ideal for subheadings, lead paragraphs, or callouts
+* `font:4xl ~ font:10xl` Reserved for large headings, page titles, and hero sections
+
+<FontSizeBasicUsage />
+However, when setting font size, you typically want to pair it with a corresponding line height. Smaller text sizes use taller line-heights to improve legibility, while larger sizes use tighter spacing to maintain compactness and strong hierarchy.
+
+In our [`text:<size>`](/reference/text-size) system, each size from `text:3xs` to `text:10xl` has a carefully adjusted line-height to achieve balanced readability and visual harmony. These values are not uniform ratios—they're intentionally tuned to suit the visual characteristics of each text scale.
+
+See some classic examples in the following sections.
+
+### Body text
+<BodyText />
+### Headings
+<Headings />
+### Page titles
+<PageTitles />
+
+---
+
+## Font families
+Master provides three standard font family variables, `font-family-sans`, `font-family-serif` and `font-family-mono`, for you to use as a reference for custom fonts.
+<Demo $py={0}>
+    <DemoPanel className="flex flex-col gap:8x">
+        <div className="w:full">
+            <DemoLabel>font:sans</DemoLabel>
+            <DemoP className="font:sans">Elegant forms shape visual harmony.</DemoP>
+        </div>
+        <div className="w:full">
+            <DemoLabel>font:serif</DemoLabel>
+            <DemoP className="font:serif">Elegant forms shape visual harmony.</DemoP>
+        </div>
+        <div className="w:full">
+            <DemoLabel>font:mono</DemoLabel>
+            <DemoP className="font:mono">Elegant forms shape visual harmony.</DemoP>
+        </div>
+    </DemoPanel>
+</Demo>
+Apply the defined font family variables:
+```html
+<!-- @MARK font:sans -->
+<div class="font:sans">Elegant forms shape visual harmony.</div>
+<!-- @MARK font:serif -->
+<div class="font:serif">Elegant forms shape visual harmony.</div>
+<!-- @MARK font:mono -->
+<div class="font:mono">Elegant forms shape visual harmony.</div>
+```
+See the [font family](/reference/font-family) reference for more details on how to add custom fonts.
+
+---
+
+## Font weights
+Our typography system defines a semantic range of font weight tokens, from `font:thin` to `font:heavy`, providing clear naming for visual emphasis and typographic hierarchy.
+
+* `font:thin` extra-light strokes for subtle or elegant UI elements
+* `font:light` light weight, ideal for large headings or minimalist design
+* `font:regular` default weight for body text and general readability
+* `font:medium` slightly bolder for subheadings or emphasis
+* `font:bold` strong emphasis, often used in call-to-action or UI labels
+* `font:heavy` maximum weight for impact, branding, or visual anchors
+
+<FontWeightBasicUsage />
+
+---
+
+## Line height
+<LineHeightBasicUsage />
+
+---
+
+## Letter spacing

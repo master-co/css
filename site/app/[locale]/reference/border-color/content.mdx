@@ -1,6 +1,35 @@
 ## Overview [sr-only]
 <Overview />
 
+---
+
+## Use custom border colors
+Add a color to the frame variable namespace.
+```js name=master.css.js
+export default {
+    modes: {
+        light: {
+            frame: {
+                light: '$slate-60/.2' /* [!code highlight] */
+            }
+        },
+        dark: {
+            frame: {
+                light: '$gray-30/.2' /* [!code highlight] */
+            }
+        }
+    }
+}
+```
+Apply the defined `frame-*` variables using the inherited rules <FrameHeirs />.
+```html
+<div class="outline:neutral"></div> <!-- [!code highlight] -->
+<div class="outline:frame-neutral">equals</div>
+<div class="outline:$frame-neutral">equals</div>
+```
+
+---
+
 ## Conditionally apply
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html

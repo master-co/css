@@ -10,6 +10,49 @@ Add the suffix `/alpha` to change the opacity of any color.
 
 ---
 
+## Use custom text colors
+
+Add a color to the text variable namespace.
+```js name=master.css.js
+export default {
+    variables: {
+        text: {
+            primary: '#000' /* [!code ++] */
+        }
+    }
+}
+```
+Apply the custom color:
+```html
+<!-- @MARK primary -->
+<p class="fg:primary"></p>
+```
+Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
+```html
+<!-- @MARK light -->
+<html class="light">
+    <body class="fg:neutral"></body> <!-- [!code highlight] -->
+    <body class="fg:text-neutral">equals</body>
+    <body class="fg:$text-neutral">equals</body>
+</html>
+```
+(x) We set the [foreground color](/reference/color) of elements using `fg:color` rather than the [text-specific](/reference/text-fill-color) `text:color`.
+```html
+<p class="text:pink">text-fill-color properity</p>
+```
+Besides inheriting the above rules, you can use `text-*` to access global text color variables in other syntax.
+```html
+<!-- @MARK text-light -->
+<svg class="stroke:text-light"></svg>
+```
+To escape inherited text colors, use `$blue` to apply `variables.blue` instead of `variables.text.blue`.
+```html
+<!-- @MARK $blue -->
+<p class="fg:$blue">…</p>
+```
+
+---
+
 ## Conditionally apply
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
