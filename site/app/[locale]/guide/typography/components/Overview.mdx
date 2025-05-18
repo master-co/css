@@ -1,0 +1,21 @@
+import buildingImg from '~/site/public/building.jpg';
+
+<Demo>
+    <div className="bg:surface max-w:90x r:2x overflow:hidden s:demo outline:1|lightest">
+        <Image src={buildingImg} width="640" height="320" className="aspect:16/9 object:cover" />
+        <div className="p:6x">
+            <div className="uppercase fg:sky font:semibold text:2xs tracking:widest mb:1x">Architectural</div>
+            <div className="fg:strong font:medium text:md">Future-proof infrastructure</div>
+            <div className="fg:light text:sm text-truncate:3 mt:1x">From typography to spacing, every detail is intentionally designed to provide visual harmony, adaptability, and intuitive customization across your entire site.</div>
+        </div>
+    </div>
+</Demo>
+```html
+...
+<div class="uppercase font:semibold text:2xs tracking:widest ...">Architectural</div>
+<div class="font:medium text:md ...">Future-proof infrastructure</div>
+<div class="text:sm ...">
+    From typography to spacing, every...
+</div>
+...
+```

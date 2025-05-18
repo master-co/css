@@ -27,10 +27,8 @@ It can be reducible:
 ```html
 <!-- Same as native CSS -->
 <div class="text-align:center">
-
 <!-- Ambiguous shorthand -->
 <div class="text:center">
-
 <!-- Abbreviation -->
 <div class="t:center">
 ```
@@ -38,13 +36,10 @@ It can be elegant:
 ```html
 <!-- Set the background to blue-60 with an opacity of .5 -->
 <div class="bg:blue-60/.5">
-
 <!-- Magnify to 1.5x -->
 <div class="scale(1.5)">
-
 <!-- Transition with a delay of 0.3s and timing-function "ease" -->
 <div class="~transform|.3s|ease">
-
 <!-- Use a utility class that translates to "display: block" -->
 <div class="block">
 ```
@@ -52,16 +47,12 @@ It can be [stateful and selectable](/guide/selectors):
 ```html
 <!-- Set a pink background on hover -->
 <div class="bg:pink:hover">
-
 <!-- Set a pink background for all subsequent sibling elements -->
 <div class="bg:pink~*">
-
 <!-- All subsequent div siblings -->
 <div class="bg:pink+div">
-
 <!-- All descendant p elements -->
 <div class="bg:pink_:where(p)">
-
 <!-- Use simplified :first instead of :nth-child to set pink background -->
 <div class="bg:pink:first">
 ```
@@ -69,19 +60,14 @@ It can be [responsive](/guide/responsive-design) and [conditional](/guide/apply-
 ```html
 <!-- Set width to 50rem, when screen width >=1024 -->
 <div class="width:800@>=1024">
-
 <!-- Similar to previous example, using a built-in breakpoint -->
 <div class="width:800@sm">
-
 <!-- Screen width >= 600px & < 1279.98px top at 0.0625rem -->
 <div class="top:1@xs&<lg">
-
 <!-- Set background to gray-20 when in dark mode -->
 <div class="bg:gray-20@dark">
-
 <!-- Hide element for print -->
 <div class="hidden@print">
-
 <!-- Fade with a 0.2s delay when low motion is not specified by the client -->
 <div class="@fade|.2s@motion">
 ```
@@ -113,20 +99,18 @@ This feature is included in the [Master CSS Language Service](/guide/language-se
 A factual study by [PPIG](https://en.wikipedia.org/wiki/Psychology_of_programming) finds that syntax highlighting helps comprehension and reduces time to internalize a language.
 
 (!) This is a template markup written by a utility-first framework.
-```jsx
-<div class="mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300">
-<div class="mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300">
-<div class="mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300">
+```text
+mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300
+mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300
+mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300
 ```
 (o) Improve readability with syntax highlighting.
-```html
-<div class="mt:36 r:8 flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm">
-<div class="mt:36 r:8 flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm">
-<div class="mt:36 r:8 flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm">
+```mcss
+mt:9x r:2x flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
+mt:9x r:2x flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
+mt:9x r:2x flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
 ```
 We take pride in the experience improvement of syntax highlighting in template markup. This feature effectively reduces discomfort caused by "long class names" and facilitates a quick understanding of the overall style.
-
-Thanks to the [structured syntax](#structured-syntax) of Master CSS, you can now grasp the prettier markup.
 
 Master CSS also features autocompletion, generated CSS preview, and more. Check out our [Language Service](/guide/language-service) for more information.
 

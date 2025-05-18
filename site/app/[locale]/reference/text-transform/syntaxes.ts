@@ -1,9 +1,9 @@
 const syntaxes = [
-    ['text-transform:`transform`'],
-    'text-transform:none',
     'capitalize',
     'uppercase',
     'lowercase',
+    'text-transform:none',
+    ['text-transform:`transform`'],
 ]
 
 export default syntaxes

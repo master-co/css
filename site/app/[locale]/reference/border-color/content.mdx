@@ -3,6 +3,16 @@
 
 ---
 
+## Examples
+### Apply conditionally
+Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
+```html
+<div class="border-color:blue-60:hover border-color:blue-60@sm border-color:blue-60@dark border-color:blue-60@print">…</div>
+```
+
+---
+
+## Customization
 ## Use custom border colors
 Add a color to the frame variable namespace.
 ```js name=master.css.js
@@ -27,10 +37,3 @@ Apply the defined `frame-*` variables using the inherited rules <FrameHeirs />.
 <div class="outline:frame-neutral">equals</div>
 <div class="outline:$frame-neutral">equals</div>
 ```
-
-### Apply conditionally
-Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
-```html
-<div class="border-color:blue-60:hover border-color:blue-60@sm border-color:blue-60@dark border-color:blue-60@print">…</div>
-```
-
