@@ -5,8 +5,19 @@ import Headings from '../../reference/text-size/components/Headings.mdx'
 import PageTitles from '../../reference/text-size/components/PageTitles.mdx'
 import LineHeightBasicUsage from '../../reference/line-height/components/BasicUsage.mdx'
 import FontWeightBasicUsage from '../../reference/font-weight/components/BasicUsage.mdx'
+import LetterSpacingBasicUsage from '../../reference/letter-spacing/components/BasicUsage.mdx'
+import FontFamilyBasicUsage from '../../reference/font-family/components/BasicUsage.mdx'
 
 ## Overview [sr-only]
+
+### Namespaces for typography
+The typography system is built on a set of [variables](/guide/variables) that are organized into namespaces. This allows for easy customization and consistent application across your design.
+
+* `font-size` for font sizes, text sizes
+* `font-family` for font families
+* `font-weight` for font weights
+* `line-height` for line height
+* `letter-spacing` for letter spacing
 
 ---
 
@@ -19,48 +30,11 @@ The font scale ranges from `font:3xs` to `font:10xl`, with each size intentional
 * `font:4xl ~ font:10xl` Reserved for large headings, page titles, and hero sections
 
 <FontSizeBasicUsage />
-However, when setting font size, you typically want to pair it with a corresponding line height. Smaller text sizes use taller line-heights to improve legibility, while larger sizes use tighter spacing to maintain compactness and strong hierarchy.
-
-In our [`text:<size>`](/reference/text-size) system, each size from `text:3xs` to `text:10xl` has a carefully adjusted line-height to achieve balanced readability and visual harmony. These values are not uniform ratios—they're intentionally tuned to suit the visual characteristics of each text scale.
-
-See some classic examples in the following sections.
-
-### Body text
-<BodyText />
-### Headings
-<Headings />
-### Page titles
-<PageTitles />
 
 ---
 
 ## Font families
-Master provides three standard font family variables, `font-family-sans`, `font-family-serif` and `font-family-mono`, for you to use as a reference for custom fonts.
-<Demo $py={0}>
-    <DemoPanel className="flex flex-col gap:8x">
-        <div className="w:full">
-            <DemoLabel>font:sans</DemoLabel>
-            <DemoP className="font:sans">Elegant forms shape visual harmony.</DemoP>
-        </div>
-        <div className="w:full">
-            <DemoLabel>font:serif</DemoLabel>
-            <DemoP className="font:serif">Elegant forms shape visual harmony.</DemoP>
-        </div>
-        <div className="w:full">
-            <DemoLabel>font:mono</DemoLabel>
-            <DemoP className="font:mono">Elegant forms shape visual harmony.</DemoP>
-        </div>
-    </DemoPanel>
-</Demo>
-Apply the defined font family variables:
-```html
-<!-- @MARK font:sans -->
-<div class="font:sans">Elegant forms shape visual harmony.</div>
-<!-- @MARK font:serif -->
-<div class="font:serif">Elegant forms shape visual harmony.</div>
-<!-- @MARK font:mono -->
-<div class="font:mono">Elegant forms shape visual harmony.</div>
-```
+<FontFamilyBasicUsage />
 See the [font family](/reference/font-family) reference for more details on how to add custom fonts.
 
 ---
@@ -85,3 +59,20 @@ Our typography system defines a semantic range of font weight tokens, from `font
 ---
 
 ## Letter spacing
+<LetterSpacingBasicUsage />
+
+---
+
+## Text scale
+However, when setting font size, you typically want to pair it with a corresponding line height. Smaller text sizes use taller line-heights to improve legibility, while larger sizes use tighter spacing to maintain compactness and strong hierarchy.
+
+In our [`text:<size>`](/reference/text-size) system, each size from `text:3xs` to `text:10xl` has a carefully adjusted line-height to achieve balanced readability and visual harmony. These values are not uniform ratios—they're intentionally tuned to suit the visual characteristics of each text scale.
+
+See some classic examples in the following sections.
+
+### Body text
+<BodyText />
+### Article headings
+<Headings />
+### Large titles
+<PageTitles />
