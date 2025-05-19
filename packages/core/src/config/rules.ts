@@ -771,46 +771,54 @@ const rules = {
     'border-top-left-radius': {
         key: 'rtl',
         unit: 'rem',
-        type: SyntaxRuleType.Native
+        type: SyntaxRuleType.Native,
+        namespaces: ['border-radius']
     },
     'border-top-right-radius': {
         key: 'rtr',
         unit: 'rem',
-        type: SyntaxRuleType.Native
+        type: SyntaxRuleType.Native,
+        namespaces: ['border-radius']
     },
     'border-bottom-left-radius': {
         key: 'rbl',
         unit: 'rem',
-        type: SyntaxRuleType.Native
+        type: SyntaxRuleType.Native,
+        namespaces: ['border-radius']
     },
     'border-bottom-right-radius': {
         key: 'rbr',
         unit: 'rem',
-        type: SyntaxRuleType.Native
+        type: SyntaxRuleType.Native,
+        namespaces: ['border-radius']
     },
     'border-top-radius': {
         key: 'rt',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: ['border-top-left-radius', 'border-top-right-radius']
+        declarations: ['border-top-left-radius', 'border-top-right-radius'],
+        namespaces: ['border-radius']
     },
     'border-bottom-radius': {
         key: 'rb',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: ['border-bottom-left-radius', 'border-bottom-right-radius']
+        declarations: ['border-bottom-left-radius', 'border-bottom-right-radius'],
+        namespaces: ['border-radius']
     },
     'border-left-radius': {
         key: 'rl',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: ['border-top-left-radius', 'border-bottom-left-radius']
+        declarations: ['border-top-left-radius', 'border-bottom-left-radius'],
+        namespaces: ['border-radius']
     },
     'border-right-radius': {
         key: 'rr',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
-        declarations: ['border-top-right-radius', 'border-bottom-right-radius']
+        declarations: ['border-top-right-radius', 'border-bottom-right-radius'],
+        namespaces: ['border-radius']
     },
     'border-radius': {
         key: 'r',

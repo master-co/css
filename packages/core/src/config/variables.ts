@@ -61,6 +61,16 @@ const variables = {
         "9xl": 96,
         "10xl": 128
     },
+    'border-radius': {
+        "xs": 2,
+        "sm": 4,
+        "md": 6,
+        "lg": 8,
+        "xl": 12,
+        "2xl": 16,
+        "3xl": 24,
+        "4xl": 32,
+    },
     'order': {
         'first': -999999,
         'last': 999999
