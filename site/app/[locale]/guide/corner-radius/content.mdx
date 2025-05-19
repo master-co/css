@@ -1,0 +1,43 @@
+import BorderRadiusBasicUsage from '../../reference/border-radius/components/BasicUsage.mdx'
+import CreatePillButton from '../../reference/border-radius/components/CreatePillButton.mdx'
+import CreateIconButton from '../../reference/border-radius/components/CreateIconButton.mdx'
+
+## Overview [sr-only]
+The border radius system defines the curvature of UI elements' corners, helping establish a consistent visual language across components.
+<BorderRadiusBasicUsage />
+Each radius token — from `r:xs` to `r:4xl` — represents a progressively larger corner rounding. These are designed to support various use cases:
+
+* `r:xs` to `r:md` are ideal for subtle rounding in input fields, buttons, and cards.
+* `r:lg` to `r:4xl` suit more expressive UI elements such as modals, banners, or illustrations.
+
+For semantic shortcuts:
+
+* `rounded` applies a full border radius along the horizontal/vertical axis, commonly used for tags, buttons, or badges.
+* `round` applies a full (pill or circle) border radius, commonly used for avatars, badges, or circular buttons.
+
+By standardizing radius values, the system ensures visual harmony, simplifies design decisions, and promotes scalable theming across products.
+
+---
+
+## Namespace for corner radius
+The corner radius system is defined in the `variables.border-radius` namespace. This namespace includes a set of utility [variables](/guide/variables) that can be used to apply corner radius styles to elements.
+
+The following rules share the same namespace:
+
+* `border-radius` for the default border radius
+* `border-top-left-radius` for the top left corner
+* `border-top-right-radius` for the top right corner
+* `border-bottom-left-radius` for the bottom left corner
+* `border-bottom-right-radius` for the bottom right corner
+
+See the [border radius](/reference/border-radius) reference for more details on how to add custom corner radius tokens.
+
+---
+
+## Create a pill button
+<CreatePillButton />
+
+---
+
+## Create an icon button
+<CreateIconButton />
