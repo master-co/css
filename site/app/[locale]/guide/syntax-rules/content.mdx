@@ -9,12 +9,13 @@ Use this as a last resort when implementing your design system or styling conven
 
 ---
 
-## Basic usage
-### Add a syntax rule
+## Add a custom syntax rule
 Create your own syntax rule.
 <Overview />
+Master CSS does not provide methods like `declare` or `transform` to let you fully customize the syntax, but instead exposes limited `transformers` and `declarers` to let you extend practical syntax rules. You should rely on the implicit behavior built into Master CSS to achieve the desired effect, but more often than not you will need `config.components`.
 
 ---
 
-## Customization
-Master CSS does not provide methods like `declare` or `transform` to let you fully customize the syntax, but instead exposes limited `transformers` and `declarers` to let you extend practical syntax rules. You should rely on the implicit behavior built into Master CSS to achieve the desired effect, but more often than not you will need `config.components`.
+## Syntax rule types
+Master CSS uses `SyntaxRuleType` to determine the priority of CSS rule generation. By default, each rule is intentionally ordered to minimize style conflicts and reduce the need for overrides.
+<Code lang="ts">{require('../../../../../packages/core/src/syntax-rule-type.ts?raw')}</Code>

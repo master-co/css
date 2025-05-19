@@ -1,13 +1,13 @@
 import type { PropertiesHyphen } from 'csstype'
 import type { rules, utilities } from '../config'
 import { AT_IDENTIFIERS } from '../common'
-import { SyntaxRuleTypeValue } from './common'
 import { DeclarerNames } from '../declarers'
 import { TransformerNames } from '../transformers'
 import { FunctionTransformerNames } from '../function-transformers'
+import SyntaxRuleType from '../syntax-rule-type'
 
 export interface SyntaxRuleDefinition {
-    type?: SyntaxRuleTypeValue
+    type?: SyntaxRuleType
     matcher?: RegExp | string
     sign?: string
     key?: string

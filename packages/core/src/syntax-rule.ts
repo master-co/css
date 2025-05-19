@@ -14,7 +14,6 @@ import generateAt from './utils/generate-at'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 import generateSelector from './utils/generate-selector'
 import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
-import { SyntaxRuleTypeValue } from './types/common'
 import declarers from './declarers'
 import transformers from './transformers'
 import functionTransformers from './function-transformers'
@@ -23,7 +22,7 @@ export class SyntaxRule {
     native?: CSSRule
     readonly atRules?: Partial<Record<AtIdentifier, AtRuleNode[]>>
     readonly priority!: RulePriority
-    readonly type: SyntaxRuleTypeValue = SyntaxRuleType.Normal
+    readonly type: SyntaxRuleType = SyntaxRuleType.Normal
     readonly declarations?: PropertiesHyphen
     readonly layer: Layer
     readonly valid: boolean = true

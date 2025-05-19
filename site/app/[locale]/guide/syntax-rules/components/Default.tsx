@@ -25,7 +25,7 @@ const Default = () =>
                                         <th><InlineCode className='white-space:nowrap'>{eachSyntaxName}</InlineCode></th>
                                         <td>
                                             {rule.type
-                                                ? <code>{SyntaxRuleType[rule.type as keyof typeof SyntaxRuleType]}</code>
+                                                ? <code>{SyntaxRuleType[rule.type]}</code>
                                                 : <span className='fg:lightest'>-</span>}
                                         </td>
                                         <td>
