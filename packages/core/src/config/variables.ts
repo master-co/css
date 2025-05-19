@@ -9,7 +9,7 @@ const variables = {
     'min': 'min-content',
     'current': 'currentColor',
     'font-family': {
-        'sans': '$font-family-sans-fallback',
+        'sans': "'Inter', $font-family-sans-fallback",
         'serif': '$font-family-serif-fallback',
         'mono': '$font-family-mono-fallback',
         'sans-fallback': "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
