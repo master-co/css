@@ -1,20 +1,78 @@
 ## Overview [sr-only]
-The spacing system is grounded on a consistent and scalable design token foundation. It uses a [base unit](/guide/configuration#baseunit) of **4 pixels**, which acts as the smallest scalable measurement across your interface.
-<SpacingAndSizing />
-By applying the multiplier unit `x`, developers can express spacing with semantic, readable values while maintaining visual harmony.
+This spacing scale ranges from `4xs` to `5xl`, allowing fine-tuned control over both compact and expansive layouts.
+<Overview />
+Spacing is a fundamental part of layout design. It ensures visual consistency, rhythm, and alignment across components and sections.
+
+- `4xs ~ 2xs` Used for micro spacing like between icons, tags, or inline controls.
+- `xs ~ sm` Suitable for spacing between form fields, list items, or small content blocks.
+- `md` The default spacing for most UI components.
+- `lg ~ xl` For separating grouped content or larger components.
+- `2xl ~ 5xl` Ideal for layout gutters, section spacing, or hero areas.
+
+For example, use `gap:md` for a grid layout:
+<Demo>
+    <div className="grid-cols:5 gap:md bg:pink/.1 r:md">
+        <div className='app-box'>1</div>
+        <div className='app-box'>2</div>
+        <div className='app-box'>3</div>
+        <div className='app-box'>4</div>
+        <div className='app-box'>5</div>
+        <div className='app-box'>6</div>
+        <div className='app-box'>7</div>
+        <div className='app-box'>8</div>
+        <div className='app-box'>9</div>
+        <div className='app-box'>10</div>
+    </div>
+</Demo>
 ```html
-<!-- @MARK 1x -->
-<div class="m:1x">4px, margin: 0.25rem</div>
-<!-- @MARK 2x -->
-<div class="p:2x">8px, padding: 0.5rem</div>
-<!-- @MARK 8x -->
-<div class="w:8x">32px, width: 2rem</div>
-<!-- @MARK 3x -->
-<div class="gap:3x">12px, gap: 0.75rem</div>
-<!-- @MARK 6x -->
-<div class="size:6x">24px, width: 1.5rem; height: 1.5rem</div>
+<!-- @MARK gap:md -->
+<div class="grid-cols:4 gap:md">
+    <div>1</div>
+    <div>2</div>
+    ...
+</div>
 ```
 
+
+
+### Namespace for spacing
+The `spacing` variable namespace is shared across related rules:
+<SpacingHeirs />
+It allows you to declare spacing without `spacing-` prefix, making it easier to write with spacing-related rules.
+
+```js name=master.css.js
+export default {
+    variables: {
+        spacing: {
+            sm: 12, // [!code highlight]
+            md: 16, // [!code highlight]
+            lg: 24, // [!code highlight]
+        }
+    }
+}
+```
+Apply the custom spacing tokens in your markup:
+```html
+<!-- @MARK mt:md --><!-- @MARK p:sm --><!-- @MARK gap:lg -->
+<div class="mt:md p:sm gap:lg">…</div>
+```
+
+---
+
+## Using multiplier `x`
+The spacing system is grounded on a consistent and scalable design token foundation. It uses a [base unit](/guide/configuration#baseunit) of **4 pixels**, which acts as the smallest scalable measurement across your interface.
+
+Use the `x` suffix to indicate a multiplier of the base unit.
+```html
+<!-- @MARK 1x -->
+<div class="m:1x"></div>       <!--  4px, margin: 0.25rem -->
+<!-- @MARK 2x -->
+<div class="p:2x"></div>       <!--  8px, padding: 0.5rem -->
+<!-- @MARK 8x -->
+<div class="w:8x"></div>       <!-- 32px, width: 2rem -->
+<!-- @MARK 3x -->
+<div class="gap:3x"></div>     <!-- 12px, gap: 0.75rem -->
+```
 The `x` suffix helps differentiate these scale-based tokens from unitless raw values, improving clarity and avoiding conflicts with system-generated class names.
 
 ---
@@ -24,52 +82,15 @@ The `x` suffix helps differentiate these scale-based tokens from unitless raw va
 In some cases, pixel-accurate control is necessary. Master CSS allows raw unitless values such as `0`, `1`, `2`, ..., for low-level precision. These bypass the base unit system:
 
 ```html
-<!-- @MARK 0 -->
+<!-- @MARK m:0 -->
 <div class="m:0">0px, margin: 0rem</div>
-<!-- @MARK 1 -->
+<!-- @MARK p:1 -->
 <div class="p:1">1px, padding: 0.0625rem</div>
-<!-- @MARK 2 -->
+<!-- @MARK w:2 -->
 <div class="w:2">2px, width: 0.125rem</div>
 ```
 
-(!) Avoid mixing `x`-based tokens and unitless values arbitrarily in design systems. Prefer `x` tokens for layout spacing, and unitless values only for micro-adjustments or pixel-grid alignment.
-
----
-
-## Using custom spacing tokens
-You can extend the spacing system with **named tokens** for semantic usage:
-
-```js name=master.css.js
-export default {
-    variables: {
-        spacing: {
-            md: 20, /* used for component padding or section gaps */ /* [!code highlight] */
-        }
-    }
-}
-```
-
-Then, apply your tokens in markup:
-
-```html
-<!-- @MARK mt:md --><!-- @MARK p:md -->
-<div class="mt:md p:md">…</div>
-```
-
-These named tokens inherit the base logic defined in your config and can be reused across components for consistent spacing.
-
-<SpacingAndSizingHeirs />
-
-### Why use spacing tokens?
-
-Spacing tokens encode **design intent**. Instead of thinking in raw pixel values, developers and designers can collaborate using shared, semantic names. For example:
-
-* `md` might mean "medium gutter"
-* `xl` might mean "section margin"
-* `2x` might represent "double base unit"
-
-This abstraction helps teams maintain consistent spacing without memorizing exact pixel values.
-
+(!) Avoid mixing `x`-based tokens and unitless values arbitrarily in design systems. Prefer `sm` `x` tokens for layout spacing, and unitless values only for micro-adjustments or pixel-grid alignment.
 
 ---
 
