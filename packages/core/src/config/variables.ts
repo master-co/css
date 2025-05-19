@@ -75,6 +75,20 @@ const variables = {
         'first': -999999,
         'last': 999999
     },
+    'spacing': {
+        "4xs": 2,
+        "3xs": 4,
+        "2xs": 6,
+        "xs": 8,
+        "sm": 12,
+        "md": 16,
+        "lg": 24,
+        "xl": 32,
+        "2xl": 48,
+        "3xl": 64,
+        "4xl": 96,
+        "5xl": 128
+    },
     'white': 'oklch(100% 0 none)',
     'black': 'oklch(0% 0 none)',
     ...colors
