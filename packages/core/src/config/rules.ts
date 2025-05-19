@@ -513,7 +513,8 @@ const rules = {
         unit: 'rem',
         declarations: {
             'font-size': undefined,
-            'line-height': ['max(1.8em - max(0rem, ', undefined, ' - 1rem) * 1.2', ', ', undefined ,')']
+            'line-height': ['max(1.8em - max(0rem, ', undefined, ' - 1rem) * 1.12', ', ', undefined, ')'],
+            'letter-spacing': ['clamp(-0.072em, calc((', undefined, ' - 1rem) * -0.048), 0em)',]
         },
         type: SyntaxRuleType.Shorthand,
         namespaces: ['font-size']
