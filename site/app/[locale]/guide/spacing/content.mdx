@@ -1,3 +1,5 @@
+import XScale from '../sizing/components/XScale'
+
 ## Overview [sr-only]
 This spacing scale ranges from `4xs` to `5xl`, allowing fine-tuned control over both compact and expansive layouts.
 <Overview />
@@ -59,9 +61,9 @@ Apply the custom spacing tokens in your markup:
 
 ---
 
-## Using multiplier `x`
+## Using spacing multiplier
 The spacing system is grounded on a consistent and scalable design token foundation. It uses a [base unit](/guide/configuration#baseunit) of **4 pixels**, which acts as the smallest scalable measurement across your interface.
-
+<XScale />
 Use the `x` suffix to indicate a multiplier of the base unit.
 ```html
 <!-- @MARK 1x -->
