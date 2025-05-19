@@ -15,16 +15,16 @@ The typography system in Master CSS provides a cohesive and scalable approach, [
 ### Namespaces for typography
 The typography system is built on a set of [variables](/guide/variables) that are organized into namespaces. This allows for easy customization and consistent application across your design.
 
-* `font-size` for font sizes, text sizes
-* `font-family` for font families
-* `font-weight` for font weights
-* `line-height` for line height
-* `letter-spacing` for letter spacing
+* `variables.font-size` for font sizes, text sizes
+* `variables.font-family` for font families
+* `variables.font-weight` for font weights
+* `variables.line-height` for line height
+* `variables.letter-spacing` for letter spacing
 
 ---
 
 ## All-in-one text scale
-At its core, the system is powered by a semantic type scale (`text:3xs` to `text:10xl`) and corresponding font utilities (`font:*`, `line:*`, `tracking:*`) defined through design tokens. These values are carefully calibrated—not just mathematically scaled—to produce an optimal reading experience.
+At its core, the system is powered by a semantic type scale (`text:3xs` to `text:10xl`) and corresponding font utilities (`font:*`, `leading:*`, `tracking:*`) defined through design tokens. These values are carefully calibrated—not just mathematically scaled—to produce an optimal reading experience.
 
 Rather than manually composing multiple properties, you can use `text:<size>` to apply all three attributes—**font-size**, **line-height**, and **letter-spacing**—with a single class, tuned to the specific needs of each text scale.
 
@@ -34,8 +34,14 @@ Rather than manually composing multiple properties, you can use `text:<size>` to
 * `text:4xl ~ text:10xl` — Reserved for large headings, page titles, and hero sections
 
 See some classic examples in the following sections. All examples use `text:<size>`, which automatically applies the ideal font size, line height, and letter spacing in a single utility.
+
+### Body text
 <BodyText />
+
+### Headings
 <Headings />
+
+### Page titles
 <PageTitles />
 
 ### Without vs With `text:<size>`
