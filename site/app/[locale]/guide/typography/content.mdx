@@ -10,6 +10,7 @@ import FontFamilyBasicUsage from '../../reference/font-family/components/BasicUs
 
 ## Overview [sr-only]
 <Overview />
+The typography system in Master CSS provides a cohesive and scalable approach, [`text:<size>`](/guide/typography#text-scale), to setting text styles. It combines **font size**, **line height**, and **letter spacing** into unified tokens to ensure consistency and visual rhythm across interfaces—from fine print to large headlines.
 
 ### Namespaces for typography
 The typography system is built on a set of [variables](/guide/variables) that are organized into namespaces. This allows for easy customization and consistent application across your design.
@@ -19,6 +20,65 @@ The typography system is built on a set of [variables](/guide/variables) that ar
 * `font-weight` for font weights
 * `line-height` for line height
 * `letter-spacing` for letter spacing
+
+---
+
+## Text scale
+At its core, the system is powered by a semantic type scale (`text:3xs` to `text:10xl`) and corresponding font utilities (`font:*`, `line:*`, `tracking:*`) defined through design tokens. These values are carefully calibrated—not just mathematically scaled—to produce an optimal reading experience.
+
+Rather than manually composing multiple properties, you can use `text:<size>` to apply all three attributes—**font-size**, **line-height**, and **letter-spacing**—with a single class, tuned to the specific needs of each text scale.
+
+* `text:3xs ~ text:xs` — For fine print, annotations, captions, or table labels
+* `text:sm ~ text:lg` — Standard text sizes for body copy, paragraphs, and buttons
+* `text:xl ~ text:3xl` — Ideal for subheadings, lead paragraphs, or callouts
+* `text:4xl ~ text:10xl` — Reserved for large headings, page titles, and hero sections
+
+See some classic examples in the following sections. All examples use `text:<size>`, which automatically applies the ideal font size, line height, and letter spacing in a single utility.
+<BodyText />
+<Headings />
+<PageTitles />
+
+### Without vs With `text:<size>`
+Manually configuring typography often requires juggling multiple CSS properties like `font-size`, `line-height`, and `letter-spacing`. This can quickly become inconsistent, especially when reused across different components or pages.
+<Demo $py={0}>
+    <DemoPanel className="flex flex-col gap:8x w:full">
+        <div className="w:full">
+            <DemoLabel className="fg:crimson">font:5xl</DemoLabel>
+            <DemoP className="text:pretty font:5xl font:regular leading:1">Designing for consistency across every platform.</DemoP>
+        </div>
+        <div className="w:full">
+            <DemoLabel className="fg:beryl">text:5xl</DemoLabel>
+            <DemoP className="text:pretty text:5xl font:regular">Designing for consistency across every platform.</DemoP>
+        </div>
+    </DemoPanel>
+</Demo>
+Let’s compare a manual approach with the simplified `text:<size>` utility:
+
+(!) Manually add the most appropriate style for the title each time
+```html
+<h1 class="font:3xl tracking:-0.048rem leading:2.4rem">...</h1>
+```
+
+You may also find yourself tweaking these values individually for each heading or paragraph, which increases cognitive load and the risk of visual inconsistency.
+
+(o) Using `text:3xl` utility token
+```html
+<h1 class="text:3xl">...</h1>
+```
+
+The `text:lg` token applies a finely tuned combination of:
+
+<Class2CSS>{'text:3xl'}</Class2CSS>
+
+All values are calibrated to provide optimal readability and consistent rhythm across the type scale. No manual calculation, no guesswork—just a reliable, semantic shortcut.
+
+Why this matters? Using `text:<size>` ensures:
+
+* **Consistency** — every instance of `text:lg` looks exactly the same
+* **Maintainability** — no need to audit multiple values across stylesheets
+* **Scalability** — easier to theme or adjust from a central design token
+
+Whenever possible, prefer `text:<size>` over ad hoc styles. It’s faster, safer, and makes your typography systematically predictable.
 
 ---
 
@@ -55,24 +115,3 @@ Our typography system defines a semantic range of font weight tokens, from `font
 
 ## Letter spacing
 <LetterSpacingBasicUsage />
-
----
-
-## Text scale
-However, when setting font size, you typically want to pair it with a corresponding line height. Smaller text sizes use taller line-heights to improve legibility, while larger sizes use tighter spacing to maintain compactness and strong hierarchy.
-
-In our [`text:<size>`](/reference/text-size) system, each size from `text:3xs` to `text:10xl` has a carefully adjusted line-height to achieve balanced readability and visual harmony. These values are not uniform ratios—they're intentionally tuned to suit the visual characteristics of each text scale.
-
-* `text:3xs ~ text:xs` Used for fine print, annotations, captions, or table labels
-* `text:sm ~ text:lg` Standard text sizes for body copy, paragraphs, and buttons
-* `text:xl ~ text:3xl` Ideal for subheadings, lead paragraphs, or callouts
-* `text:4xl ~ text:10xl` Reserved for large headings, page titles, and hero sections
-
-See some classic examples in the following sections.
-
-### Body text
-<BodyText />
-### Article headings
-<Headings />
-### Large titles
-<PageTitles />

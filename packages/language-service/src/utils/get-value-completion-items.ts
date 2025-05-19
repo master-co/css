@@ -81,7 +81,8 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
         if (eachDefinedRule.definition.key === ruleKey || eachDefinedRule.definition.subkey === ruleKey || eachDefinedRule.definition.aliasGroups?.includes(ruleKey)) {
             for (const variableName in eachDefinedRule.variables) {
                 if (completionItems.find(({ label }) => label === variableName)) continue
-                const variable = eachDefinedRule.variables[variableName]
+                const variable = eachDefinedRule.variables.get(variableName)
+                if (!variable) continue
                 const completionItem = generateVariableCompletionItem(variable, { scoped: true })
                 if (completionItem) {
                     completionItem.label = variableName
