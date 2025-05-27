@@ -7,9 +7,8 @@ const variables = {
     'fit': 'fit-content',
     'max': 'max-content',
     'min': 'min-content',
-    'current': 'currentColor',
     'font-family': {
-        'sans': "'Inter', $font-family-sans-fallback",
+        'sans': '"Inter", $font-family-sans-fallback',
         'serif': '$font-family-serif-fallback',
         'mono': '$font-family-mono-fallback',
         'sans-fallback': "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
@@ -89,9 +88,12 @@ const variables = {
         "4xl": 96,
         "5xl": 128
     },
-    'white': 'oklch(100% 0 none)',
-    'black': 'oklch(0% 0 none)',
-    ...colors
+    'color': {
+        'current': 'currentColor',
+        'white': 'oklch(100% 0 none)',
+        'black': 'oklch(0% 0 none)',
+        ...colors
+    }
 } satisfies VariableDefinitions
 
 export default variables

@@ -33,7 +33,7 @@ describe.concurrent('with themes', () => {
                 primary: '#ffffff'
             },
             chrisma: {
-                primary: '$black/.5'
+                primary: '$color-black/.5'
             }
         },
         modeTrigger: 'class'

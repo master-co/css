@@ -14,14 +14,14 @@ describe('comp -> comp -> var', () => {
         },
         modes: {
             light: {
-                primary: '$black',
-                'primary-text': '$white',
+                primary: '$color-black',
+                'primary-text': '$color-white',
                 'primary-active': '$gray',
             },
             dark: {
-                primary: '$white',
-                'primary-text': '$black',
-                'primary-active': '$white',
+                primary: '$color-white',
+                'primary-text': '$color-black',
+                'primary-active': '$color-white',
             }
         }
     })

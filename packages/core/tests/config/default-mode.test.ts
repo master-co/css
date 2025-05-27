@@ -5,25 +5,31 @@ new CSSTester({
     modeTrigger: 'class',
     defaultMode: 'light',
     variables: {
-        'white': 'oklch(100% 0 none)',
-        'black': 'oklch(0% 0 none)',
+        color: {
+            'white': 'oklch(100% 0 none)',
+            'black': 'oklch(0% 0 none)',
+        }
     },
     modes: {
         light: {
-            'invert': '$black',
+            color: {
+                'invert': '$color-black',
+            }
         },
         dark: {
-            'invert': '$white',
+            color: {
+                'invert': '$color-white',
+            }
         }
     },
     rules
 }, null).layers({
     'bg:invert': {
         theme: [
-            '.light,:root{--invert:oklch(0% 0 none)}',
-            '.dark{--invert:oklch(100% 0 none)}'
+            '.light,:root{--color-invert:oklch(0% 0 none)}',
+            '.dark{--color-invert:oklch(100% 0 none)}'
         ],
-        general: '.bg\\:invert{background-color:var(--invert)}'
+        general: '.bg\\:invert{background-color:var(--color-invert)}'
     }
 })
 

@@ -8,13 +8,13 @@ const config = {
         config2
     ],
     variables:  {
-        third: '$black'
+        third: '$color-black'
     },
     modes: {
         dark: {
-            first: '$black',
-            second: '$black',
-            fourth: '$black'
+            first: '$color-black',
+            second: '$color-black',
+            fourth: '$color-black'
         }
     }
 }

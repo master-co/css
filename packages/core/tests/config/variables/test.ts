@@ -15,11 +15,11 @@ it.concurrent('uses with $ function', () => {
 
 describe.concurrent('sigil', () => {
     it.concurrent('sigil in class', () => {
-        expect(createCSS().create('fg:$white')?.text).toContain('oklch(100% 0 none)')
-        expect(createCSS().create('fg:$white/.5')?.text).toContain('oklch(100% 0 none/0.5)')
+        expect(createCSS().create('fg:$color-white')?.text).toContain('oklch(100% 0 none)')
+        expect(createCSS().create('fg:$color-white/.5')?.text).toContain('oklch(100% 0 none/0.5)')
     })
     it.concurrent('sigil in config', () => {
-        expect(createCSS({ variables: { a: '$white' } }).create('fg:a')?.text).toContain('oklch(100% 0 none)')
+        expect(createCSS({ variables: { a: '$color-white' } }).create('fg:a')?.text).toContain('oklch(100% 0 none)')
     })
 })
 

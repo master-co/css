@@ -119,18 +119,20 @@ export default class MasterCSS {
 
         const rulesEntriesLength = rulesEntries.length
 
-        // Prepare color variables
-        const colorNames = new Set(['current', 'currentColor', 'transparent'])
-        this.variables.forEach(v => {
-            if (v.type === 'color') colorNames.add(v.name)
-        })
-        const colorPattern = [...colorNames].join('|')
-
         // Main loop
         rulesEntries
             .sort((a, b) => {
                 if (a[1].type !== b[1].type) {
                     return (b[1].type || 0) - (a[1].type || 0)
+                }
+                if (!a[1].kind && !b[1].kind) return 0
+                if (!a[1].kind) return 1
+                if (!b[1].kind) return -1
+                const kindOrder = ['color', 'number', 'image']
+                const aKindIndex = kindOrder.indexOf(a[1].kind)
+                const bKindIndex = kindOrder.indexOf(b[1].kind)
+                if (aKindIndex !== bKindIndex) {
+                    return aKindIndex - bKindIndex
                 }
                 return b[0].localeCompare(a[0], undefined, { numeric: true })
             })
@@ -169,10 +171,11 @@ export default class MasterCSS {
                 const addNamespace = (namespace: string) => {
                     this.variables.forEach(v => {
                         if (v.namespace === namespace) {
+                            const variableKey = v.name.replace(namespace + '-', '')
                             if (syntax.variables) {
-                                syntax.variables.set(v.key, v)
+                                syntax.variables.set(variableKey, v)
                             } else {
-                                syntax.variables = new Map([[v.key, v]])
+                                syntax.variables = new Map([[variableKey, v]])
                             }
                         }
                     })
@@ -218,7 +221,7 @@ export default class MasterCSS {
                             : []
                         switch (kind) {
                             case 'color':
-                                valuePatterns.push(`(?:#|(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla|light-dark)\\(.*\\)|(?:${colorPattern})(?![a-zA-Z0-9-]))`)
+                                valuePatterns.push(`(?:#|(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla|light-dark)\\(.*\\)|(?:currentColor|transparent)(?![a-zA-Z0-9-]))`)
                                 break
                             case 'number':
                                 valuePatterns.push('(?:[\\d.]|(?:max|min|calc|clamp)\\([^|]*\\))')

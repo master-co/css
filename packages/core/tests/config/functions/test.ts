@@ -13,8 +13,8 @@ test.concurrent('functions', () => {
 
     expect(createCSS().create('grid-template-cols:repeat(2,auto|.6|calc(3-max(2,1)))')?.text).toBe('.grid-template-cols\\:repeat\\(2\\,auto\\|\\.6\\|calc\\(3-max\\(2\\,1\\)\\)\\){grid-template-columns:repeat(2,auto 0.6 calc(0.1875rem - max(2, 1) / 16 * 1rem))}')
 
-    expect(createCSS().create('$primary:black')?.text).toBe('.\\$primary\\:black{--primary:oklch(0% 0 none)}')
-    expect(createCSS().create('$primary:black')?.text).toBe('.\\$primary\\:black{--primary:oklch(0% 0 none)}')
+    expect(createCSS().create('$color-primary:color-black')?.text).toBe('.\\$color-primary\\:color-black{--color-primary:oklch(0% 0 none)}')
+    expect(createCSS().create('$color-primary:color-black')?.text).toBe('.\\$color-primary\\:color-black{--color-primary:oklch(0% 0 none)}')
 })
 
 test.concurrent('checks gradient-related functions with color variables', () => {

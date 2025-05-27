@@ -55,7 +55,7 @@ const rules = {
     color: {
         key: 'fg',
         type: SyntaxRuleType.Native,
-        namespaces: ['text']
+        namespaces: ['color.text']
     },
     // margin
     'margin-left': {
@@ -316,7 +316,7 @@ const rules = {
         aliasGroups: ['text-decoration'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        namespaces: ['text']
+        namespaces: ['color', 'color.text']
     },
     'text-decoration-style': {
         aliasGroups: ['text-decoration'],
@@ -340,7 +340,7 @@ const rules = {
         values: ['underline', 'overline', 'line-through'],
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
-        namespaces: ['text'],
+        namespaces: ['color.text'],
         declarations: ['-webkit-text-decoration', 'text-decoration']
     },
     'text-underline-offset': {
@@ -506,6 +506,7 @@ const rules = {
     'text-shadow': {
         unit: 'rem',
         type: SyntaxRuleType.Native,
+        namespaces: ['color']
     },
     'text-size': {
         aliasGroups: ['text', 't'],
@@ -523,7 +524,7 @@ const rules = {
         aliasGroups: ['text', 't'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        namespaces: ['text'],
+        namespaces: ['color', 'color.text'],
         declarations: ['-webkit-text-fill-color']
     },
     'text-stroke-width': {
@@ -538,7 +539,8 @@ const rules = {
         aliasGroups: ['text-stroke'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        declarations: ['-webkit-text-stroke-color']
+        declarations: ['-webkit-text-stroke-color'],
+        namespaces: ['color']
     },
     'text-stroke': {
         unit: 'rem',
@@ -562,6 +564,7 @@ const rules = {
         subkey: 's',
         unit: 'rem',
         type: SyntaxRuleType.Native,
+        namespaces: ['color']
     },
     'table-layout': {
         type: SyntaxRuleType.Native
@@ -727,45 +730,45 @@ const rules = {
         aliasGroups: ['bt', 'border-top'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
     },
     'border-bottom-color': {
         aliasGroups: ['bb', 'border-bottom'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
     },
     'border-left-color': {
         aliasGroups: ['bl', 'border-left'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
     },
     'border-right-color': {
         aliasGroups: ['br', 'border-right'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
     },
     'border-x-color': {
         aliasGroups: ['bx', 'border-x'],
         kind: 'color',
         type: SyntaxRuleType.Shorthand,
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
         declarations: ['border-left-color', 'border-right-color']
     },
     'border-y-color': {
         aliasGroups: ['by', 'border-y'],
         kind: 'color',
         type: SyntaxRuleType.Shorthand,
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
         declarations: ['border-top-color', 'border-bottom-color']
     },
     'border-color': {
         aliasGroups: ['b', 'border'],
         kind: 'color',
         type: SyntaxRuleType.NativeShorthand,
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
     },
     // border radius
     'border-top-left-radius': {
@@ -945,35 +948,35 @@ const rules = {
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
     },
     'border-bottom': {
         key: 'bb',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
     },
     'border-left': {
         key: 'bl',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
     },
     'border-right': {
         key: 'br',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
     },
     'border-x': {
         key: 'bx',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         transformer: 'auto-fill-solid',
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
         declarations: ['border-left', 'border-right']
     },
     'border-y': {
@@ -981,7 +984,7 @@ const rules = {
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         transformer: 'auto-fill-solid',
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
         declarations: ['border-top', 'border-bottom']
     },
     border: {
@@ -989,7 +992,7 @@ const rules = {
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         transformer: 'auto-fill-solid',
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
     },
     'background-attachment': {
         aliasGroups: ['bg'],
@@ -1004,6 +1007,7 @@ const rules = {
         aliasGroups: ['bg'],
         kind: 'color',
         type: SyntaxRuleType.Native,
+        namespaces: ['color']
     },
     'background-clip': {
         key: 'bg-clip',
@@ -1035,11 +1039,13 @@ const rules = {
     'background-image': {
         aliasGroups: ['bg'],
         kind: 'image',
-        type: SyntaxRuleType.Native
+        type: SyntaxRuleType.Native,
+        namespaces: ['color']
     },
     background: {
         key: 'bg',
-        type: SyntaxRuleType.NativeShorthand
+        type: SyntaxRuleType.NativeShorthand,
+        namespaces: ['color']
     },
     'gradient()': {
         declarations: {
@@ -1053,10 +1059,12 @@ const rules = {
     'backdrop-filter': {
         key: 'bd',
         type: SyntaxRuleType.Native,
-        declarations: ['-webkit-backdrop-filter', 'backdrop-filter']
+        declarations: ['-webkit-backdrop-filter', 'backdrop-filter'],
+        namespaces: ['color']
     },
     filter: {
         type: SyntaxRuleType.Native,
+        namespaces: ['color']
     },
     'blur()': {
         declarations: ['filter']
@@ -1068,7 +1076,8 @@ const rules = {
         declarations: ['filter']
     },
     'drop-shadow()': {
-        declarations: ['filter']
+        declarations: ['filter'],
+        namespaces: ['color']
     },
     'grayscale()': {
         declarations: ['filter']
@@ -1105,6 +1114,7 @@ const rules = {
     },
     stroke: {
         type: SyntaxRuleType.Native,
+        namespaces: ['color']
     },
     x: {
         type: SyntaxRuleType.Native,
@@ -1303,7 +1313,7 @@ const rules = {
         aliasGroups: ['outline'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        namespaces: ['frame'],
+        namespaces: ['color', 'frame'],
     },
     'outline-offset': {
         unit: 'rem',
@@ -1330,13 +1340,15 @@ const rules = {
             'outline-style',
             'outline-offset',
             'outline-color',
-            'frame'
+            'frame',
+            'color'
         ],
         transformer: 'auto-fill-solid'
     },
     'accent-color': {
         key: 'accent',
         type: SyntaxRuleType.Native,
+        namespaces: ['color']
     },
     appearance: {
         type: SyntaxRuleType.Native
@@ -1344,7 +1356,7 @@ const rules = {
     'caret-color': {
         key: 'caret',
         type: SyntaxRuleType.Native,
-        namespaces: ['text']
+        namespaces: ['color', 'color.text']
     },
     'scroll-behavior': {
         type: SyntaxRuleType.Native

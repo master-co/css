@@ -18,8 +18,8 @@ const config = {
         dark: {
             first: '#222222',
             second: '#999999',
-            third: '$white',
-            'third-2': '$white'
+            third: '$color-white',
+            'third-2': '$color-white'
         }
     },
     components: {

@@ -15,7 +15,7 @@ it.concurrent('customizes fonts', () => {
         sans: css.variables.get('font-family-sans'),
         mono: css.variables.get('font-family-mono'),
     }).toEqual({
-        sans: { namespace: 'font-family', group: 'font-family', key: 'sans', name: 'font-family-sans', type: 'string', value: '"Inter", ' + variables['font-family'].sans },
+        sans: { namespace: 'font-family', group: 'font-family', key: 'sans', name: 'font-family-sans', type: 'string', value: variables['font-family'].sans },
         mono: { namespace: 'font-family', group: 'font-family', key: 'mono', name: 'font-family-mono', type: 'string', value: '"Fira Code", ' + variables['font-family'].mono },
     })
 })

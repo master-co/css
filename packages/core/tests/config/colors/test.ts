@@ -191,14 +191,14 @@ test.concurrent('colors', () => {
         'btn',
         {
             variables: {
-                'primary-filled': '$black'
+                'primary-filled': '$color-black'
             },
             modes: {
                 light: {
-                    'primary-filled': '$white'
+                    'primary-filled': '$color-white'
                 },
                 dark: {
-                    'primary-filled': '$black'
+                    'primary-filled': '$color-black'
                 }
             },
             modeTrigger: 'class',
@@ -216,14 +216,14 @@ test.concurrent('colors', () => {
         'bg:primary-filled',
         {
             variables: {
-                'primary-filled': '$black'
+                'primary-filled': '$color-black'
             },
             modes: {
                 light: {
-                    'primary-filled': '$white'
+                    'primary-filled': '$color-white'
                 },
                 dark: {
-                    'primary-filled': '$black'
+                    'primary-filled': '$color-black'
                 }
             },
             components: {
@@ -240,14 +240,14 @@ test.concurrent('colors', () => {
         'bg:primary-filled@dark',
         {
             variables: {
-                'primary-filled': '$white'
+                'primary-filled': '$color-white'
             },
             modes: {
                 light: {
-                    'primary-filled': '$black'
+                    'primary-filled': '$color-black'
                 },
                 dark: {
-                    'primary-filled': '$white'
+                    'primary-filled': '$color-white'
                 }
             },
             components: {

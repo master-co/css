@@ -32,7 +32,7 @@ describe('mix color spaces, modes, and alias', () => {
         variables: { black: '#000000', primary: '#000000' },
         modes: {
             dark: { primary: 'hsl(0 0% 100%)' },
-            light: { primary: '$black' }
+            light: { primary: '$color-black' }
         },
         rules,
         modeTrigger: 'class'
@@ -67,7 +67,7 @@ describe('inline color variable with alpha', () => {
 
 describe('inline color variable with alias and alpha', () => {
     new CSSTester({
-        variables: { black: '#000000', primary: '$black/.5' },
+        variables: { black: '#000000', primary: '$color-black/.5' },
         rules,
         modeTrigger: 'class'
     }, null)
@@ -80,7 +80,7 @@ describe('inline color variable with alias and alpha', () => {
 
 describe('multiply two alpha', () => {
     new CSSTester({
-        variables: { black: '#000000', primary: '$black/.5' },
+        variables: { black: '#000000', primary: '$color-black/.5' },
         rules,
         modeTrigger: 'class'
     }, null)
@@ -106,7 +106,7 @@ describe('multiply two alpha', () => {
 
 describe('create an alias for a variable with modes', () => {
     new CSSTester({
-        variables: { primary: '#000000', alias: '$primary' },
+        variables: { primary: '#000000', alias: '$color-primary' },
         modes: {
             light: { primary: 'oklch(0 0 0)' },
             dark: { primary: 'hsl(0 0% 100%)' }

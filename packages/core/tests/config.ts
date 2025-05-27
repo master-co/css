@@ -60,7 +60,7 @@ export default {
             rgb1: 'rgb(0, 0, 0)',
             rgb2: 'oklch(0% 0 none)',
             rgb3: 'rgb(0 0 0/.5)',
-            '2': '$primary-rgb3/.7'
+            '2': '$color-primary-rgb3/.7'
         },
         input: '#123456',
         code: '$(accent)',

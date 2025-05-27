@@ -38,11 +38,11 @@ describe('modes', () => {
     test.concurrent('dark mode', () => {
         expect(extendConfig(
             { modes: { dark: { a: '#ffffff' } } },
-            { modes: { dark: { a: '$black' } } }
+            { modes: { dark: { a: '$color-black' } } }
         )).toMatchObject({
             modes: {
                 dark: {
-                    a: { key: 'a', name: 'a', value: '$black' }
+                    a: { key: 'a', name: 'a', value: '$color-black' }
                 }
             }
         })
