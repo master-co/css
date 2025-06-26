@@ -60,4 +60,9 @@ export interface PluginOptions {
      * Useful in Runtime
      */
     avoidFOUC?: boolean
+
+    /**
+     * Specifies which entry to use when multiple entries (i.e. main.tsx and index.ts) are present.
+     */
+    entryId?: string
 }

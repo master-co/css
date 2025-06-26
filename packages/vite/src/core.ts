@@ -37,7 +37,12 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
             enforce: 'pre',
             configResolved(config) {
                 context.config = config
-                context.entryId = fg.sync(ENTRY_MODULE_PATTERNS, { cwd: config.root, absolute: true, onlyFiles: true, caseSensitiveMatch: false })[0]
+                context.entryId = options.entryId ?? fg.sync(ENTRY_MODULE_PATTERNS, {
+                    cwd: config.root,
+                    absolute: true,
+                    onlyFiles: true,
+                    caseSensitiveMatch: false
+                )[0]
                 if (process.env.DEBUG) {
                     console.log(`[@master/css.vite] mode: ${options.mode}`)
                     console.log(`[@master/css.vite] entry: ${context.entryId || 'none'}`)
