@@ -1,10 +1,14 @@
 export default {
     modes: {
         light: {
-            primary: '#000000',
+            color: {
+                primary: '#000000',
+            }
         },
         dark: {
-            primary: '#ffffff',
+            color: {
+                primary: '#ffffff',
+            }
         }
     },
     components: {

@@ -40,7 +40,9 @@ const config: Config = {
         btn: 'bg:red'
     },
     variables: {
-        primary: '$(blue)'
+        color: {
+            primary: '$(color-blue)'
+        }
     }
 }
 
@@ -92,7 +94,7 @@ if (!process.env.CI) {
             waitForDataMatch(subprocess, (data) => data.includes('exported'))
         ])
         const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
-        expect(fileCSSText).toContain('.btn{background-color:rgb(var(--blue))')
+        expect(fileCSSText).toContain('.btn{background-color:var(--color-blue)')
     }, 120000)
 
     it('change html file class attr and update', async () => {
