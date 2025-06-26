@@ -1,10 +1,10 @@
-import { initCSSRuntime } from '../../src'
+import CSSRuntime, { initCSSRuntime } from '../../src'
 
-initCSSRuntime({
-    components: {
-        btn: 'bg:black'
-    }
-})
+// initCSSRuntime({
+//     components: {
+//         btn: 'bg:black'
+//     }
+// })
 
 // const createElement = (name: string) => {
 //     const el = document.createElement('div')
@@ -28,3 +28,10 @@ initCSSRuntime({
 // p1c3.remove()
 // p1c3.classList.add('p1c3-1')
 // p1.remove()
+
+/* iframe test */
+const iframe = document.querySelector('iframe')
+if (iframe?.contentDocument) {
+    new CSSRuntime(iframe.contentDocument)
+        .observe()
+}

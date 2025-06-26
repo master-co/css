@@ -2,13 +2,17 @@
 export default {
     modes: {
         light: {
-            text: {
-                primary: '$color-yellow-50'
+            color: {
+                text: {
+                    primary: '$color-yellow-50'
+                }
             }
         },
         dark: {
-            text: {
-                primary: '$color-amber-20'
+            color: {
+                text: {
+                    primary: '$color-amber-20'
+                }
             }
         }
     }

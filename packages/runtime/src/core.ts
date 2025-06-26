@@ -25,10 +25,12 @@ export default class CSSRuntime extends MasterCSS {
         public baseConfig?: Config
     ) {
         super(customConfig, baseConfig)
-        if (this.root instanceof Document || this.root instanceof HTMLDocument) {
-            this.root.defaultView!.globalThis.cssRuntime = this
-            this.container = this.root.head
-            this.host = this.root.documentElement
+        // Do not use instanceof here, because it will not work
+        const rootConstructorName = root?.constructor.name
+        if (rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document') {
+            (this.root as Document).defaultView!.globalThis.cssRuntime = this
+            this.container = (this.root as Document).head
+            this.host = (this.root as Document).documentElement
         } else {
             this.container = this.root as CSSRuntime['container']
             this.host = (this.root as ShadowRoot).host
@@ -69,12 +71,7 @@ export default class CSSRuntime extends MasterCSS {
             if (!count) connectedNames.add(className)
             this.classCounts.set(className, count + 1)
         }
-
-        const rootEl = this.root instanceof Document || this.root instanceof HTMLDocument
-            ? this.root
-            : this.container
-
-        const elementsWithClass = rootEl.querySelectorAll('[class]')
+        const elementsWithClass = this.root.querySelectorAll('[class]')
         elementsWithClass.forEach(el => {
             const clsList = el.classList
             if (clsList) {
