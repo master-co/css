@@ -23,7 +23,7 @@ export default () => {
                                         <td>{value / 16}rem</td>
                                         <td>
                                             <div className='inline-flex bg:stripe-pink outline:1|lighter outline-offset:-1 v:middle w:fit' style={{ gap: value / 16 + 'rem' }}>
-                                                {Array.from({ length: 14 - index }, (_, index) => <div className='inline-block bg:base size:1.5em'></div>)}
+                                                {Array.from({ length: 14 - index }, (_, index) => <div key={index} className='inline-block size:1.5em bg:base'></div>)}
                                             </div>
                                         </td>
                                     </tr>

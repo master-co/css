@@ -340,7 +340,7 @@ const rules = {
         values: ['underline', 'overline', 'line-through'],
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
-        namespaces: ['color.text'],
+        namespaces: ['color', 'color.text'],
         declarations: ['-webkit-text-decoration', 'text-decoration']
     },
     'text-underline-offset': {
@@ -1011,8 +1011,7 @@ const rules = {
     },
     'background-clip': {
         key: 'bg-clip',
-        type: SyntaxRuleType.Native,
-        declarations: ['-webkit-background-clip', 'background-clip']
+        type: SyntaxRuleType.Native
     },
     'background-origin': {
         key: 'bg-origin',

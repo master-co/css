@@ -1,4 +1,3 @@
-/* eslint-disable @master/css/class-validation */
 import Code from 'internal/components/Code'
 import BasicDemo from './BasicDemo'
 

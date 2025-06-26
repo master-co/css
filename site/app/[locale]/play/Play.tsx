@@ -519,7 +519,7 @@ export default function Play(props: any) {
     const width = useMemo(() => (!layout || layout === '2') ? '50%' : '100%', [layout])
     const height = useMemo(() => (!layout || layout === '2') ? '100%' : '50%', [layout])
     return (
-        <div className="abs flex full flex-col">
+        <div className="abs flex flex-col full">
             <Header fixed={false}>
                 <HeaderContent>
                     <Link href={'/'}>
@@ -737,7 +737,7 @@ export default function Play(props: any) {
                             srcDoc={previewHTML}
                         />
                         <div className={clsx('flex flex-col h:full', { 'hidden!': preview !== 'css' })}>
-                            <div className='flex bb:1|lightest flex:0|0|auto px:5x px:10x@sm align-items:center font:12 h:48 justify-content:space-between'>
+                            <div className='flex bb:1|lightest flex:0|0|auto px:5x align-items:center font:12 h:48 justify-content:space-between px:10x@sm'>
                                 <div>Generated CSS</div>
                                 <div className="fg:light">{generatedCSSSize}</div>
                             </div>

@@ -5,7 +5,7 @@ import { expectLayers } from './test'
 
 test.concurrent('utilities', () => {
     expect(createCSS(config).create('show')?.text).toBe('.show{display:block}')
-    expect(createCSS().create('gradient-text')?.text).toBe('.gradient-text{-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text}')
+    expect(createCSS().create('gradient-text')?.text).toBe('.gradient-text{-webkit-text-fill-color:transparent;background-clip:text}')
 
     expectLayers(
         {
