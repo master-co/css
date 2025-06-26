@@ -16,7 +16,9 @@ import { variables } from '@master/css'
 
 export default {
     variables: {
-         primary: variables.indigo /* [!code highlight] */
+        color: {
+            primary: variables.indigo /* [!code highlight] */
+        }
     }
 }
 ```
@@ -95,7 +97,9 @@ Add a primitive color to the base variables group.
 ```js name=master.css.js
 export default {
     variables: {
-        primary: '#000' /* [!code ++] */
+        color: {
+            primary: '#000' /* [!code ++] */
+        }
     }
 }
 ```

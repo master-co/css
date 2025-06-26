@@ -18,7 +18,7 @@ describe.concurrent('ambiguous', () => {
 
 describe.concurrent('detail and documentation', () => {
     test.concurrent('font:', () => expect(hint('font:')?.find(({ label }) => label === 'sans')).toEqual({
-        detail: '(scope) ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
+        detail: '(scope) \"Inter\", $font-family-sans-fallback',
         kind: CompletionItemKind.Value,
         label: 'sans',
         sortText: 'aaaasans',
@@ -28,7 +28,7 @@ describe.concurrent('detail and documentation', () => {
                     \`\`\`css
                     @layer general {
                       .font\\:sans {
-                        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji
+                        font-family: \"Inter\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'
                       }
                     }
                     \`\`\`

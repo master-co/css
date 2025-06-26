@@ -40,7 +40,6 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createCS
     const utilityNames = Object.keys(css.config.utilities || {})
     const isStyle = !!componentNames.find((eachStyleName) => new RegExp(`^${eachStyleName}(?:\\b|_)`).test(field))
     const isUtility = !!utilityNames.find((eachUtilityName) => new RegExp(`^${eachUtilityName}(?:\\b|_)`).test(field))
-
     // check by utilities and components
     if (!isStyle && !isUtility) {
         if (key === undefined && !valueSeparatorMatch) {

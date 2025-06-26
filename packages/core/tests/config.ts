@@ -10,26 +10,30 @@ export default {
     modeTrigger: 'class',
     modes: {
         light: {
-            primary: '$(black)',
-            'primary-text': '$(white)',
-            'primary-active': '$(gray)',
-            'primary-stage-1': '$(black)',
-            accent: '$(black)',
-            major: '$(black)',
-            content: '$(black)',
-            fade: '$(black)',
-            'fade-light': '$fade',
+            color: {
+                primary: '$(color-black)',
+                'primary-text': '$(color-white)',
+                'primary-active': '$(color-gray)',
+                'primary-stage-1': '$(color-black)',
+                accent: '$(color-black)',
+                major: '$(color-black)',
+                content: '$(color-black)',
+                fade: '$(color-black)',
+                'fade-light': '$color-fade',
+            }
         },
         dark: {
-            primary: '$(white)',
-            'primary-text': '$(black)',
-            'primary-active': '$(white)',
-            'primary-code': '$(white)',
-            'primary-stage-1': '$(white)',
-            accent: '$(white)',
-            major: '$(white)',
-            content: '$(white)',
-            fade: '$(white)',
+            color: {
+                primary: '$(color-white)',
+                'primary-text': '$(color-black)',
+                'primary-active': '$(color-white)',
+                'primary-code': '$(color-white)',
+                'primary-stage-1': '$(color-white)',
+                accent: '$(color-white)',
+                major: '$(color-white)',
+                content: '$(color-white)',
+                fade: '$(color-white)',
+            }
         },
     },
     variables: {
@@ -41,7 +45,7 @@ export default {
             wide: .4
         },
         border: {
-            'inputborder': '2|solid|black'
+            'inputborder': '2|solid|color-black'
         },
         'box-shadow': {
             x2: '0 25px 50px -12px rgb(0 0 0 / 25%)'
@@ -50,20 +54,22 @@ export default {
             sm: 10,
             md: 20
         },
-        primary: {
-            '': '$(black)',
-            code: '$(black)',
-            stage: {
-                1: '$(white)'
+        color: {
+            primary: {
+                '': '$(color-black)',
+                code: '$(color-black)',
+                stage: {
+                    1: '$(color-white)'
+                },
+                alpha: '$(color-white)/.1',
+                rgb1: 'rgb(0, 0, 0)',
+                rgb2: 'oklch(0% 0 none)',
+                rgb3: 'rgb(0 0 0/.5)',
+                '2': '$color-primary-rgb3/.7'
             },
-            alpha: '$(white)/.1',
-            rgb1: 'rgb(0, 0, 0)',
-            rgb2: 'oklch(0% 0 none)',
-            rgb3: 'rgb(0 0 0/.5)',
-            '2': '$color-primary-rgb3/.7'
-        },
-        input: '#123456',
-        code: '$(accent)',
+            input: '#123456',
+            code: '$(color-accent)',
+        }
     },
     utilities: {
         show: {

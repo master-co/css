@@ -4,10 +4,10 @@ import CSSTester from './tester'
 
 describe('mix color spaces and modes', () => {
     new CSSTester({
-        variables: { primary: '#000000' },
+        variables: { color: { primary: '#000000' } },
         modes: {
-            light: { primary: 'oklch(0 0 0)' },
-            dark: { primary: 'hsl(0 0% 100%)' }
+            light: { color: { primary: 'oklch(0 0 0)' } },
+            dark: { color: { primary: 'hsl(0 0% 100%)' } }
         },
         rules,
         modeTrigger: 'class'
@@ -15,24 +15,24 @@ describe('mix color spaces and modes', () => {
         .layers({
             'bg:primary': {
                 theme: [
-                    ':root{--primary:rgb(0 0 0)}',
-                    '.light{--primary:oklch(0 0 0)}',
-                    '.dark{--primary:hsl(0 0% 100%)}'
+                    ':root{--color-primary:rgb(0 0 0)}',
+                    '.light{--color-primary:oklch(0 0 0)}',
+                    '.dark{--color-primary:hsl(0 0% 100%)}'
                 ],
-                general: '.bg\\:primary{background-color:var(--primary)}'
+                general: '.bg\\:primary{background-color:var(--color-primary)}'
             },
             'bg:primary/.5': {
-                general: '.bg\\:primary\\/\\.5{background-color:color-mix(in oklab,var(--primary) 50%,transparent)}'
+                general: '.bg\\:primary\\/\\.5{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}'
             }
         })
 })
 
 describe('mix color spaces, modes, and alias', () => {
     new CSSTester({
-        variables: { black: '#000000', primary: '#000000' },
+        variables: { color: { black: '#000000', primary: '#000000' } },
         modes: {
-            dark: { primary: 'hsl(0 0% 100%)' },
-            light: { primary: '$color-black' }
+            dark: { color: { primary: 'hsl(0 0% 100%)' } },
+            light: { color: { primary: '$color-black' } }
         },
         rules,
         modeTrigger: 'class'
@@ -40,21 +40,21 @@ describe('mix color spaces, modes, and alias', () => {
         .layers({
             'bg:primary': {
                 theme: [
-                    ':root{--primary:rgb(0 0 0)}',
-                    '.dark{--primary:hsl(0 0% 100%)}',
-                    '.light{--primary:rgb(0 0 0)}',
+                    ':root{--color-primary:rgb(0 0 0)}',
+                    '.dark{--color-primary:hsl(0 0% 100%)}',
+                    '.light{--color-primary:rgb(0 0 0)}',
                 ],
-                general: '.bg\\:primary{background-color:var(--primary)}'
+                general: '.bg\\:primary{background-color:var(--color-primary)}'
             },
             'bg:primary/.5': {
-                general: '.bg\\:primary\\/\\.5{background-color:color-mix(in oklab,var(--primary) 50%,transparent)}'
+                general: '.bg\\:primary\\/\\.5{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}'
             }
         })
 })
 
 describe('inline color variable with alpha', () => {
     new CSSTester({
-        variables: { black: '#000000' },
+        variables: { color: { black: '#000000' } },
         rules,
         modeTrigger: 'class'
     }, null)
@@ -67,7 +67,7 @@ describe('inline color variable with alpha', () => {
 
 describe('inline color variable with alias and alpha', () => {
     new CSSTester({
-        variables: { black: '#000000', primary: '$color-black/.5' },
+        variables: { color: { black: '#000000', primary: '$color-black/.5' } },
         rules,
         modeTrigger: 'class'
     }, null)
@@ -80,7 +80,7 @@ describe('inline color variable with alias and alpha', () => {
 
 describe('multiply two alpha', () => {
     new CSSTester({
-        variables: { black: '#000000', primary: '$color-black/.5' },
+        variables: { color: { black: '#000000', primary: '$color-black/.5' } },
         rules,
         modeTrigger: 'class'
     }, null)
@@ -93,7 +93,7 @@ describe('multiply two alpha', () => {
 
 describe('multiply two alpha', () => {
     new CSSTester({
-        variables: { a: '#000000', b: '$a/.5', c: '$b/.5' },
+        variables: { color: { a: '#000000', b: '$color-a/.5', c: '$color-b/.5' } },
         rules,
         modeTrigger: 'class'
     }, null)
@@ -106,10 +106,10 @@ describe('multiply two alpha', () => {
 
 describe('create an alias for a variable with modes', () => {
     new CSSTester({
-        variables: { primary: '#000000', alias: '$color-primary' },
+        variables: { color: { primary: '#000000', alias: '$color-primary' } },
         modes: {
-            light: { primary: 'oklch(0 0 0)' },
-            dark: { primary: 'hsl(0 0% 100%)' }
+            light: { color: { primary: 'oklch(0 0 0)' } },
+            dark: { color: { primary: 'hsl(0 0% 100%)' } }
         },
         rules,
         modeTrigger: 'class'
@@ -117,11 +117,11 @@ describe('create an alias for a variable with modes', () => {
         .layers({
             'bg:alias': {
                 theme: [
-                    ':root{--alias:rgb(0 0 0)}',
-                    '.light{--alias:oklch(0 0 0)}',
-                    '.dark{--alias:hsl(0 0% 100%)}'
+                    ':root{--color-alias:rgb(0 0 0)}',
+                    '.light{--color-alias:oklch(0 0 0)}',
+                    '.dark{--color-alias:hsl(0 0% 100%)}'
                 ],
-                general: '.bg\\:alias{background-color:var(--alias)}'
+                general: '.bg\\:alias{background-color:var(--color-alias)}'
             }
         })
 })

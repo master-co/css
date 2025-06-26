@@ -92,11 +92,13 @@ Sets multiple shades for a single color.
 ```js name=master.css.js
 export default {
     variables: {
-        primary: { /* [!code ++] */
-            '': '#1192e8', /* primary */ /* [!code ++] */
-            10: '#e5f6ff', /* primary-10 */ /* [!code ++] */
-            20: '#bae6ff', /* primary-20 */ /* [!code ++] */
-        } /* [!code ++] */
+        color: {
+            primary: { /* [!code ++] */
+                '': '#1192e8', /* primary */ /* [!code ++] */
+                10: '#e5f6ff', /* primary-10 */ /* [!code ++] */
+                20: '#bae6ff', /* primary-20 */ /* [!code ++] */
+            } /* [!code ++] */
+        }
     }
 }
 ```
@@ -123,19 +125,9 @@ Using modes for variables, you can access a single source of truth and simplify 
 ```js name=master.css.js
 export default {
     variables: {
-        blue: '#4589ff' /* [!code ++] */
+        color: {
+            blue: '#4589ff' /* [!code ++] */
+        }
     }
 }
 ```
-
-(o) Use `app-*` to avoid conflicts with defaults and keep `blue-*` colors consistent.
-
-<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/override-default-colors/master.css.js?raw')}</Code>
-Apply custom colors for the current application.
-<Code lang="html">{require('../../../../../packages/server/tests/fixtures/override-default-colors/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/override-default-colors/generated.css?raw')}</Code>
-    </div>
-</details>

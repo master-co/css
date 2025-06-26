@@ -1,5 +1,7 @@
 export default {
     variables: {
-        primary: '#000' /* [!code highlight] */
+        color: {
+            primary: '#000' /* [!code highlight] */
+        }
     }
 }

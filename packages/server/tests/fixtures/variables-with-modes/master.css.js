@@ -1,10 +1,14 @@
 export default {
     modes: {
         light: {
-            primary: '#000000' /* [!code highlight] */
+            color: {
+                primary: '#000000' /* [!code highlight] */
+            }
         },
         dark: {
-            primary: '#ffffff' /* [!code highlight] */
+            color: {
+                primary: '#ffffff' /* [!code highlight] */
+            }
         }
     }
 }

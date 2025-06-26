@@ -1,4 +1,4 @@
-import { Layer, DefinedRule } from '@master/css'
+import { createCSS, DefinedRule } from '@master/css'
 import cssDataProvider from './css-data-provider'
 import type { IPropertyData } from 'vscode-css-languageservice'
 

@@ -5,8 +5,8 @@ import { expectLayers } from '../../test'
 test.concurrent('colors', () => {
     expectLayers(
         {
-            theme: ':root{--primary-stage-1:oklch(100% 0 none)}.light{--primary-stage-1:oklch(0% 0 none)}.dark{--primary-stage-1:oklch(100% 0 none)}',
-            general: '.fg\\:primary-stage-1{color:var(--primary-stage-1)}'
+            theme: ':root{--color-primary-stage-1:oklch(100% 0 none)}.light{--color-primary-stage-1:oklch(0% 0 none)}.dark{--color-primary-stage-1:oklch(100% 0 none)}',
+            general: '.fg\\:primary-stage-1{color:var(--color-primary-stage-1)}'
         },
         'fg:primary-stage-1',
         config
@@ -22,7 +22,7 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            general: '.bg\\:blue-100{background-color:rgb(119 119 119)}'
+            general: '.bg\\:blue-100{background-color:oklch(25.46% 0.168 269.2)}'
         },
         'bg:blue-100',
         {
@@ -74,8 +74,8 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: '.light,:root{--major:oklch(0% 0 none)}.dark{--major:oklch(100% 0 none)}',
-            general: '.bg\\:linear-gradient\\(180deg\\,major\\,black\\){background-image:linear-gradient(180deg,var(--major),oklch(0% 0 none))}'
+            theme: '.light,:root{--color-major:oklch(0% 0 none)}.dark{--color-major:oklch(100% 0 none)}',
+            general: '.bg\\:linear-gradient\\(180deg\\,major\\,black\\){background-image:linear-gradient(180deg,var(--color-major),oklch(0% 0 none))}'
         },
         'bg:linear-gradient(180deg,major,black)',
         config
@@ -185,20 +185,26 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: ':root{--primary-filled:oklch(0% 0 none)}.light{--primary-filled:oklch(100% 0 none)}.dark{--primary-filled:oklch(0% 0 none)}',
-            components: '.btn{background-color:var(--primary-filled)}'
+            theme: ':root{--color-primary-filled:oklch(0% 0 none)}.light{--color-primary-filled:oklch(100% 0 none)}.dark{--color-primary-filled:oklch(0% 0 none)}',
+            components: '.btn{background-color:var(--color-primary-filled)}'
         },
         'btn',
         {
             variables: {
-                'primary-filled': '$color-black'
+                color: {
+                    'primary-filled': '$color-black'
+                }
             },
             modes: {
                 light: {
-                    'primary-filled': '$color-white'
+                    color: {
+                        'primary-filled': '$color-white'
+                    }
                 },
                 dark: {
-                    'primary-filled': '$color-black'
+                    color: {
+                        'primary-filled': '$color-black'
+                    }
                 }
             },
             modeTrigger: 'class',
@@ -210,20 +216,26 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: ':root{--primary-filled:oklch(0% 0 none)}.light{--primary-filled:oklch(100% 0 none)}.dark{--primary-filled:oklch(0% 0 none)}',
-            general: '.bg\\:primary-filled{background-color:var(--primary-filled)}'
+            theme: ':root{--color-primary-filled:oklch(0% 0 none)}.light{--color-primary-filled:oklch(100% 0 none)}.dark{--color-primary-filled:oklch(0% 0 none)}',
+            general: '.bg\\:primary-filled{background-color:var(--color-primary-filled)}'
         },
         'bg:primary-filled',
         {
             variables: {
-                'primary-filled': '$color-black'
+                color: {
+                    'primary-filled': '$color-black'
+                }
             },
             modes: {
                 light: {
-                    'primary-filled': '$color-white'
+                    color: {
+                        'primary-filled': '$color-white'
+                    }
                 },
                 dark: {
-                    'primary-filled': '$color-black'
+                    color: {
+                        'primary-filled': '$color-black'
+                    }
                 }
             },
             components: {
@@ -240,14 +252,20 @@ test.concurrent('colors', () => {
         'bg:primary-filled@dark',
         {
             variables: {
-                'primary-filled': '$color-white'
+                color: {
+                    'primary-filled': '$color-white'
+                }
             },
             modes: {
                 light: {
-                    'primary-filled': '$color-black'
+                    color: {
+                        'primary-filled': '$color-black'
+                    }
                 },
                 dark: {
-                    'primary-filled': '$color-white'
+                    color: {
+                        'primary-filled': '$color-white'
+                    }
                 }
             },
             components: {
@@ -259,8 +277,8 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: '.light,:root{--code:oklch(0% 0 none)}.dark{--code:oklch(100% 0 none)}',
-            general: '.bg\\:code{background-color:var(--code)}'
+            theme: '.light,:root{--color-code:oklch(0% 0 none)}.dark{--color-code:oklch(100% 0 none)}',
+            general: '.bg\\:code{background-color:var(--color-code)}'
         },
         'bg:code',
         config
@@ -268,8 +286,8 @@ test.concurrent('colors', () => {
 
     expectLayers(
         {
-            theme: '.light,:root{--code:oklch(0% 0 none)}.dark{--code:oklch(100% 0 none)}',
-            general: '.bg\\:code\\/\\.5{background-color:color-mix(in oklab,var(--code) 50%,transparent)}'
+            theme: '.light,:root{--color-code:oklch(0% 0 none)}.dark{--color-code:oklch(100% 0 none)}',
+            general: '.bg\\:code\\/\\.5{background-color:color-mix(in oklab,var(--color-code) 50%,transparent)}'
         },
         'bg:code/.5',
         config

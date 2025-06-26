@@ -8,14 +8,23 @@
     <style id="master">
         @layer base, theme, preset, components, general;
 
-        @layer theme {
-            :host(.light),:host{--base: 255 255 255}
-            :host(.dark){--base: 29 28 29}
+        @layer components {
+            .btn {
+                background-color: oklch(0% 0 none);
+            }
+
+            @media (width >=52.125rem) {
+                .btn\@sm {
+                    background-color: oklch(0% 0 none);
+                }
+            }
         }
     </style>
 </head>
 
 <body>
+    <button class="btn">button</button>
+    <button class="btn@sm">button</button>
 </body>
 
 </html>

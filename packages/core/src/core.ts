@@ -8,9 +8,9 @@ import SyntaxRuleType from './syntax-rule-type'
 import Layer from './layer'
 import SyntaxLayer from './syntax-layer'
 import NonLayer from './non-layer'
-import { ColorVariable, DefinedRule, LiteralVariable, NumberVariable, StringVariable, Variable } from './types/syntax'
+import { ColorVariable, DefinedRule, Variable } from './types/syntax'
 import { AtRule, AtRuleValueNode } from './utils/parse-at'
-import { AnimationDefinitions, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
+import { AnimationDefinitions, Config, SyntaxRuleDefinition } from './types/config'
 import registerGlobal from './register-global'
 import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
@@ -125,14 +125,15 @@ export default class MasterCSS {
                 if (a[1].type !== b[1].type) {
                     return (b[1].type || 0) - (a[1].type || 0)
                 }
-                if (!a[1].kind && !b[1].kind) return 0
-                if (!a[1].kind) return 1
-                if (!b[1].kind) return -1
-                const kindOrder = ['color', 'number', 'image']
-                const aKindIndex = kindOrder.indexOf(a[1].kind)
-                const bKindIndex = kindOrder.indexOf(b[1].kind)
-                if (aKindIndex !== bKindIndex) {
-                    return aKindIndex - bKindIndex
+                if (a[1].kind !== b[1].kind) {
+                    if (!a[1].kind) return 1
+                    if (!b[1].kind) return -1
+                    const kindOrder = ['color', 'number', 'image']
+                    const aKindIndex = kindOrder.indexOf(a[1].kind)
+                    const bKindIndex = kindOrder.indexOf(b[1].kind)
+                    if (aKindIndex !== bKindIndex) {
+                        return aKindIndex - bKindIndex
+                    }
                 }
                 return b[0].localeCompare(a[0], undefined, { numeric: true })
             })
@@ -169,9 +170,13 @@ export default class MasterCSS {
 
                 // Helper: resolve variable groups
                 const addNamespace = (namespace: string) => {
+                    const dashedNamespace = namespace.replace(/\./g, '-')
                     this.variables.forEach(v => {
-                        if (v.namespace === namespace) {
-                            const variableKey = v.name.replace(namespace + '-', '')
+                        if (v.namespace === namespace || v.group === namespace) {
+                            let variableKey = v.name
+                            if (variableKey.startsWith('-' + dashedNamespace) || variableKey.startsWith(dashedNamespace)) {
+                                variableKey = variableKey.slice(dashedNamespace.length + 1)
+                            }
                             if (syntax.variables) {
                                 syntax.variables.set(variableKey, v)
                             } else {
@@ -181,13 +186,13 @@ export default class MasterCSS {
                     })
                 }
 
-                // Rule-defined variable groups
+                // 1. Auto variable binding
+                addNamespace(id)
+
+                // 2. Rule-defined variable groups
                 if (namespaces) {
                     namespaces.forEach(addNamespace)
                 }
-
-                // Auto variable binding
-                addNamespace(id)
 
                 if (id.endsWith('()')) {
                     if (!key) def.key = key = id
@@ -238,7 +243,7 @@ export default class MasterCSS {
 
                         if (variableKeys.length) {
                             syntax.matchers.variable = new RegExp(
-                                `^${keyPattern}:(?:${variableKeys.join('|')}(?![a-zA-Z0-9-]))[^|]*?(?:@|$)`
+                                `^${keyPattern}:(?:${variableKeys.join('|')})(?![a-zA-Z0-9-])[^|]*?(?:@|$)`
                             )
                         }
                     }
@@ -263,6 +268,7 @@ export default class MasterCSS {
                     )
                 }
             })
+
     }
 
     resolveComponents() {
@@ -512,7 +518,15 @@ export default class MasterCSS {
                     namespace: 'screen',
                     group: 'screen',
                     type: 'number',
-                    value: value,
+                    value,
+                })
+                this.variables.set('-' + name, {
+                    name: '-' + name,
+                    key: '-' + key,
+                    namespace: 'screen',
+                    group: 'screen',
+                    type: 'number',
+                    value: value * -1,
                 })
             }
         }
@@ -543,6 +557,7 @@ export default class MasterCSS {
         for (const eachSyntax of this.definedRules) {
             if (eachSyntax.matchers.value?.test(className)) return eachSyntax
         }
+
         /**
          * 3. full key
          * @example text-align:center color:blue-40
@@ -550,6 +565,7 @@ export default class MasterCSS {
         for (const eachSyntax of this.definedRules) {
             if (eachSyntax.matchers.key?.test(className)) return eachSyntax
         }
+
         /**
          * 4. arbitrary
          * @example custom RegExp, utility

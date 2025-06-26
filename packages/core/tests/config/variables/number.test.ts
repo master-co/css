@@ -175,3 +175,12 @@ test.concurrent('negative variables', () => {
         }
     )
 })
+
+test.concurrent('negative screens', () => {
+    expectLayers(
+        {
+            general: '.mb\\:-screen-md{margin-bottom:-64rem}'
+        },
+        'mb:-screen-md'
+    )
+})

@@ -79,10 +79,8 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
          * @example box: + content -> box-sizing:content
          */
         if (eachDefinedRule.definition.key === ruleKey || eachDefinedRule.definition.subkey === ruleKey || eachDefinedRule.definition.aliasGroups?.includes(ruleKey)) {
-            for (const variableName in eachDefinedRule.variables) {
-                if (completionItems.find(({ label }) => label === variableName)) continue
-                const variable = eachDefinedRule.variables.get(variableName)
-                if (!variable) continue
+            eachDefinedRule.variables?.forEach((variable, variableName) => {
+                if (completionItems.find(({ label }) => label === variableName)) return
                 const completionItem = generateVariableCompletionItem(variable, { scoped: true })
                 if (completionItem) {
                     completionItem.label = variableName
@@ -90,14 +88,14 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
                     completionItem.detail = '(scope) ' + completionItem.detail
                     completionItems.push(completionItem)
                 }
-            }
+            })
         }
 
         /**
          * @example animation:fade
          */
         if (eachDefinedRule.keys.includes(ruleKey) && eachDefinedRule.definition.includeAnimations) {
-            css.animations.forEach((animation, animationName) => {
+            css.animations.forEach((_, animationName) => {
                 const isNative = eachDefinedRule.definition.type && ([SyntaxRuleType.Native, SyntaxRuleType.NativeShorthand]).includes(eachDefinedRule.definition.type)
                 completionItems.push({
                     label: animationName,

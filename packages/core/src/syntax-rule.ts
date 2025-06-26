@@ -338,7 +338,6 @@ export class SyntaxRule {
                                 handleVariable(
                                     (variable) => {
                                         const colorVariable = variable as ColorVariable
-                                        const v = colorVariable.value
                                         alpha = (alpha || 1) * (colorVariable.alpha || 1)
                                         if (alpha < 1) {
                                             currentValue += eachValueComponent.text = `${colorVariable.space}(${colorVariable.value}/${alpha})`

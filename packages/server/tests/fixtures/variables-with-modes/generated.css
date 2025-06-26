@@ -1,1 +1,1 @@
-@layer base,theme,preset,components,general;@layer theme{@media (prefers-color-scheme:light){:root{--primary:rgb(0 0 0)}}@media (prefers-color-scheme:dark){:root{--primary:rgb(255 255 255)}}}@layer general{.bg\:primary{background-color:var(--primary)}}
+@layer base,theme,preset,components,general;@layer theme{@media (prefers-color-scheme:light){:root{--color-primary:rgb(0 0 0)}}@media (prefers-color-scheme:dark){:root{--color-primary:rgb(255 255 255)}}}@layer general{.bg\:primary{background-color:var(--color-primary)}}

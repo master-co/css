@@ -71,12 +71,12 @@ For non-mode variables, optimization is achieved by directly inlining values `#0
 You can also use native CSS variable declarations explicitly, but it will not generate `--primary: #000` rules and you will have to define them manually as usual.
 ```html
 <!-- @MARK fg:var(--primary) -->
-<div class="fg:var(--primary)">…</div>
+<div class="fg:var(--color-primary)">…</div>
 ```
 It will be compiled to:
 ```css
-.fg\:var\(--primary\) {
-    color: var(--primary);
+.fg\:var\(--color-primary\) {
+    color: var(--color-primary);
 }
 ```
 
@@ -161,13 +161,13 @@ export default {
 With default `'light'` mode:
 ```css
 .light, :root {
-    --primary: 0 0 0;
+    --color-primary: 0 0 0;
 }
 ```
 No default mode `false`:
 ```css
 .light {
-    --primary: 0 0 0;
+    --color-primary: 0 0 0;
 }
 ```
 (i) The `defaultMode` has no effect with `'media'` trigger, as CSS always applies either light or dark color preferences based on the user's system settings.

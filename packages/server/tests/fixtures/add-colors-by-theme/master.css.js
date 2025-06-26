@@ -1,13 +1,19 @@
 export default {
     variables: {
-        primary: '#ff0000'
+        color: {
+            primary: '#ff0000'
+        }
     },
     modes: {
         light: {
-            primary: '#000000' /* [!code highlight] */
+            color: {
+                primary: '#000000' /* [!code highlight] */
+            }
         },
         dark: {
-            primary: '#ffffff' /* [!code highlight] */
+            color: {
+                primary: '#ffffff' /* [!code highlight] */
+            }
         }
     }
 }

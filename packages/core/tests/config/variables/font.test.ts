@@ -1,4 +1,4 @@
-import { it, test, expect } from 'vitest'
+import { it, expect } from 'vitest'
 import { createCSS } from '../../../src'
 
 it.concurrent('should be able to access related font variables using inherited rules', () => {

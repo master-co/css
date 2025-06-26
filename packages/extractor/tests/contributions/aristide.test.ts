@@ -79,6 +79,8 @@ test('AristideBH', async () => {
         `)
     expect(extractor?.css.generalLayer.rules.map(({ name }) => name)).toEqual([
         'flex',
+        'flex-col',
+        'flex-row',
         'sticky',
         'bg:var(--code-background-color)',
         'bg:var(--primary)',
@@ -88,8 +90,6 @@ test('AristideBH', async () => {
         'aspect:16/9',
         'f:12',
         'fg:white',
-        'flex-col',
-        'flex-row',
         'jc:center',
         'obj:cover',
         't:center',

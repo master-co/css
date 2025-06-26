@@ -1,33 +1,38 @@
 import { test, expect } from '@playwright/test'
-import { dirname, resolve } from 'path'
+import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import init from './init'
-import { modeTrigger } from '~/examples/webpack/master.css'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const variables = {
-    first: '#111111',
-    third: '#666666',
-    fourth: '#888888',
+    color: {
+        first: '#111111',
+        third: '#666666',
+        fourth: '#888888',
+    }
 }
 
 const modes = {
     light: {
-        first: '#333333',
-        second: '#555555',
-        third: '#777777',
-        fourth: '#000000',
-        fifth: '#033333',
-        sixth: '#666666'
+        color: {
+            first: '#333333',
+            second: '#555555',
+            third: '#777777',
+            fourth: '#000000',
+            fifth: '#033333',
+            sixth: '#666666'
+        }
     },
     dark: {
-        first: '#222222',
-        second: '#444444',
-        third: '#666666',
-        fourth: '#999999',
-        fifth: '#022222'
+        color: {
+            first: '#222222',
+            second: '#444444',
+            third: '#666666',
+            fourth: '#999999',
+            fifth: '#022222'
+        }
     }
 }
 
@@ -47,8 +52,8 @@ test('expects the variable output', async ({ page }) => {
             return globalThis.cssRuntime.text
         }),
         {
-            theme: ':root{--first:17 17 17}.light{--first:51 51 51}.dark{--first:34 34 34}',
-            general: '.bg\\:first{background-color:rgb(var(--first))}'
+            theme: ':root{--color-first:rgb(17 17 17)}.light{--color-first:rgb(51 51 51)}.dark{--color-first:rgb(34 34 34)}',
+            general: '.bg\\:first{background-color:var(--color-first)}'
         }
     )
 
@@ -64,65 +69,65 @@ test('expects the variable output', async ({ page }) => {
         await new Promise(resolve => setTimeout(resolve, 0))
         return globalThis.cssRuntime.text
     })
-    expect(text).toMatch(/\.dark\{[^}]*--second:68 68 68[^}]*\}/)
-    expect(text).toMatch(/\.light,:root\{[^}]*--second:85 85 85[^}]*\}/)
-    expect(text).toContain('.bg\\:second{background-color:rgb(var(--second))}')
-    expect(text).toMatch(/:root\{[^}]*--third:102 102 102[^}]*\}/)
-    expect(text).toMatch(/\.light\{[^}]*--third:119 119 119[^}]*\}/)
-    expect(text).toContain('.b\\:third{border-color:rgb(var(--third))}')
-    expect(text).toMatch(/:root\{[^}]*--fourth:136 136 136[^}]*\}/)
-    expect(text).toMatch(/\.dark\{[^}]*--fourth:153 153 153[^}]*\}/)
-    expect(text).toMatch(/\.light\{[^}]*--fourth:0 0 0[^}]*\}/)
-    expect(text).toMatch(/\.dark\{[^}]*--fifth:2 34 34[^}]*\}/)
-    expect(text).toMatch(/\.light,:root\{[^}]*--fifth:3 51 51[^}]*\}/)
+    expect(text).toMatch(/\.dark\{[^}]*--color-second:rgb\(68 68 68\)[^}]*\}/)
+    expect(text).toMatch(/\.light,:root\{[^}]*--color-second:rgb\(85 85 85\)[^}]*\}/)
+    expect(text).toContain('.bg\\:second{background-color:var(--color-second)}')
+    expect(text).toMatch(/:root\{[^}]*--color-third:rgb\(102 102 102\)[^}]*\}/)
+    expect(text).toMatch(/\.light\{[^}]*--color-third:rgb\(119 119 119\)[^}]*\}/)
+    expect(text).toContain('.b\\:third{border-color:var(--color-third)}')
+    expect(text).toMatch(/:root\{[^}]*--color-fourth:rgb\(136 136 136\)[^}]*\}/)
+    expect(text).toMatch(/\.dark\{[^}]*--color-fourth:rgb\(153 153 153\)[^}]*\}/)
+    expect(text).toMatch(/\.light\{[^}]*--color-fourth:rgb\(0 0 0\)[^}]*\}/)
+    expect(text).toMatch(/\.dark\{[^}]*--color-fifth:rgb\(2 34 34\)[^}]*\}/)
+    expect(text).toMatch(/\.light,:root\{[^}]*--color-fifth:rgb\(3 51 51\)[^}]*\}/)
     // todo: insertRule throw error
     // expect(text).toContain('.\\{outline\\:fourth\\;accent\\:fifth\\}{outline-color:rgb(var(--fourth));accent-color:rgb(var(--fifth))}')
-    expect(text).toContain('.fg\\:second{color:rgb(var(--second))}')
-    expect(text).toMatch(/\.light,:root\{[^}]*--sixth:102 102 102[^}]*\}/)
+    expect(text).toContain('.fg\\:second{color:var(--color-second)}')
+    expect(text).toMatch(/\.light,:root\{[^}]*--color-sixth:rgb\(102 102 102\)[^}]*\}/)
 
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('bg:second')
         await new Promise(resolve => setTimeout(resolve, 0))
         return globalThis.cssRuntime.text
     })
-    expect(text).toMatch(/\.dark\{[^}]*--second:68 68 68[^}]*\}/)
-    expect(text).toMatch(/\.light,:root\{[^}]*--second:85 85 85[^}]*\}/)
+    expect(text).toMatch(/\.dark\{[^}]*--color-second:rgb\(68 68 68\)[^}]*\}/)
+    expect(text).toMatch(/\.light,:root\{[^}]*--color-second:rgb\(85 85 85\)[^}]*\}/)
 
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('b:third')
         await new Promise(resolve => setTimeout(resolve, 0))
         return globalThis.cssRuntime.text
     })
-    expect(text).not.toMatch(/:root\{[^}]*--third:102 102 102[^}]*\}/)
-    expect(text).not.toMatch(/\.light\{[^}]*--third:119 119 119[^}]*\}/)
+    expect(text).not.toMatch(/:root\{[^}]*--color-third:rgb\(102 102 102\)[^}]*\}/)
+    expect(text).not.toMatch(/\.light\{[^}]*--color-third:rgb\(119 119 119\)[^}]*\}/)
 
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('{outline:fourth;accent:fifth}')
         await new Promise(resolve => setTimeout(resolve, 0))
         return globalThis.cssRuntime.text
     })
-    expect(text).not.toMatch(/:root\{[^}]*--fourth:136 136 136[^}]*\}/)
-    expect(text).not.toMatch(/\.dark\{[^}]*--fourth:153 153 153[^}]*\}/)
-    expect(text).not.toMatch(/\.light, :root\{[^}]*--fourth:0 0 0[^}]*\}/)
-    expect(text).not.toMatch(/\.dark\{[^}]*--fifth:2 34 34[^}]*\}/)
-    expect(text).not.toMatch(/\.light, :root\{[^}]*--fifth:3 51 51[^}]*\}/)
+    expect(text).not.toMatch(/:root\{[^}]*--color-fourth:rgb\(136 136 136\)[^}]*\}/)
+    expect(text).not.toMatch(/\.dark\{[^}]*--color-fourth:rgb\(153 153 153\)[^}]*\}/)
+    expect(text).not.toMatch(/\.light, :root\{[^}]*--color-fourth:rgb\(0 0 0\)[^}]*\}/)
+    expect(text).not.toMatch(/\.dark\{[^}]*--color-fifth:rgb\(2 34 34\)[^}]*\}/)
+    expect(text).not.toMatch(/\.light, :root\{[^}]*--color-fifth:rgb\(3 51 51\)[^}]*\}/)
 
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('fg:second')
         await new Promise(resolve => setTimeout(resolve, 0))
         return globalThis.cssRuntime.text
     })
-    expect(text).not.toMatch(/\.dark\{[^}]*--second:68 68 68[^}]*\}/)
-    expect(text).not.toMatch(/\.light,:root\{[^}]*--second:85 85 85[^}]*\}/)
+    expect(text).not.toMatch(/\.dark\{[^}]*--color-second:rgb\(68 68 68\)[^}]*\}/)
+    expect(text).not.toMatch(/\.light,:root\{[^}]*--color-second:rgb\(85 85 85\)[^}]*\}/)
 
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('bg:first')
         await new Promise(resolve => setTimeout(resolve, 0))
         return globalThis.cssRuntime.text
     })
-    expect(text).not.toMatch(/:root\{[^}]*--first:17 17 17[^}]*\}/)
-    expect(text).not.toMatch(/\.dark\{[^}]*--first:29 28 29[^}]*\}/)
-    expect(text).not.toMatch(/\.light, :root\{[^}]*--first:51 51 51[^}]*\}/)
+    expect(text).not.toMatch(/:root\{[^}]*--color-first:rgb\(17 17 17\)[^}]*\}/)
+    expect(text).not.toMatch(/\.dark\{[^}]*--color-first:rgb\(29 28 29\)[^}]*\}/)
+    expect(text).not.toMatch(/\.light, :root\{[^}]*--color-first:rgb\(51 51 51\)[^}]*\}/)
 
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('accent:sixth')
