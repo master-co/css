@@ -644,6 +644,15 @@ const rules = {
     'rotate3d()': {
         declarations: ['transform']
     },
+    'skew()': {
+        declarations: ['transform']
+    },
+    'skewX()': {
+        declarations: ['transform']
+    },
+    'skewY()': {
+        declarations: ['transform']
+    },
     'perspective()': {
         declarations: ['transform']
     },
