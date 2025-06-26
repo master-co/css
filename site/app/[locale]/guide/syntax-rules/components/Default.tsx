@@ -8,7 +8,7 @@ const Default = () =>
             <table>
                 <thead>
                     <tr>
-                        <th className="sticky-th w:0">Name</th>
+                        <th className="w:0 sticky-th">Name</th>
                         <th className='sticky-th'>type</th>
                         <th className='sticky-th'>Unit</th>
                         <th className='sticky-th'>Variable Namespaces</th>
