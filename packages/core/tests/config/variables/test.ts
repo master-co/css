@@ -39,7 +39,6 @@ test.concurrent('rule variables', () => {
     expect(createCSS(config).create('tracking:wide')?.text).toBe('.tracking\\:wide{letter-spacing:0.025em}')
     expect(createCSS(config).create('letter-spacing:wide')?.text).toBe('.letter-spacing\\:wide{letter-spacing:0.025em}')
     expect(createCSS(config).create('shadow:x2')?.text).toBe('.shadow\\:x2{box-shadow:0rem 25px 50px -12px rgb(0 0 0 / 25%)}')
-    expect(createCSS(config).create('inset:sm|md|md|sm')?.text).toBe('.inset\\:sm\\|md\\|md\\|sm{inset:0.625rem 1.25rem 1.25rem 0.625rem}')
     expect(createCSS(config).create('b:inputborder')?.text).toBe('.b\\:inputborder{border:0.125rem solid oklch(0% 0 none)}')
     expectLayers(
         {

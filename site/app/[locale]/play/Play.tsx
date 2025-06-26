@@ -572,7 +572,7 @@ export default function Play(props: any) {
                     {shareable && <ShareButton className={clsx('hidden@<md', sharing ? 'app-header-nav' : 'app-header-icon')} disabled={sharing} onClick={share}>
                         {sharing && <span className="ml:10">{$('Sharing ...')}</span>}
                     </ShareButton>}
-                    {(shareId || shareable) && <div className='mx:4x bg:frame-light h:1em w:1 hidden@<md'></div>}
+                    {(shareId || shareable) && <div className='mx:4x bg:line-light h:1em w:1 hidden@<md'></div>}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout ? '' : '2')}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
@@ -606,7 +606,7 @@ export default function Play(props: any) {
                         </svg>
                     </button>
                     <span className='hidden'>{layout}</span>
-                    <div className='mx:4x bg:frame-light h:1em w:1 hidden@<md'></div>
+                    <div className='mx:4x bg:line-light h:1em w:1 hidden@<md'></div>
                     {/* preview: desktop */}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', '')}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
@@ -629,7 +629,7 @@ export default function Play(props: any) {
                         )} />
                     </button>
                     <span className='hidden'>{preview}</span>
-                    <div className='mx:4x bg:frame-light h:1em w:1 hidden@<md'></div>
+                    <div className='mx:4x bg:line-light h:1em w:1 hidden@<md'></div>
                     <LanguageButton className="app-header-icon hidden@<md" />
                     <ThemeButton className="app-header-icon mr:-12 hidden@<md"
                         onChange={(theme: string) => {
@@ -723,8 +723,8 @@ export default function Play(props: any) {
                         overlay={false}
                         originX={'center'}
                         showHandler={responsive ? [false, true, true] : false}
-                        className={clsx('full outline:1|frame-light.resizing', {
-                            'outline:1|frame-lighter max-h:100% max-w:100%': responsive
+                        className={clsx('full outline:1|line-light.resizing', {
+                            'outline:1|line-lighter max-h:100% max-w:100%': responsive
                         })}
                         showHeight={true}
                     >

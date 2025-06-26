@@ -117,7 +117,7 @@ const modes = {
                 "active": "$color-red-70",
                 "text": "$color-white"
             },
-            "frame": {
+            "line": {
                 "neutral": "$color-grey-60",
                 "light": "oklch(0% 0 none / 0.12)",
                 "lighter": "oklch(0% 0 none / 0.09)",
@@ -270,7 +270,7 @@ const modes = {
                 "active": "$color-red-40",
                 "text": "$color-white"
             },
-            "frame": {
+            "line": {
                 "neutral": "$color-gray-30",
                 "light": "oklch(100% 0 none / 0.12)",
                 "lighter": "oklch(100% 0 none / 0.09)",

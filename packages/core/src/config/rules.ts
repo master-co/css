@@ -730,45 +730,45 @@ const rules = {
         aliasGroups: ['bt', 'border-top'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
     },
     'border-bottom-color': {
         aliasGroups: ['bb', 'border-bottom'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
     },
     'border-left-color': {
         aliasGroups: ['bl', 'border-left'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
     },
     'border-right-color': {
         aliasGroups: ['br', 'border-right'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
     },
     'border-x-color': {
         aliasGroups: ['bx', 'border-x'],
         kind: 'color',
         type: SyntaxRuleType.Shorthand,
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
         declarations: ['border-left-color', 'border-right-color']
     },
     'border-y-color': {
         aliasGroups: ['by', 'border-y'],
         kind: 'color',
         type: SyntaxRuleType.Shorthand,
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
         declarations: ['border-top-color', 'border-bottom-color']
     },
     'border-color': {
         aliasGroups: ['b', 'border'],
         kind: 'color',
         type: SyntaxRuleType.NativeShorthand,
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
     },
     // border radius
     'border-top-left-radius': {
@@ -948,35 +948,35 @@ const rules = {
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
     },
     'border-bottom': {
         key: 'bb',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
     },
     'border-left': {
         key: 'bl',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
     },
     'border-right': {
         key: 'br',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
     },
     'border-x': {
         key: 'bx',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
         declarations: ['border-left', 'border-right']
     },
     'border-y': {
@@ -984,7 +984,7 @@ const rules = {
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
         declarations: ['border-top', 'border-bottom']
     },
     border: {
@@ -992,7 +992,7 @@ const rules = {
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
     },
     'background-attachment': {
         aliasGroups: ['bg'],
@@ -1315,7 +1315,7 @@ const rules = {
         aliasGroups: ['outline'],
         kind: 'color',
         type: SyntaxRuleType.Native,
-        namespaces: ['color', 'color.frame'],
+        namespaces: ['color', 'color.line'],
     },
     'outline-offset': {
         unit: 'rem',
@@ -1342,7 +1342,7 @@ const rules = {
             'outline-style',
             'outline-offset',
             'outline-color',
-            'color.frame',
+            'color.line',
             'color'
         ],
         transformer: 'auto-fill-solid'
