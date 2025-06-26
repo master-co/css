@@ -21,6 +21,10 @@
         "url": "https://github.com/master-co/css.git",
         "directory": "packages/figma"
     },
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    },
     "devDependencies": {
         "@figma/eslint-plugin-figma-plugins": "^0.16.1",
         "@figma/plugin-typings": "^1.111.0",
