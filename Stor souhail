@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsightFlow OS Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Basic Reset & Font */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: #1a1a1a; /* Very dark gray/slate */
+            color: #e0e0e0; /* Light gray for text */
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Dashboard Container (CSS Grid for layout) */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 200px 1fr 300px; /* Left | Middle | Right */
+            min-height: 100vh;
+            gap: 20px;
+            padding: 20px; /* Add some padding around the whole dashboard */
+        }
+
+        /* Sidebar (Left Column) */
+        .sidebar {
+            background-color: #2c3e50; /* Deep Charcoal */
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar .logo {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #00FFFF; /* Electric Cyan */
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        .navigation ul {
+            list-style: none;
+        }
+
+        .navigation ul li {
+            margin-bottom: 15px;
+        }
+
+        .navigation ul li a {
+            color: #e0e0e0;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: block;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+
+        .navigation ul li a:hover,
+        .navigation ul li a.active {
+            background-color: rgba(0, 255, 255, 0.1);
+            color: #00FFFF;
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+        }
+
+        /* Main Content (Middle Column) */
+        .main-content {
+            background-color: #252525; /* Slightly lighter dark gray */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .main-header h1 {
+            color: #00FFFF; /* Electric Cyan */
+            font-size: 2em;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            color: #b0b0b0;
+        }
+
+        .user-profile .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #00FFFF; /* Electric Cyan */
+            border-radius: 50%;
+            margin-left: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #2c3e50;
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: #333333; /* Darker gray for cards */
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            color: #00FFFF; /* Electric Cyan */
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            padding-bottom: 10px;
+            text-shadow: 0 0 3px rgba(0, 255, 255, 0.3);
+        }
+
+        /* AI Automation Panel Specifics */
+        .ai-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+        }
+
+        .ai-toggle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .ai-status-label {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .ai-status-label #aiStatusText {
+            color: #e0e0e0; /* Default color */
+            transition: color 0.3s ease-in-out;
+        }
+
+        /* Toggle Switch Styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 90px; /* Larger width */
+            height: 50px; /* Larger height */
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #555; /* Off state color */
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 42px; /* Slightly smaller than switch height */
+            width: 42px; /* Slightly smaller than switch width */
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked + .slider {
+            background-color: #00FFFF; /* Electric Cyan when ON */
+            box-shadow: 0 0 10px #00FFFF; /* Cyan Glow when ON */
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #00FFFF;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(40px); /* Move slider to the right */
+            -ms-transform: translateX(40px);
+            transform: translateX(40px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        /* Cyan glow for ON state of AI Pricing */
+        input:checked ~ .ai-status-label #aiStatusText {
+            color: #00FFFF; /* Make text cyan when ON */
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.8);
+        }
+
+        /* Data Visualization Placeholder */
+        .chart-card {
+            position: relative;
+            height: 350px; /* Give canvas container a height */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-card canvas {
+            background-color: rgba(0, 0, 0, 0.1); /* Subtle background for chart area */
+            border-radius: 8px;
+            flex-grow: 1; /* Make canvas take available space */
+            box-shadow: inset 0 0 8px rgba(0, 255, 255, 0.1), 0 0 10px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            width: 100%;
+            height: 100%; /* Ensure canvas fills its container */
+        }
+
+        /* Activity List */
+        .activity-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .activity-list li {
+            background-color: #3f3f3f;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            border-left: 3px solid #00FFFF; /* Electric Cyan accent */
+            font-size: 0.95em;
+            color: #c0c0c0;
+            transition: background-color 0.2s ease;
+        }
+
+        .activity-list li:hover {
+            background-color: #4a4a4a;
+        }
+
+        /* Action Feed (Right Column) */
+        .action-feed {
+            background-color: #252525; /* Light background for feed */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .action-feed h2 {
+            color: #00FFFF; /* Electric Cyan */
+            font-size: 1.4em;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            text-shadow: 0 0 3px rgba(0, 255, 255, 0.3);
+        }
+
+        .feed-item {
+            background-color: #333333;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease-in-out;
+            border-left: 4px solid;
+        }
+
+        .feed-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .feed-item.alert {
+            border-color: #FF6347; /* Tomato red for alerts */
+            color: #FFDAB9; /* Lighter text for alerts */
+        }
+
+        .feed-item.notification {
+            border-color: #6A5ACD; /* Slate Blue for notifications */
+            color: #E6E6FA; /* Lighter text for notifications */
+        }
+
+        .feed-item strong {
+            color: #00FFFF; /* Electric Cyan for strong text */
+            margin-right: 5px;
+        }
+
+        /* Responsive Adjustments (Basic) */
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                grid-template-columns: 200px 1fr; /* Sidebar and main content */
+                grid-template-areas:
+                    "sidebar header"
+                    "sidebar main"
+                    "sidebar feed";
+                gap: 15px;
+            }
+            .sidebar { grid-area: sidebar; }
+            .main-content { grid-area: main; }
+            .main-header { grid-area: header; } /* Needs adjustment in grid-template-areas */
+            .action-feed {
+                grid-area: feed;
+                grid-column: span 2; /* Make feed span both columns below main */
+            }
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-container {
+                grid-template-columns: 1fr; /* Single column layout */
+                grid-template-areas:
+                    "sidebar"
+                    "main"
+                    "feed";
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-radius: 0;
+            }
+
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-header h1 {
+                margin-bottom: 10px;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr; /* Stack cards vertically */
+            }
+
+            .action-feed {
+                border-left: none;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Left Column: Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">InsightFlow OS</div>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="#" class="active">Dashboard</a></li>
+                    <li><a href="#">Analytics</a></li>
+                    <li><a href="#">Customers</a></li>
+                    <li><a href="#">Products</a></li>
+                    <li><a href="#">Settings</a></li>
+                    <li><a href="#">Reports</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Middle Column: Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Overview</h1>
+                <div class="user-profile">
+                    <span>Welcome, Admin</span>
+                    <div class="avatar"></div>
+                </div>
+            </header>
+
+            <section class="dashboard-cards">
+                <div class="card ai-panel">
+                    <h2 class="card-title">Autonomous Pricing AI Status</h2>
+                    <div class="ai-toggle-container">
+                        <label class="switch">
+                            <input type="checkbox" id="aiPricingToggle">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="ai-status-label">AI Pricing is <span id="aiStatusText">OFF</span></span>
+                    </div>
+                </div>
+
+                <div class="card chart-card">
+                    <h2 class="card-title">Quarterly Revenue</h2>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Recent Activity</h2>
+                    <ul class="activity-list">
+                        <li>Customer 'Acme Corp' upgraded plan.</li>
+                        <li>New user 'Jane Doe' registered.</li>
+                        <li>Subscription 'Enterprise Tier' renewed.</li>
+                        <li>Payment for 'Global Solutions' failed.</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <!-- Right Column: Action Feed -->
+        <aside class="action-feed">
+            <h2>Action Feed</h2>
+            <div class="feed-item alert">
+                <strong>Alert:</strong> High churn risk detected for 3 accounts.
+            </div>
+            <div class="feed-item notification">
+                <strong>Notification:</strong> New marketing campaign launched.
+            </div>
+            <div class="feed-item notification">
+                <strong>Notification:</strong> System update scheduled for 2 AM UTC.
+            </div>
+            <div class="feed-item alert">
+                <strong>Warning:</strong> Low disk space on analytics server.
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Simple JS for toggle text and potential future chart rendering
+        document.addEventListener('DOMContentLoaded', () => {
+            const aiPricingToggle = document.getElementById('aiPricingToggle');
+            const aiStatusText = document.getElementById('aiStatusText');
+
+            aiPricingToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    aiStatusText.textContent = 'ON';
+                } else {
+                    aiStatusText.textContent = 'OFF';
+                }
+            });
+
+            // Placeholder for a chart (e.g., using Chart.js)
+            // if (typeof Chart !== 'undefined') {
+            //     const ctx = document.getElementById('revenueChart').getContext('2d');
+            //     new Chart(ctx, {
+            //         type: 'line',
+            //         data: {
+            //             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            //             datasets: [{
+            //                 label: 'Revenue',
+            //                 data: [120000, 150000, 130000, 180000, 160000, 200000],
+            //                 borderColor: '#00FFFF',
+            //                 backgroundColor: 'rgba(0, 255, 255, 0.2)',
+            //                 tension: 0.4,
+            //                 fill: true
+            //             }]
+            //         },
+            //         options: {
+            //             responsive: true,
+            //             maintainAspectRatio: false,
+            //             scales: {
+            //                 x: {
+            //                     grid: {
+            //                         color: 'rgba(255, 255, 255, 0.1)'
+            //                     },
+            //                     ticks: {
+            //                         color: '#e0e0e0'
+            //                     }
+            //                 },
+            //                 y: {
+            //                     grid: {
+            //                         color: 'rgba(255, 255, 255, 0.1)'
+            //                     },
+            //                     ticks: {
+            //                         color: '#e0e0e0'
+            //                     }
+            //                 }
+            //             },
+            //             plugins: {
+            //                 legend: {
+            //                     display: false
+            //                 }
+            //             }
+            //         }
+            //     });
+            // }
+        });
+    </script>
+</body>
+</html>
