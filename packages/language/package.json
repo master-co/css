@@ -5,7 +5,13 @@
         "build": "techor build \"src/**/*.ts\"",
         "dev": "pnpm build --watch",
         "lint": "eslint",
-        "type-check": "tsc --noEmit"
+        "type-check": "tsc --noEmit",
+        "test": "vitest"
+    },
+    "devDependencies": {
+        "@shikijs/langs": "^3.0.0",
+        "vscode-oniguruma": "^2.0.1",
+        "vscode-textmate": "^9.2.0"
     },
     "license": "MIT",
     "description": "The language declaration, TextMate grammars provide syntax highlighting and improved editor integration.",
