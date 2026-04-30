@@ -52,21 +52,32 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
         const isExtended = '__extended' in rest
         if (isExtended) delete rest.__extended
 
-        // variables
+        // variables — also extracts inline `@<mode>` entries into a modes accumulator
+        const inlineModes: Record<string, Record<string, Variable>> = {}
         if (variables) {
             extendedConfig.variables ??= {}
-            const flattened = isExtended ? { ...variables } : flattenMetaObject(variables, [], {})
+            const flattened = isExtended
+                ? { ...variables }
+                : flattenMetaObject(variables, [], {}, inlineModes as any)
             Object.assign(extendedConfig.variables, flattened)
         }
 
         // modes
-        if (modes) {
+        if (modes || Object.keys(inlineModes).length > 0) {
             extendedConfig.modes ??= {}
-            for (const [modeName, modeVars] of Object.entries(modes)) {
-                const flattenedMode = isExtended ? { ...modeVars } : flattenMetaObject(modeVars, [], {})
+            if (modes) {
+                for (const [modeName, modeVars] of Object.entries(modes)) {
+                    const flattenedMode = isExtended ? { ...modeVars } : flattenMetaObject(modeVars, [], {})
+                    extendedConfig.modes[modeName] = {
+                        ...extendedConfig.modes[modeName],
+                        ...flattenedMode
+                    }
+                }
+            }
+            for (const [modeName, modeVars] of Object.entries(inlineModes)) {
                 extendedConfig.modes[modeName] = {
                     ...extendedConfig.modes[modeName],
-                    ...flattenedMode
+                    ...modeVars
                 }
             }
         }

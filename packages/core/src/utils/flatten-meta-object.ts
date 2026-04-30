@@ -1,12 +1,38 @@
+type FlatVariable = {
+    name: string
+    value: any
+    key: string
+    group?: string
+    namespace?: string
+}
+
 export default function flattenMetaObject(
     obj: Record<string, any>,
     name: string[] = [],
-    result: Record<
-        string,
-        { name: string; value: any; key: string; group?: string; namespace?: string }
-    > = {}
+    result: Record<string, FlatVariable> = {},
+    modes: Record<string, Record<string, FlatVariable>> = {}
 ) {
     for (const [rawKey, rawValue] of Object.entries(obj)) {
+        // Inline mode marker: keys starting with '@' (e.g. '@light', '@dark')
+        // route the value into the modes accumulator under the parent path,
+        // instead of producing a literal `<parent>-@<mode>` flat variable.
+        if (rawKey.startsWith('@') && name.length > 0) {
+            const modeName = rawKey.slice(1)
+            const parentFlatKey = name.join('-')
+            const parentKey = name[name.length - 1]
+            const parentGroup = name.slice(0, -1).join('.')
+            const parentNamespace = name[0]
+            modes[modeName] ??= {}
+            modes[modeName][parentFlatKey] = {
+                name: parentFlatKey,
+                key: parentKey,
+                value: Array.isArray(rawValue) ? rawValue.join(',') : rawValue,
+                group: name.length > 1 ? parentGroup : undefined,
+                namespace: name.length > 1 ? parentNamespace : undefined,
+            }
+            continue
+        }
+
         const key = rawKey || name[0] || ''
         const path = [...name, rawKey].filter(Boolean)
         const flatKey = path.join('-')
@@ -33,7 +59,7 @@ export default function flattenMetaObject(
                 namespace: path.length > 1 ? namespace : undefined,
             }
         } else {
-            flattenMetaObject(rawValue, path, result)
+            flattenMetaObject(rawValue, path, result, modes)
         }
     }
 

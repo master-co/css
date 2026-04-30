@@ -420,8 +420,13 @@ export default class MasterCSS {
                             addVariable(newVariable.name, newVariable, mode)
                             if (aliasVariable.modes) {
                                 for (const eachMode in aliasVariable.modes) {
-                                    const aliasModeVariable = aliasVariable.modes[eachMode]
-                                    addVariable(newVariable.name, aliasModeVariable as Variable, eachMode)
+                                    const aliasModeVariable = aliasVariable.modes[eachMode] as any
+                                    const newAliasModeVariable: any = { ...aliasModeVariable }
+                                    if (alpha) {
+                                        const newModeAlpha = Number(alpha) * (aliasModeVariable.alpha ?? 1)
+                                        if (newModeAlpha < 1) newAliasModeVariable.alpha = newModeAlpha
+                                    }
+                                    addVariable(newVariable.name, newAliasModeVariable as Variable, eachMode)
                                 }
                             }
                         }
