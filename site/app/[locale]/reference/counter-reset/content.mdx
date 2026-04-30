@@ -1,0 +1,39 @@
+## Overview
+
+`counter-reset` creates a new CSS counter (or resets an existing one) on the matched element. The counter is then bumped by [`counter-increment`](/reference/counter-increment) and rendered with `content: counter(...)`.
+
+## Syntax
+
+```html
+<!-- create a counter named "section" starting at 0 -->
+<div class="counter-reset:section">…</div>
+
+<!-- start at an explicit value -->
+<div class="counter-reset:section|10">…</div>
+
+<!-- multiple counters -->
+<div class="counter-reset:section|chapter|0">…</div>
+
+<!-- reverse counter (counts down) -->
+<div class="counter-reset:reversed(section)">…</div>
+
+<!-- no reset (default) -->
+<div class="counter-reset:none">…</div>
+```
+
+## Example: scoped numbering
+
+```html
+<section class="counter-reset:question">
+    <p class="counter-increment:question { content:'Q'counter(question)'._' }::before">…</p>
+    <p class="counter-increment:question { content:'Q'counter(question)'._' }::before">…</p>
+</section>
+<section class="counter-reset:question">
+    <!-- counter starts again at 1 inside this section -->
+</section>
+```
+
+## See also
+
+- [MDN — `counter-reset`](https://developer.mozilla.org/en-US/docs/Web/CSS/counter-reset)
+- [`counter-increment`](/reference/counter-increment)

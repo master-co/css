@@ -1,0 +1,70 @@
+## Overview
+
+Master CSS doesn't ship a Bootstrap-style row/column scaffold — modern CSS Grid is expressive enough that a thin set of utilities does the job. This guide collects three common patterns.
+
+## 12-column layout
+
+```html
+<div class="grid grid-cols:12 gap:24">
+    <header class="grid-col:span-12">…</header>
+    <main class="grid-col:span-8">…</main>
+    <aside class="grid-col:span-4">…</aside>
+</div>
+```
+
+Stack on small screens by overriding `grid-col` at a breakpoint:
+
+```html
+<aside class="grid-col:span-4 grid-col:span-12@max-md">…</aside>
+```
+
+## Auto-fit responsive cards (no breakpoints)
+
+This pattern fills the row with as many cards as fit, each at least `16rem` wide, then collapses naturally:
+
+```html
+<div class="grid grid-cols:repeat(auto-fit,minmax(16rem,1fr)) gap:16">
+    <article class="bg:white p:16 r:8">…</article>
+    <article class="bg:white p:16 r:8">…</article>
+    <article class="bg:white p:16 r:8">…</article>
+</div>
+```
+
+## Named template areas
+
+For app-shell style layouts, name regions and assign them with `grid-area:`:
+
+```html
+<div class="
+    grid
+    {grid-template-areas:'header header'|'sidebar main'|'footer footer'}
+    {grid-template-rows:auto|1fr|auto}
+    grid-template-cols:240|1fr
+    h:dvh
+">
+    <header class="grid-area:header">…</header>
+    <aside class="grid-area:sidebar">…</aside>
+    <main class="grid-area:main">…</main>
+    <footer class="grid-area:footer">…</footer>
+</div>
+```
+
+## When to reach for a fixed grid library
+
+If your design assumes traditional 12-column gutters, breakpoint-specific column counts, or container queries against a parent grid, write the template once as a [component](/guide/components):
+
+```ts name=master.css.ts
+export default {
+    components: {
+        'grid-12': 'grid grid-cols:12 gap:24 mx:auto max-w:1280'
+    }
+}
+```
+
+Now `<div class="grid-12">` expands to the full set of utilities anywhere it's used.
+
+## See also
+
+- [`grid-template-columns` reference](/reference/grid-template-columns)
+- [`grid-area` reference](/reference/grid-area)
+- [Components](/guide/components)

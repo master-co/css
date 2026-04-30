@@ -1,0 +1,64 @@
+## Overview
+
+Bun ≥ 1.x runs JavaScript and bundles to a browser target. Master CSS works with Bun in two ways:
+
+1. **Runtime injection** — let `@master/css-runtime` generate styles in the browser. Easiest setup, zero build configuration.
+2. **Static extraction at build time** — call the `mcss` CLI in your `bun build` step to emit a single stylesheet. Best for production.
+
+## Runtime injection
+
+```bash
+bun add @master/css @master/css-runtime
+```
+
+```ts name=src/index.ts
+import { initCSSRuntime } from '@master/css-runtime'
+import config from './master.css'
+
+initCSSRuntime(config)
+```
+
+```ts name=src/master.css.ts
+import type { Config } from '@master/css'
+
+export default {} satisfies Config
+```
+
+```bash
+bun --hot src/index.ts
+```
+
+## Static extraction
+
+```bash
+bun add -D @master/css @master/css.cli
+```
+
+```json name=package.json
+{
+    "scripts": {
+        "build": "bun build ./src/index.tsx --outdir ./dist && mcss render \"dist/**/*.html\""
+    }
+}
+```
+
+`mcss` walks the emitted HTML, collects every Master CSS class, and writes a single deduplicated stylesheet. Reference it with `<link rel=\"stylesheet\" href=\"./master.css\">` in your HTML entry.
+
+## Configuration
+
+```ts name=master.css.ts
+import type { Config } from '@master/css'
+
+export default {
+    variables: {
+        color: { primary: '#4285f4' }
+    }
+} satisfies Config
+```
+
+Bun resolves the config natively — no `tsx` or `ts-node` needed.
+
+## See also
+
+- [Vite integration guide](/guide/installation/vite) for parallels in plugin form
+- [`@master/css.cli` reference](/reference/cli)

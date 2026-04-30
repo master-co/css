@@ -1,0 +1,68 @@
+## Overview
+
+Lit components render inside a Shadow DOM by default, which means a globally injected stylesheet does **not** reach into them. There are two viable patterns:
+
+1. **Use `:host` styles + the runtime** — let `@master/css-runtime` generate a single global stylesheet, but flatten components into the Light DOM (`createRenderRoot() { return this }`).
+2. **Per-component stylesheets** — use the runtime in the page shell *and* re-attach an `adoptedStyleSheets` clone inside each component's shadow root.
+
+## Light DOM (recommended for most apps)
+
+```ts name=my-button.ts
+import { LitElement, html } from 'lit'
+import { customElement } from 'lit/decorators.js'
+
+@customElement('my-button')
+export class MyButton extends LitElement {
+    // opt out of Shadow DOM so global Master CSS classes apply
+    createRenderRoot() { return this }
+
+    render() {
+        return html`
+            <button class="bg:primary fg:white px:16 py:8 r:8 hover:bg:primary-70">
+                <slot></slot>
+            </button>
+        `
+    }
+}
+```
+
+Bootstrap the runtime once at the app entry:
+
+```ts name=index.ts
+import { initCSSRuntime } from '@master/css-runtime'
+import config from './master.css'
+import './my-button'
+
+initCSSRuntime(config)
+```
+
+## Shadow DOM with adoptedStyleSheets
+
+```ts name=my-button.ts
+import { LitElement, html } from 'lit'
+import { customElement } from 'lit/decorators.js'
+import { CSSRuntime } from '@master/css-runtime'
+import config from './master.css'
+
+const css = new CSSRuntime(config)
+const sheet = new CSSStyleSheet()
+sheet.replaceSync(css.text)
+
+@customElement('my-button')
+export class MyButton extends LitElement {
+    constructor() {
+        super()
+        this.shadowRoot && (this.shadowRoot.adoptedStyleSheets = [sheet])
+    }
+    render() {
+        return html`<button class="bg:primary fg:white px:16 py:8 r:8">…</button>`
+    }
+}
+```
+
+This duplicates the stylesheet into every shadow root; use only when you need style isolation.
+
+## See also
+
+- [`@master/css-runtime` reference](/reference/runtime)
+- [Lit docs — Styles](https://lit.dev/docs/components/styles/)

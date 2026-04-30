@@ -1,0 +1,30 @@
+## Overview
+
+`border-image` draws an image instead of solid colors around the element's border box. Master CSS exposes the shorthand and each long-hand property as a class.
+
+## Syntax
+
+```html
+<!-- shorthand: source slice / width / outset repeat -->
+<div class="border-image:url(/frame.png)|30|round">…</div>
+
+<!-- long-hand utilities -->
+<div class="border-image-source:url(/frame.png)">…</div>
+<div class="border-image-slice:30">…</div>
+<div class="border-image-width:1rem">…</div>
+<div class="border-image-outset:0">…</div>
+<div class="border-image-repeat:round">…</div>
+```
+
+## Apply conditionally
+
+Like every Master CSS rule, you can scope it with [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries):
+
+```html
+<div class="border-image:url(/frame.png)|30|round@sm">…</div>
+```
+
+## See also
+
+- [MDN — `border-image`](https://developer.mozilla.org/en-US/docs/Web/CSS/border-image)
+- [Can I Use](https://caniuse.com/?search=border-image)

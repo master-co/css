@@ -1,0 +1,92 @@
+## Overview
+
+A Master CSS "plugin" is a normal npm package that exports a partial `Config` object. Consumers merge it via `extends`, so plugins compose in a deterministic order (later overrides earlier). There is no separate plugin runtime — everything is plain config.
+
+## Anatomy of a plugin package
+
+```ts name=src/index.ts
+import type { Config } from '@master/css'
+
+const plugin: Config = {
+    rules: {
+        'shadow-elevated': {
+            declarations: { 'box-shadow': '0 8px 24px rgba(0,0,0,.12)' }
+        }
+    },
+    variables: {
+        color: {
+            brand: { primary: '#4285f4', danger: '#e63946' }
+        }
+    },
+    components: {
+        card: 'bg:white shadow-elevated r:12 p:24'
+    }
+}
+
+export default plugin
+```
+
+```json name=package.json
+{
+    "name": "master-css-preset-myteam",
+    "version": "0.1.0",
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "peerDependencies": {
+        "@master/css": "*"
+    }
+}
+```
+
+`@master/css` is a **peer dependency** so the host project's version wins.
+
+## Consuming the plugin
+
+```ts name=master.css.ts
+import myteam from 'master-css-preset-myteam'
+import type { Config } from '@master/css'
+
+export default {
+    extends: [myteam],
+    // overrides win over the plugin
+    variables: { color: { brand: { primary: '#0063f0' } } }
+} satisfies Config
+```
+
+`extends` accepts an array — multiple plugins are applied left-to-right.
+
+## What a plugin can ship
+
+| Field | Use case |
+|-------|----------|
+| `rules` | Custom utility shorthands (`shadow-elevated`, `font-display`) |
+| `utilities` | Static one-off declarations (`sr-only`, `not-sr-only`) |
+| `variables` | Design tokens (colors, spacing, radii, font scales) |
+| `modes` | Mode-scoped variable values (`light`, `dark`, custom) |
+| `components` | Class compositions (`card`, `btn`, `btn-primary`) |
+| `selectors` | Custom logical selector tokens |
+| `at` | Custom at-rule tokens |
+| `animations` | Reusable `@keyframes` |
+
+Avoid bundling source files for these directly — emit compiled JS via your build of choice (`tsup`, `tsc`, `bun build`, `unbuild`).
+
+## Conventions
+
+- Name with the prefix `master-css-preset-` or `master-css-plugin-` so consumers can find it.
+- Document required peer deps and the minimum `@master/css` version.
+- Keep the public surface in one default export; named sub-exports for opt-in slices are fine.
+- Don't import the runtime in the plugin — plugins ship config only.
+
+## See also
+
+- [Configuration reference](/guide/configuration)
+- [`@master/css` core reference](/reference/core)

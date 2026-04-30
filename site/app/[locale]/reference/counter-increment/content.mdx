@@ -1,0 +1,39 @@
+## Overview
+
+`counter-increment` advances one or more CSS counters every time the element is rendered. Pair it with [`counter-reset`](/reference/counter-reset) and `content: counter(...)` on `::before`/`::after` to render numbered lists, section labels, etc.
+
+## Syntax
+
+```html
+<!-- increment a counter named "section" by 1 (default) -->
+<div class="counter-increment:section">…</div>
+
+<!-- increment by an explicit value -->
+<div class="counter-increment:section|2">…</div>
+
+<!-- multiple counters -->
+<div class="counter-increment:section|chapter|1">…</div>
+
+<!-- disable inheritance -->
+<div class="counter-increment:none">…</div>
+```
+
+## Example: numbered headings
+
+```html
+<article class="counter-reset:section">
+    <h2 class="counter-increment:section { content:counter(section)'._' }::before">Intro</h2>
+    <h2 class="counter-increment:section { content:counter(section)'._' }::before">Setup</h2>
+</article>
+```
+
+## Apply conditionally
+
+```html
+<div class="counter-increment:section@sm counter-increment:none@max-sm">…</div>
+```
+
+## See also
+
+- [MDN — `counter-increment`](https://developer.mozilla.org/en-US/docs/Web/CSS/counter-increment)
+- [`counter-reset`](/reference/counter-reset)
