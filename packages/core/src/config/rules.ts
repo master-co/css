@@ -483,6 +483,7 @@ const rules = {
         type: SyntaxRuleType.Native
     },
     'touch-action': {
+        key: 'touch',
         type: SyntaxRuleType.Native
     },
     'word-break': {
