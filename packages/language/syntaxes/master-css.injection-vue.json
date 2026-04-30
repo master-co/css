@@ -1,7 +1,7 @@
 {
     "name": "master-css",
     "scopeName": "source.master-css.injection-vue",
-    "injectionSelector": "L:source.vue meta.attribute.directive meta.array.literal string.template",
+    "injectionSelector": "L:source.vue meta.attribute.directive meta.array.literal string.template -comment",
     "patterns": [
         {
             "include": "source.master-css"

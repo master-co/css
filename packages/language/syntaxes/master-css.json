@@ -208,7 +208,7 @@
                     "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\|)",
                     "captures": {
                         "1": {
-                            "name": "comment.block"
+                            "name": "punctuation.separator.master-css"
                         }
                     }
                 },
@@ -273,7 +273,7 @@
         "master-css-selector": {
             "patterns": [
                 {
-                    "match": "(?<![\\|/])(\\.)(?!\\d)([^\\s;'\"`@:><.\\[\\]_\\+\\(\\),]*)",
+                    "match": "(?<![A-Za-z0-9_\\-\\|/])(\\.)(?!\\d)([^\\s;'\"`@:><.\\[\\]_\\+\\(\\),]*)",
                     "captures": {
                         "1": {
                             "name": "entity.other.attribute-name.class.css"

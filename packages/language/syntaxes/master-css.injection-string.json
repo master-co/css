@@ -1,7 +1,7 @@
 {
     "name": "master-css",
     "scopeName": "source.master-css.injection-string",
-    "injectionSelector": "L:meta.embedded.block.master-css.class string.quoted",
+    "injectionSelector": "L:meta.embedded.block.master-css.class string.quoted -comment",
     "patterns": [
         {
             "include": "source.master-css"
