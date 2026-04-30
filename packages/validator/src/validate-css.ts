@@ -1,6 +1,9 @@
 import { lexer, parse, walk, property as propertyName } from 'css-tree'
 import { type SyntaxError } from './types/syntax-error'
 
+// CSS math/comparison functions whose argument types css-tree may misjudge.
+const MATH_FN_REGEX = /\b(?:calc|min|max|clamp|sin|cos|tan|asin|acos|atan|atan2|exp|log|pow|sqrt|hypot|abs|sign|round|mod|rem)\(/i
+
 export default function validateCSS(text: string, parseOptions = {
     parseAtrulePrelude: false,
     parseRulePrelude: false,
@@ -133,8 +136,18 @@ export function validateDeclaration(property: string, value: any) {
             property
         }))
     } else if (error = isTargetError(lexer.matchProperty(property, value).error)) {
-        // TODO: https://github.com/master-co/css/issues/405
-        if (!error.css?.includes('min(') && !error.css?.includes('max(') && !error.css?.includes('clamp(')) {
+        // Suppress mismatches caused by CSS Values Module Level 4 math/comparison
+        // functions that css-tree's bundled syntax data does not yet describe.
+        // See issues #405, #323, #331. Check both the error fragment and the full
+        // value text — sometimes the mismatched fragment doesn't include the math
+        // function call (e.g. `right: max(0px, 1rem)` reports the bare `0px` arg).
+        const valueText = typeof value === 'string'
+            ? value
+            : value && typeof value.value === 'string'
+                ? value.value
+                : ''
+        const hasMathFn = MATH_FN_REGEX.test(error.css ?? '') || MATH_FN_REGEX.test(valueText)
+        if (!hasMathFn) {
             errors.push(Object.assign(error, {
                 property,
                 ...error.rawMessage === 'Mismatch' &&
