@@ -589,6 +589,19 @@ const rules = {
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
+    // Individual transform properties (CSS Transforms Module Level 2)
+    translate: {
+        type: SyntaxRuleType.Native,
+        unit: 'rem',
+        namespaces: ['spacing']
+    },
+    scale: {
+        type: SyntaxRuleType.Native
+    },
+    rotate: {
+        type: SyntaxRuleType.Native,
+        unit: 'deg'
+    },
     'translate()': {
         declarations: ['transform'],
         unit: 'rem',
