@@ -194,6 +194,30 @@ export default class MasterCSS {
                     namespaces.forEach(addNamespace)
                 }
 
+                // 3. Shorthand rules auto-inherit variables from related long-hand
+                //    namespaces. e.g. the `font` rule automatically picks up every
+                //    variable whose namespace starts with `font-` (font-size,
+                //    font-weight, …) without listing them explicitly. Issue #330.
+                if (type === SyntaxRuleType.NativeShorthand || type === SyntaxRuleType.Shorthand) {
+                    const prefix = id + '-'
+                    const groupPrefix = id + '.'
+                    this.variables.forEach(v => {
+                        const inherits = (v.namespace && v.namespace.startsWith(prefix))
+                            || (v.group && v.group.startsWith(groupPrefix))
+                        if (!inherits) return
+                        const dashedNs = (v.namespace || '').replace(/\./g, '-')
+                        let variableKey = v.name
+                        if (dashedNs && (variableKey.startsWith('-' + dashedNs) || variableKey.startsWith(dashedNs))) {
+                            variableKey = variableKey.slice(dashedNs.length + 1)
+                        }
+                        if (syntax.variables) {
+                            syntax.variables.set(variableKey, v)
+                        } else {
+                            syntax.variables = new Map([[variableKey, v]])
+                        }
+                    })
+                }
+
                 if (id.endsWith('()')) {
                     if (!key) def.key = key = id
                     const fnName = id.slice(0, -2)
