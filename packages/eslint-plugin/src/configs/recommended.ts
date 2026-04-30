@@ -6,6 +6,7 @@ export default {
     rules: {
         '@master/css/class-order': 'warn',
         '@master/css/class-validation': 'error',
-        '@master/css/class-collision': 'warn'
+        '@master/css/class-collision': 'warn',
+        '@master/css/class-recommended': 'warn'
     },
 } as Linter.Config

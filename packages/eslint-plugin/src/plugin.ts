@@ -1,5 +1,6 @@
 import classCollision from './rules/class-collision'
 import classOrder from './rules/class-order'
+import classRecommended from './rules/class-recommended'
 import classValidation from './rules/class-validation'
 import { readFileSync } from 'fs'
 import type { TSESLint } from '@typescript-eslint/utils'
@@ -18,6 +19,7 @@ const plugin = {
     rules: {
         'class-collision': classCollision,
         'class-order': classOrder,
+        'class-recommended': classRecommended,
         'class-validation': classValidation
     }
 } as TSESLint.Linter.Plugin

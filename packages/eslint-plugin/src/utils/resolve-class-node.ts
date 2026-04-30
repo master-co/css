@@ -122,7 +122,10 @@ export default function resolveClassNode(node: any, context: RuleContext<any, an
             type: 'class',
             value: classValue,
             raw: classRaw,
-            range: [start, endOffset],
+            // Bug fix: was `[start, endOffset]` — `start` is the className-value
+            // start, not this individual class's start. Wrong range[0] confused
+            // any rule that sorts class nodes by source position.
+            range: [startOffset, endOffset],
             loc: {
                 start: sourceCode.getLocFromIndex(startOffset),
                 end: sourceCode.getLocFromIndex(endOffset),
