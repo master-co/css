@@ -122,6 +122,25 @@ const rules = {
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
+    // margin block (logical vertical)
+    'margin-block-start': {
+        key: 'mbs',
+        type: SyntaxRuleType.Native,
+        unit: 'rem',
+        namespaces: ['spacing']
+    },
+    'margin-block-end': {
+        key: 'mbe',
+        type: SyntaxRuleType.Native,
+        unit: 'rem',
+        namespaces: ['spacing']
+    },
+    'margin-block': {
+        key: 'mb-block',
+        unit: 'rem',
+        type: SyntaxRuleType.NativeShorthand,
+        namespaces: ['spacing']
+    },
     // padding
     'padding-left': {
         key: 'pl',
@@ -186,6 +205,25 @@ const rules = {
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
+    // padding block (logical vertical)
+    'padding-block-start': {
+        key: 'pbs',
+        type: SyntaxRuleType.Native,
+        unit: 'rem',
+        namespaces: ['spacing']
+    },
+    'padding-block-end': {
+        key: 'pbe',
+        type: SyntaxRuleType.Native,
+        unit: 'rem',
+        namespaces: ['spacing']
+    },
+    'padding-block': {
+        key: 'pb-block',
+        unit: 'rem',
+        type: SyntaxRuleType.NativeShorthand,
+        namespaces: ['spacing']
+    },
     // flex
     'flex-basis': {
         aliasGroups: ['flex'],
@@ -234,6 +272,33 @@ const rules = {
     },
     'min-height': {
         key: 'min-h',
+        unit: 'rem',
+        type: SyntaxRuleType.Native
+    },
+    // Logical sizing (CSS Logical Properties Level 1)
+    'inline-size': {
+        key: 'inline-size',
+        unit: 'rem',
+        type: SyntaxRuleType.Native
+    },
+    'block-size': {
+        key: 'block-size',
+        unit: 'rem',
+        type: SyntaxRuleType.Native
+    },
+    'min-inline-size': {
+        unit: 'rem',
+        type: SyntaxRuleType.Native
+    },
+    'min-block-size': {
+        unit: 'rem',
+        type: SyntaxRuleType.Native
+    },
+    'max-inline-size': {
+        unit: 'rem',
+        type: SyntaxRuleType.Native
+    },
+    'max-block-size': {
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
@@ -419,6 +484,37 @@ const rules = {
         namespaces: ['spacing']
     },
     inset: {
+        unit: 'rem',
+        type: SyntaxRuleType.NativeShorthand,
+        namespaces: ['spacing']
+    },
+    // Logical inset (positions in flow-relative axes)
+    'inset-inline-start': {
+        unit: 'rem',
+        type: SyntaxRuleType.Native,
+        namespaces: ['spacing']
+    },
+    'inset-inline-end': {
+        unit: 'rem',
+        type: SyntaxRuleType.Native,
+        namespaces: ['spacing']
+    },
+    'inset-inline': {
+        unit: 'rem',
+        type: SyntaxRuleType.NativeShorthand,
+        namespaces: ['spacing']
+    },
+    'inset-block-start': {
+        unit: 'rem',
+        type: SyntaxRuleType.Native,
+        namespaces: ['spacing']
+    },
+    'inset-block-end': {
+        unit: 'rem',
+        type: SyntaxRuleType.Native,
+        namespaces: ['spacing']
+    },
+    'inset-block': {
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
