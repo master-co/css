@@ -80,3 +80,7 @@ packages/nuxt/playground/.output
 **/blob-report/
 **/playwright/.cache/
 **/.svelte-kit
+
+# generated llms.txt indexes (regenerated at build time)
+site/public/llms.txt
+site/public/llms-full.txt
