@@ -44,6 +44,10 @@
             "require": "./dist/index.cjs"
         }
     },
+    "bin": {
+        "mcss-language-server": "./dist/bin/index.cjs",
+        "master-css-language-server": "./dist/bin/index.cjs"
+    },
     "files": [
         "dist"
     ],
