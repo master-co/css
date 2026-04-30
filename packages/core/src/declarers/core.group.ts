@@ -8,7 +8,11 @@ export default function coreGroup(this: SyntaxRule, value: string) {
         const indexOfColon = propertyName.indexOf(':')
         if (indexOfColon !== -1) {
             const propName = propertyName.slice(0, indexOfColon)
-            declarations[propName] = propertyName.slice(indexOfColon + 1)
+            // `|` is the class-name-safe space separator (used because spaces
+            // would break HTML class attribute parsing). Inside `{ … }` group
+            // values the literal pipe must be expanded back to a space, otherwise
+            // the browser sees `paint-order:stroke|fill` and rejects the rule.
+            declarations[propName] = propertyName.slice(indexOfColon + 1).replace(/\|/g, ' ')
         }
     }
     const handleRule = (rule: SyntaxRule) => {
