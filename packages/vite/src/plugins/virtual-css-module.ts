@@ -43,17 +43,21 @@ export default function VirtualCSSModulePlugin(options: PluginOptions, context: 
             }
             // The placeholder was emitted (user imported the virtual module)
             // but no CSS chunk in the final bundle still contained it. The
-            // most common cause is a downstream PostCSS plugin or minifier
-            // having rewritten / dropped the placeholder rule, in which case
-            // the build silently ships CSS missing every extracted class.
-            // Surface this loudly so the user sees it instead of debugging an
-            // empty stylesheet at runtime.
+            // cause is Vite's downstream CSS pipeline mutating the rule
+            // between `load()` and `generateBundle` — could be a PostCSS
+            // plugin in the user's vite config (autoprefixer / cssnano /
+            // preset-env / tailwind), Vite's bundled minifier (esbuild or
+            // lightningcss), or any other vite plugin transforming `.css`.
+            // Without this warn the build silently ships CSS missing every
+            // extracted class; the user only finds out at runtime against
+            // an unstyled page. Surface it loudly at build time instead.
             if (placeholderEmitted && !replacedAny && realCSS.length > 0) {
                 this.warn(
                     `[master-css.vite] Could not splice extracted CSS into any bundle asset. ` +
                     `The placeholder "${slotCSSRule}" was emitted but no CSS chunk in the final ` +
-                    `bundle still contained it — most likely a downstream PostCSS plugin or ` +
-                    `minifier rewrote/dropped it. The output will be missing all extracted classes.`
+                    `bundle still contained it — Vite's downstream CSS pipeline (a PostCSS ` +
+                    `plugin in your vite config, the bundler's CSS minifier, etc.) most likely ` +
+                    `rewrote or dropped it. The output will be missing all extracted classes.`
                 )
             }
         }
