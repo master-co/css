@@ -2,6 +2,11 @@
     "private": true,
     "type": "module",
     "packageManager": "pnpm@10.33.2",
+    "pnpm": {
+        "overrides": {
+            "@master/css-language": "workspace:^"
+        }
+    },
     "scripts": {
         "submodules": "pnpm dlx tsx submodules",
         "postinstall": "pnpm dlx husky install",
