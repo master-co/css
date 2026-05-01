@@ -13,7 +13,8 @@
         "noEmit": true,
         "allowImportingTsExtensions": true,
         "types": [
-            "@figma/plugin-typings"
+            "@figma/plugin-typings",
+            "node"
         ]
     },
     "include": [

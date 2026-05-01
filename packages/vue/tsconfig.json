@@ -19,7 +19,7 @@
         "module": "ESNext",
         // We expect users to use bundlers.
         // So here we enable some resolution features that are only available in bundlers.
-        "moduleResolution": "node",
+        "moduleResolution": "Bundler",
         "resolveJsonModule": true,
         // `allowImportingTsExtensions` can only be used when `noEmit` or `emitDeclarationOnly` is set.
         // But `noEmit` may cause problems with solution-style tsconfigs:

@@ -10,6 +10,7 @@
 
 # monorepo
 **/*.vscode-test
+**/*.output
 **/*dist
 **/*dist-test
 **/*node_modules
