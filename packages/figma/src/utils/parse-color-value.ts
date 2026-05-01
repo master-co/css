@@ -9,7 +9,7 @@ export interface RGBA {
 
 export default function parseColorValue(input: string): RGBA {
     const color = new Color(input)
-    const [r, g, b] = color.to('srgb', { inGamut: true }).coords
+    const [r = 0, g = 0, b = 0] = color.to('srgb', { inGamut: true }).coords.map((coord) => coord ?? 0)
     const a = color.alpha ?? 1
     return { r, g, b, a }
 }
