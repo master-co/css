@@ -235,6 +235,8 @@ export default class CSSExtractor extends EventEmitter {
         await new Promise<void>(resolve => {
             watcher.once('ready', resolve)
         })
+        // Let chokidar finish registering native watchers before callers mutate files.
+        await new Promise(resolve => setTimeout(resolve, 0))
     }
 
     async startWatch(options: { emit?: boolean } = { emit: true }) {
@@ -242,8 +244,11 @@ export default class CSSExtractor extends EventEmitter {
         const resolvedConfigPath = this.resolvedConfigPath
         const resolvedOptionsPath = this.resolvedOptionsPath
 
-        if (this.options.sources?.length) {
-            await this.watchSource(this.options.sources)
+        const sourcePaths = this.options.sources?.length
+            ? this.fixedSourcePaths
+            : this.allowedSourcePaths
+        if (sourcePaths.length) {
+            await this.watchSource(sourcePaths)
         }
 
         if (resolvedConfigPath) {

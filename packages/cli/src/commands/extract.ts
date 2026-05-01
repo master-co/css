@@ -44,8 +44,7 @@ export default (program: Command) => program
                     log``
                     log.t`Start watching source changes`
                 })
-                .on('reset', async () => {
-                    await extractor.reset()
+                .on('reset', () => {
                     log``
                     log.t`Restart watching source changes`
                 })
