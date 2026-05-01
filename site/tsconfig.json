@@ -9,6 +9,7 @@
             "esnext"
         ],
         "allowJs": true,
+        "ignoreDeprecations": "6.0",
         "skipLibCheck": true,
         "strict": true,
         "forceConsistentCasingInFileNames": true,

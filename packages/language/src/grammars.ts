@@ -8,7 +8,12 @@ import type { LanguageRegistration } from 'shiki/types'
 import declaration from './declaration'
 
 export declare type Grammar = {
-    embeddedLanguages?: Record<string, string>
+    /**
+     * VS Code's grammar contribution shape. Shiki's `embeddedLanguages`
+     * field is a string list, so keep this separate from the TextMate grammar
+     * registration object passed to Shiki.
+     */
+    vscodeEmbeddedLanguages?: Record<string, string>
 } & LanguageRegistration
 
 const grammars = [
@@ -52,7 +57,10 @@ const grammars = [
             'source.svelte',
             'source.vue'
         ],
-        embeddedLanguages: {
+        embeddedLangs: [
+            'master-css'
+        ],
+        vscodeEmbeddedLanguages: {
             'meta.embedded.block.master-css.class': 'master-css'
         },
     },
