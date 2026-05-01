@@ -351,18 +351,12 @@ export default class CSSExtractor extends EventEmitter {
     get configPath(): string | undefined {
         if (typeof this.options.config === 'string') {
             // try to find the config file with the given name and options.extensions
-            let foundConfigPath: string | undefined
-            let foundBasename: string | undefined
             for (const eachExtension of ['js', 'mjs', 'ts', 'cjs', 'cts', 'mts']) {
                 const eachBasename = this.options.config + '.' + eachExtension
-                const eachPath = resolve(this.cwd || '', eachBasename)
-                if (existsSync(eachPath)) {
-                    foundConfigPath = eachPath
-                    foundBasename = eachBasename
-                    break
+                if (existsSync(resolve(this.cwd || '', eachBasename))) {
+                    return eachBasename
                 }
             }
-            return foundBasename
         }
     }
 
@@ -382,18 +376,12 @@ export default class CSSExtractor extends EventEmitter {
     get optionsPath(): string | undefined {
         if (typeof this.customOptions === 'string') {
             // try to find the config file with the given name and options.extensions
-            let foundConfigPath: string | undefined
-            let foundBasename: string | undefined
             for (const eachExtension of ['js', 'mjs', 'ts', 'cjs', 'cts', 'mts']) {
                 const eachBasename = this.customOptions + '.' + eachExtension
-                const eachPath = resolve(this.cwd || '', eachBasename)
-                if (existsSync(eachPath)) {
-                    foundConfigPath = eachPath
-                    foundBasename = eachBasename
-                    break
+                if (existsSync(resolve(this.cwd || '', eachBasename))) {
+                    return eachBasename
                 }
             }
-            return foundBasename
         }
     }
 
