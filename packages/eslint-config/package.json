@@ -2,7 +2,7 @@
     "name": "@master/eslint-config-css",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\"",
+        "build": "techor build \"src/**/*.ts\" --formats esm",
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
         "test": "vitest",
@@ -26,7 +26,7 @@
         "url": "https://github.com/master-co/css.git",
         "directory": "packages/eslint-config"
     },
-    "main": "./dist/index.cjs",
+    "main": "./dist/index.mjs",
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
@@ -35,7 +35,7 @@
         ".": {
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
-            "require": "./dist/index.cjs"
+            "default": "./dist/index.mjs"
         }
     },
     "publishConfig": {

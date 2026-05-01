@@ -2,7 +2,7 @@
     "name": "@master/css",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\"",
+        "build": "techor build \"src/**/*.ts\" --formats esm",
         "dev": "pnpm build --watch",
         "test": "vitest",
         "bench": "vitest bench",
@@ -43,7 +43,7 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.cjs",
+    "main": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
     "module": "./dist/index.mjs",
@@ -51,13 +51,13 @@
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
-            "require": "./dist/index.cjs",
-            "import": "./dist/index.mjs"
+            "import": "./dist/index.mjs",
+            "default": "./dist/index.mjs"
         },
         "./*": {
             "types": "./dist/*.d.ts",
-            "require": "./dist/*.cjs",
-            "import": "./dist/*.mjs"
+            "import": "./dist/*.mjs",
+            "default": "./dist/*.mjs"
         }
     },
     "bin": "./dist/bin/index.mjs",

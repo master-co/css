@@ -2,7 +2,7 @@
     "name": "@master/css-language",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\"",
+        "build": "techor build \"src/**/*.ts\" --formats esm",
         "dev": "pnpm build --watch",
         "lint": "eslint",
         "type-check": "tsc --noEmit"
@@ -30,7 +30,7 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.cjs",
+    "main": "./dist/index.mjs",
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
@@ -39,17 +39,17 @@
         ".": {
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
-            "require": "./dist/index.cjs"
+            "default": "./dist/index.mjs"
         },
         "./declaration": {
             "types": "./dist/declaration.d.ts",
             "import": "./dist/declaration.mjs",
-            "require": "./dist/declaration.cjs"
+            "default": "./dist/declaration.mjs"
         },
         "./grammars": {
             "types": "./dist/grammars.d.ts",
             "import": "./dist/grammars.mjs",
-            "require": "./dist/grammars.cjs"
+            "default": "./dist/grammars.mjs"
         }
     },
     "files": [

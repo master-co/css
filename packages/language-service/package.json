@@ -2,7 +2,7 @@
     "name": "@master/css-language-service",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\"",
+        "build": "techor build \"src/**/*.ts\" --formats esm",
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
@@ -43,7 +43,7 @@
         "vscode-languageserver": "^9.0.1"
     },
     "sideEffects": false,
-    "main": "./dist/index.cjs",
+    "main": "./dist/index.mjs",
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
@@ -52,7 +52,7 @@
         ".": {
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
-            "require": "./dist/index.cjs"
+            "default": "./dist/index.mjs"
         }
     },
     "files": [
