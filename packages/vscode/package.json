@@ -68,7 +68,8 @@
                 ],
                 "extensions": [
                     ".mcss"
-                ]
+                ],
+                "configuration": "./syntaxes/language-configuration.json"
             }
         ],
         "grammars": [
