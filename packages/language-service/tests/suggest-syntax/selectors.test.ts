@@ -31,7 +31,7 @@ describe.concurrent('pseudo-class', () => {
             'references': [
                 {
                     'name': 'MDN Reference',
-                    'url': 'https://developer.mozilla.org/docs/Web/CSS/:first-child',
+                    'url': 'https://developer.mozilla.org/docs/Web/CSS/Reference/Selectors/:first-child',
                 },
             ],
         },
@@ -51,7 +51,7 @@ describe.concurrent('pseudo-class', () => {
 
                 (Edge 12, Firefox 3,  4, Safari 3,  4, Chrome 4,  18, IE 7, Opera 9)
 
-                [Master CSS](https://rc.css.master.co/guide/selectors) | [MDN Reference](https://developer.mozilla.org/docs/Web/CSS/:first-child)
+                [Master CSS](https://rc.css.master.co/guide/selectors) | [MDN Reference](https://developer.mozilla.org/docs/Web/CSS/Reference/Selectors/:first-child)
             `,
         },
         'insertText': 'first',
@@ -90,7 +90,7 @@ describe.concurrent('pseudo-element', () => {
             'references': [
                 {
                     'name': 'MDN Reference',
-                    'url': 'https://developer.mozilla.org/docs/Web/CSS/::placeholder',
+                    'url': 'https://developer.mozilla.org/docs/Web/CSS/Reference/Selectors/::placeholder',
                 },
             ],
         },
@@ -108,7 +108,7 @@ describe.concurrent('pseudo-element', () => {
 
                 (Edge 79, Firefox 51,  51, Safari 10,  10, Chrome 57,  57, Opera 44)
 
-                [Master CSS](https://rc.css.master.co/guide/selectors) | [MDN Reference](https://developer.mozilla.org/docs/Web/CSS/::placeholder)
+                [Master CSS](https://rc.css.master.co/guide/selectors) | [MDN Reference](https://developer.mozilla.org/docs/Web/CSS/Reference/Selectors/::placeholder)
          `,
         },
         'insertText': 'placeholder',

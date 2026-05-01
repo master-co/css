@@ -18,6 +18,8 @@ test.concurrent('info', () => expect(hint('b')?.find(({ label }) => label === 'b
 
             The element generates a block\\-level box
 
+            (Edge 12, Firefox 1,  4, Safari 1,  1, Chrome 1,  18, IE 4, Opera 7)
+
             [Master CSS](https://rc.css.master.co/reference/display)
         `
     }

@@ -50,11 +50,11 @@ test.concurrent('hwb', async () => {
 })
 
 test.concurrent('lab', async () => {
-    await expectEditedColors({ before: 'lab(52%|40|60)', after: 'lab(67|-35|-20)' })
+    await expectEditedColors({ before: 'lab(52%|40|60)', after: 'lab(67%|-35|-20)' })
 })
 
 test.concurrent('lch', async () => {
-    await expectEditedColors({ before: 'lch(50%|72|50)', after: 'lch(70|82|139)' })
+    await expectEditedColors({ before: 'lch(50%|72|50)', after: 'lch(70%|82|139)' })
 })
 
 test.concurrent('oklab', async () => {
