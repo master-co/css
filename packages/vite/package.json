@@ -63,10 +63,10 @@
         "@master/css-extractor": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
-        "@master/normal.css": "*",
+        "@master/normal.css": "^3.2.0",
         "fast-glob": "^3.3.3",
-        "magic-string": "^0.30.17",
-        "source-map": "^0.7.4"
+        "magic-string": "^0.30.21",
+        "source-map": "^0.7.6"
     },
     "devDependencies": {
         "shared": "workspace:^"

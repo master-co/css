@@ -21,12 +21,12 @@
         "@master/css-explore-config": "workspace:^",
         "@master/css-language-service": "workspace:^",
         "@techor/extend": "^3.2.5",
-        "fast-glob": "^3.3.2",
-        "js-beautify": "^1.15.1",
-        "nanoid": "^5.0.6",
+        "fast-glob": "^3.3.3",
+        "js-beautify": "^1.15.4",
+        "nanoid": "^5.1.11",
         "vscode-languageserver": "^9.0.1",
-        "vscode-languageserver-textdocument": "^1.0.11",
-        "vscode-uri": "^3.0.8"
+        "vscode-languageserver-textdocument": "^1.0.12",
+        "vscode-uri": "^3.1.0"
     },
     "devDependencies": {
         "shared": "workspace:^"

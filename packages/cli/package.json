@@ -47,13 +47,13 @@
         "@techor/glob": "^3.2.5",
         "@techor/log": "^3.2.5",
         "bytes": "^3.1.2",
-        "commander": "^12.0.0",
-        "minimatch": "^9.0.3",
+        "commander": "^14.0.3",
+        "minimatch": "^10.2.5",
         "pretty-hrtime": "^1.0.3"
     },
     "devDependencies": {
         "@types/pretty-hrtime": "^1.0.3",
-        "fast-glob": "^3.3.2",
+        "fast-glob": "^3.3.3",
         "shared": "workspace:^"
     }
 }

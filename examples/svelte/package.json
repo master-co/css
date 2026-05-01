@@ -11,24 +11,24 @@
         "lint": "eslint"
     },
     "dependencies": {
-        "@master/css.vite": "workspace:^",
-        "@master/css-server": "workspace:^"
+        "@master/css-server": "workspace:^",
+        "@master/css.vite": "workspace:^"
     },
     "devDependencies": {
-        "@eslint/compat": "^1.2.8",
-        "@fontsource/fira-mono": "^5.2.5",
+        "@eslint/compat": "^2.0.5",
+        "@fontsource/fira-mono": "^5.2.7",
         "@neoconfetti/svelte": "^2.2.2",
-        "@sveltejs/adapter-vercel": "^5.7.0",
-        "@sveltejs/kit": "^2.20.7",
-        "@sveltejs/vite-plugin-svelte": "^5.0.3",
-        "eslint": "^9.24.0",
-        "eslint-plugin-svelte": "^3.5.1",
-        "globals": "^16.0.0",
-        "svelte": "^5.27.0",
-        "svelte-check": "^4.1.6",
-        "typescript": "^5.8.3",
-        "typescript-eslint": "^8.30.1",
-        "vite": "^6.3.2"
+        "@sveltejs/adapter-vercel": "^6.3.3",
+        "@sveltejs/kit": "^2.58.0",
+        "@sveltejs/vite-plugin-svelte": "^7.0.0",
+        "eslint": "^10.2.1",
+        "eslint-plugin-svelte": "^3.17.1",
+        "globals": "^17.5.0",
+        "svelte": "^5.55.5",
+        "svelte-check": "^4.4.7",
+        "typescript": "^6.0.3",
+        "typescript-eslint": "^8.59.1",
+        "vite": "^8.0.10"
     },
     "type": "module"
 }

@@ -55,20 +55,20 @@
         "@master/css": "workspace:^",
         "@master/css-explore-config": "workspace:^",
         "@master/css-validator": "workspace:^",
-        "@typescript-eslint/utils": "^8.29.1",
-        "typescript-eslint": "^8.29.1"
+        "@typescript-eslint/utils": "^8.59.1",
+        "typescript-eslint": "^8.59.1"
     },
     "devDependencies": {
-        "@angular-eslint/template-parser": "^19.3.0",
-        "@angular/compiler": "^17.2.2",
+        "@angular-eslint/template-parser": "^21.3.1",
+        "@angular/compiler": "^21.2.11",
         "@master/css-explore-config": "workspace:^",
-        "@typescript-eslint/rule-tester": "^8.29.1",
-        "eslint": "^9.24.0",
+        "@typescript-eslint/rule-tester": "^8.59.1",
+        "eslint": "^10.2.1",
         "eslint-plugin-markdown": "^5.1.0",
-        "eslint-plugin-mdx": "^3.4.0",
+        "eslint-plugin-mdx": "^3.7.0",
         "shared": "workspace:^",
-        "svelte-eslint-parser": "^1.1.2",
+        "svelte-eslint-parser": "^1.6.0",
         "ts-node": "^10.9.2",
-        "vue-eslint-parser": "^10.1.3"
+        "vue-eslint-parser": "^10.4.0"
     }
 }

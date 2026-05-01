@@ -10,7 +10,7 @@
         "vscode:package": "vsce package --no-dependencies --follow-symlinks",
         "vscode:publish": "vsce publish --no-dependencies --follow-symlinks --pre-release"
     },
-    "version": "2.0.15",
+    "version": "2.0.16",
     "description": "Master CSS for Visual Studio Code",
     "displayName": "Master CSS",
     "author": "Aoyue Design LLC.",
@@ -272,10 +272,10 @@
         "provenance": true
     },
     "devDependencies": {
-        "@master/css-language-server": "workspace:^",
         "@master/css-language": "workspace:^",
-        "@types/vscode": "^1.98.0",
-        "@vscode/vsce": "^3.3.0",
+        "@master/css-language-server": "workspace:^",
+        "@types/vscode": "^1.118.0",
+        "@vscode/vsce": "^3.9.1",
         "shared": "workspace:^",
         "vscode-languageclient": "^9.0.1"
     }

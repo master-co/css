@@ -52,9 +52,9 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "dom-serializer": "^2.0.0",
-        "domhandler": "^5.0.3",
-        "htmlparser2": "^10.0.0"
+        "dom-serializer": "^3.0.0",
+        "domhandler": "^6.0.1",
+        "htmlparser2": "^12.0.0"
     },
     "devDependencies": {
         "shared": "workspace:^"

@@ -53,26 +53,26 @@
         "@master/css-server": "workspace:^",
         "@master/css.vite": "workspace:^",
         "@master/css.vue": "workspace:^",
-        "@nuxt/kit": "^3.17.5"
+        "@nuxt/kit": "^4.4.4"
     },
     "devDependencies": {
-        "@nuxt/devtools": "^2.5.0",
-        "@nuxt/eslint": "^1.4.1",
-        "@nuxt/eslint-config": "^1.4.1",
-        "@nuxt/module-builder": "^1.0.1",
-        "@nuxt/schema": "^3.17.5",
-        "@nuxt/test-utils": "^3.19.1",
+        "@nuxt/devtools": "4.0.0-alpha.4",
+        "@nuxt/eslint": "^1.15.2",
+        "@nuxt/eslint-config": "^1.15.2",
+        "@nuxt/module-builder": "^1.0.2",
+        "@nuxt/schema": "^4.4.4",
+        "@nuxt/test-utils": "^4.0.3",
         "@types/js-beautify": "^1.14.3",
-        "@vue/test-utils": "^2.4.6",
-        "changelogen": "^0.6.1",
-        "eslint": "^9.29.0",
-        "happy-dom": "^17.6.3",
+        "@vue/test-utils": "^2.4.10",
+        "changelogen": "^0.6.2",
+        "eslint": "^10.2.1",
+        "happy-dom": "^20.9.0",
         "js-beautify": "^1.15.4",
-        "nuxt": "^3.17.5",
-        "playwright-core": "^1.53.1",
+        "nuxt": "^4.4.4",
+        "playwright-core": "^1.59.1",
         "shared": "workspace:^",
-        "vite": "^6.3.5",
-        "vitest": "^3.2.4",
-        "vue": "^3.5.17"
+        "vite": "^8.0.10",
+        "vitest": "^4.1.5",
+        "vue": "^3.5.33"
     }
 }

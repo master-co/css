@@ -9,16 +9,16 @@
         "lint": "next lint"
     },
     "dependencies": {
-        "@master/css.webpack": "workspace:^",
         "@master/css-runtime": "workspace:^",
-        "@types/node": "^22.10.7",
-        "@types/react": "^19.0.7",
-        "@types/react-dom": "^19.0.3",
-        "eslint": "^8.57.1",
-        "eslint-config-next": "^15.1.5",
-        "next": "^15.1.5",
-        "react": "^19",
-        "react-dom": "^19",
-        "typescript": "^5.7.3"
+        "@master/css.webpack": "workspace:^",
+        "@types/node": "^25.6.0",
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "eslint": "^10.2.1",
+        "eslint-config-next": "^16.2.4",
+        "next": "^16.2.4",
+        "react": "^19.2.5",
+        "react-dom": "^19.2.5",
+        "typescript": "^6.0.3"
     }
 }

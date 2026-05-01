@@ -53,7 +53,7 @@
         "@master/css": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@techor/log": "^3.2.5",
-        "webpack-virtual-modules": "^0.5.0"
+        "webpack-virtual-modules": "^0.6.2"
     },
     "devDependencies": {
         "shared": "workspace:^"

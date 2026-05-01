@@ -6,7 +6,7 @@
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
         "test": "vitest",
-        "lint": "eslint"
+        "lint": "eslint src *.mjs"
     },
     "keywords": [
         "mastercss",
@@ -49,8 +49,8 @@
         "eslint": ">=9.0.0"
     },
     "devDependencies": {
-        "@angular-eslint/template-parser": "^18.4.1",
-        "eslint": "^9.15.0",
+        "@angular-eslint/template-parser": "^21.3.1",
+        "eslint": "^10.2.1",
         "shared": "workspace:^"
     }
 }
