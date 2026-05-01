@@ -53,6 +53,18 @@ const virtualCSSFilepath = path.join(__dirname, 'master.css')
 
 let subprocess: Subprocess
 
+async function waitForCSSContent(doesMatch: (css: string) => boolean) {
+    const deadline = Date.now() + 120000
+    while (Date.now() < deadline) {
+        if (fs.existsSync(virtualCSSFilepath)) {
+            const css = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
+            if (doesMatch(css)) return css
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+    return fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
+}
+
 beforeAll(() => {
     fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w+' })
     fs.writeFileSync(optionsFilepath, originOptionsText, { flag: 'w+' })
@@ -93,7 +105,7 @@ if (!process.env.CI) {
             }),
             waitForDataMatch(subprocess, (data) => data.includes('exported'))
         ])
-        const fileCSSText = fs.readFileSync(virtualCSSFilepath, { encoding: 'utf8' })
+        const fileCSSText = await waitForCSSContent((css) => css.includes('.btn{background-color:var(--color-blue)'))
         expect(fileCSSText).toContain('.btn{background-color:var(--color-blue)')
     }, 120000)
 

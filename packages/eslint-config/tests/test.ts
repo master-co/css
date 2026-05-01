@@ -1,7 +1,9 @@
 import { test, expect } from 'vitest'
 import { ESLint } from 'eslint'
 
-test('ESLint Configuration is valid', async () => {
+test('ESLint Configuration is valid', {
+    timeout: 15000 // for Mac OS CI test timed out in 5000ms.
+}, async () => {
     const eslint = new ESLint({ cwd: __dirname })
     const result = await eslint.lintFiles('./index.html')
     expect(result[0].errorCount).toBe(1)
@@ -17,6 +19,4 @@ test('ESLint Configuration is valid', async () => {
             'Invalid value for `width` property.',
         ]
     )
-}, {
-    timeout: 15000 // for Mac OS CI test timed out in 5000ms.
 })
