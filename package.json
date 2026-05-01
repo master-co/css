@@ -15,7 +15,7 @@
         "commit-check": "commitlint --from=HEAD~1 --verbose"
     },
     "engines": {
-        "node": "^22"
+        "node": "^24"
     },
     "repository": {
         "type": "git",

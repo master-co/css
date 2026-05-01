@@ -10,9 +10,6 @@ on:
 jobs:
     check:
         runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                node-version: [22]
         steps:
             - uses: techor-dev/techor@main
               with:
