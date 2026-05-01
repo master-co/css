@@ -589,6 +589,13 @@ const rules = {
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
+    // View Transitions API (CSS View Transitions Level 1 / 2). #265 foundation.
+    'view-transition-name': {
+        type: SyntaxRuleType.Native
+    },
+    'view-transition-class': {
+        type: SyntaxRuleType.Native
+    },
     'translate()': {
         declarations: ['transform'],
         unit: 'rem',

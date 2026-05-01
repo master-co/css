@@ -97,8 +97,14 @@ export default function parseSelector(token: string, css: MasterCSS, isRaw = tru
             if (body) {
                 const lastColonIndex = pre.lastIndexOf(':')
                 if (lastColonIndex !== -1) {
-                    name = pre.slice(lastColonIndex)
-                    pre = pre.slice(0, lastColonIndex)
+                    // Walk back through any leading `:` (so `::foo(args)` keeps
+                    // both colons in `name`, not just the last one).
+                    let nameStart = lastColonIndex
+                    while (nameStart > 0 && pre[nameStart - 1] === ':') {
+                        nameStart--
+                    }
+                    name = pre.slice(nameStart)
+                    pre = pre.slice(0, nameStart)
                 }
             }
 
