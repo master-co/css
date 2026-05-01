@@ -73,6 +73,19 @@ Modify these only with focused tests and a clear reason:
 - Do not reduce correctness just to make tests pass.
 - Do not guess when modifying parser, compiler, renderer, selector, at-rule, variable, mode, priority, or cascade behavior.
 
+## Commit Message Policy
+
+All commits in this monorepo must follow Techor conventional commits:
+
+```txt
+Type(Target): Summary
+```
+
+- `Type` must be one of `Bump`, `Feat`, `New`, `Perf`, `Add`, `Update`, `Improve`, `Fix`, `Deprecate`, `Drop`, `Docs`, `Upgrade`, `Revert`, `Example`, `Test`, `Refactor`, `Chore`, or `Misc`.
+- `Target` is required for this monorepo. Use the affected workspace, package, or role, such as `Core`, `Runtime`, `Extractor`, `CLI`, `Site`, `Repo`, or `AI`.
+- `Type`, `Target`, and `Summary` use sentence case. Do not end the summary with a period.
+- Examples: `Fix(Core): Parse escaped selectors`, `Docs(Site): Update box shadow reference`, `Test(CLI): Cover extract watch mode`.
+
 ## CSS Output Policy
 
 Any CSS output change must be reviewed as a behavior change. Explain:
