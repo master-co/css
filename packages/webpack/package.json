@@ -5,7 +5,8 @@
         "build": "techor build \"src/**/*.ts\"",
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
-        "lint": "eslint"
+        "lint": "eslint",
+        "test": "vitest"
     },
     "license": "MIT",
     "description": "Integrate Master CSS Static Build in Webpack way",
@@ -56,6 +57,7 @@
         "webpack-virtual-modules": "^0.5.0"
     },
     "devDependencies": {
-        "shared": "workspace:^"
+        "shared": "workspace:^",
+        "tapable": "^2.2.0"
     }
 }
