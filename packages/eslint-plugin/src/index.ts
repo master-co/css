@@ -3,8 +3,17 @@ import legacy from './configs/legacy'
 import base from './configs/base'
 import recommended from './configs/recommended'
 import plugin from './plugin'
+import type { Linter } from 'eslint'
+import type { TSESLint } from '@typescript-eslint/utils'
 
-export default {
+const masterCSSPlugin: Omit<TSESLint.Linter.Plugin, 'configs'> & {
+    configs: {
+        legacy: unknown
+        base: Linter.Config
+        recommended: Linter.Config
+    }
+    settings: typeof settings
+} = {
     ...plugin,
     configs: {
         legacy,
@@ -13,3 +22,5 @@ export default {
     },
     settings
 }
+
+export default masterCSSPlugin
