@@ -19,7 +19,7 @@ describe('issue #358: clamp() with bare arithmetic in middle arg', () => {
     test('clamp() args that are already calc() are not double-wrapped', () => {
         const css = new MasterCSS(undefined, defaultConfig)
         const rule = css.create('font-size:clamp(1rem,calc(2vw+1rem),3rem)')
-        expect(rule?.text).toMatch(/clamp\(1rem,calc\(2vw\s*\+\s*1rem\),3rem\)/)
+        expect(rule?.text).toMatch(/clamp\(1rem,\s*calc\(2vw\s*\+\s*1rem\),\s*3rem\)/)
         expect(rule?.text).not.toContain('calc(calc(')
     })
 
@@ -27,7 +27,7 @@ describe('issue #358: clamp() with bare arithmetic in middle arg', () => {
         const css = new MasterCSS(undefined, defaultConfig)
         const rule = css.create('font-size:clamp(-1rem,2vw,3rem)')
         // Single token with leading minus is a sign, not arithmetic — no calc wrapping.
-        expect(rule?.text).toContain('clamp(-1rem,2vw,3rem)')
+        expect(rule?.text).toContain('clamp(-1rem, 2vw, 3rem)')
     })
 
     test('clamp() with calc() wrapper still works (regression)', () => {
@@ -42,6 +42,6 @@ describe('issue #358: clamp() with bare arithmetic in middle arg', () => {
         const css = new MasterCSS(undefined, defaultConfig)
         const rule = css.create('font-size:clamp(1rem,2vw,3rem)')
         expect(rule).toBeDefined()
-        expect(rule?.text).toContain('clamp(1rem,2vw,3rem)')
+        expect(rule?.text).toContain('clamp(1rem, 2vw, 3rem)')
     })
 })

@@ -3,7 +3,68 @@ import { StringValueComponent } from '../types/syntax'
 import functions from '../config/functions'
 import { BASE_UNIT_REGEX } from '../common'
 
-export default function coreCalc(this: SyntaxRule, value: string, bypassVariableNames: string[]) {
+interface CoreMathData {
+    name?: string
+    wrapArguments?: boolean
+}
+
+function splitTopLevelArguments(value: string) {
+    const parts: string[] = []
+    let depth = 0
+    let start = 0
+    for (let i = 0; i < value.length; i++) {
+        const char = value[i]
+        if (char === '(') {
+            depth++
+        } else if (char === ')') {
+            depth--
+        } else if (char === ',' && depth === 0) {
+            parts.push(value.slice(start, i), char)
+            start = i + 1
+        }
+    }
+    parts.push(value.slice(start))
+    return parts
+}
+
+function hasTopLevelOperator(value: string) {
+    let depth = 0
+    for (let i = 0; i < value.length; i++) {
+        const char = value[i]
+        if (char === '(') {
+            depth++
+        } else if (char === ')') {
+            depth--
+        } else if (depth === 0 && (char === '+' || char === '-' || char === '*' || char === '/')) {
+            let previousIndex = i - 1
+            while (value[previousIndex] === ' ') {
+                previousIndex--
+            }
+            const previousChar = value[previousIndex]
+            if ((char === '+' || char === '-') && (!previousChar || previousChar === '(' || previousChar === ',' || previousChar === ' ')) {
+                continue
+            }
+            return true
+        }
+    }
+    return false
+}
+
+function wrapCalcArguments(value: string) {
+    return splitTopLevelArguments(value).map((part) => {
+        if (part === ',') return part
+        const trimmed = part.trim()
+        if (!trimmed || /^(?:calc|clamp|min|max|var)\(/.test(trimmed) || !hasTopLevelOperator(trimmed)) {
+            return part
+        }
+        const leadingWhitespace = part.match(/^\s*/)![0]
+        const trailingWhitespace = part.match(/\s*$/)![0]
+        return `${leadingWhitespace}calc(${trimmed})${trailingWhitespace}`
+    }).join('')
+}
+
+export default function coreMath(this: SyntaxRule, value: string, bypassVariableNames: string[], data?: CoreMathData) {
+    const functionName = data?.name ?? 'calc'
     const valueComponents: SyntaxRule['valueComponents'] = []
     let i = 0
 
@@ -201,5 +262,10 @@ export default function coreCalc(this: SyntaxRule, value: string, bypassVariable
         handleUnitChecking()
     }
     anaylzeDeeply(valueComponents, false, false, false, false)
-    return 'calc(' + this.resolveValue(valueComponents, this.definition.unit, bypassVariableNames, true) + ')'
+
+    let resolvedValue = this.resolveValue(valueComponents, this.definition.unit, bypassVariableNames, true)
+    if (data?.wrapArguments) {
+        resolvedValue = wrapCalcArguments(resolvedValue)
+    }
+    return functionName + '(' + resolvedValue + ')'
 }

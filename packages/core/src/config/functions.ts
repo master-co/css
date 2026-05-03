@@ -33,7 +33,7 @@ const functions = {
     oklab: { unit: '' },
     oklch: { unit: '' },
     'light-dark': { unit: '' },
-    clamp: { transformer: ['core.math-fn', { name: 'clamp' }] },
+    clamp: { transformer: ['core.math', { name: 'clamp', wrapArguments: true }] },
     repeat: { unit: '' },
     'linear-gradient': {},
     'radial-gradient': {},
@@ -49,7 +49,7 @@ const functions = {
     'scaleY': { unit: '' },
     'scaleZ': { unit: '' },
     $: { transformer: 'core.variable' },
-    calc: { transformer: 'core.calc' },
+    calc: { transformer: 'core.math' },
 } satisfies Record<string, FunctionDefinition>
 
 export default functions

@@ -1,10 +1,8 @@
-import coreCalc from './core.calc'
-import coreMathFn from './core.math-fn'
+import coreMath from './core.math'
 import coreVariable from './core.variable'
 
 const functionTransformers = {
-    'core.calc': coreCalc,
-    'core.math-fn': coreMathFn,
+    'core.math': coreMath,
     'core.variable': coreVariable,
 }
 
