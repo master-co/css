@@ -1,38 +1,40 @@
 {
-  "name": "site",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "prepare-app": "tsx --env-file=.env ./prepare",
-    "dev": "pnpm prepare-app && next dev",
-    "build": "pnpm prepare-app && pnpm build:repo && pnpm build:next && pnpm build:css",
-    "build:repo": "cd ../ && pnpm build && cd site",
-    "build:next": "cross-env NODE_OPTIONS=--max-old-space-size=16384 next build",
-    "build:css": "node ../packages/cli/dist/bin/index.mjs render \".next/**/*.html\"",
-    "start": "next start",
-    "lint": "next lint",
-    "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@master/colors": "^3.0.0",
-    "@master/normal.css": "^3.2.0",
-    "@monaco-editor/react": "^4.7.0",
-    "@next/mdx": "16.2.4",
-    "class-variant": "^2.0.6",
-    "monaco-editor": "^0.55.1",
-    "monaco-editor-textmate": "^4.0.0",
-    "monaco-textmate": "^3.0.1",
-    "next": "16.2.4",
-    "react": "19.2.5",
-    "react-dom": "19.2.5",
-    "theme-mode": "^1.1.1",
-    "use-debounce": "^10.1.1"
-  },
-  "devDependencies": {
-    "@shikijs/monaco": "^4.0.2",
-    "eslint": "^10.2.1",
-    "internal": "workspace:^",
-    "tsx": "^4.21.0",
-    "typescript": "^6.0.3"
-  }
+    "name": "site",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "prepare-app": "tsx --env-file=.env ./prepare",
+        "dev": "pnpm prepare-app && next dev --turbo",
+        "build": "pnpm prepare-app && pnpm build:llms && pnpm build:repo && pnpm build:next && pnpm build:css",
+        "build:repo": "cd ../ && pnpm build && cd site",
+        "build:next": "cross-env NODE_OPTIONS=--max-old-space-size=16384 next build --turbo",
+        "build:css": "node ../packages/cli/dist/bin/index.mjs render \".next/**/*.html\"",
+        "build:llms": "tsx scripts/generate-llms-txt.ts",
+        "test:llms": "tsx --test scripts/generate-llms-txt.test.ts",
+        "start": "next start",
+        "lint": "next lint",
+        "type-check": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@master/colors": "^3.0.0",
+        "@master/normal.css": "^3.2.0",
+        "@monaco-editor/react": "^4.7.0",
+        "@next/mdx": "16.2.4",
+        "class-variant": "^2.0.6",
+        "monaco-editor": "^0.55.1",
+        "monaco-editor-textmate": "^4.0.0",
+        "monaco-textmate": "^3.0.1",
+        "next": "16.2.4",
+        "react": "19.2.5",
+        "react-dom": "19.2.5",
+        "theme-mode": "^1.1.1",
+        "use-debounce": "^10.1.1"
+    },
+    "devDependencies": {
+        "@shikijs/monaco": "^4.0.2",
+        "eslint": "^10.2.1",
+        "internal": "workspace:^",
+        "tsx": "^4.21.0",
+        "typescript": "^6.0.3"
+    }
 }
