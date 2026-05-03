@@ -28,7 +28,7 @@ This package builds the VS Code extension. It starts the language server, contri
 
 ```sh
 pnpm --filter master-css-vscode build
+pnpm --filter master-css-vscode test
 pnpm --filter master-css-vscode type-check
 pnpm --filter master-css-vscode lint
 ```
-
