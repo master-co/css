@@ -133,14 +133,11 @@ export function validateDeclaration(property: string, value: any) {
             property
         }))
     } else if (error = isTargetError(lexer.matchProperty(property, value).error)) {
-        // TODO: https://github.com/master-co/css/issues/405
-        if (!error.css?.includes('min(') && !error.css?.includes('max(') && !error.css?.includes('clamp(')) {
-            errors.push(Object.assign(error, {
-                property,
-                ...error.rawMessage === 'Mismatch' &&
-                { details: error.message, message: 'Invalid value for `' + property + '` property' }
-            }))
-        }
+        errors.push(Object.assign(error, {
+            property,
+            ...error.rawMessage === 'Mismatch' &&
+            { details: error.message, message: 'Invalid value for `' + property + '` property' }
+        }))
     }
 
     return errors

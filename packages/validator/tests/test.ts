@@ -14,10 +14,12 @@ it('validate valid classes', () => {
     expectClassWithoutErrors('text:center')
     expectClassWithoutErrors('font:12@sm')
     expectClassWithoutErrors('mt:$(top)')
+    expectClassWithoutErrors('right:max(0px,calc(50%-45.3125rem))')
     expect(validate('bg:light-dark(#333b3c,#efefec)').errors).toEqual([])
     expectClassValid('text:center')
     expectClassValid('font:12@sm')
     expectClassValid('mt:$(top)')
+    expectClassValid('right:max(0px,calc(50%-45.3125rem))')
 })
 
 it('create rules by class', () => {
