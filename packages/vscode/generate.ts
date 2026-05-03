@@ -73,6 +73,10 @@ pkg.set('contributes.configuration', {
             'type': 'boolean',
             'default': settings.renderSyntaxColors
         },
+        'masterCSS.renderSemanticTokens': {
+            'type': 'boolean',
+            'default': settings.renderSemanticTokens
+        },
         'masterCSS.workspaces': {
             'type': [
                 'string',

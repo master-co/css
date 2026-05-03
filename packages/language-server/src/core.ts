@@ -1,4 +1,4 @@
-import { createConnection, TextDocuments, InitializeParams, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole } from 'vscode-languageserver/node.js'
+import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole, SemanticTokensParams } from 'vscode-languageserver/node.js'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'node:path'
 import CSSLanguageService, { Settings as CSSLanguageServiceSettings } from '@master/css-language-service'
@@ -60,6 +60,7 @@ export default class CSSLanguageServer {
             this.connection.onCompletion(this.onCompletion.bind(this)),
             this.connection.onDocumentColor(this.onDocumentColor.bind(this)),
             this.connection.onColorPresentation(this.onColorPresentation.bind(this)),
+            this.connection.languages.semanticTokens.on(this.onSemanticTokens.bind(this)),
             this.connection.onInitialize(this.onInitialize.bind(this)),
             this.connection.onInitialized(() => this.init())
         )
@@ -74,13 +75,19 @@ export default class CSSLanguageServer {
         })
     }
 
-    onInitialize(params: InitializeParams) {
+    onInitialize(params: InitializeParams): InitializeResult {
         this.clientCapabilities = params.capabilities
         if (params.workspaceFolders?.length) {
             this.workspaceFolders = params.workspaceFolders
         }
+        const capabilities = {
+            ...SERVER_CAPABILITIES
+        }
+        if (this.settings?.renderSemanticTokens === false) {
+            delete capabilities.semanticTokensProvider
+        }
         return {
-            capabilities: SERVER_CAPABILITIES
+            capabilities
         }
     }
 
@@ -120,6 +127,17 @@ export default class CSSLanguageServer {
         }
     }
 
+    async onSemanticTokens(params: SemanticTokensParams) {
+        await this.init()
+        const workspace = this.findClosestWorkspace(params.textDocument.uri)
+        if (workspace?.languageService) {
+            const document = this.documents.get(params.textDocument.uri)
+                ?? workspace.openedTextDocuments.find((document) => document.uri === params.textDocument.uri)
+            if (document) return workspace.languageService.renderSemanticTokens(document) ?? { data: [] }
+        }
+        return { data: [] }
+    }
+
     async onDidOpen(params: TextDocumentChangeEvent<TextDocument>) {
         await this.init()
         const workspace = this.findClosestWorkspace(params.document.uri)
@@ -146,6 +164,7 @@ export default class CSSLanguageServer {
         if (!workspace) return
         const name = path.parse(params.document.uri).name
         if (name === 'master.css' || name.endsWith('.css')) {
+            this.refreshSemanticTokens()
             this.connection.sendRequest('masterCSS/restart', {
                 title: 'Updating Master CSS configuration',
             })
@@ -157,6 +176,7 @@ export default class CSSLanguageServer {
         if (settings?.masterCSS) {
             this.connection.sendNotification('masterCSS/globalSettingsChanged', settings.masterCSS)
             this.customSettings = settings.masterCSS
+            this.refreshSemanticTokens()
             this.connection.sendRequest('masterCSS/restart', {
                 title: 'Updating Master CSS settings',
             })
@@ -244,6 +264,12 @@ export default class CSSLanguageServer {
         if (foundWorkspace) return foundWorkspace
         this.console.info(`This is an external document ${textDocumentURI} with the global workspace`)
         return this.globalWorkspace
+    }
+
+    private refreshSemanticTokens() {
+        if (this.settings?.renderSemanticTokens === false) return
+        if (!this.clientCapabilities.workspace?.semanticTokens?.refreshSupport) return
+        this.connection.languages.semanticTokens.refresh()
     }
 
     stop(): void {

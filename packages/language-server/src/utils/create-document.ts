@@ -12,6 +12,7 @@ const extOfLang = {
     scss: 'scss',
     less: 'less',
     html: 'html',
+    'master-css': 'mcss',
     json: 'json',
     vue: 'vue',
     svelte: 'svelte',

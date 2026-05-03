@@ -9,6 +9,7 @@ export const languageIdOfExt = {
     scss: 'scss',
     less: 'less',
     html: 'html',
+    mcss: 'master-css',
     json: 'json',
     vue: 'vue',
     svelte: 'svelte',

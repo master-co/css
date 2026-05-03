@@ -55,7 +55,8 @@ const settings: Settings = {
     suggestSyntax: true,
     inspectSyntax: true,
     renderSyntaxColors: true,
-    editSyntaxColors: true
+    editSyntaxColors: true,
+    renderSemanticTokens: true
 }
 
 export default settings
@@ -73,4 +74,5 @@ export declare interface Settings {
     inspectSyntax?: boolean
     renderSyntaxColors?: boolean
     editSyntaxColors?: boolean
+    renderSemanticTokens?: boolean
 }

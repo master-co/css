@@ -8,6 +8,25 @@ export const AT_TRIGGER_CHARACTER = AT_SIGN
 export const QUERY_TRIGGER_CHARACTERS = [...QUERY_COMPARISON_OPERATORS, ...QUERY_LOGICAL_OPERATORS]
 export const GROUP_TRIGGER_CHARACTER = '{'
 export const DECLARATION_SEPARATOR_TRIGGER_CHARACTER = ';'
+export const SEMANTIC_TOKEN_TYPES = [
+    'class',
+    'property',
+    'variable',
+    'function',
+    'number',
+    'string',
+    'keyword',
+    'modifier',
+    'operator'
+] as const
+export const SEMANTIC_TOKEN_MODIFIERS = [
+    'declaration',
+    'defaultLibrary'
+] as const
+export const SEMANTIC_TOKENS_LEGEND = {
+    tokenTypes: [...SEMANTIC_TOKEN_TYPES],
+    tokenModifiers: [...SEMANTIC_TOKEN_MODIFIERS]
+}
 
 export const SERVER_CAPABILITIES: ServerCapabilities = {
     textDocumentSync: TextDocumentSyncKind.Incremental,
@@ -29,6 +48,10 @@ export const SERVER_CAPABILITIES: ServerCapabilities = {
     },
     colorProvider: true,
     hoverProvider: true,
+    semanticTokensProvider: {
+        legend: SEMANTIC_TOKENS_LEGEND,
+        full: true
+    },
     workspace: {
         workspaceFolders: {
             supported: true,
