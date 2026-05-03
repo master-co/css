@@ -1,9 +1,34 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Basic usage
+### Place an item by rows
+Use `grid-row` to place an item between row grid lines.
+<Demo $py={0}>
+    <DemoPanel>
+        <div className="grid grid-cols:2 grid-template-rows:48px|48px|48px gap:2x">
+            <div className="grid-row:1/3 min-w:0 p:3x r:8 bg:blue-5 bg:blue-95@dark border:1|solid|blue-20 border-color:blue-80@dark">
+                <div className="fg:blue-60 font:11 font-weight:700 text:ellipsis overflow:hidden white-space:nowrap">grid-row:1/3</div>
+                <div className="fg:strong font:14 font-weight:560">Item</div>
+            </div>
+            <div className="min-w:0 p:3x r:8 bg:gray-5 bg:gray-90@dark">A</div>
+            <div className="min-w:0 p:3x r:8 bg:gray-5 bg:gray-90@dark">B</div>
+        </div>
+    </DemoPanel>
+</Demo>
+```html
+<!-- @MARK grid-row:1/3 -->
+<div class="grid-row:1/3">Item</div>
+```
+
+### Span rows
+```html
+<!-- @MARK grid-row-span:2 -->
+<div class="grid-row-span:2">Spans two rows</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="grid-row:2:hover grid-row:2@sm grid-row:2@dark grid-row:2@print">…</div>
+<div class="grid-row:1/3:hover grid-row:1/3@sm grid-row:1/3@dark grid-row:1/3@print">…</div>
 ```
-

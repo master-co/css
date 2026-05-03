@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['grid-template-areas:`value`'],
+    ["grid-template-areas:'head_head'|'nav_main'"],
     'grid-template-areas:none'
 ]
 

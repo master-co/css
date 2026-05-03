@@ -1,5 +1,6 @@
 const syntaxes = [
-    ['grid-col:`value`'],
+    ['grid-column:`value`'],
+    ['grid-column:2/4'],
     ['grid-col-span:`value`'],
     ['grid-col-start:`value`'],
     ['grid-col-end:`value`'],

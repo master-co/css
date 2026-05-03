@@ -1,9 +1,25 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Basic usage
+### Define rows and columns together
+Use `grid-template` to set grid rows and columns in one shorthand.
+<Demo $py={0}>
+    <DemoPanel>
+        <div className="grid grid-template:64px|1fr/120px|1fr gap:2x h:180">
+            <div className="min-w:0 p:3x r:8 bg:blue-5 bg:blue-95@dark border:1|solid|blue-20 border-color:blue-80@dark text:ellipsis overflow:hidden white-space:nowrap">Nav</div>
+            <div className="min-w:0 p:3x r:8 bg:gray-5 bg:gray-90@dark text:ellipsis overflow:hidden white-space:nowrap">Header</div>
+            <div className="min-w:0 p:3x r:8 bg:gray-5 bg:gray-90@dark text:ellipsis overflow:hidden white-space:nowrap">Main</div>
+        </div>
+    </DemoPanel>
+</Demo>
+```html
+<!-- @MARK grid-template:64px|1fr/120px|1fr -->
+<div class="grid grid-template:64px|1fr/120px|1fr">…</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="grid-template:none:hover grid-template:none@sm grid-template:none@dark grid-template:none@print">…</div>
+<div class="grid-template:64px|1fr/120px|1fr:hover grid-template:64px|1fr/120px|1fr@sm grid-template:64px|1fr/120px|1fr@dark grid-template:64px|1fr/120px|1fr@print">…</div>
 ```
-

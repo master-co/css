@@ -1,9 +1,30 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Basic usage
+### Size implicit rows
+Use `grid-auto-rows` to size rows created outside the explicit grid.
+<Demo $py={0}>
+    <DemoPanel>
+        <div className="grid grid-cols:2 grid-auto-rows:64px gap:2x">
+            <div className="min-w:0 p:3x r:8 bg:blue-5 bg:blue-95@dark border:1|solid|blue-20 border-color:blue-80@dark">
+                <div className="fg:blue-60 font:11 font-weight:700 text:ellipsis overflow:hidden white-space:nowrap">64px row</div>
+                <div className="fg:strong font:14 font-weight:560">A</div>
+            </div>
+            <div className="min-w:0 p:3x r:8 bg:gray-5 bg:gray-90@dark">B</div>
+            <div className="min-w:0 p:3x r:8 bg:gray-5 bg:gray-90@dark">C</div>
+        </div>
+    </DemoPanel>
+</Demo>
+```html
+<!-- @MARK grid-auto-rows:64px -->
+<div class="grid grid-cols:2 grid-auto-rows:64px">
+    <div>A</div><div>B</div><div>C</div>
+</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="grid-auto-rows:min:hover grid-auto-rows:min@sm grid-auto-rows:min@dark grid-auto-rows:min@print">…</div>
+<div class="grid-auto-rows:64px:hover grid-auto-rows:64px@sm grid-auto-rows:64px@dark grid-auto-rows:64px@print">…</div>
 ```
-
