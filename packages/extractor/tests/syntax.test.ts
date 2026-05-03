@@ -2,7 +2,7 @@ import { test, expect, it } from 'vitest'
 import CSSExtractor from '../src'
 
 test('syntax', async () => {
-    const extractor = new CSSExtractor({ sources: ['syntax.html'] }, __dirname).init()
+    const extractor = new CSSExtractor({ sources: ['syntax.html'], include: [] }, __dirname).init()
     const testClasses = [
         '{fg:blue-40/.5;font:32;p:16;w:full;text:center}>li:hover@md',
         'w:calc(+100%-1.25rem)',

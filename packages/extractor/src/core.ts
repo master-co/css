@@ -11,6 +11,7 @@ import exploreCSSConfig from '@master/css-explore-config'
 import { generateValidRules } from '@master/css-validator'
 import chokidar, { type ChokidarOptions, type FSWatcher } from 'chokidar'
 import { EventEmitter } from 'node:events'
+import { createHash } from 'node:crypto'
 import cssEscape from 'shared/utils/css-escape'
 import { explorePathsSync } from '@techor/glob'
 import path, { resolve } from 'path'
@@ -25,6 +26,27 @@ export default class CSSExtractor extends EventEmitter {
     watching = false
     watchers: FSWatcher[] = []
     initialized = false
+
+    /**
+     * Per-source content-hash cache. When the same `source` arrives with the
+     * same `content` (HMR re-fires the same file unchanged, vite transform
+     * runs the same module twice), we skip re-running the regex pipeline
+     * and re-validating every class.
+     */
+    private contentHashes = new Map<string, string>()
+
+    /**
+     * Memoized result of `generateValidRules` per syntax string. The same
+     * class commonly appears in 100+ files in real codebases; without this,
+     * we re-run css.generate() + validateCSS() per occurrence. With it, the
+     * second occurrence is an O(1) Map lookup.
+     */
+    private validRulesCache = new Map<string, ReturnType<typeof generateValidRules>>()
+
+    /** Memoized result of `fixedSourcePaths` getter (fs IO via fast-glob). */
+    private cachedFixedSourcePaths?: string[]
+    /** Memoized result of `allowedSourcePaths` getter (fs IO via fast-glob). */
+    private cachedAllowedSourcePaths?: string[]
 
     constructor(
         public customOptions: Options | string = 'master.css-extractor',
@@ -71,6 +93,10 @@ export default class CSSExtractor extends EventEmitter {
         this.latentClasses.clear()
         this.validClasses.clear()
         this.invalidClasses.clear()
+        this.contentHashes.clear()
+        this.validRulesCache.clear()
+        this.cachedFixedSourcePaths = undefined
+        this.cachedAllowedSourcePaths = undefined
         this.initialized = false
         this.init(customOptions)
         await this.prepare()
@@ -83,6 +109,8 @@ export default class CSSExtractor extends EventEmitter {
         this.latentClasses.clear()
         this.validClasses.clear()
         this.invalidClasses.clear()
+        this.contentHashes.clear()
+        this.validRulesCache.clear()
         this.removeAllListeners()
         await this.closeWatch()
         this.emit('destroy')
@@ -137,62 +165,76 @@ export default class CSSExtractor extends EventEmitter {
         if (!content) {
             return false
         }
-        let latentClasses = this.extract(source, content)
+
+        // Skip the whole pipeline when this exact (source, content) pair has
+        // already been processed. HMR commonly re-fires unchanged files; vite
+        // can also call `transform` on the same module twice. Hashing 1 KB of
+        // source via SHA-1 is ~2 µs; running extract + validate on it is ms.
+        if (source) {
+            const hash = createHash('sha1').update(content).digest('hex')
+            if (this.contentHashes.get(source) === hash) {
+                return false
+            }
+            this.contentHashes.set(source, hash)
+        }
+
+        const allLatent = this.extract(source, content)
+        if (!allLatent.length) {
+            return false
+        }
+
+        // Single-pass filter (was three sequential `.filter` chains, each
+        // allocating a new array). Skip classes already known invalid /
+        // already known valid / explicitly excluded by user config.
+        const excludeClasses = this.options.excludeClasses
+        const latentClasses: string[] = []
+        for (const eachLatentClass of allLatent) {
+            if (this.invalidClasses.has(eachLatentClass)) continue
+            if (this.validClasses.has(eachLatentClass)) continue
+            if (excludeClasses?.length) {
+                let excluded = false
+                for (const eachIgnoreClass of excludeClasses) {
+                    if (typeof eachIgnoreClass === 'string') {
+                        if (eachIgnoreClass === eachLatentClass) { excluded = true; break }
+                    } else if (eachIgnoreClass.test(eachLatentClass)) {
+                        excluded = true
+                        break
+                    }
+                }
+                if (excluded) continue
+            }
+            latentClasses.push(eachLatentClass)
+        }
         if (!latentClasses.length) {
             return false
         }
 
-        /**
-         * 排除已驗證為 invalid 的 extraction
-         */
-        if (this.invalidClasses.size) {
-            latentClasses = latentClasses.filter((eachLatentClass) => !this.invalidClasses.has(eachLatentClass))
-        }
-
-        /**
-         * 排除已驗證為 valid 的 extraction
-         */
-        if (this.validClasses.size) {
-            latentClasses = latentClasses.filter((eachLatentClass) => !this.validClasses.has(eachLatentClass))
-        }
-
-        /* 排除指定的 class */
-        if (this.options.excludeClasses?.length)
-            latentClasses = latentClasses.filter((eachLatentClass) => {
-                if (this.options.excludeClasses)
-                    for (const eachIgnoreClass of this.options.excludeClasses) {
-                        if (typeof eachIgnoreClass === 'string') {
-                            if (eachIgnoreClass === eachLatentClass) return false
-                        } else if (eachIgnoreClass.test(eachLatentClass)) {
-                            return false
-                        }
-                    }
-                return true
-            })
-
         let time = process.hrtime()
-        /* 根據類名尋找並插入規則 ( MasterCSS 本身帶有快取機制，重複的類名不會再編譯及產生 ) */
+        // Synchronous loop — generateValidRules is sync; the previous
+        // `Promise.all(map(async))` was just microtask overhead with no
+        // parallelism in single-threaded JS. Per-class result is also memoized
+        // so repeated occurrences across files are O(1).
         const validClasses: string[] = []
-
-        await Promise.all(
-            latentClasses
-                .map(async (eachLatentClass) => {
-                    const validRules = generateValidRules(eachLatentClass, this.css)
-                    if (validRules.length) {
-                        for (const validRule of validRules) {
-                            validRule.layer.insert(validRule)
-                        }
-                        validClasses.push(eachLatentClass)
-                        this.validClasses.add(eachLatentClass)
-                    } else {
-                        this.invalidClasses.add(eachLatentClass)
-                    }
-                })
-        )
-        time = process.hrtime(time)
-        const spent = Math.round(((time[0] * 1e9 + time[1]) / 1e6) * 10) / 10
+        for (const eachLatentClass of latentClasses) {
+            let validRules = this.validRulesCache.get(eachLatentClass)
+            if (validRules === undefined) {
+                validRules = generateValidRules(eachLatentClass, this.css)
+                this.validRulesCache.set(eachLatentClass, validRules)
+            }
+            if (validRules.length) {
+                for (const validRule of validRules) {
+                    validRule.layer.insert(validRule)
+                }
+                validClasses.push(eachLatentClass)
+                this.validClasses.add(eachLatentClass)
+            } else {
+                this.invalidClasses.add(eachLatentClass)
+            }
+        }
         if (this.css.definedRules.length && validClasses.length) {
             if (this.options.verbose) {
+                time = process.hrtime(time)
+                const spent = Math.round(((time[0] * 1e9 + time[1]) / 1e6) * 10) / 10
                 log.ok`**${path.relative(this.cwd, source)}** ${validClasses.length} classes inserted ${log.chalk.gray('in')} ${spent}ms ${this.options.verbose > 1 ? validClasses : ''}`
             }
             this.emit('change')
@@ -287,14 +329,18 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     /**
-     * computed from `options.sources`
+     * computed from `options.sources`. Memoized — each access used to re-glob
+     * the filesystem which is expensive on large projects. Cleared on `reset()`.
      */
     get fixedSourcePaths(): string[] {
+        if (this.cachedFixedSourcePaths) return this.cachedFixedSourcePaths
         const { sources } = this.options
-        return sources?.length
+        const computed = sources?.length
             ? explorePathsSync(sources, { cwd: this.cwd })
                 .filter((eachSourcePath) => !!eachSourcePath)
             : []
+        this.cachedFixedSourcePaths = computed
+        return computed
     }
 
     /**
@@ -305,14 +351,18 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     /**
-     * `options.include` - `options.exclude`
+     * `options.include` - `options.exclude`. Memoized — same reason as
+     * `fixedSourcePaths`. Cleared on `reset()`.
      */
     get allowedSourcePaths(): string[] {
+        if (this.cachedAllowedSourcePaths) return this.cachedAllowedSourcePaths
         const { include, exclude } = this.options
-        return include?.length
+        const computed = include?.length
             ? explorePathsSync(include, { cwd: this.cwd, ignore: exclude })
                 .filter((eachSourcePath) => Boolean(eachSourcePath))
             : []
+        this.cachedAllowedSourcePaths = computed
+        return computed
     }
 
     /**
