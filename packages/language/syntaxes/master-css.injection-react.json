@@ -99,12 +99,12 @@
                     "name": "keyword.operator.assignment"
                 },
                 "3": {
-                    "name": "string.quoted.double.html"
+                    "name": "string.quoted.single.html"
                 }
             },
             "endCaptures": {
                 "1": {
-                    "name": "string.quoted.double.html"
+                    "name": "string.quoted.single.html"
                 }
             },
             "patterns": [
@@ -118,7 +118,7 @@
                     "match": "(\\S)",
                     "captures": {
                         "1": {
-                            "name": "string.quoted.double"
+                            "name": "string.quoted.single"
                         }
                     }
                 }
