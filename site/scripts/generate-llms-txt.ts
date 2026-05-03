@@ -1,9 +1,9 @@
 import { readFile, writeFile, readdir } from 'node:fs/promises'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const DEFAULT_LOCALE = 'en'
-const SITE_URL = 'https://rc.css.master.co'
+const SITE_URL = process.env.NEXT_PUBLIC_URL || 'https://rc.css.master.co'
 const PROJECT_NAME = 'Master CSS'
 const PROJECT_DESC =
     'A CSS language and framework for rapidly building beautiful websites and design systems with rule-based CSS-in-class.'
@@ -15,14 +15,30 @@ export type Page = {
     section: string
     /** Public URL path, e.g. "/en/guide/colors". */
     url: string
-    /** Display title (from first H1/H2 or last route segment). */
+    /** Display title from metadata, first H1/H2, or last route segment. */
     title: string
-    /** Raw MDX body. */
+    /** Optional link note from metadata.description. */
+    description?: string
+    /** LLM-oriented Markdown body. */
     body: string
+}
+
+type PageMetadata = {
+    title?: string | { absolute?: string; default?: string }
+    description?: string
 }
 
 const TITLE_FROM_HEADING = /^#{1,2}\s+(.+?)\s*$/m
 const HEADING_TRAILING_TAG = /\s*[\[\{][^\]\}]*[\]\}]\s*$/
+const ROUTE_GROUP = /^\(.+\)$/
+const CODE_FENCE = /(```[\s\S]*?```)/g
+const IMPORT_LINE = /^import\s.+$/gm
+const JSX_ATTRIBUTE_LINE = /^[ \t]*<\/?[A-Za-z][^`\n]*\b(?:className|src=|width=|height=|style=|key=|alt=|\{)[^`\n]*$/gm
+const HTML_TAG_ONLY_LINE = /^[ \t]*<\/?[a-z][\w.:-]*(?:\s+[^`\n<>]*)?>\s*$/gm
+const GENERATED_CSS_SUMMARY_LINE = /^[ \t]*<summary>Generated CSS<\/summary>\s*$/gm
+const RAW_REQUIRE_LINE = /^\s*\{require\(.+\)\}\s*$/gm
+const MDX_COMPONENT_TAG = /<\/?[A-Z][\w.:-]*(?:\s+[^<>]*)?\/?>/g
+const JSX_EXPRESSION_LINE = /^\s*\{.*\}\s*$/gm
 
 export function deriveTitle(body: string, fallbackSegment: string): string {
     const m = body.match(TITLE_FROM_HEADING)
@@ -33,15 +49,50 @@ export function deriveTitle(body: string, fallbackSegment: string): string {
         .join(' ')
 }
 
+export function metadataTitle(title: PageMetadata['title']): string | undefined {
+    if (typeof title === 'string') return title
+    return title?.absolute || title?.default
+}
+
+export function normalizeRoutePath(relPath: string): string {
+    return relPath
+        .replace(/\/content\.mdx$/, '')
+        .split('/')
+        .filter((segment) => segment && !ROUTE_GROUP.test(segment))
+        .join('/')
+}
+
 /** Convert filesystem path under app/[locale]/ into a public URL path. */
 export function pageUrl(relPath: string, locale = DEFAULT_LOCALE): string {
-    // relPath is like "guide/colors/content.mdx"
-    const dir = relPath.replace(/\/content\.mdx$/, '')
+    const dir = normalizeRoutePath(relPath)
     return `/${locale}${dir ? '/' + dir : ''}`
 }
 
 export function topSection(relPath: string): string {
-    return relPath.split('/')[0] ?? ''
+    return normalizeRoutePath(relPath).split('/')[0] ?? ''
+}
+
+export function cleanMdx(body: string): string {
+    return body
+        .split(CODE_FENCE)
+        .map((part) => part.startsWith('```') ? part : cleanMdxProse(part))
+        .join('')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim()
+}
+
+function cleanMdxProse(body: string): string {
+    return body
+        .replace(IMPORT_LINE, '')
+        .replace(MDX_COMPONENT_TAG, '')
+        .replace(JSX_ATTRIBUTE_LINE, '')
+        .replace(GENERATED_CSS_SUMMARY_LINE, '')
+        .replace(HTML_TAG_ONLY_LINE, '')
+        .replace(RAW_REQUIRE_LINE, '')
+        .replace(JSX_EXPRESSION_LINE, '')
+        .replace(/\s+\[sr-only\]/g, '')
+        .replace(/\s+\{\.sr-only\}/g, '')
+        .replace(/[ \t]+\n/g, '\n')
 }
 
 export function renderLlmsIndex(pages: Page[], siteUrl = SITE_URL): string {
@@ -57,9 +108,10 @@ export function renderLlmsIndex(pages: Page[], siteUrl = SITE_URL): string {
     lines.push(`> ${PROJECT_DESC}`, '')
     for (const sec of sortedSections) {
         const items = bySection.get(sec)!.sort((a, b) => a.url.localeCompare(b.url))
-        lines.push(`## ${sec.charAt(0).toUpperCase() + sec.slice(1)}`)
+        lines.push(`## ${sectionTitle(sec)}`)
         for (const p of items) {
-            lines.push(`- [${p.title}](${siteUrl}${p.url})`)
+            const note = p.description ? `: ${p.description}` : ''
+            lines.push(`- [${p.title}](${siteUrl}${p.url})${note}`)
         }
         lines.push('')
     }
@@ -73,9 +125,17 @@ export function renderLlmsFull(pages: Page[], siteUrl = SITE_URL): string {
         out.push('---', '')
         out.push(`# ${p.title}`, '')
         out.push(`Source: ${siteUrl}${p.url}`, '')
+        if (p.description) out.push(`Summary: ${p.description}`, '')
         out.push(p.body.trim(), '')
     }
     return out.join('\n').trimEnd() + '\n'
+}
+
+function sectionTitle(section: string): string {
+    return section
+        .split('-')
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' ')
 }
 
 async function listMdx(root: string): Promise<string[]> {
@@ -92,20 +152,34 @@ async function listMdx(root: string): Promise<string[]> {
     return out
 }
 
+async function loadMetadata(file: string): Promise<PageMetadata> {
+    const metadataPath = path.join(path.dirname(file), 'metadata.ts')
+    try {
+        const mod = await import(pathToFileURL(metadataPath).href)
+        return mod.default ?? {}
+    } catch {
+        return {}
+    }
+}
+
 export async function loadPages(localeRoot: string): Promise<Page[]> {
     const files = await listMdx(localeRoot)
     const pages: Page[] = []
     for (const file of files) {
         const rel = path.relative(localeRoot, file).split(path.sep).join('/')
-        const body = await readFile(file, 'utf8')
-        const segments = rel.replace(/\/content\.mdx$/, '').split('/')
+        const [rawBody, metadata] = await Promise.all([
+            readFile(file, 'utf8'),
+            loadMetadata(file)
+        ])
+        const segments = normalizeRoutePath(rel).split('/')
         const lastSegment = segments[segments.length - 1] ?? ''
         pages.push({
             file,
             section: topSection(rel),
             url: pageUrl(rel),
-            title: deriveTitle(body, lastSegment),
-            body
+            title: metadataTitle(metadata.title) || deriveTitle(rawBody, lastSegment),
+            description: metadata.description,
+            body: cleanMdx(rawBody)
         })
     }
     return pages
