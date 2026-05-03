@@ -1,0 +1,36 @@
+## Overview [sr-only]
+<Overview/>
+
+## Basic usage
+### Slice the source image
+Use `border-image-slice` to divide the source image into corners, edges, and a center region. The center is discarded unless `fill` is included.
+<Demo $py={0}>
+    <DemoPanel>
+        <div className="b:16|solid|transparent border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-slice:30 p:10x r:8 bg:white bg:gray-95@dark">
+            <div className="fg:strong font:18 font-weight:560">Slice 30</div>
+            <p className="fg:muted font:14 my:4x">The slice value controls how the image is divided.</p>
+        </div>
+    </DemoPanel>
+</Demo>
+```html
+<!-- @MARK border-image-source:linear-gradient(45deg,dodgerblue,hotpink) -->
+<!-- @MARK border-image-slice:30 -->
+<div class="b:16|solid|transparent border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-slice:30">
+    Slice 30
+</div>
+```
+
+### Preserve the center with fill
+Use `fill` when the middle region of the source should be painted like a background.
+```html
+<!-- @MARK border-image-slice:30|fill -->
+<div class="b:16|solid|transparent border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-slice:30|fill">
+    Filled center
+</div>
+```
+
+### Apply conditionally
+Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
+```html
+<div class="border-image-slice:30:hover border-image-slice:30@sm border-image-slice:30@dark border-image-slice:30@print">…</div>
+```

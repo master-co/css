@@ -1,0 +1,35 @@
+## Overview [sr-only]
+<Overview/>
+
+## Basic usage
+### Set the border image width
+Use `border-image-width` to control how thick the painted border image is. It can be larger than the fallback `border-width`.
+<Demo $py={0}>
+    <DemoPanel>
+        <div className="b:8|solid|transparent border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-slice:30 border-image-width:16 p:10x r:8 bg:white bg:gray-95@dark">
+            <div className="fg:strong font:18 font-weight:560">Image width 16</div>
+            <p className="fg:muted font:14 my:4x">The painted image uses a wider border image area.</p>
+        </div>
+    </DemoPanel>
+</Demo>
+```html
+<!-- @MARK border-image-width:16 -->
+<div class="b:8|solid|transparent border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-slice:30 border-image-width:16">
+    Image width 16
+</div>
+```
+
+### Use automatic width
+Use `auto` to derive the width from the slice value when possible.
+```html
+<!-- @MARK border-image-width:auto -->
+<div class="b:16|solid|transparent border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-slice:30 border-image-width:auto">
+    Auto image width
+</div>
+```
+
+### Apply conditionally
+Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
+```html
+<div class="border-image-width:16:hover border-image-width:16@sm border-image-width:16@dark border-image-width:16@print">…</div>
+```
