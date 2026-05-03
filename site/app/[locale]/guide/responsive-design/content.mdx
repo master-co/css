@@ -6,9 +6,7 @@
 <!-- @MARK @xs @sm @md -->
 <div class="grid-cols:2 grid-cols:3@xs grid-cols:4@sm grid-cols:5@md …">…</div>
 ```
-Master CSS allows for the conditional application of styles at different viewport and container sizes, with up to [11 predefined screen sizes](/guide/screens) available, from `4xs` ~ `4xl`.
-<ScreensDefault />
-This comprehensive coverage caters to the modern web layout scenario.
+Master CSS allows for the conditional application of styles at different viewport and container sizes. These queries use shared [screen sizes](/guide/screen-sizes), which you can use as viewport breakpoints, screen variables, and container query sizes.
 
 ---
 
@@ -18,7 +16,7 @@ CSS Media Queries allow styles to be applied based on the *size of the viewport*
 These breakpoints enable developers to change layouts, typography, spacing, and more to ensure an optimal user experience across devices.
 
 ### Using responsive breakpoints
-The syntax is `@<breakpoint>`, where `<breakpoint>` can be any of the predefined [screen sizes](/guide/screens), such as `xs`, `sm`, `md`, `lg`, etc.
+The syntax is `@<breakpoint>`, where `<breakpoint>` can be any configured [screen size token](/guide/screen-sizes), such as `xs`, `sm`, `md`, `lg`, etc.
 ```html
 <!-- @MARK @xs @sm @md -->
 <div class="grid-cols:2 grid-cols:3@xs grid-cols:4@sm grid-cols:5@md …">…</div>
@@ -78,7 +76,7 @@ The `container` class is a utility class that applies the `container-type: inlin
         {['container', 'flex-col@container(<=2xs)']}
     </Class2CSS>
 </details>
-Container queries and media queries share the same [screen sizes](/guide/screens).
+Container queries and media queries share the same [screen sizes](/guide/screen-sizes).
 
 ### Querying container ranges
 Use [comparison](/guide/conditional-queries#comparison-operators) and [logical](/guide/conditional-queries#logical-operators) operators to create more complex container range queries.
