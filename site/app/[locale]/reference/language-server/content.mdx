@@ -17,6 +17,13 @@ const languageServer = new CSSLanguageServer(connection, customSettings)
 ```
 Check out the [source code](https://github.com/master-co/css/blob/rc/packages/language-server/src/core.ts) for arguments and properties.
 
+### Semantic tokens
+The language server advertises `semanticTokensProvider` by default and handles `textDocument/semanticTokens/full` requests for open documents.
+
+Unlike static TextMate grammars, semantic tokens are resolved from the nearest workspace language service. This lets the server highlight config-dependent Master CSS tokens such as custom variables and components after loading `master.css.*`.
+
+When configuration or Master CSS settings change, the server requests a semantic token refresh from clients that support `workspace/semanticTokens/refresh`.
+
 ---
 
 ## API Reference
@@ -80,3 +87,9 @@ It creates `/` and `/apps/b` workspaces.
 ### `settings.verbose`
 Print all console logs.
 <DocProp defaultValue={JSON.stringify(settings.verbose)} types={['boolean']} />
+
+### `settings.renderSemanticTokens`
+Enable semantic token support.
+<DocProp defaultValue={JSON.stringify(settings.renderSemanticTokens)} types={['boolean']} />
+
+Set this to `false` to omit the server `semanticTokensProvider` capability and skip semantic token rendering. This setting is inherited from the [language service](/reference/language-service#settingsrendersemantictokens).

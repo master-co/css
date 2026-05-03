@@ -38,6 +38,13 @@ import declaration from '@master/css-language/declaration'
     </div>
 </details>
 
+### Static and dynamic highlighting
+This package provides static [TextMate](https://macromates.com/manual/en/language_grammars) grammars. They are loaded by VS Code, Shiki, and other grammar consumers before any project configuration is known.
+
+Static grammar highlighting is intentionally configuration-independent. It can recognize stable Master CSS syntax such as declarations, values, selectors, queries, groups, functions, and punctuation, but it cannot know whether a token such as `brand`, `btn`, or `surface` comes from your `master.css.*` configuration.
+
+For configuration-aware highlighting, use the [language service](/reference/language-service#settingsrendersemantictokens) through the [language server](/reference/language-server#semantic-tokens). The language server loads the workspace configuration, creates a configured Master CSS engine, and returns LSP semantic tokens for custom variables, components, utilities, and other parsed class parts.
+
 ---
 
 ## Integrating
@@ -91,6 +98,8 @@ highlighter.codeToHtml(html, { lang: 'html' })
 </div>
 ```
 
+Shiki uses the static grammar data from this package. It does not load project configuration or render LSP semantic tokens by itself.
+
 ### Monaco Editor
 The [Monaco Editor](https://github.com/microsoft/monaco-editor) is the fully featured code editor from VS Code. Integrate Monaco Editor based on the above [shiki](#shiki) setup.
 ```ts
@@ -103,3 +112,5 @@ import highlighter from './highlighter'
 shikiToMonaco(highlighter, monaco)
 ```
 See the [@shikijs/monaco](https://shiki.matsu.io/packages/monaco) documentation.
+
+If your Monaco integration also needs configuration-aware Master CSS highlighting, pair the static grammar with the [language service](/reference/language-service) semantic token API.
