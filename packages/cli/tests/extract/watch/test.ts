@@ -3,6 +3,7 @@
 import fs from 'fs'
 import os from 'node:os'
 import { createRequire } from 'module'
+import { pathToFileURL } from 'url'
 import path from 'upath'
 import cssEscape from 'shared/utils/css-escape'
 import waitForDataMatch from 'shared/utils/wait-for-data-match'
@@ -11,7 +12,7 @@ import { it, beforeAll, afterAll, expect } from 'vitest'
 import { execa, type ResultPromise } from 'execa'
 
 const cliFilepath = path.resolve(__dirname, '../../../src/bin/index.ts')
-const tsxLoaderPath = createRequire(import.meta.url).resolve('tsx')
+const tsxLoaderURL = pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href
 const originHTMLText = dedent`
     <!DOCTYPE html>
     <html lang="en">
@@ -89,7 +90,7 @@ beforeAll(() => {
     fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w+' })
     fs.writeFileSync(optionsFilepath, originOptionsText, { flag: 'w+' })
     fs.writeFileSync(configFilepath, originConfigText, { flag: 'w+' })
-    subprocess = execa(process.execPath, ['--import', tsxLoaderPath, cliFilepath, 'extract', '-w'], {
+    subprocess = execa(process.execPath, ['--import', tsxLoaderURL, cliFilepath, 'extract', '-w'], {
         cwd: workspacePath,
         forceKillAfterDelay: 1000
     })
