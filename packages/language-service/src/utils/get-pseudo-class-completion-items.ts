@@ -6,6 +6,33 @@ import { IPseudoClassData } from 'vscode-css-languageservice'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 
 const kind = CompletionItemKind.Function
+const functionalPseudoClassNames = new Set([
+    ':current',
+    ':dir',
+    ':has',
+    ':has-slotted',
+    ':host',
+    ':host-context',
+    ':is',
+    ':lang',
+    ':local-link',
+    ':not',
+    ':nth',
+    ':nth-child',
+    ':nth-col',
+    ':nth-last',
+    ':nth-last-child',
+    ':nth-last-col',
+    ':nth-last-of-type',
+    ':nth-of-type',
+    ':of',
+    ':state',
+    ':where'
+])
+
+function normalizeFunctionalPseudoClass(name: string): string {
+    return functionalPseudoClassNames.has(name) ? name + '()' : name
+}
 
 export default function getPseudoClassCompletionItems(css: MasterCSS = createCSS(), syntax: string): CompletionItem[] {
     const pseudoClassDataList = cssDataProvider.providePseudoClasses()
@@ -17,7 +44,7 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = createCSS
     const completionItems = pseudoClassDataList
         .map((data) => {
             // fix https://github.com/microsoft/vscode-custom-data/issues/78
-            const name = /:(?:dir|has|is|nth-col|where)/.test(data.name) ? data.name + '()' : data.name
+            const name = normalizeFunctionalPseudoClass(data.name)
             let sortText = name.startsWith(':-')
                 ? 'yyyy' + name.slice(2)
                 : 'yy' + name.replace(/^:/, '')
@@ -43,14 +70,15 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = createCSS
         if (name.startsWith('::')) continue
         const value = selectors[name]
         const data: IPseudoClassData | undefined = pseudoClassDataList.find((data) => value.startsWith(data.name))
-        let sortText = name.startsWith(':-')
-            ? 'yyyy' + name.slice(2)
-            : 'yy' + name.replace(/^:/, '')
+        const label = normalizeFunctionalPseudoClass(name)
+        let sortText = label.startsWith(':-')
+            ? 'yyyy' + label.slice(2)
+            : 'yy' + label.replace(/^:/, '')
         if (sortText.endsWith('()')) sortText = 'y' + sortText
         const completionItem: CompletionItem = {
-            label: name,
+            label,
             documentation: getCSSDataDocumentation(data, {
-                generatedCSS: generateCSS([syntax + name.slice(1)], css),
+                generatedCSS: generateCSS([syntax + label.slice(1)], css),
                 docs: '/guide/selectors'
             }),
             sortText,

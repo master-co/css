@@ -6,7 +6,33 @@ describe.concurrent('pseudo-class', () => {
     test.concurrent(':', () => expect(hint('text:center:')?.map(({ label }) => label)).toContain(':active'))
     test.concurrent('two', () => expect(hint('text:center:hover:')?.map(({ label }) => label)).toContain(':active'))
     test.concurrent('utility', () => expect(hint('block:')?.map(({ label }) => label)).toContain(':active'))
+    test.concurrent('functional labels', () => {
+        const labels = hint('block:')?.map(({ label }) => label)
+
+        expect(labels).toEqual(expect.arrayContaining([
+            ':current()',
+            ':dir()',
+            ':has()',
+            ':has-slotted()',
+            ':host()',
+            ':host-context()',
+            ':is()',
+            ':lang()',
+            ':local-link()',
+            ':not()',
+            ':nth()',
+            ':nth-child()',
+            ':nth-last()',
+            ':nth-last-child()',
+            ':nth-last-of-type()',
+            ':nth-of-type()',
+            ':of()',
+            ':state()',
+            ':where()'
+        ]))
+    })
     it.concurrent('should take into account trigger character :', () => expect(hint('text:center:')?.find(({ label }) => label === ':active')).toMatchObject({ insertText: 'active' }))
+    it.concurrent('should insert functional pseudo-class text without the trigger character', () => expect(hint('text:center:')?.find(({ label }) => label === ':not()')).toMatchObject({ insertText: 'not()' }))
     it.concurrent('should take into account trigger character +', () => expect(hint('text:center+')?.find(({ label }) => label === ':active')?.insertText).toBeUndefined())
     test.concurrent('info', () => expect(hint('block:')?.find(({ label }) => label === ':first')).toEqual({
         'data': {
