@@ -1,5 +1,5 @@
 // @ts-expect-error
-import { css_beautify } from 'js-beautify/js/lib/beautify-css'
+import { css_beautify } from 'js-beautify/js/lib/beautify-css.js'
 
 export default function beautifyCSS(text: string) {
     return css_beautify(text.replace(/@(media|container|supports|layer)\(/g,'@$1 ('), {

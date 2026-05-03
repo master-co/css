@@ -15,13 +15,13 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                node-version: [22]
+                node-version: [24]
         steps:
-            - uses: actions/checkout@v4
-            - uses: pnpm/action-setup@v3
+            - uses: actions/checkout@v6
+            - uses: pnpm/action-setup@v4
               with:
-                  version: 9
-            - uses: actions/setup-node@v4
+                  version: 10.33.2
+            - uses: actions/setup-node@v6
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'pnpm'

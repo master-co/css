@@ -1,0 +1,60 @@
+## Using screens [sr-only]
+The `config.screens` object is the single source for these sizes. Each token creates a responsive breakpoint such as `@md`, a value token such as `screen-md`, and a container query size such as `@container(md)`.
+<Overview />
+Master CSS includes 11 predefined screen sizes from `4xs` to `4xl`; you can customize them in [`config.screens`](/guide/configuration#screens).
+
+---
+
+## Viewport breakpoints
+Use `@<name>` to apply styles when the viewport reaches a configured screen size.
+<ResponsiveBreakpoints />
+
+```html
+<!-- @MARK @md -->
+<div class="font:24 font:32@md">…</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['font:24', 'font:32@md']}
+    </Class2CSS>
+</details>
+
+---
+
+## Screen size variables
+Use `screen-<name>` anywhere a size value can reference the screen namespace.
+<ScreenVariables />
+
+```html
+<!-- @MARK screen-md -->
+<div class="max-w:screen-md w:full">…</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['max-w:screen-md', 'w:full']}
+    </Class2CSS>
+</details>
+
+---
+
+## Container query sizes
+Use `@container(<name>)` to apply styles when the nearest container reaches a configured screen size.
+<ContainerQuerySizes />
+
+```html
+<div class="container">
+    <!-- @MARK @container(md) -->
+    <div class="grid-cols:1 grid-cols:2@container(md)">…</div>
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['container', 'grid-cols:1', 'grid-cols:2@container(md)']}
+    </Class2CSS>
+</details>

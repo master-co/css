@@ -52,9 +52,9 @@ export default async function renderSyntaxColors(this: CSSLanguageService, docum
                                 end: document.positionAt(startOffset + valueComponentTokenLength)
                             },
                             color: {
-                                red: rgbaColor.r,
-                                green: rgbaColor.g,
-                                blue: rgbaColor.b,
+                                red: rgbaColor.r ?? 0,
+                                green: rgbaColor.g ?? 0,
+                                blue: rgbaColor.b ?? 0,
                                 alpha: Number(rgbaColor.alpha)
                             }
                         })

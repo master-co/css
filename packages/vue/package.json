@@ -36,15 +36,16 @@
         "nuxtjs"
     ],
     "sideEffects": false,
-    "main": "./dist/index.cjs",
+    "main": "./dist/index.js",
     "jsnext:main": "./dist/index.js",
     "esnext": "./dist/index.js",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "require": "./dist/index.cjs",
-            "import": "./dist/index.js"
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
         }
     },
     "files": [
@@ -62,17 +63,17 @@
         "@techor/extend": "^3.2.5"
     },
     "devDependencies": {
-        "@playwright/experimental-ct-vue": "^1.49.1",
-        "@playwright/test": "^1.49.1",
-        "@vitejs/plugin-vue": "^5.2.1",
-        "@vue/eslint-config-typescript": "^14.1.4",
-        "@vue/server-renderer": "^3.5.13",
-        "@vue/test-utils": "^2.4.6",
-        "@vue/tsconfig": "^0.7.0",
-        "eslint-plugin-vue": "^9.32.0",
+        "@playwright/experimental-ct-vue": "^1.59.1",
+        "@playwright/test": "^1.59.1",
+        "@vitejs/plugin-vue": "^6.0.6",
+        "@vue/eslint-config-typescript": "^14.7.0",
+        "@vue/server-renderer": "^3.5.33",
+        "@vue/test-utils": "^2.4.10",
+        "@vue/tsconfig": "^0.9.1",
+        "eslint-plugin-vue": "^10.9.0",
         "shared": "workspace:^",
-        "typescript": "5.6.2",
-        "vite": "^6",
-        "vue-tsc": "^2.1.10"
+        "typescript": "6.0.3",
+        "vite": "^8.0.10",
+        "vue-tsc": "^3.2.7"
     }
 }

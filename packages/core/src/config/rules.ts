@@ -564,7 +564,7 @@ const rules = {
         subkey: 's',
         unit: 'rem',
         type: SyntaxRuleType.Native,
-        namespaces: ['color']
+        namespaces: ['shadow', 'color']
     },
     'table-layout': {
         type: SyntaxRuleType.Native
@@ -601,6 +601,14 @@ const rules = {
     rotate: {
         type: SyntaxRuleType.Native,
         unit: 'deg'
+    // View Transitions API (CSS View Transitions Level 1 / 2). #265 foundation.
+    'view-transition-name': {
+        key: 'vt-name',
+        type: SyntaxRuleType.Native
+    },
+    'view-transition-class': {
+        key: 'vt-class',
+        type: SyntaxRuleType.Native
     },
     'translate()': {
         declarations: ['transform'],
@@ -681,12 +689,14 @@ const rules = {
     },
     'transition-timing-function': {
         key: '~easing',
-        type: SyntaxRuleType.Native
+        type: SyntaxRuleType.Native,
+        namespaces: ['easing']
     },
     'transition-duration': {
         key: '~duration',
         type: SyntaxRuleType.Native,
-        unit: 'ms'
+        unit: 'ms',
+        namespaces: ['duration']
     },
     'transition-delay': {
         key: '~delay',
@@ -695,7 +705,8 @@ const rules = {
     },
     transition: {
         sign: '~',
-        type: SyntaxRuleType.NativeShorthand
+        type: SyntaxRuleType.NativeShorthand,
+        namespaces: ['duration', 'easing']
     },
     'animation-delay': {
         key: '@delay',
@@ -709,7 +720,8 @@ const rules = {
     'animation-duration': {
         key: '@duration',
         type: SyntaxRuleType.Native,
-        unit: 'ms'
+        unit: 'ms',
+        namespaces: ['duration']
     },
     'animation-fill-mode': {
         key: '@fill',
@@ -730,12 +742,14 @@ const rules = {
     },
     'animation-timing-function': {
         key: '@easing',
-        type: SyntaxRuleType.Native
+        type: SyntaxRuleType.Native,
+        namespaces: ['easing']
     },
     animation: {
         sign: '@',
         type: SyntaxRuleType.NativeShorthand,
         includeAnimations: true,
+        namespaces: ['duration', 'easing']
     },
     'border-collapse': {
         aliasGroups: ['b', 'border'],
@@ -1016,6 +1030,40 @@ const rules = {
         transformer: 'auto-fill-solid',
         namespaces: ['color', 'color.line'],
     },
+    // Logical borders (CSS Logical Properties Level 1)
+    // Long-hand color
+    'border-inline-start-color': { kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
+    'border-inline-end-color':   { kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
+    'border-block-start-color':  { kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
+    'border-block-end-color':    { kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
+    'border-inline-color':       { kind: 'color', type: SyntaxRuleType.NativeShorthand, namespaces: ['color', 'color.line'] },
+    'border-block-color':        { kind: 'color', type: SyntaxRuleType.NativeShorthand, namespaces: ['color', 'color.line'] },
+    // Long-hand style
+    'border-inline-start-style': { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
+    'border-inline-end-style':   { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
+    'border-block-start-style':  { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
+    'border-block-end-style':    { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
+    'border-inline-style':       { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.NativeShorthand },
+    'border-block-style':        { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.NativeShorthand },
+    // Long-hand width
+    'border-inline-start-width': { kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
+    'border-inline-end-width':   { kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
+    'border-block-start-width':  { kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
+    'border-block-end-width':    { kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
+    'border-inline-width':       { kind: 'number', unit: 'rem', type: SyntaxRuleType.NativeShorthand },
+    'border-block-width':        { kind: 'number', unit: 'rem', type: SyntaxRuleType.NativeShorthand },
+    // Shorthands (border-inline-start: 1px solid red etc.)
+    'border-inline-start': { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    'border-inline-end':   { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    'border-block-start':  { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    'border-block-end':    { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    'border-inline':       { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    'border-block':        { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    // Logical corner radii (CSS Borders Level 4 — start/end on each axis)
+    'border-start-start-radius': { unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
+    'border-start-end-radius':   { unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
+    'border-end-start-radius':   { unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
+    'border-end-end-radius':     { unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
     'background-attachment': {
         aliasGroups: ['bg'],
         values: ['fixed', 'local', 'scroll'],

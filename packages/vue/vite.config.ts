@@ -11,7 +11,7 @@ export default defineConfig({
             entry: [
                 resolve(__dirname, 'src/index.ts'),
             ],
-            formats: ['cjs', 'es']
+            formats: ['es']
         },
         rollupOptions: {
             external: ['vue', ...Object.keys(pkg.dependencies)]

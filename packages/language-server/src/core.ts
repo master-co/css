@@ -1,4 +1,4 @@
-import { createConnection, TextDocuments, InitializeParams, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole } from 'vscode-languageserver/node'
+import { createConnection, TextDocuments, InitializeParams, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole } from 'vscode-languageserver/node.js'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'node:path'
 import CSSLanguageService, { Settings as CSSLanguageServiceSettings } from '@master/css-language-service'

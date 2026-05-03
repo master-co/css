@@ -32,7 +32,7 @@
         "extension"
     ],
     "sideEffects": false,
-    "main": "./dist/index.cjs",
+    "main": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
     "module": "./dist/index.mjs",
@@ -41,8 +41,8 @@
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
-            "require": "./dist/index.cjs",
-            "import": "./dist/index.mjs"
+            "import": "./dist/index.mjs",
+            "default": "./dist/index.mjs"
         }
     },
     "files": [
@@ -53,7 +53,7 @@
         "provenance": true
     },
     "devDependencies": {
-        "@playwright/test": "^1.49.1",
+        "@playwright/test": "^1.59.1",
         "shared": "workspace:^"
     }
 }

@@ -1,0 +1,134 @@
+# Site AI Instructions
+
+These instructions apply to the `site/` workspace. They extend the repository root `AGENTS.md`; follow the root instructions first, then apply these site-specific rules.
+
+Keep this file named `AI.md`. It is the scoped instruction file for agents working inside `site/`.
+
+## Documentation Architecture
+
+Guide pages live under:
+
+```txt
+site/app/[locale]/guide/<slug>/
+```
+
+Use the established page shape:
+
+```txt
+metadata.ts
+page.tsx
+content.mdx
+components/
+```
+
+- `metadata.ts` defines the public title, description, category, reference links, and `fileURL`.
+- `page.tsx` should use `createPage`, `internal/layouts/doc`, `site/dictionaries`, and `site/.categories/guide.json`.
+- `content.mdx` contains the guide copy, code examples, generated CSS examples, and imported local demos.
+- `components/` contains interactive demos and guide-local presentational components.
+- Category membership comes from metadata. Run `pnpm --filter site prepare-app` when adding or renaming pages so local `.categories` files refresh.
+
+For the View Transitions guide specifically:
+
+- Route slug is `/guide/view-transitions`.
+- Page title is `View Transitions`.
+- Category is `Fundamentals`.
+- Use the formal platform feature name `View Transition API` when referring to the browser API.
+
+## Content Strategy
+
+Guides should teach in this order:
+
+1. Explain the native web feature in plain language with links to authoritative references such as MDN or web.dev.
+2. Show the smallest Master CSS syntax needed to use it.
+3. Provide a working in-page demo.
+4. Show generated CSS with `<Class2CSS>` when the guide introduces new Master CSS classes.
+5. Cover important constraints, fallbacks, browser support concerns, and accessibility concerns after the core flow is clear.
+
+Keep reduced-motion handling and other progressive hardening after the primary example unless the guide is specifically about accessibility.
+
+For guide layout, visual design, responsive behavior, and token choices, use the existing `Fundations` category under `site/app/[locale]/guide` as the source of truth. Do not duplicate or enumerate those guide pages here; discover the relevant current pages from metadata or generated category data when needed.
+
+## Example Code
+
+Visible examples in documentation should be as framework-neutral as practical:
+
+- Prefer native `html`, `css`, and `js` code blocks for the reader-facing examples.
+- Use `class`, not React `className`, in visible HTML examples.
+- Use `document.startViewTransition()` with a direct DOM update and fallback in visible JavaScript examples.
+- Avoid exposing Next.js, React state, `flushSync`, or `next/image` in visible examples unless the section is explicitly about a framework integration.
+- The implementation demo may use React, Next.js, and `flushSync`; the displayed code does not need to match it exactly.
+
+For View Transitions examples:
+
+- Keep `view-transition-name` values unique among rendered elements.
+- Use article-specific names such as `article-image` instead of generic names that can collide in a list.
+- Use `view-transition-class` to group related snapshots when styling `::view-transition-group(...)`.
+- Scope global transition pseudo-element classes carefully. Avoid broad `::view-transition-group(*)` in shared guide demos unless intentionally documenting global behavior.
+
+## Demo Implementation
+
+Interactive demos should be local client components under the guide's `components/` folder.
+
+Use existing site primitives:
+
+- Wrap demos in `<Demo>`.
+- Use `next/image` for local bitmap images.
+- Use `@tabler/icons-react` for icon buttons and icon+text controls when an appropriate icon exists.
+- Use existing app button and panel classes where possible.
+
+Design demos for the actual doc content width, not just viewport width:
+
+- A `<Demo>` inside guide content is roughly `674px` wide on desktop and much narrower on mobile.
+- Prefer container queries over viewport breakpoints for internal demo layout.
+- Add `container` to the demo wrapper when using `@container(...)` classes.
+- Keep mobile single-column by default.
+- Use two-column layouts only when the container has enough width.
+- Avoid layouts where text, buttons, or cards rely on wide desktop space that the doc article does not provide.
+
+For View Transitions demos:
+
+- Add transition styling classes to `document.documentElement` in a client component and clean them up on unmount.
+- In React state demos, wrap the state update passed to `document.startViewTransition()` in `flushSync()` so the DOM update happens inside the transition callback.
+- Always provide a no-API fallback that runs the update immediately.
+- Keep article detail views single-column unless the guide explicitly demonstrates a multi-column destination layout.
+
+## Design References
+
+Before changing guide demo layout, spacing, sizing, color, radius, typography, or responsive behavior, inspect the relevant `Fundations` guide pages and follow their current patterns. Prefer semantic Master CSS tokens in demos; use low-level values only when the surrounding code already uses them or when the example is specifically teaching low-level sizing.
+
+## Assets
+
+Local bitmap assets for demos belong under:
+
+```txt
+site/assets/images/<guide-or-feature>/
+```
+
+Import them statically in components and render with Next `<Image>`:
+
+```tsx
+import Image from 'next/image'
+import articleImage from '~/site/assets/images/view-transitions/article-aurora.jpg'
+```
+
+Use `placeholder="blur"` when static imports provide blur data. Set an appropriate `sizes` value for responsive images.
+
+Do not place guide demo images in `site/public/` unless they must be addressed by a stable public URL outside the bundle.
+
+## Verification
+
+For content-only guide updates, at minimum run:
+
+```sh
+pnpm --filter site prepare-app
+```
+
+For interactive or visual demo changes, additionally verify:
+
+```sh
+curl -I http://localhost:3000/guide/<slug>
+```
+
+Use Playwright screenshots for desktop and mobile when layout, images, responsive behavior, or animation demos change. If Playwright browser binaries are missing, install the required browser with `pnpm exec playwright install chromium`.
+
+`pnpm --filter site type-check` is useful, but this workspace may have unrelated existing type errors. Report those separately and do not hide new errors introduced by the current change.

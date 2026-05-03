@@ -13,7 +13,7 @@ pkg.set('contributes.grammars', grammars.map((grammar) => {
         scopeName: grammar.scopeName,
         path: `./syntaxes/${grammar.scopeName.replace('source.', '')}.json`,
     }
-    if (grammar.embeddedLanguages) newGrammar.embeddedLanguages = grammar.embeddedLanguages
+    if (grammar.vscodeEmbeddedLanguages) newGrammar.embeddedLanguages = grammar.vscodeEmbeddedLanguages
     if (grammar.injectTo) newGrammar.injectTo = grammar.injectTo
     return newGrammar
 }))

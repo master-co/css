@@ -46,16 +46,34 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
         virtualModule.apply(compiler)
 
         compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
-            compilation.hooks.succeedModule.tap(NAME, async (module) => {
-                // @ts-expect-error
+            // Per-module: only synchronously record source. `succeedModule` is a
+            // SyncHook — async handlers attached via `.tap()` would be discarded
+            // by tapable, and webpack would proceed to `emit` before any
+            // `extractor.insert()` resolved (race that produced incomplete CSS).
+            const pendingByPath = new Map<string, string>()
+            compilation.hooks.succeedModule.tap(NAME, (module) => {
+                // @ts-expect-error webpack internals
                 const modulePath = module['resourceResolveData']?.['path'] || module['resource']
-                if (modulePath) {
-                    // @ts-expect-error
-                    const moduleSource = module['_source']
-                    const moduleContent = moduleSource?.source()
-                    this.moduleContentByPath[modulePath] = moduleContent
-                    await this.insert(modulePath, moduleContent)
-                }
+                if (!modulePath) return
+                // @ts-expect-error webpack internals
+                const moduleContent = module['_source']?.source()
+                if (moduleContent === undefined || moduleContent === null) return
+                this.moduleContentByPath[modulePath] = moduleContent
+                pendingByPath.set(modulePath, String(moduleContent))
+            })
+            // After the compilation has identified every module that succeeded
+            // this pass, await all extractor inserts together. `finishModules`
+            // is an AsyncSeriesHook so webpack will block on this promise
+            // before processing assets / emitting — which is exactly the
+            // ordering the original `tap(async ...)` was attempting (and
+            // silently failing) to achieve.
+            compilation.hooks.finishModules.tapPromise(NAME, async () => {
+                if (!pendingByPath.size) return
+                const entries = Array.from(pendingByPath.entries())
+                pendingByPath.clear()
+                await Promise.all(entries.map(([modulePath, content]) =>
+                    this.insert(modulePath, content)
+                ))
             })
         })
     }

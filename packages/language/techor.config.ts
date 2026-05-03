@@ -1,6 +1,6 @@
-import { Config } from 'techor'
+import type { Config } from 'techor'
 
-export default {
+const config: Config = {
     build: {
         input: {
             external: [
@@ -8,4 +8,6 @@ export default {
             ]
         }
     }
-} as Config
+}
+
+export default config

@@ -10,7 +10,7 @@
     },
     "devDependencies": {
         "@master/css.vite": "workspace:^",
-        "typescript": "^5.8.3",
-        "vite": "^6"
+        "typescript": "^6.0.3",
+        "vite": "^8.0.10"
     }
 }

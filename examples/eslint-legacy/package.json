@@ -4,8 +4,8 @@
         "lint": "ESLINT_USE_FLAT_CONFIG=false eslint \"*.html\""
     },
     "devDependencies": {
-        "@angular-eslint/template-parser": "^18.4.2",
+        "@angular-eslint/template-parser": "^21.3.1",
         "@master/eslint-config-css": "workspace:^",
-        "eslint": "^8.57.0"
+        "eslint": "^10.2.1"
     }
 }

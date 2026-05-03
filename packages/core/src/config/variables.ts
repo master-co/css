@@ -88,6 +88,33 @@ const variables = {
         "4xl": 96,
         "5xl": 128
     },
+    'duration': {
+        'fastest': '75ms',
+        'faster': '100ms',
+        'fast': '150ms',
+        'slow': '300ms',
+        'slower': '500ms',
+        'slowest': '800ms',
+    },
+    'easing': {
+        'smooth': 'cubic-bezier(.4,0,.2,1)',
+        'soft': 'cubic-bezier(.33,1,.68,1)',
+        'crisp': 'cubic-bezier(.16,1,.3,1)',
+        'snap': 'cubic-bezier(.2,0,0,1)',
+        'accelerate': 'cubic-bezier(.4,0,1,1)',
+        'decelerate': 'cubic-bezier(0,0,.2,1)',
+        'overshoot': 'cubic-bezier(.34,1.56,.64,1)',
+        'rewind': 'cubic-bezier(.36,0,.66,-.56)',
+        'spring': 'cubic-bezier(.68,-.6,.32,1.6)',
+    },
+    'shadow': {
+        'xs': '0 1px 2px oklch(0% 0 none / .08)',
+        'sm': '0 1px 2px oklch(0% 0 none / .06), 0 2px 4px oklch(0% 0 none / .06)',
+        'md': '0 2px 4px -1px oklch(0% 0 none / .08), 0 6px 12px -2px oklch(0% 0 none / .08)',
+        'lg': '0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10)',
+        'xl': '0 8px 16px -4px oklch(0% 0 none / .10), 0 20px 40px -8px oklch(0% 0 none / .12)',
+        '2xl': '0 16px 24px -8px oklch(0% 0 none / .12), 0 32px 64px -16px oklch(0% 0 none / .16)'
+    },
     'color': {
         'current': 'currentColor',
         'white': 'oklch(100% 0 none)',

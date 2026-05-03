@@ -11,10 +11,10 @@ export default async function Layout({ children, params }: {
     const { locale } = await params
     const translations = await importTranslations(locale, dictionaries)
     return (
-        <RootClient locale={locale} translations={translations}>
-            <HTML locale={locale}>
+        <HTML locale={locale}>
+            <RootClient locale={locale} translations={translations}>
                 {children}
-            </HTML>
-        </RootClient>
+            </RootClient>
+        </HTML>
     )
 }

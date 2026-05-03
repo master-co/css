@@ -20,6 +20,11 @@ const selectors = {
     '::slider-runnable-track': '::-webkit-slider-runnable-track',
     '::resizer': '::-webkit-resizer',
     '::progress': '::-webkit-progress',
+    '::vt': '::view-transition',
+    '::vt-group': '::view-transition-group',
+    '::vt-image-pair': '::view-transition-image-pair',
+    '::vt-old': '::view-transition-old',
+    '::vt-new': '::view-transition-new',
 } satisfies SelectorDefinitions
 
 export default selectors

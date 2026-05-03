@@ -2,11 +2,12 @@
     "name": "@master/css-extractor",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\"",
+        "build": "techor build \"src/**/*.ts\" --formats esm",
         "dev": "techor build --watch",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
-        "test": "vitest"
+        "test": "vitest",
+        "bench": "tsx tests/bench.ts"
     },
     "license": "MIT",
     "description": "Master CSS static extraction for various raw text",
@@ -31,7 +32,7 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "main": "./dist/index.cjs",
+    "main": "./dist/index.mjs",
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
@@ -40,18 +41,18 @@
         ".": {
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
-            "require": "./dist/index.cjs"
+            "default": "./dist/index.mjs"
         },
         "./options": {
             "types": "./dist/options/index.d.ts",
             "import": "./dist/options/index.mjs",
-            "require": "./dist/options/index.cjs"
+            "default": "./dist/options/index.mjs"
         }
     },
     "typesVersions": {
         "*": {
             ".": [
-                "./dist/index.d.js"
+                "./dist/index.d.ts"
             ],
             "./options": [
                 "./dist/options/index.d.ts"
@@ -73,9 +74,9 @@
         "@techor/glob": "^3.2.5",
         "@techor/log": "^3.2.5",
         "bytes": "^3.1.2",
-        "chokidar": "^4.0.2",
+        "chokidar": "^5.0.0",
         "explore-config": "^3.2.5",
-        "minimatch": "^10.0.1"
+        "minimatch": "^10.2.5"
     },
     "devDependencies": {
         "@types/bytes": "^3.1.5",

@@ -34,7 +34,7 @@ test.concurrent('text:center', async () => {
 
             Syntax: start | end | left | right | center | justify | match\\-parent
 
-            [Master CSS](https://rc.css.master.co/reference/text-align) | [MDN Reference](https://developer.mozilla.org/docs/Web/CSS/text-align)
+            [Master CSS](https://rc.css.master.co/reference/text-align) | [MDN Reference](https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-align)
         `
     })
 })
@@ -54,6 +54,8 @@ test.concurrent('hidden', async () => {
             \`\`\`
 
             The element and its descendants generates no boxes\\.
+
+            (Edge 12, Firefox 1,  4, Safari 1,  1, Chrome 1,  18, IE 4, Opera 7)
 
             [Master CSS](https://rc.css.master.co/reference/display)
         `

@@ -2,7 +2,7 @@
     "name": "@master/css.vite",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\"",
+        "build": "techor build \"src/**/*.ts\" --formats esm",
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
@@ -35,7 +35,7 @@
         "vite-plugin"
     ],
     "sideEffects": false,
-    "main": "./dist/index.cjs",
+    "main": "./dist/index.mjs",
     "module": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
@@ -44,7 +44,7 @@
         ".": {
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
-            "require": "./dist/index.cjs"
+            "default": "./dist/index.mjs"
         }
     },
     "files": [
@@ -63,10 +63,10 @@
         "@master/css-extractor": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
-        "@master/normal.css": "*",
+        "@master/normal.css": "^3.2.0",
         "fast-glob": "^3.3.3",
-        "magic-string": "^0.30.17",
-        "source-map": "^0.7.4"
+        "magic-string": "^0.30.21",
+        "source-map": "^0.7.6"
     },
     "devDependencies": {
         "shared": "workspace:^"

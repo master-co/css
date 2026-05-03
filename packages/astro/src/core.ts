@@ -1,5 +1,4 @@
 import { AstroIntegration } from 'astro'
-import type { Plugin } from 'vite'
 import { default as vitePlugin, CSS_RUNTIME_INJECTIOIN } from '@master/css.vite'
 import defaultOptions, { type IntegrationOptions } from './options'
 
@@ -13,10 +12,10 @@ export default function masterCSS(options?: IntegrationOptions): AstroIntegratio
                     case 'progressive':
                     case 'runtime':
                         injectScript('page', CSS_RUNTIME_INJECTIOIN)
-                        updateConfig({ vite: { plugins: [vitePlugin({ ...options, injectRuntime: false }) as unknown as Plugin] } })
+                        updateConfig({ vite: { plugins: [vitePlugin({ ...options, injectRuntime: false }) as never] } })
                         break
                     default:
-                        updateConfig({ vite: { plugins: [vitePlugin(options) as unknown as Plugin] } })
+                        updateConfig({ vite: { plugins: [vitePlugin(options) as never] } })
                         break
                 }
                 switch (options.mode) {

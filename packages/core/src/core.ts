@@ -387,10 +387,12 @@ export default class MasterCSS {
                     const alpha = aliasResult[2] ?? aliasResult[4]
                     let aliasVariableModeResolver = aliasVariableModeResolvers.get(variable.name)
                     if (!aliasVariableModeResolver) {
-                        aliasVariableModeResolvers.set(variable.name, aliasVariableModeResolver = {})
+                        aliasVariableModeResolver = {}
+                        aliasVariableModeResolvers.set(variable.name, aliasVariableModeResolver)
                     }
-                    aliasVariableModeResolver[mode as string] = () => {
-                        delete aliasVariableModeResolver[mode as string]
+                    const resolver = aliasVariableModeResolver
+                    resolver[mode as string] = () => {
+                        delete resolver[mode as string]
                         if (!alias) return
                         const eachAliasModeVariableResolver = aliasVariableModeResolvers.get(alias)
                         if (eachAliasModeVariableResolver) {

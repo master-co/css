@@ -1,4 +1,3 @@
-import tsconfigPaths from 'vite-tsconfig-paths'
 import type { ViteUserConfig } from 'vitest/config'
 
 const config: ViteUserConfig = {
@@ -21,11 +20,9 @@ const config: ViteUserConfig = {
             '**/fixtures/**/*'
         ]
     },
-    plugins: [
-        tsconfigPaths({
-            ignoreConfigErrors: true
-        })
-    ]
+    resolve: {
+        tsconfigPaths: true
+    }
 }
 
 export default config

@@ -32,7 +32,7 @@
         "cdn"
     ],
     "sideEffects": false,
-    "main": "./dist/index.cjs",
+    "main": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
     "module": "./dist/index.mjs",
@@ -41,14 +41,11 @@
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
-            "require": {
-                "development": "./dist/index.development.cjs",
-                "default": "./dist/index.cjs"
-            },
             "import": {
                 "development": "./dist/index.development.mjs",
                 "default": "./dist/index.mjs"
-            }
+            },
+            "default": "./dist/index.mjs"
         }
     },
     "files": [
@@ -63,7 +60,7 @@
         "@master/css-devtools-hook": "workspace:^"
     },
     "devDependencies": {
-        "@playwright/test": "^1.49.1",
+        "@playwright/test": "^1.59.1",
         "shared": "workspace:^"
     }
 }

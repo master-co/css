@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Sizing',
-    description: 'A guide to the sizing system and how to apply it in your project.',
+    description: 'Use width, height, size, min, max, fractions, screen sizes, and fluid CSS functions to control layout dimensions.',
     category: 'Fundations',
     fileURL: import.meta.url
 })

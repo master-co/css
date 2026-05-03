@@ -2,7 +2,7 @@
     "name": "@master/css.react",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.tsx\"",
+        "build": "techor build \"src/**/*.tsx\" --formats esm",
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
@@ -35,7 +35,7 @@
         "solidjs"
     ],
     "sideEffects": false,
-    "main": "./dist/index.cjs",
+    "main": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
     "module": "./dist/index.mjs",
@@ -43,8 +43,8 @@
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
-            "require": "./dist/index.cjs",
-            "import": "./dist/index.mjs"
+            "import": "./dist/index.mjs",
+            "default": "./dist/index.mjs"
         }
     },
     "files": [
@@ -62,9 +62,13 @@
         "@master/css-runtime": "workspace:^"
     },
     "devDependencies": {
-        "@playwright/experimental-ct-react": "^1.49.1",
-        "@playwright/test": "^1.49.1",
-        "@types/node": "^22.10.2",
+        "@playwright/experimental-ct-react": "^1.59.1",
+        "@playwright/test": "^1.59.1",
+        "@types/node": "^25.6.0",
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "react": "19.2.5",
+        "react-dom": "19.2.5",
         "shared": "workspace:^"
     }
 }
