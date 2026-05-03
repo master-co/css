@@ -12,16 +12,12 @@ export declare type Grammar = {
 
 const jsonImportOptions = { with: { type: 'json' } } as const
 
-function importJSON(path: string) {
-    return import(path, jsonImportOptions)
-}
-
-const core = (await importJSON('../syntaxes/master-css.json')).default
-const injectionClass = (await importJSON('../syntaxes/master-css.injection-class.json')).default
-const injectionJS = (await importJSON('../syntaxes/master-css.injection-js.json')).default
-const injectionReact = (await importJSON('../syntaxes/master-css.injection-react.json')).default
-const injectionString = (await importJSON('../syntaxes/master-css.injection-string.json')).default
-const injectionVue = (await importJSON('../syntaxes/master-css.injection-vue.json')).default
+const core = (await import('../syntaxes/master-css.json')).default
+const injectionClass = (await import('../syntaxes/master-css.injection-class.json')).default
+const injectionJS = (await import('../syntaxes/master-css.injection-js.json')).default
+const injectionReact = (await import('../syntaxes/master-css.injection-react.json')).default
+const injectionString = (await import('../syntaxes/master-css.injection-string.json')).default
+const injectionVue = (await import('../syntaxes/master-css.injection-vue.json')).default
 
 const grammars = [
     {

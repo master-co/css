@@ -564,7 +564,7 @@ const rules = {
         subkey: 's',
         unit: 'rem',
         type: SyntaxRuleType.Native,
-        namespaces: ['color']
+        namespaces: ['shadow', 'color']
     },
     'table-layout': {
         type: SyntaxRuleType.Native
@@ -591,9 +591,11 @@ const rules = {
     },
     // View Transitions API (CSS View Transitions Level 1 / 2). #265 foundation.
     'view-transition-name': {
+        key: 'vt-name',
         type: SyntaxRuleType.Native
     },
     'view-transition-class': {
+        key: 'vt-class',
         type: SyntaxRuleType.Native
     },
     'translate()': {
@@ -675,12 +677,14 @@ const rules = {
     },
     'transition-timing-function': {
         key: '~easing',
-        type: SyntaxRuleType.Native
+        type: SyntaxRuleType.Native,
+        namespaces: ['easing']
     },
     'transition-duration': {
         key: '~duration',
         type: SyntaxRuleType.Native,
-        unit: 'ms'
+        unit: 'ms',
+        namespaces: ['duration']
     },
     'transition-delay': {
         key: '~delay',
@@ -689,7 +693,8 @@ const rules = {
     },
     transition: {
         sign: '~',
-        type: SyntaxRuleType.NativeShorthand
+        type: SyntaxRuleType.NativeShorthand,
+        namespaces: ['duration', 'easing']
     },
     'animation-delay': {
         key: '@delay',
@@ -703,7 +708,8 @@ const rules = {
     'animation-duration': {
         key: '@duration',
         type: SyntaxRuleType.Native,
-        unit: 'ms'
+        unit: 'ms',
+        namespaces: ['duration']
     },
     'animation-fill-mode': {
         key: '@fill',
@@ -724,12 +730,14 @@ const rules = {
     },
     'animation-timing-function': {
         key: '@easing',
-        type: SyntaxRuleType.Native
+        type: SyntaxRuleType.Native,
+        namespaces: ['easing']
     },
     animation: {
         sign: '@',
         type: SyntaxRuleType.NativeShorthand,
         includeAnimations: true,
+        namespaces: ['duration', 'easing']
     },
     'border-collapse': {
         aliasGroups: ['b', 'border'],

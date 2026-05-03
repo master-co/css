@@ -16,6 +16,20 @@ describe('issue #265: View Transitions API foundation', () => {
         expect(rule?.text).toContain('view-transition-class:product-card')
     })
 
+    test('vt-name expands to view-transition-name declaration', () => {
+        const css = new MasterCSS(undefined, defaultConfig)
+        const rule = css.create('vt-name:hero')
+        expect(rule).toBeDefined()
+        expect(rule?.text).toContain('view-transition-name:hero')
+    })
+
+    test('vt-class expands to view-transition-class declaration', () => {
+        const css = new MasterCSS(undefined, defaultConfig)
+        const rule = css.create('vt-class:product-card')
+        expect(rule).toBeDefined()
+        expect(rule?.text).toContain('view-transition-class:product-card')
+    })
+
     test('view-transition-name:none disables transition for the element', () => {
         const css = new MasterCSS(undefined, defaultConfig)
         const rule = css.create('view-transition-name:none')
@@ -42,5 +56,18 @@ describe('issue #265: View Transitions API foundation', () => {
         const css = new MasterCSS(undefined, defaultConfig)
         expect(css.create('opacity:1::view-transition-new(hero)')?.text)
             .toContain('::view-transition-new(hero)')
+    })
+
+    test.each([
+        ['::vt', '::view-transition'],
+        ['::vt-group(hero)', '::view-transition-group(hero)'],
+        ['::vt-image-pair(hero)', '::view-transition-image-pair(hero)'],
+        ['::vt-old(hero)', '::view-transition-old(hero)'],
+        ['::vt-new(hero)', '::view-transition-new(hero)'],
+    ])('%s shorthand selector expands to %s', (selector, expectedSelector) => {
+        const css = new MasterCSS(undefined, defaultConfig)
+        const rule = css.create('opacity:0' + selector)
+        expect(rule).toBeDefined()
+        expect(rule?.text).toContain(expectedSelector + '{opacity:0}')
     })
 })
